@@ -43,11 +43,13 @@ ExtensionApiFrameIdMap::FrameData::FrameData()
 ExtensionApiFrameIdMap::FrameData::FrameData(int frame_id,
                                              int parent_frame_id,
                                              int tab_id,
-                                             int window_id)
+                                             int window_id,
+                                             const DocumentId& document_id)
     : frame_id(frame_id),
       parent_frame_id(parent_frame_id),
       tab_id(tab_id),
-      window_id(window_id) {}
+      window_id(window_id),
+      document_id(document_id) {}
 
 ExtensionApiFrameIdMap::FrameData::~FrameData() = default;
 
@@ -145,7 +147,8 @@ ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
     ExtensionsBrowserClient::Get()->GetTabAndWindowIdForWebContents(
         content::WebContents::FromRenderFrameHost(rfh), &tab_id, &window_id);
   }
-  return FrameData(GetFrameId(rfh), GetParentFrameId(rfh), tab_id, window_id);
+  return FrameData(GetFrameId(rfh), GetParentFrameId(rfh), tab_id, window_id,
+                   GetDocumentId(rfh));
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::GetFrameData(
@@ -156,6 +159,27 @@ ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::GetFrameData(
     return frame_id_iter->second;
 
   return KeyToValue(rfh_id, true /* require_live_frame */);
+}
+
+ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::GetDocumentId(
+    content::RenderFrameHost* rfh) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(rfh);
+  return ExtensionDocumentUserData::GetOrCreateForCurrentDocument(rfh)
+      ->document_id();
+}
+
+ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::GetDocumentId(
+    content::NavigationHandle* navigation_handle) {
+  // We can only access NavigationHandle::GetRenderFrameHost if the navigation
+  // handle has committed or is waiting to commit. This is fine because
+  // otherwise the documentId is useless as it will point at the old
+  // document.
+  if (navigation_handle->IsWaitingToCommit() ||
+      navigation_handle->HasCommitted()) {
+    return GetDocumentId(navigation_handle->GetRenderFrameHost());
+  }
+  return DocumentId();
 }
 
 void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
@@ -178,5 +202,15 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
                      },
                      base::Unretained(this), key));
 }
+
+ExtensionApiFrameIdMap::ExtensionDocumentUserData::ExtensionDocumentUserData(
+    content::RenderFrameHost* render_frame_host)
+    : content::DocumentUserData<ExtensionDocumentUserData>(render_frame_host),
+      document_id_(DocumentId::Create()) {}
+
+ExtensionApiFrameIdMap::ExtensionDocumentUserData::
+    ~ExtensionDocumentUserData() = default;
+
+DOCUMENT_USER_DATA_KEY_IMPL(ExtensionApiFrameIdMap::ExtensionDocumentUserData);
 
 }  // namespace extensions

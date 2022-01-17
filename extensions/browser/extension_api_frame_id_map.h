@@ -10,6 +10,8 @@
 #include <set>
 
 #include "base/lazy_instance.h"
+#include "base/unguessable_token.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -40,11 +42,17 @@ namespace extensions {
 // The non-static methods of this class use an internal cache.
 class ExtensionApiFrameIdMap {
  public:
+  using DocumentId = base::UnguessableToken;
+
   // The data for a RenderFrame. Every GlobalRenderFrameHostId maps to a
   // FrameData.
   struct FrameData {
     FrameData();
-    FrameData(int frame_id, int parent_frame_id, int tab_id, int window_id);
+    FrameData(int frame_id,
+              int parent_frame_id,
+              int tab_id,
+              int window_id,
+              const DocumentId& document_id);
     ~FrameData();
 
     FrameData(const FrameData&);
@@ -63,6 +71,9 @@ class ExtensionApiFrameIdMap {
     // The id of the window that the frame is in, or -1 if the frame isn't in a
     // window.
     int window_id;
+
+    // The extennsion API document ID of the document in the frame.
+    DocumentId document_id;
   };
 
   // An invalid extension API frame ID.
@@ -88,6 +99,12 @@ class ExtensionApiFrameIdMap {
   // Get the extension API frame ID for the parent of |navigation_handle|.
   static int GetParentFrameId(content::NavigationHandle* navigation_handle);
 
+  // Get the extension API document ID for the current document of |rfh|.
+  static DocumentId GetDocumentId(content::RenderFrameHost* rfh);
+
+  // Get the extension API document ID for the document of |navigation_handle|.
+  static DocumentId GetDocumentId(content::NavigationHandle* navigation_handle);
+
   // Find the current RenderFrameHost for a given WebContents and extension
   // frame ID.
   // Returns nullptr if not found.
@@ -105,6 +122,21 @@ class ExtensionApiFrameIdMap {
 
  protected:
   friend struct base::LazyInstanceTraitsBase<ExtensionApiFrameIdMap>;
+  class ExtensionDocumentUserData
+      : public content::DocumentUserData<ExtensionDocumentUserData> {
+   public:
+    explicit ExtensionDocumentUserData(
+        content::RenderFrameHost* render_frame_host);
+    ~ExtensionDocumentUserData() override;
+
+    const DocumentId& document_id() const { return document_id_; }
+
+   private:
+    friend content::DocumentUserData<ExtensionDocumentUserData>;
+    DOCUMENT_USER_DATA_KEY_DECL();
+
+    DocumentId document_id_;
+  };
 
   ExtensionApiFrameIdMap();
   ~ExtensionApiFrameIdMap();

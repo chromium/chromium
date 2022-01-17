@@ -70,6 +70,9 @@ std::unique_ptr<Event> CreateOnBeforeNavigateEvent(
       ExtensionTabUtil::GetTabId(navigation_handle->GetWebContents());
   details.url = url.spec();
   details.process_id = -1;
+  // There is no documentId for this event because the document has not
+  // been created yet. It will first appear in the OnCommitted event. The
+  // frameId can be used to associate OnBeforeNavigate and OnCommitted together.
   details.frame_id = ExtensionApiFrameIdMap::GetFrameId(navigation_handle);
   details.parent_frame_id =
       ExtensionApiFrameIdMap::GetParentFrameId(navigation_handle);
@@ -110,6 +113,8 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
                    ExtensionApiFrameIdMap::GetFrameId(frame_host));
   dict->SetInteger(web_navigation_api_constants::kParentFrameIdKey,
                    ExtensionApiFrameIdMap::GetParentFrameId(frame_host));
+  dict->SetString(web_navigation_api_constants::kDocumentIdKey,
+                  ExtensionApiFrameIdMap::GetDocumentId(frame_host).ToString());
 
   if (navigation_handle->WasServerRedirect()) {
     transition_type = ui::PageTransitionFromInt(
@@ -159,6 +164,8 @@ void DispatchOnDOMContentLoaded(content::WebContents* web_contents,
   details.frame_id = ExtensionApiFrameIdMap::GetFrameId(frame_host);
   details.parent_frame_id =
       ExtensionApiFrameIdMap::GetParentFrameId(frame_host);
+  details.document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(frame_host).ToString();
   details.time_stamp = MilliSecondsFromTime(base::Time::Now());
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
@@ -180,6 +187,8 @@ void DispatchOnCompleted(content::WebContents* web_contents,
   details.frame_id = ExtensionApiFrameIdMap::GetFrameId(frame_host);
   details.parent_frame_id =
       ExtensionApiFrameIdMap::GetParentFrameId(frame_host);
+  details.document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(frame_host).ToString();
   details.time_stamp = MilliSecondsFromTime(base::Time::Now());
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
@@ -240,6 +249,8 @@ void DispatchOnErrorOccurred(content::WebContents* web_contents,
   details.parent_frame_id =
       ExtensionApiFrameIdMap::GetParentFrameId(frame_host);
   details.error = net::ErrorToString(error_code);
+  details.document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(frame_host).ToString();
   details.time_stamp = MilliSecondsFromTime(base::Time::Now());
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
@@ -263,6 +274,8 @@ void DispatchOnErrorOccurred(content::NavigationHandle* navigation_handle) {
   details.error = (navigation_handle->GetNetErrorCode() != net::OK)
                       ? net::ErrorToString(navigation_handle->GetNetErrorCode())
                       : net::ErrorToString(net::ERR_ABORTED);
+  details.document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(navigation_handle).ToString();
   details.time_stamp = MilliSecondsFromTime(base::Time::Now());
 
   content::BrowserContext* browser_context =

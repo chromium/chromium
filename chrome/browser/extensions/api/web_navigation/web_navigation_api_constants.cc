@@ -9,6 +9,7 @@ namespace extensions {
 namespace web_navigation_api_constants {
 
 const char kErrorKey[] = "error";
+const char kDocumentIdKey[] = "documentId";
 const char kFrameIdKey[] = "frameId";
 const char kParentFrameIdKey[] = "parentFrameId";
 const char kProcessIdKey[] = "processId";

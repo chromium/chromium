@@ -52,12 +52,14 @@ class ExtensionNavigationUIData {
   }
 
  private:
-  ExtensionNavigationUIData(content::WebContents* web_contents,
-                            int tab_id,
-                            int window_id,
-                            int frame_id,
-                            int parent_frame_id,
-                            content::GlobalRenderFrameHostId parent_routing_id);
+  ExtensionNavigationUIData(
+      content::WebContents* web_contents,
+      int tab_id,
+      int window_id,
+      int frame_id,
+      int parent_frame_id,
+      content::GlobalRenderFrameHostId parent_routing_id,
+      const ExtensionApiFrameIdMap::DocumentId& document_id);
 
   ExtensionApiFrameIdMap::FrameData frame_data_;
   bool is_web_view_;
