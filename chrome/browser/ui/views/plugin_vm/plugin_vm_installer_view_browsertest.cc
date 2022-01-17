@@ -320,6 +320,9 @@ IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
       vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
   fake_vm_plugin_dispatcher_client_->set_list_vms_response(list_vms_response);
 
+  fake_vm_plugin_dispatcher_client_->set_start_vm_response(
+      vm_tools::plugin_dispatcher::StartVmResponse());
+
   ShowUi("default");
   EXPECT_NE(nullptr, view_);
 

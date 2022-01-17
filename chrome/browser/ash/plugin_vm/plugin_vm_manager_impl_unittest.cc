@@ -68,6 +68,10 @@ class PluginVmManagerImplTest : public testing::Test {
     chrome_shelf_controller_->Init();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     chromeos::DlcserviceClient::InitializeFake();
+
+    // Make StartVm succeed by default, tests can override as needed.
+    VmPluginDispatcherClient().set_start_vm_response(
+        vm_tools::plugin_dispatcher::StartVmResponse());
   }
 
   PluginVmManagerImplTest(const PluginVmManagerImplTest&) = delete;
@@ -507,7 +511,8 @@ TEST_F(PluginVmManagerImplTest, UninstallMissingPluginVm) {
   test_helper_->AllowPluginVm();
   EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
-  VmPluginDispatcherClient().set_list_vms_response({});  // An empty list.
+  VmPluginDispatcherClient().set_list_vms_response(
+      vm_tools::plugin_dispatcher::ListVmResponse());
   testing_profile_->GetPrefs()->SetBoolean(
       plugin_vm::prefs::kPluginVmImageExists, true);
 
