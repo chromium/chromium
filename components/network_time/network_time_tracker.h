@@ -165,9 +165,15 @@ class NetworkTimeTracker {
   base::TimeDelta GetTimerDelayForTesting() const;
 
  private:
+  // Tells how a call to CheckTime was initiated.
+  enum class CheckTimeType {
+    ON_DEMAND,
+    BACKGROUND,
+  };
+
   // Checks whether a network time query should be issued, and issues one if so.
   // Upon response, execution resumes in |OnURLFetchComplete|.
-  void CheckTime();
+  void CheckTime(CheckTimeType check_type);
 
   // Updates network time from a time server response, returning true
   // if successful.
@@ -179,7 +185,8 @@ class NetworkTimeTracker {
                                  base::TimeDelta fetch_latency) const;
 
   // Called to process responses from the secure time service.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(CheckTimeType check_type,
+                           std::unique_ptr<std::string> response_body);
 
   // Sets the next time query to be run at the specified time.
   void QueueCheckTime(base::TimeDelta delay);
