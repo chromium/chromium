@@ -322,6 +322,17 @@ void ParsePreferredRelatedApplicationIdentifiers(
   }
 }
 
+bool GetString(const base::Value* dict,
+               base::StringPiece key,
+               std::string& result) {
+  DCHECK(dict);
+  const std::string* value = dict->FindStringKey(key);
+  if (value) {
+    result = *value;
+  }
+  return value;
+}
+
 }  // namespace
 
 PaymentManifestParser::WebAppIcon::WebAppIcon() = default;
@@ -492,14 +503,14 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
         fingerprint_dict =
             &base::Value::AsDictionaryValue(fingerprint_dict_value);
       }
-      const std::string* fingerprint_type =
-          fingerprint_dict->FindStringKey("type");
-      const std::string* fingerprint_value =
-          fingerprint_dict->FindStringKey("value");
-      if (!fingerprint_dict || !fingerprint_type ||
-          *fingerprint_type != "sha256_cert" || !fingerprint_value ||
-          fingerprint_value->empty() ||
-          !base::IsStringASCII(*fingerprint_value)) {
+      std::string fingerprint_type;
+      std::string fingerprint_value;
+      if (!fingerprint_dict ||
+          !GetString(fingerprint_dict, "type", fingerprint_type) ||
+          fingerprint_type != "sha256_cert" ||
+          !GetString(fingerprint_dict, "value", fingerprint_value) ||
+          fingerprint_value.empty() ||
+          !base::IsStringASCII(fingerprint_value)) {
         log.Error(base::StringPrintf(
             "Each entry in \"%s\" must be a dictionary with \"type\": "
             "\"sha256_cert\" and a non-empty ASCII string \"value\".",
@@ -509,7 +520,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
       }
 
       std::vector<uint8_t> hash =
-          FingerprintStringToByteArray(*fingerprint_value, log);
+          FingerprintStringToByteArray(fingerprint_value, log);
       if (hash.empty()) {
         output->clear();
         return false;
