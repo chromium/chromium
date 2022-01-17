@@ -30,8 +30,6 @@ class UkmRecorder;
 
 namespace blink {
 
-CORE_EXPORT extern const base::Feature kFixFirstInputDelayForDesktop;
-
 class Document;
 class Event;
 

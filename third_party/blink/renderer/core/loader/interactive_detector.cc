@@ -36,10 +36,6 @@ constexpr base::TimeDelta kFirstInputDelayTraceEventThreshold =
 
 }  // namespace
 
-// A fix for FID computation.
-const base::Feature kFixFirstInputDelayForDesktop{
-    "FixFirstInputDelayForDesktop", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Required length of main thread and network quiet window for determining
 // Time to Interactive.
 constexpr auto kTimeToInteractiveWindow = base::Seconds(5);
@@ -218,10 +214,6 @@ void InteractiveDetector::HandleForInputDelay(
   if (event_platform_timestamp.is_null())
     return;
 
-  if (event.type() == event_type_names::kMouseup &&
-      !base::FeatureList::IsEnabled(kFixFirstInputDelayForDesktop))
-    return;
-
   // These variables track the values which will be reported to histograms.
   base::TimeDelta delay;
   base::TimeTicks event_timestamp;
@@ -244,24 +236,19 @@ void InteractiveDetector::HandleForInputDelay(
     delay = pending_pointerdown_delay_;
     event_timestamp = pending_pointerdown_timestamp_;
   } else {
-    if (base::FeatureList::IsEnabled(kFixFirstInputDelayForDesktop)) {
-      if (event.type() == event_type_names::kMousedown) {
-        pending_mousedown_delay_ = processing_start - event_platform_timestamp;
-        pending_mousedown_timestamp_ = event_platform_timestamp;
+    if (event.type() == event_type_names::kMousedown) {
+      pending_mousedown_delay_ = processing_start - event_platform_timestamp;
+      pending_mousedown_timestamp_ = event_platform_timestamp;
+      return;
+    } else if (event.type() == event_type_names::kMouseup) {
+      if (pending_mousedown_timestamp_.is_null())
         return;
-      } else if (event.type() == event_type_names::kMouseup) {
-        if (pending_mousedown_timestamp_.is_null())
-          return;
-        delay = pending_mousedown_delay_;
-        event_timestamp = pending_mousedown_timestamp_;
-        pending_mousedown_delay_ = base::TimeDelta();
-        pending_mousedown_timestamp_ = base::TimeTicks();
-      } else {
-        // Record delays for click, keydown.
-        delay = processing_start - event_platform_timestamp;
-        event_timestamp = event_platform_timestamp;
-      }
+      delay = pending_mousedown_delay_;
+      event_timestamp = pending_mousedown_timestamp_;
+      pending_mousedown_delay_ = base::TimeDelta();
+      pending_mousedown_timestamp_ = base::TimeTicks();
     } else {
+      // Record delays for click, keydown.
       delay = processing_start - event_platform_timestamp;
       event_timestamp = event_platform_timestamp;
     }
