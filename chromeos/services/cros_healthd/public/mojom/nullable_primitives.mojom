@@ -24,3 +24,9 @@ struct NullableUint64 {
   // The value of the uint64.
   uint64 value;
 };
+
+// Optional double field.
+struct NullableDouble {
+  // The value of the double.
+  double value;
+};

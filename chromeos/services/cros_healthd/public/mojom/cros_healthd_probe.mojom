@@ -1111,18 +1111,44 @@ union DisplayResult {
 
 // Display information.
 //
-// NextMinVersion: 1, NextIndex: 1
+// NextMinVersion: 2, NextIndex: 2
 struct DisplayInfo {
   // Embedded display info.
   EmbeddedDisplayInfo edp_info@0;
+  // External display info.
+  [MinVersion=1] array<ExternalDisplayInfo>? dp_infos@1;
 };
 
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 7
 struct EmbeddedDisplayInfo {
   // Privacy screen is supported or not.
   bool privacy_screen_supported@0;
   // Privacy screen is enabled or not.
   bool privacy_screen_enabled@1;
+  // Display width in millimeters.
+  [MinVersion=1] NullableUint32? display_width@2;
+  // Display height in millimeters.
+  [MinVersion=1] NullableUint32? display_height@3;
+  // Horizontal resolution.
+  [MinVersion=1] NullableUint32? resolution_horizontal@4;
+  // Vertical resolution.
+  [MinVersion=1] NullableUint32? resolution_vertical@5;
+  // Refresh rate.
+  [MinVersion=1] NullableDouble? refresh_rate@6;
+};
+
+// NextMinVersion: 1, NextIndex: 5
+struct ExternalDisplayInfo {
+  // Display width in millimeters.
+  NullableUint32? display_width@0;
+  // Display height in millimeters.
+  NullableUint32? display_height@1;
+  // Horizontal resolution.
+  NullableUint32? resolution_horizontal@2;
+  // Vertical resolution.
+  NullableUint32? resolution_vertical@3;
+  // Refresh rate.
+  NullableDouble? refresh_rate@4;
 };
 
 // Information related to a Thunderbolt device.
