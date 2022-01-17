@@ -9,6 +9,7 @@ import subprocess
 import time
 
 import common
+import ffx_session
 import remote_cmd
 
 from log_manager import LogManager
@@ -17,7 +18,6 @@ from symbolizer import BuildIdsPaths, RunSymbolizer
 
 _SHUTDOWN_CMD = ['dm', 'poweroff']
 _ATTACH_RETRY_INTERVAL = 1
-_ATTACH_RETRY_SECONDS = 120
 
 # Amount of time to wait for a complete package installation, as a
 # mitigation against hangs due to pkg/network-related failures.
@@ -76,6 +76,7 @@ class Target(object):
     self._ffx_path = os.path.join(common.SDK_ROOT, 'tools',
                                   common.GetHostArchFromPlatform(), 'ffx')
     self._log_manager = LogManager(logs_dir)
+    self._ffx_runner = ffx_session.FfxRunner(self._log_manager)
 
   @staticmethod
   def CreateFromArgs(args):
@@ -99,6 +100,10 @@ class Target(object):
     """Returns True if the Fuchsia target instance is ready to accept
     commands."""
     return self._started
+
+  def GetFfxTarget(self):
+    """Returns the FfxTarget instance to use to interact with this target."""
+    raise NotImplementedError()
 
   def Stop(self):
     """Stop all subprocesses and close log streams."""
@@ -289,11 +294,11 @@ class Target(object):
   def _AssertIsStarted(self):
     assert self.IsStarted()
 
-  def _WaitUntilReady(self):
+  def _ConnectToTarget(self):
     logging.info('Connecting to Fuchsia using SSH.')
 
     host, port = self._GetEndpoint()
-    end_time = time.time() + _ATTACH_RETRY_SECONDS
+    end_time = time.time() + common.ATTACH_RETRY_SECONDS
     ssh_diagnostic_log = self._log_manager.Open('ssh_diagnostic_log')
     while time.time() < end_time:
       runner = remote_cmd.CommandRunner(self._GetSshConfigPath(), host, port)
@@ -311,6 +316,9 @@ class Target(object):
     logging.error('Timeout limit reached.')
 
     raise FuchsiaTargetException('Couldn\'t connect using SSH.')
+
+  def _DisconnectFromTarget(self):
+    pass
 
   def _GetSshConfigPath(self, path):
     raise NotImplementedError()
