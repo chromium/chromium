@@ -249,7 +249,11 @@ public class ChromeTabCreator extends TabCreator {
                     TraceEvent.end("ChromeTabCreator.loadUrl");
                 }
             }
-            RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
+            // When tab reparenting the |intent| is the reparenting intent, not the intent that
+            // created the tab.
+            if (type != TabLaunchType.FROM_REPARENTING) {
+                RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
+            }
             if (intent != null && intent.hasExtra(ServiceTabLauncher.LAUNCH_REQUEST_ID_EXTRA)) {
                 ServiceTabLauncher.onWebContentsForRequestAvailable(
                         intent.getIntExtra(ServiceTabLauncher.LAUNCH_REQUEST_ID_EXTRA, 0),
