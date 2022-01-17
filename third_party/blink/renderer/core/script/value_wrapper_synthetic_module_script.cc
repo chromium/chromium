@@ -7,6 +7,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -64,7 +65,21 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
         v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
         ScriptFetchOptions(), error);
   }
-  v8::Local<v8::Value> v8_value_stylesheet = ToV8(style_sheet, script_state);
+
+  v8::Local<v8::Value> v8_value_stylesheet;
+  {
+    // Limit the scope of v8_try_catch so that it doesn't contain
+    // the following ValueWrapperSyntheticModuleScript::CreateWithDefaultExport.
+    v8::TryCatch v8_try_catch(isolate);
+    if (!ToV8Traits<CSSStyleSheet>::ToV8(script_state, style_sheet)
+             .ToLocal(&v8_value_stylesheet)) {
+      DCHECK(v8_try_catch.HasCaught());
+      return ValueWrapperSyntheticModuleScript::CreateWithError(
+          v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
+          ScriptFetchOptions(), v8_try_catch.Exception());
+    };
+  }
+
   return ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
       v8_value_stylesheet, settings_object, params.SourceURL(), KURL(),
       ScriptFetchOptions());
