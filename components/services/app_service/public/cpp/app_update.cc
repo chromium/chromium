@@ -182,9 +182,16 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(publisher_id)
   SET_OPTIONAL_VALUE(description)
   SET_OPTIONAL_VALUE(version)
+
+  if (!delta->additional_search_terms.empty()) {
+    state->additional_search_terms.clear();
+    state->additional_search_terms = delta->additional_search_terms;
+  }
+
   if (delta->icon_key.has_value()) {
     state->icon_key = CloneIconKey(delta->icon_key.value());
   }
+
   SET_ENUM_VALUE(install_reason, InstallReason::kUnknown);
   SET_ENUM_VALUE(install_source, InstallSource::kUnknown);
 
@@ -374,6 +381,11 @@ std::vector<std::string> AppUpdate::AdditionalSearchTerms() const {
   }
 
   return additional_search_terms;
+}
+
+std::vector<std::string> AppUpdate::GetAdditionalSearchTerms() const {
+  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(additional_search_terms, empty,
+                                          std::vector<std::string>{})
 }
 
 bool AppUpdate::AdditionalSearchTermsChanged() const {

@@ -20,6 +20,7 @@ std::unique_ptr<App> App::Clone() const {
   app->publisher_id = publisher_id;
   app->description = description;
   app->version = version;
+  app->additional_search_terms = additional_search_terms;
 
   if (icon_key.has_value()) {
     app->icon_key = apps::IconKey(icon_key->timeline, icon_key->resource_id,
@@ -174,6 +175,7 @@ std::unique_ptr<App> ConvertMojomAppToApp(
   app->publisher_id = mojom_app->publisher_id;
   app->description = mojom_app->description;
   app->version = mojom_app->version;
+  app->additional_search_terms = mojom_app->additional_search_terms;
 
   if (mojom_app->icon_key) {
     app->icon_key = apps::IconKey(mojom_app->icon_key->timeline,

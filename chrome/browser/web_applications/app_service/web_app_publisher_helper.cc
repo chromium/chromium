@@ -403,6 +403,7 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
           GetInstallSource(profile()->GetPrefs(), web_app->app_id())));
 
   app->description = web_app->description();
+  app->additional_search_terms = web_app->additional_search_terms();
 
   // Web App's publisher_id the start url.
   app->publisher_id = web_app->start_url().spec();

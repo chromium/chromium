@@ -31,6 +31,8 @@ class AppUpdateTest : public testing::Test {
 
   std::string expect_version_;
 
+  std::vector<std::string> expect_additional_search_terms_;
+
   absl::optional<IconKey> expect_icon_key_;
 
   InstallReason expect_install_reason_;
@@ -52,6 +54,8 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_description_, u.GetDescription());
 
     EXPECT_EQ(expect_version_, u.GetVersion());
+
+    EXPECT_EQ(expect_additional_search_terms_, u.GetAdditionalSearchTerms());
 
     if (expect_icon_key_.has_value()) {
       ASSERT_TRUE(u.GetIconKey().has_value());
@@ -80,6 +84,7 @@ class AppUpdateTest : public testing::Test {
     expect_publisher_id_ = "";
     expect_description_ = "";
     expect_version_ = "";
+    expect_additional_search_terms_.clear();
     expect_icon_key_ = absl::nullopt;
     expect_install_reason_ = InstallReason::kUnknown;
     expect_install_source_ = InstallSource::kUnknown;
@@ -205,6 +210,32 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_version_, state->version);
+      CheckExpects(u);
+    }
+
+    // AdditionalSearchTerms tests.
+
+    if (state) {
+      state->additional_search_terms.push_back("cat");
+      state->additional_search_terms.push_back("dog");
+      expect_additional_search_terms_.push_back("cat");
+      expect_additional_search_terms_.push_back("dog");
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      expect_additional_search_terms_.clear();
+      delta->additional_search_terms.push_back("horse");
+      delta->additional_search_terms.push_back("mouse");
+      expect_additional_search_terms_.push_back("horse");
+      expect_additional_search_terms_.push_back("mouse");
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_additional_search_terms_,
+                state->additional_search_terms);
       CheckExpects(u);
     }
 

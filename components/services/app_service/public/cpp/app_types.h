@@ -7,6 +7,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -116,6 +117,7 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
 
   absl::optional<std::string> description;
   absl::optional<std::string> version;
+  std::vector<std::string> additional_search_terms;
 
   absl::optional<IconKey> icon_key;
 

@@ -63,6 +63,7 @@ std::unique_ptr<App> StandaloneBrowserApps::CreateStandaloneBrowserApp() {
       Readiness::kReady, "Lacros" /* TODO(crbug.com/1267752): Localized name.*/,
       InstallReason::kSystem, InstallSource::kSystem);
 
+  app->additional_search_terms.push_back("chrome");
   app->icon_key = std::move(*CreateIconKey(/*is_browser_load_success=*/true));
   return app;
 }

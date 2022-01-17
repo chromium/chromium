@@ -53,11 +53,11 @@ namespace apps {
          (!state_ || (delta_->VALUE() != state_->VALUE()));
 
 #define GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(VALUE, CHECK, DEFAULT_RETURN) \
-  if (delta_ && !delta_->VALUE().CHECK()) {                                   \
-    return delta_->VALUE();                                                   \
+  if (delta_ && !delta_->VALUE.CHECK()) {                                     \
+    return delta_->VALUE;                                                     \
   }                                                                           \
-  if (state_ && !state_->VALUE().CHECK()) {                                   \
-    return state_->VALUE();                                                   \
+  if (state_ && !state_->VALUE.CHECK()) {                                     \
+    return state_->VALUE;                                                     \
   }                                                                           \
   return DEFAULT_RETURN;
 

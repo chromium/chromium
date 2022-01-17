@@ -125,7 +125,8 @@ bool InstanceUpdate::WindowChanged() const {
 }
 
 const std::string& InstanceUpdate::LaunchId() const {
-  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(LaunchId, empty, base::EmptyString());
+  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(LaunchId(), empty,
+                                          base::EmptyString());
 }
 
 bool InstanceUpdate::LaunchIdChanged() const {
@@ -141,7 +142,7 @@ bool InstanceUpdate::StateChanged() const {
 }
 
 base::Time InstanceUpdate::LastUpdatedTime() const {
-  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(LastUpdatedTime, is_null,
+  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(LastUpdatedTime(), is_null,
                                           base::Time());
 }
 

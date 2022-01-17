@@ -349,6 +349,14 @@ std::unique_ptr<App> CrostiniApps::CreateApp(
       AppType::kCrostini, registration.app_id(), Readiness::kReady,
       registration.Name(), InstallReason::kUser, InstallSource::kUnknown);
 
+  const std::string& executable_file_name = registration.ExecutableFileName();
+  if (!executable_file_name.empty()) {
+    app->additional_search_terms.push_back(executable_file_name);
+  }
+  for (const std::string& keyword : registration.Keywords()) {
+    app->additional_search_terms.push_back(keyword);
+  }
+
   if (generate_new_icon_key) {
     if (registration.app_id() == crostini::kCrostiniTerminalSystemAppId) {
       // Treat the Crostini Terminal as a special case, loading an icon defined
