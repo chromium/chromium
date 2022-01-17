@@ -19,6 +19,8 @@
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -231,8 +233,8 @@ TEST_F(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
 
       // Test that a call with the above parameters actually reaches
       // ExecuteClearingTask().
-      net::TestURLRequestContext context;
-      std::unique_ptr<net::URLRequest> request(context.CreateRequest(
+      auto context = net::CreateTestURLRequestContextBuilder()->Build();
+      std::unique_ptr<net::URLRequest> request(context->CreateRequest(
           url, net::DEFAULT_PRIORITY, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
       TestHandler handler(
           base::BindRepeating(&FakeBrowserContextGetter),
@@ -300,10 +302,10 @@ TEST_F(ClearSiteDataHandlerTest, InvalidHeader) {
 }
 
 TEST_F(ClearSiteDataHandlerTest, ClearCookieSuccess) {
-  net::TestURLRequestContext context;
+  auto context = net::CreateTestURLRequestContextBuilder()->Build();
   std::unique_ptr<net::URLRequest> request(
-      context.CreateRequest(GURL("https://example.com"), net::DEFAULT_PRIORITY,
-                            nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
+      context->CreateRequest(GURL("https://example.com"), net::DEFAULT_PRIORITY,
+                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
   std::vector<Message> message_buffer;
   TestHandler handler(
       base::BindRepeating(&FakeBrowserContextGetter),
@@ -327,10 +329,10 @@ TEST_F(ClearSiteDataHandlerTest, ClearCookieSuccess) {
 }
 
 TEST_F(ClearSiteDataHandlerTest, LoadDoNotSaveCookies) {
-  net::TestURLRequestContext context;
+  auto context = net::CreateTestURLRequestContextBuilder()->Build();
   std::unique_ptr<net::URLRequest> request(
-      context.CreateRequest(GURL("https://example.com"), net::DEFAULT_PRIORITY,
-                            nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
+      context->CreateRequest(GURL("https://example.com"), net::DEFAULT_PRIORITY,
+                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->SetLoadFlags(net::LOAD_DO_NOT_SAVE_COOKIES);
   std::vector<Message> message_buffer;
   TestHandler handler(
@@ -376,12 +378,12 @@ TEST_F(ClearSiteDataHandlerTest, InvalidOrigin) {
       {"data:unique-origin;", false, "Not supported for unique origins."},
   };
 
-  net::TestURLRequestContext context;
+  auto context = net::CreateTestURLRequestContextBuilder()->Build();
 
   for (const TestCase& test_case : kTestCases) {
     std::unique_ptr<net::URLRequest> request(
-        context.CreateRequest(GURL(test_case.origin), net::DEFAULT_PRIORITY,
-                              nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
+        context->CreateRequest(GURL(test_case.origin), net::DEFAULT_PRIORITY,
+                               nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
     std::vector<Message> message_buffer;
     TestHandler handler(
         base::BindRepeating(&FakeBrowserContextGetter),
@@ -467,10 +469,10 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
   for (bool navigation : kHandlerTypeIsNavigation) {
     SCOPED_TRACE(navigation ? "Navigation test." : "Subresource test.");
 
-    net::TestURLRequestContext context;
+    auto context = net::CreateTestURLRequestContextBuilder()->Build();
     std::unique_ptr<net::URLRequest> request(
-        context.CreateRequest(GURL(kTestCases[0].url), net::DEFAULT_PRIORITY,
-                              nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
+        context->CreateRequest(GURL(kTestCases[0].url), net::DEFAULT_PRIORITY,
+                               nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     std::string output_buffer;
     std::string last_seen_console_output;
@@ -515,10 +517,10 @@ TEST_F(ClearSiteDataHandlerTest, CookiePartitionKey) {
   const GURL kTestURL("https://www.bar.com");
 
   for (const auto& cookie_partition_key : cookie_partition_keys) {
-    net::TestURLRequestContext context;
+    auto context = net::CreateTestURLRequestContextBuilder()->Build();
     std::unique_ptr<net::URLRequest> request(
-        context.CreateRequest(kTestURL, net::DEFAULT_PRIORITY, nullptr,
-                              TRAFFIC_ANNOTATION_FOR_TESTS));
+        context->CreateRequest(kTestURL, net::DEFAULT_PRIORITY, nullptr,
+                               TRAFFIC_ANNOTATION_FOR_TESTS));
     std::string output_buffer;
     TestHandler handler(
         base::BindRepeating(&FakeBrowserContextGetter),
