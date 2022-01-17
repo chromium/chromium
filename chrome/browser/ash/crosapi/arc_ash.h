@@ -47,7 +47,7 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   void HandleUrl(const std::string& url,
                  const std::string& package_name) override;
 
-  // arc::ArcLacrosObserver:
+  // arc::ArcIntentHelperObserver:
   void OnIconInvalidated(const std::string& package_name) override;
   void OnArcIntentHelperBridgeDestruction() override;
 
