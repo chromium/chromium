@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
-                       QuietChipAbusiveUmaTest) {
+                       PermissionIgnoredQuietChipAbusiveUmaTest) {
   base::HistogramTester histograms;
 
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
@@ -551,6 +551,122 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   histograms.ExpectBucketCount(
       "Permissions.Prompt.Notifications.LocationBarLeftQuietAbusiveChip."
       "Ignored.DidClickLearnMore",
+      static_cast<int>(false), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
+                       PermissionGrantedQuietChipAbusiveUmaTest) {
+  base::HistogramTester histograms;
+
+  for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
+                               QuietUiReason::kTriggeredDueToAbusiveRequests,
+                               QuietUiReason::kTriggeredDueToAbusiveContent}) {
+    SetCannedUiDecision(reason, absl::nullopt);
+
+    RequestPermission(permissions::RequestType::kNotifications);
+
+    ASSERT_EQ(
+        test_api_->manager()->current_request_prompt_disposition_for_testing(),
+        permissions::PermissionPromptDisposition::
+            LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
+
+    ClickOnChip(GetChip());
+
+    test_api_->manager()->Accept();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftQuietAbusiveChip."
+      "Accepted.DidClickLearnMore",
+      static_cast<int>(false), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
+                       PermissionGrantedOnceQuietChipAbusiveUmaTest) {
+  base::HistogramTester histograms;
+
+  for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
+                               QuietUiReason::kTriggeredDueToAbusiveRequests,
+                               QuietUiReason::kTriggeredDueToAbusiveContent}) {
+    SetCannedUiDecision(reason, absl::nullopt);
+
+    RequestPermission(permissions::RequestType::kNotifications);
+
+    ASSERT_EQ(
+        test_api_->manager()->current_request_prompt_disposition_for_testing(),
+        permissions::PermissionPromptDisposition::
+            LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
+
+    ClickOnChip(GetChip());
+
+    test_api_->manager()->AcceptThisTime();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftQuietAbusiveChip."
+      "AcceptedOnce.DidClickLearnMore",
+      static_cast<int>(false), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
+                       PermissionDeniedOnceQuietChipAbusiveUmaTest) {
+  base::HistogramTester histograms;
+
+  for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
+                               QuietUiReason::kTriggeredDueToAbusiveRequests,
+                               QuietUiReason::kTriggeredDueToAbusiveContent}) {
+    SetCannedUiDecision(reason, absl::nullopt);
+
+    RequestPermission(permissions::RequestType::kNotifications);
+
+    ASSERT_EQ(
+        test_api_->manager()->current_request_prompt_disposition_for_testing(),
+        permissions::PermissionPromptDisposition::
+            LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
+
+    ClickOnChip(GetChip());
+
+    test_api_->manager()->Deny();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftQuietAbusiveChip."
+      "Denied.DidClickLearnMore",
+      static_cast<int>(false), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
+                       PermissionDismissedOnceQuietChipAbusiveUmaTest) {
+  base::HistogramTester histograms;
+
+  for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
+                               QuietUiReason::kTriggeredDueToAbusiveRequests,
+                               QuietUiReason::kTriggeredDueToAbusiveContent}) {
+    SetCannedUiDecision(reason, absl::nullopt);
+
+    RequestPermission(permissions::RequestType::kNotifications);
+
+    ASSERT_EQ(
+        test_api_->manager()->current_request_prompt_disposition_for_testing(),
+        permissions::PermissionPromptDisposition::
+            LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
+
+    ClickOnChip(GetChip());
+
+    test_api_->manager()->Dismiss();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftQuietAbusiveChip."
+      "Dismissed.DidClickLearnMore",
       static_cast<int>(false), 3);
 }
 

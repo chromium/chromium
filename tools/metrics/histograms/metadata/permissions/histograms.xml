@@ -720,10 +720,18 @@ chromium-metrics-reviews@google.com.
     prompt has been resolved.
   </summary>
   <token key="Disposition">
+    <variant name="AnchoredBubble"/>
+    <variant name="CustomModalDialog"/>
     <variant name="LocationBarLeftChip"/>
     <variant name="LocationBarLeftChipAutoBubble"/>
     <variant name="LocationBarLeftQuietAbusiveChip"/>
     <variant name="LocationBarLeftQuietChip"/>
+    <variant name="LocationBarRightAnimatedIcon"/>
+    <variant name="LocationBarRightStaticIcon"/>
+    <variant name="MessageUI"/>
+    <variant name="MiniInfobar"/>
+    <variant name="ModalDialog"/>
+    <variant name="NoneVisible"/>
   </token>
   <token key="PermissionType">
     <variant name="AR"/>
@@ -782,17 +790,25 @@ chromium-metrics-reviews@google.com.
     expired.
   </summary>
   <token key="Action">
+    <variant name="Accepted"/>
+    <variant name="AcceptedOnce"/>
     <variant name="Denied"/>
     <variant name="Dismissed"/>
-    <variant name="Granted"/>
-    <variant name="GrantedOnce"/>
     <variant name="Ignored"/>
   </token>
   <token key="Disposition">
+    <variant name="AnchoredBubble"/>
+    <variant name="CustomModalDialog"/>
     <variant name="LocationBarLeftChip"/>
     <variant name="LocationBarLeftChipAutoBubble"/>
     <variant name="LocationBarLeftQuietAbusiveChip"/>
     <variant name="LocationBarLeftQuietChip"/>
+    <variant name="LocationBarRightAnimatedIcon"/>
+    <variant name="LocationBarRightStaticIcon"/>
+    <variant name="MessageUI"/>
+    <variant name="MiniInfobar"/>
+    <variant name="ModalDialog"/>
+    <variant name="NoneVisible"/>
   </token>
   <token key="PermissionType">
     <variant name="AR"/>
@@ -824,10 +840,10 @@ chromium-metrics-reviews@google.com.
     <variant name="DidClickManage"/>
   </token>
   <token key="Action">
+    <variant name="Accepted"/>
+    <variant name="AcceptedOnce"/>
     <variant name="Denied"/>
     <variant name="Dismissed"/>
-    <variant name="Granted"/>
-    <variant name="GrantedOnce"/>
     <variant name="Ignored"/>
   </token>
   <token key="Disposition">

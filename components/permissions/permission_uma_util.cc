@@ -639,25 +639,29 @@ void PermissionUmaUtil::PermissionPromptResolved(
 
   if (permission_action == PermissionAction::IGNORED &&
       ui_disposition !=
-          PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE) {
+          PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE &&
+      ui_disposition != PermissionPromptDisposition::ANCHORED_BUBBLE) {
     base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
                                   permission_disposition +
                                   ".Ignored.DidShowBubble",
                               did_show_prompt);
   }
 
-  if (ui_disposition ==
-      PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP) {
-    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                  permission_disposition + "." + action_string +
-                                  ".DidClickManage",
-                              did_click_managed);
-  } else if (ui_disposition == PermissionPromptDisposition::
-                                   LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP) {
-    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                  permission_disposition + "." + action_string +
-                                  ".DidClickLearnMore",
-                              did_click_learn_more);
+  if (requests[0]->request_type() == RequestType::kGeolocation ||
+      requests[0]->request_type() == RequestType::kNotifications) {
+    if (ui_disposition ==
+        PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP) {
+      base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
+                                    permission_disposition + "." +
+                                    action_string + ".DidClickManage",
+                                did_click_managed);
+    } else if (ui_disposition == PermissionPromptDisposition::
+                                     LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP) {
+      base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
+                                    permission_disposition + "." +
+                                    action_string + ".DidClickLearnMore",
+                                did_click_learn_more);
+    }
   }
 }  // namespace permissions
 
