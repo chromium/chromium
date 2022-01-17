@@ -902,7 +902,11 @@ bool RuleFeatureSet::AddValueOfSimpleSelectorInHasArgument(
     return true;
   }
   if (selector.Match() == CSSSelector::kPseudoClass) {
-    pseudos_in_has_argument_.insert(selector.GetPseudoType());
+    CSSSelector::PseudoType pseudo_type = selector.GetPseudoType();
+
+    // Ignore :visited to prevent history leakage.
+    if (pseudo_type != CSSSelector::kPseudoVisited)
+      pseudos_in_has_argument_.insert(pseudo_type);
     return true;
   }
   return false;
