@@ -277,7 +277,14 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, CloseTab) {
   Mock::VerifyAndClear(auth_requestor_.get());
 }
 
-IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, Escape) {
+// TODO(https://crbug.com/1287764): Fails on the linux-wayland-rel bot.
+#if defined(OZONE_PLATFORM_WAYLAND)
+#define MAYBE_EscapeTest DISABLED_Escape
+#else
+#define MAYBE_EscapeTest Escape
+#endif
+IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest,
+                       MAYBE_EscapeTest) {
   // auth_requestor_1_ should get selected automatically by the
   // SSLClientAuthObserver when selector_2_ is accepted, since both 1 & 2 have
   // the same host:port.
@@ -298,7 +305,14 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, Escape) {
   EXPECT_CALL(*auth_requestor_, CancelCertificateSelection());
 }
 
-IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, SelectSecond) {
+// TODO(https://crbug.com/1287784): Fails on the linux-wayland-rel bot.
+#if defined(OZONE_PLATFORM_WAYLAND)
+#define MAYBE_SelectSecond DISABLED_SelectSecond
+#else
+#define MAYBE_SelectSecond SelectSecond
+#endif
+IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest,
+                       MAYBE_SelectSecond) {
   // auth_requestor_1_ should get selected automatically by the
   // SSLClientAuthObserver when selector_2_ is accepted, since both 1 & 2 have
   // the same host:port.
