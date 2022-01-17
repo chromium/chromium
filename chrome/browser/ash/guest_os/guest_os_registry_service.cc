@@ -904,12 +904,10 @@ void GuestOsRegistryService::ClearApplicationList(
     const std::string& vm_name,
     const std::string& container_name) {
   std::vector<std::string> removed_apps;
-  // The DictionaryPrefUpdateDeprecated should be destructed before calling the
-  // observer.
+  // The DictionaryPrefUpdate should be destructed before calling the observer.
   {
-    DictionaryPrefUpdateDeprecated update(prefs_,
-                                          guest_os::prefs::kGuestOsRegistry);
-    base::DictionaryValue* apps = update.Get();
+    DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
+    base::Value* apps = update.Get();
 
     for (const auto item : apps->DictItems()) {
       if (item.first == crostini::kCrostiniTerminalSystemAppId) {
@@ -967,12 +965,10 @@ void GuestOsRegistryService::UpdateApplicationList(
   std::vector<std::string> removed_apps;
   std::vector<std::string> inserted_apps;
 
-  // The DictionaryPrefUpdateDeprecated should be destructed before calling the
-  // observer.
+  // The DictionaryPrefUpdate should be destructed before calling the observer.
   {
-    DictionaryPrefUpdateDeprecated update(prefs_,
-                                          guest_os::prefs::kGuestOsRegistry);
-    base::DictionaryValue* apps = update.Get();
+    DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
+    base::Value* apps = update.Get();
     for (const App& app : app_list.apps()) {
       if (app.desktop_file_id().empty()) {
         LOG(WARNING) << "Received app with missing desktop file id";
@@ -1108,9 +1104,8 @@ void GuestOsRegistryService::RemoveObserver(Observer* observer) {
 }
 
 void GuestOsRegistryService::AppLaunched(const std::string& app_id) {
-  DictionaryPrefUpdateDeprecated update(prefs_,
-                                        guest_os::prefs::kGuestOsRegistry);
-  base::DictionaryValue* apps = update.Get();
+  DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
+  base::Value* apps = update.Get();
 
   base::Value* app = apps->FindKey(app_id);
   if (!app) {
@@ -1135,9 +1130,8 @@ void GuestOsRegistryService::SetAppScaled(const std::string& app_id,
                                           bool scaled) {
   DCHECK_NE(app_id, crostini::kCrostiniTerminalSystemAppId);
 
-  DictionaryPrefUpdateDeprecated update(prefs_,
-                                        guest_os::prefs::kGuestOsRegistry);
-  base::DictionaryValue* apps = update.Get();
+  DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
+  base::Value* apps = update.Get();
 
   base::Value* app = apps->FindKey(app_id);
   if (!app) {

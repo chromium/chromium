@@ -247,9 +247,9 @@ class GuestOsSharePathTest : public testing::Test {
     share_path_ = root_.Append("path-to-share");
     shared_path_ = root_.Append("already-shared");
     ASSERT_TRUE(base::CreateDirectory(shared_path_));
-    DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                          prefs::kGuestOSPathsSharedToVms);
-    base::DictionaryValue* shared_paths = update.Get();
+    DictionaryPrefUpdate update(profile()->GetPrefs(),
+                                prefs::kGuestOSPathsSharedToVms);
+    base::Value* shared_paths = update.Get();
     base::Value termina(base::Value::Type::LIST);
     termina.Append(base::Value(crostini::kCrostiniDefaultVmName));
     shared_paths->SetKey(shared_path_.value(), std::move(termina));
@@ -786,9 +786,9 @@ TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathSuccess) {
   SetUpVolume();
-  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                        prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  DictionaryPrefUpdate update(profile()->GetPrefs(),
+                              prefs::kGuestOSPathsSharedToVms);
+  base::Value* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("vm-running"));
   shared_paths->SetKey(shared_path_.value(), std::move(vms));
@@ -813,9 +813,9 @@ TEST_F(GuestOsSharePathTest, UnsharePathRoot) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathVmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                        prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  DictionaryPrefUpdate update(profile()->GetPrefs(),
+                              prefs::kGuestOSPathsSharedToVms);
+  base::Value* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("vm-not-running"));
   shared_paths->SetKey(shared_path_.value(), std::move(vms));
@@ -830,9 +830,9 @@ TEST_F(GuestOsSharePathTest, UnsharePathVmNotRunning) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathPluginVmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                        prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  DictionaryPrefUpdate update(profile()->GetPrefs(),
+                              prefs::kGuestOSPathsSharedToVms);
+  base::Value* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("PvmDefault"));
   shared_paths->SetKey(shared_path_.value(), std::move(vms));
@@ -848,9 +848,9 @@ TEST_F(GuestOsSharePathTest, UnsharePathPluginVmNotRunning) {
 // Tests that it cannot unshare path when ARCVM is not running.
 TEST_F(GuestOsSharePathTest, UnsharePathArcvmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                        prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  DictionaryPrefUpdate update(profile()->GetPrefs(),
+                              prefs::kGuestOSPathsSharedToVms);
+  base::Value* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value(arc::kArcVmName));
   shared_paths->SetKey(shared_path_.value(), std::move(vms));

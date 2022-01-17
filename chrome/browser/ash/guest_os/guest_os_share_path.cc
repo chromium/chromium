@@ -130,7 +130,7 @@ class ErrorCapture {
   std::string first_failure_reason_;
 };  // class
 
-void RemovePersistedPathFromPrefs(base::DictionaryValue* shared_paths,
+void RemovePersistedPathFromPrefs(base::Value* shared_paths,
                                   const std::string& vm_name,
                                   const base::FilePath& path) {
   // |shared_paths| format is {'path': ['vm1', vm2']}.
@@ -512,9 +512,8 @@ void GuestOsSharePath::UnsharePath(const std::string& vm_name,
 
   if (unpersist) {
     PrefService* pref_service = profile_->GetPrefs();
-    DictionaryPrefUpdateDeprecated update(pref_service,
-                                          prefs::kGuestOSPathsSharedToVms);
-    base::DictionaryValue* shared_paths = update.Get();
+    DictionaryPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
+    base::Value* shared_paths = update.Get();
     RemovePersistedPathFromPrefs(shared_paths, vm_name, path);
   }
 
@@ -564,9 +563,8 @@ void GuestOsSharePath::SharePersistedPaths(const std::string& vm_name,
 void GuestOsSharePath::RegisterPersistedPath(const std::string& vm_name,
                                              const base::FilePath& path) {
   PrefService* pref_service = profile_->GetPrefs();
-  DictionaryPrefUpdateDeprecated update(pref_service,
-                                        prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  DictionaryPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
+  base::Value* shared_paths = update.Get();
   // Check if path is already shared so we know whether we need to add it.
   bool already_shared = false;
   // Remove any paths that are children of this path.
