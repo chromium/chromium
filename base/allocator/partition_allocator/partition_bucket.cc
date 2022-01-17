@@ -341,7 +341,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PA_DCHECK(!page->slot_span_metadata.marked_full);
     PA_DCHECK(!page->slot_span_metadata.num_allocated_slots);
     PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
-    PA_DCHECK(!page->slot_span_metadata.in_empty_cache);
+    PA_DCHECK(!page->slot_span_metadata.in_empty_cache());
 
     PA_DCHECK(!metadata->subsequent_page.subsequent_page_metadata.raw_size);
     // Raw size is set later, by the caller.
@@ -706,7 +706,6 @@ template <bool thread_safe>
 ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   new (slot_span) SlotSpanMetadata<thread_safe>(this);
-  slot_span->in_empty_cache = 0;
 
   slot_span->Reset();
 
@@ -820,7 +819,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 #endif
 
   // We had no free slots, and created some (potentially 0) in sorted order.
-  slot_span->freelist_is_sorted = true;
+  slot_span->set_freelist_sorted();
 
   return return_slot;
 }
@@ -885,7 +884,7 @@ void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
     //
     // Besides saving CPU, this also avoids touching memory of fully idle slot
     // spans, which may required paging.
-    if (slot_span->num_allocated_slots > 0 && !slot_span->freelist_is_sorted)
+    if (slot_span->num_allocated_slots > 0 && !slot_span->freelist_is_sorted())
       slot_span->SortFreelist();
   }
 }

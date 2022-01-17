@@ -81,25 +81,24 @@ ALWAYS_INLINE void PartitionDirectUnmap(
   UnmapNow(reservation_start, reservation_size, root->ChoosePool());
 }
 
+}  // namespace
+
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
-    SlotSpanMetadata<thread_safe>* slot_span) {
-  PA_DCHECK(slot_span->is_empty());
-  PartitionRoot<thread_safe>* root =
-      PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
+ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
+  PA_DCHECK(is_empty());
+  auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
 
   root->empty_slot_spans_dirty_bytes +=
-      base::bits::AlignUp(slot_span->GetProvisionedSize(), SystemPageSize());
+      base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
 
-  slot_span->ToSuperPageExtent()->DecrementNumberOfNonemptySlotSpans();
+  ToSuperPageExtent()->DecrementNumberOfNonemptySlotSpans();
 
   // If the slot span is already registered as empty, give it another life.
-  if (slot_span->in_empty_cache) {
-    PA_DCHECK(slot_span->empty_cache_index < kMaxFreeableSpans);
-    PA_DCHECK(root->global_empty_slot_span_ring[slot_span->empty_cache_index] ==
-              slot_span);
-    root->global_empty_slot_span_ring[slot_span->empty_cache_index] = nullptr;
+  if (in_empty_cache_) {
+    PA_DCHECK(empty_cache_index_ < kMaxFreeableSpans);
+    PA_DCHECK(root->global_empty_slot_span_ring[empty_cache_index_] == this);
+    root->global_empty_slot_span_ring[empty_cache_index_] = nullptr;
   }
 
   int16_t current_index = root->global_empty_slot_span_ring_index;
@@ -111,12 +110,12 @@ ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
     slot_span_to_decommit->DecommitIfPossible(root);
 
   // We put the empty slot span on our global list of "slot spans that were once
-  // empty". thus providing it a bit of breathing room to get re-used before
-  // we really free it. This improves performance, particularly on Mac OS X
-  // which has subpar memory management performance.
-  root->global_empty_slot_span_ring[current_index] = slot_span;
-  slot_span->empty_cache_index = current_index;
-  slot_span->in_empty_cache = 1;
+  // empty", thus providing it a bit of breathing room to get re-used before we
+  // really free it. This reduces the number of system calls. Otherwise any
+  // free() from a single-slot slot span would lead to a syscall, for instance.
+  root->global_empty_slot_span_ring[current_index] = this;
+  empty_cache_index_ = current_index;
+  in_empty_cache_ = 1;
   ++current_index;
   if (current_index == root->global_empty_slot_span_ring_size)
     current_index = 0;
@@ -137,8 +136,6 @@ ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
   }
 }
 
-}  // namespace
-
 // static
 template <bool thread_safe>
 SlotSpanMetadata<thread_safe>
@@ -154,7 +151,7 @@ SlotSpanMetadata<thread_safe>::get_sentinel_slot_span() {
 template <bool thread_safe>
 SlotSpanMetadata<thread_safe>::SlotSpanMetadata(
     PartitionBucket<thread_safe>* bucket)
-    : bucket(bucket), can_store_raw_size(bucket->CanStoreRawSize()) {}
+    : bucket(bucket), can_store_raw_size_(bucket->CanStoreRawSize()) {}
 
 template <bool thread_safe>
 void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
@@ -207,7 +204,7 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
     if (CanStoreRawSize())
       SetRawSize(0);
 
-    PartitionRegisterEmptySlotSpan(this);
+    RegisterEmpty();
   }
 }
 
@@ -246,10 +243,10 @@ template <bool thread_safe>
 void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
     PartitionRoot<thread_safe>* root) {
   root->lock_.AssertAcquired();
-  PA_DCHECK(in_empty_cache);
-  PA_DCHECK(empty_cache_index < kMaxFreeableSpans);
-  PA_DCHECK(this == root->global_empty_slot_span_ring[empty_cache_index]);
-  in_empty_cache = 0;
+  PA_DCHECK(in_empty_cache_);
+  PA_DCHECK(empty_cache_index_ < kMaxFreeableSpans);
+  PA_DCHECK(this == root->global_empty_slot_span_ring[empty_cache_index_]);
+  in_empty_cache_ = 0;
   if (is_empty())
     Decommit(root);
 }
@@ -298,7 +295,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
     SetFreelistHead(head);
   }
 
-  freelist_is_sorted = true;
+  freelist_is_sorted_ = true;
 }
 
 namespace {

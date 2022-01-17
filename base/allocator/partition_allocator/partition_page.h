@@ -152,18 +152,19 @@ struct __attribute__((packed)) SlotSpanMetadata {
   uint32_t num_allocated_slots : kMaxSlotsPerSlotSpanBits;
   uint32_t num_unprovisioned_slots : kMaxSlotsPerSlotSpanBits;
 
-  uint32_t can_store_raw_size : 1;
-  uint32_t freelist_is_sorted : 1;
-  uint32_t unused1 : (32 - 1 - 2 * kMaxSlotsPerSlotSpanBits - 1 - 1);
-
-  // If |in_empty_cache|==1, |empty_cache_index| is undefined and mustn't be
+ private:
+  const uint32_t can_store_raw_size_ : 1;
+  uint32_t freelist_is_sorted_ : 1;
+  uint32_t unused1_ : (32 - 1 - 2 * kMaxSlotsPerSlotSpanBits - 1 - 1);
+  // If |in_empty_cache_|==1, |empty_cache_index| is undefined and mustn't be
   // used.
-  uint16_t in_empty_cache : 1;
-  uint16_t empty_cache_index : kEmptyCacheIndexBits;  // < kMaxFreeableSpans.
-  uint16_t unused2 : (16 - 1 - kEmptyCacheIndexBits);
+  uint16_t in_empty_cache_ : 1;
+  uint16_t empty_cache_index_ : kEmptyCacheIndexBits;  // < kMaxFreeableSpans.
+  uint16_t unused2_ : (16 - 1 - kEmptyCacheIndexBits);
   // Can use only 48 bits (6B) in this bitfield, as this structure is embedded
   // in PartitionPage which has 2B worth of fields and must fit in 32B.
 
+ public:
   explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
   // Public API
@@ -183,6 +184,9 @@ struct __attribute__((packed)) SlotSpanMetadata {
 
   // Sorts the freelist in ascending addresses order.
   void SortFreelist();
+  // Inserts the slot span into the empty ring, making space for the new slot
+  // span, and potentially shrinking the ring.
+  void RegisterEmpty();
 
   // Pointer manipulation functions. These must be static as the input
   // |slot_span| pointer may be the result of an offset calculation and
@@ -200,7 +204,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
       const;
 
   // Checks if it is feasible to store raw_size.
-  ALWAYS_INLINE bool CanStoreRawSize() const { return can_store_raw_size; }
+  ALWAYS_INLINE bool CanStoreRawSize() const { return can_store_raw_size_; }
   // The caller is responsible for ensuring that raw_size can be stored before
   // calling Set/GetRawSize.
   ALWAYS_INLINE void SetRawSize(size_t raw_size);
@@ -267,6 +271,9 @@ struct __attribute__((packed)) SlotSpanMetadata {
   ALWAYS_INLINE bool is_full() const;
   ALWAYS_INLINE bool is_empty() const;
   ALWAYS_INLINE bool is_decommitted() const;
+  ALWAYS_INLINE bool in_empty_cache() const { return in_empty_cache_; }
+  ALWAYS_INLINE bool freelist_is_sorted() const { return freelist_is_sorted_; }
+  ALWAYS_INLINE void set_freelist_sorted() { freelist_is_sorted_ = true; }
 
  private:
   // sentinel_slot_span_ is used as a sentinel to indicate that there is no slot
@@ -281,12 +288,12 @@ struct __attribute__((packed)) SlotSpanMetadata {
       : marked_full(0),
         num_allocated_slots(0),
         num_unprovisioned_slots(0),
-        can_store_raw_size(false),
-        freelist_is_sorted(true),
-        unused1(0),
-        in_empty_cache(1),
-        empty_cache_index(0),
-        unused2(0) {}
+        can_store_raw_size_(false),
+        freelist_is_sorted_(true),
+        unused1_(0),
+        in_empty_cache_(0),
+        empty_cache_index_(0),
+        unused2_(0) {}
 };
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
@@ -632,7 +639,7 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetFreelistHead(
   freelist_head = new_head;
   // Inserted something new in the freelist, assume that it is not sorted
   // anymore.
-  freelist_is_sorted = false;
+  freelist_is_sorted_ = false;
 }
 
 template <bool thread_safe>
@@ -642,7 +649,7 @@ SlotSpanMetadata<thread_safe>::PopForAlloc(size_t size) {
   // |bucket->slot_size| is the same as |size|.
   PA_DCHECK(size == bucket->slot_size);
   PartitionFreelistEntry* result = freelist_head;
-  // Not setting freelist_is_sorted to false since this doesn't destroy
+  // Not setting freelist_is_sorted_ to false since this doesn't destroy
   // ordering.
   freelist_head = freelist_head->GetNext(size);
   num_allocated_slots++;
@@ -766,7 +773,7 @@ ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_decommitted() const {
   if (ret) {
     PA_DCHECK(!marked_full);
     PA_DCHECK(!num_unprovisioned_slots);
-    PA_DCHECK(!in_empty_cache);
+    PA_DCHECK(!in_empty_cache_);
   }
   return ret;
 }
