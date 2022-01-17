@@ -404,34 +404,30 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 #if DCHECK_IS_ON()
   AllowPostLayoutScope allow_post_layout_scope;
 #endif
-  const LayoutBox* flow_thread = nullptr;
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
     children_[i].offset = other.children_[i].offset;
-    const NGPhysicalFragment* post_layout;
     const NGPhysicalFragment& other_child_fragment = *other.children_[i];
-    if (UNLIKELY(other_child_fragment.IsColumnBox())) {
-      // To find the PostLayout fragment of a column box, copy from the
-      // FlowThread. Its |PhysicalFragments| should match the children of the
-      // multicol container fragment. |PostLayout| does not work for column
-      // boxes because a fragment can't compute its index, but we know the
-      // index. See |PostLayout| for more details.
-      if (!flow_thread) {
-        DCHECK_EQ(i, 0u);
-        flow_thread =
-            To<LayoutBox>(GetSelfOrContainerLayoutObject()->SlowFirstChild());
-        DCHECK(flow_thread);
-        DCHECK(flow_thread->IsLayoutFlowThread());
-        DCHECK_EQ(flow_thread->PhysicalFragmentCount(), const_num_children_);
-      }
-      post_layout = flow_thread->GetPhysicalFragment(i);
-    } else {
-      DCHECK(!flow_thread);
-      post_layout = other_child_fragment.PostLayout();
-    }
-
+    const NGPhysicalFragment* post_layout = other_child_fragment.PostLayout();
     DCHECK(post_layout);
     new (&children_[i].fragment)
         scoped_refptr<const NGPhysicalFragment>(post_layout);
+
+    if (!children_[i]->IsFragmentainerBox())
+      continue;
+
+    // Fragmentainers don't have the concept of post-layout fragments, so if
+    // this is a fragmentation context root (such as a multicol container), we
+    // need to not only update its children, but also the children of the
+    // children that are fragmentainers.
+    auto* fragmentainer = const_cast<NGPhysicalBoxFragment*>(
+        To<NGPhysicalBoxFragment>(children_[i].fragment));
+    for (wtf_size_t j = 0; j < fragmentainer->const_num_children_; ++j) {
+      NGLink& link = fragmentainer->children_[j];
+      auto& old_child = *To<NGPhysicalBoxFragment>(link.fragment);
+      link.fragment = old_child.PostLayout();
+      link.fragment->AddRef();
+      old_child.Release();
+    }
   }
 
   ink_overflow_type_ = other.ink_overflow_type_;
@@ -547,25 +543,28 @@ NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
       table_cell_column_index(other.table_cell_column_index) {}
 
 const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
+  // TODO(layout-dev): We should probably get rid of this method, now that it
+  // does nothing, apart from some checking. The checks are useful, but could be
+  // moved elsewhere.
   const LayoutBox* owner_box =
       DynamicTo<LayoutBox>(GetSelfOrContainerLayoutObject());
+
+#if DCHECK_IS_ON()
   DCHECK(owner_box);
   if (UNLIKELY(IsFragmentainerBox())) {
     if (owner_box->IsLayoutView()) {
       DCHECK(IsPageBox());
       DCHECK(To<LayoutView>(owner_box)->ShouldUsePrintingLayout());
-      return owner_box;
+    } else {
+      DCHECK(IsColumnBox());
     }
-    // Adjust the owner for column boxes. Column box fragment's |layout_object_|
-    // is its multicol container, but |LayoutFlowThread::layout_results_|
-    // has the column box fragments.
-    DCHECK(IsColumnBox());
-    owner_box = To<LayoutBox>(owner_box->SlowFirstChild());
-    DCHECK(owner_box && owner_box->IsLayoutFlowThread());
+  } else {
+    // Check |this| and the |LayoutBox| that produced it are in sync.
+    DCHECK(owner_box->PhysicalFragments().Contains(*this));
+    DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
   }
-  // Check |this| and the |LayoutBox| that produced it are in sync.
-  DCHECK(owner_box->PhysicalFragments().Contains(*this));
-  DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
+#endif
+
   return owner_box;
 }
 
@@ -574,6 +573,8 @@ LayoutBox* NGPhysicalBoxFragment::MutableOwnerLayoutBox() const {
 }
 
 PhysicalOffset NGPhysicalBoxFragment::OffsetFromOwnerLayoutBox() const {
+  DCHECK(IsCSSBox());
+
   // This function uses |FragmentData|, so must be |kPrePaintClean|.
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
@@ -627,17 +628,15 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
     DCHECK(IsInlineBox());
     return this;
   }
-  if (UNLIKELY(IsFragmentainerBox())) {
-    // For fragmentainers, the logic does not work because non-last
-    // fragmentainers may have null |BreakToken|, and |SequenceNumber| does not
-    // match the index of |LayoutBox::PhysicalFragments|. For this reason,
-    // |CloneWithPostLayoutFragments| has special logic to handle
-    // fragmentainers.
-#if DCHECK_IS_ON()
-    // We can at least check whether |this| is the latest or not.
-    if (!AllowPostLayoutScope::IsAllowed())
-      DCHECK(OwnerLayoutBox());
-#endif
+  if (UNLIKELY(!IsCSSBox())) {
+    // We don't need to do anything special for fragments that don't correspond
+    // to entries in the CSS box tree (such as fragmentainers). Any post-layout
+    // fragmentainers should be found as children of the post-layout fragments
+    // of the containing block.
+    //
+    // TODO(mstensho): Clean up this method. Rather than calling
+    // GetSelfOrContainerLayoutObject() above, we first bail on !IsCSSBox(), and
+    // then simply use GetLayoutObject().
     return this;
   }
 

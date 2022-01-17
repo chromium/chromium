@@ -782,20 +782,23 @@ void LocalFrameView::PerformLayout() {
       // tree spine of a common ancestor.
       HeapHashMap<Member<const LayoutBlock>, unsigned> fragment_tree_spines;
       for (auto& root : layout_subtree_root_list_.Unordered()) {
-        const LayoutBlock* cb = root->ContainingBlock();
-        if (cb->PhysicalFragmentCount()) {
+        const LayoutBlock* cb = root->ContainingNGBlock();
+        if (cb && cb->PhysicalFragmentCount()) {
           auto add_result = fragment_tree_spines.insert(cb, 0);
           ++add_result.stored_value->value;
         }
       }
       for (auto& root : layout_subtree_root_list_.Ordered()) {
-        LayoutBlock* cb = root->ContainingBlock();
-        auto it = fragment_tree_spines.find(cb);
-        DCHECK(it == fragment_tree_spines.end() || it->value > 0);
-        // Ensure fragment-tree consistency just after all the cb's
-        // descendants have completed their subtree layout.
-        bool should_rebuild_fragments =
-            it != fragment_tree_spines.end() && --it->value == 0;
+        bool should_rebuild_fragments = false;
+        LayoutBlock* cb = root->ContainingNGBlock();
+        if (cb) {
+          auto it = fragment_tree_spines.find(cb);
+          DCHECK(it == fragment_tree_spines.end() || it->value > 0);
+          // Ensure fragment-tree consistency just after all the cb's
+          // descendants have completed their subtree layout.
+          should_rebuild_fragments =
+              it != fragment_tree_spines.end() && --it->value == 0;
+        }
 
         if (!LayoutFromRootObject(*root))
           continue;

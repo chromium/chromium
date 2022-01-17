@@ -2371,7 +2371,7 @@ void LayoutBlock::RebuildFragmentTreeSpine() {
       layout_result =
           NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
     }
-    cb = cb->ContainingBlock();
+    cb = cb->ContainingNGBlock();
   }
 }
 

@@ -1954,27 +1954,6 @@ void NGBlockNode::StoreMargins(const NGPhysicalBoxStrut& physical_margins) {
   box_->SetMargin(physical_margins);
 }
 
-void NGBlockNode::AddColumnResult(
-    scoped_refptr<const NGLayoutResult> result,
-    const NGBlockBreakToken* incoming_break_token) const {
-  wtf_size_t index = FragmentIndex(incoming_break_token);
-  GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
-      ->AddLayoutResult(result, index);
-}
-
-void NGBlockNode::AddColumnResult(
-    scoped_refptr<const NGLayoutResult> result) const {
-  GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
-      ->AddLayoutResult(std::move(result));
-}
-
-void NGBlockNode::ReplaceColumnResult(
-    scoped_refptr<const NGLayoutResult> result,
-    const NGPhysicalBoxFragment& old_fragment) const {
-  GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
-      ->ReplaceLayoutResult(std::move(result), old_fragment);
-}
-
 static bool g_devtools_layout = false;
 bool DevtoolsReadonlyLayoutScope::InDevtoolsLayout() {
   return g_devtools_layout;

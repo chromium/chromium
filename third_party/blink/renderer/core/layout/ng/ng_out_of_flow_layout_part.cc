@@ -1746,14 +1746,8 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
     LogicalOffset offset,
     bool create_new_fragment,
     NGSimplifiedOOFLayoutAlgorithm* algorithm) {
-  const NGBlockNode& node = container_builder_->Node();
-  const auto& fragmentainer = container_builder_->Children()[index];
-  const NGPhysicalBoxFragment& fragment =
-      To<NGPhysicalBoxFragment>(*fragmentainer.fragment.get());
-
   if (create_new_fragment) {
     scoped_refptr<const NGLayoutResult> new_result = algorithm->Layout();
-    node.AddColumnResult(new_result);
     container_builder_->AddChild(
         new_result->PhysicalFragment(), offset,
         /* margin_strut */ nullptr, /* is_self_collapsing */ false,
@@ -1762,7 +1756,6 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
         /* adjustment_for_oof_propagation */ absl::nullopt);
   } else {
     scoped_refptr<const NGLayoutResult> new_result = algorithm->Layout();
-    node.ReplaceColumnResult(new_result, fragment);
     const NGPhysicalFragment* new_fragment = &new_result->PhysicalFragment();
     container_builder_->ReplaceChild(index, *new_fragment, offset);
 
@@ -1951,16 +1944,61 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
   LayoutBox& box = *old_fragment.MutableOwnerLayoutBox();
   box.ReplaceLayoutResult(new_result, index);
 
-  // Replace the entry in the parent fragment.
-  const LayoutBlock& containing_block = *box.ContainingBlock();
-  for (const auto& parent_fragment : containing_block.PhysicalFragments()) {
+  // Replace the entry in the parent fragment. Locating the parent fragment
+  // isn't straight-forward if the containing block is a multicol container.
+  LayoutBlock* containing_block = box.ContainingNGBlock();
+
+  // Replace the old fragment with the new one, if it's inside |parent|.
+  auto ReplaceChild = [&new_result, &old_fragment](
+                          const NGPhysicalBoxFragment& parent) -> bool {
     for (NGLink& child_link :
-         parent_fragment.GetMutableChildrenForOutOfFlow().Children()) {
-      if (child_link.fragment == &old_fragment) {
-        child_link.fragment->Release();
-        child_link.fragment = &new_result->PhysicalFragment();
-        child_link.fragment->AddRef();
+         parent.GetMutableChildrenForOutOfFlow().Children()) {
+      if (child_link.fragment != &old_fragment)
+        continue;
+      child_link.fragment->Release();
+      child_link.fragment = &new_result->PhysicalFragment();
+      child_link.fragment->AddRef();
+      return true;
+    }
+    return false;
+  };
+
+  // Replace the old fragment with the new one, if |multicol_child| is a
+  // fragmentainer and has the old fragment as a child.
+  auto ReplaceFragmentainerChild =
+      [ReplaceChild](const NGPhysicalFragment& multicol_child) -> bool {
+    // We're going to replace a child of a fragmentainer. First check if it's a
+    // fragmentainer at all.
+    if (!multicol_child.IsFragmentainerBox())
+      return false;
+    const auto& fragmentainer = To<NGPhysicalBoxFragment>(multicol_child);
+    // Then search and replace inside the fragmentainer.
+    return ReplaceChild(fragmentainer);
+  };
+
+  if (!containing_block->IsFragmentationContextRoot()) {
+    // Simply search inside child fragments of the containing block.
+    DCHECK_NE(containing_block, container_builder_->GetLayoutObject());
+    for (const auto& parent_fragment : containing_block->PhysicalFragments()) {
+      if (ReplaceChild(parent_fragment))
         return;
+    }
+  } else if (containing_block == container_builder_->GetLayoutObject()) {
+    // We're currently laying out |containing_block|, and it's a multicol
+    // container. Search inside fragmentainer children in the builder.
+    for (const NGContainerFragmentBuilder::ChildWithOffset& child :
+         container_builder_->Children()) {
+      if (ReplaceFragmentainerChild(*child.fragment))
+        return;
+    }
+  } else {
+    // |containing_block| has already been laid out, and it's a multicol
+    // container. Search inside fragmentainer children of the fragments
+    // generated for the containing block.
+    for (const auto& multicol : containing_block->PhysicalFragments()) {
+      for (const auto& child : multicol.Children()) {
+        if (ReplaceFragmentainerChild(*child.fragment))
+          return;
       }
     }
   }

@@ -310,9 +310,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
 
-  static void ReplaceFragment(scoped_refptr<const NGLayoutResult> new_result,
-                              const NGPhysicalBoxFragment& old_fragment,
-                              wtf_size_t index);
+  void ReplaceFragment(scoped_refptr<const NGLayoutResult> new_result,
+                       const NGPhysicalBoxFragment& old_fragment,
+                       wtf_size_t index);
 
   // This saves the static-position for an OOF-positioned object into its
   // paint-layer.

@@ -287,13 +287,19 @@ class CORE_EXPORT NGPhysicalFragment
   }
   // The node to return when hit-testing on this fragment. This can be different
   // from GetNode() when this fragment is content of a pseudo node.
-  Node* NodeForHitTest() const { return layout_object_->NodeForHitTest(); }
+  Node* NodeForHitTest() const {
+    if (IsFragmentainerBox())
+      return nullptr;
+    return layout_object_->NodeForHitTest();
+  }
 
   Node* NonPseudoNode() const {
     return IsCSSBox() ? layout_object_->NonPseudoNode() : nullptr;
   }
 
   bool IsInSelfHitTestingPhase(HitTestAction action) const {
+    if (IsFragmentainerBox())
+      return false;
     if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
       return box->IsInSelfHitTestingPhase(action);
     if (IsInlineBox())
