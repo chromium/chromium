@@ -1524,6 +1524,10 @@ bool IsFastPairEnabled() {
   return base::FeatureList::IsEnabled(kFastPair);
 }
 
+bool IsFileManagerFuseBoxEnabled() {
+  return base::FeatureList::IsEnabled(kFuseBox);
+}
+
 bool IsFileManagerSwaEnabled() {
   return base::FeatureList::IsEnabled(kFilesSWA);
 }
