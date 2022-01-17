@@ -258,6 +258,14 @@ void Clipboard::DispatchPortableRepresentation(PortableFormat format,
                 &(params[0].front()), params[0].size());
       break;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    case PortableFormat::kEncodedDataTransferEndpoint:
+      // Only supported on Lacros.
+      WriteData(ClipboardFormatType::DataTransferEndpointDataType(),
+                &(params[0].front()), params[0].size());
+      break;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     default:
       NOTREACHED();
   }

@@ -65,7 +65,9 @@
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
 
+using testing::_;
 using testing::Contains;
+using testing::Property;
 
 namespace ui {
 
@@ -1364,6 +1366,40 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadPng) {
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
   EXPECT_EQ(true, image.empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Checks that source DTEs provided through the custom MIME type can be parsed.
+TYPED_TEST(ClipboardTest, ClipboardSourceDteCanBeRetrievedByLacros) {
+  auto policy_controller = std::make_unique<MockPolicyController>();
+  const std::u16string kTestText(u"World");
+  const std::string kDteJson(
+      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})");
+  {
+    // No source DTE provided directly to the Lacros clipboard.
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteText(kTestText);
+    // Encoded source DTE provided in custom MIME type.
+    writer.WriteEncodedDataTransferEndpointForTesting(kDteJson);
+  }
+
+  EXPECT_CALL(
+      *policy_controller,
+      IsClipboardReadAllowed(
+          Pointee(AllOf(Property(&DataTransferEndpoint::IsUrlType, true),
+                        Property(&DataTransferEndpoint::GetOrigin,
+                                 Pointee(Property(&url::Origin::Serialize,
+                                                  "https://www.google.com"))))),
+          _, _))
+      .WillRepeatedly(testing::Return(true));
+
+  std::u16string read_result;
+  this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
+                             /* data_dst= */ nullptr, &read_result);
+  EXPECT_EQ(kTestText, read_result);
+
+  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 

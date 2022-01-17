@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/exo/data_device.h"
@@ -480,6 +481,98 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result16));
   EXPECT_EQ("Test data", base::UTF16ToUTF8(result16));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacros) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kLacros);
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
+        url::Origin::Create(GURL("https://www.google.com"))));
+    writer.WriteText(u"Test data");
+  }
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
+
+  EXPECT_EQ(4u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
+  EXPECT_EQ(1u, delegate.mime_types().count("UTF8_STRING"));
+  EXPECT_EQ(1u,
+            delegate.mime_types().count("chromium/x-data-transfer-endpoint"));
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  std::string text_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &text_result));
+  EXPECT_EQ("Test data", text_result);
+
+  // Retrieve encoded clipboard source data transfer endpoint.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("chromium/x-data-transfer-endpoint",
+                     std::move(write_pipe));
+  std::string dte_json_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
+  EXPECT_EQ(R"({"endpoint_type":"url","url_origin":"https://www.google.com"})",
+            dte_json_result);
+}
+
+TEST_F(DataOfferTest, SetClipboardDataDoNotOfferDteToNonLacros) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kArc);
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
+        url::Origin::Create(GURL("https://www.google.com"))));
+    writer.WriteText(u"Test data");
+  }
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
+
+  EXPECT_EQ(3u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
+  EXPECT_EQ(1u, delegate.mime_types().count("UTF8_STRING"));
+  EXPECT_EQ(0u,
+            delegate.mime_types().count("chromium/x-data-transfer-endpoint"));
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  std::string text_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &text_result));
+  EXPECT_EQ("Test data", text_result);
+
+  // Attempt to retrieve encoded clipboard source data transfer endpoint.
+  // Nothing should be returned.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("chromium/x-data-transfer-endpoint",
+                     std::move(write_pipe));
+  std::string dte_json_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
+  EXPECT_EQ("", dte_json_result);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DataOfferTest, SetClipboardDataHTML) {
   TestDataOfferDelegate delegate;

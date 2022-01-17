@@ -217,6 +217,16 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ScopedClipboardWriter::WriteEncodedDataTransferEndpointForTesting(
+    const std::string& json) {
+  Clipboard::ObjectMapParams parameters;
+  parameters.push_back(Clipboard::ObjectMapParam(json.begin(), json.end()));
+  objects_[Clipboard::PortableFormat::kEncodedDataTransferEndpoint] =
+      parameters;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void ScopedClipboardWriter::Reset() {
   objects_.clear();
   platform_representations_.clear();

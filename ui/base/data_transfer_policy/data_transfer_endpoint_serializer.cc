@@ -11,7 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/gurl.h"
@@ -28,24 +28,26 @@ constexpr char kUrlOriginKey[] = "url_origin";
 constexpr char kDefaultString[] = "default";
 constexpr char kUrlString[] = "url";
 constexpr char kClipboardHistoryString[] = "clipboard_history";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1280545): Build VM DataTransferEndpoint endpoint types in
-// Lacros.
+#if defined(OS_CHROMEOS)
 constexpr char kUnknownVmString[] = "unknown_vm";
 constexpr char kArcString[] = "arc";
 constexpr char kBorealisString[] = "borealis";
 constexpr char kCrostiniString[] = "crostini";
 constexpr char kPluginVmString[] = "plugin_vm";
 constexpr char kLacrosString[] = "lacros";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 std::string EndpointTypeToString(EndpointType type) {
   // N.B. If a new EndpointType is added here, please add the relevant entry
   // into |kEndpointStringToTypeMap| within the EndpointStringToType function.
   switch (type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1280545): Build VM DataTransferEndpoint endpoint types in
-    // Lacros.
+    case EndpointType::kDefault:
+      return kDefaultString;
+    case EndpointType::kUrl:
+      return kUrlString;
+    case EndpointType::kClipboardHistory:
+      return kClipboardHistoryString;
+#if defined(OS_CHROMEOS)
     case EndpointType::kUnknownVm:
       return kUnknownVmString;
     case EndpointType::kArc:
@@ -58,13 +60,7 @@ std::string EndpointTypeToString(EndpointType type) {
       return kPluginVmString;
     case EndpointType::kLacros:
       return kLacrosString;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    case EndpointType::kDefault:
-      return kDefaultString;
-    case EndpointType::kUrl:
-      return kUrlString;
-    case EndpointType::kClipboardHistory:
-      return kClipboardHistoryString;
+#endif  // defined(OS_CHROMEOS)
   }
 }
 
@@ -72,19 +68,18 @@ std::optional<EndpointType> EndpointStringToType(
     const std::string& endpoint_string) {
   static constexpr auto kEndpointStringToTypeMap =
       base::MakeFixedFlatMap<base::StringPiece, ui::EndpointType>({
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // TODO(crbug.com/1280545): Build VM DataTransferEndpoint endpoint
-      // types in Lacros.
-      {kUnknownVmString, EndpointType::kUnknownVm},
-      {kArcString, EndpointType::kArc},
-      {kBorealisString, EndpointType::kBorealis},
-      {kCrostiniString, EndpointType::kCrostini},
-      {kPluginVmString, EndpointType::kPluginVm},
-      {kLacrosString, EndpointType::kLacros},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      {kDefaultString, EndpointType::kDefault},
-      {kUrlString, EndpointType::kUrl},
-      {kClipboardHistoryString, EndpointType::kClipboardHistory}});
+#if defined(OS_CHROMEOS)
+        {kUnknownVmString, EndpointType::kUnknownVm},
+        {kArcString, EndpointType::kArc},
+        {kBorealisString, EndpointType::kBorealis},
+        {kCrostiniString, EndpointType::kCrostini},
+        {kPluginVmString, EndpointType::kPluginVm},
+        {kLacrosString, EndpointType::kLacros},
+#endif  // defined(OS_CHROMEOS)
+        {kDefaultString, EndpointType::kDefault},
+        {kUrlString, EndpointType::kUrl},
+        {kClipboardHistoryString, EndpointType::kClipboardHistory}
+      });
 
   auto* it = kEndpointStringToTypeMap.find(endpoint_string);
   if (it != kEndpointStringToTypeMap.end())

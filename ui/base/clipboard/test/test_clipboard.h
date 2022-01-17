@@ -136,6 +136,14 @@ class TestClipboard : public Clipboard {
   void AddClipboardSourceToDataOffer(const ClipboardBuffer buffer);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  // In Lacros, retrieves and parses the clipboard source DataTransferEndpoint
+  // from the DTE MIME type if no source is provided. In all cases,
+  // IsReadAllowed() is called and returned.
+  bool MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_src,
+      const DataTransferEndpoint* data_dst) const;
+
   // The non-const versions update the sequence number as a side effect.
   const DataStore& GetStore(ClipboardBuffer buffer) const;
   const DataStore& GetDefaultStore() const;
