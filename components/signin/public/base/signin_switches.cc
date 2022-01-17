@@ -4,10 +4,6 @@
 
 #include "components/signin/public/base/signin_switches.h"
 
-#include "base/feature_list.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-
 namespace switches {
 
 // All switches in alphabetical order.
@@ -39,6 +35,12 @@ const base::Feature kForceDisableExtendedSyncPromos{
 // Features to trigger the startup sign-in promo at boot.
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Allows local (not signed-in) profiles on lacros.
+const base::Feature kLacrosNonSyncingProfiles{
+    "LacrosNonSyncingProfiles", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 }  // namespace switches

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 
 extern const base::Feature kProcessGaiaRemoveLocalAccountHeader;
 

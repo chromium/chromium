@@ -7735,6 +7735,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kAmbientModeAnimationFeature)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"lacros-non-syncing-profiles",
+     flag_descriptions::kLacrosNonSyncingProfilesName,
+     flag_descriptions::kLacrosNonSyncingProfilesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(switches::kLacrosNonSyncingProfiles)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

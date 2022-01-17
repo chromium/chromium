@@ -37,6 +37,10 @@ extern const base::Feature kForceDisableExtendedSyncPromos;
 extern const base::Feature kForceStartupSigninPromo;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const base::Feature kLacrosNonSyncingProfiles;
+#endif
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_

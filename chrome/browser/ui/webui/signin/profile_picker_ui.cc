@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -34,6 +35,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -124,13 +126,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE
 #endif
     },
-    {"signInButtonLabel",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS
-#else
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL
-#endif
-    },
     {"notNowButtonLabel",
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
     {"localProfileCreationTitle",
@@ -192,6 +187,16 @@ void AddStrings(content::WebUIDataSource* html_source) {
 #endif
   html_source->AddLocalizedString("mainViewTitle", main_view_title_id);
 
+  int sign_in_button_label_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
+    sign_in_button_label_id =
+        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS;
+  }
+#endif
+  html_source->AddLocalizedString("signInButtonLabel", sign_in_button_label_id);
+
   ProfilePicker::AvailabilityOnStartup availability_on_startup =
       static_cast<ProfilePicker::AvailabilityOnStartup>(
           g_browser_process->local_state()->GetInteger(
@@ -206,6 +211,13 @@ void AddStrings(content::WebUIDataSource* html_source) {
                           AccountConsistencyModeManager::IsDiceSignInAllowed());
 #else
                           true);
+#endif
+  html_source->AddBoolean(
+      "localProfileCreationFlowSupported",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
+#else
+      true);
 #endif
 
   html_source->AddString("minimumPickerSize",

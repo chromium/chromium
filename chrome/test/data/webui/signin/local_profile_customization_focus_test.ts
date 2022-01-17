@@ -75,13 +75,6 @@ suite('LocalProfileCustomizationFocusTest', function() {
     assertTrue(!!choice);
     await whenCheck(choice!, () => choice!.classList.contains('active'));
 
-    // <if expr="lacros">
-    // Local profile creation is not enabled on Lacros.
-    assertFalse(!!choice!.shadowRoot!.querySelector('#notNowButton'));
-    return;
-    // </if>
-
-    // <if expr="not lacros">
     const notNowButton = choice!.$.notNowButton;
     notNowButton.focus();
     notNowButton.click();
@@ -112,7 +105,6 @@ suite('LocalProfileCustomizationFocusTest', function() {
     await verifyProfileName(true, false);
     customization!.$.nameInput.value = 'Work';
     assertFalse(customization!.$.nameInput.invalid);
-    // </if>
   });
 
   test('BrowserSigninNotAllowed', async function() {

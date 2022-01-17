@@ -12,7 +12,6 @@ assert(!is_chromeos_ash)
 
 # Test files that contain // <if expr> and therefore require preprocessing.
 preprocessed_files = [
-  "local_profile_customization_focus_test.ts",
   "profile_card_menu_test.ts",
   "profile_picker_app_test.ts",
   "profile_picker_main_view_test.ts",
@@ -24,6 +23,7 @@ preprocessed_files = [
 # file below, move it to the list above.
 non_preprocessed_files = [
   "enterprise_profile_welcome_test.ts",
+  "local_profile_customization_focus_test.ts",
   "local_profile_customization_test.ts",
   "profile_customization_test.ts",
   "profile_switch_test.ts",

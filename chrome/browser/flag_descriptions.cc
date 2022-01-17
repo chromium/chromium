@@ -5207,6 +5207,13 @@ const char kLauncherNudgeShortIntervalDescription[] =
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kLacrosNonSyncingProfilesName[] =
+    "Enable non-syncing profiles on lacros";
+const char kLacrosNonSyncingProfilesDescription[] =
+    "Enables further types of profiles: (1) local, (2) signed-in non-syncing.";
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[] =
     "Allow default web app migration for Chrome OS managed users";

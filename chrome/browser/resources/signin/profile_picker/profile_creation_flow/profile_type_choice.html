@@ -99,12 +99,11 @@
       disabled="[[loadSigninInProgess_]]">
     $i18n{signInButtonLabel}
   </cr-button>
-  <if expr="not lacros">
-    <cr-button id="notNowButton" on-click="onNotNowClick_"
-        disabled="[[loadSigninInProgess_]]">
-      $i18n{notNowButtonLabel}
-    </cr-button>
-  </if>
+  <cr-button id="notNowButton" on-click="onNotNowClick_"
+      hidden="[[!localProfileCreationFlowSupported_]]"
+      disabled="[[loadSigninInProgess_]]">
+    $i18n{notNowButtonLabel}
+  </cr-button>
 </div>
 
 <template is="dom-if" if="[[managedDeviceDisclaimer_]]">

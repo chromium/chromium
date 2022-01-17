@@ -2996,6 +2996,11 @@ extern const char kLauncherNudgeShortIntervalDescription[];
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kLacrosNonSyncingProfilesName[];
+extern const char kLacrosNonSyncingProfilesDescription[];
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[];
 extern const char
