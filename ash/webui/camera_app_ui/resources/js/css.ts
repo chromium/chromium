@@ -10,7 +10,7 @@ import {
 /**
  * CSS rules.
  */
-const cssRules: CSSStyleRule[] = (() => {
+const cssRules: CSSRule[] = (() => {
   const ruleList = [];
   for (const sheet of document.styleSheets) {
     ruleList.push(...sheet.cssRules);
@@ -23,7 +23,9 @@ const cssRules: CSSStyleRule[] = (() => {
  * @param selector Selector text.
  */
 export function cssStyle(selector: string): CSSStyleDeclaration {
-  const rule = cssRules.find((rule) => rule.selectorText === selector);
+  const rule = cssRules.find(
+      (rule): rule is CSSStyleRule =>
+          rule instanceof CSSStyleRule && rule.selectorText === selector);
   assert(rule !== undefined);
   return assertInstanceof(rule.style, CSSStyleDeclaration);
 }
