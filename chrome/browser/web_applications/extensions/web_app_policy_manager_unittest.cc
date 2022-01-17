@@ -75,10 +75,13 @@ const char kWebAppSettingWithDefaultConfiguration[] = R"({
 })";
 
 const char kDefaultFallbackAppName[] = "fallback app name";
+const char kDefaultCustomAppName[] = "custom app name";
 
 constexpr char kWindowedUrl[] = "https://windowed.example/";
 constexpr char kTabbedUrl[] = "https://tabbed.example/";
 constexpr char kNoContainerUrl[] = "https://no-container.example/";
+constexpr char kDefaultCustomIconUrl[] = "https://windowed.example/icon.png";
+constexpr char kDefaultCustomIconHash[] = "abcdef";
 
 base::Value GetWindowedItem() {
   base::Value item(base::Value::Type::DICTIONARY);
@@ -228,6 +231,53 @@ ExternalInstallOptions GetFallbackAppNameInstallOptions() {
   return options;
 }
 
+base::Value GetCustomAppNameItem(std::string name) {
+  base::Value item(base::Value::Type::DICTIONARY);
+  item.SetKey(kUrlKey, base::Value(kWindowedUrl));
+  item.SetKey(kDefaultLaunchContainerKey,
+              base::Value(kDefaultLaunchContainerWindowValue));
+  item.SetKey(kCustomNameKey, base::Value(name));
+  return item;
+}
+
+ExternalInstallOptions GetCustomAppNameInstallOptions(std::string name) {
+  ExternalInstallOptions options(GURL(kWindowedUrl), DisplayMode::kStandalone,
+                                 ExternalInstallSource::kExternalPolicy);
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = false;
+  options.add_to_quick_launch_bar = false;
+  options.install_placeholder = true;
+  options.reinstall_placeholder = true;
+  options.wait_for_windows_closed = true;
+  options.override_name = name;
+  return options;
+}
+
+base::Value GetCustomAppIconItem() {
+  base::Value item(base::Value::Type::DICTIONARY);
+  item.SetKey(kUrlKey, base::Value(kWindowedUrl));
+  item.SetKey(kDefaultLaunchContainerKey,
+              base::Value(kDefaultLaunchContainerWindowValue));
+  base::Value sub_item(base::Value::Type::DICTIONARY);
+  sub_item.SetKey(kCustomIconURLKey, base::Value(kDefaultCustomIconUrl));
+  sub_item.SetKey(kCustomIconHashKey, base::Value(kDefaultCustomIconHash));
+  item.SetKey(kCustomIconKey, std::move(sub_item));
+  return item;
+}
+
+ExternalInstallOptions GetCustomAppIconInstallOptions() {
+  ExternalInstallOptions options(GURL(kWindowedUrl), DisplayMode::kStandalone,
+                                 ExternalInstallSource::kExternalPolicy);
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = false;
+  options.add_to_quick_launch_bar = false;
+  options.install_placeholder = true;
+  options.reinstall_placeholder = true;
+  options.wait_for_windows_closed = true;
+  options.override_icon_url = GURL(kDefaultCustomIconUrl);
+  return options;
+}
+
 Source::Type ConvertExternalInstallSourceToSourceType(
     ExternalInstallSource external_install_source) {
   return InferSourceFromMetricsInstallSource(
@@ -277,18 +327,23 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
         base::BindLambdaForTesting(
             [this](const ExternalInstallOptions& install_options) {
               const GURL& install_url = install_options.install_url;
-              if (!app_registrar().GetAppById(GenerateAppId(
-                      /*manifest_id=*/absl::nullopt, install_url))) {
+              const AppId app_id = GenerateAppId(
+                  /*manifest_id=*/absl::nullopt, install_url);
+              if (app_registrar().GetAppById(app_id) &&
+                  install_options.force_reinstall) {
+                UnregisterApp(app_id);
+              }
+              if (!app_registrar().GetAppById(app_id)) {
                 const auto install_source = install_options.install_source;
                 std::unique_ptr<WebApp> web_app = test::CreateWebApp(
                     install_url,
                     ConvertExternalInstallSourceToSourceType(install_source));
+                if (install_options.override_name)
+                  web_app->SetName(install_options.override_name.value());
                 RegisterApp(std::move(web_app));
 
-                externally_installed_app_prefs().Insert(
-                    install_url,
-                    GenerateAppId(/*manifest_id=*/absl::nullopt, install_url),
-                    install_source);
+                externally_installed_app_prefs().Insert(install_url, app_id,
+                                                        install_source);
               }
               return ExternallyManagedAppManager::InstallResult(
                   install_result_code_);
@@ -654,6 +709,88 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
   expected_install_options_list.push_back(GetFallbackAppNameInstallOptions());
 
   EXPECT_EQ(install_requests, expected_install_options_list);
+}
+
+TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppIcon) {
+  if (ShouldSkipPWASpecificTest())
+    return;
+  base::Value list(base::Value::Type::LIST);
+  list.Append(GetCustomAppIconItem());
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+
+  policy_manager().Start();
+  base::RunLoop().RunUntilIdle();
+
+  const auto& install_requests =
+      externally_managed_app_manager().install_requests();
+
+  std::vector<ExternalInstallOptions> expected_install_options_list;
+  expected_install_options_list.push_back(GetCustomAppIconInstallOptions());
+
+  EXPECT_EQ(install_requests, expected_install_options_list);
+}
+
+TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppName) {
+  if (ShouldSkipPWASpecificTest())
+    return;
+  base::Value list(base::Value::Type::LIST);
+  list.Append(GetCustomAppNameItem(kDefaultCustomAppName));
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+
+  policy_manager().Start();
+  base::RunLoop().RunUntilIdle();
+
+  const auto& install_requests =
+      externally_managed_app_manager().install_requests();
+
+  std::vector<ExternalInstallOptions> expected_install_options_list;
+  expected_install_options_list.push_back(
+      GetCustomAppNameInstallOptions(kDefaultCustomAppName));
+
+  EXPECT_EQ(install_requests, expected_install_options_list);
+}
+
+TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppNameRefresh) {
+  if (ShouldSkipPWASpecificTest())
+    return;
+
+  std::string kPrefix = "Modified ";
+
+  policy_manager().Start();
+  // Add app
+  {
+    base::Value list(base::Value::Type::LIST);
+    list.Append(GetCustomAppNameItem(kDefaultCustomAppName));
+    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  }
+  base::RunLoop().RunUntilIdle();
+  // Change custom name
+  {
+    base::Value list(base::Value::Type::LIST);
+    list.Append(GetCustomAppNameItem(kPrefix + kDefaultCustomAppName));
+    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  }
+  base::RunLoop().RunUntilIdle();
+
+  const auto& install_requests =
+      externally_managed_app_manager().install_requests();
+
+  // App should have been installed twice, with a force-install the second time.
+  std::vector<ExternalInstallOptions> expected_install_options_list;
+  expected_install_options_list.push_back(
+      GetCustomAppNameInstallOptions(kDefaultCustomAppName));
+  auto options =
+      GetCustomAppNameInstallOptions(kPrefix + kDefaultCustomAppName);
+  options.force_reinstall = true;
+  expected_install_options_list.push_back(options);
+
+  EXPECT_EQ(install_requests, expected_install_options_list);
+
+  std::map<AppId, GURL> apps = app_registrar().GetExternallyInstalledApps(
+      ExternalInstallSource::kExternalPolicy);
+  EXPECT_EQ(1u, apps.size());
+  EXPECT_EQ(kPrefix + kDefaultCustomAppName,
+            app_registrar().GetAppShortName(apps.begin()->first));
 }
 
 TEST_P(WebAppPolicyManagerTest, DynamicRefresh) {

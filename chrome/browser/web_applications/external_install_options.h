@@ -45,10 +45,13 @@ struct ExternalInstallOptions {
   // their manifest.
   absl::optional<std::string> fallback_app_name;
 
-  // App name in case a placeholder needs to be installed.
-  // placeholder_name takes precedent over fallback_app_name in case both are
+  // App name that replaces the app's real name.
+  // override_name takes precedent over fallback_app_name in case both are
   // present.
-  absl::optional<std::string> placeholder_name;
+  absl::optional<std::string> override_name;
+
+  // URL of an icon that replaces the app's real icons.
+  absl::optional<GURL> override_icon_url;
 
   // If true, a shortcut is added to the Applications folder on macOS, and Start
   // Menu on Linux and Windows and launcher on Chrome OS. If false, we skip

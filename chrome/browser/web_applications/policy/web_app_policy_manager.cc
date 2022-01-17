@@ -45,6 +45,19 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+namespace {
+
+bool IconInfosContainIconURL(const std::vector<apps::IconInfo>& icon_infos,
+                             const GURL& url) {
+  for (apps::IconInfo info : icon_infos) {
+    if (info.url.EqualsIgnoringRef(url))
+      return true;
+  }
+  return false;
+}
+
+}  // namespace
+
 namespace web_app {
 
 const char WebAppPolicyManager::kInstallResultHistogramName[];
@@ -52,8 +65,8 @@ const char WebAppPolicyManager::kInstallResultHistogramName[];
 WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
     : profile_(profile),
       pref_service_(profile_->GetPrefs()),
-      default_settings_(
-          std::make_unique<WebAppPolicyManager::WebAppSetting>()) {}
+      default_settings_(std::make_unique<WebAppPolicyManager::WebAppSetting>()),
+      externally_installed_app_prefs_(profile_->GetPrefs()) {}
 
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 
@@ -221,6 +234,25 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
         (GetUrlRunOnOsLoginPolicy(install_options.install_url) ==
          RunOnOsLoginPolicy::kRunWindowed);
 
+    absl::optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
+        install_options.install_url);
+    if (app_id) {
+      // If the override name has changed, reinstall:
+      if (install_options.override_name &&
+          install_options.override_name.value() !=
+              app_registrar_->GetAppShortName(app_id.value())) {
+        install_options.force_reinstall = true;
+      }
+
+      // If the override icon has changed, reinstall:
+      if (install_options.override_icon_url &&
+          !IconInfosContainIconURL(
+              app_registrar_->GetAppIconInfos(app_id.value()),
+              install_options.override_icon_url.value())) {
+        install_options.force_reinstall = true;
+      }
+    }
+
     install_options_list.push_back(std::move(install_options));
   }
 
@@ -357,15 +389,17 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
     install_options.fallback_app_name = fallback_app_name->GetString();
 
   if (custom_name) {
-    install_options.placeholder_name = custom_name->GetString();
+    install_options.override_name = custom_name->GetString();
     if (gurl.is_valid())
       custom_manifest_values_by_url_[gurl].SetName(custom_name->GetString());
   }
 
-  if (custom_icon && custom_icon->is_dict() && gurl.is_valid()) {
+  if (custom_icon && custom_icon->is_dict()) {
     const std::string* icon_url = custom_icon->FindStringKey(kCustomIconURLKey);
     if (icon_url) {
-      custom_manifest_values_by_url_[gurl].SetIcon(*icon_url);
+      install_options.override_icon_url = GURL(*icon_url);
+      if (gurl.is_valid())
+        custom_manifest_values_by_url_[gurl].SetIcon(*icon_url);
     }
   }
 

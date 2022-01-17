@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   options.install_placeholder = true;
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
-  options.placeholder_name = CUSTOM_NAME;
+  options.override_name = CUSTOM_NAME;
   InstallApp(options);
 
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());

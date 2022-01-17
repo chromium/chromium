@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -183,6 +184,8 @@ class WebAppPolicyManager {
   std::unique_ptr<WebAppSetting> default_settings_;
   base::ObserverList<WebAppPolicyManagerObserver, /*check_empty=*/true>
       observers_;
+
+  ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
   base::WeakPtrFactory<WebAppPolicyManager> weak_ptr_factory_{this};
 };
