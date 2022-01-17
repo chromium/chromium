@@ -36,8 +36,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFooter = kItemTypeEnumZero,
-  ItemTypeOptionImportData,
   ItemTypeOptionKeepDataSeparate,
+  ItemTypeOptionImportData,
 };
 
 }  // namespace
@@ -51,8 +51,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // any choice to import or clear the data.
   ShouldClearData _shouldClearData;
 
-  SettingsImageDetailTextItem* _importDataItem;
   SettingsImageDetailTextItem* _keepDataSeparateItem;
+  SettingsImageDetailTextItem* _importDataItem;
 }
 
 #pragma mark - Initialization
@@ -102,12 +102,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self descriptionItem]
       toSectionWithIdentifier:SectionIdentifierDisclaimer];
 
-  _importDataItem = [self importDataItem];
   _keepDataSeparateItem = [self keepDataSeparateItem];
+  _importDataItem = [self importDataItem];
   [model addSectionWithIdentifier:SectionIdentifierOptions];
-  [model addItem:_importDataItem
-      toSectionWithIdentifier:SectionIdentifierOptions];
   [model addItem:_keepDataSeparateItem
+      toSectionWithIdentifier:SectionIdentifierOptions];
+  [model addItem:_importDataItem
       toSectionWithIdentifier:SectionIdentifierOptions];
 }
 
@@ -140,9 +140,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeOptionKeepDataSeparate];
-  item.text = l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE);
-  item.detailText =
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN);
+  item.text =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_TITLE);
+  item.detailText = l10n_util::GetNSString(
+      IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_SUBTITLE);
   item.accessoryType = UITableViewCellAccessoryNone;
   item.accessibilityIdentifier = kImportDataKeepSeparateCellId;
   return item;
@@ -198,7 +199,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       _keepDataSeparateItem.accessoryType = UITableViewCellAccessoryNone;
       break;
   }
-  [self reconfigureCellsForItems:@[ _importDataItem, _keepDataSeparateItem ]];
+  [self reconfigureCellsForItems:@[ _keepDataSeparateItem, _importDataItem ]];
 }
 
 - (void)didTapContinue {

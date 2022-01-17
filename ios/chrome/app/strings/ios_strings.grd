@@ -1431,10 +1431,10 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_TITLE" desc="The title of the Import Data option on the Import Data settings screen. [60em]">
         Combine my data
       </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN" desc="The subtitle of the Keep Data Separate option on the Import Data settings screen when signing in. [400em]">
+      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_SUBTITLE" desc="The subtitle of the Keep Data Separate option on the Import Data settings screen. [400em]">
         Delete existing data.
       </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE" desc="The title of the Keep Data Separate option on the Import Data settings screen. [60em]">
+      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_TITLE" desc="The title of the Keep Data Separate option on the Import Data settings screen. [60em]">
         Keep my data separate
       </message>
       <message name="IDS_IOS_OPTIONS_PRELOAD_WEBPAGES" desc="Title for opening the setting for if/when to preload webpages. [Length: 20em] [iOS only]">

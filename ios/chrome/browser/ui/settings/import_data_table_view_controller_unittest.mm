@@ -22,8 +22,8 @@
 namespace {
 
 typedef NS_ENUM(NSInteger, ItemIndex) {
-  kImportDataItemIndex = 0,
-  kKeepDataSeparateItemIndex = 1,
+  kKeepDataSeparateItemIndex = 0,
+  kImportDataItemIndex = 1,
 };
 
 }  // namespace
@@ -86,18 +86,20 @@ TEST_F(ImportDataTableViewControllerTest, TestModelSignedOut) {
       item.text);
   EXPECT_EQ(2, NumberOfItemsInSection(1));
   CheckTextCellTextAndDetailText(
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_TITLE),
+      l10n_util::GetNSString(
+          IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_SUBTITLE),
+      1, kKeepDataSeparateItemIndex);
+  CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_TITLE),
       l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_SUBTITLE,
                               base::SysNSStringToUTF16(@"toEmail@gmail.com")),
-      1, 0);
-  CheckTextCellTextAndDetailText(
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE),
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN),
-      1, 1);
+      1, kImportDataItemIndex);
 
   // No item is selected by default.
-  CheckAccessoryType(UITableViewCellAccessoryNone, 1, 1);
-  CheckAccessoryType(UITableViewCellAccessoryNone, 1, 1);
+  CheckAccessoryType(UITableViewCellAccessoryNone, 1,
+                     kKeepDataSeparateItemIndex);
+  CheckAccessoryType(UITableViewCellAccessoryNone, 1, kImportDataItemIndex);
 
   // Continue button is disabled by default.
   EXPECT_FALSE(controller().navigationItem.rightBarButtonItem.enabled);
