@@ -28187,6 +28187,7 @@ Called by update_document_policy_enum.py.-->
   <int value="875" label="ReportDeviceNetworkConfiguration"/>
   <int value="876" label="ReportDeviceNetworkStatus"/>
   <int value="877" label="DataLeakPreventionClipboardCheckSizeLimit"/>
+  <int value="878" label="CrossOriginWebAssemblyModuleSharingEnabled"/>
   <int value="879"
       label="RestrictedManagedGuestSessionExtensionCleanupExemptList"/>
   <int value="880" label="DisplayCapturePermissionsPolicyEnabled"/>
