@@ -241,7 +241,7 @@ public class ContextualSearchTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // It only makes sense to send dummy data here because we can't easily control
             // what's in the native context.
-            mContextualSearchClient.selectWordAroundCaretAck(true, 0, 0);
+            mContextualSearchClient.selectAroundCaretAck(null);
         });
     }
 

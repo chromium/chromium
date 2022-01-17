@@ -36,6 +36,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -531,12 +532,12 @@ void WebContentsAndroid::ScrollFocusedEditableNodeIntoView(
     input_handler->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
 }
 
-void WebContentsAndroid::SelectWordAroundCaretAck(bool did_select,
-                                                  int start_adjust,
-                                                  int end_adjust) {
+void WebContentsAndroid::SelectAroundCaretAck(
+    blink::mojom::SelectAroundCaretResultPtr result) {
   RenderWidgetHostViewAndroid* rwhva = GetRenderWidgetHostViewAndroid();
-  if (rwhva)
-    rwhva->SelectWordAroundCaretAck(did_select, start_adjust, end_adjust);
+  if (rwhva) {
+    rwhva->SelectAroundCaretAck(std::move(result));
+  }
 }
 
 void WebContentsAndroid::SelectAroundCaret(JNIEnv* env,
@@ -550,7 +551,7 @@ void WebContentsAndroid::SelectAroundCaret(JNIEnv* env,
   input_handler->SelectAroundCaret(
       static_cast<blink::mojom::SelectionGranularity>(granularity),
       should_show_handle, should_show_context_menu,
-      base::BindOnce(&WebContentsAndroid::SelectWordAroundCaretAck,
+      base::BindOnce(&WebContentsAndroid::SelectAroundCaretAck,
                      weak_factory_.GetWeakPtr()));
 }
 

@@ -360,6 +360,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/RenderWidgetHostView.java",
     "java/src/org/chromium/content_public/browser/ScreenOrientationDelegate.java",
     "java/src/org/chromium/content_public/browser/ScreenOrientationProvider.java",
+    "java/src/org/chromium/content_public/browser/SelectAroundCaretResult.java",
     "java/src/org/chromium/content_public/browser/SelectionClient.java",
     "java/src/org/chromium/content_public/browser/SelectionEventProcessor.java",
     "java/src/org/chromium/content_public/browser/SelectionPopupController.java",

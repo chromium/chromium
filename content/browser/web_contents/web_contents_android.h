@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/navigation_controller_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 
 class GURL;
 
@@ -302,9 +303,7 @@ class CONTENT_EXPORT WebContentsAndroid {
                              const GURL& url,
                              const std::vector<SkBitmap>& bitmaps,
                              const std::vector<gfx::Size>& sizes);
-  void SelectWordAroundCaretAck(bool did_select,
-                                int start_adjust,
-                                int end_adjust);
+  void SelectAroundCaretAck(blink::mojom::SelectAroundCaretResultPtr result);
   // Walks over the AXTreeUpdate and creates a light weight snapshot.
   void AXTreeSnapshotCallback(
       const base::android::JavaRef<jobject>& view_structure_root,

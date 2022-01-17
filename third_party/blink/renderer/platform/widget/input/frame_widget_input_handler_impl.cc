@@ -282,11 +282,11 @@ void FrameWidgetInputHandlerImpl::SelectAroundCaret(
   if (ThreadedCompositingEnabled()) {
     callback = base::BindOnce(
         [](scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
-           SelectAroundCaretCallback callback, bool did_select,
-           int start_adjust, int end_adjust) {
+           SelectAroundCaretCallback callback,
+           mojom::blink::SelectAroundCaretResultPtr result) {
           callback_task_runner->PostTask(
-              FROM_HERE, base::BindOnce(std::move(callback), did_select,
-                                        start_adjust, end_adjust));
+              FROM_HERE,
+              base::BindOnce(std::move(callback), std::move(result)));
         },
         base::ThreadTaskRunnerHandle::Get(), std::move(callback));
   }
@@ -301,7 +301,7 @@ void FrameWidgetInputHandlerImpl::SelectAroundCaret(
                                      should_show_context_menu,
                                      std::move(callback));
         } else {
-          std::move(callback).Run(false, 0, 0);
+          std::move(callback).Run(std::move(nullptr));
         }
       },
       main_thread_frame_widget_input_handler_, granularity, should_show_handle,
