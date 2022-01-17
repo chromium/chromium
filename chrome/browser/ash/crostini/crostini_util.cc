@@ -460,8 +460,7 @@ void AddNewLxdContainerToPrefs(Profile* profile,
                           static_cast<int>(ContainerOsVersion::kUnknown));
   new_container.SetStringKey(prefs::kContainerOsPrettyNameKey, "");
 
-  ListPrefUpdateDeprecated updater(pref_service,
-                                   crostini::prefs::kCrostiniContainers);
+  ListPrefUpdate updater(pref_service, crostini::prefs::kCrostiniContainers);
   updater->Append(std::move(new_container));
 }
 
@@ -480,8 +479,7 @@ bool MatchContainerDict(const base::Value& dict,
 void RemoveLxdContainerFromPrefs(Profile* profile,
                                  const ContainerId& container_id) {
   auto* pref_service = profile->GetPrefs();
-  ListPrefUpdateDeprecated updater(pref_service,
-                                   crostini::prefs::kCrostiniContainers);
+  ListPrefUpdate updater(pref_service, crostini::prefs::kCrostiniContainers);
   updater->EraseListIter(
       std::find_if(updater->GetList().begin(), updater->GetList().end(),
                    [&](const auto& dict) {
@@ -515,8 +513,8 @@ void UpdateContainerPref(Profile* profile,
                          const ContainerId& container_id,
                          const std::string& key,
                          base::Value value) {
-  ListPrefUpdateDeprecated updater(profile->GetPrefs(),
-                                   crostini::prefs::kCrostiniContainers);
+  ListPrefUpdate updater(profile->GetPrefs(),
+                         crostini::prefs::kCrostiniContainers);
   auto it = std::find_if(
       updater->GetList().begin(), updater->GetList().end(),
       [&](const auto& dict) { return MatchContainerDict(dict, container_id); });

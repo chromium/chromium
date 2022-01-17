@@ -100,9 +100,8 @@ bool CrostiniPortForwarder::MatchPortRuleContainerId(
 void CrostiniPortForwarder::AddNewPortPreference(const PortRuleKey& key,
                                                  const std::string& label) {
   PrefService* pref_service = profile_->GetPrefs();
-  ListPrefUpdateDeprecated update(pref_service,
-                                  crostini::prefs::kCrostiniPortForwarding);
-  base::ListValue* all_ports = update.Get();
+  ListPrefUpdate update(pref_service, crostini::prefs::kCrostiniPortForwarding);
+  base::Value* all_ports = update.Get();
   base::Value new_port_metadata(base::Value::Type::DICTIONARY);
   new_port_metadata.SetIntKey(kPortNumberKey, key.port_number);
   new_port_metadata.SetIntKey(kPortProtocolKey,
@@ -116,9 +115,8 @@ void CrostiniPortForwarder::AddNewPortPreference(const PortRuleKey& key,
 
 bool CrostiniPortForwarder::RemovePortPreference(const PortRuleKey& key) {
   PrefService* pref_service = profile_->GetPrefs();
-  ListPrefUpdateDeprecated update(pref_service,
-                                  crostini::prefs::kCrostiniPortForwarding);
-  base::ListValue* all_ports = update.Get();
+  ListPrefUpdate update(pref_service, crostini::prefs::kCrostiniPortForwarding);
+  base::Value* all_ports = update.Get();
   base::Value::ListView list_view = all_ports->GetList();
   auto it = std::find_if(
       list_view.begin(), list_view.end(),
@@ -362,8 +360,7 @@ void CrostiniPortForwarder::DeactivateAllActivePorts(
 
 void CrostiniPortForwarder::RemoveAllPorts(const ContainerId& container_id) {
   PrefService* pref_service = profile_->GetPrefs();
-  ListPrefUpdateDeprecated update(pref_service,
-                                  crostini::prefs::kCrostiniPortForwarding);
+  ListPrefUpdate update(pref_service, crostini::prefs::kCrostiniPortForwarding);
   update->EraseListValueIf([&container_id, this](const auto& dict) {
     return MatchPortRuleContainerId(dict, container_id);
   });
