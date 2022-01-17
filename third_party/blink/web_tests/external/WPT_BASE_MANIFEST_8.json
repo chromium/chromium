@@ -2239,6 +2239,13 @@
        {}
       ]
      ],
+     "insertlinebreak-in-map-element-editing-host.html": [
+      "c141f89c4e254ebb43cb44d779bc88d9302a9c30",
+      [
+       null,
+       {}
+      ]
+     ],
      "insertorderedlist-in-focused-inline-editing-host.html": [
       "73869af3b597697c4774640e596eb54dceeddbfb",
       [
@@ -2255,6 +2262,13 @@
      ],
      "insertparagraph-from-DOMNodeInserted-caused-by-insertorderedlist.html": [
       "fa322420cb3686b7d7ccb1b49f910aa5e409a72b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "insertparagraph-in-map-element-editing-host.html": [
+      "e05b36907e09a7ae6292e85e9a2492ea12934b5e",
       [
        null,
        {}
@@ -277439,7 +277453,7 @@
      []
     ],
     "requirements.txt": [
-     "86bfe880960e5259daef53349e9b40ec8c973d63",
+     "bdf0ee2ab168ef78898cfbdd515abf0203b833f2",
      []
     ],
     "reviewing-tests": {
