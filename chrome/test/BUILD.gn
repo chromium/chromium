@@ -1888,6 +1888,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ssl/ocsp_browsertest.cc",
       "../browser/ssl/security_state_tab_helper_browsertest.cc",
       "../browser/ssl/ssl_browsertest.cc",
+      "../browser/ssl/ssl_fenced_frame_browsertest.cc",
       "../browser/ssl/ssl_prerender_browsertest.cc",
       "../browser/ssl/stateful_ssl_host_state_delegate_test.cc",
       "../browser/storage/durable_storage_browsertest.cc",
