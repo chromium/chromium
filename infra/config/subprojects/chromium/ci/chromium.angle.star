@@ -157,7 +157,7 @@ ci.thin_tester(
 
 ci.gpu.mac_builder(
     name = "ios-angle-builder",
-    xcode = xcode.x12d4e,
+    xcode = xcode.x13main,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|Builder|ANGLE",
         short_name = "x64",
