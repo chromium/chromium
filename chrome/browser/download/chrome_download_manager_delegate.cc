@@ -871,7 +871,7 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
     browser->OpenURL(params);
 
   RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromeDownloadManagerDelegate::IsMostRecentDownloadItemAtFilePath(
@@ -1104,7 +1104,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
     return;
 
-#else   // !OS_ANDROID
+#else   // BUILDFLAG(IS_ANDROID)
   // Desktop Chrome displays a file picker for all confirmation needs. We can do
   // better.
   if (is_file_picker_showing_) {
@@ -1116,7 +1116,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     is_file_picker_showing_ = true;
     ShowFilePicker(download->GetGuid(), suggested_path, std::move(callback));
   }
-#endif  // !OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeDownloadManagerDelegate::OnConfirmationCallbackComplete(
@@ -1595,7 +1595,7 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
       }
     }
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // A separate reservation with the same target path may exist.
   // If so, cancel the current reservation.

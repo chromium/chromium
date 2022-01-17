@@ -1207,7 +1207,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       download::DOWNLOAD_INTERRUPT_REASON_NONE,
       download::DownloadItem::MixedContentStatus::SAFE);
 }
-#endif  // !OS_ANDROID
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeDownloadManagerDelegateTest, WithoutHistoryDbNextId) {
   delegate()->GetNextId(base::BindOnce(
@@ -1323,7 +1323,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 
   run_loop.Run();
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 namespace {
@@ -1670,7 +1670,7 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   EXPECT_TRUE(delegate()->ShouldCompleteDownload(download_item.get(),
                                                  base::OnceClosure()));
 }
-#endif  // OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 #endif  // FULL_SAFE_BROWSING
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1959,4 +1959,4 @@ TEST_F(DownloadLaterTriggerTest, DownloadLaterTrigger) {
   EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
   ResetNetworkNotifier();
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

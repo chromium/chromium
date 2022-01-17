@@ -60,7 +60,7 @@ void AndroidUIControllerDelegate::OnNewDownloadReady(
   DownloadControllerBase::Get()->OnDownloadStarted(item);
 }
 
-#else  // OS_ANDROID
+#else  // BUILDFLAG(IS_ANDROID)
 
 class DownloadShelfUIControllerDelegate
     : public DownloadUIController::Delegate {
@@ -109,7 +109,7 @@ void DownloadShelfUIControllerDelegate::OnNewDownloadReady(
   }
 }
 
-#endif  // !OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 } // namespace
 
