@@ -68,8 +68,9 @@ class WebAppAudioFocusBrowserTest : public WebAppControllerBrowserTest {
   }
 
   content::WebContents* AddTestPageTabAtIndex(int index) {
-    AddTabAtIndex(index, embedded_test_server()->GetURL(kAudioFocusTestPageURL),
-                  ui::PAGE_TRANSITION_TYPED);
+    EXPECT_TRUE(AddTabAtIndex(
+        index, embedded_test_server()->GetURL(kAudioFocusTestPageURL),
+        ui::PAGE_TRANSITION_TYPED));
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(tab));
