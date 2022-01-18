@@ -617,7 +617,6 @@
 #include "base/win/windows_h_disallowed.h"
 #endif  // defined(_WINDOWS_)
 
-using base::FileDescriptor;
 using blink::mojom::EffectiveConnectionType;
 using blink::web_pref::WebPreferences;
 using content::BrowserThread;
@@ -625,7 +624,6 @@ using content::BrowserURLHandler;
 using content::ChildProcessSecurityPolicy;
 using content::QuotaPermissionContext;
 using content::RenderFrameHost;
-using content::RenderViewHost;
 using content::SiteInstance;
 using content::WebContents;
 
