@@ -67986,6 +67986,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Weak signature algorithm"/>
 </enum>
 
+<enum name="PasswordChangeType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Opened a site to change password manually"/>
+  <int value="2" label="Started an automated password change flow"/>
+</enum>
+
 <enum name="PasswordCheckInteraction">
   <int value="0" label="Check started automatically"/>
   <int value="1" label="Check started manually"/>

@@ -14510,6 +14510,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.PasswordChangeTriggered">
+  <owner>selakovic@google.com</owner>
+  <owner>chrome-duplex@google.com</owner>
+  <summary>
+    Metrics related to password change. The Password Checkup in Chrome Settings
+    aims to help users find their leaked passwords. After getting list of
+    compromised passwords, user can trigger password change. On some limited
+    number of sites automated password change is available and on others only
+    manual change is available. We collect what type of password change user
+    triggered.
+  </summary>
+  <metric name="PasswordChangeType" enum="PasswordChangeType">
+    <summary>
+      Records what type of password change the user triggers.
+    </summary>
+  </metric>
+</event>
+
 <event name="PasswordManager.WellKnownChangePasswordResult">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>

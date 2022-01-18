@@ -14,8 +14,10 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
+import org.chromium.chrome.browser.password_check.PasswordChangeType;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi;
 import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
+import org.chromium.chrome.browser.password_check.PasswordCheckUkmRecorder;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.io.UnsupportedEncodingException;
@@ -66,7 +68,8 @@ public class PasswordCheckChangePasswordHelper {
         // match to open it.
         IntentUtils.safeStartActivity(mContext,
                 credential.getAssociatedApp().isEmpty()
-                        ? buildIntent(credential.getPasswordChangeUrl())
+                        ? buildIntent(
+                                credential.getPasswordChangeUrl(), PasswordChangeType.MANUAL_CHANGE)
                         : getPackageLaunchIntent(credential.getAssociatedApp()));
     }
 
@@ -89,7 +92,7 @@ public class PasswordCheckChangePasswordHelper {
      */
     public void launchCctWithScript(CompromisedCredential credential) {
         String origin = credential.getAssociatedUrl().getOrigin().getSpec();
-        Intent intent = buildIntent(origin);
+        Intent intent = buildIntent(origin, PasswordChangeType.AUTOMATED_CHANGE);
         populateAutofillAssistantExtras(intent, origin, credential.getUsername());
         IntentUtils.safeStartActivity(mContext, intent);
     }
@@ -115,9 +118,10 @@ public class PasswordCheckChangePasswordHelper {
      * Builds an intent to launch a CCT.
      *
      * @param initialUrl Initial URL to launch a CCT.
+     * @param passwordChangeType Password change type.
      * @return {@link Intent} for CCT.
      */
-    private Intent buildIntent(String initialUrl) {
+    private Intent buildIntent(String initialUrl, @PasswordChangeType int passwordChangeType) {
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
         customTabIntent.intent.setData(Uri.parse(initialUrl));
@@ -125,6 +129,9 @@ public class PasswordCheckChangePasswordHelper {
                 mContext, customTabIntent.intent);
         intent.setPackage(mContext.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
+        intent.putExtra(PasswordCheckUkmRecorder.PASSWORD_CHECK_PACKAGE
+                        + PasswordCheckUkmRecorder.PASSWORD_CHANGE_TYPE,
+                passwordChangeType);
         mTrustedIntentHelper.addTrustedIntentExtras(intent);
         return intent;
     }
