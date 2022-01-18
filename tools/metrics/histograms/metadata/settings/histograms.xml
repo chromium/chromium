@@ -221,6 +221,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacyGuide.NextNavigation"
+    enum="SettingsPrivacyGuideInteractions" expires_after="M104">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The step in the Privacy guide from which a user clicked the 'next' button.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.Enabled"
     enum="SettingsPrivacySandboxEnabled" expires_after="2022-06-26">
   <owner>harrisonsean@chromium.org</owner>

@@ -85,6 +85,25 @@ export enum SafeBrowsingInteractions {
   COUNT = 8,
 }
 
+/**
+ * All Privacy guide interactions with metrics.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with SettingsPrivacyGuideInteractions in emus.xml.
+ */
+export enum PrivacyGuideInteractions {
+  WELCOME_NEXT_BUTTON = 0,
+  MSBB_NEXT_BUTTON = 1,
+  HISTORY_SYNC_NEXT_BUTTON = 2,
+  SAFE_BROWSING_NEXT_BUTTON = 3,
+  COOKIES_NEXT_BUTTON = 4,
+  COMPLETION_NEXT_BUTTON = 5,
+  // Leave this at the end.
+  COUNT = 6,
+}
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
@@ -111,6 +130,13 @@ export interface MetricsBrowserProxy {
    */
   recordSafeBrowsingInteractionHistogram(interaction: SafeBrowsingInteractions):
       void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.PrivacyGuide.NextNavigation histogram
+   */
+  recordPrivacyGuideNextNavigationHistogram(interaction:
+                                                PrivacyGuideInteractions): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -139,6 +165,14 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send('metricsHandler:recordInHistogram', [
       'SafeBrowsing.Settings.UserAction.Default', interaction,
       SafeBrowsingInteractions.COUNT
+    ]);
+  }
+
+  recordPrivacyGuideNextNavigationHistogram(interaction:
+                                                PrivacyGuideInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.PrivacyGuide.NextNavigation', interaction,
+      PrivacyGuideInteractions.COUNT
     ]);
   }
 

@@ -28,6 +28,7 @@ import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resource
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
@@ -129,6 +130,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   // The privacy review flag is only enabled when the user was not managed at
   // the time settings were loaded, so this is default false.
   private isManaged_: boolean = false;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -174,6 +177,10 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         {
           nextStep: PrivacyReviewStep.MSBB,
           isAvailable: () => true,
+          onForwardNavigation: () => {
+            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
+                PrivacyGuideInteractions.WELCOME_NEXT_BUTTON);
+          },
         },
       ],
       [
@@ -181,6 +188,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         {
           onForwardNavigation: () => {
             Router.getInstance().navigateToPreviousRoute();
+            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
+                PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON);
           },
           previousStep: PrivacyReviewStep.COOKIES,
           isAvailable: () => true,
@@ -191,6 +200,10 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         {
           nextStep: PrivacyReviewStep.CLEAR_ON_EXIT,
           previousStep: PrivacyReviewStep.WELCOME,
+          onForwardNavigation: () => {
+            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
+                PrivacyGuideInteractions.MSBB_NEXT_BUTTON);
+          },
           isAvailable: () => true,
         },
       ],
@@ -208,6 +221,10 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         {
           nextStep: PrivacyReviewStep.SAFE_BROWSING,
           previousStep: PrivacyReviewStep.CLEAR_ON_EXIT,
+          onForwardNavigation: () => {
+            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
+                PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON);
+          },
           // Allow the history sync card to be shown while `syncStatus_` is
           // unavailable. Otherwise we would skip it in
           // `navigateForwardIfCurrentCardNoLongerAvailable` before
@@ -220,6 +237,10 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         {
           nextStep: PrivacyReviewStep.COOKIES,
           previousStep: PrivacyReviewStep.HISTORY_SYNC,
+          onForwardNavigation: () => {
+            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
+                PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON);
+          },
           isAvailable: () => this.shouldShowSafeBrowsingCard_(),
         },
       ],
@@ -230,6 +251,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onForwardNavigation: () => {
             HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
                 TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE);
+            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
+                PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
           },
           previousStep: PrivacyReviewStep.SAFE_BROWSING,
           isAvailable: () => this.shouldShowCookiesCard_(),

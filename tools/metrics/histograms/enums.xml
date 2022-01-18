@@ -80019,6 +80019,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="19" label="Clear data on site details page"/>
 </enum>
 
+<enum name="SettingsPrivacyGuideInteractions">
+  <int value="0" label="Welcome Page Next Button"/>
+  <int value="1" label="MSBB Next Button"/>
+  <int value="2" label="History Sync Next Button"/>
+  <int value="3" label="Safe Browsing Next Button"/>
+  <int value="4" label="Cookies Next Button"/>
+  <int value="5" label="Completion Next Button"/>
+</enum>
+
 <enum name="SettingsPrivacySandboxEnabled">
   <int value="0" label="PS enabled, allow all cookies"/>
   <int value="1" label="PS enabled, block 3P cookies"/>

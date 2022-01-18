@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetricsBrowserProxy, PrivacyElementInteractions, SafeBrowsingInteractions, SafetyCheckInteractions} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, SafeBrowsingInteractions, SafetyCheckInteractions} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -13,6 +13,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSafetyCheckInteractionHistogram',
       'recordSettingsPageHistogram',
       'recordSafeBrowsingInteractionHistogram',
+      'recordPrivacyGuideNextNavigationHistogram',
     ]);
   }
 
@@ -31,5 +32,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   recordSafeBrowsingInteractionHistogram(interaction:
                                              SafeBrowsingInteractions) {
     this.methodCalled('recordSafeBrowsingInteractionHistogram', interaction);
+  }
+
+  recordPrivacyGuideNextNavigationHistogram(interaction:
+                                                PrivacyGuideInteractions) {
+    this.methodCalled('recordPrivacyGuideNextNavigationHistogram', interaction);
   }
 }

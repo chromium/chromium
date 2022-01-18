@@ -6,10 +6,11 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
@@ -24,8 +25,11 @@ suite('PrivacyReviewPage', function() {
   let syncBrowserProxy: TestSyncBrowserProxy;
   let shouldShowCookiesCard: boolean;
   let shouldShowSafeBrowsingCard: boolean;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
     syncBrowserProxy.testSyncStatus = null;
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -307,7 +311,7 @@ suite('PrivacyReviewPage', function() {
     assertTrue(page.getPref('privacy_guide.viewed').value);
   });
 
-  test('welcomeForwardNavigation', function() {
+  test('welcomeForwardNavigation', async function() {
     // Navigating to the privacy review without a step parameter navigates to
     // the welcome card.
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
@@ -320,6 +324,10 @@ suite('PrivacyReviewPage', function() {
     welcomeFragment.$.startButton.click();
     flush();
     assertMsbbCardVisible();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideNextNavigationHistogram');
+    assertEquals(PrivacyGuideInteractions.WELCOME_NEXT_BUTTON, result);
 
     setSyncEnabled(true);
     assertMsbbCardVisible();
@@ -334,13 +342,17 @@ suite('PrivacyReviewPage', function() {
     assertWelcomeCardVisible();
   });
 
-  test('msbbForwardNavigationSyncOn', function() {
+  test('msbbForwardNavigationSyncOn', async function() {
     navigateToStep(PrivacyReviewStep.MSBB);
     setSyncEnabled(true);
     assertMsbbCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     assertHistorySyncCardVisible();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideNextNavigationHistogram');
+    assertEquals(PrivacyGuideInteractions.MSBB_NEXT_BUTTON, result);
   });
 
   test('msbbForwardNavigationSyncOff', function() {
@@ -352,7 +364,7 @@ suite('PrivacyReviewPage', function() {
     assertSafeBrowsingCardVisible();
   });
 
-  test('historySyncBackNavigation', function() {
+  test('historySyncBackNavigation', async function() {
     navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
     setSyncEnabled(true);
     assertHistorySyncCardVisible();
@@ -378,7 +390,8 @@ suite('PrivacyReviewPage', function() {
   });
 
   test(
-      'historySyncCardForwardNavigationShouldShowSafeBrowsingCard', function() {
+      'historySyncCardForwardNavigationShouldShowSafeBrowsingCard',
+      async function() {
         navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
         setSyncEnabled(true);
         setSafeBrowsingSetting(SafeBrowsingSetting.ENHANCED);
@@ -387,6 +400,10 @@ suite('PrivacyReviewPage', function() {
 
         page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
         assertSafeBrowsingCardVisible();
+
+        const result = await testMetricsBrowserProxy.whenCalled(
+            'recordPrivacyGuideNextNavigationHistogram');
+        assertEquals(PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON, result);
       });
 
   test(
@@ -401,7 +418,7 @@ suite('PrivacyReviewPage', function() {
         assertCookiesCardVisible();
       });
 
-  test('safeBrowsingCardBackNavigationSyncOn', function() {
+  test('safeBrowsingCardBackNavigationSyncOn', async function() {
     navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
     setSyncEnabled(true);
     assertSafeBrowsingCardVisible();
@@ -443,15 +460,22 @@ suite('PrivacyReviewPage', function() {
     assertCookiesCardVisible();
   });
 
-  test('safeBrowsingCardForwardNavigationShouldShowCookiesCard', function() {
-    navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
-    setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
-    assertSafeBrowsingCardVisible();
+  test(
+      'safeBrowsingCardForwardNavigationShouldShowCookiesCard',
+      async function() {
+        navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
+        setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
+        assertSafeBrowsingCardVisible();
 
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-    assertCookiesCardVisible();
-  });
+        page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+        flush();
+        assertCookiesCardVisible();
+
+        const result = await testMetricsBrowserProxy.whenCalled(
+            'recordPrivacyGuideNextNavigationHistogram');
+        assertEquals(
+            PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON, result);
+      });
 
   test('safeBrowsingCardForwardNavigationShouldHideCookiesCard', function() {
     navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
@@ -463,7 +487,7 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
   });
 
-  test('cookiesCardBackNavigationShouldShowSafeBrowsingCard', function() {
+  test('cookiesCardBackNavigationShouldShowSafeBrowsingCard', async function() {
     navigateToStep(PrivacyReviewStep.COOKIES);
     setSyncEnabled(true);
     setSafeBrowsingSetting(SafeBrowsingSetting.STANDARD);
@@ -485,13 +509,17 @@ suite('PrivacyReviewPage', function() {
     assertHistorySyncCardVisible();
   });
 
-  test('cookiesCardForwardNavigation', function() {
+  test('cookiesCardForwardNavigation', async function() {
     navigateToStep(PrivacyReviewStep.COOKIES);
     assertCookiesCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
     assertCompletionCardVisible();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideNextNavigationHistogram');
+    assertEquals(PrivacyGuideInteractions.COOKIES_NEXT_BUTTON, result);
   });
 
   test('cookiesCardGetsUpdated', function() {
@@ -519,7 +547,7 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
   });
 
-  test('completionCardBackNavigation', function() {
+  test('completionCardBackNavigation', async function() {
     navigateToStep(PrivacyReviewStep.COMPLETION);
     setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
     assertCompletionCardVisible();
@@ -536,11 +564,16 @@ suite('PrivacyReviewPage', function() {
     navigateToStep(PrivacyReviewStep.COMPLETION);
     assertCompletionCardVisible();
 
-    return whenPopState(function() {
+    return whenPopState(async function() {
              const completionFragment = page.shadowRoot!.querySelector(
                  '#' + PrivacyReviewStep.COMPLETION)!;
              completionFragment.shadowRoot!
                  .querySelector<HTMLElement>('#leaveButton')!.click();
+
+             const result = await testMetricsBrowserProxy.whenCalled(
+                 'recordPrivacyGuideNextNavigationHistogram');
+             assertEquals(
+                 PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON, result);
            })
         .then(function() {
           assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
