@@ -33,6 +33,8 @@ std::unique_ptr<App> App::Clone() const {
   app->install_reason = install_reason;
   app->install_source = install_source;
 
+  app->policy_id = policy_id;
+
   return app;
 }
 
@@ -193,6 +195,8 @@ std::unique_ptr<App> ConvertMojomAppToApp(
       ConvertMojomInstallReasonToInstallReason(mojom_app->install_reason);
   app->install_source =
       ConvertMojomInstallSourceToInstallSource(mojom_app->install_source);
+
+  app->policy_id = mojom_app->policy_id;
 
   return app;
 }

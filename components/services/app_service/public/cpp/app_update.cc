@@ -196,6 +196,7 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(install_time);
   SET_ENUM_VALUE(install_reason, InstallReason::kUnknown);
   SET_ENUM_VALUE(install_source, InstallSource::kUnknown);
+  SET_OPTIONAL_VALUE(policy_id);
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -534,6 +535,10 @@ const std::string& AppUpdate::PolicyId() const {
     return mojom_state_->policy_id.value();
   }
   return base::EmptyString();
+}
+
+const std::string& AppUpdate::GetPolicyId() const {
+  GET_VALUE_WITH_FALLBACK(policy_id, base::EmptyString())
 }
 
 bool AppUpdate::PolicyIdChanged() const {

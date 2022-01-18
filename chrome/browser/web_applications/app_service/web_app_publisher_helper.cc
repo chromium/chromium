@@ -418,6 +418,19 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
   DCHECK_EQ(web_app->IsSystemApp(),
             app->install_reason == apps::InstallReason::kSystem);
 
+  GURL install_url;
+  if (registrar().HasExternalAppWithInstallSource(
+          web_app->app_id(), ExternalInstallSource::kExternalPolicy)) {
+    std::map<AppId, GURL> installed_apps =
+        registrar().GetExternallyInstalledApps(
+            ExternalInstallSource::kExternalPolicy);
+    auto it = installed_apps.find(web_app->app_id());
+    if (it != installed_apps.end()) {
+      install_url = it->second;
+    }
+  }
+  app->policy_id = install_url.spec();
+
   return app;
 }
 #endif

@@ -132,6 +132,10 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // Store, etc.
   InstallSource install_source = InstallSource::kUnknown;
 
+  // An optional ID used for policy to identify the app.
+  // For web apps, it contains the install URL.
+  absl::optional<std::string> policy_id;
+
   // TODO(crbug.com/1253250): Add other App struct fields.
 
   // When adding new fields to the App type, the `Clone` function and the

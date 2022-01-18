@@ -45,6 +45,8 @@ class AppUpdateTest : public testing::Test {
 
   InstallSource expect_install_source_;
 
+  std::string expect_policy_id_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -78,6 +80,8 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_install_source_, u.GetInstallSource());
 
+    EXPECT_EQ(expect_policy_id_, u.GetPolicyId());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -100,6 +104,7 @@ class AppUpdateTest : public testing::Test {
     expect_install_time_ = base::Time();
     expect_install_reason_ = InstallReason::kUnknown;
     expect_install_source_ = InstallSource::kUnknown;
+    expect_policy_id_ = "";
     CheckExpects(u);
 
     if (delta) {
@@ -346,6 +351,25 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_install_source_, state->install_source);
+      CheckExpects(u);
+    }
+
+    // PolicyId tests.
+    if (state) {
+      state->policy_id = "https://app.site/alpha";
+      expect_policy_id_ = "https://app.site/alpha";
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->policy_id = "https://app.site/delta";
+      expect_policy_id_ = "https://app.site/delta";
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_policy_id_, state->policy_id);
       CheckExpects(u);
     }
   }
