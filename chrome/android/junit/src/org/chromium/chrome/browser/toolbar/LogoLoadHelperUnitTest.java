@@ -31,10 +31,10 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.ntp.LogoBridge;
-import org.chromium.chrome.browser.ntp.LogoBridgeJni;
-import org.chromium.chrome.browser.ntp.LogoDelegateImpl;
-import org.chromium.chrome.browser.ntp.LogoView;
+import org.chromium.chrome.browser.logo.LogoBridge;
+import org.chromium.chrome.browser.logo.LogoBridgeJni;
+import org.chromium.chrome.browser.logo.LogoDelegateImpl;
+import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
@@ -83,7 +83,7 @@ public class LogoLoadHelperUnitTest {
 
         mProfileSupplier = new ObservableSupplierImpl<>();
         mContext = ApplicationProvider.getApplicationContext();
-        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mToolbar, mContext);
+        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mToolbar, mContext, null);
         mLogoLoadHelper.setLogoDelegateForTesting(mLogoDelegate);
 
         doReturn(false).when(mMockProfile1).isOffTheRecord();

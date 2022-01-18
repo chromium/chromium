@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.logo;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -30,8 +30,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
+import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.ui.widget.LoadingView;
 
@@ -46,7 +45,6 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
  * this view and we have an animated GIF logo ready.
  */
 public class LogoView extends FrameLayout implements OnClickListener {
-
     // Number of milliseconds for a new logo to fade in.
     private static final int LOGO_TRANSITION_TIME_MS = 400;
 
@@ -80,21 +78,21 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     private final Property<LogoView, Float> mTransitionProperty =
             new Property<LogoView, Float>(Float.class, "") {
-        @Override
-        public Float get(LogoView logoView) {
-            return logoView.mTransitionAmount;
-        }
+                @Override
+                public Float get(LogoView logoView) {
+                    return logoView.mTransitionAmount;
+                }
 
-        @Override
-        public void set(LogoView logoView, Float amount) {
-            assert amount >= 0f;
-            assert amount <= 1f;
-            if (logoView.mTransitionAmount != amount) {
-                logoView.mTransitionAmount = amount;
-                invalidate();
-            }
-        }
-    };
+                @Override
+                public void set(LogoView logoView, Float amount) {
+                    assert amount >= 0f;
+                    assert amount <= 1f;
+                    if (logoView.mTransitionAmount != amount) {
+                        logoView.mTransitionAmount = amount;
+                        invalidate();
+                    }
+                }
+            };
 
     /**
      * Handles tasks for the {@link LogoView} shown on an NTP.
@@ -246,12 +244,10 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mFadeAnimation.setDuration(LOGO_TRANSITION_TIME_MS);
         mFadeAnimation.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
-            }
+            public void onAnimationStart(Animator animation) {}
 
             @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
+            public void onAnimationRepeat(Animator animation) {}
 
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -303,8 +299,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
      * @param preventUpscaling Whether the image should not be scaled up. If true, the image might
      *                         not fill the entire view but will still be centered.
      */
-    private void setMatrix(int imageWidth, int imageHeight, Matrix matrix,
-            boolean preventUpscaling) {
+    private void setMatrix(
+            int imageWidth, int imageHeight, Matrix matrix, boolean preventUpscaling) {
         int width = getWidth();
         int height = getHeight();
 
@@ -329,7 +325,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return null;
 
         Bitmap defaultLogo = sDefaultLogo == null ? null : sDefaultLogo.get();
-        final int tint = ApiCompatibilityUtils.getColor(resources, R.color.google_logo_tint);
+        final int tint = ApiCompatibilityUtils.getColor(resources, R.color.google_logo_tint_color);
         if (defaultLogo == null || sDefaultLogoTint != tint) {
             if (tint == Color.TRANSPARENT) {
                 defaultLogo = BitmapFactory.decodeResource(resources, R.drawable.google_logo);
@@ -364,8 +360,11 @@ public class LogoView extends FrameLayout implements OnClickListener {
         // doesn't invalidate the right area. Instead invalidate the entire view; the drawable takes
         // up most of the view anyway so this is just as efficient.
         // @see ImageView#invalidateDrawable().
-        if (drawable == mAnimatedLogoDrawable) invalidate();
-        else super.invalidateDrawable(drawable);
+        if (drawable == mAnimatedLogoDrawable) {
+            invalidate();
+        } else {
+            super.invalidateDrawable(drawable);
+        }
     }
 
     @Override

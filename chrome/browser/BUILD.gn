@@ -2839,8 +2839,6 @@ static_library("browser") {
       "android/locale/locale_manager.h",
       "android/locale/locale_template_url_loader.cc",
       "android/locale/locale_template_url_loader.h",
-      "android/logo_bridge.cc",
-      "android/logo_bridge.h",
       "android/media/media_capture_devices_dispatcher_android.cc",
       "android/messages_resource_mapper_initializer.cc",
       "android/metrics/android_session_durations_service.cc",

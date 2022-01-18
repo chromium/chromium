@@ -36,5 +36,6 @@ specific_include_rules = {
   'LogoLoadHelper': [
     "+chrome/android/features/start_surface/public",
     "+chrome/android/java/src/org/chromium/chrome/browser",
+    "+content/public/android/java/src/org/chromium/content_public/browser/LoadUrlParams.java",
   ],
 }

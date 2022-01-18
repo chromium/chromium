@@ -9,18 +9,22 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
-import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
-import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
-import org.chromium.chrome.browser.ntp.LogoDelegateImpl;
-import org.chromium.chrome.browser.ntp.LogoView;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
+import org.chromium.chrome.browser.logo.LogoDelegateImpl;
+import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
  * Helper used to fetch and load logo image for Start surface.
@@ -29,6 +33,8 @@ public class LogoLoadHelper {
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final TopToolbarCoordinator mToolbar;
     private final Context mContext;
+    private final Supplier<Tab> mParentTabSupplier;
+    private final Callback<LoadUrlParams> mLogoClickedCallback;
 
     private CallbackController mCallbackController = new CallbackController();
     private LogoDelegateImpl mLogoDelegate;
@@ -37,15 +43,21 @@ public class LogoLoadHelper {
     /**
      * Creates a LogoLoadHelper object.
      *
-     * @param profileSupplier Supplier of the currently applicable profile.
      * @param toolbar The {@link TopToolbarCoordinator}.
      * @param context The activity context.
+     * @param parentTabSupplier Supplies the StartSurface's parent tab.
      */
     public LogoLoadHelper(ObservableSupplier<Profile> profileSupplier,
-            TopToolbarCoordinator toolbar, Context context) {
+            TopToolbarCoordinator toolbar, Context context, Supplier<Tab> parentTabSupplier) {
         mProfileSupplier = profileSupplier;
         mToolbar = toolbar;
         mContext = context;
+        mParentTabSupplier = parentTabSupplier;
+        mLogoClickedCallback = mCallbackController.makeCancelable(
+                (urlParams)
+                        -> ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(urlParams,
+                                /*isBackground=*/false,
+                                /*incognito=*/false, mParentTabSupplier.get()));
     }
 
     /**
@@ -111,7 +123,7 @@ public class LogoLoadHelper {
 
         if (mLogoDelegate == null) {
             mLogoDelegate = new LogoDelegateImpl(
-                    /* navigationDelegate = */ null, /* logoView = */ null, mProfileSupplier.get());
+                    mLogoClickedCallback, /* logoView = */ null, mProfileSupplier.get());
         }
 
         // If default search engine doesn't have logo, pass in null.

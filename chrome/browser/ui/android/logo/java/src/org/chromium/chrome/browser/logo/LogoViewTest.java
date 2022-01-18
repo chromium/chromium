@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.logo;
 
 import static org.mockito.Mockito.doReturn;
 
@@ -26,7 +26,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
+import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -56,7 +56,7 @@ public class LogoViewTest extends DummyUiActivityTestCase {
             mView = new LogoView(activity, null);
             mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
             LayoutParams params =
-                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                    new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
             getActivity().setContentView(mView, params);
         });

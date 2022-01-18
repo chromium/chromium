@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.logo;
 
 import android.graphics.Bitmap;
 
@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.profiles.Profile;
  * Provides access to the search provider's logo via the C++ LogoService.
  */
 public class LogoBridge {
-
     /**
      * A logo for a search provider (e.g. the Yahoo! logo or Google doodle).
      */

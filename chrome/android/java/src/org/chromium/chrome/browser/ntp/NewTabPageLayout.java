@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
@@ -40,9 +41,11 @@ import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
+import org.chromium.chrome.browser.logo.LogoDelegateImpl;
+import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
-import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
-import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -70,6 +73,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.vr.VrModeObserver;
@@ -241,8 +245,10 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
 
         mSearchProviderLogoView = findViewById(R.id.search_provider_logo);
-        mLogoDelegate = new LogoDelegateImpl(
-                mManager.getNavigationDelegate(), mSearchProviderLogoView, profile);
+        Callback<LoadUrlParams> logoClickedCallback = mCallbackController.makeCancelable(
+                (urlParams)
+                        -> mManager.getNativePageHost().loadUrl(urlParams, /*isIncognito=*/false));
+        mLogoDelegate = new LogoDelegateImpl(logoClickedCallback, mSearchProviderLogoView, profile);
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);

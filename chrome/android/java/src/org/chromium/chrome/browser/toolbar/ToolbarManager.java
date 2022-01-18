@@ -939,7 +939,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mToolbar.updateStartSurfaceToolbarState(newState, shouldShowToolbar, toolbarHeight);
 
                 if (mLogoLoadHelper == null) {
-                    mLogoLoadHelper = new LogoLoadHelper(profileSupplier, mToolbar, mActivity);
+                    mLogoLoadHelper = new LogoLoadHelper(
+                            profileSupplier, mToolbar, mActivity, startSurfaceParentTabSupplier);
                 }
                 mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(mStartSurfaceState);
             };

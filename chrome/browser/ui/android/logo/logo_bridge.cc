@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/logo_bridge.h"
+#include "chrome/browser/ui/android/logo/logo_bridge.h"
 
 #include <jni.h>
 #include <stdint.h>
@@ -12,10 +12,10 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/android/chrome_jni_headers/LogoBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
+#include "chrome/browser/ui/android/logo/jni_headers/LogoBridge_jni.h"
 #include "components/search_provider_logos/logo_observer.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "content/public/browser/storage_partition.h"

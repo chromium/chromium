@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.logo;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
-import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
+import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
@@ -39,7 +38,7 @@ public class LogoDelegateImpl implements LogoView.Delegate {
     private static final int CTA_IMAGE_CLICKED = 1;
     private static final int ANIMATED_LOGO_CLICKED = 2;
 
-    private final SuggestionsNavigationDelegate mNavigationDelegate;
+    private final Callback<LoadUrlParams> mLogoClickedCallback;
     private LogoView mLogoView;
 
     private LogoBridge mLogoBridge;
@@ -53,19 +52,19 @@ public class LogoDelegateImpl implements LogoView.Delegate {
 
     /**
      * Construct a new {@link LogoDelegateImpl}.
-     * @param navigationDelegate The delegate for loading the URL when the logo is clicked. May be
+     * @param logoClickedCallback A callback for loading the URL when the logo is clicked. May be
      *         null when click events are not supported.
      * @param logoView The view that shows the search provider logo. Maybe null when the client is
      *         controlling the View presentation itself.
      * @param profile The profile to show the logo for.
      */
-    public LogoDelegateImpl(@Nullable SuggestionsNavigationDelegate navigationDelegate,
+    public LogoDelegateImpl(Callback<LoadUrlParams> logoClickedCallback,
             @Nullable LogoView logoView, Profile profile) {
-        mNavigationDelegate = navigationDelegate;
         mLogoView = logoView;
         mLogoBridge = new LogoBridge(profile);
         mImageFetcher = ImageFetcherFactory.createImageFetcher(
                 ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
+        mLogoClickedCallback = logoClickedCallback;
     }
 
     public void destroy() {
@@ -91,8 +90,7 @@ public class LogoDelegateImpl implements LogoView.Delegate {
         } else if (mOnLogoClickUrl != null) {
             RecordHistogram.recordSparseHistogram(LOGO_CLICK_UMA_NAME,
                     isAnimatedLogoShowing ? ANIMATED_LOGO_CLICKED : STATIC_LOGO_CLICKED);
-            mNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
-                    new LoadUrlParams(mOnLogoClickUrl, PageTransition.LINK));
+            mLogoClickedCallback.onResult(new LoadUrlParams(mOnLogoClickUrl, PageTransition.LINK));
         }
     }
 
@@ -132,8 +130,7 @@ public class LogoDelegateImpl implements LogoView.Delegate {
                     mShouldRecordLoadTime = false;
                 }
 
-                mOnLogoClickUrl =
-                        (logo != null && mNavigationDelegate != null) ? logo.onClickUrl : null;
+                mOnLogoClickUrl = logo != null ? logo.onClickUrl : null;
                 mAnimatedLogoUrl =
                         (logo != null && mLogoView != null) ? logo.animatedLogoUrl : null;
 
