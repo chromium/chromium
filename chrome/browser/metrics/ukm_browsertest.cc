@@ -1235,8 +1235,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
       embedded_test_server()->GetURL("/title3.html")};
 
   // Open a blank new tab.
-  AddTabAtIndexToBrowser(sync_browser, 1, GURL(url::kAboutBlankURL),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(sync_browser, 1, GURL(url::kAboutBlankURL),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   // Gather source id from the NavigationHandle assigned to navigations that
   // start with the expected URL.
   content::NavigationHandleObserver tab_1_observer(
@@ -1263,8 +1263,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
   EXPECT_FALSE(has_source_id2);
 
   // Navigate to another URL in a new tab.
-  AddTabAtIndexToBrowser(sync_browser, 2, GURL(url::kAboutBlankURL),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(sync_browser, 2, GURL(url::kAboutBlankURL),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   content::NavigationHandleObserver tab_2_observer(
       sync_browser->tab_strip_model()->GetActiveWebContents(), test_urls[1]);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(sync_browser, test_urls[1]));
