@@ -400,8 +400,11 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
             @Override
             public void didMoveTab(Tab tab, int newIndex, int curIndex) {
+                // For right-direction move, layout helper re-ordering logic
+                // expects destination index = position + 1
                 getStripLayoutHelper(tab.isIncognito())
-                        .tabMoved(time(), tab.getId(), curIndex, newIndex);
+                        .tabMoved(time(), tab.getId(), curIndex,
+                                newIndex > curIndex ? newIndex + 1 : newIndex);
             }
 
             @Override
