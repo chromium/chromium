@@ -213,7 +213,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2542089167727451762">Toca tu imagen de perfil</translation>
 <translation id="255671100581129685">El Asistente de Google no está disponible en las sesiones públicas.</translation>
 <translation id="256712445991462162">la lupa fijada</translation>
-<translation id="2573588302192866788">No se ha podido conectar <ph name="NAME" /></translation>
+<translation id="2573588302192866788">No se ha podido conectar (<ph name="NAME" />)</translation>
 <translation id="2575685495496069081">Se ha inhabilitado el inicio de sesión múltiple</translation>
 <translation id="2582112259361606227">Reiniciar para actualizar</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
@@ -452,7 +452,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Has pulsado la combinación de teclas que activa el contraste alto. ¿Quieres activarlo?</translation>
 <translation id="4322742403972824594">La combinación de teclas Ctrl + Alt + tecla de flecha hacia arriba ha cambiado. Para usar la tecla de inicio, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + tecla de flecha hacia la izquierda.</translation>
-<translation id="4331809312908958774">SO de Chrome</translation>
+<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">No es posible lanzar Lacros si varios usuarios han iniciado sesión.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">El Asistente se está cargando...</translation>
@@ -548,7 +548,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
-<translation id="4946376291507881335">Capturar imagen</translation>
+<translation id="4946376291507881335">Captar imagen</translation>
 <translation id="495046168593986294">Desplazarse hacia arriba</translation>
 <translation id="4952936045814352993">La función de localizar el teléfono no está disponible si los sonidos de la alarma están inhabilitados</translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
@@ -754,7 +754,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
 <translation id="6627638273713273709">Tecla de búsqueda + Mayús + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> quiere usar el micrófono</translation>
-<translation id="6630773993843701741">Abre los ajustes de Bluetooth para vincular el dispositivo de forma manual</translation>
+<translation id="6630773993843701741">Abre los ajustes de Bluetooth para emparejar manualmente</translation>
 <translation id="6637729079642709226">Cambiar hora</translation>
 <translation id="6641720045729354415">Activar/Desactivar Subtítulos automáticos. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
