@@ -296,7 +296,7 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses the 'url_handlers' field of a Manifest, as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
   // Returns the parsed list of UrlHandlers. The returned UrlHandlers are empty
   // if the field didn't exist, parsing failed, the input list was empty, or if
   // the blink feature flag is disabled.
@@ -306,7 +306,7 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses a single URL handler entry in 'url_handlers', as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
   // Returns |absl::nullopt| if the UrlHandler was invalid, or a UrlHandler if
   // parsing succeeded.
   // This feature is experimental and is only enabled by the blink feature flag:

@@ -837,7 +837,7 @@ const base::Feature kWebAppEnableTranslations{
 
 // Controls URL handling feature in web apps. Controls parsing of "url_handlers"
 // field in web app manifests. See explainer for more information:
-// https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+// https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
 const base::Feature kWebAppEnableUrlHandlers{"WebAppEnableUrlHandlers",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 

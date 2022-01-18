@@ -9,7 +9,7 @@ import "url/mojom/url.mojom";
 
 // The WebAppOriginAssociation structure is an internal representation of the
 // web app origin association file described in the "PWAs as URL Handlers"
-// explainer: https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+// explainer: https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
 struct WebAppOriginAssociation {
   array<AssociatedWebApp> apps;
 };
