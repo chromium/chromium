@@ -286,8 +286,8 @@ bool RateLimitTable::ClearDataForOriginsInRange(
   std::vector<int64_t> rate_limit_ids_to_delete;
   {
     static constexpr char kScanCandidateData[] =
-        "SELECT rate_limit_id,impression_site,impression_origin,"
-        "conversion_destination,conversion_origin FROM rate_limits "
+        "SELECT rate_limit_id,impression_origin,conversion_origin "
+        "FROM rate_limits "
         DCHECK_SQL_INDEXED_BY("rate_limit_attribution_type_conversion_time_idx")
         "WHERE attribution_type = ? AND conversion_time BETWEEN ? AND ?";
     sql::Statement statement(
@@ -304,9 +304,7 @@ bool RateLimitTable::ClearDataForOriginsInRange(
       while (statement.Step()) {
         int64_t rate_limit_id = statement.ColumnInt64(0);
         if (filter.Run(DeserializeOrigin(statement.ColumnString(1))) ||
-            filter.Run(DeserializeOrigin(statement.ColumnString(2))) ||
-            filter.Run(DeserializeOrigin(statement.ColumnString(3))) ||
-            filter.Run(DeserializeOrigin(statement.ColumnString(4)))) {
+            filter.Run(DeserializeOrigin(statement.ColumnString(2)))) {
           rate_limit_ids_to_delete.push_back(rate_limit_id);
         }
       }
