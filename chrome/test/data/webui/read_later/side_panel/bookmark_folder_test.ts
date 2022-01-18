@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ReadLaterUI is a Mojo WebUI controller and therefore needs mojo defined to
-// finish running its tests.
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
+import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
