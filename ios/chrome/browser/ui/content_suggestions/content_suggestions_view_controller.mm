@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_text_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -28,7 +29,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -259,7 +259,7 @@ const CGFloat kCardBorderRadius = 11;
                                             collectionViewLayout
     minimumLineSpacingForSectionAtIndex:(NSInteger)section {
   if ([self isMostVisitedSection:section]) {
-    return kNtpTilesVerticalSpacing;
+    return kContentSuggestionsTilesVerticalSpacing;
   }
   return [super collectionView:collectionView
                                    layout:collectionViewLayout

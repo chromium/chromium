@@ -7,8 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class ContentSuggestionsReturnToRecentTabItem;
+
 // View for the Return To Recent Tab tile.
 @interface ContentSuggestionsReturnToRecentTabView : UIView
+
+// Initializes and configures the view with |config|.
+- (instancetype)initWithConfiguration:
+    (ContentSuggestionsReturnToRecentTabItem*)config;
 
 // Favicon image.
 @property(nonatomic, strong) UIImageView* iconImageView;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_view.h"
 
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -22,14 +22,14 @@ const CGFloat kPreferredMaxWidth = 73;
 
 }  // namespace
 
-@interface NTPTileView ()
+@interface ContentSuggestionsTileView ()
 // Hold onto the created interaction for pointer support so it can be removed
 // when the view goes away.
 @property(nonatomic, strong)
     UIPointerInteraction* pointerInteraction API_AVAILABLE(ios(13.4));
 @end
 
-@implementation NTPTileView
+@implementation ContentSuggestionsTileView
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -69,9 +69,9 @@ const CGFloat kPreferredMaxWidth = 73;
     UIView* containerView = backgroundView;
 
     ApplyVisualConstraintsWithMetrics(
-        @[ @"V:|[container]-(space)-[title]", @"H:|[title]|" ],
+        @[ @"V:|[container]-(space)-[title]|", @"H:|[title]|" ],
         @{@"container" : containerView, @"title" : _titleLabel},
-        @{ @"space" : @(kSpaceIconTitle) });
+        @{@"space" : @(kSpaceIconTitle)});
 
     _imageBackgroundView = backgroundView;
 

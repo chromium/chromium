@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 
 #include "base/notreached.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -11,26 +11,26 @@
 #error "This file requires ARC support."
 #endif
 
-const int kNtpTilesVerticalSpacing = 16;
-const int kNtpTilesHorizontalSpacingRegular = 19;
-const int kNtpTilesHorizontalSpacingCompact = 5;
+const int kContentSuggestionsTilesVerticalSpacing = 16;
+const int kContentSuggestionsTilesHorizontalSpacingRegular = 19;
+const int kContentSuggestionsTilesHorizontalSpacingCompact = 5;
 
-const CGSize kNtpTileViewSizeSmall = {/*width=*/73, /*height=*/100};
-const CGSize kNtpTileViewSizeMedium = {/*width=*/73, /*height=*/112};
-const CGSize kNtpTileViewSizeLarge = {/*width=*/110, /*height=*/140};
-const CGSize kNtpTileViewSizeExtraLarge = {/*width=*/146, /*height=*/150};
+const CGSize kContentSuggestionsTileViewSizeSmall = {/*width=*/73, /*height=*/100};
+const CGSize kContentSuggestionsTileViewSizeMedium = {/*width=*/73, /*height=*/112};
+const CGSize kContentSuggestionsTileViewSizeLarge = {/*width=*/110, /*height=*/140};
+const CGSize kContentSuggestionsTileViewSizeExtraLarge = {/*width=*/146, /*height=*/150};
 
 namespace {
 // Display at most 4 tiles per row.
 const int kMaxNumberOfTilesPerRow = 4;
 }
 
-CGFloat NtpTilesHorizontalSpacing(UITraitCollection* trait_collection) {
+CGFloat ContentSuggestionsTilesHorizontalSpacing(UITraitCollection* trait_collection) {
   return (trait_collection.horizontalSizeClass !=
               UIUserInterfaceSizeClassCompact &&
           trait_collection.verticalSizeClass != UIUserInterfaceSizeClassCompact)
-             ? kNtpTilesHorizontalSpacingRegular
-             : kNtpTilesHorizontalSpacingCompact;
+             ? kContentSuggestionsTilesHorizontalSpacingRegular
+             : kContentSuggestionsTilesHorizontalSpacingCompact;
 }
 
 CGSize MostVisitedCellSize(UIContentSizeCategory category) {
@@ -40,18 +40,18 @@ CGSize MostVisitedCellSize(UIContentSizeCategory category) {
     case NSOrderedAscending:
       return ([category
                  isEqualToString:UIContentSizeCategoryExtraExtraExtraLarge])
-                 ? kNtpTileViewSizeMedium
-                 : kNtpTileViewSizeSmall;
+                 ? kContentSuggestionsTileViewSizeMedium
+                 : kContentSuggestionsTileViewSizeSmall;
     case NSOrderedSame:
-      return kNtpTileViewSizeLarge;
+      return kContentSuggestionsTileViewSizeLarge;
     case NSOrderedDescending:
-      return kNtpTileViewSizeExtraLarge;
+      return kContentSuggestionsTileViewSizeExtraLarge;
   }
 }
 
 CGFloat CenteredTilesMarginForWidth(UITraitCollection* trait_collection,
                                     CGFloat width) {
-  CGFloat horizontalSpace = NtpTilesHorizontalSpacing(trait_collection);
+  CGFloat horizontalSpace = ContentSuggestionsTilesHorizontalSpacing(trait_collection);
   CGSize cellSize =
       MostVisitedCellSize(trait_collection.preferredContentSizeCategory);
   for (int columns = kMaxNumberOfTilesPerRow; columns > 0; --columns) {

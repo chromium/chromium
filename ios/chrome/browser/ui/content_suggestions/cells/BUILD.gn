@@ -4,46 +4,32 @@
 
 source_set("cells") {
   sources = [
-    "content_suggestions_gesture_commands.h",
-    "content_suggestions_most_visited_action_item.h",
-    "content_suggestions_most_visited_action_item.mm",
-    "content_suggestions_most_visited_item.h",
-    "content_suggestions_most_visited_item.mm",
-    "content_suggestions_return_to_recent_tab_item.h",
-    "content_suggestions_return_to_recent_tab_item.mm",
-    "content_suggestions_return_to_recent_tab_view.h",
-    "content_suggestions_return_to_recent_tab_view.mm",
-  ]
-  deps = [
-    ":cells_ui",
-    "//base",
-    "//components/ntp_tiles",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/collection_view",
-    "//ios/chrome/browser/ui/content_suggestions/identifier",
-    "//ios/chrome/browser/ui/ntp_tile_views:constants",
-    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/common/ui/util",
-    "//ui/base",
-    "//url",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("cells_ui") {
-  sources = [
     "content_suggestions_header_item.h",
     "content_suggestions_header_item.mm",
     "content_suggestions_most_visited_action_cell.h",
     "content_suggestions_most_visited_action_cell.mm",
+    "content_suggestions_most_visited_action_item.h",
+    "content_suggestions_most_visited_action_item.mm",
     "content_suggestions_most_visited_cell.h",
     "content_suggestions_most_visited_cell.mm",
     "content_suggestions_most_visited_constants.h",
     "content_suggestions_most_visited_constants.mm",
+    "content_suggestions_most_visited_item.h",
+    "content_suggestions_most_visited_item.mm",
+    "content_suggestions_most_visited_tile_view.h",
+    "content_suggestions_most_visited_tile_view.mm",
+    "content_suggestions_return_to_recent_tab_item.h",
+    "content_suggestions_return_to_recent_tab_item.mm",
+    "content_suggestions_return_to_recent_tab_view.h",
+    "content_suggestions_return_to_recent_tab_view.mm",
+    "content_suggestions_shortcut_tile_view.h",
+    "content_suggestions_shortcut_tile_view.mm",
     "content_suggestions_text_item.h",
     "content_suggestions_text_item.mm",
+    "content_suggestions_tile_layout_util.h",
+    "content_suggestions_tile_layout_util.mm",
+    "content_suggestions_tile_view.h",
+    "content_suggestions_tile_view.mm",
     "content_suggestions_whats_new_item.h",
     "content_suggestions_whats_new_item.mm",
     "content_suggestions_whats_new_view.h",
@@ -51,26 +37,50 @@ source_set("cells_ui") {
     "suggested_content.h",
   ]
   deps = [
+    ":constants",
+    "resources:ntp_bookmarks_icon",
+    "resources:ntp_history_icon",
+    "resources:ntp_most_visited_tile",
+    "resources:ntp_readinglist_icon",
+    "resources:ntp_recent_icon",
     "//base",
+    "//components/ntp_tiles",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/material_components",
-    "//ios/chrome/browser/ui/ntp_tile_views",
-    "//ios/chrome/browser/ui/ntp_tile_views:constants",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ios/third_party/material_components_ios",
     "//ui/base",
+    "//url",
   ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "content_suggestions_tile_constants.h",
+    "content_suggestions_tile_constants.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/third_party/material_components_ios",
+    "//ui/base:base",
+  ]
 }
 
 source_set("unit_tests") {
@@ -78,11 +88,11 @@ source_set("unit_tests") {
   sources = [
     "content_suggestions_header_item_unittest.mm",
     "content_suggestions_most_visited_item_unittest.mm",
+    "content_suggestions_tile_layout_util_unittest.mm",
     "content_suggestions_whats_new_item_unittest.mm",
   ]
   deps = [
     ":cells",
-    ":cells_ui",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/collection_view",

@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_constants.h"
 
 // Item containing a most visited action button. These buttons belong to the
 // collection section as most visited items, but have static placement (the last

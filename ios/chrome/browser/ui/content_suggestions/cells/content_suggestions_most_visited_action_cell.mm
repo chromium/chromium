@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_cell.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_constants.h"
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_shortcut_tile_view.h"
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
@@ -19,7 +19,7 @@
 
 @interface ContentSuggestionsMostVisitedActionCell ()
 
-@property(nonatomic, strong) NTPShortcutTileView* tileView;
+@property(nonatomic, strong) ContentSuggestionsShortcutTileView* tileView;
 
 @end
 
@@ -30,7 +30,8 @@
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _tileView = [[NTPShortcutTileView alloc] initWithFrame:frame];
+    _tileView =
+        [[ContentSuggestionsShortcutTileView alloc] initWithFrame:frame];
     _tileView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_tileView];
     AddSameConstraints(self.contentView, _tileView);

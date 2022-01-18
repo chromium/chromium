@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_most_visited_tile_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -11,7 +12,7 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation NTPMostVisitedTileView
+@implementation ContentSuggestionsMostVisitedTileView
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -27,6 +28,18 @@
 
     [self.imageContainerView addSubview:_faviconView];
     AddSameConstraints(self.imageContainerView, _faviconView);
+  }
+  return self;
+}
+
+- (instancetype)initWithConfiguration:
+    (ContentSuggestionsMostVisitedItem*)config {
+  self = [self initWithFrame:CGRectZero];
+  if (self) {
+    self.titleLabel.text = config.title;
+    self.accessibilityLabel = config.title;
+    [_faviconView configureWithAttributes:config.attributes];
+    _config = config;
   }
   return self;
 }

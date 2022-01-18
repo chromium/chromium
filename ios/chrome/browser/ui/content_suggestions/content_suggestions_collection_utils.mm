@@ -6,7 +6,6 @@
 
 #include "base/i18n/rtl.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"

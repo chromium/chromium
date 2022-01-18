@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_TILE_VIEWS_NTP_TILE_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_NTP_TILE_VIEWS_NTP_TILE_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_TILE_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_TILE_CONSTANTS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -26,4 +26,4 @@ UIImage* ImageForCollectionShortcutType(NTPCollectionShortcutType action);
 // for a reading list tile with no badge.
 NSString* AccessibilityLabelForReadingListCellWithCount(int count);
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_TILE_VIEWS_NTP_TILE_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_TILE_CONSTANTS_H_

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_shortcut_tile_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 
 #import <MaterialComponents/MaterialTypography.h>
 
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -21,7 +22,7 @@ const CGFloat kIconSize = 56;
 
 }  // namespace
 
-@implementation NTPShortcutTileView
+@implementation ContentSuggestionsShortcutTileView
 @synthesize countLabel = _countLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -38,6 +39,27 @@ const CGFloat kIconSize = 56;
     ]];
 
     self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
+  }
+  return self;
+}
+
+- (instancetype)initWithConfiguration:
+    (ContentSuggestionsMostVisitedActionItem*)config {
+  self = [self initWithFrame:CGRectZero];
+  if (self) {
+    self.accessibilityCustomActions = nil;
+    self.titleLabel.text = config.title;
+    self.accessibilityLabel = config.accessibilityLabel.length
+                                  ? config.accessibilityLabel
+                                  : config.title;
+    // The accessibilityUserInputLabel should just be the title, with nothing
+    // extra from the accessibilityLabel.
+    self.accessibilityUserInputLabels = @[ config.title ];
+    _iconView.image =
+        ImageForCollectionShortcutType(config.collectionShortcutType);
+      _countContainer.hidden = !config.count;
+      _countLabel.text = [@(config.count) stringValue];
+    _config = config;
   }
   return self;
 }
