@@ -460,8 +460,7 @@ LayoutBox::~LayoutBox() = default;
 PaintLayerType LayoutBox::LayerTypeRequired() const {
   NOT_DESTROYED();
   if (IsStacked() || HasHiddenBackface() ||
-      (StyleRef().SpecifiesColumns() && !IsLayoutNGObject()) ||
-      IsEffectiveRootScroller())
+      (StyleRef().SpecifiesColumns() && !IsLayoutNGObject()))
     return kNormalPaintLayer;
 
   if (HasNonVisibleOverflow())
