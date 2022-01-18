@@ -158,25 +158,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.AnimationsEnabled2"
-    enum="AccessibilityAndroidAnimationsEnabled" expires_after="M85">
-  <obsolete>
-    Removed 10/2020, having expired in M85.
-  </obsolete>
-  <owner>aleventhal@chromium.org</owner>
-  <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks whether animations are enabled on Android (e.g. if the animator
-    duration scale is non-zero.) The purpose is to inform the design of the
-    prefers-reduced-motion media feature; see http://crbug.com/722548. This is
-    logged once, 45 seconds after startup.
-
-    This replaced Accessibility.Android.AnimationsEnabled because the older
-    histogram did not capture the default (e.g. no flag) case.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.Android.OnDemand.EventsDropped" units="count"
     expires_after="2022-06-05">
   <owner>mschillaci@google.com</owner>
@@ -388,22 +369,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the Chrome OS caret highlighting is on (logged once 45 secs after
     startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosChromeVoxNext" enum="BooleanEnabled"
-    expires_after="M93">
-  <obsolete>
-    Marked obsolete in 07/2021, since ChromeVox Next has been default for a long
-    time, and the code that output this histogram was previously removed.
-  </obsolete>
-  <owner>dtseng@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Set when a Chrome OS user has spoken feedback enabled, recorded once each
-    time ChromeVox starts up. True if the user has enabled &quot;ChromeVox
-    Next&quot;, a new ChromeVox experience that became the default in Chrome 56
-    (but can be toggled on or off by the user), false otherwise.
   </summary>
 </histogram>
 
@@ -818,23 +783,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Accessibility.CrosSwitchAccess.MenuAction.{SwitchAccessMenuAction}"
-    enum="BooleanUsage" expires_after="2022-04-17">
-  <obsolete>
-    No longer recording as histogram in M99. Reverted back to recording User
-    Action Accessibility.CrosSwitchAccess.MenuAction.*.
-  </obsolete>
-  <owner>dtseng@chromium.org</owner>
-  <owner>anastasi@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Switch Access menu action chosen by user, logged immediately upon selection.
-    See SwitchAccessMenuAction variants for details.
-  </summary>
-  <token key="SwitchAccessMenuAction" variants="SwitchAccessMenuAction"/>
-</histogram>
-
 <histogram name="Accessibility.CrosSwitchAccess.NextKeyCode" enum="KeyCode"
     expires_after="2022-04-17">
   <owner>dtseng@chromium.org</owner>
@@ -1125,28 +1073,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}"
-    units="ms" expires_after="2022-07-26">
-  <obsolete>
-    Removed in M92, replaced with
-    Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2.
-  </obsolete>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Measures how long SODA was running while the Live Caption UI was
-    {Visibility}. Logged once on the destruction of the
-    SpeechRecognitionRecognizerImpl.
-  </summary>
-  <token key="Visibility">
-    <variant name="Hidden"
-        summary="hidden. This might be because it was closed by user or
-                 because there was an error passing transcriptions to the UI"/>
-    <variant name="Visible" summary="visible and showing transcriptions"/>
-  </token>
-</histogram>
-
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2"
     units="ms" expires_after="2022-07-26">
   <owner>abigailbklein@google.com</owner>
@@ -1266,66 +1192,6 @@ chromium-metrics-reviews@google.com.
     The language code used to initialize the speech recognition service. Logged
     once when getting the Speech On-Device API (SODA) config path to use with
     the speech recognition service.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.LiveCaption.UseSodaForLiveCaption"
-    enum="BooleanEnabled" expires_after="2022-07-26">
-  <obsolete>
-    No longer recorded after 2021-12.
-  </obsolete>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Live Caption feature is powered by the Speech On-Device API
-    (SODA). This is logged once during the initialization of the caption
-    controller at browser start up.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.LiveCaption.WebsiteBlocked"
-    enum="BooleanEnabled" expires_after="2021-12-26">
-  <obsolete>
-    No longer recorded after 2021-07 because the blocklist is no longer active.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Live Caption feature is blocked because the website is on the
-    captioning blocklist. This is logged once per stream when the speech
-    recognition client is created.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.Mac.ReduceMotion" enum="BooleanEnabled"
-    expires_after="M85">
-  <obsolete>
-    No longer gathered after 2021-06.
-  </obsolete>
-  <owner>abigailbklein@chromium.org</owner>
-  <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks whether the accessibilityDisplayShouldReduceMotion system property is
-    enabled. The purpose is to inform the design of the prefers-reduced-motion
-    media feature; see http://crbug.com/722548. This is logged once, 45 seconds
-    after startup.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.Mac.ReduceTransparency" enum="BooleanEnabled"
-    expires_after="2021-08-01">
-  <obsolete>
-    No longer gathered after 2021-06.
-  </obsolete>
-  <owner>ellyjones@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the &quot;reduce transparency&quot; Mac system setting is enabled.
-    This is logged once, 45 seconds after startup.
   </summary>
 </histogram>
 
@@ -1577,23 +1443,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Win.AnimationsEnabled" enum="BooleanEnabled"
-    expires_after="M85">
-  <obsolete>
-    Obsolete as of M85 because we no longer need the data.
-  </obsolete>
-  <owner>aleventhal@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
-  <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks whether the SPI_GETCLIENTAREAANIMATION system property is enabled.
-    The purpose is to inform the design of the prefers-reduced-motion media
-    feature; see http://crbug.com/722548. This is logged once, 45 seconds after
-    startup.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
     expires_after="2022-04-24">
   <owner>aleventhal@chromium.org</owner>
@@ -1610,22 +1459,6 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks properties requested via UI Automation GetPropertyValue().
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.WinAudioDescription" enum="BooleanEnabled"
-    expires_after="2021-09-19">
-  <obsolete>
-    Removed 11-12-2022, because we don't think we need the data right now. This
-    may change in the future.
-  </obsolete>
-  <owner>abigailbklein@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether Windows system settings show that audio descriptions are enabled
-    (logged once 45 secs after startup).
   </summary>
 </histogram>
 
@@ -1675,25 +1508,6 @@ chromium-metrics-reviews@google.com.
   <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
     <variant name=""/>
   </token>
-</histogram>
-
-<histogram name="Accessibility.WinScreenReader" enum="BooleanEnabled"
-    expires_after="2020-02-23">
-  <obsolete>
-    Removed 11-12-2022, as it is not a good indicator of whether a screen reader
-    is running. For example, Narrator does not set it, and applications that are
-    not screen readers can and do.
-  </obsolete>
-  <owner>aleventhal@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
-  <owner>kschmi@microsoft.com</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <summary>
-    Whether Windows system settings show that a screen reader is running (logged
-    once 45 secs after startup). Note that this does not necessarily mean that
-    Chrome has detected a supported screen reader and has enabled its
-    accessibility mode.
-  </summary>
 </histogram>
 
 <histogram name="Accessibility.WinScreenReader2{AccessibilityEveryReport}"
@@ -2090,72 +1904,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TextToSpeech.Utterance.HasGender" enum="TextToSpeechHasGender"
-    expires_after="M73">
-  <obsolete>
-    Obsolete as of M73 because we decided to remove gender from the API.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <summary>
-    True if an utterance spoken via synthesized text-to-speech requested a
-    specific gender.
-  </summary>
-</histogram>
-
-<histogram name="TextToSpeech.Utterance.HasLang" enum="TextToSpeechHasLang"
-    expires_after="M93">
-  <obsolete>
-    Obsolete as of M93 because data is not needed any longer.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <summary>
-    True if an utterance spoken via synthesized text-to-speech specified a
-    language code.
-  </summary>
-</histogram>
-
-<histogram name="TextToSpeech.Utterance.HasPitch" enum="TextToSpeechHasPitch"
-    expires_after="M93">
-  <obsolete>
-    Obsolete as of M93 because data is not needed any longer.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <summary>
-    True if an utterance spoken via synthesized text-to-speech requested a
-    specific pitch other than the default.
-  </summary>
-</histogram>
-
-<histogram name="TextToSpeech.Utterance.HasRate" enum="TextToSpeechHasRate"
-    expires_after="M93">
-  <obsolete>
-    Obsolete as of M93 because data is not needed any longer.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <summary>
-    True if an utterance spoken via synthesized text-to-speech requested a
-    specific speech rate other than the default.
-  </summary>
-</histogram>
-
 <histogram name="TextToSpeech.Utterance.HasVoiceName"
     enum="TextToSpeechHasVoiceName" expires_after="2022-06-19">
   <owner>katie@chromium.org</owner>
   <summary>
     True if an utterance spoken via synthesized text-to-speech requested a
     specific voice by name.
-  </summary>
-</histogram>
-
-<histogram name="TextToSpeech.Utterance.HasVolume" enum="TextToSpeechHasVolume"
-    expires_after="M93">
-  <obsolete>
-    Obsolete as of M93 because data is not needed any longer.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <summary>
-    True if an utterance spoken via synthesized text-to-speech requested a
-    specific volume other than the default.
   </summary>
 </histogram>
 
