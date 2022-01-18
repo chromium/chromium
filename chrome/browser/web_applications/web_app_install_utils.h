@@ -10,7 +10,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 

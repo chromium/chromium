@@ -17,7 +17,7 @@
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/notification_service.h"

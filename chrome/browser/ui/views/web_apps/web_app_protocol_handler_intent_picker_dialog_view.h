@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/web_apps/launch_app_user_choice_dialog_view.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 

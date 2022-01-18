@@ -25,7 +25,7 @@
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/win/jumplist_updater.h"
 #include "chrome/common/chrome_switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"

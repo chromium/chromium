@@ -100,6 +100,8 @@ source_set("web_applications") {
     "web_app_id_constants.h",
     "web_app_install_finalizer.cc",
     "web_app_install_finalizer.h",
+    "web_app_install_info.cc",
+    "web_app_install_info.h",
     "web_app_install_manager.cc",
     "web_app_install_manager.h",
     "web_app_install_params.cc",
@@ -160,8 +162,6 @@ source_set("web_applications") {
     "web_app_url_loader.h",
     "web_app_utils.cc",
     "web_app_utils.h",
-    "web_application_info.cc",
-    "web_application_info.h",
     "web_launch_params_helper.cc",
     "web_launch_params_helper.h",
   ]

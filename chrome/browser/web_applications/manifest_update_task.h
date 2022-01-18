@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/file_handler.h"

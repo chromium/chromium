@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_install_params.h"
 
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {

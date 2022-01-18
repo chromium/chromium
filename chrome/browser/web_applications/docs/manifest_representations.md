@@ -10,7 +10,7 @@ This is a list of all the places where we represent
  - [blink::Manifest](../../../../third_party/blink/public/common/manifest/manifest.h)\
    Pre blink.mojom.Manifest representation that is getting cleaned up: https://crbug.com/1233362
 
- - [WebAppInstallInfo](../web_application_info.h)\
+ - [WebAppInstallInfo](../web_app_install_info.h)\
    Used for installation and updates.
 
  - [web_app::WebApp](../web_app.h)\

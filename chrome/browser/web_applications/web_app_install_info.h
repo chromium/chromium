@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APPLICATION_INFO_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APPLICATION_INFO_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_INFO_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_INFO_H_
 
 #include <functional>
 #include <iosfwd>
@@ -316,4 +316,4 @@ bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,
 bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
                 const WebAppShortcutsMenuItemInfo& shortcut_info2);
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APPLICATION_INFO_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_INFO_H_
