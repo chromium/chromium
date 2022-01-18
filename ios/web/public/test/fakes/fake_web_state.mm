@@ -501,8 +501,6 @@ void FakeWebState::CreateFullPagePdf(
   std::move(callback).Run([[NSData alloc] init]);
 }
 
-void FakeWebState::CloseMediaPresentations() {}
-
 bool FakeWebState::SetSessionStateData(NSData* data) {
   return false;
 }

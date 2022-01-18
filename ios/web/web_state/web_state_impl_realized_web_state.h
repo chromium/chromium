@@ -170,7 +170,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   bool CanTakeSnapshot() const;
   void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback);
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback);
-  void CloseMediaPresentations();
   void CloseWebState();
   bool SetSessionStateData(NSData* data);
   NSData* SessionStateData() const;

@@ -425,10 +425,6 @@ class WebState : public base::SupportsUserData {
   virtual void CreateFullPagePdf(
       base::OnceCallback<void(NSData*)> callback) = 0;
 
-  // Tries to dismiss the presented states of the media (fullscreen or Picture
-  // in Picture).
-  virtual void CloseMediaPresentations() = 0;
-
   // Adds and removes observers for page navigation notifications. The order in
   // which notifications are sent to observers is undefined. Clients must be
   // sure to remove the observer before they go away.

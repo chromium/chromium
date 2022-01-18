@@ -848,20 +848,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   web::CreateFullPagePdf(self.webView, base::BindOnce(completionBlock));
 }
 
-- (void)closeMediaPresentations {
-  if (@available(iOS 15, *)) {
-    [self.webView requestMediaPlaybackStateWithCompletionHandler:^(
-                      WKMediaPlaybackState mediaPlaybackState) {
-      if (mediaPlaybackState == WKMediaPlaybackStateNone)
-        return;
-
-      // Completion handler is needed to avoid a crash when called.
-      [self.webView closeAllMediaPresentationsWithCompletionHandler:^{
-      }];
-    }];
-  }
-}
-
 - (void)removeWebViewFromViewHierarchy {
   [_containerView resetContent];
 }
