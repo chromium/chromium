@@ -16,6 +16,7 @@
     th { position: sticky; top: 0; background-color: #ffffff }
     table#files th:nth-child(n+2) { cursor: pointer; }
     th.highlighted { background-color: #dddddd }
+    th.reversed::after { content: " \2303"; }
     #filterResults, #edgeFilterResults { font-weight: bold }
     </style>
   </head>
@@ -205,10 +206,13 @@ function buildFilesTable() {
     asize: (i, j) => data.asizes[j] - data.asizes[i],
   };
 
-  document.querySelectorAll('th').forEach(th => th.classList.remove('highlighted'));
-  document.getElementById(state.get('sort')).classList.add('highlighted');
+  document.querySelectorAll('th').forEach(th => th.classList.remove('highlighted', 'reversed'));
 
+  document.getElementById(state.get('sort')).classList.add('highlighted', ...(state.get('reverse') ? ['reversed'] : []));
   fileNums.sort(sortFuncs[state.get('sort')]);
+  if (state.get('reverse')) {
+    fileNums.reverse();
+  }
 
   const limit = Math.min(parseInt(state.get('limit')), fileNums.length);
   fileNums = fileNums.slice(0, limit);
@@ -311,6 +315,8 @@ function getState() {
     params.set('filter', '');
   if (!params.has('sort'))
     params.set('sort', 'asize');
+  if (!params.has('reverse'))
+    params.set('reverse', '');
   if (!params.has('includer'))
     params.set('includer', '');
   if (!params.has('included'))
@@ -324,6 +330,15 @@ function getState() {
 function changedStateHash(changes) {
   let s = getState();
   for (const [key, value] of Object.entries(changes)) {
+    if (key === 'sort') {
+      if (value === s.get('sort')) {
+        s.set('reverse', s.get('reverse') ? '' : '1');
+        continue;
+      } else {
+        s.set('reverse', '');
+      }
+    }
+
     s.set(key, value);
   }
   return s.toString();
