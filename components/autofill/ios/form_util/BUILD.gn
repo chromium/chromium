@@ -139,6 +139,7 @@ if (is_ios) {
       "//ios/web/public/js_messaging/fuzzer_support:js_message_proto",
       "//ios/web/public/test",
       "//ios/web/public/test:fuzzer_support",
+      "//ios/web/public/test:test_fixture",
       "//third_party/libprotobuf-mutator",
     ]
   }
