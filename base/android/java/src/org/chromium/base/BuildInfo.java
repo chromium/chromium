@@ -91,6 +91,7 @@ public class BuildInfo {
                 isDebugAndroid() ? "1" : "0",
                 buildInfo.isTV ? "1" : "0",
                 Build.VERSION.INCREMENTAL,
+                Build.HARDWARE,
         };
     }
 
