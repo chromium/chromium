@@ -11,7 +11,41 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 # TODO(crbug.com/731689): Assert that extensions are enabled.
 
-source_set("common_constants") {
+group("common_constants") {
+  if (is_component_build) {
+    public_deps = [ "//extensions" ]
+  } else {
+    public_deps = [ ":constants_impl" ]
+  }
+}
+
+group("export") {
+  if (is_component_build) {
+    public_deps = [ "//extensions" ]
+  } else {
+    public_deps = [ ":export_impl" ]
+  }
+}
+
+source_set("export_impl") {
+  visibility = [
+    "//extensions",
+    "//extensions/common:*",
+  ]
+
+  configs += [ "//extensions:component_implementation" ]
+
+  sources = [ "extensions_export.h" ]
+}
+
+source_set("constants_impl") {
+  visibility = [
+    "//extensions",
+    "//extensions/common:common_constants",
+  ]
+
+  configs += [ "//extensions:component_implementation" ]
+
   sources = [
     "constants.cc",
     "constants.h",
@@ -22,6 +56,7 @@ source_set("common_constants") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/services/app_service/public/mojom",
+    "//extensions/common:export_impl",
   ]
 
   deps = [ "//build:chromecast_buildflags" ]

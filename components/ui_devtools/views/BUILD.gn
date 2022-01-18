@@ -28,7 +28,6 @@ source_set("views") {
 
   deps = [
     "//components/ui_devtools",
-    "//extensions/common",
     "//skia",
     "//ui/views",
   ]

@@ -43,12 +43,12 @@ using apps::mojom::OptionalBool;
 
 namespace {
 
-constexpr char const* kAppIdsWithHiddenMoreSettings[] = {
+const char* kAppIdsWithHiddenMoreSettings[] = {
     extensions::kWebStoreAppId,
     extension_misc::kFilesManagerAppId,
 };
 
-constexpr char const* kAppIdsWithHiddenPinToShelf[] = {
+const char* kAppIdsWithHiddenPinToShelf[] = {
     extension_misc::kChromeAppId,
     extension_misc::kLacrosAppId,
 };

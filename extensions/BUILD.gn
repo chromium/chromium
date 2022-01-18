@@ -9,391 +9,414 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
-assert(enable_extensions)
 assert(
     !(enable_autofill_assistant_api && is_official_build),
     "The AutofillAssistant Extension API must be disabled in official builds.")
 
-group("extensions_resources") {
-  public_deps = [
-    ":extensions_browser_resources",
-    ":extensions_renderer_resources",
-    ":extensions_resources_grd",
-  ]
-}
-
-grit("extensions_resources_grd") {
-  source = "extensions_resources.grd"
-  outputs = [
-    "grit/extensions_resources.h",
-    "extensions_resources.pak",
-  ]
-}
-
-grit("extensions_browser_resources") {
-  source = "browser/resources/extensions_browser_resources.grd"
-  outputs = [
-    "grit/extensions_browser_resources.h",
-    "grit/extensions_browser_resources_map.cc",
-    "grit/extensions_browser_resources_map.h",
-    "extensions_browser_resources_100_percent.pak",
-    "extensions_browser_resources_200_percent.pak",
-  ]
-}
-
-grit("extensions_renderer_resources") {
-  source = "renderer/resources/extensions_renderer_resources.grd"
-  defines = [ "is_chromecast=$is_chromecast" ]
-  outputs = [
-    "grit/extensions_renderer_resources.h",
-    "extensions_renderer_resources.pak",
-  ]
-  grit_flags = [
-    "-E",
-    "mojom_root=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
-
-  deps = [
-    "//extensions/common:mojom_js",
-    "//extensions/common/api:mojom_js",
-    "//services/device/public/mojom:mojom_js",
-  ]
-}
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "browser/api/declarative/test_rules_registry.cc",
-    "browser/api/declarative/test_rules_registry.h",
-    "browser/api/storage/settings_test_util.cc",
-    "browser/api/storage/settings_test_util.h",
-    "browser/api_test_utils.cc",
-    "browser/api_test_utils.h",
-    "browser/api_unittest.cc",
-    "browser/api_unittest.h",
-    "browser/app_window/test_app_window_contents.cc",
-    "browser/app_window/test_app_window_contents.h",
-    "browser/content_verifier/test_utils.cc",
-    "browser/content_verifier/test_utils.h",
-    "browser/extension_error_test_util.cc",
-    "browser/extension_error_test_util.h",
-    "browser/extensions_test.cc",
-    "browser/extensions_test.h",
-    "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.cc",
-    "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h",
-    "browser/mock_extension_system.cc",
-    "browser/mock_extension_system.h",
-    "browser/mock_external_provider.cc",
-    "browser/mock_external_provider.h",
-    "browser/scoped_ignore_content_verifier_for_test.cc",
-    "browser/scoped_ignore_content_verifier_for_test.h",
-    "browser/test_event_router.cc",
-    "browser/test_event_router.h",
-    "browser/test_extension_registry_observer.cc",
-    "browser/test_extension_registry_observer.h",
-    "browser/test_extensions_browser_client.cc",
-    "browser/test_extensions_browser_client.h",
-    "browser/test_image_loader.cc",
-    "browser/test_image_loader.h",
-    "browser/test_management_policy.cc",
-    "browser/test_management_policy.h",
-    "browser/test_runtime_api_delegate.cc",
-    "browser/test_runtime_api_delegate.h",
-    "common/extension_builder.cc",
-    "common/extension_builder.h",
-    "common/manifest_test.cc",
-    "common/manifest_test.h",
-    "common/permissions/mock_manifest_permission.cc",
-    "common/permissions/mock_manifest_permission.h",
-    "common/permissions/permission_message_test_util.cc",
-    "common/permissions/permission_message_test_util.h",
-    "common/scoped_testing_manifest_handler_registry.cc",
-    "common/scoped_testing_manifest_handler_registry.h",
-    "renderer/test_extensions_renderer_client.cc",
-    "renderer/test_extensions_renderer_client.h",
-    "test/extension_background_page_waiter.cc",
-    "test/extension_background_page_waiter.h",
-    "test/extension_state_tester.cc",
-    "test/extension_state_tester.h",
-    "test/extension_test_message_listener.cc",
-    "test/extension_test_message_listener.h",
-    "test/extension_test_notification_observer.cc",
-    "test/extension_test_notification_observer.h",
-    "test/logging_timer.cc",
-    "test/logging_timer.h",
-    "test/result_catcher.cc",
-    "test/result_catcher.h",
-    "test/test_content_script_load_waiter.cc",
-    "test/test_content_script_load_waiter.h",
-    "test/test_content_utility_client.cc",
-    "test/test_content_utility_client.h",
-    "test/test_extension_dir.cc",
-    "test/test_extension_dir.h",
-    "test/test_extensions_client.cc",
-    "test/test_extensions_client.h",
-    "test/test_permission_message_provider.cc",
-    "test/test_permission_message_provider.h",
-  ]
-
-  deps = [
-    ":extensions_resources",
-    "//base",
-    "//build:chromeos_buildflags",
-    "//chrome/common:buildflags",
-    "//components/crx_file",
-    "//components/guest_view/browser:test_support",
-    "//components/keyed_service/content",
-    "//components/pref_registry",
-    "//components/prefs:test_support",
-    "//components/sync_preferences:test_support",
-    "//components/update_client",
-    "//components/user_prefs",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//extensions/browser",
-    "//extensions/browser:test_support",
-    "//extensions/browser/api",
-    "//extensions/browser/updater",
-    "//extensions/common",
-    "//extensions/common:core_api_provider",
-    "//extensions/common/api",
-    "//extensions/common/api:extensions_features",
-    "//extensions/renderer",
-    "//net:test_support",
-    "//services/network/public/mojom",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/cld_3/src/src:cld_3",
-    "//third_party/zlib/google:zip",
-  ]
-
-  # Generally, //extensions should not depend on //chromeos. However, a number
-  # of the APIs and the extensions shell already do. We should try to avoid
-  # expanding these dependencies.
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/login/login_state" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:test_support" ]
-  }
-
-  public_deps = [ "//content/public/browser" ]
-}
-
-repack("shell_and_test_pak") {
-  testonly = true
-
-  sources = [
-    "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
-    "$root_gen_dir/content/content_resources.pak",
-    "$root_gen_dir/content/dev_ui_content_resources.pak",
-    "$root_gen_dir/content/shell/shell_resources.pak",
-    "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
-    "$root_gen_dir/extensions/extensions_browser_resources_100_percent.pak",
-    "$root_gen_dir/extensions/extensions_renderer_resources.pak",
-    "$root_gen_dir/extensions/extensions_resources.pak",
-    "$root_gen_dir/extensions/shell/app_shell_resources.pak",
-    "$root_gen_dir/extensions/strings/extensions_strings_en-US.pak",
-    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
-    "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
-    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
-    "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
-    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
-  ]
-
-  output = "$root_out_dir/extensions_shell_and_test.pak"
-
-  deps = [
-    ":extensions_resources",
-    "//content:content_resources",
-    "//content:dev_ui_content_resources",
-    "//content/browser/devtools:devtools_resources",
-    "//content/shell:resources",
-    "//device/bluetooth/strings",
-    "//extensions/shell:resources",
-    "//extensions/strings",
-    "//mojo/public/js:resources",
-    "//third_party/blink/public:resources",
-    "//third_party/blink/public:scaled_resources_100_percent",
-    "//third_party/blink/public/strings",
-    "//ui/resources",
-    "//ui/strings",
-  ]
-}
-
-test("extensions_unittests") {
-  use_xvfb = use_xvfb_in_this_config
-
-  sources = [
-    "test/extensions_unittests_main.cc",
-    "test/logging_timer_unittest.cc",
-  ]
-
-  data = [
-    "test/data/",
-    "//chrome/test/data/extensions/",
-    "//components/test/data/cast_certificate/",
-    "$root_out_dir/content_shell.pak",
-    "$root_out_dir/extensions_shell_and_test.pak",
-  ]
-
-  deps = [
-    ":extensions_resources",
-    ":shell_and_test_pak",
-    ":test_support",
-    "//base/test:test_support",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//extensions/browser:unit_tests",
-    "//extensions/common",
-    "//extensions/common:unit_tests",
-    "//extensions/renderer:unit_tests",
-    "//extensions/shell:unit_tests",
-    "//services/data_decoder:lib",
-    "//services/service_manager/public/cpp/test:test_support",
-    "//ui/gl:test_support",
-  ]
-
-  data_deps = [ "//third_party/mesa_headers" ]
-
-  if (is_fuchsia) {
-    additional_manifest_fragments = [
-      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
-      "//build/config/fuchsia/test/network_capabilities.test-cmx",
+if (is_component_build) {
+  component("extensions") {
+    visibility = [
+      "//extensions/common:common_constants",
+      "//extensions/common:export",
+    ]
+    public_deps = [
+      "//extensions/common:constants_impl",
+      "//extensions/common:export_impl",
     ]
   }
 }
 
-test("extensions_browsertests") {
-  use_xvfb = use_xvfb_in_this_config
-
-  data = [
-    "//extensions/test/data/",
-    "//net/tools/testserver/",
-    "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    "$root_out_dir/extensions_shell_and_test.pak",
-  ]
-
-  deps = [
-    "//extensions/browser:browser_tests",
-    "//extensions/shell:browser_tests",
-  ]
-
-  data_deps = [ "//third_party/mesa_headers" ]
+# Used by targets that compile into the implementation.
+config("component_implementation") {
+  defines = [ "EXTENSIONS_COMPONENT_IMPLEMENTATION" ]
 }
 
-# TODO(rockot) bug 505926: These should be moved to extensions_browsertests but have
-# old dependencies on chrome files. The chrome dependencies should be removed
-# and these moved to the extensions_browsertests target. Currently, we solve
-# the problem by making this a source set and linking it into
-# //chrome/test:browser_tests.
-source_set("chrome_extensions_browsertests") {
-  testonly = true
-  sources = [
-    "browser/api/app_window/app_window_apitest.cc",
-    "browser/api/bluetooth/bluetooth_apitest.cc",
-    "browser/api/bluetooth/bluetooth_private_apitest.cc",
-    "browser/api/serial/serial_apitest.cc",
-    "browser/api/usb/usb_manual_apitest.cc",
-    "browser/app_window/app_window_browsertest.cc",
-    "browser/guest_view/mime_handler_view/mime_handler_view_browsertest.cc",
-    "renderer/script_context_browsertest.cc",
-  ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  # These are the deps from browser_tests minus some internal Chrome ones that
-  # aren't allowed to be included here and that aren't needed.
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//chrome/browser",
-    "//chrome/common/extensions/api",
-    "//chrome/renderer",
-    "//chrome/test:test_support",
-    "//components/autofill/content/browser:risk_proto",
-    "//components/autofill/content/renderer:test_support",
-    "//components/captive_portal/core:test_support",
-    "//components/dom_distiller/content/browser",
-    "//components/dom_distiller/core:test_support",
-    "//components/guest_view/browser:test_support",
-    "//components/javascript_dialogs",
-    "//components/resources",
-    "//components/strings",
-    "//components/sync",
-    "//components/sync:test_support_model",
-    "//components/translate/core/common",
-    "//crypto:platform",
-    "//crypto:test_support",
-    "//device/bluetooth:mocks",
-    "//extensions/browser/api/bluetooth",
-    "//extensions/common/api",
-    "//extensions/renderer",
-    "//google_apis:test_support",
-    "//media:test_support",
-    "//net",
-    "//net:test_support",
-    "//skia",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//testing/perf",
-    "//third_party/blink/public:blink",
-    "//third_party/icu",
-    "//third_party/leveldatabase",
-    "//third_party/libaddressinput",
-    "//third_party/webrtc_overrides:webrtc_component",
-    "//third_party/widevine/cdm:headers",
-    "//ui/accessibility:test_support",
-    "//ui/base:test_support",
-    "//ui/compositor:test_support",
-    "//ui/resources",
-    "//ui/web_dialogs:test_support",
-    "//v8",
-  ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//components/user_manager:test_support" ]
+# TODO(crbug.com/731689): Assert that extensions are enabled.
+# We can't do this here directly because some platforms where extensions aren't
+# enabled depend on //extensions/common:common_constants, which in turn depends
+# on the //extensions component target in component builds.
+if (enable_extensions) {
+  group("extensions_resources") {
+    public_deps = [
+      ":extensions_browser_resources",
+      ":extensions_renderer_resources",
+      ":extensions_resources_grd",
+    ]
   }
-}
 
-# TODO(rockot) bug 505926: This should be deleted for the same reason as
-# chrome_extensions_browsertests.
-source_set("chrome_extensions_interactive_uitests") {
-  testonly = true
-  sources = [ "browser/guest_view/mime_handler_view/mime_handler_view_interactive_uitest.cc" ]
+  grit("extensions_resources_grd") {
+    source = "extensions_resources.grd"
+    outputs = [
+      "grit/extensions_resources.h",
+      "extensions_resources.pak",
+    ]
+  }
 
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  grit("extensions_browser_resources") {
+    source = "browser/resources/extensions_browser_resources.grd"
+    outputs = [
+      "grit/extensions_browser_resources.h",
+      "grit/extensions_browser_resources_map.cc",
+      "grit/extensions_browser_resources_map.h",
+      "extensions_browser_resources_100_percent.pak",
+      "extensions_browser_resources_200_percent.pak",
+    ]
+  }
 
-  # These are the deps from interactive_uitests minus some internal Chrome
-  # ones that aren't allowed to be included here and that aren't needed.
-  deps = [
-    "//chrome/browser",
-    "//chrome/browser/devtools",
-    "//chrome/renderer",
-    "//chrome/test:test_support",
-    "//components/sync",
-    "//content/app/resources",
-    "//crypto:platform",
-    "//crypto:test_support",
-    "//google_apis:test_support",
-    "//net",
-    "//net:net_resources",
-    "//net:test_support",
-    "//skia",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/hunspell",
-    "//third_party/icu",
-    "//third_party/libpng",
-    "//third_party/zlib",
-    "//ui/base:test_support",
-    "//ui/resources:ui_test_pak",
-    "//ui/web_dialogs:test_support",
-  ]
+  grit("extensions_renderer_resources") {
+    source = "renderer/resources/extensions_renderer_resources.grd"
+    defines = [ "is_chromecast=$is_chromecast" ]
+    outputs = [
+      "grit/extensions_renderer_resources.h",
+      "extensions_renderer_resources.pak",
+    ]
+    grit_flags = [
+      "-E",
+      "mojom_root=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    deps = [
+      "//extensions/common:mojom_js",
+      "//extensions/common/api:mojom_js",
+      "//services/device/public/mojom:mojom_js",
+    ]
+  }
+
+  static_library("test_support") {
+    testonly = true
+    sources = [
+      "browser/api/declarative/test_rules_registry.cc",
+      "browser/api/declarative/test_rules_registry.h",
+      "browser/api/storage/settings_test_util.cc",
+      "browser/api/storage/settings_test_util.h",
+      "browser/api_test_utils.cc",
+      "browser/api_test_utils.h",
+      "browser/api_unittest.cc",
+      "browser/api_unittest.h",
+      "browser/app_window/test_app_window_contents.cc",
+      "browser/app_window/test_app_window_contents.h",
+      "browser/content_verifier/test_utils.cc",
+      "browser/content_verifier/test_utils.h",
+      "browser/extension_error_test_util.cc",
+      "browser/extension_error_test_util.h",
+      "browser/extensions_test.cc",
+      "browser/extensions_test.h",
+      "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.cc",
+      "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h",
+      "browser/mock_extension_system.cc",
+      "browser/mock_extension_system.h",
+      "browser/mock_external_provider.cc",
+      "browser/mock_external_provider.h",
+      "browser/scoped_ignore_content_verifier_for_test.cc",
+      "browser/scoped_ignore_content_verifier_for_test.h",
+      "browser/test_event_router.cc",
+      "browser/test_event_router.h",
+      "browser/test_extension_registry_observer.cc",
+      "browser/test_extension_registry_observer.h",
+      "browser/test_extensions_browser_client.cc",
+      "browser/test_extensions_browser_client.h",
+      "browser/test_image_loader.cc",
+      "browser/test_image_loader.h",
+      "browser/test_management_policy.cc",
+      "browser/test_management_policy.h",
+      "browser/test_runtime_api_delegate.cc",
+      "browser/test_runtime_api_delegate.h",
+      "common/extension_builder.cc",
+      "common/extension_builder.h",
+      "common/manifest_test.cc",
+      "common/manifest_test.h",
+      "common/permissions/mock_manifest_permission.cc",
+      "common/permissions/mock_manifest_permission.h",
+      "common/permissions/permission_message_test_util.cc",
+      "common/permissions/permission_message_test_util.h",
+      "common/scoped_testing_manifest_handler_registry.cc",
+      "common/scoped_testing_manifest_handler_registry.h",
+      "renderer/test_extensions_renderer_client.cc",
+      "renderer/test_extensions_renderer_client.h",
+      "test/extension_background_page_waiter.cc",
+      "test/extension_background_page_waiter.h",
+      "test/extension_state_tester.cc",
+      "test/extension_state_tester.h",
+      "test/extension_test_message_listener.cc",
+      "test/extension_test_message_listener.h",
+      "test/extension_test_notification_observer.cc",
+      "test/extension_test_notification_observer.h",
+      "test/logging_timer.cc",
+      "test/logging_timer.h",
+      "test/result_catcher.cc",
+      "test/result_catcher.h",
+      "test/test_content_script_load_waiter.cc",
+      "test/test_content_script_load_waiter.h",
+      "test/test_content_utility_client.cc",
+      "test/test_content_utility_client.h",
+      "test/test_extension_dir.cc",
+      "test/test_extension_dir.h",
+      "test/test_extensions_client.cc",
+      "test/test_extensions_client.h",
+      "test/test_permission_message_provider.cc",
+      "test/test_permission_message_provider.h",
+    ]
+
+    deps = [
+      ":extensions_resources",
+      "//base",
+      "//build:chromeos_buildflags",
+      "//chrome/common:buildflags",
+      "//components/crx_file",
+      "//components/guest_view/browser:test_support",
+      "//components/keyed_service/content",
+      "//components/pref_registry",
+      "//components/prefs:test_support",
+      "//components/sync_preferences:test_support",
+      "//components/update_client",
+      "//components/user_prefs",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//extensions/browser:test_support",
+      "//extensions/browser/api",
+      "//extensions/browser/updater",
+      "//extensions/common",
+      "//extensions/common:core_api_provider",
+      "//extensions/common/api",
+      "//extensions/common/api:extensions_features",
+      "//extensions/renderer",
+      "//net:test_support",
+      "//services/network/public/mojom",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/cld_3/src/src:cld_3",
+      "//third_party/zlib/google:zip",
+    ]
+
+    # Generally, //extensions should not depend on //chromeos. However, a number
+    # of the APIs and the extensions shell already do. We should try to avoid
+    # expanding these dependencies.
+    if (is_chromeos_ash) {
+      deps += [ "//chromeos/login/login_state" ]
+    }
+
+    if (is_chromeos_lacros) {
+      deps += [ "//chromeos/lacros:test_support" ]
+    }
+
+    public_deps = [ "//content/public/browser" ]
+  }
+
+  repack("shell_and_test_pak") {
+    testonly = true
+
+    sources = [
+      "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
+      "$root_gen_dir/content/content_resources.pak",
+      "$root_gen_dir/content/dev_ui_content_resources.pak",
+      "$root_gen_dir/content/shell/shell_resources.pak",
+      "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
+      "$root_gen_dir/extensions/extensions_browser_resources_100_percent.pak",
+      "$root_gen_dir/extensions/extensions_renderer_resources.pak",
+      "$root_gen_dir/extensions/extensions_resources.pak",
+      "$root_gen_dir/extensions/shell/app_shell_resources.pak",
+      "$root_gen_dir/extensions/strings/extensions_strings_en-US.pak",
+      "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
+      "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
+      "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+      "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+      "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+      "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+      "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
+      "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    ]
+
+    output = "$root_out_dir/extensions_shell_and_test.pak"
+
+    deps = [
+      ":extensions_resources",
+      "//content:content_resources",
+      "//content:dev_ui_content_resources",
+      "//content/browser/devtools:devtools_resources",
+      "//content/shell:resources",
+      "//device/bluetooth/strings",
+      "//extensions/shell:resources",
+      "//extensions/strings",
+      "//mojo/public/js:resources",
+      "//third_party/blink/public:resources",
+      "//third_party/blink/public:scaled_resources_100_percent",
+      "//third_party/blink/public/strings",
+      "//ui/resources",
+      "//ui/strings",
+    ]
+  }
+
+  test("extensions_unittests") {
+    use_xvfb = use_xvfb_in_this_config
+
+    sources = [
+      "test/extensions_unittests_main.cc",
+      "test/logging_timer_unittest.cc",
+    ]
+
+    data = [
+      "test/data/",
+      "//chrome/test/data/extensions/",
+      "//components/test/data/cast_certificate/",
+      "$root_out_dir/content_shell.pak",
+      "$root_out_dir/extensions_shell_and_test.pak",
+    ]
+
+    deps = [
+      ":extensions_resources",
+      ":shell_and_test_pak",
+      ":test_support",
+      "//base/test:test_support",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//extensions/browser:unit_tests",
+      "//extensions/common",
+      "//extensions/common:unit_tests",
+      "//extensions/renderer:unit_tests",
+      "//extensions/shell:unit_tests",
+      "//services/data_decoder:lib",
+      "//services/service_manager/public/cpp/test:test_support",
+      "//ui/gl:test_support",
+    ]
+
+    data_deps = [ "//third_party/mesa_headers" ]
+
+    if (is_fuchsia) {
+      additional_manifest_fragments = [
+        "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+        "//build/config/fuchsia/test/network_capabilities.test-cmx",
+      ]
+    }
+  }
+
+  test("extensions_browsertests") {
+    use_xvfb = use_xvfb_in_this_config
+
+    data = [
+      "//extensions/test/data/",
+      "//net/tools/testserver/",
+      "//third_party/pywebsocket3/src/mod_pywebsocket/",
+      "$root_out_dir/extensions_shell_and_test.pak",
+    ]
+
+    deps = [
+      "//extensions/browser:browser_tests",
+      "//extensions/shell:browser_tests",
+    ]
+
+    data_deps = [ "//third_party/mesa_headers" ]
+  }
+
+  # TODO(rockot) bug 505926: These should be moved to extensions_browsertests but have
+  # old dependencies on chrome files. The chrome dependencies should be removed
+  # and these moved to the extensions_browsertests target. Currently, we solve
+  # the problem by making this a source set and linking it into
+  # //chrome/test:browser_tests.
+  source_set("chrome_extensions_browsertests") {
+    testonly = true
+    sources = [
+      "browser/api/app_window/app_window_apitest.cc",
+      "browser/api/bluetooth/bluetooth_apitest.cc",
+      "browser/api/bluetooth/bluetooth_private_apitest.cc",
+      "browser/api/serial/serial_apitest.cc",
+      "browser/api/usb/usb_manual_apitest.cc",
+      "browser/app_window/app_window_browsertest.cc",
+      "browser/guest_view/mime_handler_view/mime_handler_view_browsertest.cc",
+      "renderer/script_context_browsertest.cc",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    # These are the deps from browser_tests minus some internal Chrome ones that
+    # aren't allowed to be included here and that aren't needed.
+    deps = [
+      "//base",
+      "//base:i18n",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome/browser",
+      "//chrome/common/extensions/api",
+      "//chrome/renderer",
+      "//chrome/test:test_support",
+      "//components/autofill/content/browser:risk_proto",
+      "//components/autofill/content/renderer:test_support",
+      "//components/captive_portal/core:test_support",
+      "//components/dom_distiller/content/browser",
+      "//components/dom_distiller/core:test_support",
+      "//components/guest_view/browser:test_support",
+      "//components/javascript_dialogs",
+      "//components/resources",
+      "//components/strings",
+      "//components/sync",
+      "//components/sync:test_support_model",
+      "//components/translate/core/common",
+      "//crypto:platform",
+      "//crypto:test_support",
+      "//device/bluetooth:mocks",
+      "//extensions/browser/api/bluetooth",
+      "//extensions/common/api",
+      "//extensions/renderer",
+      "//google_apis:test_support",
+      "//media:test_support",
+      "//net",
+      "//net:test_support",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//testing/perf",
+      "//third_party/blink/public:blink",
+      "//third_party/icu",
+      "//third_party/leveldatabase",
+      "//third_party/libaddressinput",
+      "//third_party/webrtc_overrides:webrtc_component",
+      "//third_party/widevine/cdm:headers",
+      "//ui/accessibility:test_support",
+      "//ui/base:test_support",
+      "//ui/compositor:test_support",
+      "//ui/resources",
+      "//ui/web_dialogs:test_support",
+      "//v8",
+    ]
+
+    if (is_chromeos_ash) {
+      deps += [ "//components/user_manager:test_support" ]
+    }
+  }
+
+  # TODO(rockot) bug 505926: This should be deleted for the same reason as
+  # chrome_extensions_browsertests.
+  source_set("chrome_extensions_interactive_uitests") {
+    testonly = true
+    sources = [ "browser/guest_view/mime_handler_view/mime_handler_view_interactive_uitest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    # These are the deps from interactive_uitests minus some internal Chrome
+    # ones that aren't allowed to be included here and that aren't needed.
+    deps = [
+      "//chrome/browser",
+      "//chrome/browser/devtools",
+      "//chrome/renderer",
+      "//chrome/test:test_support",
+      "//components/sync",
+      "//content/app/resources",
+      "//crypto:platform",
+      "//crypto:test_support",
+      "//google_apis:test_support",
+      "//net",
+      "//net:net_resources",
+      "//net:test_support",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/hunspell",
+      "//third_party/icu",
+      "//third_party/libpng",
+      "//third_party/zlib",
+      "//ui/base:test_support",
+      "//ui/resources:ui_test_pak",
+      "//ui/web_dialogs:test_support",
+    ]
+  }
 }
