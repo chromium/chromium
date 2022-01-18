@@ -4884,6 +4884,171 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, InvalidURN) {
   EXPECT_EQ(absl::nullopt, ConvertFencedFrameURNToURLInJS(invalid_urn));
 }
 
+class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
+ public:
+  InterestGroupAuctionLimitBrowserTest() {
+    // Only 2 auctions are allowed per-page.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kFledgeLimitNumAuctions, {{"max_auctions_per_page", "2"}}},
+         {blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault, {}}},
+        /*disabled_features=*/{});
+    // TODO(crbug.com/1186444): When
+    // kAdInterestGroupAPIRestrictedPolicyByDefault is the default, we won't
+    // need to set it here.
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Perform an auction, navigate the top-level frame, then navigate it back.
+// Perform 2 more auctions. The second of those two should fail, because 2
+// auctions have already been performed on the page -- one before the top level
+// bfcached navigations, and one after.
+//
+// That is, the auction limit count is preserved due to bfcache.
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
+                       NavigatingWithBfcachePreservesAuctionLimits) {
+  const GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  const url::Origin test_origin = url::Origin::Create(test_url);
+
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"cars",
+      /*bidding_url=*/
+      https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/
+      {{{GURL("https://example.com/render"),
+         "{ad:'metadata', here : [1,2] }"}}},
+      /*ad_components=*/absl::nullopt)));
+
+  // 1st auction -- before navigations
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWaitForURL(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+                })",
+                test_origin,
+                https_server_->GetURL("a.test",
+                                      "/interest_group/decision_logic.js"))));
+
+  // Navigate, then navigate back. The auction limits shouldn't be reset since
+  // the original page goes into the bfcache.
+  const GURL test_url_b = https_server_->GetURL("b.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  shell()->web_contents()->GetController().GoBack();
+  back_load_observer.Wait();
+
+  // 2nd auction -- after navigations
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWaitForURL(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+                })",
+                test_origin,
+                https_server_->GetURL("a.test",
+                                      "/interest_group/decision_logic.js"))));
+
+  // 3rd auction -- after navigations; should fail due to hitting the auction
+  // limit.
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
+                         R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+                })",
+                         test_origin,
+                         https_server_->GetURL(
+                             "a.test", "/interest_group/decision_logic.js"))));
+}
+
+// Create a page with a cross-origin iframe. Run an auction in the main frame,
+// then run 2 auctions in the cross-origin iframe. The last auction should fail
+// due to encontering the auction limit, since the limit is stored per-page (top
+// level frame), not per frame.
+IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
+                       AuctionLimitSharedWithCrossOriginFrameOnPage) {
+  // Give the cross-origin iframe permission to run auctions.
+  const GURL test_url =
+      https_server_->GetURL("a.test",
+                            "/cross_site_iframe_factory.html?a.test(b.test{"
+                            "allow-run-ad-auction})");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  const url::Origin test_origin = url::Origin::Create(test_url);
+  RenderFrameHost* const b_iframe =
+      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"cars",
+      /*bidding_url=*/
+      https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/absl::nullopt,
+      /*user_bidding_signals=*/absl::nullopt,
+      /*ads=*/
+      {{{GURL("https://example.com/render"),
+         "{ad:'metadata', here : [1,2] }"}}},
+      /*ad_components=*/absl::nullopt)));
+
+  // 1st auction -- in main frame
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWaitForURL(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+                })",
+                test_origin,
+                https_server_->GetURL("a.test",
+                                      "/interest_group/decision_logic.js"))));
+
+  // 2nd auction -- in cross-origin iframe
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWaitForURL(
+                JsReplace(
+                    R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+                })",
+                    test_origin,
+                    https_server_->GetURL("a.test",
+                                          "/interest_group/decision_logic.js")),
+                b_iframe));
+
+  // 3rd auction -- in cross-origin iframe; should fail due to hitting the
+  // auction limit.
+  EXPECT_EQ(
+      nullptr,
+      RunAuctionAndWait(JsReplace(
+                            R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+                })",
+                            test_origin,
+                            https_server_->GetURL(
+                                "a.test", "/interest_group/decision_logic.js")),
+                        b_iframe));
+}
+
 }  // namespace
 
 }  // namespace content

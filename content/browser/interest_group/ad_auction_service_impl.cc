@@ -325,6 +325,13 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
   auto browser_signals = auction_worklet::mojom::BrowserSignals::New(
       GetTopWindowOrigin(), config->seller);
 
+  auto* auction_result_metrics = AdAuctionResultMetrics::GetOrCreateForPage(
+      render_frame_host()->GetPage());
+  if (!auction_result_metrics->ShouldRunAuction()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, this, &GetInterestGroupManager(),
       std::move(config), std::move(filtered_buyers), std::move(browser_signals),
@@ -476,8 +483,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
         base::StrCat({"Worklet error: ", error}));
   }
 
-  auto* auction_result_metrics = AdAuctionResultMetrics::GetOrCreateForPage(
-      render_frame_host()->GetPage());
+  auto* auction_result_metrics =
+      AdAuctionResultMetrics::GetForPage(render_frame_host()->GetPage());
 
   if (!render_url) {
     DCHECK(!bidder_report_url);

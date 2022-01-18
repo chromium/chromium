@@ -8,13 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -26,10 +29,9 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
-#include "content/public/test/back_forward_cache_util.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -342,7 +344,11 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   AdAuctionServiceImplTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(blink::features::kInterestGroupStorage);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kInterestGroupStorage,
+                              blink::features::kAdInterestGroupAPI,
+                              blink::features::kFledge},
+        /*disabled_features=*/{});
     old_content_browser_client_ =
         SetBrowserClientForTesting(&content_browser_client_);
   }
@@ -370,21 +376,6 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     // active.
     network_responder_.reset();
     RenderViewHostTestHarness::TearDown();
-  }
-
-  void NavigateAndWaitForPageDestroyed(const GURL& dest_url) {
-    // Wait until the main render frame is deleted, which happens asynchronously
-    // after navigation -- the page gets destroyed with the main render frame.
-    // On Android, this hangs, likely due to architectural differences, so don't
-    // perform this wait on Android.
-#if !BUILDFLAG(IS_ANDROID)
-    RenderFrameHostWrapper main_frame_wrapper(web_contents()->GetMainFrame());
-    ASSERT_FALSE(main_frame_wrapper.IsDestroyed());
-#endif  // !BUILDFLAG(IS_ANDROID)
-    NavigateAndCommit(dest_url);
-#if !BUILDFLAG(IS_ANDROID)
-    ASSERT_TRUE(main_frame_wrapper.WaitUntilRenderFrameDeleted());
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   std::vector<StorageInterestGroup> GetInterestGroupsForOwner(
@@ -773,8 +764,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -824,8 +815,8 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -878,8 +869,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Lookup expiry from the database before updating.
@@ -928,8 +919,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -985,8 +976,8 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -1028,8 +1019,8 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -1083,8 +1074,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupName1));
 
   // Now, join the second interest group, also belonging to `kOriginA`.
@@ -1099,8 +1090,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   ad = blink::InterestGroup::Ad();
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group_2.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group_2));
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupName2));
 
   // Now, run the update. Both interest groups should update.
@@ -1157,8 +1148,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Now, join the second interest group, belonging to `kOriginB`.
@@ -1175,8 +1166,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   ad = blink::InterestGroup::Ad();
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group_b.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group_b));
+  interest_group_b.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
 
   // Now, run the update. Only the `kOriginB` group should get updated.
@@ -1230,8 +1221,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Now, join the second interest group, belonging to `kOriginB`.
@@ -1248,8 +1239,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   ad = blink::InterestGroup::Ad();
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group_b.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group_b));
+  interest_group_b.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
 
   // Now, join the third interest group, belonging to `kOriginC`.
@@ -1266,8 +1257,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   ad = blink::InterestGroup::Ad();
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group_c.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group_c));
+  interest_group_c.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_c);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 
   NavigateAndCommit(kUrlA);
@@ -1353,8 +1344,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -1388,8 +1379,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -1435,8 +1426,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Simulate the JSON service crashing instead of returning a result.
@@ -1474,8 +1465,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -1508,8 +1499,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -1560,8 +1551,8 @@ TEST_F(AdAuctionServiceImplTest,
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Start an interest group update and then advance time to ensure the interest
@@ -1640,8 +1631,8 @@ TEST_F(AdAuctionServiceImplTest,
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Start an interest group update and then advance time to ensure the interest
@@ -1705,8 +1696,8 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -1746,8 +1737,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Register 2 bids and a win.
@@ -1809,8 +1800,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -1908,8 +1899,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -2009,8 +2000,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -2110,8 +2101,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();
@@ -2171,8 +2162,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
   ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   EXPECT_EQ(network_responder_->UpdateCount(), 0u);
@@ -2204,22 +2195,25 @@ function generateBid(
   browserSignals) {
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
-  )";
+)";
+
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
   adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
-  )";
+)";
+
   network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   auto auction_config = blink::mojom::AuctionAdConfig::New();
@@ -2249,6 +2243,7 @@ function reportWin(
 }
   )",
                                                         kOriginStringA);
+
   const std::string kDecisionScript =
       base::StringPrintf(R"(
 function scoreAd(
@@ -2263,8 +2258,9 @@ function reportResult(auctionConfig, browserSignals) {
     'reportUrl': '%s/report_seller',
   };
 }
-  )",
+)",
                          kOriginStringA, kOriginStringA);
+
   network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
   network_responder_->RegisterReportResponse("/report_bidder", "");
@@ -2275,8 +2271,8 @@ function reportResult(auctionConfig, browserSignals) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   auto auction_config = blink::mojom::AuctionAdConfig::New();
@@ -2305,13 +2301,10 @@ function reportResult(auctionConfig, browserSignals) {
 // not. Verify that the auction result UMA is recorded correctly.
 TEST_F(AdAuctionServiceImplTest,
        AddInterestGroupRunAuctionVerifyResultMetrics) {
-  // The test assumes that the main frame RFH will be replaced during
-  // navigation.
-  DisableBackForwardCacheForTesting(web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   base::HistogramTester histogram_tester;
   constexpr char kDecisionFailAllUrlPath[] =
       "/interest_group/decision_logic_fail_all.js";
+
   constexpr char kBiddingScript[] = R"(
 function generateBid(
   interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -2319,14 +2312,16 @@ function generateBid(
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 function reportWin() {}
-  )";
+)";
+
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
   adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 function reportResult() {}
-  )";
+)";
+
   constexpr char kDecisionScriptFailAll[] = R"(
 function scoreAd(
   adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
@@ -2334,18 +2329,20 @@ function scoreAd(
 }
 function reportResult() {}
 )";
+
   network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
   network_responder_->RegisterScriptResponse(kDecisionFailAllUrlPath,
                                              kDecisionScriptFailAll);
+
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.expiry = base::Time::Now() + base::Days(10);
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Run 7 auctions, with delays:
@@ -2445,9 +2442,15 @@ function reportResult() {}
           .GetAllSamples("Ads.InterestGroup.Auction.First6AuctionsBitsPerPage")
           .size(),
       0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit")
+          .size(),
+      0u);
 
-  // Navigate to populate remaining metrics.
-  ASSERT_NO_FATAL_FAILURE(NavigateAndWaitForPageDestroyed(kUrlB));
+  // DeleteContents() to force-populate remaining metrics.
+  DeleteContents();
 
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NumAuctionsPerPage", 7, 1);
@@ -2456,6 +2459,8 @@ function reportResult() {}
       1);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.First6AuctionsBitsPerPage", 0b1101110, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit", 0, 1);
 }
 
 // Like AddInterestGroupRunAuctionVerifyResultMetrics, but with a smaller number
@@ -2463,13 +2468,10 @@ function reportResult() {}
 // reported correctly in this scenario.
 TEST_F(AdAuctionServiceImplTest,
        AddInterestGroupRunAuctionVerifyResultMetricsFewAuctions) {
-  // The test assumes that the main frame RFH will be replaced during
-  // navigation.
-  DisableBackForwardCacheForTesting(web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   base::HistogramTester histogram_tester;
   constexpr char kDecisionFailAllUrlPath[] =
       "/interest_group/decision_logic_fail_all.js";
+
   constexpr char kBiddingScript[] = R"(
 function generateBid(
   interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -2477,14 +2479,16 @@ function generateBid(
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 function reportWin() {}
-  )";
+)";
+
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
   adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 function reportResult() {}
-  )";
+)";
+
   constexpr char kDecisionScriptFailAll[] = R"(
 function scoreAd(
   adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
@@ -2492,18 +2496,20 @@ function scoreAd(
 }
 function reportResult() {}
 )";
+
   network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
   network_responder_->RegisterScriptResponse(kDecisionFailAllUrlPath,
                                              kDecisionScriptFailAll);
+
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.expiry = base::Time::Now() + base::Days(10);
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad;
   ad.render_url = GURL("https://example.com/render");
-  interest_group.ads->push_back(std::move(ad));
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Run 2 auctions, with delays:
@@ -2561,9 +2567,15 @@ function reportResult() {}
           .GetAllSamples("Ads.InterestGroup.Auction.First6AuctionsBitsPerPage")
           .size(),
       0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit")
+          .size(),
+      0u);
 
-  // Navigate to populate remaining metrics.
-  ASSERT_NO_FATAL_FAILURE(NavigateAndWaitForPageDestroyed(kUrlB));
+  // DeleteContents() to force-populate remaining metrics.
+  DeleteContents();
 
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NumAuctionsPerPage", 2, 1);
@@ -2572,22 +2584,20 @@ function reportResult() {}
       1);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.First6AuctionsBitsPerPage", 0b110, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit", 0, 1);
 }
 
 // Like AddInterestGroupRunAuctionVerifyResultMetricsFewAuctions, but with no
 // auctions.
 TEST_F(AdAuctionServiceImplTest,
        AddInterestGroupRunAuctionVerifyResultMetricsNoAuctions) {
-  // The test assumes that the main frame RFH will be replaced during
-  // navigation.
-  DisableBackForwardCacheForTesting(web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   base::HistogramTester histogram_tester;
 
   // Don't run any auctions.
 
   // Navigate to "populate" remaining metrics.
-  ASSERT_NO_FATAL_FAILURE(NavigateAndWaitForPageDestroyed(kUrlB));
+  DeleteContents();
 
   // Nothing gets reported since there were no auctions.
   EXPECT_EQ(histogram_tester
@@ -2610,6 +2620,345 @@ TEST_F(AdAuctionServiceImplTest,
                     "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage")
                 .size(),
             0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit")
+          .size(),
+      0u);
+}
+
+// The feature parameter that controls the interest group limit should default
+// to off. We both check the parameter is off, and we run a number of auctions
+// and make sure they all succeed.
+TEST_F(AdAuctionServiceImplTest, NoInterestLimitByDefault) {
+  EXPECT_FALSE(base::FeatureList::IsEnabled(features::kFledgeLimitNumAuctions));
+  base::HistogramTester histogram_tester;
+  constexpr char kDecisionFailAllUrlPath[] =
+      "/interest_group/decision_logic_fail_all.js";
+
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+  browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin() {}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+function reportResult() {}
+)";
+
+  constexpr char kDecisionScriptFailAll[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return 0;
+}
+function reportResult() {}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+  network_responder_->RegisterScriptResponse(kDecisionFailAllUrlPath,
+                                             kDecisionScriptFailAll);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(10);
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  constexpr int kNumAuctions = 10;
+  // Run kNumAuctions auctions, all should succeed since there's no limit:
+  auto succeed_auction_config = blink::mojom::AuctionAdConfig::New();
+  succeed_auction_config->seller = kOriginA;
+  succeed_auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  succeed_auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  succeed_auction_config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+
+  for (int i = 0; i < kNumAuctions; i++) {
+    EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config->Clone()),
+              absl::nullopt);
+  }
+
+  // Some metrics only get reported until after navigation.
+  EXPECT_EQ(histogram_tester
+                .GetAllSamples("Ads.InterestGroup.Auction.NumAuctionsPerPage")
+                .size(),
+            0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage")
+          .size(),
+      0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples("Ads.InterestGroup.Auction.First6AuctionsBitsPerPage")
+          .size(),
+      0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit")
+          .size(),
+      0u);
+
+  // DeleteContents() to force-populate remaining metrics.
+  DeleteContents();
+
+  // Every auction succeeds, none are skipped.
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsPerPage", kNumAuctions, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage", 100, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.First6AuctionsBitsPerPage", 0b1111111, 1);
+  // However, we do record that the auction was skipped.
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit", 0, 1);
+}
+
+class AdAuctionServiceImplNumAuctionLimitTest
+    : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplNumAuctionLimitTest() {
+    // Only 2 auctions are allowed per-page.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFledgeLimitNumAuctions, {{"max_auctions_per_page", "2"}});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Like AddInterestGroupRunAuctionVerifyResultMetrics, but with enforcement
+// limiting the number of auctions.
+TEST_F(AdAuctionServiceImplNumAuctionLimitTest,
+       AddInterestGroupRunAuctionWithNumAuctionLimits) {
+  base::HistogramTester histogram_tester;
+  constexpr char kDecisionFailAllUrlPath[] =
+      "/interest_group/decision_logic_fail_all.js";
+
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+  browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin() {}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+function reportResult() {}
+)";
+
+  constexpr char kDecisionScriptFailAll[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return 0;
+}
+function reportResult() {}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+  network_responder_->RegisterScriptResponse(kDecisionFailAllUrlPath,
+                                             kDecisionScriptFailAll);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(10);
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Run 3 auctions, with delays:
+  //
+  // succeed, (1s), fail, (3s), succeed which in bits (with an extra leading 1)
+  // is 0b110 -- the last success isn't recorded since the auction limit is
+  // enforced.
+
+  // Expect*TimeSample() doesn't accept base::TimeDelta::Max(), but the max time
+  // bucket size is 1 hour, so specifying kMaxTime will select the max bucket.
+  constexpr base::TimeDelta kMaxTime{base::Days(1)};
+
+  auto succeed_auction_config = blink::mojom::AuctionAdConfig::New();
+  succeed_auction_config->seller = kOriginA;
+  succeed_auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  succeed_auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  succeed_auction_config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+
+  auto fail_auction_config = blink::mojom::AuctionAdConfig::New();
+  fail_auction_config->seller = kOriginA;
+  fail_auction_config->decision_logic_url =
+      kUrlA.Resolve(kDecisionFailAllUrlPath);
+  fail_auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  fail_auction_config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+
+  // 1st auction
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config->Clone()),
+            absl::nullopt);
+  // Time metrics are published every auction.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", kMaxTime, 1);
+
+  // 2nd auction
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config->Clone()), absl::nullopt);
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(1),
+      1);
+
+  // 3rd auction -- fails even though decision_logic.js is used because the
+  // auction limit is encountered.
+  task_environment()->FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(RunAdAuctionAndFlush(succeed_auction_config->Clone()),
+            absl::nullopt);
+  // The time metrics shouldn't get updated.
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(3),
+      0);
+
+  // Some metrics only get reported until after navigation.
+  EXPECT_EQ(histogram_tester
+                .GetAllSamples("Ads.InterestGroup.Auction.NumAuctionsPerPage")
+                .size(),
+            0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage")
+          .size(),
+      0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples("Ads.InterestGroup.Auction.First6AuctionsBitsPerPage")
+          .size(),
+      0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit")
+          .size(),
+      0u);
+
+  // DeleteContents() to force-populate remaining metrics.
+  DeleteContents();
+
+  // The last auction doesn't count towards these metrics since the auction
+  // limit is enforced -- this is because that auction doesn't contribute any
+  // knowledge about stored interest groups to the page.
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsPerPage", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage", 1 * 100 / 2,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.First6AuctionsBitsPerPage", 0b110, 1);
+  // However, we do record that the auction was skipped.
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit", 1, 1);
+}
+
+TEST_F(AdAuctionServiceImplNumAuctionLimitTest,
+       AddInterestGroupRunAuctionStartManyAuctionsInParallel) {
+  base::HistogramTester histogram_tester;
+
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+  browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin() {}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+function reportResult() {}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(10);
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  auto succeed_auction_config = blink::mojom::AuctionAdConfig::New();
+  succeed_auction_config->seller = kOriginA;
+  succeed_auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  succeed_auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  succeed_auction_config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+
+  // Pick some large number, larger than the auction limit.
+  constexpr int kNumAuctions = 10;
+  base::RunLoop run_loop;
+  mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+  base::RepeatingClosure one_auction_complete =
+      base::BarrierClosure(kNumAuctions, run_loop.QuitClosure());
+
+  for (int i = 0; i < kNumAuctions; i++) {
+    interest_service->RunAdAuction(
+        succeed_auction_config->Clone(),
+        base::BindLambdaForTesting(
+            [&one_auction_complete](
+                const absl::optional<GURL>& ignored_result) {
+              one_auction_complete.Run();
+            }));
+  }
+  run_loop.Run();
+
+  // DeleteContents() to force-populate remaining metrics.
+  DeleteContents();
+
+  // Only the first 2 auctions should have succeeded -- the others should fail.
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsPerPage", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage", 2 * 100 / 2,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.First6AuctionsBitsPerPage", 0b111, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit",
+      kNumAuctions - 2, 1);
 }
 
 class AdAuctionServiceImplRestrictedPermissionsPolicyTest
@@ -2638,7 +2987,7 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   UpdateInterestGroupNoFlush();

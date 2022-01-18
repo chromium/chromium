@@ -5,10 +5,13 @@
 #include "content/browser/interest_group/ad_auction_result_metrics.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/time/time.h"
 #include "content/public/browser/page_user_data.h"
+#include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -18,29 +21,51 @@ AdAuctionResultMetrics::AdAuctionResultMetrics(content::Page& page)
     : PageUserData<AdAuctionResultMetrics>(page) {}
 
 AdAuctionResultMetrics::~AdAuctionResultMetrics() {
-  if (num_auctions_ <= 0)
+  if (num_completed_auctions_ <= 0)
     return;
+  // Check that every non-skipped auction should complete (but skip the check if
+  // clamping may have occurred).
+  if (num_requested_auctions_ <
+      std::numeric_limits<decltype(num_requested_auctions_)::type>::max()) {
+    DCHECK_EQ(num_auctions_not_run_due_to_auction_limit_.RawValue(),
+              (num_requested_auctions_ - num_completed_auctions_).RawValue());
+  }
   base::UmaHistogramCounts100("Ads.InterestGroup.Auction.NumAuctionsPerPage",
-                              num_auctions_);
+                              num_completed_auctions_);
   base::UmaHistogramPercentage(
       "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage",
-      num_successful_auctions_ * 100 / num_auctions_);
+      num_successful_auctions_ * 100 / num_completed_auctions_);
   DCHECK_GE(first_auction_bits_, 0b10u);
   DCHECK_LE(first_auction_bits_, (1 << kNumFirstAuctionBits) - 1);
   base::SparseHistogram::FactoryGet(
       "Ads.InterestGroup.Auction.First6AuctionsBitsPerPage",
       base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(first_auction_bits_);
+  base::UmaHistogramCounts100(
+      "Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit",
+      num_auctions_not_run_due_to_auction_limit_);
+}
+
+bool AdAuctionResultMetrics::ShouldRunAuction() {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kFledge));
+  num_requested_auctions_++;
+  if (!base::FeatureList::IsEnabled(features::kFledgeLimitNumAuctions))
+    return true;
+  if (num_requested_auctions_ > features::kFledgeLimitNumAuctionsParam.Get()) {
+    num_auctions_not_run_due_to_auction_limit_++;
+    return false;
+  }
+  return true;
 }
 
 void AdAuctionResultMetrics::ReportAuctionResult(
     AdAuctionResultMetrics::AuctionResult result) {
-  num_auctions_++;
-  if (num_auctions_ < kNumFirstAuctionBits)
+  num_completed_auctions_++;
+  if (num_completed_auctions_ < kNumFirstAuctionBits)
     first_auction_bits_ <<= 1;
   if (result == AdAuctionResultMetrics::AuctionResult::kSucceeded) {
     num_successful_auctions_++;
-    if (num_auctions_ < kNumFirstAuctionBits)
+    if (num_completed_auctions_ < kNumFirstAuctionBits)
       first_auction_bits_ |= 0x1;
   }
   const base::TimeTicks now = base::TimeTicks::Now();

@@ -500,7 +500,10 @@ chromium-metrics-reviews@google.com.
     this allows reporting metrics when fewer than 6 auctions occurred during the
     page's lifetime. Therefore, the max value is 0b1111111 (7 bits, represents 6
     successful auctions), and the min value is 0b10 (represents a page that had
-    1 failed auction), and every value in between is valid.
+    1 failed auction), and every value in between is valid. Not updated for
+    auctions skipped due to enforcing the auction limit, see
+    NumAuctionsSkippedDueToAuctionLimit. Also, not updated if runAdAuction()
+    fails before the auction worklets run.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -514,7 +517,25 @@ chromium-metrics-reviews@google.com.
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     The number of auctions (runAdAuction() calls) per-page, from page load to
-    unload, reported at unload (if at least 1 auction completed).
+    unload, reported at unload (if at least 1 auction completed). Not updated
+    for auctions skipped due to enforcing the auction limit, see
+    NumAuctionsSkippedDueToAuctionLimit. Also, not updated if runAdAuction()
+    fails before the auction worklets run.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.NumAuctionsSkippedDueToAuctionLimit"
+    units="auctions" expires_after="2022-03-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of auctions (runAdAuction() calls) per-page, from page load to
+    unload, reported at unload (if at least 1 auction completed) that were
+    skipped due to hitting the auction limit.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -562,7 +583,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     The percentage of auctions (runAdAuction() calls) per-page that succeed,
     from page load to unload, reported at unload (if at least 1 auction
-    completed), rounded down to the nearest percent.
+    completed), rounded down to the nearest percent. Not updated for auctions
+    skipped due to enforcing the auction limit, see
+    NumAuctionsSkippedDueToAuctionLimit. Also, not updated if runAdAuction()
+    fails before the auction worklets run.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -589,7 +613,9 @@ chromium-metrics-reviews@google.com.
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     The duration between runAdAuction() calls, collected on a per-page basis,
-    reported on each auction.
+    reported on each auction. Not updated for auctions skipped due to enforcing
+    the auction limit, see NumAuctionsSkippedDueToAuctionLimit. Also, not
+    updated if runAdAuction() fails before the auction worklets run.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

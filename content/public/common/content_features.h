@@ -95,6 +95,9 @@ CONTENT_EXPORT extern const base::Feature kFontSrcLocalMatching;
 CONTENT_EXPORT extern const base::Feature
     kForwardMemoryPressureEventsToGpuProcess;
 #endif
+CONTENT_EXPORT extern const base::Feature kFledgeLimitNumAuctions;
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kFledgeLimitNumAuctionsParam;
 CONTENT_EXPORT extern const base::Feature kFractionalScrollOffsets;
 CONTENT_EXPORT extern const base::Feature kGreaseUACH;
 CONTENT_EXPORT extern const base::Feature kHistoryPreventSandboxedNavigation;

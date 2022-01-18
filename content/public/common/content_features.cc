@@ -377,6 +377,15 @@ const base::Feature kForwardMemoryPressureEventsToGpuProcess {
 };
 #endif
 
+// If enabled, limits the number of FLEDGE auctions that can be run between page
+// load and unload -- any attempt to run more than this number of auctions will
+// fail (return null to JavaScript).
+const base::Feature kFledgeLimitNumAuctions{"LimitNumFledgeAuctions",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+// The number of allowed auctions for each page load (load to unload).
+const base::FeatureParam<int> kFledgeLimitNumAuctionsParam{
+    &kFledgeLimitNumAuctions, "max_auctions_per_page", 8};
+
 // Enables scrollers inside Blink to store scroll offsets in fractional
 // floating-point numbers rather than truncating to integers.
 const base::Feature kFractionalScrollOffsets{"FractionalScrollOffsets",
