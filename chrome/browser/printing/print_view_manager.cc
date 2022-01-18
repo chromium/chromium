@@ -126,8 +126,10 @@ bool PrintViewManager::PrintForSystemDialogNow(
     return false;
 
   // Don't print if `print_preview_rfh_` is no longer live.
-  if (!content::RenderFrameHost::FromID(rfh_id))
+  if (!content::RenderFrameHost::FromID(rfh_id) ||
+      !print_preview_rfh_->IsRenderFrameLive()) {
     return false;
+  }
 
   // TODO(crbug.com/809738)  Register with `PrintBackendServiceManager` when
   // system print is enabled out-of-process.
@@ -167,6 +169,9 @@ void PrintViewManager::PrintPreviewForWebNode(content::RenderFrameHost* rfh) {
     return;
 
   DCHECK(rfh);
+  // All callers should already ensure this condition holds; CHECK to
+  // aggressively protect against future unsafety.
+  CHECK(rfh->IsRenderFrameLive());
   DCHECK(!print_preview_rfh_);
   print_preview_rfh_ = rfh;
   print_preview_state_ = USER_INITIATED_PREVIEW;
@@ -198,9 +203,16 @@ void PrintViewManager::PrintPreviewDone() {
   bool send_message = !is_switching_to_system_dialog_;
 #endif
   if (send_message) {
-    // Only send a message about having closed if it is still connected.
-    if (IsPrintRenderFrameConnected(print_preview_rfh_))
+    // Only send a message about having closed if the RenderFrame is live and
+    // PrintRenderFrame is connected. Normally IsPrintRenderFrameConnected()
+    // implies  IsRenderFrameLive(). However, when a renderer process exits
+    // (e.g. due to a crash), RenderFrameDeleted() and PrintPreviewDone() are
+    // triggered by independent observers. Since there is no guarantee which
+    // observer will run first, both conditions are explicitly checked here.
+    if (print_preview_rfh_->IsRenderFrameLive() &&
+        IsPrintRenderFrameConnected(print_preview_rfh_)) {
       GetPrintRenderFrame(print_preview_rfh_)->OnPrintPreviewDialogClosed();
+    }
   }
   is_switching_to_system_dialog_ = false;
 
@@ -277,7 +289,7 @@ bool PrintViewManager::PrintPreview(
     return false;
 
   // Don't print / print preview crashed tabs.
-  if (IsCrashed())
+  if (IsCrashed() || !rfh->IsRenderFrameLive())
     return false;
 
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(std::move(print_renderer),
@@ -306,6 +318,9 @@ void PrintViewManager::SetupScriptedPrintPreview(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto& map = g_scripted_print_preview_closure_map.Get();
   content::RenderFrameHost* rfh = GetCurrentTargetFrame();
+  // The Mojo receiver endpoint is owned by a RenderFrameHostReceiverSet, so
+  // this DCHECK should always hold.
+  DCHECK(rfh->IsRenderFrameLive());
   content::RenderProcessHost* rph = rfh->GetProcess();
 
   if (base::Contains(map, rph)) {
@@ -417,9 +432,11 @@ void PrintViewManager::OnRequestPrintPreviewAllowed(
     mojom::RequestPrintPreviewParamsPtr params,
     int render_process_id,
     int render_frame_id) {
+  // Double-check that the RenderFrameHost is still alive and has a live
+  // RenderFrame, since the DLP check is potentially asynchronous.
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host) {
+  if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
     return;
   }
   if (params->webnode_only) {

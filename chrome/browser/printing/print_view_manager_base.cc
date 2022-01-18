@@ -369,7 +369,7 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
     return false;
 
   // Don't print if `rfh` is no longer live.
-  if (!content::RenderFrameHost::FromID(rfh_id))
+  if (!content::RenderFrameHost::FromID(rfh_id) || !rfh->IsRenderFrameLive())
     return false;
 
   // TODO(crbug.com/809738)  Register with `PrintBackendServiceManager` when
@@ -976,8 +976,12 @@ void PrintViewManagerBase::ReleasePrintJob() {
   if (!print_job_)
     return;
 
-  if (rfh)
+  if (rfh) {
+    // printing_rfh_ should only ever point to a RenderFrameHost with a live
+    // RenderFrame.
+    DCHECK(rfh->IsRenderFrameLive());
     GetPrintRenderFrame(rfh)->PrintingDone(printing_succeeded_);
+  }
 
   registrar_.Remove(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,
                     content::Source<PrintJob>(print_job_.get()));
@@ -1073,6 +1077,10 @@ void PrintViewManagerBase::SetPrintingRFH(content::RenderFrameHost* rfh) {
     return;
   }
   DCHECK(!printing_rfh_);
+  // Protect against future unsafety, since printing_rfh_ is cleared by
+  // RenderFrameDeleted(), which will not be called if the render frame is not
+  // live.
+  CHECK(rfh->IsRenderFrameLive());
   printing_rfh_ = rfh;
 }
 
@@ -1099,7 +1107,8 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
 
 void PrintViewManagerBase::SendPrintingEnabled(bool enabled,
                                                content::RenderFrameHost* rfh) {
-  GetPrintRenderFrame(rfh)->SetPrintingEnabled(enabled);
+  if (rfh->IsRenderFrameLive())
+    GetPrintRenderFrame(rfh)->SetPrintingEnabled(enabled);
 }
 
 }  // namespace printing
