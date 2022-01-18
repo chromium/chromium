@@ -90,6 +90,12 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
     // Called when the window is being destroyed.
     virtual void OnWindowDestroying(WindowState* window_state) {}
+
+#if DCHECK_IS_ON()
+    // Check if the window state satisfies the maximizable condition.
+    virtual void CheckMaximizableCondition(
+        const WindowState* window_state) const;
+#endif  // DCHECK_IS_ON()
   };
 
   // Returns the WindowState for |window|. Creates WindowState if it doesn't
