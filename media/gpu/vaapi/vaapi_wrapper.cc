@@ -24,6 +24,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/cpu.h"
 #include "base/cxx17_backports.h"
 #include "base/environment.h"
@@ -249,8 +250,14 @@ media::VAImplementation VendorStringToImplementationType(
 }
 
 bool UseGlobalVaapiLock(media::VAImplementation implementation_type) {
-  // Only iHD is known to be thread safe at the moment, see crbug.com/1123429.
-  return implementation_type != media::VAImplementation::kIntelIHD ||
+  // Only iHD and Mesa Gallium are known to be thread safe at the moment.
+  // * Mesa Gallium: b/144877595
+  // * iHD: crbug.com/1123429.
+  constexpr auto kNoVaapiLockImplementations =
+      base::MakeFixedFlatSet<media::VAImplementation>(
+          {media::VAImplementation::kMesaGallium,
+           media::VAImplementation::kIntelIHD});
+  return !kNoVaapiLockImplementations.contains(implementation_type) ||
          base::FeatureList::IsEnabled(media::kGlobalVaapiLock);
 }
 
