@@ -66,6 +66,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "desks_new_desk_button.icon",
     "desks_templates.icon",
     "dictation_bubble.icon",
+    "dictation_bubble_macro_failed.icon",
+    "dictation_bubble_macro_succeeded.icon",
     "dictation_menu.icon",
     "dictation_off.icon",
     "dictation_off_newui.icon",

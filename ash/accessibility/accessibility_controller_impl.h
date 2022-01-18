@@ -451,6 +451,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       const std::u16string& display_language) override;
   void UpdateDictationBubble(
       bool visible,
+      DictationBubbleIconType icon,
       const absl::optional<std::u16string>& text) override;
 
   // SessionObserver:

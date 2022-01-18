@@ -198,6 +198,15 @@ enum class MagnifierMouseFollowingMode {
   kMaxValue = kEdge
 };
 
+// The icon shown in the Dictation bubble UI. This enum should be kept in sync
+// with chrome.accessibilityPrivate.DictationBubbleIconType.
+enum class DictationBubbleIconType {
+  kHidden,
+  kStandby,
+  kMacroSuccess,
+  kMacroFail,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_

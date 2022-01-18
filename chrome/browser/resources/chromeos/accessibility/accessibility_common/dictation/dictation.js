@@ -15,6 +15,7 @@ const StartOptions = chrome.speechRecognitionPrivate.StartOptions;
 const StopEvent = chrome.speechRecognitionPrivate.SpeechRecognitionStopEvent;
 const SpeechRecognitionType =
     chrome.speechRecognitionPrivate.SpeechRecognitionType;
+const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
 
 /**
  * Main class for the Chrome OS dictation feature.
@@ -382,7 +383,8 @@ export class Dictation {
     // although SODA does not seem to do that. The newline character looks wrong
     // here.
     this.interimText_ = text;
-    this.inputController_.showBubble(this.interimText_);
+    this.inputController_.showBubble(
+        /*icon=*/ IconType.HIDDEN, /*text=*/ this.interimText_);
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;
@@ -400,7 +402,7 @@ export class Dictation {
     }
 
     this.interimText_ = '';
-    this.inputController_.showBubble();
+    this.inputController_.showBubble(/*icon=*/ IconType.STANDBY);
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;
@@ -428,7 +430,8 @@ export class Dictation {
       return;
     }
     this.interimText_ = '';
-    this.inputController_.showBubble('☑' + transcript);
+    this.inputController_.showBubble(
+        /*icon=*/ IconType.MACRO_SUCCESS, /*text=*/ transcript);
     this.clearUITextTimeoutId_ = setTimeout(
         () => this.clearInterimText_(),
         Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
@@ -454,7 +457,9 @@ export class Dictation {
 
     this.interimText_ = '';
     // TODO(crbug.com/1252037): Finalize string and internationalization.
-    this.inputController_.showBubble(`ⓘ Failed to execute: ` + transcript);
+    this.inputController_.showBubble(
+        /*icon=*/ IconType.MACRO_FAIL,
+        /*text=*/ `Failed to run command: ` + transcript);
     this.clearUITextTimeoutId_ = setTimeout(
         () => this.clearInterimText_(),
         Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);

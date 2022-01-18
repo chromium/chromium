@@ -25,6 +25,8 @@ class Label;
 
 namespace ash {
 
+enum class DictationBubbleIconType;
+
 // View for the Dictation bubble.
 class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
  public:
@@ -34,9 +36,10 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   DictationBubbleView& operator=(const DictationBubbleView&) = delete;
   ~DictationBubbleView() override;
 
-  // Updates the visibility and text content of `label_`. Also updates the size
-  // of this view.
-  void Update(const absl::optional<std::u16string>& text);
+  // Updates the visibility of all child views. Also updates the text content
+  // of `label_` and updates the size of this view.
+  void Update(DictationBubbleIconType icon,
+              const absl::optional<std::u16string>& text);
 
   // views::BubbleDialogDelegateView:
   void Init() override;
@@ -47,13 +50,21 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   std::u16string GetTextForTesting();
+  bool IsStandbyImageVisibleForTesting();
+  bool IsMacroSucceededImageVisibleForTesting();
+  bool IsMacroFailedImageVisibleForTesting();
 
  private:
-  std::unique_ptr<views::ImageView> CreateIcon();
   std::unique_ptr<views::Label> CreateLabel(const std::u16string& text);
 
   // Owned by the views hierarchy.
-  views::ImageView* image_view_ = nullptr;
+  // An image that is shown when Dictation is standing by.
+  views::ImageView* standby_image_ = nullptr;
+  // An image that is shown when a macro is successfully run.
+  views::ImageView* macro_succeeded_image_ = nullptr;
+  // An image that is shown when a macro fails to run.
+  views::ImageView* macro_failed_image_ = nullptr;
+  // A label that displays non-final speech results.
   views::Label* label_ = nullptr;
 };
 

@@ -69,6 +69,7 @@ class FakeAccessibilityController : ash::AccessibilityController {
       const std::u16string& display_language) override;
   void UpdateDictationBubble(
       bool visible,
+      ash::DictationBubbleIconType icon,
       const absl::optional<std::u16string>& text) override;
 
  private:

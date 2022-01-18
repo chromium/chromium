@@ -774,11 +774,40 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
   std::unique_ptr<accessibility_private::UpdateDictationBubble::Params> params(
       accessibility_private::UpdateDictationBubble::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::DictationBubbleProperties& properties =
+      params->properties;
 
+  // Extract the icon type.
+  ash::DictationBubbleIconType icon = ash::DictationBubbleIconType::kHidden;
+  switch (properties.icon) {
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_HIDDEN:
+      icon = ash::DictationBubbleIconType::kHidden;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_STANDBY:
+      icon = ash::DictationBubbleIconType::kStandby;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_MACROSUCCESS:
+      icon = ash::DictationBubbleIconType::kMacroSuccess;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_MACROFAIL:
+      icon = ash::DictationBubbleIconType::kMacroFail;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_NONE:
+      NOTREACHED();
+      break;
+  }
+
+  // Extract text.
   absl::optional<std::u16string> text;
-  if (params->text)
-    text = base::UTF8ToUTF16(*params->text);
-  ash::AccessibilityController::Get()->UpdateDictationBubble(params->visible,
-                                                             text);
+  if (properties.text)
+    text = base::UTF8ToUTF16(*properties.text);
+
+  ash::AccessibilityController::Get()->UpdateDictationBubble(properties.visible,
+                                                             icon, text);
   return RespondNow(NoArguments());
 }

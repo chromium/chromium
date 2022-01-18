@@ -105,17 +105,33 @@ var availableTests = [
   },
 
   function testUpdateDictationBubble() {
-    chrome.accessibilityPrivate.updateDictationBubble(
-        /*visible=*/ true, /*text=*/ 'Hello');
-    chrome.test.sendMessage('Show', (proceed) => {
-      chrome.accessibilityPrivate.updateDictationBubble(
-          /*visible=*/ true, /*text=*/ 'Hello world');
-      chrome.test.sendMessage('Update', (proceed) => {
-        chrome.accessibilityPrivate.updateDictationBubble(/*visible=*/ false);
-        chrome.test.sendMessage('Hide');
-        chrome.test.succeed();
+    const update = chrome.accessibilityPrivate.updateDictationBubble;
+    const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+
+    // The typical flow for this API is as follows:
+    // 1. Show the UI with the standby icon.
+    // 2. Update the UI with some speech results and hide all icons.
+    // 3. If the speech results match a Dictation macro (and the macro ran
+    // successfully), then show the macro succeeded icon along with the
+    // recognized text.
+    // 4. Reset the UI and show the standby icon.
+    // 5. Hide the UI.
+    update({visible: true, icon: IconType.STANDBY});
+    chrome.test.sendMessage('Standby', (proceed) => {
+      update({visible: true, icon: IconType.HIDDEN, text: 'Hello'});
+      chrome.test.sendMessage('Show text', (proceed) => {
+        update({visible: true, icon: IconType.MACRO_SUCCESS, text: 'Hello'});
+        chrome.test.sendMessage('Show macro success', (proceed) => {
+          update({visible: true, icon: IconType.STANDBY});
+          chrome.test.sendMessage('Reset', (proceed) => {
+            update({visible: false, icon: IconType.HIDDEN});
+            chrome.test.sendMessage('Hide');
+            chrome.test.succeed();
+          });
+        });
       });
     });
+
     chrome.test.notifyPass();
   },
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+
 /**
  * InputController handles interaction with input fields for Dictation.
  */
@@ -134,15 +136,18 @@ export class InputController {
 
   /**
    * Shows the bubble UI with the given text.
+   * @param {!IconType} icon
    * @param {string=} text
    */
-  showBubble(text) {
-    chrome.accessibilityPrivate.updateDictationBubble(/*visible=*/ true, text);
+  showBubble(icon, text) {
+    chrome.accessibilityPrivate.updateDictationBubble(
+        {visible: true, icon, text});
   }
 
   /** Hides the bubble UI. */
   hideBubble() {
-    chrome.accessibilityPrivate.updateDictationBubble(/*visible=*/ false);
+    chrome.accessibilityPrivate.updateDictationBubble(
+        {visible: false, icon: IconType.HIDDEN});
   }
 
   /**

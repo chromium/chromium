@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/dictation_bubble_controller.h"
 
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_bubble_view.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
@@ -27,12 +28,14 @@ DictationBubbleController::~DictationBubbleController() {
 
 void DictationBubbleController::UpdateBubble(
     bool visible,
+    DictationBubbleIconType icon,
     const absl::optional<std::u16string>& text) {
   if (visible) {
     MaybeInitialize();
-    Update(text);
+    Update(icon, text);
     widget_->Show();
   } else {
+    Update(icon, text);
     if (widget_) {
       widget_->Hide();
     }
@@ -71,12 +74,13 @@ void DictationBubbleController::MaybeInitialize() {
 // TODO(crbug.com/1252037): Fix issue where bubble is shown behind current
 // Chrome tab.
 void DictationBubbleController::Update(
+    DictationBubbleIconType icon,
     const absl::optional<std::u16string>& text) {
   DCHECK(dictation_bubble_view_);
   DCHECK(widget_);
 
   // Update `dictation_bubble_view_`.
-  dictation_bubble_view_->Update(text);
+  dictation_bubble_view_->Update(icon, text);
 
   // Update the bounds to fit entirely within the screen.
   gfx::Rect new_bounds = widget_->GetWindowBoundsInScreen();

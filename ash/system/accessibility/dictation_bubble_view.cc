@@ -4,6 +4,7 @@
 
 #include "ash/system/accessibility/dictation_bubble_view.h"
 
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -30,13 +31,17 @@ DictationBubbleView::DictationBubbleView() {
 
 DictationBubbleView::~DictationBubbleView() = default;
 
-void DictationBubbleView::Update(const absl::optional<std::u16string>& text) {
-  bool has_text = text.has_value();
-  // Show either the image view, which is a placeholder when there is no text
-  // to be displayed, or the label view. Never show both at the same time.
-  image_view_->SetVisible(!has_text);
-  label_->SetVisible(has_text);
-  label_->SetText(has_text ? text.value() : std::u16string());
+void DictationBubbleView::Update(DictationBubbleIconType icon,
+                                 const absl::optional<std::u16string>& text) {
+  // Update icon visibility.
+  standby_image_->SetVisible(icon == DictationBubbleIconType::kStandby);
+  macro_succeeded_image_->SetVisible(icon ==
+                                     DictationBubbleIconType::kMacroSuccess);
+  macro_failed_image_->SetVisible(icon == DictationBubbleIconType::kMacroFail);
+
+  // Update label.
+  label_->SetVisible(text.has_value());
+  label_->SetText(text.has_value() ? text.value() : std::u16string());
   SizeToContents();
 }
 
@@ -49,7 +54,19 @@ void DictationBubbleView::Init() {
   UseCompactMargins();
   SetBackground(views::CreateSolidBackground(kBackgroundColor));
 
-  AddChildView(CreateIcon());
+  auto create_image_view = [](views::ImageView** destination_view,
+                              const gfx::VectorIcon& icon) {
+    return views::Builder<views::ImageView>()
+        .CopyAddressTo(destination_view)
+        .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, kIconAndLabelColor))
+        .Build();
+  };
+
+  AddChildView(create_image_view(&standby_image_, kDictationBubbleIcon));
+  AddChildView(create_image_view(&macro_succeeded_image_,
+                                 kDictationBubbleMacroSucceededIcon));
+  AddChildView(
+      create_image_view(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
   AddChildView(CreateLabel(std::u16string()));
 }
 
@@ -71,12 +88,16 @@ std::u16string DictationBubbleView::GetTextForTesting() {
   return label_->GetText();
 }
 
-std::unique_ptr<views::ImageView> DictationBubbleView::CreateIcon() {
-  return views::Builder<views::ImageView>()
-      .CopyAddressTo(&image_view_)
-      .SetImage(gfx::CreateVectorIcon(kDictationBubbleIcon, kIconSizeDip,
-                                      kIconAndLabelColor))
-      .Build();
+bool DictationBubbleView::IsStandbyImageVisibleForTesting() {
+  return standby_image_->GetVisible();
+}
+
+bool DictationBubbleView::IsMacroSucceededImageVisibleForTesting() {
+  return macro_succeeded_image_->GetVisible();
+}
+
+bool DictationBubbleView::IsMacroFailedImageVisibleForTesting() {
+  return macro_failed_image_->GetVisible();
 }
 
 std::unique_ptr<views::Label> DictationBubbleView::CreateLabel(

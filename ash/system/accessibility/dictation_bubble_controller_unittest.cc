@@ -36,10 +36,15 @@ class DictationBubbleControllerTest : public AshTestBase {
   }
 
   void Show(const std::u16string& text) {
-    GetController()->UpdateBubble(/*visible=*/true, text);
+    GetController()->UpdateBubble(
+        /*visible=*/true, /*icon=*/DictationBubbleIconType::kHidden, text);
   }
 
-  void Hide() { GetController()->UpdateBubble(/*visible=*/false, u""); }
+  void Hide() {
+    GetController()->UpdateBubble(/*visible=*/false,
+                                  /*icon=*/DictationBubbleIconType::kHidden,
+                                  /*text=*/std::u16string());
+  }
 
   DictationBubbleView* GetView() {
     return GetController()->dictation_bubble_view_;

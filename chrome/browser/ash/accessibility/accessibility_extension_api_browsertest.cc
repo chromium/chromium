@@ -67,6 +67,50 @@ class AccessibilityPrivateApiTest
     return controller->dictation_bubble_view_->GetTextForTesting();
   }
 
+  bool IsDictationBubbleStandbyImageVisible() {
+    DictationBubbleController* controller =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetDictationBubbleControllerForTest();
+    DCHECK(controller != nullptr);
+    return controller->dictation_bubble_view_
+        ->IsStandbyImageVisibleForTesting();
+  }
+
+  bool IsDictationBubbleMacroSucceededImageVisible() {
+    DictationBubbleController* controller =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetDictationBubbleControllerForTest();
+    DCHECK(controller != nullptr);
+    return controller->dictation_bubble_view_
+        ->IsMacroSucceededImageVisibleForTesting();
+  }
+
+  bool IsDictationBubbleMacroFailedImageVisible() {
+    DictationBubbleController* controller =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetDictationBubbleControllerForTest();
+    DCHECK(controller != nullptr);
+    return controller->dictation_bubble_view_
+        ->IsMacroFailedImageVisibleForTesting();
+  }
+
+  DictationBubbleIconType GetDictationBubbleVisibleIcon() {
+    DCHECK_GE(1, IsDictationBubbleStandbyImageVisible() +
+                     IsDictationBubbleMacroSucceededImageVisible() +
+                     IsDictationBubbleMacroFailedImageVisible())
+        << "No more than one icon should be visible!";
+    if (IsDictationBubbleStandbyImageVisible())
+      return DictationBubbleIconType::kStandby;
+    if (IsDictationBubbleMacroSucceededImageVisible())
+      return DictationBubbleIconType::kMacroSuccess;
+    if (IsDictationBubbleMacroFailedImageVisible())
+      return DictationBubbleIconType::kMacroFail;
+    return DictationBubbleIconType::kHidden;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -226,27 +270,47 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateDictationBubble) {
 
   // This test requires some back and forth communication between C++ and JS.
   // Use message listeners to force the synchronicity of this test.
-  ExtensionTestMessageListener show_listener("Show", /*will_reply=*/true);
-  ExtensionTestMessageListener update_listener("Update", /*will_reply=*/true);
+  ExtensionTestMessageListener standby_listener("Standby", /*will_reply=*/true);
+  ExtensionTestMessageListener show_text_listener("Show text",
+                                                  /*will_reply=*/true);
+  ExtensionTestMessageListener macro_success_listener("Show macro success",
+                                                      /*will_reply=*/true);
+  ExtensionTestMessageListener reset_listener("Reset", /*will_reply=*/true);
   ExtensionTestMessageListener hide_listener("Hide", /*will_reply=*/false);
 
   extensions::ResultCatcher result_catcher;
   ASSERT_TRUE(RunSubtest("testUpdateDictationBubble")) << message_;
 
-  ASSERT_TRUE(show_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(standby_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(IsDictationBubbleVisible());
+  EXPECT_EQ(std::u16string(), GetDictationBubbleText());
+  EXPECT_EQ(DictationBubbleIconType::kStandby, GetDictationBubbleVisibleIcon());
+  standby_listener.Reply("Continue");
+
+  ASSERT_TRUE(show_text_listener.WaitUntilSatisfied());
   EXPECT_TRUE(IsDictationBubbleVisible());
   EXPECT_EQ(u"Hello", GetDictationBubbleText());
-  show_listener.Reply("Continue");
+  EXPECT_EQ(DictationBubbleIconType::kHidden, GetDictationBubbleVisibleIcon());
+  show_text_listener.Reply("Continue");
 
-  ASSERT_TRUE(update_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(macro_success_listener.WaitUntilSatisfied());
   EXPECT_TRUE(IsDictationBubbleVisible());
-  EXPECT_EQ(u"Hello world", GetDictationBubbleText());
-  update_listener.Reply("Continue");
+  EXPECT_EQ(u"Hello", GetDictationBubbleText());
+  EXPECT_EQ(DictationBubbleIconType::kMacroSuccess,
+            GetDictationBubbleVisibleIcon());
+  macro_success_listener.Reply("Continue");
+
+  ASSERT_TRUE(reset_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(IsDictationBubbleVisible());
+  EXPECT_EQ(std::u16string(), GetDictationBubbleText());
+  EXPECT_EQ(DictationBubbleIconType::kStandby, GetDictationBubbleVisibleIcon());
+  reset_listener.Reply("Continue");
 
   ASSERT_TRUE(hide_listener.WaitUntilSatisfied());
   EXPECT_FALSE(IsDictationBubbleVisible());
-  // Text remains unchanged.
-  EXPECT_EQ(u"Hello world", GetDictationBubbleText());
+  EXPECT_EQ(std::u16string(), GetDictationBubbleText());
+  EXPECT_EQ(DictationBubbleIconType::kHidden, GetDictationBubbleVisibleIcon());
+
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
