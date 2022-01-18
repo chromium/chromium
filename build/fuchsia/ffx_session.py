@@ -69,11 +69,19 @@ class FfxRunner():
         log_file.write('Process exited with code %d. Output: %s\n' %
                        (cpe.returncode, cpe.output.strip()))
       raise
+    stripped_stdout = stdoutdata.strip()
     if log_file:
-      log_file.write('Process exited with code %d. Output: %s\n' %
-                     (process.returncode, stdoutdata.strip()))
-    logging.debug('ffx command returned %d with output %s', process.returncode,
-                  stdoutdata.strip())
+      if process.returncode != 0:
+        log_file.write('Process exited with code %d.' % process.returncode)
+        if stripped_stdout:
+          log_file.write(' Output:\n%s\n' % stripped_stdout)
+        else:
+          log_file.write('\n')
+      elif stripped_stdout:
+        log_file.write('%s\n' % stripped_stdout)
+    logging.debug(
+        'ffx command returned %d with %s', process.returncode,
+        ('output %s' % stripped_stdout if stripped_stdout else 'no output'))
     return stdoutdata
 
   def open_ffx(self, args):
