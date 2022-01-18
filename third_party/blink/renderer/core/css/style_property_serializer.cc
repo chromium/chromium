@@ -1294,7 +1294,7 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
   const CSSValue* template_column_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
-  const CSSValue* area_values =
+  const CSSValue* template_area_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
 
   // 1- 'none' case.
@@ -1307,10 +1307,15 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
     return "none";
   }
 
+  const auto* template_row_value_list =
+      DynamicTo<CSSValueList>(template_row_values);
   StringBuilder result;
+
   // 2- <grid-template-rows> / <grid-template-columns>
-  if (IsA<CSSIdentifierValue>(area_values) &&
-      To<CSSIdentifierValue>(area_values)->GetValueID() == CSSValueID::kNone) {
+  if (!template_row_value_list ||
+      (IsA<CSSIdentifierValue>(template_area_values) &&
+       To<CSSIdentifierValue>(template_area_values)->GetValueID() ==
+           CSSValueID::kNone)) {
     result.Append(template_row_values->CssText());
     result.Append(" / ");
     result.Append(template_column_values->CssText());
@@ -1319,19 +1324,18 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
 
   // 3- [ <line-names>? <string> <track-size>? <line-names>? ]+
   // [ / <track-list> ]?
-  const auto* template_row_value_list =
-      DynamicTo<CSSValueList>(template_row_values);
   if (template_row_value_list->length() == 1 &&
       IsA<CSSIdentifierValue>(template_row_value_list->Item(0)) &&
       To<CSSIdentifierValue>(template_row_value_list->Item(0)).GetValueID() ==
           CSSValueID::kAuto) {
     // If the |template_row_value_list| has only one value and it is 'auto',
     // then we append the 'grid-template-area' values.
-    result.Append(area_values->CssText());
+    result.Append(template_area_values->CssText());
   } else {
-    const NamedGridAreaMap& grid_area_map =
-        DynamicTo<cssvalue::CSSGridTemplateAreasValue>(area_values)
-            ->GridAreaMap();
+    const auto* template_areas =
+        DynamicTo<cssvalue::CSSGridTemplateAreasValue>(template_area_values);
+    DCHECK(template_areas);
+    const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
     wtf_size_t grid_area_index = 0;
     for (const auto& row_value : *template_row_value_list) {
       const String row_value_text = row_value->CssText();
