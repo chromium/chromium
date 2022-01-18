@@ -221,9 +221,14 @@ class CookieStoreTest : public testing::Test {
       absl::optional<base::Time> server_time = absl::nullopt,
       absl::optional<base::Time> system_time = absl::nullopt,
       absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt) {
-    auto cookie = CanonicalCookie::Create(
-        url, cookie_line, system_time.value_or(base::Time::Now()), server_time,
-        cookie_partition_key);
+    // Ensure a different Creation date to guarantee sort order for testing
+    static base::Time last = base::Time::Min();
+    last = base::Time::Now() == last ? last + base::Microseconds(1)
+                                     : base::Time::Now();
+
+    auto cookie =
+        CanonicalCookie::Create(url, cookie_line, system_time.value_or(last),
+                                server_time, cookie_partition_key);
 
     if (!cookie)
       return false;
