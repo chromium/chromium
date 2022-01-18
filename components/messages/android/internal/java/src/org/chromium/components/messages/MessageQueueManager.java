@@ -84,6 +84,10 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         mMessages.put(messageKey, messageState);
 
         MessageState candidate = getNextMessage();
+        if (candidate != null) {
+            Log.w(TAG, "Currently displaying message with ID %s and key %s.",
+                    candidate.handler.getMessageIdentifier(), candidate.messageKey);
+        }
         updateCurrentDisplayedMessage(true, candidate);
 
         if (candidate == messageState) {
@@ -123,6 +127,8 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         // Remove the scope from the map if the messageQueue is empty.
         List<MessageState> messageQueue = mMessageQueues.get(scopeKey);
         messageQueue.remove(messageState);
+        Log.w(TAG, "Removed message with ID %s and key %s from the message queue.",
+                messageState.handler.getMessageIdentifier(), messageState.messageKey);
         if (messageQueue.isEmpty()) {
             mMessageQueues.remove(scopeKey);
             mScopeChangeController.lastMessageDismissed(scopeKey);
@@ -190,6 +196,12 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
                     if (mCurrentDisplayedMessage == null) {
                         return;
                     }
+                    Log.w(TAG,
+                            "MessageStateHandler#shouldShow for message with ID %s and key %s in "
+                                    + "MessageQueueManager#updateCurrentDisplayedMessage "
+                                    + "returned %s.",
+                            candidate.handler.getMessageIdentifier(), candidate.messageKey,
+                            candidate.handler.shouldShow());
                     mCurrentDisplayedMessage.handler.show();
                     mLastShownMessage = mCurrentDisplayedMessage;
                 });
@@ -245,8 +257,10 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             if (isActive == null || !isActive) continue;
             for (MessageState candidate : queue) {
                 boolean shouldShow = candidate.handler.shouldShow();
-                Log.d(TAG, "MessageStateHandler#shouldShow for message ID %s returned %s.",
-                        candidate.handler.getMessageIdentifier(), shouldShow);
+                Log.w(TAG,
+                        "MessageStateHandler#shouldShow for message with ID %s and key %s in "
+                                + "MessageQueueManager#getNextMessage returned %s.",
+                        candidate.handler.getMessageIdentifier(), candidate.messageKey, shouldShow);
                 if (shouldShow
                         && (nextMessage == null
                                 || (candidate.highPriority && !nextMessage.highPriority)

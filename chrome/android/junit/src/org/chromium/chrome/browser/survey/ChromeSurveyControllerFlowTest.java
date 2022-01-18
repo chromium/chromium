@@ -67,6 +67,7 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -773,7 +774,8 @@ public class ChromeSurveyControllerFlowTest {
 
     private void assertSurveyMessagesEnqueued() {
         verify(mMessageDispatcher)
-                .enqueueWindowScopedMessage(mMessagePropertyCaptor.capture(), eq(false));
+                .enqueueMessage(mMessagePropertyCaptor.capture(), eq(mMockWebContent),
+                        eq(MessageScopeType.NAVIGATION), eq(false));
         Assert.assertNotNull("Message captor is null.", mMessagePropertyCaptor.getValue());
     }
 

@@ -175,7 +175,7 @@ public class MessageQueueManagerTest {
 
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        when(m1.shouldShow()).thenReturn(true, true, false);
+        when(m1.shouldShow()).thenReturn(true, true, true, false);
 
         // m1#shouldShow will be invoked and will return true.
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
@@ -190,7 +190,7 @@ public class MessageQueueManagerTest {
         messageState = queueManager.getNextMessage();
         Assert.assertNull("Next message candidate should be null.", messageState);
 
-        verify(m1, times(3)).shouldShow();
+        verify(m1, times(4)).shouldShow();
 
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(anyBoolean(), any());
