@@ -22,7 +22,7 @@ class FastPairHandshakeImpl : public FastPairHandshake {
                         OnCompleteCallback on_complete);
   FastPairHandshakeImpl(const FastPairHandshakeImpl&) = delete;
   FastPairHandshakeImpl& operator=(const FastPairHandshakeImpl&) = delete;
-  ~FastPairHandshakeImpl();
+  ~FastPairHandshakeImpl() override;
 
  private:
   void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);

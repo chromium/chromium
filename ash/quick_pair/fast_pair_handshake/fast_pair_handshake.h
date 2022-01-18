@@ -51,7 +51,7 @@ class FastPairHandshake {
       std::unique_ptr<FastPairGattServiceClient> gatt_service_client);
   FastPairHandshake(const FastPairHandshake&) = delete;
   FastPairHandshake& operator=(const FastPairHandshake&) = delete;
-  ~FastPairHandshake();
+  virtual ~FastPairHandshake();
 
   bool completed_successfully() { return completed_successfully_; }
 

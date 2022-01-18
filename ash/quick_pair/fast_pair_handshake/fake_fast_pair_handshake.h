@@ -24,7 +24,7 @@ class FakeFastPairHandshake : public FastPairHandshake {
       std::unique_ptr<FastPairGattServiceClient> gatt_service_client = nullptr);
   FakeFastPairHandshake(const FakeFastPairHandshake&) = delete;
   FakeFastPairHandshake& operator=(const FakeFastPairHandshake&) = delete;
-  ~FakeFastPairHandshake();
+  ~FakeFastPairHandshake() override;
 
   void InvokeCallback(absl::optional<PairFailure> failure = absl::nullopt);
 };
