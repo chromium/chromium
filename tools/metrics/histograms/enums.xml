@@ -36993,6 +36993,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="24" label="Failed - cannot load stream with pending clear all"/>
   <int value="25" label="Failed - already has unread content available"/>
   <int value="26" label="Failed - user does not follow any web feeds"/>
+  <int value="27"
+      label="Failed - account token fetch failed because it was for the wrong
+             account"/>
+  <int value="28" label="Failed - account token fetch timed out"/>
+  <int value="29" label="Failed - network fetch timed out"/>
 </enum>
 
 <enum name="FeedNoticeAcknowledgementPath">

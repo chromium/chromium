@@ -15,12 +15,14 @@
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/stream_model.h"
+#include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/feed/feed_feature_list.h"
@@ -122,8 +124,11 @@ void LoadMoreTask::ProcessNetworkResponse(
   StreamModel* model = stream_.GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
-  if (!response_body)
-    return Done(LoadStreamStatus::kNoResponseBody);
+  LoadStreamStatus network_status = LoadStreamTask::LaunchResultFromNetworkInfo(
+                                        response_info, response_body != nullptr)
+                                        .load_stream_status;
+  if (network_status != LoadStreamStatus::kNoStatus)
+    return Done(network_status);
 
   RefreshResponseData translated_response =
       stream_.GetWireResponseTranslator().TranslateWireResponse(

@@ -28,6 +28,7 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace feed {
+constexpr base::TimeDelta kAccessTokenFetchTimeout = base::Seconds(10);
 
 class FeedNetworkImpl : public FeedNetwork {
  public:
@@ -41,6 +42,8 @@ class FeedNetworkImpl : public FeedNetwork {
     // Returns the AccountInfo for the signed in user if they are sync-enabled,
     // or empty otherwise.
     virtual AccountInfo GetAccountInfo() = 0;
+    // Returns whether the device is offline.
+    virtual bool IsOffline() = 0;
   };
 
   FeedNetworkImpl(Delegate* delegate,

@@ -43,6 +43,17 @@ enum class RefreshTaskId {
   kRefreshWebFeed,
 };
 
+enum class AccountTokenFetchStatus {
+  // Token fetch was not attempted, or status is unknown.
+  kUnspecified = 0,
+  // Successfully fetch the correct token.
+  kSuccess = 1,
+  // The primary account changed before fetching the token completed.
+  kUnexpectedAccount = 2,
+  // Timed out while fetching the token.
+  kTimedOut = 3,
+};
+
 // Information about the Chrome build and feature flags.
 struct ChromeInfo {
   version_info::Channel channel{};
@@ -82,6 +93,8 @@ struct NetworkResponseInfo {
   size_t encoded_size_bytes = 0;
   // If it was a signed-in request, this is the associated account info.
   AccountInfo account_info;
+  AccountTokenFetchStatus account_token_fetch_status =
+      AccountTokenFetchStatus::kUnspecified;
   base::TimeTicks fetch_time_ticks;
   base::TimeTicks loader_start_time_ticks;
 };

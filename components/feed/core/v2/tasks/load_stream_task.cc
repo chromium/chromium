@@ -26,10 +26,12 @@
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
+#include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
@@ -64,6 +66,47 @@ Result::Result(const StreamType& a_stream_type, LoadStreamStatus status)
 Result::~Result() = default;
 Result::Result(Result&&) = default;
 Result& Result::operator=(Result&&) = default;
+
+// static
+LaunchResult LoadStreamTask::LaunchResultFromNetworkInfo(
+    const NetworkResponseInfo& response_info,
+    bool has_parsed_body) {
+  if (response_info.status_code == 200) {
+    if (has_parsed_body) {
+      // Success.
+      return {LoadStreamStatus::kNoStatus,
+              feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED};
+    }
+    if (response_info.response_body_bytes > 0) {
+      return {
+          LoadStreamStatus::kCannotParseNetworkResponseBody,
+          feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS};
+    }
+    return {LoadStreamStatus::kNoResponseBody,
+            feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS};
+  }
+
+  switch (response_info.account_token_fetch_status) {
+    case AccountTokenFetchStatus::kUnspecified:
+      if (response_info.status_code == net::ERR_TIMED_OUT) {
+        return {LoadStreamStatus::kNetworkFetchTimedOut,
+                feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER};
+      }
+      break;
+    case AccountTokenFetchStatus::kSuccess:
+      break;
+    case AccountTokenFetchStatus::kUnexpectedAccount:
+      return {
+          LoadStreamStatus::kAccountTokenFetchFailedWrongAccount,
+          feedwire::DiscoverLaunchResult::NO_CARDS_FAILED_TO_GET_AUTH_TOKEN};
+    case AccountTokenFetchStatus::kTimedOut:
+      return {
+          LoadStreamStatus::kAccountTokenFetchTimedOut,
+          feedwire::DiscoverLaunchResult::NO_CARDS_FAILED_TO_GET_AUTH_TOKEN};
+  }
+  return {LoadStreamStatus::kNetworkFetchFailed,
+          feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_NON_200};
+}
 
 LoadStreamTask::LoadStreamTask(const Options& options,
                                FeedStream* stream,
@@ -321,23 +364,10 @@ void LoadStreamTask::ProcessNetworkResponse(
 
   network_response_info_ = response_info;
 
-  if (response_info.status_code != 200) {
-    return RequestFinished(
-        {LoadStreamStatus::kNetworkFetchFailed,
-         feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_NON_200});
-  }
-
-  if (!response_body) {
-    if (response_info.response_body_bytes > 0) {
-      return RequestFinished(
-          {LoadStreamStatus::kCannotParseNetworkResponseBody,
-           feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS});
-    } else {
-      return RequestFinished(
-          {LoadStreamStatus::kNoResponseBody,
-           feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS});
-    }
-  }
+  LaunchResult network_status =
+      LaunchResultFromNetworkInfo(response_info, response_body != nullptr);
+  if (network_status.load_stream_status != LoadStreamStatus::kNoStatus)
+    return RequestFinished(network_status);
 
   RefreshResponseData response_data =
       stream_.GetWireResponseTranslator().TranslateWireResponse(

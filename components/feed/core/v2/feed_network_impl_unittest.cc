@@ -85,7 +85,9 @@ class TestDelegate : public FeedNetworkImpl::Delegate {
         identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSync)};
   }
+  bool IsOffline() override { return is_offline_; }
 
+  bool is_offline_ = false;
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 };
 
@@ -212,7 +214,7 @@ class FeedNetworkTest : public testing::Test {
  protected:
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 
- private:
+ protected:
   signin::IdentityTestEnvironment identity_test_env_;
   TestDelegate delegate_{&identity_test_env_};
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -336,6 +338,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
   ASSERT_TRUE(receiver.GetResult());
   const QueryRequestResult& result = *receiver.GetResult();
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, result.response_info.status_code);
+  EXPECT_EQ(AccountTokenFetchStatus::kUnexpectedAccount,
+            result.response_info.account_token_fetch_status);
   EXPECT_FALSE(result.response_body);
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery",
@@ -366,6 +370,83 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
   EXPECT_EQ(net::ERR_TIMED_OUT, result.response_info.status_code);
   histogram_tester.ExpectTimeBucketCount(
       "ContentSuggestions.Feed.Network.Duration", base::Seconds(30), 1);
+}
+
+TEST_F(FeedNetworkTest, AccountTokenFetchTimeout) {
+  identity_test_env_.RemoveRefreshTokenForPrimaryAccount();
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  task_environment_.FastForwardBy(kAccessTokenFetchTimeout - base::Seconds(1));
+  ASSERT_FALSE(receiver.GetResult());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  ASSERT_TRUE(receiver.GetResult());
+  const QueryRequestResult& result = *receiver.GetResult();
+  EXPECT_EQ(AccountTokenFetchStatus::kTimedOut,
+            result.response_info.account_token_fetch_status);
+  EXPECT_EQ(net::ERR_TIMED_OUT, result.response_info.status_code);
+}
+
+TEST_F(FeedNetworkTest, AccountTokenRefreshCompleteAfterFetchTimeout) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  // Time-out the token fetch and then complete it.
+  task_environment_.FastForwardBy(kAccessTokenFetchTimeout);
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+  identity_test_env_.SetRefreshTokenForPrimaryAccount();
+
+  // Ensure the fetch failed.
+  const QueryRequestResult& result = receiver.RunAndGetResult();
+  EXPECT_EQ(AccountTokenFetchStatus::kTimedOut,
+            result.response_info.account_token_fetch_status);
+  EXPECT_EQ(net::ERR_TIMED_OUT, result.response_info.status_code);
+}
+
+TEST_F(FeedNetworkTest, AccountTokenRefreshCompleteBeforeFetchTimeout) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  // Time-out the token fetch just after it completes.
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+  identity_test_env_.SetRefreshTokenForPrimaryAccount();
+  task_environment_.FastForwardBy(kAccessTokenFetchTimeout);
+  RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
+
+  // Ensure the fetch failed.
+  const QueryRequestResult& result = receiver.RunAndGetResult();
+  EXPECT_EQ(AccountTokenFetchStatus::kUnspecified,
+            result.response_info.account_token_fetch_status);
+  EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
+}
+
+TEST_F(FeedNetworkTest, FetchImmediatelyAbortsIfOffline) {
+  // Trying to fetch the token would timeout, but because the device is offline,
+  // the fetch quits immediately.
+  identity_test_env_.RemoveRefreshTokenForPrimaryAccount();
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+  delegate_.is_offline_ = true;
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  ASSERT_TRUE(receiver.GetResult());
+  const QueryRequestResult& result = *receiver.GetResult();
+  EXPECT_EQ(AccountTokenFetchStatus::kUnspecified,
+            result.response_info.account_token_fetch_status);
+  EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED, result.response_info.status_code);
 }
 
 TEST_F(FeedNetworkTest, ParallelRequests) {
@@ -553,6 +634,8 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActionsFailsForWrongUser) {
   const FeedNetwork::ApiResult<feedwire::UploadActionsResponse>& result =
       *receiver.GetResult();
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, result.response_info.status_code);
+  EXPECT_EQ(AccountTokenFetchStatus::kUnexpectedAccount,
+            result.response_info.account_token_fetch_status);
   EXPECT_FALSE(result.response_body);
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.UploadActions",

@@ -171,6 +171,9 @@ feedui::ZeroStateSlice::Type GetZeroStateType(LoadStreamStatus status) {
     case LoadStreamStatus::kCannotLoadFromNetworkOffline:
     case LoadStreamStatus::kCannotLoadFromNetworkThrottled:
     case LoadStreamStatus::kNetworkFetchFailed:
+    case LoadStreamStatus::kAccountTokenFetchFailedWrongAccount:
+    case LoadStreamStatus::kAccountTokenFetchTimedOut:
+    case LoadStreamStatus::kNetworkFetchTimedOut:
       return feedui::ZeroStateSlice::CANT_REFRESH;
     case LoadStreamStatus::kNotAWebFeedSubscriber:
       return feedui::ZeroStateSlice::NO_WEB_FEED_SUBSCRIPTIONS;

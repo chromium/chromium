@@ -110,6 +110,8 @@ class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
         identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   }
 
+  bool IsOffline() override { return net::NetworkChangeNotifier::IsOffline(); }
+
  private:
   raw_ptr<FeedService::Delegate> service_delegate_;
   raw_ptr<signin::IdentityManager> identity_manager_;

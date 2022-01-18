@@ -69,6 +69,12 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kAlreadyHaveUnreadContent";
     case LoadStreamStatus::kNotAWebFeedSubscriber:
       return out << "kNotAWebFeedSubscriber";
+    case LoadStreamStatus::kAccountTokenFetchFailedWrongAccount:
+      return out << "kAccountTokenFetchFailedWrongAccount";
+    case LoadStreamStatus::kAccountTokenFetchTimedOut:
+      return out << "kAccountTokenFetchTimedOut";
+    case LoadStreamStatus::kNetworkFetchTimedOut:
+      return out << "kNetworkFetchTimedOut";
   }
 #else
   return out << (static_cast<int>(value));
@@ -106,6 +112,10 @@ bool IsLoadingSuccessfulAndFresh(LoadStreamStatus status) {
     case LoadStreamStatus::kAbortWithPendingClearAll:
     case LoadStreamStatus::kAlreadyHaveUnreadContent:
     case LoadStreamStatus::kNotAWebFeedSubscriber:
+
+    case LoadStreamStatus::kAccountTokenFetchFailedWrongAccount:
+    case LoadStreamStatus::kAccountTokenFetchTimedOut:
+    case LoadStreamStatus::kNetworkFetchTimedOut:
       return false;
   }
 }

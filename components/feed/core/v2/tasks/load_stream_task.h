@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_TASKS_LOAD_STREAM_TASK_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -35,6 +36,14 @@ class FeedStream;
 // This task has three modes, see |LoadType| in enums.h.
 class LoadStreamTask : public offline_pages::Task {
  public:
+  // Returns the `LaunchResult` that contains the terminal failure result if the
+  // parameters do not represent a successful Feed response. Returns a
+  // `load_stream_status` of `LoadStreamStatus::kNoStatus` if there was no
+  // failure.
+  static LaunchResult LaunchResultFromNetworkInfo(
+      const NetworkResponseInfo& network_response_info,
+      bool has_parsed_body);
+
   struct Options {
     // The stream type to load.
     StreamType stream_type;
