@@ -87,6 +87,7 @@ void DropIfAllowed(const ui::OSExchangeData* drag_data,
                    aura::client::DragUpdateInfo& drag_info,
                    base::OnceClosure drop_cb) {
   DCHECK(drag_data);
+
   if (ui::DataTransferPolicyController::HasInstance()) {
     ui::DataTransferPolicyController::Get()->DropIfAllowed(
         drag_data->GetSource(), &drag_info.data_endpoint, std::move(drop_cb));
@@ -355,16 +356,13 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
     event->StopPropagation();
     return;
   }
-  // If the event ET_MOUSE_RELEASED is received we must allow the event
-  // to propagate so that the target window eventually releases capture.
-  bool stop_propagation = true;
+
   auto translated_event = ConvertEvent(translated_target, *event);
   switch (translated_event->type()) {
     case ui::ET_MOUSE_DRAGGED:
       DragUpdate(translated_target, *translated_event.get());
       break;
     case ui::ET_MOUSE_RELEASED:
-      stop_propagation = false;
       Drop(translated_target, *translated_event.get());
       break;
     default:
@@ -381,8 +379,7 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
     toplevel_window_drag_delegate_->OnToplevelWindowDragEvent(
         translated_event.get());
 
-  if (stop_propagation)
-    event->StopPropagation();
+  event->StopPropagation();
 }
 
 void DragDropController::OnTouchEvent(ui::TouchEvent* event) {

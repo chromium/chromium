@@ -1755,42 +1755,4 @@ TEST_F(DragDropControllerTest, DlpAsyncDrop) {
             delegate.state());
 }
 
-TEST_F(DragDropControllerTest,
-       ToplevelWindowDragDelegateForwardsMouseReleased) {
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-      gfx::Rect(0, 0, 100, 100)));
-
-  // Emulate a drag session completion to verify that the ET_MOUSE_RELEASED
-  // event can release capture.
-  {
-    TestToplevelWindowDragDelegate delegate;
-    drag_drop_controller_->set_toplevel_window_drag_delegate(&delegate);
-
-    ui::test::EventGenerator generator(window->GetRootWindow(), window.get());
-    generator.PressLeftButton();
-
-    auto data(std::make_unique<ui::OSExchangeData>());
-    drag_drop_controller_->StartDragAndDrop(
-        std::move(data), window->GetRootWindow(), window.get(),
-        gfx::Point(5, 5), ui::DragDropTypes::DRAG_MOVE,
-        ui::mojom::DragEventSource::kMouse);
-
-    // Send a fake mouse up event and assert that it can continue
-    // propagation.
-    auto event = std::make_unique<ui::MouseEvent>(
-        ui::ET_MOUSE_RELEASED, gfx::Point(5, 5), gfx::Point(5, 5),
-        ui::EventTimeForNow(), 0, 0);
-    ui::Event::DispatcherApi(event.get()).set_phase(ui::EP_PRETARGET);
-    ui::Event::DispatcherApi(event.get())
-        .set_target(window->GetToplevelWindow());
-
-    drag_drop_controller_->OnMouseEvent(event.get());
-
-    EXPECT_EQ(TestToplevelWindowDragDelegate::State::kDragDroppedInvoked,
-              delegate.state());
-    EXPECT_FALSE(event.get()->stopped_propagation());
-  }
-}
-
 }  // namespace ash
