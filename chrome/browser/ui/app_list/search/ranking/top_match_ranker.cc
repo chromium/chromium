@@ -71,6 +71,8 @@ void TopMatchRanker::UpdateResultRanks(ResultsMap& results,
       // set as a top match.
       if (scoring.top_match) {
         scoring.top_match = false;
+        if (result->best_match())
+          result->SetBestMatch(false);
       }
 
       if (scoring.normalized_relevance >= kTopMatchThreshold)
@@ -85,6 +87,7 @@ void TopMatchRanker::UpdateResultRanks(ResultsMap& results,
   for (int i = 0; i < std::min(kNumTopMatches, top_results.size()); ++i) {
     auto* result = top_results[i].first;
     result->scoring().top_match = true;
+    result->SetBestMatch(true);
   }
 }
 
