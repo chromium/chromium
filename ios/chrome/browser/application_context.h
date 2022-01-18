@@ -68,6 +68,12 @@ class IOSChromeIOThread;
 class PrefService;
 class SafeBrowsingService;
 
+// Unused. Present to ensure that all files including application_context.h
+// has been converted to Objective-C++ and that it is safe to include ObjC
+// in this file in the future. Will be removed when real ObjC use is added
+// in a followup CL.
+@class NSObject;
+
 // Gets the global application context. Cannot return null.
 ApplicationContext* GetApplicationContext();
 

@@ -120,14 +120,14 @@ source_set("store_factory") {
   sources = [
     "credentials_cleaner_runner_factory.cc",
     "credentials_cleaner_runner_factory.h",
-    "ios_chrome_affiliation_service_factory.cc",
     "ios_chrome_affiliation_service_factory.h",
+    "ios_chrome_affiliation_service_factory.mm",
     "ios_chrome_password_change_success_tracker_factory.cc",
     "ios_chrome_password_change_success_tracker_factory.h",
     "ios_chrome_password_reuse_manager_factory.cc",
     "ios_chrome_password_reuse_manager_factory.h",
-    "ios_chrome_password_store_factory.cc",
     "ios_chrome_password_store_factory.h",
+    "ios_chrome_password_store_factory.mm",
     "ios_password_store_utils.h",
     "ios_password_store_utils.mm",
   ]

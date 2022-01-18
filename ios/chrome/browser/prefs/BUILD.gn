@@ -7,8 +7,8 @@ source_set("prefs") {
   sources = [
     "ios_chrome_pref_model_associator_client.cc",
     "ios_chrome_pref_model_associator_client.h",
-    "ios_chrome_pref_service_factory.cc",
     "ios_chrome_pref_service_factory.h",
+    "ios_chrome_pref_service_factory.mm",
   ]
   deps = [
     "//base",

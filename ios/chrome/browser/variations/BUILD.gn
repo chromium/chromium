@@ -5,9 +5,10 @@
 import("//components/variations/service/generate_ui_string_overrider.gni")
 
 source_set("variations") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_chrome_variations_service_client.cc",
     "ios_chrome_variations_service_client.h",
+    "ios_chrome_variations_service_client.mm",
   ]
   deps = [
     "//base",

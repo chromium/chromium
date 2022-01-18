@@ -4,8 +4,8 @@
 
 source_set("rlz") {
   sources = [
-    "rlz_tracker_delegate_impl.cc",
     "rlz_tracker_delegate_impl.h",
+    "rlz_tracker_delegate_impl.mm",
   ]
   deps = [
     "//base",

@@ -3,9 +3,10 @@
 # found in the LICENSE file.
 
 source_set("gcm") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_chrome_gcm_profile_service_factory.cc",
     "ios_chrome_gcm_profile_service_factory.h",
+    "ios_chrome_gcm_profile_service_factory.mm",
   ]
   deps = [
     "//base",

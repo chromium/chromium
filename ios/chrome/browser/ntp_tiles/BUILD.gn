@@ -7,8 +7,8 @@ source_set("ntp_tiles") {
   sources = [
     "ios_most_visited_sites_factory.cc",
     "ios_most_visited_sites_factory.h",
-    "ios_popular_sites_factory.cc",
     "ios_popular_sites_factory.h",
+    "ios_popular_sites_factory.mm",
     "most_visited_sites_observer_bridge.h",
     "most_visited_sites_observer_bridge.mm",
   ]

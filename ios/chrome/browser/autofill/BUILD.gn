@@ -5,14 +5,14 @@
 source_set("autofill") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "address_normalizer_factory.cc",
     "address_normalizer_factory.h",
-    "autocomplete_history_manager_factory.cc",
+    "address_normalizer_factory.mm",
     "autocomplete_history_manager_factory.h",
+    "autocomplete_history_manager_factory.mm",
     "autofill_log_router_factory.cc",
     "autofill_log_router_factory.h",
-    "autofill_profile_validator_factory.cc",
     "autofill_profile_validator_factory.h",
+    "autofill_profile_validator_factory.mm",
     "form_input_suggestions_provider.h",
     "form_suggestion_controller.h",
     "form_suggestion_controller.mm",
@@ -22,10 +22,10 @@ source_set("autofill") {
     "form_suggestion_tab_helper.mm",
     "form_suggestion_view.h",
     "form_suggestion_view.mm",
-    "personal_data_manager_factory.cc",
     "personal_data_manager_factory.h",
-    "strike_database_factory.cc",
+    "personal_data_manager_factory.mm",
     "strike_database_factory.h",
+    "strike_database_factory.mm",
     "validation_rules_storage_factory.cc",
     "validation_rules_storage_factory.h",
   ]

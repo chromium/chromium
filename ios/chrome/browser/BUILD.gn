@@ -28,8 +28,8 @@ source_set("chrome_paths") {
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "application_context.cc",
     "application_context.h",
+    "application_context.mm",
     "arch_util.cc",
     "arch_util.h",
     "browser_about_rewriter.cc",
@@ -46,8 +46,8 @@ source_set("browser") {
     "install_time_util.mm",
     "installation_notifier.h",
     "installation_notifier.mm",
-    "ios_chrome_field_trials.cc",
     "ios_chrome_field_trials.h",
+    "ios_chrome_field_trials.mm",
     "ios_chrome_io_thread.h",
     "ios_chrome_io_thread.mm",
     "notification_promo.cc",

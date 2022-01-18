@@ -30,10 +30,10 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "ios_chrome_scoped_testing_chrome_browser_state_manager.cc",
     "ios_chrome_scoped_testing_chrome_browser_state_manager.h",
-    "ios_chrome_scoped_testing_local_state.cc",
+    "ios_chrome_scoped_testing_chrome_browser_state_manager.mm",
     "ios_chrome_scoped_testing_local_state.h",
+    "ios_chrome_scoped_testing_local_state.mm",
     "root_view_controller_test.h",
     "root_view_controller_test.mm",
     "scoped_key_window.h",
