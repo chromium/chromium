@@ -5,16 +5,29 @@
  */
 
 var gPaymentResponse = null;
+var gValidationErrors = null;
 
 /**
  * Launches the PaymentRequest UI
  */
 function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([{supportedMethods: 'basic-card'}]);
+}
+
+/**
+ * Launches the PaymentRequest UI
+ * @param {sequence<PaymentMethodData>} methodData An array of payment method
+ *        objects.
+ */
+function buyWithMethods(methodData) {
   var options = {};
-  getPaymentResponse(options)
-      .then(function(response) {
-        gPaymentResponse = response;
-      });
+  getPaymentResponseWithMethod(options, methodData).then(function(response) {
+    if (gValidationErrors != null) {
+      // retry() has been called before PaymentResponse promise resolved.
+      response.retry(gValidationErrors);
+    }
+    gPaymentResponse = response;
+  });
 }
 
 /**
@@ -24,6 +37,8 @@ function buy() { // eslint-disable-line no-unused-vars
  */
 function retry(validationErrors) { // eslint-disable-line no-unused-vars
   if (gPaymentResponse == null) {
+    // retry() has been called before PaymentResponse promise resolved.
+    gValidationErrors = validationErrors;
     return;
   }
 
