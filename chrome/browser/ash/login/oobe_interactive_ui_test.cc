@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
+#include "chrome/browser/ash/login/test/fake_arc_tos_mixin.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -164,6 +165,16 @@ void LogInAsRegularUser() {
                                 FakeGaiaMixin::kFakeUserPassword,
                                 FakeGaiaMixin::kEmptyUserServices);
   LOG(INFO) << "OobeInteractiveUITest: Logged in.";
+}
+
+void RunConsolidatedConsentScreenChecks() {
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {"consolidated-consent", "loadedDialog"})
+      ->Wait();
+
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 }
 
 void RunSyncConsentScreenChecks() {
@@ -663,6 +674,7 @@ class OobeInteractiveUITest : public OobeBaseTest,
   void ForceBrandedBuild() const;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
+  FakeArcTosMixin fake_arc_tos_{&mixin_host_, embedded_test_server()};
 
   net::EmbeddedTestServer arc_tos_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   EmbeddedTestServerSetupMixin arc_tos_server_setup_{&mixin_host_,
@@ -684,9 +696,11 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
   RunNetworkSelectionScreenChecks();
   test::TapNetworkSelectionNext();
 
-  test::WaitForEulaScreen();
-  RunEulaScreenChecks();
-  test::TapEulaAccept();
+  if (!chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    test::WaitForEulaScreen();
+    RunEulaScreenChecks();
+    test::TapEulaAccept();
+  }
 
   test::WaitForUpdateScreen();
   test::ExitUpdateScreenNoUpdate();
@@ -700,6 +714,12 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   }
   WaitForGaiaSignInScreen(test_setup()->arc_state() != ArcState::kNotAvailable);
   LogInAsRegularUser();
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    test::WaitForConsolidatedConsentScreen();
+    RunConsolidatedConsentScreenChecks();
+    test::TapConsolidatedConsentAccept();
+  }
 
   test::WaitForSyncConsentScreen();
   RunSyncConsentScreenChecks();
@@ -717,7 +737,8 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
     test::ExitPinSetupScreen();
   }
 
-  if (test_setup()->arc_state() != ArcState::kNotAvailable) {
+  if (!chromeos::features::IsOobeConsolidatedConsentEnabled() &&
+      test_setup()->arc_state() != ArcState::kNotAvailable) {
     HandleArcTermsOfServiceScreen();
   }
 

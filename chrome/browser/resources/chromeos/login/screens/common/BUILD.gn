@@ -159,6 +159,7 @@ js_library("consolidated_consent.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.m.js" ]
   deps = [
     "../..:display_manager.m",
+    "../../components:display_manager_types.m",
     "../../components:oobe_select.m",
     "../../components:oobe_types.m",
     "../../components:web_view_helper.m",

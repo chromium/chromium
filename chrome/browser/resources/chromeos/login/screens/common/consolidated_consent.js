@@ -149,6 +149,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
             'setLocationMode',
     ];
   }
+  // clang-format on
 
   /** @override */
   defaultUIStep() {
@@ -159,7 +160,10 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     return ConsolidatedConsentScreenState;
   }
 
-  // clang-format on
+  /** Initial UI State for screen */
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.ONBOARDING;
+  }
 
   /** @override */
   ready() {
