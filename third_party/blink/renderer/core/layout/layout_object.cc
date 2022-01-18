@@ -4009,8 +4009,9 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
 
 void LayoutObject::Destroy() {
   NOT_DESTROYED();
-  CHECK(g_allow_destroying_layout_object_in_finalizer ||
-        !ThreadState::IsSweepingOnOwningThread(*ThreadStateStorage::Current()));
+  DCHECK(
+      g_allow_destroying_layout_object_in_finalizer ||
+      !ThreadState::IsSweepingOnOwningThread(*ThreadStateStorage::Current()));
 
   // Mark as being destroyed to avoid trouble with merges in |RemoveChild()| and
   // other house keepings.
