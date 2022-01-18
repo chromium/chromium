@@ -52,6 +52,9 @@ using safe_browsing::BinaryUploadService;
 
 namespace enterprise_connectors {
 
+const base::Feature kBypassJustificationEnabled{
+    "kBypassJustificationEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
 
 // Global pointer of factory function (RepeatingCallback) used to create
@@ -242,6 +245,9 @@ absl::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
 }
 
 bool ContentAnalysisDelegate::BypassRequiresJustification() const {
+  if (!base::FeatureList::IsEnabled(kBypassJustificationEnabled))
+    return false;
+
   return data_.settings.tags_requiring_justification.count(final_result_tag_) >
          0;
 }

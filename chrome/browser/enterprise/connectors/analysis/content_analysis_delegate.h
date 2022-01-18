@@ -33,6 +33,8 @@ class Profile;
 
 namespace enterprise_connectors {
 
+extern const base::Feature kBypassJustificationEnabled;
+
 class ContentAnalysisDialog;
 
 // A class that performs deep scans of data (for example malicious or sensitive
