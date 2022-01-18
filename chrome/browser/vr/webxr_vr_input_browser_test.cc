@@ -646,6 +646,8 @@ device_test::mojom::InteractionProfileType GetMojomInteractionProfile(
       return device_test::mojom::InteractionProfileType::kHPReverbG2;
     case device::OpenXrInteractionProfileType::kHandSelectGrasp:
       return device_test::mojom::InteractionProfileType::kHandSelectGrasp;
+    case device::OpenXrInteractionProfileType::kViveCosmos:
+      return device_test::mojom::InteractionProfileType::kViveCosmos;
     case device::OpenXrInteractionProfileType::kCount:
       return device_test::mojom::InteractionProfileType::kInvalid;
   }

@@ -767,6 +767,8 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
         button_id = device::kX;
       } else if (PathContainsString(path_string, "/y/")) {
         button_id = device::kY;
+      } else if (PathContainsString(path_string, "/shoulder/")) {
+        button_id = device::kShoulder;
       } else {
         NOTREACHED() << "Unrecognized boolean button: " << path_string;
       }
@@ -976,6 +978,9 @@ void OpenXrTestHelper::UpdateInteractionProfile(
       break;
     case device_test::mojom::InteractionProfileType::kHandSelectGrasp:
       interaction_profile_ = device::kHandSelectGraspInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kViveCosmos:
+      interaction_profile_ = device::kHTCViveCosmosInteractionProfilePath;
       break;
     case device_test::mojom::InteractionProfileType::kInvalid:
       NOTREACHED() << "Invalid EventData interaction_profile type";

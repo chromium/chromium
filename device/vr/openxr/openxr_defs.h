@@ -28,6 +28,8 @@ constexpr char kHPReverbG2InteractionProfilePath[] =
     "/interaction_profiles/hp/mixed_reality_controller";
 constexpr char kHandSelectGraspInteractionProfilePath[] =
     "/interaction_profiles/microsoft/hand_interaction";
+constexpr char kHTCViveCosmosInteractionProfilePath[] =
+    "/interaction_profiles/htc/vive_cosmos_controller";
 
 }  // namespace device
 

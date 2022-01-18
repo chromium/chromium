@@ -152,6 +152,7 @@ XrResult CreateInstance(
   EnableExtensionIfSupported(kExtSamsungOdysseyControllerExtensionName);
   EnableExtensionIfSupported(kExtHPMixedRealityControllerExtensionName);
   EnableExtensionIfSupported(kMSFTHandInteractionExtensionName);
+  EnableExtensionIfSupported(XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME);
 
   EnableExtensionIfSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
   EnableExtensionIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);

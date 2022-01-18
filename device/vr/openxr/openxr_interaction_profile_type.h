@@ -15,6 +15,7 @@ enum class OpenXrInteractionProfileType {
   kSamsungOdyssey = 5,
   kHPReverbG2 = 6,
   kHandSelectGrasp = 7,
+  kViveCosmos = 8,
   kCount,
 };
 }

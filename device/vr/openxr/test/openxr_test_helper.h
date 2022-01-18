@@ -146,6 +146,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       device::kExtSamsungOdysseyControllerExtensionName,
       device::kExtHPMixedRealityControllerExtensionName,
       device::kMSFTHandInteractionExtensionName,
+      XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
   };
 

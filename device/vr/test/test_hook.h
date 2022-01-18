@@ -33,6 +33,7 @@ enum XrButtonId {
   kX = 9,
   kY = 10,
   kThumbRest = 11,
+  kShoulder = 12,
   kProximitySensor = 31,
   kAxisTrackpad = 32,
   kAxisTrigger = 33,
