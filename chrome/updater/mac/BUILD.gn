@@ -231,7 +231,7 @@ bundle_data("keystone_agent_bundle_resource_plist") {
   sources =
       [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/Info.plist" ]
 
-  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/{{source_file_part}}" ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/{{source_file_part}}" ]
   public_deps = [ ":keystone_agent_bundle" ]
 }
 
