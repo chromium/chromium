@@ -3060,7 +3060,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       if (child_change.RecalcDescendants())
         MarkNonSlottedHostChildrenForStyleRecalc();
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
-      slot->RecalcStyleForSlotChildren(child_change, child_recalc_context);
+      slot->RecalcStyleForSlotChildren(
+          child_change, child_recalc_context.ForSlotChildren(*slot));
     } else {
       RecalcDescendantStyles(child_change, child_recalc_context);
     }

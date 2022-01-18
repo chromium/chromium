@@ -41,4 +41,27 @@ StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
   return StyleRecalcContext();
 }
 
+StyleRecalcContext StyleRecalcContext::ForSlotChildren(
+    const HTMLSlotElement& slot) const {
+  // If the container is in a different tree scope, it is already in the shadow-
+  // including inclusive ancestry of the host.
+  if (!container || container->GetTreeScope() != slot.GetTreeScope())
+    return *this;
+
+  DCHECK(RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
+
+  // No assigned nodes means we will render the light tree children of the
+  // slot as a fallback. Those children are in the same tree scope as the slot
+  // which means the current container is the correct one.
+  if (slot.AssignedNodes().IsEmpty())
+    return *this;
+
+  // The slot's flat tree children are children of the slot's shadow host, and
+  // their container is in the shadow-including inclusive ancestors of the host.
+  DCHECK(slot.IsInShadowTree());
+  Element* host = slot.OwnerShadowHost();
+  DCHECK(host);
+  return StyleRecalcContext{FromInclusiveAncestors(*host)};
+}
+
 }  // namespace blink

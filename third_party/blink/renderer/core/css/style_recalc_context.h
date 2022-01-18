@@ -11,6 +11,7 @@
 namespace blink {
 
 class Element;
+class HTMLSlotElement;
 
 // StyleRecalcContext is an object that is passed on the stack during
 // the style recalc process.
@@ -30,6 +31,11 @@ class CORE_EXPORT StyleRecalcContext {
   // suitable for resolving the style for child elements of the passed in
   // element. Otherwise return the passed in context as a value.
   static StyleRecalcContext FromInclusiveAncestors(Element&);
+
+  // When traversing into slotted children, the container is in the shadow-
+  // including inclusive ancestry of the slotted element's host. Return a
+  // context with the container adjusted as necessary.
+  StyleRecalcContext ForSlotChildren(const HTMLSlotElement& slot) const;
 
   // Set to the nearest container (for container queries), if any.
   // This is used to evaluate container queries in ElementRuleCollector.
