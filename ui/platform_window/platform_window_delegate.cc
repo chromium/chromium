@@ -46,4 +46,6 @@ PlatformWindowDelegate::GetOwnedWindowAnchorAndRectInPx() {
   return absl::nullopt;
 }
 
+void PlatformWindowDelegate::SetFrameRateThrottleEnabled(bool enabled) {}
+
 }  // namespace ui

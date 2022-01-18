@@ -109,6 +109,8 @@ class WaylandToplevelWindow : public WaylandWindow,
                                     zaura_surface* surface,
                                     uint32_t mode);
   static void DeskChanged(void* data, zaura_surface* surface, int state);
+  static void StartThrottle(void* data, zaura_surface* surface);
+  static void EndThrottle(void* data, zaura_surface* surface);
 
   // Calls UpdateWindowShape, set_input_region and set_opaque_region
   // for this toplevel window.

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
+#include "ui/aura/host_frame_rate_throttler.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -292,6 +293,13 @@ void WindowTreeHostPlatform::OnOcclusionStateChanged(
       break;
   }
   SetNativeWindowOcclusionState(aura_occlusion_state, {});
+}
+
+void WindowTreeHostPlatform::SetFrameRateThrottleEnabled(bool enabled) {
+  if (enabled)
+    HostFrameRateThrottler::GetInstance().AddHost(this);
+  else
+    HostFrameRateThrottler::GetInstance().RemoveHost(this);
 }
 
 }  // namespace aura

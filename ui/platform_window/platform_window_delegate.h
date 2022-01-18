@@ -135,6 +135,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // in positioning child windows, which must be repositioned if the originally
   // intended position caused the surface to be constrained.
   virtual absl::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInPx();
+
+  // Enables or disables frame rate throttling.
+  virtual void SetFrameRateThrottleEnabled(bool enabled);
 };
 
 }  // namespace ui

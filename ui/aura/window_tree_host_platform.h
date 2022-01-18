@@ -84,6 +84,7 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void OnMouseEnter() override;
   void OnOcclusionStateChanged(
       ui::PlatformWindowOcclusionState occlusion_state) override;
+  void SetFrameRateThrottleEnabled(bool enabled) override;
 
   // Overridden from aura::WindowTreeHost:
   bool CaptureSystemKeyEventsImpl(

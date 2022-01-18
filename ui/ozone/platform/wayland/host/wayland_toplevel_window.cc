@@ -518,6 +518,16 @@ void WaylandToplevelWindow::DeskChanged(void* data,
   self->OnDeskChanged(state);
 }
 
+void WaylandToplevelWindow::StartThrottle(void* data, zaura_surface* surface) {
+  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  self->delegate()->SetFrameRateThrottleEnabled(true);
+}
+
+void WaylandToplevelWindow::EndThrottle(void* data, zaura_surface* surface) {
+  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  self->delegate()->SetFrameRateThrottleEnabled(false);
+}
+
 bool WaylandToplevelWindow::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   DCHECK(connection()->window_drag_controller());
   return connection()->window_drag_controller()->Drag(this, drag_offset);
@@ -775,11 +785,8 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
   DCHECK(shell_toplevel_);
   if (connection()->zaura_shell() && !aura_surface_) {
     static constexpr zaura_surface_listener zaura_surface_listener = {
-        &OcclusionChanged,
-        &LockFrame,
-        &UnlockFrame,
-        &OcclusionStateChanged,
-        &DeskChanged,
+        &OcclusionChanged, &LockFrame,     &UnlockFrame, &OcclusionStateChanged,
+        &DeskChanged,      &StartThrottle, &EndThrottle,
     };
     aura_surface_.reset(zaura_shell_get_aura_surface(
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));

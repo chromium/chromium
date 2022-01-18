@@ -5,6 +5,7 @@
 #include "ui/aura/host_frame_rate_throttler.h"
 
 #include "base/containers/contains.h"
+#include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "ui/aura/env.h"
@@ -13,7 +14,11 @@
 
 namespace aura {
 
+#if defined(OS_WIN)
 constexpr uint8_t kDefaultThrottleFps = 1;
+#else
+constexpr uint8_t kDefaultThrottleFps = 20;
+#endif
 
 HostFrameRateThrottler& HostFrameRateThrottler::GetInstance() {
   static base::NoDestructor<HostFrameRateThrottler> instance;

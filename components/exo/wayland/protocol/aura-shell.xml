@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="28">
+  <interface name="zaura_shell" version="29">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -148,7 +148,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_surface" version="25">
+  <interface name="zaura_surface" version="29">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -499,6 +499,17 @@
   the window was locked with the trusted state or not.
       </description>
     </request>
+
+    <event name="start_throttle" since="29">
+      <description summary="start throttling on the surface">
+        Informs the client to start throttling on the surface.
+      </description>
+    </event>
+    <event name="end_throttle" since="29">
+      <description summary="end throttling on the surface">
+        Informs the client to end throttling on the surface.
+      </description>
+    </event>
   </interface>
 
   <interface name="zaura_output" version="6">
