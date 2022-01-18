@@ -1080,18 +1080,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
     EXPECT_EQ(0, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
 }
 
-// Disabled due to flakiness on Linux, https://crbug.com/1287462
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_TestWithDownloadsFromDifferentProfiles \
-  DISABLED_TestWithDownloadsFromDifferentProfiles
-#else
-#define MAYBE_TestWithDownloadsFromDifferentProfiles \
-  TestWithDownloadsFromDifferentProfiles
-#endif
 // Test shutdown with a download in progress from one profile, where the only
 // open windows are for another profile.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
-                       MAYBE_TestWithDownloadsFromDifferentProfiles) {
+                       TestWithDownloadsFromDifferentProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   std::unique_ptr<Profile> other_profile;
   {
@@ -1128,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                 ->GetVisibleURL());
   EXPECT_EQ(GURL("about:blank"), other_profile_browser->tab_strip_model()
                                      ->GetActiveWebContents()
-                                     ->GetLastCommittedURL());
+                                     ->GetVisibleURL());
 
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
