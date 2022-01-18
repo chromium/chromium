@@ -17,9 +17,9 @@ class Profile;
 
 namespace app_list {
 
-// An answer result from the Omnibox provider. Answer results have are displayed
-// as cards at the top of the categorical search launcher, so are separated in
-// the UI from other Omnibox results.
+// An answer result from the Omnibox provider. Answer results are displayed as
+// cards at the top of the categorical search launcher, so are separated in the
+// UI from other Omnibox results.
 class OmniboxAnswerResult : public ChromeSearchResult,
                             public BitmapFetcherDelegate {
  public:

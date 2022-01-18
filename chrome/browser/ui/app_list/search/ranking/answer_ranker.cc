@@ -28,6 +28,9 @@ void AnswerRanker::UpdateResultRanks(ResultsMap& results,
 
     // Compare this result to the existing answer, if any, and hide the one with
     // lower score.
+    // TODO(crbug.com/1275408): If we ever expect there to be more than one
+    // answer candidate, then it should instead be properly demoted into a list
+    // result.
     const double score = result->relevance();
     if (!top_answer) {
       top_answer = result.get();
