@@ -170,7 +170,8 @@ void SupportToolHandler::ExportIntoTempDir(
 
   if (tmp_path.empty()) {
     collected_errors_.insert(
-        SupportToolError::kDataExportTempDirCreationFailed);
+        {SupportToolErrorCode::kDataExportError,
+         "Failed to create temporary directory for output."});
     std::move(on_data_export_done_callback_).Run(collected_errors_);
     return;
   }
@@ -218,7 +219,8 @@ void SupportToolHandler::OnDataExportDone(bool success) {
   // Clean-up the temporary directory after exporting the data.
   CleanUp();
   if (!success) {
-    collected_errors_.insert(SupportToolError::kDataExportCreateArchiveFailed);
+    collected_errors_.insert({SupportToolErrorCode::kDataExportError,
+                              "Failed to archive the output files."});
   }
   std::move(on_data_export_done_callback_).Run(collected_errors_);
 }

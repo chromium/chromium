@@ -140,7 +140,7 @@ void SystemLogSourceDataCollectorAdaptor::OnPIIDetected(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   system_logs_response_ = std::move(detection_result.first);
   pii_map_ = std::move(detection_result.second);
-  std::move(on_data_collected_callback).Run(/*error_code=*/absl::nullopt);
+  std::move(on_data_collected_callback).Run(/*error=*/absl::nullopt);
 }
 
 void SystemLogSourceDataCollectorAdaptor::ExportCollectedDataWithPII(
@@ -181,7 +181,11 @@ void SystemLogSourceDataCollectorAdaptor::OnFilesWritten(
     base::FilePath target_directory,
     DataCollectorDoneCallback on_exported_callback,
     bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Will add the error check in a follow up CL for b/214196981.
-  std::move(on_exported_callback).Run(/*error_code=*/absl::nullopt);
+  if (!success) {
+    SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
+                              "Failed on data export."};
+    std::move(on_exported_callback).Run(error);
+    return;
+  }
+  std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
 }

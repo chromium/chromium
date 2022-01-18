@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
@@ -19,20 +20,34 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The error code that a Support Tool component can return.
-enum class SupportToolError {
-  kUIHierarchyDataCollectorError,
-  // Error for testing.
-  kTestDataCollectorError,
-  kDataExportTempDirCreationFailed,
-  kDataExportCreateArchiveFailed,
-  kSystemLogSourceFetchFailed,
+enum class SupportToolErrorCode {
+  kDataCollectorError,
+  kDataExportError,
+};
+
+// SupportToolError is an error that a Support Tool component can return.
+struct SupportToolError {
+  // General meaning error code.
+  SupportToolErrorCode error_code;
+  // Detailed error message.
+  std::string error_message;
+
+  SupportToolError(SupportToolErrorCode error_code, std::string error_message)
+      : error_code(error_code), error_message(error_message) {}
+
+  // We need to overload < operator since it will be used when SupportToolErrors
+  // are added to std::set to be returned in SupportToolHandler.
+  bool operator<(const SupportToolError& other) const {
+    return std::tie(error_code, error_message) <
+           std::tie(other.error_code, other.error_message);
+  }
 };
 
 using PIIMap = std::map<feedback::PIIType, std::set<std::string>>;
 
 // Returns a SupportToolError if an error occurs to the callback.
 using DataCollectorDoneCallback =
-    base::OnceCallback<void(absl::optional<SupportToolError> error_code)>;
+    base::OnceCallback<void(absl::optional<SupportToolError> error)>;
 
 // The DataCollector provides an interface for data sources that the
 // SupportToolHandler uses to collect debug data from multiple sources in Chrome

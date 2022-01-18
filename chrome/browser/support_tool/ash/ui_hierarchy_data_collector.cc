@@ -116,7 +116,7 @@ void UiHierarchyDataCollector::CollectDataAndDetectPII(
   data_ = std::move(ui_hierarchy_data.data);
   // `data_` can't be empty.
   DCHECK(!data_.empty());
-  std::move(on_data_collected_callback).Run(/*error_code=*/absl::nullopt);
+  std::move(on_data_collected_callback).Run(/*error=*/absl::nullopt);
 }
 
 void UiHierarchyDataCollector::ExportCollectedDataWithPII(
@@ -140,11 +140,12 @@ void UiHierarchyDataCollector::OnDataExportDone(
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!success) {
-    std::move(on_exported_callback)
-        .Run(SupportToolError::kUIHierarchyDataCollectorError);
+    SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
+                              "Failed on data export."};
+    std::move(on_exported_callback).Run(error);
     return;
   }
-  std::move(on_exported_callback).Run(/*error_code=*/absl::nullopt);
+  std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
 }
 
 void UiHierarchyDataCollector::InsertIntoPIIMap(
