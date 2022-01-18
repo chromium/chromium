@@ -705,6 +705,16 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
   if (!entry)
     return;
 
+  if (entry->IsInitialEntryNotForSynchronousAboutBlank()) {
+    // We should never navigate to an existing initial NavigationEntry that is
+    // the initial NavigationEntry for the initial empty document that hasn't
+    // been overridden by the synchronous about:blank commit, to preserve
+    // legacy behavior where trying to reload when the main frame is on the
+    // initial empty document won't result in a navigation. See also
+    // https://crbug.com/1277414.
+    return;
+  }
+
   // Set ReloadType for |entry|.
   entry->set_reload_type(reload_type);
 
@@ -974,10 +984,21 @@ void NavigationControllerImpl::GoToIndex(int index,
     return;
   }
 
+  if (entries_[index]->IsInitialEntryNotForSynchronousAboutBlank()) {
+    // We should never navigate to an existing initial NavigationEntry that is
+    // the initial NavigationEntry for the initial empty document that hasn't
+    // been overridden by the synchronous about:blank commit, to preserve
+    // legacy behavior where trying to reload when the main frame is on the
+    // initial empty document won't result in a navigation. See also
+    // https://crbug.com/1277414.
+    return;
+  }
+
   DiscardNonCommittedEntries();
 
   DCHECK_EQ(nullptr, pending_entry_);
   DCHECK_EQ(-1, pending_entry_index_);
+
   pending_entry_ = entries_[index].get();
   pending_entry_index_ = index;
   pending_entry_->SetTransitionType(ui::PageTransitionFromInt(
@@ -1592,7 +1613,6 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
     bool is_new_entry,
     LoadCommittedDetails* commit_details) {
   // Update the FrameNavigationEntry.
-
   std::vector<GURL> redirects;
   entry->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), update_policy, params.item_sequence_number,
@@ -1623,9 +1643,32 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
   entry->set_page_type((request && request->DidEncounterError())
                            ? PAGE_TYPE_ERROR
                            : PAGE_TYPE_NORMAL);
-  if (commit_details) {
-    // Retain the "initial NavigationEntry" status if needed.
-    entry->set_is_initial_entry(commit_details->should_stay_as_initial_entry);
+  if (commit_details && commit_details->should_stay_as_initial_entry) {
+    // Retain the "initial NavigationEntry" status.
+    if (request->IsSameDocument()) {
+      // If this is for a same-document navigation, the NavigationEntry must be
+      // reused and should already be marked as the initial NavigationEntry.
+      DCHECK(entry->IsInitialEntry());
+    } else {
+      // If this is for a cross-document navigation, it can be caused by a
+      // renderer-initiated reload, or the synchronous about:blank commit. Mark
+      // "for synchronous about:blank" in the latter case, and also when it is
+      // reloading a "for synchronous about:blank" entry. Otherwise, the entry
+      // is not for a synchronous about:blank commit.
+      NavigationEntryImpl::InitialNavigationEntryState new_state =
+          NavigationEntryImpl::InitialNavigationEntryState::
+              kInitialNotForSynchronousAboutBlank;
+      if (entry->IsInitialEntryForSynchronousAboutBlank() ||
+          request->is_synchronous_renderer_commit()) {
+        new_state = NavigationEntryImpl::InitialNavigationEntryState::
+            kInitialForSynchronousAboutBlank;
+      }
+      entry->set_initial_navigation_entry_state(new_state);
+    }
+  } else if (commit_details && !commit_details->should_stay_as_initial_entry) {
+    // Remove the "initial NavigationEntry" status.
+    entry->set_initial_navigation_entry_state(
+        NavigationEntryImpl::InitialNavigationEntryState::kNonInitial);
   }
 
   if (is_new_entry) {
@@ -2394,6 +2437,16 @@ bool NavigationControllerImpl::ReloadFrame(FrameTreeNode* frame_tree_node) {
   NavigationEntryImpl* entry = GetEntryAtIndex(GetCurrentEntryIndex());
   if (!entry)
     return false;
+
+  if (entry->IsInitialEntryNotForSynchronousAboutBlank()) {
+    // We should never navigate to an existing initial NavigationEntry that is
+    // the initial NavigationEntry for the initial empty document that hasn't
+    // been overridden by the synchronous about:blank commit, to preserve
+    // legacy behavior where trying to reload when the main frame is on the
+    // initial empty document won't result in a navigation. See also
+    // https://crbug.com/1277414.
+    return false;
+  }
   FrameNavigationEntry* frame_entry = entry->GetFrameEntry(frame_tree_node);
   if (!frame_entry)
     return false;
@@ -3590,13 +3643,13 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     bool is_browser_initiated) {
   DCHECK(frame_entry);
   GURL dest_url = frame_entry->url();
-  if (entry->IsInitialEntry() && frame_tree_node->IsMainFrame() &&
-      dest_url.is_empty()) {
-    // The main frame of an initial NavigationEntry might have an empty URL.
-    // Convert it to about:blank instead. This should only happen when the
-    // initial NavigationEntry is reloaded.
-    dest_url = GURL("about:blank");
-  }
+  // We should never navigate to an existing initial NavigationEntry that is the
+  // initial NavigationEntry for the initial empty document that hasn't been
+  // overridden by the synchronous about:blank commit, to preserve previous
+  // behavior where trying to reload when the main frame is on the initial empty
+  // document won't result in a navigation.
+  // See also https://crbug.com/1277414.
+  DCHECK(!entry->IsInitialEntryNotForSynchronousAboutBlank());
   absl::optional<url::Origin> origin_to_commit =
       frame_entry->committed_origin();
 
@@ -3756,15 +3809,22 @@ void NavigationControllerImpl::LoadIfNecessary() {
     NavigateToExistingPendingEntry(ReloadType::NONE,
                                    FrameTreeNode::kFrameTreeNodeInvalidId,
                                    true /* is_browser_initiated */);
-  } else if (last_committed_entry_index_ != -1) {
+  } else if (!GetLastCommittedEntry()
+                  ->IsInitialEntryNotForSynchronousAboutBlank()) {
     pending_entry_ = entries_[last_committed_entry_index_].get();
     pending_entry_index_ = last_committed_entry_index_;
     NavigateToExistingPendingEntry(ReloadType::NONE,
                                    FrameTreeNode::kFrameTreeNodeInvalidId,
                                    true /* is_browser_initiated */);
   } else {
-    // If there is something to reload, the successful reload will clear the
-    // |needs_reload_| flag. Otherwise, just do it here.
+    // We should never navigate to an existing initial NavigationEntry that is
+    // the initial NavigationEntry for the initial empty document that hasn't
+    // been overridden by the synchronous about:blank commit, to preserve
+    // legacy behavior where trying to reload when the main frame is on the
+    // initial empty document won't result in a navigation. See also
+    // https://crbug.com/1277414. If there is something to reload, the
+    // successful reload will clear the |needs_reload_| flag. Otherwise, just do
+    // it here.
     needs_reload_ = false;
   }
 }

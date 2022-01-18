@@ -417,7 +417,10 @@ NavigationEntryImpl::NavigationEntryImpl(
       started_from_context_menu_(false),
       ssl_error_(false),
       should_skip_on_back_forward_ui_(false),
-      is_initial_entry_(is_initial_entry) {}
+      initial_navigation_entry_state_(
+          is_initial_entry
+              ? InitialNavigationEntryState::kInitialNotForSynchronousAboutBlank
+              : InitialNavigationEntryState::kNonInitial) {}
 
 NavigationEntryImpl::~NavigationEntryImpl() {}
 
@@ -725,7 +728,8 @@ bool NavigationEntryImpl::GetCanLoadLocalResources() {
 }
 
 bool NavigationEntryImpl::IsInitialEntry() {
-  return is_initial_entry_;
+  return initial_navigation_entry_state_ !=
+         InitialNavigationEntryState::kNonInitial;
 }
 
 std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::Clone() const {
@@ -734,7 +738,8 @@ std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::Clone() const {
                               ClonePolicy::kShareFrameEntries);
   // This function is only used for creating pending entries, which should not
   // carry the "initial" status.
-  entry->set_is_initial_entry(false);
+  entry->set_initial_navigation_entry_state(
+      InitialNavigationEntryState::kNonInitial);
   return entry;
 }
 
@@ -803,7 +808,7 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   copy->CloneDataFrom(*this);
   copy->replaced_entry_data_ = replaced_entry_data_;
   copy->should_skip_on_back_forward_ui_ = should_skip_on_back_forward_ui_;
-  copy->is_initial_entry_ = is_initial_entry_;
+  copy->initial_navigation_entry_state_ = initial_navigation_entry_state_;
 
   return copy;
 }
@@ -1014,7 +1019,8 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
         // the initial entry creation path also goes through this function, but
         // we know not to remove the status in that case because it uses the
         // empty URL.
-        is_initial_entry_ = false;
+        initial_navigation_entry_state_ =
+            InitialNavigationEntryState::kNonInitial;
       }
     }
 

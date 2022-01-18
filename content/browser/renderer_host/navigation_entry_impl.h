@@ -430,8 +430,61 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     back_forward_cache_metrics_ = metrics;
   }
 
-  void set_is_initial_entry(bool is_initial_entry) {
-    is_initial_entry_ = is_initial_entry;
+  // Whether this NavigationEntry is the initial NavigationEntry or not, and
+  // whether it's for the initial empty document or the synchronously
+  // committed about:blank document. The original initial NavigationEntry is
+  // created when the FrameTree is created, so it might not be associated with
+  // any navigation, but represents a placeholder NavigationEntry for the
+  // "initial empty document", which commits in the renderer on frame creation
+  // but doesn't notify the browser of the commit. However, more initial
+  // NavigationEntries might be created after that in response to navigations,
+  // and update or replace the original NavigationEntry. The initial
+  // NavigationEntry will only get replaced with a non-initial NavigationEntry
+  // by the first navigation that satisfies all of the following conditions:
+  //   1. Happens on the main frame
+  //   2. Classified as NEW_ENTRY (won't reuse the NavigationEntry)
+  //   3. Is not the synchronous about:blank commit
+  // So the "initial" status will be retained/copied to the new
+  // NavigationEntry on subframe navigations, or when the NavigationEntry is
+  // reused/classified as EXISTING_ENTRY (same-document navigations,
+  // renderer-initiated reloads), or on the synchronous about:blank commit.
+  // Some other important properties of initial NavigationEntries:
+  // - The initial NavigationEntry always gets reused or replaced on the next
+  // navigation (potentially by another initial NavigationEntry), so if there
+  // is an initial NavigationEntry in the session history, it must be the only
+  // NavigationEntry (as it is impossible to append to session history if the
+  // initial NavigationEntry exists), which means it's not possible to do
+  // a history navigation to an initial NavigationEntry.
+  // - The initial NavigationEntry never gets restored on session restore,
+  // because we never restore tabs with only the initial NavigationEntry.
+  enum class InitialNavigationEntryState {
+    // An initial NavigationEntry for the initial empty document or a
+    // renderer-reloaded initial empty document.
+    kInitialNotForSynchronousAboutBlank,
+    // An initial NavigationEntry for the synchronously committed about:blank
+    // document.
+    kInitialForSynchronousAboutBlank,
+    // Not an initial NavigationEntry.
+    kNonInitial
+  };
+
+  bool IsInitialEntryNotForSynchronousAboutBlank() {
+    return initial_navigation_entry_state_ ==
+           InitialNavigationEntryState::kInitialNotForSynchronousAboutBlank;
+  }
+
+  bool IsInitialEntryForSynchronousAboutBlank() {
+    return initial_navigation_entry_state_ ==
+           InitialNavigationEntryState::kInitialForSynchronousAboutBlank;
+  }
+
+  void set_initial_navigation_entry_state(
+      InitialNavigationEntryState initial_navigation_entry_state) {
+    initial_navigation_entry_state_ = initial_navigation_entry_state;
+  }
+
+  InitialNavigationEntryState initial_navigation_entry_state() {
+    return initial_navigation_entry_state_;
   }
 
  private:
@@ -564,32 +617,9 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // It is preserved at commit but not persisted.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics_;
 
-  // Whether this NavigationEntry is the initial NavigationEntry or not. The
-  // original initial NavigationEntry is created when the FrameTree is created,
-  // so it might not be associated with any navigation, but represents a
-  // placeholder NavigationEntry for the "initial empty document", which commits
-  // in the renderer on frame creation but doesn't notify the browser of the
-  // commit. However, more initial NavigationEntries might be created after that
-  // in response to navigations, and replace the original NavigationEntry. The
-  // initial NavigationEntry will only get replaced with a non-initial
-  // NavigationEntry by the first navigation that satisfies all of the
-  // following condition:
-  //   1. Happens on the main frame
-  //   2. Classified as NEW_ENTRY (won't reuse the NavigationEntry)
-  //   3. Is not the synchronous about:blank commit
-  // So the "initial" status will be retained/copied to the new
-  // NavigationEntry on subframe navigations, or when the NavigationEntry is
-  // reused/classified as EXISTING_ENTRY, or on the synchronous about:blank
-  // commit. Some other important properties of initial NavigationEntries:
-  // - The initial NavigationEntry always gets reused or replaced on the next
-  // navigation (potentially by another initial NavigationEntry), so if there
-  // is an initial NavigationEntry in the session history, it must be the only
-  // NavigationEntry (as it is impossible to append to session history if the
-  // initial NavigationEntry exists), which means it's not possible to do
-  // a history navigation to an initial NavigationEntry.
-  // - The initial NavigationEntry never gets restored on session restore,
-  // because we never restore tabs with only the initial NavigationEntry.
-  bool is_initial_entry_ = false;
+  // See comment for the enum for explanation.
+  InitialNavigationEntryState initial_navigation_entry_state_ =
+      InitialNavigationEntryState::kNonInitial;
 };
 
 }  // namespace content
