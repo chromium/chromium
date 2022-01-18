@@ -168,4 +168,8 @@ absl::optional<bool> MetricsServiceClient::GetCurrentUserMetricsConsent()
   return absl::nullopt;
 }
 
+absl::optional<std::string> MetricsServiceClient::GetCurrentUserId() const {
+  return absl::nullopt;
+}
+
 }  // namespace metrics

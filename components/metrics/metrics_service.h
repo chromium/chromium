@@ -204,6 +204,10 @@ class MetricsService : public base::HistogramFlattener {
   // more details.
   absl::optional<bool> GetCurrentUserMetricsConsent() const;
 
+  // Returns the current logged in user id. See comments at
+  // MetricsServiceClient::GetCurrentUserId() for more details.
+  absl::optional<std::string> GetCurrentUserId() const;
+
   // Updates the current user metrics consent. No-ops if no user has logged in.
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent);
 

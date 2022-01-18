@@ -534,4 +534,12 @@ void MetricsLog::GetEncodedLog(std::string* encoded_log) {
   uma_proto_.SerializeToString(encoded_log);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void MetricsLog::SetUserId(const std::string& user_id) {
+  uint64_t hashed_user_id = Hash(user_id);
+  uma_proto_.set_user_id(hashed_user_id);
+  log_metadata_.user_id = hashed_user_id;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace metrics

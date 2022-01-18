@@ -524,11 +524,6 @@ ukm::UkmService* ChromeMetricsServiceClient::GetUkmService() {
   return ukm_service_.get();
 }
 
-bool ChromeMetricsServiceClient::ShouldUploadMetricsForUserId(
-    const uint64_t user_id) {
-  return true;
-}
-
 void ChromeMetricsServiceClient::SetMetricsClientId(
     const std::string& client_id) {
   crash_keys::SetMetricsClientIdFromGUID(client_id);
@@ -1213,6 +1208,39 @@ bool ChromeMetricsServiceClient::ShouldResetClientIdsOnClonedInstall() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+bool ChromeMetricsServiceClient::ShouldUploadMetricsForUserId(
+    const uint64_t user_id) {
+  if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
+    // Metrics logs with user ids should be stored in a user cryptohome so this
+    // function should only be called after a user logins.
+    // |per_user_state_manager_| is initialized before a user can login.
+    DCHECK(per_user_state_manager_);
+
+    // This function should only be called if reporting is enabled.
+    DCHECK(ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
+
+    auto current_user_id = per_user_state_manager_->GetCurrentUserId();
+
+    // Current session is an ephemeral session with metrics reporting enabled.
+    // All logs generated during the session will not have a user id associated.
+    // Do not upload log with |user_id| during this session.
+    if (!current_user_id.has_value())
+      return false;
+
+    // If |user_id| is different from the currently logged in user, log
+    // associated with different |user_id| should not be uploaded. This can
+    // happen if a user goes from enable->disable->enable state as user ID is
+    // reset going from enable->disable state.
+    //
+    // The log will be dropped since it may contain data collected during a
+    // point in which metrics reporting consent was disabled.
+    return user_id == metrics::MetricsLog::Hash(current_user_id.value());
+  }
+
+  return true;
+}
+
 void ChromeMetricsServiceClient::UpdateCurrentUserMetricsConsent(
     bool user_metrics_consent) {
   if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
@@ -1240,4 +1268,15 @@ absl::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
 
   return absl::nullopt;
 }
+
+absl::optional<std::string> ChromeMetricsServiceClient::GetCurrentUserId()
+    const {
+  if (per_user_state_manager_) {
+    DCHECK(base::FeatureList::IsEnabled(ash::features::kPerUserMetrics));
+    return per_user_state_manager_->GetCurrentUserId();
+  }
+
+  return absl::nullopt;
+}
+
 #endif

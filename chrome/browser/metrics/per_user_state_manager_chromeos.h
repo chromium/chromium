@@ -87,12 +87,11 @@ class PerUserStateManagerChromeOS
           metrics_service_manager);
 
   // Returns the user_id of the current logged in user. If no user is logged in,
-  // returns absl::nullopt.
+  // returns absl::nullopt. If a user has logged in and has opted-out, will
+  // return absl::nullopt.
   //
   // If the user has opted-into metrics collection and is not ephemeral, then
   // this will return the pseudo-anonymous identifier associated with the user.
-  // If the user has opted-out, then this will return empty string instead of
-  // absl::nullopt since it is used to write to the pref.
   absl::optional<std::string> GetCurrentUserId() const;
 
   // Returns the consent of the current logged in user only if current user's

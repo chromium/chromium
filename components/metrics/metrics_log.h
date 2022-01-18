@@ -218,6 +218,12 @@ class MetricsLog {
   // record.  Must only be called after CloseLog() has been called.
   void GetEncodedLog(std::string* encoded_log);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Assigns a user ID to the log. This should be called immediately after
+  // consotruction if it should be applied.
+  void SetUserId(const std::string& user_id);
+#endif
+
   LogType log_type() const { return log_type_; }
 
   const LogMetadata& log_metadata() const { return log_metadata_; }

@@ -161,6 +161,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserRegularUserTest,
   // being off.
   EXPECT_THAT(metrics_services_manager->IsMetricsReportingEnabled(),
               Eq(owner_consent));
+
+  // User should have a user id.
+  EXPECT_THAT(g_browser_process->metrics_service()->GetCurrentUserId(),
+              Ne(absl::nullopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(MetricsConsentForRegularUser,
@@ -184,8 +188,8 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
 
   auto* metrics_services_manager =
       g_browser_process->GetMetricsServicesManager();
-  MetricsLogStore* log_store =
-      g_browser_process->metrics_service()->LogStoreForTest();
+  auto* metrics_service = g_browser_process->metrics_service();
+  MetricsLogStore* log_store = metrics_service->LogStoreForTest();
 
   // Device consent should be false if device is not owned.
   EXPECT_FALSE(ash::StatsReportingController::Get()->IsEnabled());
@@ -204,6 +208,9 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
   EXPECT_THAT(metrics_services_manager->IsMetricsReportingEnabled(),
               Eq(guest_consent));
   EXPECT_THAT(log_store->has_alternate_ongoing_log_store(), Ne(guest_consent));
+
+  // Guests do not have a user id.
+  EXPECT_THAT(metrics_service->GetCurrentUserId(), Eq(absl::nullopt));
 
   // Device settings consent should remain disabled since this is a guest
   // session.
@@ -273,6 +280,9 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestTestWithDeviceOwner,
   // Guest session cryptohome is ephemeral, so we want persistent metrics logs
   // to be in the local store.
   EXPECT_THAT(log_store->has_alternate_ongoing_log_store(), Ne(owner_consent));
+
+  // Guests do not have a user id.
+  EXPECT_THAT(metrics_service->GetCurrentUserId(), Eq(absl::nullopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(MetricsConsentForGuestWithOwner,
@@ -357,6 +367,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserManagedDeviceTest,
   // Should still follow policy_consent.
   EXPECT_EQ(metrics_services_manager->IsMetricsReportingEnabled(),
             policy_consent);
+
+  // Managed users should not have a user id since they cannot control the
+  // policy.
+  EXPECT_THAT(metrics_service->GetCurrentUserId(), Eq(absl::nullopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(MetricsConsentForManagedUsers,

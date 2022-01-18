@@ -78,7 +78,6 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // metrics::MetricsServiceClient:
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
-  bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
@@ -111,11 +110,12 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   static void SetNotificationListenerSetupFailedForTesting(
       bool simulate_failure);
   bool ShouldResetClientIdsOnClonedInstall() override;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void InitPerUserMetrics() override;
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) override;
   absl::optional<bool> GetCurrentUserMetricsConsent() const override;
+  absl::optional<std::string> GetCurrentUserId() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // ukm::HistoryDeleteObserver:

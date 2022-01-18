@@ -129,7 +129,10 @@ absl::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()
     const {
   if (state_ != State::USER_LOG_STORE_HANDLED)
     return absl::nullopt;
-  return GetCurrentUserPrefs()->GetString(prefs::kMetricsUserId);
+  auto user_id = GetCurrentUserPrefs()->GetString(prefs::kMetricsUserId);
+  if (user_id.empty())
+    return absl::nullopt;
+  return user_id;
 }
 
 absl::optional<bool>
@@ -358,9 +361,14 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
   }
   state_ = State::USER_LOG_STORE_HANDLED;
 
-  // Sets the current logged-in user ID to handle crashes.
-  local_state_->SetString(prefs::kMetricsCurrentUserId,
-                          GetCurrentUserId().value());
+  // Sets the current logged-in user ID to handle crashes. Assigns a user ID if
+  // current user has one. Otherwise, clear the pref to reflect that current
+  // user does not have a user id.
+  auto user_id = GetCurrentUserId();
+  if (user_id.has_value())
+    local_state_->SetString(prefs::kMetricsCurrentUserId, user_id.value());
+  else
+    local_state_->ClearPref(prefs::kMetricsCurrentUserId);
 
   // If the reporting policy is managed, then metrics reporting should be
   // controlled by the reporting policy. This should be handled by

@@ -508,6 +508,10 @@ absl::optional<bool> MetricsService::GetCurrentUserMetricsConsent() const {
   return client_->GetCurrentUserMetricsConsent();
 }
 
+absl::optional<std::string> MetricsService::GetCurrentUserId() const {
+  return client_->GetCurrentUserId();
+}
+
 void MetricsService::UpdateCurrentUserMetricsConsent(
     bool user_metrics_consent) {
   client_->UpdateCurrentUserMetricsConsent(user_metrics_consent);
@@ -907,8 +911,16 @@ bool MetricsService::ShouldResetClientIdsOnClonedInstall() {
 
 std::unique_ptr<MetricsLog> MetricsService::CreateLog(
     MetricsLog::LogType log_type) {
-  return std::make_unique<MetricsLog>(state_manager_->client_id(), session_id_,
-                                      log_type, client_);
+  auto new_metrics_log = std::make_unique<MetricsLog>(
+      state_manager_->client_id(), session_id_, log_type, client_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<std::string> user_id = GetCurrentUserId();
+  if (user_id.has_value())
+    new_metrics_log->SetUserId(user_id.value());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return new_metrics_log;
 }
 
 void MetricsService::SetPersistentSystemProfile(
