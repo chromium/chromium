@@ -147,6 +147,10 @@ TEST_F(ShortcutTest, CreateAndResolveShortcutProperties) {
 }
 
 TEST_F(ShortcutTest, CreateAndResolveShortcut) {
+  // TODO(crbug.com/1264563): Disabled on Win7 bots for being flaky.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ShortcutProperties only_target_properties;
   only_target_properties.set_target(link_properties_.target);
 
