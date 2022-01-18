@@ -139,6 +139,17 @@ MediaStreamRendererFactory::GetAudioRenderer(
                                   std::move(on_render_error_callback));
   }
 
+  // Get the AudioDevice associated with the frame where this track was created,
+  // in case the track has been moved to eg a same origin iframe. Without this,
+  // one can get into a situation where media is piped to a different audio
+  // device to that where control signals are sent, leading to no audio being
+  // played out - see crbug/1239207.
+  WebLocalFrame* track_creation_frame =
+      audio_components[0].Get()->CreationFrame();
+  if (track_creation_frame) {
+    frame = To<LocalFrame>(WebLocalFrame::ToCoreFrame(*track_creation_frame));
+  }
+
   // This is a remote WebRTC media stream.
   WebRtcAudioDeviceImpl* audio_device =
       PeerConnectionDependencyFactory::From(*frame->DomWindow())
