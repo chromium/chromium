@@ -12945,7 +12945,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="UwsInterstitialAttribution"
       label="UwS interstitial referrer attribution."/>
   <affected-histogram name="SafeBrowsing.ReferrerAttributionResult"/>
-  <affected-histogram name="SafeBrowsing.ReferrerHasInvalidTabID"/>
   <affected-histogram name="SafeBrowsing.ReferrerURLChainSize"/>
 </histogram_suffixes>
 
@@ -13707,7 +13706,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SafeBrowsing.RT.GetCache.Time"/>
   <affected-histogram name="SafeBrowsing.RT.GetCacheResult"/>
   <affected-histogram name="SafeBrowsing.RT.HasTokenInRequest"/>
-  <affected-histogram name="SafeBrowsing.RT.HasValidCacheManager"/>
   <affected-histogram name="SafeBrowsing.RT.IsLookupSuccessful"/>
   <affected-histogram name="SafeBrowsing.RT.IsPopulationMbbOrEsb"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Result"/>
@@ -13901,7 +13899,6 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <suffix name="SBER1Pref" label="Value of the legacy Extended Reporting pref"/>
   <suffix name="SBER2Pref" label="Value of the new Extended Reporting pref"/>
-  <affected-histogram name="SafeBrowsing.Pref.SawInterstitial"/>
   <affected-histogram name="SafeBrowsing.Pref.Scout.NoScoutGroup"/>
   <affected-histogram name="SafeBrowsing.Pref.Scout.ScoutGroup"/>
   <affected-histogram name="SafeBrowsing.Pref.Scout.SetPref"/>
