@@ -51,14 +51,6 @@ TEST(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
             policy->SanitizeTriggerData(3, StorableSource::SourceType::kEvent));
 }
 
-TEST(AttributionPolicyTest, SanitizeHighEntropySourceEventId_Unchanged) {
-  uint64_t source_event_id = 256LU;
-
-  // The policy should not alter the impression data, and return the base 10
-  // representation.
-  EXPECT_EQ(256LU, AttributionPolicy().SanitizeSourceEventId(source_event_id));
-}
-
 TEST(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
   std::unique_ptr<AttributionPolicy> policy =
       std::make_unique<ConfigurableAttributionPolicy>(/*should_noise=*/false);

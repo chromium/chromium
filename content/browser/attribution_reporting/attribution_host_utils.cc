@@ -62,9 +62,9 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
   AttributionPolicy::AttributionMode mode =
       policy.GetAttributionMode(source_type);
   StorableSource storable_impression(
-      policy.SanitizeSourceEventId(impression.impression_data),
-      impression_origin, impression.conversion_destination, reporting_origin,
-      impression_time,
+      // Impression data doesn't need to be sanitized.
+      impression.impression_data, impression_origin,
+      impression.conversion_destination, reporting_origin, impression_time,
       policy.GetExpiryTimeForImpression(impression.expiry, impression_time,
                                         source_type),
       source_type, impression.priority, mode.logic(), mode.fake_trigger_data(),

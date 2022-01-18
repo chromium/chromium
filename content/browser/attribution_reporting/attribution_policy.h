@@ -39,8 +39,6 @@ class CONTENT_EXPORT AttributionPolicy {
       uint64_t trigger_data,
       StorableSource::SourceType source_type) const;
 
-  [[nodiscard]] uint64_t SanitizeSourceEventId(uint64_t source_event_id) const;
-
   // Returns the expiry time for an impression that is clamped to a maximum
   // value of 30 days from |impression_time|.
   [[nodiscard]] base::Time GetExpiryTimeForImpression(

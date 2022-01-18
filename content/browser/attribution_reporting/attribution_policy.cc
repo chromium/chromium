@@ -82,12 +82,6 @@ bool AttributionPolicy::IsTriggerDataInRange(
   return trigger_data < TriggerDataCardinality(source_type);
 }
 
-uint64_t AttributionPolicy::SanitizeSourceEventId(
-    uint64_t source_event_id) const {
-  // Impression data is allowed the full 64 bits.
-  return source_event_id;
-}
-
 base::Time AttributionPolicy::GetExpiryTimeForImpression(
     const absl::optional<base::TimeDelta>& declared_expiry,
     base::Time impression_time,
