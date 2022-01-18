@@ -29,13 +29,13 @@
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_arc_tos_mixin.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -812,7 +812,7 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
                                      PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
                                  ""));
     OobeInteractiveUITest::SetUpOnMainThread();
-    policy_server_.ConfigureFakeStatisticsForZeroTouch(
+    policy_test_server_mixin_.ConfigureFakeStatisticsForZeroTouch(
         &fake_statistics_provider_);
   }
 
@@ -832,13 +832,13 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
   void ZeroTouchEndToEnd();
 
  private:
-  LocalPolicyTestServerMixin policy_server_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
-  policy_server_.SetupZeroTouchForcedEnrollment();
+  policy_test_server_mixin_.SetupZeroTouchForcedEnrollment();
 
   PerformStepsBeforeEnrollmentCheck();
 

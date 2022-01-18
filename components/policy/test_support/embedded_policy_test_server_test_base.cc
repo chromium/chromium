@@ -71,6 +71,11 @@ void EmbeddedPolicyTestServerTestBase::SetDeviceType(
   AddQueryParam(dm_protocol::kParamDeviceType, device_type);
 }
 
+void EmbeddedPolicyTestServerTestBase::SetOAuthToken(
+    const std::string& oauth_token) {
+  AddQueryParam(dm_protocol::kParamOAuthToken, oauth_token);
+}
+
 void EmbeddedPolicyTestServerTestBase::SetRequestTypeParam(
     const std::string& request_type) {
   AddQueryParam(dm_protocol::kParamRequest, request_type);

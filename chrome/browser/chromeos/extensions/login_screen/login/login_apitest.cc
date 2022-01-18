@@ -162,9 +162,9 @@ class LoginApitest : public LoginScreenApitestBase {
     auto registry_observer =
         GetTestExtensionRegistryObserver(kInSessionExtensionId);
 
-    ASSERT_TRUE(local_policy_mixin_.server()->UpdatePolicy(
+    policy_test_server_mixin_.UpdatePolicy(
         policy::dm_protocol::kChromePublicAccountPolicyType, kAccountId,
-        user_policy_builder->payload().SerializeAsString()));
+        user_policy_builder->payload().SerializeAsString());
     session_manager_client()->set_device_local_account_policy(
         kAccountId, user_policy_builder->GetBlob());
     RefreshPolicies();
@@ -192,7 +192,7 @@ class LoginApitest : public LoginScreenApitestBase {
   void LockScreen() { ScreenLockerTester().Lock(); }
 
  private:
-  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   base::DictionaryValue config_;
 };
 

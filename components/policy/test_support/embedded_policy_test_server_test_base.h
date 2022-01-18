@@ -43,6 +43,7 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   void SetAppType(const std::string& app_type);
   void SetDeviceIdParam(const std::string& device_id);
   void SetDeviceType(const std::string& device_type);
+  void SetOAuthToken(const std::string& oauth_token);
   void SetRequestTypeParam(const std::string& request_type);
   void SetEnrollmentTokenHeader(const std::string& enrollment_token);
   void SetDeviceTokenHeader(const std::string& device_token);

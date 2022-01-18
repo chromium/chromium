@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -45,6 +45,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/test_support/request_handler_for_check_android_management.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -60,10 +61,6 @@
 
 namespace {
 
-// Set managed auth token for Android managed accounts.
-constexpr char kManagedAuthToken[] = "managed-auth-token";
-// Set unmanaged auth token for other Android unmanaged accounts.
-constexpr char kUnmanagedAuthToken[] = "unmanaged-auth-token";
 constexpr char kWellKnownConsumerName[] = "test@gmail.com";
 constexpr char kFakeUserName[] = "test@example.com";
 constexpr char kFakeGaiaId[] = "1234567890";
@@ -230,7 +227,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
   }
 
  private:
-  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
@@ -242,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ConsumerAccount) {
   EnableArc();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      kUnmanagedAuthToken, base::Time::Max());
+      policy::kUnmanagedAuthToken, base::Time::Max());
   ASSERT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());
 }
@@ -268,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ManagedAndroidAccount) {
   EnableArc();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      kManagedAuthToken, base::Time::Max());
+      policy::kManagedAuthToken, base::Time::Max());
   ArcPlayStoreDisabledWaiter().Wait();
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
 }

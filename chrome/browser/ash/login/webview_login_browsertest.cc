@@ -35,9 +35,9 @@
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -1922,7 +1922,8 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
   }
 
   void UpdateServedPolicyFromDevicePolicyTestHelper() {
-    local_policy_mixin_.UpdateDevicePolicy(device_policy_builder()->payload());
+    policy_test_server_mixin_.UpdateDevicePolicy(
+        device_policy_builder()->payload());
   }
 
   policy::DevicePolicyBuilder* device_policy_builder() {
@@ -1942,7 +1943,7 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
   // A proxy server which requires authentication using the 'Basic'
   // authentication method.
   std::unique_ptr<net::SpawnedTestServer> auth_proxy_server_;
-  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   policy::DevicePolicyBuilder device_policy_builder_;
 
   DeviceStateMixin device_state_{
@@ -2009,9 +2010,9 @@ class WebviewChildLoginTest : public WebviewLoginTest {
   AccountId child_account_id_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId)};
-  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, child_account_id_,
-                                     &local_policy_mixin_};
+                                     &policy_test_server_mixin_};
 };
 
 // Test verfies case when user info message sent before authentication is
