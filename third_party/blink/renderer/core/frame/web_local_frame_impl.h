@@ -218,6 +218,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
                          bool should_show_handle,
                          bool should_show_context_menu);
+  EphemeralRange GetWordSelectionRangeAroundCaret() const;
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
   void SelectRange(const WebRange&,
                    HandleVisibilityBehavior,
