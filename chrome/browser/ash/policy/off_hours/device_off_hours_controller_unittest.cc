@@ -41,6 +41,8 @@ constexpr base::TimeDelta kHour = base::Hours(1);
 constexpr base::TimeDelta kDay = base::Days(1);
 
 const char kGmtTimezone[] = "GMT";
+const char kBerlinTimezone[] = "Europe/Berlin";
+const char kLosAngelesTimezone[] = "America/Los_Angeles";
 
 const int kDeviceAllowNewUsersPolicyTag = 3;
 const int kDeviceGuestModeEnabledPolicyTag = 8;
@@ -410,6 +412,10 @@ INSTANTIATE_TEST_SUITE_P(
     TestCases,
     DeviceOffHoursControllerUpdateTest,
     testing::Values(
+        // ----- Using GMT timezone
+        std::make_tuple(OffHoursPolicy(kGmtTimezone, {kOffHoursInterval}),
+                        base::TimeDelta{},  // Staying at 1970-01-01T00:00:00
+                        false),
         std::make_tuple(OffHoursPolicy(kGmtTimezone, {kOffHoursInterval}),
                         kHour,  // Advancing to 1970-01-01T01:00:00
                         true),
@@ -421,6 +427,33 @@ INSTANTIATE_TEST_SUITE_P(
                         false),  // Advancing to 1970-01-01T02:00:00
         std::make_tuple(OffHoursPolicy(kGmtTimezone, {kOffHoursInterval}),
                         kHour * 3,  // Advancing to 1970-01-01T03:00:00
+                        false),
+        // ----- Using Berlin timezone, one hour ahead of GMT
+        std::make_tuple(OffHoursPolicy(kBerlinTimezone, {kOffHoursInterval}),
+                        base::TimeDelta{},  // Staying at 1970-01-01T00:00:00
+                        true),
+        std::make_tuple(OffHoursPolicy(kBerlinTimezone, {kOffHoursInterval}),
+                        kHour * 0.5,  // Advancing to 1970-01-01T00:30:00
+                        true),
+        std::make_tuple(OffHoursPolicy(kBerlinTimezone, {kOffHoursInterval}),
+                        kHour * 1,  // Advancing to 1970-01-01T01:00:00
+                        false),
+        // ----- Using Los Angeles timezone, eight hours behind GMT
+        std::make_tuple(OffHoursPolicy(kLosAngelesTimezone,
+                                       {kOffHoursInterval}),
+                        kHour * 8,  // Advancing to 1970-01-01T08:00:00
+                        false),
+        std::make_tuple(OffHoursPolicy(kLosAngelesTimezone,
+                                       {kOffHoursInterval}),
+                        kHour * 9,  // Advancing to 1970-01-01T09:00:00
+                        true),
+        std::make_tuple(OffHoursPolicy(kLosAngelesTimezone,
+                                       {kOffHoursInterval}),
+                        kHour * 9.5,  // Advancing to 1970-01-01T09:30:00
+                        true),
+        std::make_tuple(OffHoursPolicy(kLosAngelesTimezone,
+                                       {kOffHoursInterval}),
+                        kHour * 10,  // Advancing to 1970-01-01T10:00:00
                         false)));
 
 }  // namespace off_hours
