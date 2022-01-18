@@ -102,6 +102,12 @@ void PdfPrintManager::PrintToPdf(
     return;
   }
 
+  if (!rfh->IsRenderFrameLive()) {
+    std::move(callback).Run(PRINTING_FAILED,
+                            base::MakeRefCounted<base::RefCountedString>());
+    return;
+  }
+
   printing_rfh_ = rfh;
   page_ranges_ = page_ranges;
   ignore_invalid_page_ranges_ = ignore_invalid_page_ranges;
@@ -227,6 +233,22 @@ void PdfPrintManager::SetAccessibilityTree(
 void PdfPrintManager::PdfWritingDone(int page_count) {}
 #endif
 
+void PdfPrintManager::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  PrintManager::RenderFrameDeleted(render_frame_host);
+
+  if (printing_rfh_ != render_frame_host) {
+    return;
+  }
+
+  if (callback_) {
+    std::move(callback_).Run(PRINTING_FAILED,
+                             base::MakeRefCounted<base::RefCountedString>());
+  }
+
+  Reset();
+}
+
 void PdfPrintManager::DidPrintDocument(
     printing::mojom::DidPrintDocumentParamsPtr params,
     DidPrintDocumentCallback callback) {
@@ -263,7 +285,15 @@ void PdfPrintManager::ReleaseJob(PrintResult result) {
 
   DCHECK(result == PRINT_SUCCESS || data_.empty());
   std::move(callback_).Run(result, base::RefCountedString::TakeString(&data_));
-  GetPrintRenderFrame(printing_rfh_)->PrintingDone(result == PRINT_SUCCESS);
+  // TODO(https://crbug.com/1286556): In theory, this should not be needed. In
+  // practice, nothing seems to restrict receiving incoming Mojo method calls
+  // for reporting the printing state to `printing_rfh_`.
+  //
+  // This should probably be changed so that the browser pushes endpoints to the
+  // renderer rather than the renderer connecting on-demand to the browser...
+  if (printing_rfh_ && printing_rfh_->IsRenderFrameLive()) {
+    GetPrintRenderFrame(printing_rfh_)->PrintingDone(result == PRINT_SUCCESS);
+  }
   Reset();
 }
 

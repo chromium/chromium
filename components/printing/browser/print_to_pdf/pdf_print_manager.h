@@ -15,6 +15,7 @@
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "printing/print_settings.h"
 
@@ -61,6 +62,9 @@ class PdfPrintManager : public printing::PrintManager,
  private:
   explicit PdfPrintManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PdfPrintManager>;
+
+  // WebContentsObserver overrides (via PrintManager):
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // printing::mojom::PrintManagerHost:
   void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,

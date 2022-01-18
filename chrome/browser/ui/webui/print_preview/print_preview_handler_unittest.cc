@@ -40,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "printing/mojom/print.mojom.h"
@@ -400,6 +401,10 @@ class PrintPreviewHandlerTest : public testing::Test {
     initiator_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
     content::WebContents* initiator = initiator_web_contents_.get();
+    // Ensure the initiator has a RenderFrameHost with a live RenderFrame, as
+    // the print code will not bother to send IPCs to a non-live RenderFrame.
+    content::NavigationSimulator::NavigateAndCommitFromDocument(
+        GURL("about:blank"), initiator->GetMainFrame());
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
     PrintViewManager::CreateForWebContents(initiator);
