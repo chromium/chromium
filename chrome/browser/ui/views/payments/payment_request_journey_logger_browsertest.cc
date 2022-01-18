@@ -1554,6 +1554,62 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownTest, OnlyNotShownMetricsLogged) {
                                     0);
 }
 
+using PaymentRequestNotShownBasicCardDisabledTest = BasicCardDisabledTestBase;
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownBasicCardDisabledTest,
+                       OnlyNotShownMetricsLogged) {
+  // Installs two apps so that canMakePayment is true.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_can_make_payment_metrics_test.html");
+  base::HistogramTester histogram_tester;
+
+  ResetEventWaiterForSequence({DialogEvent::CAN_MAKE_PAYMENT_CALLED,
+                               DialogEvent::CAN_MAKE_PAYMENT_RETURNED,
+                               DialogEvent::HAS_ENROLLED_INSTRUMENT_CALLED,
+                               DialogEvent::HAS_ENROLLED_INSTRUMENT_RETURNED});
+
+  // Initiate a Payment Request without showing it.
+  ASSERT_TRUE(content::ExecuteScript(
+      GetActiveWebContents(),
+      content::JsReplace("queryNoShowWithMethods([{supportedMethods:$1}"
+                         ", {supportedMethods:$2}]);",
+                         a_method_name, b_method_name)));
+
+  WaitForObservedEvent();
+
+  // Navigate away to abort the Payment Request and trigger the logs.
+  NavigateTo("/payment_request_email_test.html");
+
+  // Abort should be logged.
+  histogram_tester.ExpectBucketCount(
+      "PaymentRequest.CheckoutFunnel.Aborted",
+      JourneyLogger::ABORT_REASON_USER_NAVIGATION, 1);
+
+  // Some events should be logged.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_EQ(JourneyLogger::EVENT_USER_ABORTED |
+                JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT |
+                JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS |
+                JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE |
+                JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_TRUE |
+                JourneyLogger::EVENT_REQUEST_METHOD_OTHER |
+                JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER,
+            buckets[0].min);
+
+  // Make sure that the metrics that required the Payment Request to be shown
+  // are not logged.
+  histogram_tester.ExpectTotalCount("PaymentRequest.NumberOfSuggestionsShown",
+                                    0);
+}
+
 using PaymentRequestCompleteSuggestionsForEverythingTest =
     BasicCardEnabledTestBase;
 
