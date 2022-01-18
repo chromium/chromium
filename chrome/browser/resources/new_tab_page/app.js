@@ -513,7 +513,8 @@ class AppElement extends mixinBehaviors
 
   /** @private */
   onPromoAndModulesLoadedChange_() {
-    if (this.promoAndModulesLoaded_) {
+    if (this.promoAndModulesLoaded_ &&
+        loadTimeData.getBoolean('modulesEnabled')) {
       recordLoadDuration(
           'NewTabPage.Modules.ShownTime', WindowProxy.getInstance().now());
     }

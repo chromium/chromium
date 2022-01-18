@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -78,6 +79,7 @@ using content::WebContents;
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
+constexpr char kSignedOutNtpModulesSwitch[] = "signed-out-ntp-modules";
 
 content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   content::WebUIDataSource* source =
@@ -679,11 +681,14 @@ void NewTabPageUI::OnLoad() {
   update->SetDoubleKey("navigationStartTime",
                        navigation_start_time_.ToJsTime());
   // Only enable modules if account credentials are available as most modules
-  // won't have data to render otherwise.
-
+  // won't have data to render otherwise. We can override this behavior with the
+  // "--signed-out-ntp-modules" command line switch, e.g. to allow modules in
+  // perf tests, which do not support sign-in.
   update->SetBoolKey("modulesEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kModules) &&
-                         HasCredentials(profile_));
+                         (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                              kSignedOutNtpModulesSwitch) ||
+                          HasCredentials(profile_)));
   update->SetBoolKey("driveModuleEnabled",
                      NewTabPageUI::IsDriveModuleEnabled(profile_));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
