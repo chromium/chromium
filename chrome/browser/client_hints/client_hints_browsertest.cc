@@ -2958,8 +2958,9 @@ class ClientHintsAcceptCHFrameObserverBrowserTest
       accept_ch_frame_observer_interceptor_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// Flaky: https://crbug.com/1195790
+// TODO(crbug.com/1195790): Flaky on multiple bots.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_AcceptCHFrame DISABLED_AcceptCHFrame
 #else
 #define MAYBE_AcceptCHFrame AcceptCHFrame
