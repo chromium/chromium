@@ -261,7 +261,7 @@ export class Box {
     const cornLD = new Point(0, this.size.height);
     const cornLU = new Point(0, 0);
     const cornRU = new Point(this.size.width, 0);
-    const segs = [
+    const segs: Array<[Point, Point]> = [
       [cornRU, cornLU],
       [cornRD, cornRU],
       [cornLU, cornLD],
