@@ -54,30 +54,19 @@
     },
     {
       "name": "LayoutVideo VIDEO id='video'",
-      "bounds": [150, 60],
-      "transform": 1
+      "position": [15, 854],
+      "bounds": [150, 60]
     },
     {
       "name": "LayoutNGFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source'",
+      "position": [15, 854],
       "bounds": [150, 60],
-      "contentsOpaqueForText": true,
-      "transform": 1
+      "contentsOpaqueForText": true
     },
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
       "bounds": [15, 600]
-    }
-  ],
-  "transforms": [
-    {
-      "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [15, 854, 0, 1]
-      ]
     }
   ]
 }

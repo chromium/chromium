@@ -121,7 +121,10 @@ class VideoPainterTest : public PaintControllerPaintTestBase {
 
 TEST_F(VideoPainterTest, VideoLayerAppearsInLayerTree) {
   // Insert a <video> and allow it to begin loading.
-  SetBodyInnerHTML("<video width=300 height=300 src=test.ogv>");
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0 }</style>
+    <video id=video width=300 height=300 src=test.ogv>
+  )HTML");
   test::RunPendingTasks();
 
   // Force the page to paint.
@@ -129,7 +132,7 @@ TEST_F(VideoPainterTest, VideoLayerAppearsInLayerTree) {
 
   // Fetch the layer associated with the <video>, and check that it was
   // correctly configured in the layer tree.
-  auto* element = To<HTMLMediaElement>(GetDocument().body()->firstChild());
+  auto* element = To<HTMLMediaElement>(GetDocument().getElementById("video"));
   StubWebMediaPlayer* player =
       static_cast<StubWebMediaPlayer*>(element->GetWebMediaPlayer());
   const cc::Layer* layer = player->GetCcLayer();
