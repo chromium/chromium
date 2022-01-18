@@ -57,7 +57,7 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kIdentityApiUiAppId,
     kTextEditorAppId,
     kInAppPaymentsSupportAppId,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     kAssessmentAssistantExtensionId,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -73,7 +73,7 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     nullptr,  // Null-terminated array.
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kAssessmentAssistantExtensionId[] =
     "gndmhdcefbhlchkhipcnnbkcmicncehk";
 const char kGnubbyAppId[] = "beknehfpfkghjoafdifaflglpjkojoco";

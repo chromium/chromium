@@ -17,7 +17,7 @@
 #include "content/public/common/common_param_traits.h"
 #include "ipc/ipc_message_macros.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(importer::ImporterType,
                               importer::TYPE_UNKNOWN,
                               importer::TYPE_EDGE)

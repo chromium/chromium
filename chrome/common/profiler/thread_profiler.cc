@@ -30,7 +30,7 @@
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/sandbox.h"
 
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/arm_cfi_table.h"
@@ -42,7 +42,7 @@ extern "C" {
 // shared library.
 extern char __executable_start;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
 using CallStackProfileParams = metrics::CallStackProfileParams;
@@ -59,7 +59,7 @@ ThreadProfiler* g_main_thread_instance = nullptr;
 constexpr double kFractionOfExecutionTimeToSample = 0.02;
 
 bool IsCurrentProcessBackgrounded() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Port provider that returns the calling process's task port, ignoring its
   // argument.
   class SelfPortProvider : public base::PortProvider {
@@ -69,12 +69,12 @@ bool IsCurrentProcessBackgrounded() {
   };
   SelfPortProvider provider;
   return base::Process::Current().IsProcessBackgrounded(&provider);
-#else   // defined(OS_MAC)
+#else   // BUILDFLAG(IS_MAC)
   return base::Process::Current().IsProcessBackgrounded();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 // Encapsulates the setup required to create the Chrome unwinder on Android.
 class ChromeUnwinderCreator {
  public:
@@ -141,10 +141,10 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
   unwinders.push_back(chrome_unwinder_creator->Create());
   return unwinders;
 }
-#endif  // defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
   // The module is loadable if the profiler is enabled for the current
   // process.
   CHECK(

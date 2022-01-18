@@ -18,7 +18,7 @@ class DictionaryValue;
 class FilePath;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Detects which version of Firefox is installed from registry. Returns its
 // major version, and drops the minor version. Returns 0 if failed. If there are
 // indicators of both Firefox 2 and Firefox 3 it is biased to return the biggest
@@ -28,7 +28,7 @@ int GetCurrentFirefoxMajorVersionFromRegistry();
 // Detects where Firefox lives. Returns an empty path if Firefox is not
 // installed.
 base::FilePath GetFirefoxInstallPathFromRegistry();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 struct FirefoxDetail {
   // |path| represents the Path field in Profiles.ini.

@@ -20,13 +20,13 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -126,7 +126,7 @@ class ThreadProfilerBrowserTest : public PlatformBrowserTest {
 };
 
 bool ShouldSkipTestForMacOS11() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Sampling profiler does not work and is disabled on macOS 11.
   // See https://crbug.com/1101399 and https://crbug.com/1098119.
   // DCHECK that that remains the case so these tests are re-enabled when the
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
 }
 
 // Android doesn't have a network service process.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_NetworkServiceProcessIOThread \
   DISABLED_NetworkServiceProcessIOThread
 #else

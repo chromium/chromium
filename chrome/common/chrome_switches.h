@@ -179,7 +179,7 @@ extern const char kWindowWorkspace[];
 extern const char kWinHttpProxyResolver[];
 extern const char kWinJumplistAction[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAuthAndroidNegotiateAccountType[];
 extern const char kEnableAccessibilityTabSwitcher[];
 extern const char kEnableHungRendererInfoBar[];
@@ -191,7 +191,7 @@ extern const char kForceEnableSigninFRE[];
 extern const char kForceDisableSigninFRE[];
 extern const char kForceUpdateMenuType[];
 extern const char kMarketUrlForTesting[];
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kCroshCommand[];
@@ -204,7 +204,7 @@ extern const char kSchedulerConfigurationPerformance[];
 extern const char kSchedulerConfigurationDefault[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kHelp[];
 extern const char kHelpShort[];
 extern const char kPasswordStore[];
@@ -212,16 +212,16 @@ extern const char kEnableEncryptionSelection[];
 extern const char kWmClass[];
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 extern const char kAppsKeepChromeAliveInTests[];
 extern const char kEnableUserMetrics[];
 extern const char kMetricsClientID[];
 extern const char kRelauncherProcess[];
 extern const char kRelauncherProcessDMGDevice[];
 extern const char kMakeChromeDefault[];
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kDisableWindows10CustomTitlebar[];
 extern const char kEnableProfileShortcutManager[];
 extern const char kFromInstaller[];
@@ -234,7 +234,7 @@ extern const char kPwaLauncherVersion[];
 extern const char kShowIcons[];
 extern const char kUninstall[];
 extern const char kUninstallAppId[];
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
 extern const char kDebugPrint[];
@@ -246,22 +246,22 @@ extern const char kAllowNaClFileHandleAPI[];
 extern const char kAllowNaClSocketAPI[];
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
 #endif
 
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kListApps[];
 extern const char kProfileBaseName[];
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 extern const char kWebApkServerUrl[];
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 extern const char kUseSystemDefaultPrinter[];
 #endif
 

@@ -9,7 +9,7 @@
 #include "content/public/common/content_descriptors.h"
 
 enum {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   kAndroidLocalePakDescriptor = kContentIPCDescriptorMax + 1,
   kAndroidSecondaryLocalePakDescriptor,
   kAndroidChrome100PercentPakDescriptor,

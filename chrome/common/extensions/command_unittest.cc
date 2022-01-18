@@ -98,7 +98,7 @@ TEST(CommandTest, ExtensionCommandParsing) {
   const ui::Accelerator none = ui::Accelerator();
   const ui::Accelerator shift_f = ui::Accelerator(ui::VKEY_F,
                                                   ui::EF_SHIFT_DOWN);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   int ctrl = ui::EF_COMMAND_DOWN;
 #else
   int ctrl = ui::EF_CONTROL_DOWN;
@@ -225,16 +225,16 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
                base::UTF16ToASCII(command.description()).c_str());
   EXPECT_STREQ(command_name.c_str(), command.command_name().c_str());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::Accelerator accelerator(ui::VKEY_W,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   ui::Accelerator accelerator(ui::VKEY_M,
                               ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ui::Accelerator accelerator(ui::VKEY_C,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   ui::Accelerator accelerator(ui::VKEY_L,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
 #else
@@ -272,7 +272,7 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
 
   // Now add only a valid platform that we are not running on to make sure devs
   // are notified of errors on other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   key_dict->SetStringKey("mac", "Ctrl+Shift+M");
 #else
   key_dict->SetStringKey("windows", "Ctrl+Shift+W");
@@ -280,7 +280,7 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
   EXPECT_FALSE(command.Parse(input.get(), command_name, 0, &error));
 
   // Make sure Mac specific keys are not processed on other platforms.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   key_dict->SetStringKey("windows", "Command+Shift+M");
   EXPECT_FALSE(command.Parse(input.get(), command_name, 0, &error));
 #endif

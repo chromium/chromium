@@ -14,7 +14,7 @@
 // logger in this file.  (We implement about:ipc on Mac but implement
 // the loggers here anyway).  We need to do this real early to be sure
 // IPC_MESSAGE_MACROS_LOG_ENABLED doesn't get undefined.
-#if defined(OS_POSIX) && BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
+#if BUILDFLAG(IS_POSIX) && BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #define IPC_MESSAGE_MACROS_LOG_ENABLED
 #include "content/public/common/content_ipc_logging.h"
 #define IPC_LOG_TABLE_ADD_ENTRY(msg_id, logger) \
@@ -22,7 +22,7 @@
 #include "chrome/common/all_messages.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -59,7 +59,7 @@
 #include "ash/constants/ash_switches.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <initguid.h>
 #include "base/logging_win.h"
 #include "base/syslog_logging.h"
@@ -85,7 +85,7 @@ bool chrome_logging_failed_ = false;
 // InitChromeLogging() and the beginning of CleanupChromeLogging().
 bool chrome_logging_redirected_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // {7FE69228-633E-4f06-80C1-527FEA23E3A7}
 const GUID kChromeTraceProviderName = {
     0x7fe69228, 0x633e, 0x4f06,
@@ -111,7 +111,7 @@ void SuppressDialogs() {
   assert_handler_ = new ScopedLogAssertHandler(
       base::BindRepeating(SilentRuntimeAssertHandler));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   UINT new_flags = SEM_FAILCRITICALERRORS |
                    SEM_NOGPFAULTERRORBOX |
                    SEM_NOOPENFILEERRORBOX;
@@ -372,7 +372,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Enable trace control and transport through event tracing for Windows.
   LogEventProvider::Initialize(kChromeTraceProviderName);
 

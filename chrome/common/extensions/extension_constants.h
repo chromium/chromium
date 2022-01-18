@@ -160,7 +160,7 @@ enum AppLaunchBucket {
   APP_LAUNCH_BUCKET_INVALID
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // The extension id of the Assessment Assistant extension.
 extern const char kAssessmentAssistantExtensionId[];
 // The extension id of the Gnubby chrome app.

@@ -116,15 +116,15 @@ TEST_P(ChannelInfoTest, IsExtendedStableChannel) {
   EXPECT_EQ(IsExtendedStableChannel(), GetParam().is_extended_stable);
 }
 
-#if defined(OS_WIN)
-#elif defined(OS_MAC)
+#if BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_MAC)
 
 TEST_P(ChannelInfoTest, GetChannelByName) {
   EXPECT_EQ(GetChannelByName(GetParam().channel_name_with_es),
             GetParam().channel);
 }
 
-#elif defined(OS_POSIX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(ChannelInfoTest, GetChannelSuffixForDataDir) {
   EXPECT_EQ(GetChannelSuffixForDataDir(), GetParam().posix_data_dir_suffix);
@@ -170,8 +170,8 @@ INSTANTIATE_TEST_SUITE_P(
                             version_info::Channel::DEV,
                             /*is_extended_stable=*/false,
                             /*posix_data_dir_suffix=*/"-unstable")));
-#if defined(OS_MAC) || defined(OS_WIN) || \
-    defined(OS_FUCHSIA)  // No canary channel on Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_FUCHSIA)  // No canary channel on Linux.
 INSTANTIATE_TEST_SUITE_P(
     Canary,
     ChannelInfoTest,
@@ -181,7 +181,7 @@ INSTANTIATE_TEST_SUITE_P(
                             version_info::Channel::CANARY,
                             /*is_extended_stable=*/false,
                             /*posix_data_dir_suffix=*/"")));
-#endif  // defined(OS_MAC) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 INSTANTIATE_TEST_SUITE_P(
     Chromium,

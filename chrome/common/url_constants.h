@@ -251,7 +251,7 @@ extern const char kSyncGoogleDashboardURL[];
 // The URL for the "Learn more" page for sync setup on the personal stuff page.
 extern const char kSyncLearnMoreURL[];
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The URL for the trusted vault sync passphrase opt in.
 extern const char kSyncTrustedVaultOptInURL[];
 #endif
@@ -270,7 +270,7 @@ extern const char kWhoIsMyAdministratorHelpURL[];
 // The URL for the "Learn more" link about CWS Enhanced Safe Browsing.
 extern const char kCwsEnhancedSafeBrowsingLearnMoreURL[];
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // "Learn more" URL for the enhanced playback notification dialog.
 extern const char kEnhancedPlaybackNotificationLearnMoreURL[];
 #endif
@@ -421,7 +421,7 @@ extern const char kNearbyShareManageContactsURL[];
 extern const char kFingerprintLearnMoreURL[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // "Learn more" URL for the enterprise sign-in confirmation dialog.
 extern const char kChromeEnterpriseSignInLearnMoreURL[];
 
@@ -429,7 +429,7 @@ extern const char kChromeEnterpriseSignInLearnMoreURL[];
 extern const char kMac10_10_ObsoleteURL[];
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // The URL for the Learn More link in the Chrome Cleanup settings card.
 extern const char kChromeCleanerLearnMoreURL[];
 

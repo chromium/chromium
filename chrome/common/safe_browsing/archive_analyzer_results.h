@@ -27,12 +27,12 @@ struct ArchiveAnalyzerResults {
   google::protobuf::RepeatedPtrField<ClientDownloadRequest_ArchivedBinary>
       archived_binary;
   std::vector<base::FilePath> archived_archive_filenames;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::vector<uint8_t> signature_blob;
   google::protobuf::RepeatedPtrField<
       ClientDownloadRequest_DetachedCodeSignature>
       detached_code_signatures;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   int file_count;
   int directory_count;
   ArchiveAnalyzerResults();

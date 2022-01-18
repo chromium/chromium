@@ -104,7 +104,7 @@ ui::Accelerator ParseImpl(const std::string& accelerator,
         // Mac the developer has to specify MacCtrl). Therefore we treat this
         // as Command.
         modifiers |= ui::EF_COMMAND_DOWN;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       } else if (platform_key == values::kKeybindingPlatformDefault) {
         // If we see "Command+foo" in the Default section it can mean two
         // things, depending on the platform:
@@ -249,7 +249,7 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
   if (platform == values::kKeybindingPlatformMac) {
     normalize = true;
   } else if (platform == values::kKeybindingPlatformDefault) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     normalize = true;
 #endif
   }
@@ -288,13 +288,13 @@ Command::~Command() {}
 
 // static
 std::string Command::CommandPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return values::kKeybindingPlatformWin;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return values::kKeybindingPlatformMac;
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return values::kKeybindingPlatformChromeOs;
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   return values::kKeybindingPlatformLinux;
 #else
   return "";

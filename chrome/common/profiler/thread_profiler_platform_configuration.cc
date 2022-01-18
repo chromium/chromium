@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/common/profiler/process_type.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/modules/stack_unwinder/public/module.h"
 #endif
 
@@ -112,7 +112,7 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
          *release_channel == version_info::Channel::DEV;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The configuration to use for the Android platform. Applies to ARM32 which is
 // the only Android architecture currently supported by StackSamplingProfiler.
 // Defined in terms of DefaultPlatformConfiguration where Android does not
@@ -236,14 +236,14 @@ bool AndroidPlatformConfiguration::IsSupportedForChannel(
   // TODO(https://crbug.com/1004855): Enable across all browser tests.
   return browser_test_mode_enabled();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
 // static
 std::unique_ptr<ThreadProfilerPlatformConfiguration>
 ThreadProfilerPlatformConfiguration::Create(bool browser_test_mode_enabled) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   using PlatformConfiguration = AndroidPlatformConfiguration;
 #else
   using PlatformConfiguration = DefaultPlatformConfiguration;

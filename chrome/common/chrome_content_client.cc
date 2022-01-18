@@ -61,12 +61,12 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/url_constants.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fcntl.h>
 #include "sandbox/linux/services/credentials.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -88,7 +88,7 @@
 #include "chrome/common/media/cdm_host_file_path.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/common/media/chrome_media_drm_bridge_client.h"
 #endif
 
@@ -266,7 +266,7 @@ void ChromeContentClient::AddContentDecryptionModules(
 static const char* const kChromeStandardURLSchemes[] = {
     extensions::kExtensionScheme, chrome::kChromeNativeScheme,
     chrome::kChromeSearchScheme,  dom_distiller::kDomDistillerScheme,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     content::kAndroidAppScheme,
 #endif
 };
@@ -275,7 +275,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   for (auto* standard_scheme : kChromeStandardURLSchemes)
     schemes->standard_schemes.push_back(standard_scheme);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
 #endif
 
@@ -317,7 +317,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->local_schemes.push_back(content::kExternalFileScheme);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   schemes->local_schemes.push_back(url::kContentScheme);
 #endif
 }
@@ -350,7 +350,7 @@ gfx::Image& ChromeContentClient::GetNativeImageNamed(int resource_id) {
       resource_id);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 base::FilePath ChromeContentClient::GetChildProcessPath(
     int child_flags,
     const base::FilePath& helpers_path) {
@@ -365,7 +365,7 @@ base::FilePath ChromeContentClient::GetChildProcessPath(
   NOTREACHED() << "Unsupported child process flags!";
   return {};
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 std::string ChromeContentClient::GetProcessTypeNameInEnglish(int type) {
 #if BUILDFLAG(ENABLE_NACL)
@@ -392,11 +392,11 @@ blink::OriginTrialPolicy* ChromeContentClient::GetOriginTrialPolicy() {
   return origin_trial_policy_.get();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 media::MediaDrmBridgeClient* ChromeContentClient::GetMediaDrmBridgeClient() {
   return new ChromeMediaDrmBridgeClient();
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromeContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,

@@ -20,7 +20,7 @@ extern const base::FilePath::CharType kBrowserProcessExecutableName[];
 extern const base::FilePath::CharType kHelperProcessExecutableName[];
 extern const base::FilePath::CharType kBrowserProcessExecutablePath[];
 extern const base::FilePath::CharType kHelperProcessExecutablePath[];
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // NOTE: if you change the value of kFrameworkName, please don't forget to
 // update components/test/run_all_unittests.cc as well.
 // TODO(tfarina): Remove the comment above, when you fix components to use plist
@@ -30,12 +30,12 @@ extern const base::FilePath::CharType kFrameworkExecutableName[];
 // Suffix added to the helper app name to display alert notifications. Must be
 // kept in sync with the value in alert_helper_params (//chrome/BUILD.gn).
 extern const char kMacHelperSuffixAlerts[];
-#endif  // OS_MAC
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
 extern const base::FilePath::CharType kBrowserResourcesDll[];
 extern const base::FilePath::CharType kElfDll[];
 extern const base::FilePath::CharType kStatusTrayWindowClass[];
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 extern const char kInitialProfile[];
 extern const char kMultiProfileDirPrefix[];
@@ -81,12 +81,12 @@ extern const base::FilePath::CharType kTrustTokenFilename[];
 extern const base::FilePath::CharType kVideoTutorialsStorageDirname[];
 extern const base::FilePath::CharType kWebAppDirname[];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const base::FilePath::CharType kJumpListIconDirname[];
 #endif
 
 // directory names
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const wchar_t kUserDataDirname[];
 #endif
 

@@ -22,7 +22,7 @@ class CommandsManifestTest : public ChromeManifestTest {
 };
 
 TEST_F(CommandsManifestTest, CommandManifestSimple) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   int ctrl = ui::EF_COMMAND_DOWN;
 #else
   int ctrl = ui::EF_CONTROL_DOWN;

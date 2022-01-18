@@ -6,6 +6,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
@@ -139,7 +140,7 @@ const char kChromeUINewTabPageThirdPartyURL[] =
 const char kChromeUINewTabURL[] = "chrome://newtab/";
 const char kChromeUIOmniboxHost[] = "omnibox";
 const char kChromeUIOmniboxURL[] = "chrome://omnibox/";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kChromeUIAppDisabledURL[] = "chrome://app-disabled";
 const char kChromeUIOsFlagsAppURL[] = "chrome://flags/";
 const char kChromeUIOsUrlAppURL[] = "chrome://internal/";
@@ -211,12 +212,12 @@ const char kChromeUIWelcomeURL[] = "chrome://welcome/";
 const char kChromeUIWhatsNewHost[] = "whats-new";
 const char kChromeUIWhatsNewURL[] = "chrome://whats-new/";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1003960): Remove when issue is resolved.
 const char kChromeUIWelcomeWin10Host[] = "welcome-win10";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kChromeUIExploreSitesInternalsHost[] = "explore-sites-internals";
 const char kChromeUIJavaCrashURL[] = "chrome://java-crash/";
 const char kChromeUINativeBookmarksURL[] = "chrome-native://bookmarks/";
@@ -242,7 +243,7 @@ const char kCfmNetworkSettingsHost[] = "cfm-network-settings";
 const char kCfmNetworkSettingsURL[] = "chrome://cfm-network-settings";
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kChromeUIGpuURL[] = "chrome://gpu";
 const char kChromeUIHistogramsURL[] = "chrome://histograms";
 #endif
@@ -427,40 +428,40 @@ const char kOsUIFlagsURL[] = "os://flags";
 const char kOsUIVersionURL[] = "os://version";
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kChromeUIWebUIJsErrorHost[] = "webuijserror";
 const char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 const char kChromeUIConnectorsInternalsHost[] = "connectors-internals";
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 const char kChromeUIDiscardsHost[] = "discards";
 const char kChromeUIDiscardsURL[] = "chrome://discards/";
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kChromeUINearbyShareHost[] = "nearby";
 const char kChromeUINearbyShareURL[] = "chrome://nearby/";
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 const char kChromeUILinuxProxyConfigHost[] = "linux-proxy-config";
 #endif
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
 const char kChromeUISandboxHost[] = "sandbox";
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_FUCHSIA) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 const char kChromeUIBrowserSwitchHost[] = "browser-switch";
 const char kChromeUIBrowserSwitchURL[] = "chrome://browser-switch/";
 const char kChromeUIEnterpriseProfileWelcomeHost[] =
@@ -475,7 +476,8 @@ const char kChromeUIProfilePickerUrl[] = "chrome://profile-picker/";
 const char kChromeUIProfilePickerStartupQuery[] = "startup";
 #endif
 
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(TOOLKIT_VIEWS)) || \
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+     defined(TOOLKIT_VIEWS)) ||                         \
     defined(USE_AURA)
 const char kChromeUITabModalConfirmDialogHost[] = "tab-modal-confirm-dialog";
 #endif
@@ -489,7 +491,7 @@ const char kChromeUITabStripHost[] = "tab-strip.top-chrome";
 const char kChromeUITabStripURL[] = "chrome://tab-strip.top-chrome";
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kChromeUICommanderHost[] = "commander";
 const char kChromeUICommanderURL[] = "chrome://commander";
 const char kChromeUIDownloadShelfHost[] = "download-shelf.top-chrome";
@@ -540,15 +542,15 @@ const char kCreateProfileSubPage[] = "createProfile";
 const char kManageProfileSubPage[] = "manageProfile";
 const char kPeopleSubPage[] = "people";
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kCleanupSubPage[] = "cleanup";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if !defined(OS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kChromeUICastFeedbackHost[] = "cast-feedback";
 #endif
 
@@ -560,7 +562,7 @@ const char kExtensionConfigureCommandsSubPage[] = "configureCommands";
 const char* const kChromeHostURLs[] = {
     kChromeUIAboutHost,
     kChromeUIAccessibilityHost,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     kChromeUIAppServiceInternalsHost,
 #endif
     kChromeUIAutofillInternalsHost,
@@ -584,7 +586,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIInterstitialHost,
     kChromeUIInvalidationsHost,
     kChromeUILocalStateHost,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     kChromeUIManagementHost,
 #endif
     kChromeUIMediaEngagementHost,
@@ -604,14 +606,14 @@ const char* const kChromeHostURLs[] = {
     kChromeUINTPTilesInternalsHost,
     safe_browsing::kChromeUISafeBrowsingHost,
     kChromeUISyncInternalsHost,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     kChromeUITermsHost,
 #endif
     kChromeUITranslateInternalsHost,
     kChromeUIUsbInternalsHost,
     kChromeUIUserActionsHost,
     kChromeUIVersionHost,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     kChromeUIWebAppInternalsHost,
 #endif
     content::kChromeUIAttributionInternalsHost,
@@ -624,12 +626,12 @@ const char* const kChromeHostURLs[] = {
     content::kChromeUINetworkErrorsListingHost,
     content::kChromeUIProcessInternalsHost,
     content::kChromeUIServiceWorkerInternalsHost,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     content::kChromeUITracingHost,
 #endif
     content::kChromeUIUkmHost,
     content::kChromeUIWebRTCInternalsHost,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     kChromeUIAppLauncherPageHost,
 #endif
@@ -643,7 +645,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUISystemInfoHost,
     kChromeUIWhatsNewHost,
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     kChromeUIExploreSitesInternalsHost,
     kChromeUIOfflineInternalsHost,
     kChromeUISnippetsInternalsHost,
@@ -665,22 +667,22 @@ const char* const kChromeHostURLs[] = {
     kChromeUIInternetDetailDialogHost,
     kChromeUIAssistantOptInHost,
 #endif
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
     kChromeUIConnectorsInternalsHost,
 #endif
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
     kChromeUIDiscardsHost,
 #endif
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
     kChromeUILinuxProxyConfigHost,
 #endif
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
     kChromeUISandboxHost,
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     kChromeUIConflictsHost,
 #endif
 #if BUILDFLAG(ENABLE_NACL)
@@ -702,9 +704,9 @@ const size_t kNumberOfChromeHostURLs = base::size(kChromeHostURLs);
 // Add chrome://internals/* subpages here to be included in chrome://chrome-urls
 // (about:about).
 const char* const kChromeInternalsPathURLs[] = {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     kChromeUIInternalsQueryTilesPath,
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
     kChromeUISessionServiceInternalsPath,
 #endif
@@ -726,15 +728,15 @@ const char* const kChromeDebugURLs[] = {
     blink::kChromeUIMemoryExhaustURL,
     blink::kChromeUIMemoryPressureCriticalURL,
     blink::kChromeUIMemoryPressureModerateURL,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     blink::kChromeUIBrowserHeapCorruptionURL,
     blink::kChromeUIHeapCorruptionCrashURL,
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     blink::kChromeUIGpuJavaCrashURL,
     kChromeUIJavaCrashURL,
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     kChromeUIWebUIJsErrorURL,
 #endif
     kChromeUIQuitURL,

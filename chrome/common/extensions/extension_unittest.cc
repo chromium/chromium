@@ -187,13 +187,13 @@ TEST(ExtensionTest, RTLNameInLTRLocale) {
   run_rtl_test(L"google\x202e.com", L"google\x202e.com\x202c");
 
   run_rtl_test(L"كبير Google التطبيق",
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
                L"\x200e\x202bكبير Google التطبيق\x202c\x200e");
 #else
                // On Windows for an LTR locale, no changes to the string are
                // made.
                L"كبير Google التطبيق");
-#endif  // !OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 TEST(ExtensionTest, GetResourceURLAndPath) {

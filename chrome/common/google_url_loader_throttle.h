@@ -18,7 +18,7 @@ class GoogleURLLoaderThrottle
     : public blink::URLLoaderThrottle,
       public base::SupportsWeakPtr<GoogleURLLoaderThrottle> {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   GoogleURLLoaderThrottle(const std::string& client_data_header,
                           bool is_tab_large_enough,
                           chrome::mojom::DynamicParams dynamic_params);
@@ -49,7 +49,7 @@ class GoogleURLLoaderThrottle
 #endif
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string client_data_header_;
   bool is_tab_large_enough_;
 #endif
