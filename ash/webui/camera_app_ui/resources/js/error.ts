@@ -117,7 +117,8 @@ const triggeredErrorSet = new Set<string>();
  * metrics in non test run.
  */
 export function reportError(
-    type: ErrorType, level: ErrorLevel, error: Error): void {
+    type: ErrorType, level: ErrorLevel, errorRaw: unknown): void {
+  const error = assertInstanceof(errorRaw, Error);
   // Uncaught promise is already logged in console.
   if (type !== ErrorType.UNCAUGHT_PROMISE) {
     if (level === ErrorLevel.ERROR) {
