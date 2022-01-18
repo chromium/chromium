@@ -20,7 +20,7 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element.h"
-#include "components/autofill_assistant/browser/web/js_snippets.h"
+#include "components/autofill_assistant/browser/web/js_filter_builder.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
 
 namespace content {
@@ -105,77 +105,6 @@ class ElementFinder : public WebControllerWorker {
   void Start(const Result& start_element, Callback callback);
 
  private:
-  // Helper for building JavaScript functions.
-  //
-  // TODO(b/155264465): extract this into a top-level class in its own file, so
-  // it can be tested.
-  class JsFilterBuilder {
-   public:
-    JsFilterBuilder();
-    ~JsFilterBuilder();
-
-    // Builds the argument list for the function.
-    std::vector<std::unique_ptr<runtime::CallArgument>> BuildArgumentList()
-        const;
-
-    // Return the JavaScript function.
-    std::string BuildFunction() const;
-
-    // Adds a filter, if possible.
-    bool AddFilter(const SelectorProto::Filter& filter);
-
-   private:
-    std::vector<std::string> arguments_;
-    JsSnippet snippet_;
-    bool defined_query_all_deduplicated_ = false;
-
-    // A number that's increased by each call to DeclareVariable() to make sure
-    // we generate unique variables.
-    int variable_counter_ = 0;
-
-    // Adds a regexp filter.
-    void AddRegexpFilter(const TextFilter& filter, const std::string& property);
-
-    // Declares and initializes a variable containing a RegExp object that
-    // correspond to |filter| and returns the variable name.
-    std::string AddRegexpInstance(const TextFilter& filter);
-
-    // Returns the name of a new unique variable.
-    std::string DeclareVariable();
-
-    // Adds an argument to the argument list and returns its JavaScript
-    // representation.
-    //
-    // This allows passing strings to the JavaScript code without having to
-    // hardcode and escape them - this helps avoid XSS issues.
-    std::string AddArgument(const std::string& value);
-
-    // Adds a line of JavaScript code to the function, between the header and
-    // footer. At that point, the variable "elements" contains the current set
-    // of matches, as an array of nodes. It should be updated to contain the new
-    // set of matches.
-    //
-    // IMPORTANT: Only pass strings that originate from hardcoded strings to
-    // this method.
-    void AddLine(const std::string& line) { snippet_.AddLine(line); }
-
-    // Adds a line of JavaScript code to the function that's made up of multiple
-    // parts to be concatenated together.
-    //
-    // IMPORTANT: Only pass strings that originate from hardcoded strings to
-    // this method.
-    void AddLine(const std::vector<std::string>& line) {
-      snippet_.AddLine(line);
-    }
-
-    // Define a |queryAllDeduplicated(roots, selector)| JS function that calls
-    // querySelectorAll(selector) on all |roots| (in order) and returns a
-    // deduplicated list of the matching elements.
-    // Calling this function a second time does not do anything; the function
-    // will be defined only once.
-    void DefineQueryAllDeduplicated();
-  };
-
   // Update the log info with details about the current run.
   void UpdateLogInfo(const ClientStatus& status);
 

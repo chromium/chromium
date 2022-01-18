@@ -283,6 +283,8 @@ static_library("browser") {
     "web/element_rect_getter.h",
     "web/element_store.cc",
     "web/element_store.h",
+    "web/js_filter_builder.cc",
+    "web/js_filter_builder.h",
     "web/js_snippets.cc",
     "web/js_snippets.h",
     "web/keyboard_input_data.cc",
