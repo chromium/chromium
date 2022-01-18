@@ -228,7 +228,9 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static isInvalid(node) {
-    return node.invalidState === InvalidState.TRUE;
+    return node.invalidState === InvalidState.TRUE ||
+        AutomationPredicate.hasInvalidGrammarMarker(node) ||
+        AutomationPredicate.hasInvalidSpellingMarker(node);
   }
 
 

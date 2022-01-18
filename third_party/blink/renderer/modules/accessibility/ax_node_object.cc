@@ -2576,23 +2576,18 @@ ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
   // aria-invalid="false".
   if (EqualIgnoringASCIICase(attribute_value, "false"))
     return ax::mojom::blink::InvalidState::kFalse;
-    // In most cases, aria-invalid="spelling"| "grammar" are used on inline text
-    // elements, and are exposed via Markers() as if they are native errors.
-    // Therefore, they are exposed as InvalidState:kNone here in order to avoid
-    // exposing the state twice, and to prevent superfluous "invalid"
-    // announcements in some screen readers.
-    // On text fields, they are simply exposed as if aria-invalid="true".
-    // TODO(accessibility) Reenable this condition onn OS_CHROMEOS, but add
-    // spelling/grammar errors from markers to AutomationPredicate.IsValid().
-    // See crrev.com/c//3396516.
-#if !defined(OS_CHROMEOS)
+  // In most cases, aria-invalid="spelling"| "grammar" are used on inline text
+  // elements, and are exposed via Markers() as if they are native errors.
+  // Therefore, they are exposed as InvalidState:kNone here in order to avoid
+  // exposing the state twice, and to prevent superfluous "invalid"
+  // announcements in some screen readers.
+  // On text fields, they are simply exposed as if aria-invalid="true".
   if (EqualIgnoringASCIICase(attribute_value, "spelling") ||
       EqualIgnoringASCIICase(attribute_value, "grammar")) {
     return RoleValue() == ax::mojom::blink::Role::kTextField
                ? ax::mojom::blink::InvalidState::kTrue
                : ax::mojom::blink::InvalidState::kNone;
   }
-#endif  // !defined(OS_CHROMEOS)
   // Any other non-empty value is considered true.
   if (!attribute_value.IsEmpty()) {
     return ax::mojom::blink::InvalidState::kTrue;
