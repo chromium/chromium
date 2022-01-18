@@ -838,7 +838,6 @@ cc_test("cc_unittests") {
   ]
 
   if (skia_support_skottie) {
-    data = [ "//components/viz/test/data/" ]
     sources += [
       "paint/skottie_mru_resource_provider_unittest.cc",
       "paint/skottie_resource_metadata_unittest.cc",
@@ -883,6 +882,8 @@ cc_test("cc_unittests") {
     "//ui/gl",
     "//ui/gl:test_support",
   ]
+
+  data = [ "//components/viz/test/data/" ]
   data_deps = [
     "//testing/buildbot/filters:cc_unittests_filters",
     "//third_party/mesa_headers",

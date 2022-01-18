@@ -8,8 +8,11 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_switches.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/base/completion_event.h"
@@ -21,8 +24,10 @@
 #include "cc/paint/paint_image_builder.h"
 #include "cc/raster/playback_image_provider.h"
 #include "cc/raster/raster_source.h"
+#include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
+#include "components/viz/test/paths.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -41,6 +46,7 @@
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -64,6 +70,14 @@ scoped_refptr<DisplayItemList> MakeNoopDisplayItemList() {
   display_item_list->EndPaintOfUnpaired(gfx::Rect(10000, 10000));
   display_item_list->Finalize();
   return display_item_list;
+}
+
+// Creates a bitmap of |size| filled with pixels of |color|.
+SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocPixels(SkImageInfo::MakeN32Premul(size.width(), size.height()));
+  bitmap.eraseColor(color);
+  return bitmap;
 }
 
 constexpr size_t kCacheLimitBytes = 1024 * 1024;
@@ -383,32 +397,30 @@ class OopPixelTest : public testing::Test,
     return bitmap;
   }
 
-  void ExpectEquals(SkBitmap actual,
-                    SkBitmap expected,
-                    const char* label = nullptr) {
-    ExactPixelComparator exact(/* discard_alpha */ false);
-    ExpectEquals(actual, expected, exact, label);
+  // Verifies |actual| matches the expected PNG image.
+  void ExpectEquals(const SkBitmap& actual,
+                    const base::FilePath::StringType& ref_filename,
+                    const PixelComparator& comparator =
+                        ExactPixelComparator(/*discard_alpha=*/false)) {
+    base::FilePath test_data_dir;
+    ASSERT_TRUE(
+        base::PathService::Get(viz::Paths::DIR_TEST_DATA, &test_data_dir));
+
+    base::FilePath png_path = test_data_dir.Append(ref_filename);
+
+    auto* cmd = base::CommandLine::ForCurrentProcess();
+    if (cmd->HasSwitch(switches::kRebaselinePixelTests)) {
+      EXPECT_TRUE(WritePNGFile(actual, png_path, true));
+    } else {
+      EXPECT_TRUE(MatchesPNGFile(actual, png_path, comparator));
+    }
   }
 
   void ExpectEquals(SkBitmap actual,
                     SkBitmap expected,
-                    const PixelComparator& comparator,
-                    const char* label = nullptr) {
-    EXPECT_EQ(actual.dimensions(), expected.dimensions());
-
-    // We don't just use MatchesBitmap so that we can control logging output.
-    if (comparator.Compare(actual, expected))
-      return;
-
-    auto expected_url = GetPNGDataUrl(expected);
-    auto actual_url = GetPNGDataUrl(actual);
-    if (label) {
-      ADD_FAILURE() << "\nCase: " << label << "\nExpected: " << expected_url
-                    << "\nActual:   " << actual_url;
-    } else {
-      ADD_FAILURE() << "\nExpected: " << expected_url
-                    << "\nActual:   " << actual_url;
-    }
+                    const PixelComparator& comparator =
+                        ExactPixelComparator(/*discard_alpha=*/false)) {
+    EXPECT_TRUE(MatchesBitmap(actual, expected, comparator));
   }
 
  protected:
@@ -453,18 +465,10 @@ TEST_F(OopPixelTest, DrawColor) {
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
-  std::vector<SkPMColor> expected_pixels(rect.width() * rect.height(),
-                                         SkPreMultiplyARGB(255, 0, 0, 255));
-  SkBitmap expected;
-  expected.installPixels(
-      SkImageInfo::MakeN32Premul(rect.width(), rect.height()),
-      expected_pixels.data(), rect.width() * sizeof(SkColor));
+  SkBitmap expected = MakeSolidColorBitmap(rect.size(), SK_ColorBLUE);
 
-  auto actual_oop = Raster(display_item_list, rect.size());
-  ExpectEquals(actual_oop, expected, "oop");
-
-  auto actual_gpu = RasterExpectedBitmap(display_item_list, rect.size());
-  ExpectEquals(actual_gpu, expected, "gpu");
+  auto actual = Raster(display_item_list, rect.size());
+  ExpectEquals(actual, expected);
 }
 
 TEST_F(OopPixelTest, DrawColorWithTargetColorSpace) {
@@ -480,12 +484,11 @@ TEST_F(OopPixelTest, DrawColorWithTargetColorSpace) {
   RasterOptions options(rect.size());
   options.color_space = target_color_space;
 
-  auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
-  ExpectEquals(actual, expected);
+  SkBitmap expected =
+      MakeSolidColorBitmap(rect.size(), SkColorSetARGB(255, 38, 15, 221));
 
-  // Verify conversion.
-  EXPECT_EQ(SkColorSetARGB(255, 38, 15, 221), expected.getColor(0, 0));
+  auto actual = Raster(display_item_list, options);
+  ExpectEquals(actual, expected);
 }
 
 TEST_F(OopPixelTest, DrawRect) {
@@ -572,10 +575,8 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
       SkIRect::MakeLTRB(output_size.width() / 2, output_size.height() / 2,
                         output_size.width(), output_size.height()));
 
-  auto actual_oop = Raster(display_item_list, output_size);
-  auto actual_gpu = RasterExpectedBitmap(display_item_list, output_size);
-  ExpectEquals(actual_oop, expected);
-  ExpectEquals(actual_gpu, expected);
+  auto actual = Raster(display_item_list, output_size);
+  ExpectEquals(actual, expected);
 }
 
 TEST_P(OopImagePixelTest, DrawImage) {
@@ -613,10 +614,7 @@ TEST_P(OopImagePixelTest, DrawImage) {
   display_item_list->Finalize();
 
   auto actual = Raster(display_item_list, rect.size());
-  auto expected = RasterExpectedBitmap(display_item_list, rect.size());
-  ExpectEquals(actual, expected);
-
-  EXPECT_EQ(actual.getColor(0, 0), SK_ColorMAGENTA);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image.png"));
 }
 
 TEST_P(OopImagePixelTest, DrawImageScaled) {
@@ -1052,9 +1050,7 @@ TEST_F(OopPixelTest, Preclear) {
 
   auto actual = Raster(display_item_list, options);
 
-  options.preclear = false;
-  options.background_color = SK_ColorGREEN;
-  auto expected = RasterExpectedBitmap(display_item_list, options);
+  auto expected = MakeSolidColorBitmap(rect.size(), SK_ColorGREEN);
   ExpectEquals(actual, expected);
 }
 
@@ -1087,7 +1083,6 @@ TEST_P(OopClearPixelTest, ClearingOpaqueCorner) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1110,8 +1105,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueCorner) {
     canvas.drawRect(SkRect::MakeXYWH(0, 6, 9, 2), green);
   }
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_F(OopPixelTest, ClearingOpaqueCornerExactEdge) {
@@ -1137,7 +1131,6 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerExactEdge) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1153,8 +1146,7 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerExactEdge) {
   canvas.drawRect(SkRect::MakeXYWH(9, 0, 1, 10), green);
   canvas.drawRect(SkRect::MakeXYWH(0, 9, 10, 1), green);
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_F(OopPixelTest, ClearingOpaqueCornerPartialRaster) {
@@ -1182,7 +1174,6 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerPartialRaster) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1194,8 +1185,7 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerPartialRaster) {
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(options.preclear_color);
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
@@ -1229,7 +1219,6 @@ TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1250,8 +1239,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
     canvas.drawRect(SkRect::MakeXYWH(0, 0, 1, 10), green);
   }
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
@@ -1286,7 +1274,6 @@ TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1307,8 +1294,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
     canvas.drawRect(SkRect::MakeXYWH(2, 0, 2, 10), green);
   }
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
@@ -1342,7 +1328,6 @@ TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1364,8 +1349,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
     canvas.drawRect(SkRect::MakeXYWH(0, 0, 10, 1), green);
   }
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
@@ -1400,7 +1384,6 @@ TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1422,8 +1405,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
     canvas.drawRect(SkRect::MakeXYWH(0, 4, 10, 2), green);
   }
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_F(OopPixelTest, ClearingOpaqueInternal) {
@@ -1448,7 +1430,6 @@ TEST_F(OopPixelTest, ClearingOpaqueInternal) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1461,8 +1442,7 @@ TEST_F(OopPixelTest, ClearingOpaqueInternal) {
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(options.preclear_color);
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_F(OopPixelTest, ClearingTransparentCorner) {
@@ -1484,7 +1464,6 @@ TEST_F(OopPixelTest, ClearingTransparentCorner) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   // Because this is rastering the entire tile, clear the entire thing
   // even if the full raster rect doesn't cover the whole resource.
@@ -1497,8 +1476,7 @@ TEST_F(OopPixelTest, ClearingTransparentCorner) {
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(SK_ColorTRANSPARENT);
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_F(OopPixelTest, ClearingTransparentInternalTile) {
@@ -1524,7 +1502,6 @@ TEST_F(OopPixelTest, ClearingTransparentInternalTile) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   // Because this is rastering the entire tile, clear the entire thing
   // even if the full raster rect doesn't cover the whole resource.
@@ -1537,8 +1514,7 @@ TEST_F(OopPixelTest, ClearingTransparentInternalTile) {
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(SK_ColorTRANSPARENT);
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
 TEST_F(OopPixelTest, ClearingTransparentCornerPartialRaster) {
@@ -1561,7 +1537,6 @@ TEST_F(OopPixelTest, ClearingTransparentCornerPartialRaster) {
   auto display_item_list = MakeNoopDisplayItemList();
 
   auto oop_result = Raster(display_item_list, options);
-  auto gpu_result = RasterExpectedBitmap(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1577,14 +1552,11 @@ TEST_F(OopPixelTest, ClearingTransparentCornerPartialRaster) {
   canvas.clipRect(gfx::RectToSkRect(options.playback_rect));
   canvas.drawColor(SK_ColorTRANSPARENT, SkBlendMode::kSrc);
 
-  ExpectEquals(oop_result, bitmap, "oop");
-  ExpectEquals(gpu_result, bitmap, "gpu");
+  ExpectEquals(oop_result, bitmap);
 }
 
-// Test various bitmap and playback rects in the raster options, to verify
-// that in process (RasterSource) and out of process (GLES2Implementation)
-// raster behave identically.
-TEST_F(OopPixelTest, DrawRectBasicRasterOptions) {
+// Test bitmap and playback rects in the raster options.
+TEST_F(OopPixelTest, DrawRectPlaybackRect) {
   PaintFlags flags;
   flags.setColor(SkColorSetARGB(255, 250, 10, 20));
   gfx::Rect draw_rect(3, 1, 8, 9);
@@ -1595,26 +1567,16 @@ TEST_F(OopPixelTest, DrawRectBasicRasterOptions) {
   display_item_list->EndPaintOfUnpaired(draw_rect);
   display_item_list->Finalize();
 
-  std::vector<std::pair<gfx::Rect, gfx::Rect>> input = {
-      {{0, 0, 10, 10}, {0, 0, 10, 10}},
-      {{1, 2, 10, 10}, {4, 2, 5, 6}},
-      {{5, 5, 15, 10}, {5, 5, 10, 10}}};
+  RasterOptions options;
+  options.full_raster_rect = gfx::Rect(1, 2, 10, 10);
+  options.resource_size = options.full_raster_rect.size();
+  options.content_size = gfx::Size(options.full_raster_rect.right(),
+                                   options.full_raster_rect.bottom());
+  options.playback_rect = gfx::Rect(4, 2, 5, 6);
+  options.background_color = SK_ColorMAGENTA;
 
-  for (size_t i = 0; i < input.size(); ++i) {
-    SCOPED_TRACE(base::StringPrintf("Case %zd", i));
-
-    RasterOptions options;
-    options.resource_size = input[i].first.size(),
-    options.full_raster_rect = input[i].first;
-    options.content_size = gfx::Size(options.full_raster_rect.right(),
-                                     options.full_raster_rect.bottom());
-    options.playback_rect = input[i].second;
-    options.background_color = SK_ColorMAGENTA;
-
-    auto actual = Raster(display_item_list, options);
-    auto expected = RasterExpectedBitmap(display_item_list, options);
-    ExpectEquals(actual, expected);
-  }
+  auto actual = Raster(display_item_list, options);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_rect_playback_rect.png"));
 }
 
 TEST_F(OopPixelTest, DrawRectScaleTransformOptions) {
@@ -1644,8 +1606,7 @@ TEST_F(OopPixelTest, DrawRectScaleTransformOptions) {
   options.post_scale = 2.f;
 
   auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
-  ExpectEquals(actual, expected);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_rect_scale_transform.png"));
 }
 
 TEST_F(OopPixelTest, DrawRectTransformOptionsFullRaster) {
@@ -1677,7 +1638,9 @@ TEST_F(OopPixelTest, DrawRectTransformOptionsFullRaster) {
   options.post_scale = 2.f;
 
   auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
+  auto expected = MakeSolidColorBitmap(options.resource_size,
+                                       SkColorSetARGB(255, 64, 128, 32));
+
   ExpectEquals(actual, expected);
 }
 
@@ -1710,8 +1673,7 @@ TEST_F(OopPixelTest, DrawRectQueryMiddleOfDisplayList) {
   options.post_scale = 2.f;
 
   auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
-  ExpectEquals(actual, expected);
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_rect_query.png"));
 }
 
 TEST_F(OopPixelTest, DrawRectColorSpace) {
@@ -1732,8 +1694,10 @@ TEST_F(OopPixelTest, DrawRectColorSpace) {
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list->Finalize();
 
+  SkBitmap expected = MakeSolidColorBitmap(options.resource_size,
+                                           SkColorSetARGB(255, 117, 251, 76));
+
   auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
   ExpectEquals(actual, expected);
 }
 
@@ -2431,9 +2395,8 @@ class OopPathPixelTest : public OopPixelTest,
         /*avg_abs_error_limit=*/255,
         /*max_abs_error_limit=*/255,
         /*small_error_threshold=*/0);
-    auto expected = RasterExpectedBitmap(display_item_list, options);
     auto actual = Raster(display_item_list, options);
-    ExpectEquals(actual, expected, comparator);
+    ExpectEquals(actual, FILE_PATH_LITERAL("oop_path.png"), comparator);
   }
 };
 
@@ -2470,9 +2433,9 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list->Finalize();
 
-  auto expected = RasterExpectedBitmap(display_item_list, options);
   auto actual = Raster(display_item_list, options);
-  ExpectEquals(actual, expected);
+  ExpectEquals(actual,
+               FILE_PATH_LITERAL("oop_record_shader_max_texture_size.png"));
 }
 
 INSTANTIATE_TEST_SUITE_P(P, OopImagePixelTest, ::testing::Bool());
