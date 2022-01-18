@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -19,6 +20,7 @@
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
+#include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
@@ -54,6 +56,37 @@ void TabsSearchService::SearchIncognito(
     base::OnceCallback<void(std::vector<web::WebState*>)> completion) {
   SearchWithinBrowsers(browser_list_->AllIncognitoBrowsers(), term,
                        std::move(completion));
+}
+
+void TabsSearchService::SearchRecentlyClosed(
+    const std::u16string& term,
+    base::OnceCallback<void(
+        std::vector<const sessions::SerializedNavigationEntry>)> completion) {
+  FixedPatternStringSearchIgnoringCaseAndAccents query_search(term);
+
+  std::vector<const sessions::SerializedNavigationEntry> results;
+  sessions::TabRestoreService* restore_service =
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state_);
+  for (auto iter = restore_service->entries().begin();
+       iter != restore_service->entries().end(); ++iter) {
+    const sessions::TabRestoreService::Entry* entry = iter->get();
+    DCHECK(entry);
+    DCHECK_EQ(sessions::TabRestoreService::TAB, entry->type);
+    const sessions::TabRestoreService::Tab* tab =
+        static_cast<const sessions::TabRestoreService::Tab*>(entry);
+    const sessions::SerializedNavigationEntry& navigationEntry =
+        tab->navigations[tab->current_navigation_index];
+
+    if (query_search.Search(navigationEntry.title(), /*match_index=*/nullptr,
+                            /*match_length=*/nullptr) ||
+        query_search.Search(
+            base::UTF8ToUTF16(navigationEntry.virtual_url().spec()),
+            /*match_index=*/nullptr, nullptr)) {
+      results.push_back(navigationEntry);
+    }
+  }
+
+  std::move(completion).Run(results);
 }
 
 void TabsSearchService::SearchRemoteTabs(

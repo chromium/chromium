@@ -18,6 +18,10 @@ class Browser;
 class BrowserList;
 class ChromeBrowserState;
 
+namespace sessions {
+class SerializedNavigationEntry;
+}  // namespace sessions
+
 namespace synced_sessions {
 struct DistantTab;
 }  // namespace synced_sessions
@@ -46,6 +50,13 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   void SearchIncognito(
       const std::u16string& term,
       base::OnceCallback<void(std::vector<web::WebState*>)> completion);
+
+  // Searches through recently closed tabs within |browser_state| in the same
+  // manner as |Search|.
+  void SearchRecentlyClosed(
+      const std::u16string& term,
+      base::OnceCallback<void(
+          std::vector<const sessions::SerializedNavigationEntry>)> completion);
 
   // Searches through Remote Tabs for tabs matching |term|.
   void SearchRemoteTabs(

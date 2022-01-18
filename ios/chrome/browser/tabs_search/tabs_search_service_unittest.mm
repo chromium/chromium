@@ -4,17 +4,25 @@
 
 #import "ios/chrome/browser/tabs_search/tabs_search_service.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/sessions/core/tab_restore_service_impl.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #include "ios/chrome/browser/main/test_browser.h"
+#include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_client.h"
+#include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
@@ -44,18 +52,35 @@ const char16_t kWebState1Title[] = u"Web State 1";
 const char kWebState2Url[] = "http://www.url2.com/";
 // Title for a second sample WebState.
 const char16_t kWebState2Title[] = u"Web State 2";
+
+std::unique_ptr<KeyedService> BuildTabRestoreService(
+    web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  return std::make_unique<sessions::TabRestoreServiceImpl>(
+      base::WrapUnique(new IOSChromeTabRestoreServiceClient(browser_state)),
+      browser_state->GetPrefs(), nullptr);
+}
 }  // namespace
 
 // Test fixture to test the search service.
 class TabsSearchServiceTest : public PlatformTest {
  public:
-  TabsSearchServiceTest() {
+  TabsSearchServiceTest()
+      : scoped_browser_state_manager_(
+            std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {
     TestChromeBrowserState::Builder test_browser_state_builder;
     chrome_browser_state_ = test_browser_state_builder.Build();
+    IOSChromeTabRestoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        chrome_browser_state_.get(),
+        base::BindRepeating(&BuildTabRestoreService));
+
     browser_list_ =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
+
     browser_list_->AddBrowser(browser_.get());
 
     other_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
@@ -79,6 +104,14 @@ class TabsSearchServiceTest : public PlatformTest {
     fake_web_state->SetVisibleURL(url);
     fake_web_state->SetTitle(title);
 
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+
+    navigation_manager->AddItem(url, ui::PAGE_TRANSITION_LINK);
+    int item_index = navigation_manager->GetLastCommittedItemIndex();
+    navigation_manager->GetItemAtIndex(item_index)->SetTitle(title);
+
+    fake_web_state->SetNavigationManager(std::move(navigation_manager));
+
     web::FakeWebState* inserted_web_state = fake_web_state.get();
     browser->GetWebStateList()->InsertWebState(
         WebStateList::kInvalidIndex, std::move(fake_web_state),
@@ -93,6 +126,7 @@ class TabsSearchServiceTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> other_browser_;
@@ -349,6 +383,112 @@ TEST_F(TabsSearchServiceTest, CaseInsensitiveURLSearch) {
         EXPECT_EQ(expected_web_state, results.front());
         results_received = true;
       }));
+
+  ASSERT_TRUE(results_received);
+}
+
+// Tests that no recently closed tabs are returned before any tabs are closed.
+TEST_F(TabsSearchServiceTest, RecentlyClosedNoResults) {
+  AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
+
+  __block bool results_received = false;
+  search_service()->SearchRecentlyClosed(
+      kWebState1Title,
+      base::BindOnce(
+          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
+            ASSERT_EQ(0ul, results.size());
+            results_received = true;
+          }));
+
+  ASSERT_TRUE(results_received);
+}
+
+// Tests that no recently closed tabs are returned when the search term doesn't
+// match the recently closed tabs.
+TEST_F(TabsSearchServiceTest, RecentlyClosedNoMatch) {
+  AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
+
+  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
+                                               WebStateList::CLOSE_NO_FLAGS);
+
+  __block bool results_received = false;
+  search_service()->SearchRecentlyClosed(
+      kSearchQueryMatchesNone,
+      base::BindOnce(
+          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
+            ASSERT_EQ(0ul, results.size());
+            results_received = true;
+          }));
+
+  ASSERT_TRUE(results_received);
+}
+
+// Tests that a recently closed tab is matched based on a title string match.
+TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitle) {
+  AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
+  AppendNewWebState(browser_.get(), kWebState2Title, GURL(kWebState2Url));
+
+  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
+                                               WebStateList::CLOSE_NO_FLAGS);
+
+  __block bool results_received = false;
+  search_service()->SearchRecentlyClosed(
+      kWebState1Title,
+      base::BindOnce(
+          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
+            ASSERT_EQ(1ul, results.size());
+            EXPECT_EQ(kWebState1Url, results.front().virtual_url().spec());
+            EXPECT_EQ(kWebState1Title, results.front().title());
+            results_received = true;
+          }));
+
+  ASSERT_TRUE(results_received);
+}
+
+// Tests that a recently closed tab is matched based on a url match.
+TEST_F(TabsSearchServiceTest, RecentlyClosedMatchURL) {
+  AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
+  AppendNewWebState(browser_.get(), kWebState2Title, GURL(kWebState2Url));
+
+  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
+                                               WebStateList::CLOSE_NO_FLAGS);
+
+  __block bool results_received = false;
+  search_service()->SearchRecentlyClosed(
+      kWebState1ParamValue,
+      base::BindOnce(
+          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
+            ASSERT_EQ(1ul, results.size());
+            EXPECT_EQ(kWebState1Url, results.front().virtual_url().spec());
+            EXPECT_EQ(kWebState1Title, results.front().title());
+
+            results_received = true;
+          }));
+
+  ASSERT_TRUE(results_received);
+}
+
+// Tests that a recently closed tab is matched based on a title string match.
+TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitleAllClosed) {
+  AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
+  AppendNewWebState(browser_.get(), kWebState2Title, GURL(kWebState2Url));
+  // Add a webstate which will not match |kSearchQueryMatchesAll|.
+  AppendNewWebState(browser_.get(), u"X", GURL("http://abc.xyz"));
+
+  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+
+  __block bool results_received = false;
+  search_service()->SearchRecentlyClosed(
+      kSearchQueryMatchesAll,
+      base::BindOnce(
+          ^(std::vector<const sessions::SerializedNavigationEntry> results) {
+            ASSERT_EQ(2ul, results.size());
+            EXPECT_EQ(kWebState1Url, results.front().virtual_url().spec());
+            EXPECT_EQ(kWebState1Title, results.front().title());
+            EXPECT_EQ(kWebState2Url, results.back().virtual_url().spec());
+            EXPECT_EQ(kWebState2Title, results.back().title());
+            results_received = true;
+          }));
 
   ASSERT_TRUE(results_received);
 }
