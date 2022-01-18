@@ -13754,6 +13754,16 @@ be describing additional metrics about the same event.
       anytime after that happens.
     </summary>
   </metric>
+  <metric name="PaintTiming.LargestContentfulPaintBPP"
+      enum="BitsPerPixelExponential">
+    <summary>
+      Measures the ratio of image file size (in bits) to displayed pixels for
+      the LCP candidate. Bucketed into roughly exponential intervals to account
+      for the wide range of encountered values (less than 1:100000 to greater
+      than 10000:1). This metric is recorded whenever the LCP candidate is an
+      image, and omitted when it is text.
+    </summary>
+  </metric>
   <metric name="PaintTiming.LargestContentfulPaintType">
     <summary>
       Indicates that type of the LargestContentfulPaint candidate. This value is

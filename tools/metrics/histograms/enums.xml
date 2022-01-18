@@ -8567,6 +8567,57 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="allpass"/>
 </enum>
 
+<enum name="BitsPerPixelExponential">
+  <summary>
+    The ratio of image size in bits to displayed size in pixels. Ranges are
+    half-open: (low, high].
+  </summary>
+  <int value="0" label="0"/>
+  <int value="1" label="0 - 0.00001"/>
+  <int value="2" label="0.00001 - 0.0001"/>
+  <int value="3" label="0.0001 - 0.001"/>
+  <int value="4" label="0.001 - 0.01"/>
+  <int value="5" label="0.01 - 0.02"/>
+  <int value="6" label="0.02 - 0.03"/>
+  <int value="7" label="0.03 - 0.04"/>
+  <int value="8" label="0.04 - 0.05"/>
+  <int value="9" label="0.05 - 0.06"/>
+  <int value="10" label="0.06 - 0.07"/>
+  <int value="11" label="0.07 - 0.08"/>
+  <int value="12" label="0.08 - 0.09"/>
+  <int value="13" label="0.09 - 0.1"/>
+  <int value="14" label="0.1 - 0.2"/>
+  <int value="15" label="0.2 - 0.3"/>
+  <int value="16" label="0.3 - 0.4"/>
+  <int value="17" label="0.4 - 0.5"/>
+  <int value="18" label="0.5 - 0.6"/>
+  <int value="19" label="0.6 - 0.7"/>
+  <int value="20" label="0.7 - 0.8"/>
+  <int value="21" label="0.8 - 0.9"/>
+  <int value="22" label="0.9 - 1.0"/>
+  <int value="23" label="1.0 - 2.0"/>
+  <int value="24" label="2.0 - 3.0"/>
+  <int value="25" label="3.0 - 4.0"/>
+  <int value="26" label="4.0 - 5.0"/>
+  <int value="27" label="5.0 - 6.0"/>
+  <int value="28" label="6.0 - 7.0"/>
+  <int value="29" label="7.0 - 8.0"/>
+  <int value="30" label="8.0 - 9.0"/>
+  <int value="31" label="9.0 - 10.0"/>
+  <int value="32" label="10.0 - 20.0"/>
+  <int value="33" label="20.0 - 30.0"/>
+  <int value="34" label="30.0 - 40.0"/>
+  <int value="35" label="40.0 - 50.0"/>
+  <int value="36" label="50.0 - 60.0"/>
+  <int value="37" label="60.0 - 70.0"/>
+  <int value="38" label="70.0 - 80.0"/>
+  <int value="39" label="80.0 - 90.0"/>
+  <int value="40" label="90.0 - 100.0"/>
+  <int value="41" label="100.0 - 1000.0"/>
+  <int value="42" label="1000.0 - 10000.0"/>
+  <int value="43" label="10000.0 - inf"/>
+</enum>
+
 <enum name="BlacklistedVideoCaptureDeviceNames">
   <int value="0" label="Google GTalk Camera Adapter"/>
   <int value="1" label="IP Camera"/>

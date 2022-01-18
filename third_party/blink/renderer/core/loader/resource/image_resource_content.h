@@ -183,6 +183,13 @@ class CORE_EXPORT ImageResourceContent final
 
   ImageDecoder::CompressionFormat GetCompressionFormat() const;
 
+  // Returns the number of bytes of image data which should be used for entropy
+  // calculations. Ideally this should exclude metadata from within the image
+  // file, but currently just returns the complete file size.
+  // TODO(iclelland): Eventually switch this, and related calculations, to bits
+  // rather than bytes.
+  uint64_t ContentSizeForEntropy() const;
+
   // Returns true if the image content is well-compressed (and not full of
   // extraneous metadata). "well-compressed" is determined by comparing the
   // image's compression ratio against a specific value that is defined by an

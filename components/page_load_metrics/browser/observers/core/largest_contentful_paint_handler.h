@@ -32,25 +32,27 @@ class ContentfulPaintTimingInfo {
     kMaxValue = kText,
   };
 
-  explicit ContentfulPaintTimingInfo(
-      LargestContentTextOrImage largest_content_type,
-      bool in_main_frame,
-      blink::LargestContentfulPaintTypeMask type);
-  explicit ContentfulPaintTimingInfo(
+  ContentfulPaintTimingInfo(LargestContentTextOrImage largest_content_type,
+                            bool in_main_frame,
+                            blink::LargestContentfulPaintTypeMask type);
+  ContentfulPaintTimingInfo(
       const absl::optional<base::TimeDelta>&,
       const uint64_t& size,
       const LargestContentTextOrImage largest_content_type,
+      double image_bpp,
       bool in_main_frame,
       blink::LargestContentfulPaintTypeMask type);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
   void Reset(const absl::optional<base::TimeDelta>&,
              const uint64_t& size,
-             blink::LargestContentfulPaintTypeMask type);
+             blink::LargestContentfulPaintTypeMask type,
+             double image_bpp);
   absl::optional<base::TimeDelta> Time() const { return time_; }
   bool InMainFrame() const { return in_main_frame_; }
   blink::LargestContentfulPaintTypeMask Type() const { return type_; }
   uint64_t Size() const { return size_; }
   LargestContentTextOrImage TextOrImage() const { return text_or_image_; }
+  double ImageBPP() const { return image_bpp_; }
 
   // Returns true iff this object does not represent any paint.
   bool Empty() const {
@@ -75,6 +77,7 @@ class ContentfulPaintTimingInfo {
   uint64_t size_;
   LargestContentTextOrImage text_or_image_;
   blink::LargestContentfulPaintTypeMask type_ = 0;
+  double image_bpp_ = 0.0;
   bool in_main_frame_;
 };
 

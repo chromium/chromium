@@ -164,6 +164,13 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
 
   const uint64_t size =
       largest_image_record ? largest_image_record->first_size : 0;
+
+  double bpp =
+      (size > 0 && largest_image_record->cached_image)
+          ? largest_image_record->cached_image->ContentSizeForEntropy() * 8.0 /
+                size
+          : 0.0;
+
   PaintTimingDetector& detector = frame_view_->GetPaintTimingDetector();
   // Calling NotifyIfChangedLargestImagePaint only has an impact on
   // PageLoadMetrics, and not on the web exposed metrics.
@@ -171,7 +178,7 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
   // Two different candidates are rare to have the same time and size.
   // So when they are unchanged, the candidate is considered unchanged.
   bool changed =
-      detector.NotifyIfChangedLargestImagePaint(time, size, is_animated);
+      detector.NotifyIfChangedLargestImagePaint(time, size, is_animated, bpp);
   if (changed) {
     if (!time.is_null() && largest_image_record->loaded) {
       ReportCandidateToTrace(*largest_image_record);

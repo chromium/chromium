@@ -255,7 +255,8 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     base::TimeTicks image_paint_time,
     uint64_t image_paint_size,
-    bool is_animated) {
+    bool is_animated,
+    double image_bpp) {
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
 
@@ -270,6 +271,7 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
   }
   largest_image_paint_time_ = image_paint_time;
   largest_image_paint_size_ = image_paint_size;
+  largest_contentful_paint_image_bpp_ = image_bpp;
   UpdateLargestContentfulPaintTime();
   DidChangePerformanceTiming();
   return true;

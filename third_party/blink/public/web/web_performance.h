@@ -125,6 +125,7 @@ class WebPerformance {
   BLINK_EXPORT uint64_t ExperimentalLargestImagePaintSize() const;
   BLINK_EXPORT LargestContentfulPaintTypeMask
   LargestContentfulPaintType() const;
+  BLINK_EXPORT double LargestContentfulPaintImageBPP() const;
   BLINK_EXPORT double ExperimentalLargestTextPaint() const;
   BLINK_EXPORT uint64_t ExperimentalLargestTextPaintSize() const;
   BLINK_EXPORT double FirstEligibleToPaint() const;

@@ -51,11 +51,12 @@ void MergeForSubframesWithAdjustedTime(
   DCHECK(inout_timing);
   const ContentfulPaintTimingInfo new_candidate(
       candidate_new_time, candidate_new_size, inout_timing->TextOrImage(),
-      inout_timing->InMainFrame(), inout_timing->Type());
+      inout_timing->InMainFrame(), inout_timing->Type(),
+      inout_timing->ImageBPP());
   const ContentfulPaintTimingInfo& merged_candidate =
       MergeTimingsBySizeAndTime(new_candidate, *inout_timing);
   inout_timing->Reset(merged_candidate.Time(), merged_candidate.Size(),
-                      merged_candidate.Type());
+                      merged_candidate.Type(), merged_candidate.ImageBPP());
 }
 
 bool IsSubframe(content::RenderFrameHost* subframe_rfh) {
@@ -63,7 +64,7 @@ bool IsSubframe(content::RenderFrameHost* subframe_rfh) {
 }
 
 void Reset(ContentfulPaintTimingInfo& timing) {
-  timing.Reset(absl::nullopt, 0u, 0 /*type*/);
+  timing.Reset(absl::nullopt, 0u, /*type=*/0, /*image_bpp=*/0.0);
 }
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
@@ -90,12 +91,14 @@ ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
     const absl::optional<base::TimeDelta>& time,
     const uint64_t& size,
     const LargestContentTextOrImage text_or_image,
+    double image_bpp,
     bool in_main_frame,
     uint32_t type)
     : time_(time),
       size_(size),
       text_or_image_(text_or_image),
       type_(type),
+      image_bpp_(image_bpp),
       in_main_frame_(in_main_frame) {}
 
 ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
@@ -135,10 +138,12 @@ void LargestContentfulPaintHandler::SetTestMode(bool enabled) {
 void ContentfulPaintTimingInfo::Reset(
     const absl::optional<base::TimeDelta>& time,
     const uint64_t& size,
-    uint32_t type) {
+    uint32_t type,
+    double image_bpp) {
   size_ = size;
   time_ = time;
   type_ = type;
+  image_bpp_ = image_bpp;
 }
 ContentfulPaint::ContentfulPaint(bool in_main_frame, uint32_t type)
     : text_(ContentfulPaintTimingInfo::LargestContentTextOrImage::kText,
@@ -281,13 +286,14 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
   if (IsValid(largest_contentful_paint.largest_text_paint)) {
     main_frame_contentful_paint_.Text().Reset(
         largest_contentful_paint.largest_text_paint,
-        largest_contentful_paint.largest_text_paint_size, 0 /*type*/);
+        largest_contentful_paint.largest_text_paint_size, /*type=*/0,
+        /*image_bpp=*/0.0);
   }
   if (IsValid(largest_contentful_paint.largest_image_paint)) {
     main_frame_contentful_paint_.Image().Reset(
         largest_contentful_paint.largest_image_paint,
         largest_contentful_paint.largest_image_paint_size,
-        largest_contentful_paint.type);
+        largest_contentful_paint.type, largest_contentful_paint.image_bpp);
   }
 }
 

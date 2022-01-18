@@ -42,7 +42,7 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   Member<WindowPerformance> window_performance_;
 
   uint64_t largest_reported_size_ = 0u;
-
+  double largest_image_bpp_ = 0.0;
   unsigned count_candidates_ = 0;
 };
 

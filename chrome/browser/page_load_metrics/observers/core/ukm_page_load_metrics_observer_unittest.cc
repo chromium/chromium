@@ -156,10 +156,12 @@ class UkmPageLoadMetricsObserverTest
   // Tests that LCP reports the given |value|,
   // and tests that the LCP content type reported is |text_or_image|. If
   // |test_main_frame| is set, also tests that the main frame LCP histograms
-  // also report |value|.
+  // also report |value|. If |text_or_image| is kText, then tests that image
+  // BPP is not reported, and otherwise tests that it matches |bpp_bucket|.
   void TestLCP(int value,
                LargestContentTextOrImage text_or_image,
-               bool test_main_frame) {
+               bool test_main_frame,
+               uint32_t bpp_bucket = 0) {
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
             PageLoad::kEntryName);
@@ -180,6 +182,15 @@ class UkmPageLoadMetricsObserverTest
     }
     EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
         entry, PageLoad::kPageTiming_ForegroundDurationName));
+
+    if (text_or_image == LargestContentTextOrImage::kText) {
+      EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
+          entry, PageLoad::kPaintTiming_LargestContentfulPaintBPPName));
+    } else {
+      tester()->test_ukm_recorder().ExpectEntryMetric(
+          entry, PageLoad::kPaintTiming_LargestContentfulPaintBPPName,
+          bpp_bucket);
+    }
 
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> internal_merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -413,6 +424,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
   timing.paint_timing->largest_contentful_paint->largest_image_paint =
       base::Milliseconds(600);
   timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -422,7 +434,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
+          30 /* image_bpp = "8.0 - 9.0" */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestImageLoading) {

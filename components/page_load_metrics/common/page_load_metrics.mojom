@@ -40,6 +40,10 @@ struct LargestContentfulPaintTiming {
   // These are packed blink::LargestContentfulPaintType enums, indicating
   // the largest LCP candidate's type characteristics.
   uint32 type;
+
+  // Computed entropy of the page's largest image, calculated as the image file
+  // size, in bits, divided by the image's rendered size, in pixels.
+  double image_bpp;
 };
 
 // TimeDeltas below relative to navigation start.

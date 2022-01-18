@@ -58,6 +58,10 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
     return;
 
   largest_reported_size_ = largest_image->first_size;
+  largest_image_bpp_ =
+      (largest_reported_size_ > 0)
+          ? cached_image->ContentSizeForEntropy() * 8.0 / largest_reported_size_
+          : 0.0;
   const KURL& url = cached_image->Url();
   bool expose_paint_time_to_api =
       url.ProtocolIsData() || cached_image->GetResponse().TimingAllowPassed();

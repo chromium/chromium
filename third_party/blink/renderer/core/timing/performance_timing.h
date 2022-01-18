@@ -145,6 +145,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // Largest Text Paint is the first paint after the largest text within
   // viewport being painted. LargestTextPaint and LargestTextPaintSize
   // are the time and size of it.
+  double LargestContentfulPaintImageBPP() const;
   uint64_t LargestTextPaint() const;
   uint64_t LargestTextPaintSize() const;
   // Largest Contentful Paint is the either the largest text paint time or the

@@ -236,6 +236,10 @@ LargestContentfulPaintTypeMask WebPerformance::LargestContentfulPaintType()
   return private_->timing()->LargestContentfulPaintType();
 }
 
+double WebPerformance::LargestContentfulPaintImageBPP() const {
+  return private_->timing()->LargestContentfulPaintImageBPP();
+}
+
 double WebPerformance::ExperimentalLargestTextPaint() const {
   return 0.0;
 }

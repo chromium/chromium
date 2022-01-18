@@ -484,6 +484,16 @@ ImageDecoder::CompressionFormat ImageResourceContent::GetCompressionFormat()
                                             GetResponse().HttpContentType());
 }
 
+uint64_t ImageResourceContent::ContentSizeForEntropy() const {
+  uint64_t resource_length =
+      static_cast<double>(GetResponse().ExpectedContentLength());
+  if (resource_length <= 0 && image_ && image_->HasData()) {
+    // WPT and LayoutTests server returns -1 or 0 for the content length.
+    resource_length = image_->DataSize();
+  }
+  return resource_length;
+}
+
 bool ImageResourceContent::IsAcceptableCompressionRatio(
     ExecutionContext& context) {
   if (!image_)
@@ -493,18 +503,12 @@ bool ImageResourceContent::IsAcceptableCompressionRatio(
   if (!pixels)
     return true;
 
-  double resource_length =
-      static_cast<double>(GetResponse().ExpectedContentLength());
-  if (resource_length <= 0 && image_->HasData()) {
-    // WPT and LayoutTests server returns -1 or 0 for the content length.
-    resource_length = static_cast<double>(image_->DataSize());
-  }
-
   // Calculate the image's compression ratio (in bytes per pixel) with both 1k
   // and 10k overhead. The constant overhead allowance is provided to allow room
   // for headers and to account for small images (which are harder to compress).
-  double compression_ratio_1k = (resource_length - 1024) / pixels;
-  double compression_ratio_10k = (resource_length - 10240) / pixels;
+  double raw_bpp = static_cast<double>(ContentSizeForEntropy()) / pixels;
+  double compression_ratio_1k = raw_bpp - (1024 / pixels);
+  double compression_ratio_10k = raw_bpp - (10240 / pixels);
 
   ImageDecoder::CompressionFormat compression_format = GetCompressionFormat();
 

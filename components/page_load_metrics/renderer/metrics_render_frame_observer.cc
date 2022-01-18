@@ -594,6 +594,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
             : ClampDelta(perf.LargestImagePaint(), start);
     timing->paint_timing->largest_contentful_paint->type =
         perf.LargestContentfulPaintType();
+    timing->paint_timing->largest_contentful_paint->image_bpp =
+        perf.LargestContentfulPaintImageBPP();
   }
   if (perf.LargestTextPaintSize() > 0) {
     // LargestTextPaint and LargestTextPaintSize should be available at the
