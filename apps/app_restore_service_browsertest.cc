@@ -6,6 +6,7 @@
 
 #include "apps/app_restore_service_factory.h"
 #include "apps/saved_files_service.h"
+#include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
