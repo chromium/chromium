@@ -48,7 +48,7 @@ a:hover {
 
 @media (prefers-color-scheme: dark) {
   :-webkit-any(a, .learn-more-button) {
-    color: rgb(138, 180, 248);  /* --google-blue-refresh-300 */
+    color: rgb(138, 180, 248);  /* --google-blue-300 */
   }
 }
 
