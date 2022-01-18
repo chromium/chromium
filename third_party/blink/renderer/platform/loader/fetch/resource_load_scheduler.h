@@ -91,8 +91,7 @@ class PLATFORM_EXPORT ResourceLoadSchedulerClient
 //     and the milestones being experimented with are first paint and first
 //     contentful paint so far.
 class PLATFORM_EXPORT ResourceLoadScheduler final
-    : public GarbageCollected<ResourceLoadScheduler>,
-      public FrameOrWorkerScheduler::Observer {
+    : public GarbageCollected<ResourceLoadScheduler> {
  public:
   // An option to use in calling Request(). If kCanNotBeStoppedOrThrottled is
   // specified, the request should be granted and Run() should be called
@@ -180,7 +179,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
                         LoadingBehaviorObserver* loading_behavior_observer);
   ResourceLoadScheduler(const ResourceLoadScheduler&) = delete;
   ResourceLoadScheduler& operator=(const ResourceLoadScheduler&) = delete;
-  ~ResourceLoadScheduler() override;
+  ~ResourceLoadScheduler();
 
   void Trace(Visitor*) const;
 
@@ -225,8 +224,8 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   }
   void SetOutstandingLimitForTesting(size_t tight_limit, size_t normal_limit);
 
-  // FrameOrWorkerScheduler::Observer overrides:
-  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState) override;
+  // FrameOrWorkerScheduler lifecycle observer callback.
+  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState);
 
   // The caller is the owner of the |clock|. The |clock| must outlive the
   // ResourceLoadScheduler.

@@ -29,19 +29,17 @@ class WorkerScheduler;
 // on the parent thread. It's passed to WorkerScheduler during its
 // construction. Given that DedicatedWorkerThread object outlives worker thread,
 // this class outlives worker thread too.
-class PLATFORM_EXPORT WorkerSchedulerProxy
-    : public FrameOrWorkerScheduler::Observer {
+class PLATFORM_EXPORT WorkerSchedulerProxy {
  public:
   explicit WorkerSchedulerProxy(FrameOrWorkerScheduler* scheduler);
   WorkerSchedulerProxy(const WorkerSchedulerProxy&) = delete;
   WorkerSchedulerProxy& operator=(const WorkerSchedulerProxy&) = delete;
-  ~WorkerSchedulerProxy() override;
+  ~WorkerSchedulerProxy();
 
   void OnWorkerSchedulerCreated(
       base::WeakPtr<WorkerScheduler> worker_scheduler);
 
-  void OnLifecycleStateChanged(
-      SchedulingLifecycleState lifecycle_state) override;
+  void OnLifecycleStateChanged(SchedulingLifecycleState lifecycle_state);
 
   // Accessed only during init.
   SchedulingLifecycleState lifecycle_state() const {
