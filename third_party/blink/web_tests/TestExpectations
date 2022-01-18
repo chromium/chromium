@@ -5817,7 +5817,7 @@ crbug.com/1070995 external/wpt/html/infrastructure/safe-passing-of-structured-da
 crbug.com/1058073 [ Mac10.14 ] accessibility/content-changed-notification-causes-crash.html [ Failure Pass ]
 
 # Sheriff 2020-03-06
-crbug.com/1059262 http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
+crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
 crbug.com/1059262 [ Mac ] webexposed/global-interface-listing-platform-specific.html [ Failure Pass ]
 crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
 

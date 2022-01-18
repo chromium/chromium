@@ -8,13 +8,11 @@
 // * |outputFunc| is called back with each line of output.
 
 function globalInterfaceListing(globalObject, propertyNamesInGlobal, platformSpecific, outputFunc) {
-
-// List of builtin JS constructors; Blink is not controlling what properties these
-// objects have, so exercising them in a Blink test doesn't make sense.
-//
-// If new builtins are added, please update this list along with the one in
-// web_tests/http/tests/worklet/webexposed/resources/global-interface-listing-worklet.js
-var jsBuiltins = new Set([
+  // List of builtin JS constructors; Blink is not controlling what properties
+  // these objects have, so exercising them in a Blink test doesn't make sense.
+  //
+  // If new builtins are added, please update this list.
+  var jsBuiltins = new Set([
     'AggregateError',
     'Array',
     'ArrayBuffer',
@@ -75,12 +73,12 @@ var jsBuiltins = new Set([
     'parseInt',
     'undefined',
     'unescape',
-]);
+  ]);
 
-function isWebIDLInterface(propertyKey) {
+  function isWebIDLInterface(propertyKey) {
     if (jsBuiltins.has(propertyKey))
         return false;
-    var descriptor = Object.getOwnPropertyDescriptor(this, propertyKey);
+    var descriptor = Object.getOwnPropertyDescriptor(globalObject, propertyKey);
     if (descriptor.value == undefined || descriptor.value.prototype == undefined)
         return false;
     return descriptor.writable && !descriptor.enumerable && descriptor.configurable;
@@ -89,7 +87,8 @@ function isWebIDLInterface(propertyKey) {
 function isWebIDLNamespace(propertyKey) {
     if (jsBuiltins.has(propertyKey))
         return false;
-    let object = Object.getOwnPropertyDescriptor(this, propertyKey).value;
+    let object =
+        Object.getOwnPropertyDescriptor(globalObject, propertyKey).value;
     if (object == undefined || typeof(object) != 'object' ||
         object.prototype != undefined) {
         return false;
@@ -206,13 +205,14 @@ function outputProperty(property) {
 }
 
 function outputWebIDLInterface(interfaceName) {
-    var inheritsFrom = this[interfaceName].__proto__.name;
-    if (inheritsFrom)
-        outputFunc('interface ' + interfaceName + ' : ' + inheritsFrom);
-    else
-        outputFunc('interface ' + interfaceName);
-    // List static properties then prototype properties.
-    [this[interfaceName], this[interfaceName].prototype].forEach(function(object) {
+  var inheritsFrom = globalObject[interfaceName].__proto__.name;
+  if (inheritsFrom)
+    outputFunc('interface ' + interfaceName + ' : ' + inheritsFrom);
+  else
+    outputFunc('interface ' + interfaceName);
+  // List static properties then prototype properties.
+  [globalObject[interfaceName], globalObject[interfaceName].prototype].forEach(
+      function(object) {
         var propertyKeys = collectPropertyKeys(object);
         var propertyStrings = [];
         propertyKeys.forEach(function(propertyKey) {
@@ -221,12 +221,12 @@ function outputWebIDLInterface(interfaceName) {
 
         propertyStrings.filter((property) => filterPlatformSpecificProperty(interfaceName, property))
             .sort().forEach(outputProperty);
-    });
+      });
 }
 
 function outputWebIDLNamespace(namespaceName) {
     outputFunc('namespace ' + namespaceName);
-    let object = this[namespaceName];
+    let object = globalObject[namespaceName];
     let propertyKeys = collectPropertyKeys(object);
     let propertyStrings = [];
     propertyKeys.forEach((propertyKey) => {
@@ -237,16 +237,16 @@ function outputWebIDLNamespace(namespaceName) {
 }
 
 outputFunc('[INTERFACES]');
-var interfaceNames = Object.getOwnPropertyNames(this)
-                           .filter(isWebIDLInterface)
-                           .filter(filterPlatformSpecificInterface);
+var interfaceNames = Object.getOwnPropertyNames(globalObject)
+                         .filter(isWebIDLInterface)
+                         .filter(filterPlatformSpecificInterface);
 interfaceNames.sort();
 interfaceNames.forEach(outputWebIDLInterface);
 
 outputFunc('[NAMESPACES]');
-let namespaceNames = Object.getOwnPropertyNames(this)
-                           .filter(isWebIDLNamespace)
-                           .filter(filterPlatformSpecificInterface);
+let namespaceNames = Object.getOwnPropertyNames(globalObject)
+                         .filter(isWebIDLNamespace)
+                         .filter(filterPlatformSpecificInterface);
 namespaceNames.sort();
 namespaceNames.forEach(outputWebIDLNamespace);
 
@@ -261,4 +261,22 @@ memberNames.forEach(function(propertyKey) {
     collectPropertyInfo(globalObject, propertyKey, propertyStrings);
 });
 propertyStrings.sort().filter(filterPlatformSpecificGlobalProperty).forEach(outputProperty);
+}
+
+// We're in a paint worklet, invoke the test function immediately.
+// This is done here because worklets can not easily import non-module
+// libraries (i.e. load more than one script and share access to state).
+if (typeof PaintWorkletGlobalScope == 'function') {
+  // Generally, Worklet should not have a reference to the global object.
+  // https://drafts.css-houdini.org/worklets/#code-idempotency
+  if (this) {
+    console.error('"this" should not refer to the global object');
+  }
+
+  // However, globalThis is accessible. For now...
+  // See https://github.com/whatwg/html/issues/6059
+  let propertyNamesInGlobal = Object.getOwnPropertyNames(globalThis);
+
+  globalInterfaceListing(
+      globalThis, propertyNamesInGlobal, false, (x) => console.log(x));
 }
