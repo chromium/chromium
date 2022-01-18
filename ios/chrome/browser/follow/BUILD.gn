@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/js_compile.gni")
+
+source_set("follow") {
+  sources = [
+    "rss_link_java_script_feature.h",
+    "rss_link_java_script_feature.mm",
+  ]
+  deps = [
+    ":rss_link_js",
+    "//base",
+    "//ios/web/public/js_messaging",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+js_compile_bundle("rss_link_js") {
+  visibility = [ ":follow" ]
+  closure_entry_point = "__crWeb.rssLink"
+
+  sources = [ "resources/rss_link.js" ]
+}

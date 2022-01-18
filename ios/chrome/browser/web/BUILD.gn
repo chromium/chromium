@@ -230,6 +230,7 @@ source_set("web_internal") {
     "//ios/chrome/browser:browser_impl",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/follow",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/passwords",
