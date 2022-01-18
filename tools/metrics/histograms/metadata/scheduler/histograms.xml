@@ -138,27 +138,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduler.TimerBase.ScheduledTaskInvokedReason"
-    enum="ScheduledTaskInvokedReason" expires_after="M95">
-  <obsolete>
-    Deprecated in M97.
-  </obsolete>
-  <owner>pmonette@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Records the reason that a timer's scheduled task was invoked.
-
-    To avoid a degenerate case where a timer could flood the task queue by
-    repeatedly stopping and starting, the scheduled task is kept active in the
-    task queue even if the timer is not running anymore. The issue with this is
-    that the scheduled task can now cause unnecessary wake-ups just to do
-    nothing. This histogram records how many times the timer's task was run
-    unnecessarily.
-
-    Not recorded on Fuchsia.
-  </summary>
-</histogram>
-
 <histogram name="Scheduling.BeginImplFrameLatency2" units="microseconds"
     expires_after="M85">
   <owner>stanisc@chromium.org</owner>
@@ -212,25 +191,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     How long it takes for the compositor to rasterize pending tree content after
     an impl-side invalidation before it is ready for activation.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Scheduling.PrepareTilesDuration2" units="microseconds"
-    expires_after="M85">
-  <obsolete>
-    Removed M90.
-  </obsolete>
-  <owner>vmiura@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <summary>
-    How long it takes the compositor to PreapreTiles, which determines what
-    rasterization work to do.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
@@ -363,63 +323,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduling.SwapToAckLatency2" units="microseconds"
-    expires_after="M85">
-  <obsolete>
-    Removed M90.
-  </obsolete>
-  <owner>vmiura@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <summary>
-    How long it takes the swap ack to return after a swap.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram base="true" name="ThreadPool.DetachDuration" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed 10/2020. Not actively used.
-  </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Time elapsed between when the thread managed by a SchedulerWorker is
-    detached and when the main function of a new thread managed by the same
-    SchedulerWorker is entered (following a wake up). Recorded each time that a
-    thread is recreated for a given SchedulerWorker.
-  </summary>
-</histogram>
-
-<histogram base="true" name="ThreadPool.HeartbeatLatencyMicroseconds"
-    units="microseconds" expires_after="M85">
-  <obsolete>
-    Removed 11/2020. Not actively used.
-  </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Latency of dummy &quot;heartbeat&quot; tasks posted with specific traits
-    (see suffix). The heartbeat recording avoids dependencies between this
-    report and other work in the system. See
-    ThreadPool.TaskLatencyMicroseconds.* for a metric that is closer to the real
-    workload.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram base="true" name="ThreadPool.NumTasksBeforeDetach" units="tasks"
     expires_after="M85">
   <owner>fdoray@chromium.org</owner>
@@ -428,35 +331,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of tasks executed by a SchedulerWorker before it detached. Recorded
     when a SchedulerWorker detaches.
-  </summary>
-</histogram>
-
-<histogram base="true" name="ThreadPool.NumTasksRunWhileQueuing" units="tasks"
-    expires_after="2019-10-01">
-  <obsolete>
-    Removed 10/2020. Not actively used.
-  </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    Number of tasks run by ThreadPool while task was queuing (from time task was
-    posted until time it was run). Recorded for dummy &quot;heartbeat&quot;
-    tasks posted with specific traits (see suffix). The heartbeat recording
-    avoids dependencies between this report and other work in the system.
-    Recorded every time the ServiceThread performs a heartbeat latency report.
-  </summary>
-</histogram>
-
-<histogram base="true" name="ThreadPool.TaskLatencyMicroseconds"
-    units="microseconds" expires_after="M85">
-  <obsolete>
-    Removed 10/2020. Not actively used.
-  </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Time elapsed between when a task is posted and when it starts to run.
-    Recorded for each task that runs inside the ThreadPool.
   </summary>
 </histogram>
 

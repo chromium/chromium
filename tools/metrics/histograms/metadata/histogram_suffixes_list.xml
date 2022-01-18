@@ -2370,9 +2370,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="Scheduling.DrawIntervalWithMainThreadCompositableAnimations2"/>
   <affected-histogram name="Scheduling.InvalidationToReadyToActivateDuration2"/>
-  <affected-histogram name="Scheduling.PrepareTilesDuration2"/>
   <affected-histogram name="Scheduling.SwapAckWasFast"/>
-  <affected-histogram name="Scheduling.SwapToAckLatency2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="CompositorTimingHistoryProcess2" separator="."
@@ -7545,7 +7543,6 @@ chromium-metrics-reviews@google.com.
              (whether from a crash or a continued session) either spawning or
              reusing a renderer. Time spent in beforeunload subtracted."/>
   <affected-histogram name="Navigation.TimeToCommit"/>
-  <affected-histogram name="Navigation.TimeToURLJobStart"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationFrameType" separator=".">
@@ -7603,14 +7600,11 @@ chromium-metrics-reviews@google.com.
       label="Recorded only for pages whose URL does not match the URL of the
              search results page of the user's default search engine."/>
   <affected-histogram name="NavigationPredictor.AccuracyActionTaken"/>
-  <affected-histogram name="NavigationPredictor.ActionTaken"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationPredictor_Origin" separator=".">
   <suffix name="CrossOrigin" label="Links to a different origin"/>
   <suffix name="SameOrigin" label="Links to the same origin."/>
-  <affected-histogram name="NavigationPredictor.CountOfURLsAboveThreshold"/>
-  <affected-histogram name="NavigationPredictor.CountOfURLsInPredictedSet"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationPreloadEnabled" separator="_">
@@ -7642,44 +7636,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Navigation.StartToCommit"/>
   <affected-histogram name="Navigation.TimeToReadyToCommit"/>
   <affected-histogram name="Navigation.TimeToReadyToCommit2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NavigationType" separator=".">
-  <obsolete>
-    Removed as of November 2021.
-  </obsolete>
-  <suffix name="ExistingPageBrowserInitiated"
-      label="existing page browser-initiated navigation"/>
-  <suffix name="ExistingPageDifferentDocumentIntendedAsNew"
-      label="existing page navigation which is intended as new"/>
-  <suffix name="ExistingPageDifferentDocumentRendererInitiated"
-      label="existing page renderer-initiated navigation"/>
-  <suffix name="ExistingPageRestoredBrowserInitiated"
-      label="existing page browser-initiated navigation which is restored"/>
-  <suffix name="ExistingPageSameDocumentBrowserInitiated"
-      label="in-document existing page browser-initiated navigation"/>
-  <suffix name="ExistingPageSameDocumentIntendedAsNew"
-      label="in-document existing page navigation which is intended as new"/>
-  <suffix name="ExistingPageSameDocumentRendererInitiated"
-      label="in-document existing page renderer-initiated navigation"/>
-  <suffix name="ExistingPageSameDocumentRestoredBrowserInitiated"
-      label="in-document existing page browser-initiated navigation which is
-             restored"/>
-  <suffix name="NewPageInPage" label="in-document new page navigation"/>
-  <suffix name="NewPageInPageOriginMismatch"
-      label="in-document new page navigation with a non-matching origin"/>
-  <suffix name="NewPageNoMatchingEntry"
-      label="new page navigation with no matching entry"/>
-  <suffix name="NewPagePendingEntryMatches"
-      label="new page navigation which found a pending entry"/>
-  <suffix name="NewSubFrame" label="new subframe navigation"/>
-  <suffix name="SamePage" label="same page navigation">
-    <obsolete>
-      Deprecated 01/2021 in favor of ExistingPageSameDocumentIntendedAsNew and
-      ExistingPageDifferentDocumentIntendedAsNew.
-    </obsolete>
-  </suffix>
-  <affected-histogram name="Navigation.SecureSchemeHasSSLStatus"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationTypeTiming" separator=".">
@@ -16173,180 +16129,11 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="TaskScheduler.PercentCancelledDelayedTasks"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="TaskSchedulerMayBlock" separator=".">
-  <obsolete>
-    Removed 1/2018. Merged with TaskSchedulerTaskPriority into
-    TaskSchedulerTaskType to reduce suffixing.
-  </obsolete>
-  <suffix name="MayBlock"
-      label="Applies to tasks posted with MayBlock() or
-             WithBaseSyncPrimitives()."/>
-  <affected-histogram
-      name="TaskScheduler.TaskLatencyMicroseconds.BackgroundTaskPriority"/>
-  <affected-histogram
-      name="TaskScheduler.TaskLatencyMicroseconds.UserBlockingTaskPriority"/>
-  <affected-histogram
-      name="TaskScheduler.TaskLatencyMicroseconds.UserVisibleTaskPriority"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TaskSchedulerName" separator=".">
-  <obsolete>
-    Removed 4/2019. Prefix renamed to ThreadPool.
-  </obsolete>
-  <suffix base="true" name="Browser"
-      label="TaskScheduler for the browser process."/>
-  <suffix base="true" name="ContentChild"
-      label="TaskSchedulers for various instantiations of
-             content::ChildProcess."/>
-  <suffix base="true" name="Renderer"
-      label="TaskSchedulers for renderer processes."/>
-  <affected-histogram name="TaskScheduler.DetachDuration"/>
-  <affected-histogram name="TaskScheduler.HeartbeatLatencyMicroseconds"/>
-  <affected-histogram name="TaskScheduler.NumActiveWorkers"/>
-  <affected-histogram name="TaskScheduler.NumTasksBeforeDetach"/>
-  <affected-histogram name="TaskScheduler.NumTasksBetweenWaits"/>
-  <affected-histogram name="TaskScheduler.NumTasksRunWhileQueuing"/>
-  <affected-histogram name="TaskScheduler.NumWorkers"/>
-  <affected-histogram name="TaskScheduler.TaskLatencyMicroseconds"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TaskSchedulerTaskPriority" separator=".">
-  <obsolete>
-    Removed 1/2018. Merged with TaskSchedulerMayBlock into TaskSchedulerTaskType
-    to reduce suffixing.
-  </obsolete>
-  <suffix name="BackgroundTaskPriority"
-      label="Applies to tasks posted with a BACKGROUND priority."/>
-  <suffix name="UserBlockingTaskPriority"
-      label="Applies to tasks posted with a USER_BLOCKING priority."/>
-  <suffix name="UserVisibleTaskPriority"
-      label="Applies to tasks posted with a USER_VISIBLE priority."/>
-  <affected-histogram name="TaskScheduler.TaskLatencyMicroseconds"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TaskSchedulerTaskType" separator=".">
-  <obsolete>
-    Removed 4/2019. Prefix renamed to ThreadPool.
-  </obsolete>
-  <suffix name="BackgroundTaskPriority"
-      label="Applies to tasks posted with a BACKGROUND priority and neither
-             of MayBlock() nor WithBaseSyncPrimitives()."/>
-  <suffix name="BackgroundTaskPriority_MayBlock"
-      label="Applies to tasks posted with a BACKGROUND priority and
-             MayBlock() or WithBaseSyncPrimitives()."/>
-  <suffix name="UserBlockingTaskPriority"
-      label="Applies to tasks posted with a USER_BLOCKING priority and
-             neither of MayBlock() nor WithBaseSyncPrimitives()."/>
-  <suffix name="UserBlockingTaskPriority_MayBlock"
-      label="Applies to tasks posted with a USER_BLOCKING priority and
-             MayBlock() or WithBaseSyncPrimitives()."/>
-  <suffix name="UserVisibleTaskPriority"
-      label="Applies to tasks posted with a USER_VISIBLE priority and neither
-             of MayBlock() nor WithBaseSyncPrimitives()."/>
-  <suffix name="UserVisibleTaskPriority_MayBlock"
-      label="Applies to tasks posted with a USER_VISIBLE priority and
-             MayBlock() or WithBaseSyncPrimitives()."/>
-  <affected-histogram
-      name="TaskScheduler.HeartbeatLatencyMicroseconds.Browser"/>
-  <affected-histogram
-      name="TaskScheduler.HeartbeatLatencyMicroseconds.ContentChild"/>
-  <affected-histogram
-      name="TaskScheduler.HeartbeatLatencyMicroseconds.Renderer"/>
-  <affected-histogram name="TaskScheduler.NumTasksRunWhileQueuing.Browser"/>
-  <affected-histogram
-      name="TaskScheduler.NumTasksRunWhileQueuing.ContentChild"/>
-  <affected-histogram name="TaskScheduler.NumTasksRunWhileQueuing.Renderer"/>
-  <affected-histogram name="TaskScheduler.TaskLatencyMicroseconds.Browser"/>
-  <affected-histogram
-      name="TaskScheduler.TaskLatencyMicroseconds.ContentChild"/>
-  <affected-histogram name="TaskScheduler.TaskLatencyMicroseconds.Renderer"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TaskSchedulerWorkerPool" separator=".">
-  <obsolete>
-    Removed 4/2019. Prefix renamed to ThreadPool.
-  </obsolete>
-  <suffix name="BackgroundBlockingPool"
-      label="Applies to the BackgroundBlocking worker pool.">
-    <obsolete>
-      Deprecated January 2019 as the pool no longer exists.
-    </obsolete>
-  </suffix>
-  <suffix name="BackgroundFileIOPool"
-      label="Applies to the BackgroundFileIO worker pool.">
-    <obsolete>
-      Deprecated 02/2017. Pool was renamed to BackgroundBlocking.
-    </obsolete>
-  </suffix>
-  <suffix name="BackgroundPool" label="Applies to the Background worker pool."/>
-  <suffix name="ForegroundBlockingPool"
-      label="Applies to the ForegroundBlocking worker pool.">
-    <obsolete>
-      Deprecated January 2019 as the pool no longer exists.
-    </obsolete>
-  </suffix>
-  <suffix name="ForegroundFileIOPool"
-      label="Applies to the ForegroundFileIO worker pool.">
-    <obsolete>
-      Deprecated 02/2017. Pool was renamed to ForegroundBlocking.
-    </obsolete>
-  </suffix>
-  <suffix name="ForegroundPool" label="Applies to the Foreground worker pool."/>
-  <suffix name="RendererBackgroundBlockingPool"
-      label="Applies to the RendererBackgroundBlocking worker pool.">
-    <obsolete>
-      Deprecated 01/2018. In favor of TaskSchedulerName suffix.
-    </obsolete>
-  </suffix>
-  <suffix name="RendererBackgroundPool"
-      label="Applies to the RendererBackground worker pool.">
-    <obsolete>
-      Deprecated 01/2018. In favor of TaskSchedulerName suffix.
-    </obsolete>
-  </suffix>
-  <suffix name="RendererForegroundBlockingPool"
-      label="Applies to the RendererForegroundBlocking worker pool.">
-    <obsolete>
-      Deprecated 01/2018. In favor of TaskSchedulerName suffix.
-    </obsolete>
-  </suffix>
-  <suffix name="RendererForegroundPool"
-      label="Applies to the RendererForeground worker pool.">
-    <obsolete>
-      Deprecated 01/2018. In favor of TaskSchedulerName suffix.
-    </obsolete>
-  </suffix>
-  <affected-histogram name="TaskScheduler.DetachDuration.Browser"/>
-  <affected-histogram name="TaskScheduler.DetachDuration.ContentChild"/>
-  <affected-histogram name="TaskScheduler.DetachDuration.Renderer"/>
-  <affected-histogram name="TaskScheduler.NumActiveWorkers.Browser"/>
-  <affected-histogram name="TaskScheduler.NumActiveWorkers.ContentChild"/>
-  <affected-histogram name="TaskScheduler.NumActiveWorkers.Renderer"/>
-  <affected-histogram name="TaskScheduler.NumTasksBeforeDetach.Browser"/>
-  <affected-histogram name="TaskScheduler.NumTasksBeforeDetach.ContentChild"/>
-  <affected-histogram name="TaskScheduler.NumTasksBeforeDetach.Renderer"/>
-  <affected-histogram name="TaskScheduler.NumTasksBetweenWaits.Browser"/>
-  <affected-histogram name="TaskScheduler.NumTasksBetweenWaits.ContentChild"/>
-  <affected-histogram name="TaskScheduler.NumTasksBetweenWaits.Renderer"/>
-  <affected-histogram name="TaskScheduler.NumWorkers.Browser"/>
-  <affected-histogram name="TaskScheduler.NumWorkers.ContentChild"/>
-  <affected-histogram name="TaskScheduler.NumWorkers.Renderer"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="TeamDrivesSupport" separator=".">
   <suffix name="TeamDrives" label=""/>
   <affected-histogram name="Drive.DeltaFeedLoadTime"/>
   <affected-histogram name="Drive.DirectoryFeedLoadTime"/>
   <affected-histogram name="Drive.FullFeedLoadTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ThisOrOtherUser" separator=".">
-  <obsolete>
-    Removed 2020 January.
-  </obsolete>
-  <suffix name="OtherUser" label="Having a different EUID."/>
-  <suffix name="ThisUser" label="Sharing the same EUID."/>
-  <affected-histogram name="OSX.OtherInstances"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ThreadPoolName" separator=".">
@@ -16357,59 +16144,10 @@ chromium-metrics-reviews@google.com.
   <suffix base="true" name="GPU" label="ThreadPool for the gpu process."/>
   <suffix base="true" name="Renderer"
       label="ThreadPools for renderer processes."/>
-  <affected-histogram name="ThreadPool.DetachDuration"/>
-  <affected-histogram name="ThreadPool.HeartbeatLatencyMicroseconds"/>
   <affected-histogram name="ThreadPool.NumActiveWorkers"/>
   <affected-histogram name="ThreadPool.NumTasksBeforeDetach"/>
   <affected-histogram name="ThreadPool.NumTasksBetweenWaits"/>
-  <affected-histogram name="ThreadPool.NumTasksRunWhileQueuing"/>
   <affected-histogram name="ThreadPool.NumWorkers"/>
-  <affected-histogram name="ThreadPool.TaskLatencyMicroseconds"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ThreadPoolTaskType" separator=".">
-  <suffix name="BackgroundTaskPriority"
-      label="Applies to tasks posted with a BACKGROUND priority."/>
-  <suffix name="BackgroundTaskPriority_MayBlock"
-      label="Applies to tasks posted with a BACKGROUND priority and MayBlock()
-             or WithBaseSyncPrimitives().">
-    <obsolete>
-      Deprecated 09/2019. Merged with BackgroundTaskPriority, because both
-      histograms effectively record the same thing since we merged pools.
-    </obsolete>
-  </suffix>
-  <suffix name="UserBlockingTaskPriority"
-      label="Applies to tasks posted with a USER_BLOCKING priority and
-             neither of MayBlock() nor WithBaseSyncPrimitives()."/>
-  <suffix name="UserBlockingTaskPriority_MayBlock"
-      label="Applies to tasks posted with a USER_BLOCKING priority and
-             MayBlock() or WithBaseSyncPrimitives().">
-    <obsolete>
-      Deprecated 09/2019. Merged with UserBlockingTaskPriority, because both
-      histograms effectively record the same thing since we merged pools.
-    </obsolete>
-  </suffix>
-  <suffix name="UserVisibleTaskPriority"
-      label="Applies to tasks posted with a USER_VISIBLE priority and neither
-             of MayBlock() nor WithBaseSyncPrimitives()."/>
-  <suffix name="UserVisibleTaskPriority_MayBlock"
-      label="Applies to tasks posted with a USER_VISIBLE priority and
-             MayBlock() or WithBaseSyncPrimitives().">
-    <obsolete>
-      Deprecated 09/2019. Merged with UserVisibleTaskPriority, because both
-      histograms effectively record the same thing since we merged pools.
-    </obsolete>
-  </suffix>
-  <affected-histogram name="ThreadPool.HeartbeatLatencyMicroseconds.Browser"/>
-  <affected-histogram
-      name="ThreadPool.HeartbeatLatencyMicroseconds.ContentChild"/>
-  <affected-histogram name="ThreadPool.HeartbeatLatencyMicroseconds.Renderer"/>
-  <affected-histogram name="ThreadPool.NumTasksRunWhileQueuing.Browser"/>
-  <affected-histogram name="ThreadPool.NumTasksRunWhileQueuing.ContentChild"/>
-  <affected-histogram name="ThreadPool.NumTasksRunWhileQueuing.Renderer"/>
-  <affected-histogram name="ThreadPool.TaskLatencyMicroseconds.Browser"/>
-  <affected-histogram name="ThreadPool.TaskLatencyMicroseconds.ContentChild"/>
-  <affected-histogram name="ThreadPool.TaskLatencyMicroseconds.Renderer"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ThreadPoolWorkerGroup" separator=".">
@@ -16417,9 +16155,6 @@ chromium-metrics-reviews@google.com.
       label="Applies to the Background priority worker group."/>
   <suffix name="Foreground"
       label="Applies to the Foreground priority worker group."/>
-  <affected-histogram name="ThreadPool.DetachDuration.Browser"/>
-  <affected-histogram name="ThreadPool.DetachDuration.ContentChild"/>
-  <affected-histogram name="ThreadPool.DetachDuration.Renderer"/>
   <affected-histogram name="ThreadPool.NumActiveWorkers.Browser"/>
   <affected-histogram name="ThreadPool.NumActiveWorkers.ContentChild"/>
   <affected-histogram name="ThreadPool.NumActiveWorkers.Renderer"/>
