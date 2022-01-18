@@ -328,9 +328,8 @@ bool UtilityProcessHost::StartProcess() {
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(
             sandbox_type_, env_, *cmd_line);
 
-    auto snapshot_files = GetV8SnapshotFilesToPreload(*cmd_line);
     process_->LaunchWithPreloadedFiles(std::move(delegate), std::move(cmd_line),
-                                       std::move(snapshot_files), true);
+                                       GetV8SnapshotFilesToPreload(), true);
   }
 
   return true;

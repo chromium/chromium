@@ -218,9 +218,6 @@ CONTENT_EXPORT extern const char kTrustableWebBundleFileUrl[];
 CONTENT_EXPORT extern const char kUseFakeCodecForPeerConnection[];
 CONTENT_EXPORT extern const char kUseFakeUIForMediaStream[];
 CONTENT_EXPORT extern const char kVideoImageTextureTarget[];
-#if BUILDFLAG(IS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
-CONTENT_EXPORT extern const char kUseContextSnapshotSwitch[];
-#endif
 CONTENT_EXPORT extern const char kUseMobileUserAgent[];
 CONTENT_EXPORT extern const char kUseMockCertVerifierForTesting[];
 extern const char kUtilityCmdPrefix[];

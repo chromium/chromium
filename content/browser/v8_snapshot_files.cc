@@ -4,17 +4,12 @@
 
 #include "content/browser/v8_snapshot_files.h"
 
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "content/public/common/content_descriptor_keys.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 
 namespace content {
 
-std::map<std::string, base::FilePath> GetV8SnapshotFilesToPreload(
-    base::CommandLine& process_command_line) {
+std::map<std::string, base::FilePath> GetV8SnapshotFilesToPreload() {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
   return {{kV8ContextSnapshotDataDescriptor,
@@ -24,14 +19,7 @@ std::map<std::string, base::FilePath> GetV8SnapshotFilesToPreload(
            base::FilePath(FILE_PATH_LITERAL("snapshot_blob.bin"))}};
 #endif
 #elif defined(OS_ANDROID)
-#if defined(INCLUDE_BOTH_V8_SNAPSHOTS) || !defined(USE_V8_CONTEXT_SNAPSHOT)
-#if defined(INCLUDE_BOTH_V8_SNAPSHOTS)
-  if (base::FeatureList::IsEnabled(features::kUseContextSnapshot)) {
-    process_command_line.AppendSwitch(switches::kUseContextSnapshotSwitch);
-    // For USE_V8_CONTEXT_SNAPSHOT, the renderer reads the files directly.
-    return {};
-  }
-#endif
+#if !defined(USE_V8_CONTEXT_SNAPSHOT)
   return {{kV8Snapshot64DataDescriptor,
            base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_64.bin"))},
           {kV8Snapshot32DataDescriptor,

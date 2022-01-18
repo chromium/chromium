@@ -202,11 +202,7 @@ namespace {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
 gin::V8SnapshotFileType GetSnapshotType(const base::CommandLine& command_line) {
-#if BUILDFLAG(IS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
-  if (command_line.HasSwitch(switches::kUseContextSnapshotSwitch))
-    return gin::V8SnapshotFileType::kWithAdditionalContext;
-  return gin::V8SnapshotFileType::kDefault;
-#elif defined(USE_V8_CONTEXT_SNAPSHOT)
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
   return gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
   return gin::V8SnapshotFileType::kDefault;
@@ -215,11 +211,7 @@ gin::V8SnapshotFileType GetSnapshotType(const base::CommandLine& command_line) {
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 std::string GetSnapshotDataDescriptor(const base::CommandLine& command_line) {
-#if BUILDFLAG(IS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
-  if (command_line.HasSwitch(switches::kUseContextSnapshotSwitch))
-    return std::string();
-  return kV8SnapshotDataDescriptor;
-#elif defined(USE_V8_CONTEXT_SNAPSHOT)
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
 #if BUILDFLAG(IS_ANDROID)
   // On android, the renderer loads the context snapshot directly.
   return std::string();

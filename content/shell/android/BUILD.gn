@@ -175,8 +175,7 @@ android_assets("content_shell_assets") {
   ]
   if (use_v8_context_snapshot) {
     deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  }
-  if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+  } else {
     deps += [ "//v8:v8_external_startup_data_assets" ]
   }
 }

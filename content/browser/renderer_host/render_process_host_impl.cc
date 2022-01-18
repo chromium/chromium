@@ -1840,7 +1840,6 @@ bool RenderProcessHostImpl::Init() {
     std::unique_ptr<SandboxedProcessLauncherDelegate> sandbox_delegate =
         std::make_unique<RendererSandboxedProcessLauncherDelegate>();
 #endif
-    auto snapshot_files = GetV8SnapshotFilesToPreload(*cmd_line);
     // Spawn the child process asynchronously to avoid blocking the UI thread.
     // As long as there's no renderer prefix, we can use the zygote process
     // at this stage.
@@ -1848,7 +1847,7 @@ bool RenderProcessHostImpl::Init() {
         std::move(sandbox_delegate), std::move(cmd_line), GetID(), this,
         std::move(mojo_invitation_),
         base::BindRepeating(&RenderProcessHostImpl::OnMojoError, id_),
-        std::move(snapshot_files));
+        GetV8SnapshotFilesToPreload());
     channel_->Pause();
 
     // In single process mode, browser-side tracing and memory will cover the

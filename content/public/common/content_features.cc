@@ -954,12 +954,6 @@ const base::Feature kTrustedDOMTypes{"TrustedDOMTypes",
 const base::Feature kUnrestrictedSharedArrayBuffer{
     "UnrestrictedSharedArrayBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
-// If enabled, blink's context snapshot is used rather than the v8 snapshot.
-const base::Feature kUseContextSnapshot{"UseContextSnapshot",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 // Allows user activation propagation to all frames having the same origin as
 // the activation notifier frame.  This is an intermediate measure before we
 // have an iframe attribute to declaratively allow user activation propagation
