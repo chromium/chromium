@@ -1,5 +1,14 @@
-AXWebArea
-++AXList AXOrientation='AXVerticalOrientation' AXSelectedChildren=["AXStaticText 3"] AXVisibleChildren=["AXStaticText 1","AXStaticText 2","AXStaticText 3"]
-++++AXStaticText AXValue='1'
-++++AXStaticText AXValue='2'
-++++AXStaticText AXValue='3'
+AXWebArea AXSelected=0
+++AXList AXOrientation='AXVerticalOrientation' AXSelected=0 AXSelectedChildren=[] AXVisibleChildren=[:3, :4, :5]
+++++AXStaticText AXSelected=0 AXValue='1'
+++++AXStaticText AXSelected=0 AXValue='2'
+++++AXStaticText AXSelected=0 AXValue='3'
+++AXGroup AXSelected=0
+=== Start Continuation ===
+AXWebArea AXSelected=0
+++AXList AXOrientation='AXVerticalOrientation' AXSelected=0 AXSelectedChildren=[:5] AXVisibleChildren=[:3, :4, :5]
+++++AXStaticText AXSelected=0 AXValue='1'
+++++AXStaticText AXSelected=0 AXValue='2'
+++++AXStaticText AXSelected=1 AXValue='3'
+++AXGroup AXSelected=0
+++++AXStaticText AXSelected=0 AXValue='focused'

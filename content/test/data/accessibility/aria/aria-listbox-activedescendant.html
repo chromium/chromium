@@ -1,6 +1,8 @@
 <!--
+@EXECUTE-AND-WAIT-FOR:focusChildren()
 @MAC-ALLOW:AXSubrole
 @MAC-ALLOW:AXOrientation
+@MAC-ALLOW:AXSelected
 @MAC-ALLOW:AXSelectedChildren
 @MAC-ALLOW:AXVisibleChildren
 -->
@@ -11,6 +13,14 @@
   <div id="2" aria-label="2" role="option">Item 2</div>
   <div id="3" aria-label="3" role="option">Item 3</div>
 </div>
-<script>document.querySelector('*[role="listbox"]').focus();</script>
+<div id="done"></div>
+<script>
+function focusChildren() {
+    document.querySelector('*[role="listbox"]').focus();
+    document.getElementById('done').innerText = 'focused';
+    return 'focused';
+}
+</script>
+
 </body>
 </html>
