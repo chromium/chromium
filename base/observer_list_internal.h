@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
 #include "base/debug/stack_trace.h"
 #endif
 
@@ -104,13 +104,13 @@ class BASE_EXPORT CheckedObserverAdapter {
     return static_cast<ObserverType*>(adapter.weak_ptr_.get());
   }
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   std::string GetCreationStackString() const { return stack_.ToString(); }
 #endif
 
  private:
   WeakPtr<CheckedObserver> weak_ptr_;
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   base::debug::StackTrace stack_;
 #endif
 };
