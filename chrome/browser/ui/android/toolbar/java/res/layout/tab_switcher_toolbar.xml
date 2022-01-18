@@ -21,6 +21,7 @@
         android:orientation="horizontal"
         android:visibility="gone">
         <ImageView
+            android:id="@+id/new_tab_view_button"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
             android:layout_gravity="start|top"
@@ -31,6 +32,7 @@
             app:srcCompat="@drawable/new_tab_icon"
             android:contentDescription="@string/accessibility_toolbar_btn_new_tab"/>
         <TextView
+            android:id="@+id/new_tab_view_desc"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingEnd="16dp"

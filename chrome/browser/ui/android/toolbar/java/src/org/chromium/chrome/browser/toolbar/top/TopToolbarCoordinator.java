@@ -22,6 +22,8 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -159,28 +161,26 @@ public class TopToolbarCoordinator implements Toolbar {
 
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
-        if (mToolbarLayout instanceof ToolbarPhone) {
-            if (isStartSurfaceEnabled) {
-                if (shouldHideToolbarLayoutOnStart) mToolbarLayout.setVisibility(View.GONE);
-                View.OnClickListener homeButtonOnClickListener = v -> {
-                    if (tabController != null) {
-                        tabController.openHomepage();
-                    }
-                };
-                mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(
-                        controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
-                        userEducationHelper, identityDiscStateSupplier, overviewThemeColorProvider,
-                        overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
-                        isGridTabSwitcherEnabled, homepageEnabledSupplier,
-                        startSurfaceAsHomepageSupplier, homepageManagedByPolicySupplier,
-                        homeButtonOnClickListener, isTabGroupsAndroidContinuationEnabled,
-                        isIncognitoModeEnabledSupplier);
-            } else {
+        if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
+            if (shouldHideToolbarLayoutOnStart) mToolbarLayout.setVisibility(View.GONE);
+            View.OnClickListener homeButtonOnClickListener = v -> {
+                if (tabController != null) {
+                    tabController.openHomepage();
+                }
+            };
+            mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(
+                    controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
+                    userEducationHelper, identityDiscStateSupplier, overviewThemeColorProvider,
+                    overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
+                    isGridTabSwitcherEnabled, homepageEnabledSupplier,
+                    startSurfaceAsHomepageSupplier, homepageManagedByPolicySupplier,
+                    homeButtonOnClickListener, isTabGroupsAndroidContinuationEnabled,
+                    isIncognitoModeEnabledSupplier);
+        } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {
                 mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(
-                        controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
-                        overviewModeMenuButtonCoordinator, isGridTabSwitcherEnabled,
-                        isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier);
-            }
+                    controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
+                    overviewModeMenuButtonCoordinator, isGridTabSwitcherEnabled,
+                    isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier);
         }
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         controlContainer.setToolbar(this, initializeWithIncognitoColors);
@@ -192,6 +192,10 @@ public class TopToolbarCoordinator implements Toolbar {
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
         homepageEnabledSupplier.addObserver((show) -> mToolbarLayout.onHomeButtonUpdate(show));
         mToolbarLayout.setInvalidatorCallback(invalidatorCallback);
+    }
+
+    private boolean isTabletGridTabSwitcherEnabled() {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
     }
 
     /**

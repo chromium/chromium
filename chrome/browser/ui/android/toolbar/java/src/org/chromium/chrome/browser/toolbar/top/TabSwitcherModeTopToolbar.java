@@ -12,10 +12,12 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -30,6 +32,7 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
@@ -251,13 +254,11 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     /** Called when incognito tab existence changes. */
     void onIncognitoTabsExistenceChanged(boolean doesExist) {
         if (!doesExist == mShouldShowNewTabVariation) return;
-        mShouldShowNewTabVariation = !doesExist;
+        mShouldShowNewTabVariation = shouldShowNewTabVariation(doesExist);
 
-        // TODO(crbug.com/1012014): Address the empty top toolbar issue when adaptive toolbar and
-        // new tab variation are both on.
-        // Show new tab variation when there are no incognito tabs.
-        assert mIncognitoToggleTabLayout != null;
-        mIncognitoToggleTabLayout.setVisibility(mShouldShowNewTabVariation ? GONE : VISIBLE);
+        if (mIncognitoToggleTabLayout != null) {
+            mIncognitoToggleTabLayout.setVisibility(mShouldShowNewTabVariation ? GONE : VISIBLE);
+        }
         updateNewTabButtonVisibility();
     }
 
@@ -316,6 +317,15 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         if (mToggleTabStackButton != null) {
             mToggleTabStackButton.setUseLightDrawables(useLightIcons);
         }
+
+        if (mNewTabViewButton != null) {
+            ApiCompatibilityUtils.setImageTintList(
+                    mNewTabViewButton.findViewById(R.id.new_tab_view_button),
+                    useLightIcons ? mLightIconTint : mDarkIconTint);
+            final TextView newTabViewDesc = mNewTabViewButton.findViewById(R.id.new_tab_view_desc);
+            newTabViewDesc.setTextColor(useLightIcons ? mLightIconTint.getDefaultColor()
+                                                      : mDarkIconTint.getDefaultColor());
+        }
     }
 
     private int getToolbarColorForCurrentState() {
@@ -360,10 +370,23 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     }
 
     /**
-     * @return Whether or not incognito toggle should be visible based on the enabled features
-     *         and incognito status.
+     * @return Whether or not incognito toggle should be visible based on the enabled features,
+     *         incognito status and form-factor.
      */
     private boolean shouldShowIncognitoToggle() {
-        return mIsGridTabSwitcherEnabled && mIsIncognitoModeEnabledSupplier.getAsBoolean();
+        return mIsGridTabSwitcherEnabled && mIsIncognitoModeEnabledSupplier.getAsBoolean()
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
+    }
+
+    /**
+     * @return Whether or not new tab variant should be enabled based on if incognito tabs exists
+     * and form factor. Always returns true for tablets.
+     */
+    private boolean shouldShowNewTabVariation(boolean incognitoTabExists) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            return true;
+        }
+
+        return !incognitoTabExists;
     }
 }
