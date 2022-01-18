@@ -246,7 +246,6 @@ source_set("chromeos") {
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:attestation_proto",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/dbus/cryptohome:cryptohome_signkey_proto",
     "//chromeos/dbus/cups_proxy",
     "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
