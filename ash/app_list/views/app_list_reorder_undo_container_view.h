@@ -13,7 +13,7 @@ class LabelButton;
 
 namespace ash {
 
-class SystemToastStyle;
+class AppListToastView;
 enum class AppListSortOrder;
 
 // A view accommodating a toast view that reverts the app list temporary
@@ -45,7 +45,7 @@ class AppListReorderUndoContainerView : public views::View {
   [[nodiscard]] std::u16string CalculateToastTextFromOrder(
       AppListSortOrder order) const;
 
-  SystemToastStyle* toast_view_ = nullptr;
+  AppListToastView* toast_view_ = nullptr;
 };
 
 }  // namespace ash
