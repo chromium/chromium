@@ -228,8 +228,8 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverTwoLocks) {
 
 // Verify that content::FeatureObserver is notified that a frame stopped holding
 // locks when it is navigated away.
-// TODO(crbug.com/1286329): Flakes on Linux and Chrome OS.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// TODO(crbug.com/1286329): Flakes on Linux, Chrome OS, and Mac.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
 #define MAYBE_ObserverNavigate DISABLED_ObserverNavigate
 #else
 #define MAYBE_ObserverNavigate ObserverNavigate
