@@ -142,7 +142,8 @@ Equivalently, you can launch a sandboxed utility process to handle the data, and
 return a well-formed response back to the caller in an IPC message. See [Safe
 Browsing's ZIP
 analyzer](https://cs.chromium.org/chromium/src/chrome/common/safe_browsing/zip_analyzer.h)
-for an example.
+for an example. The [Data Decoder Service](https://source.chromium.org/chromium/chromium/src/+/main:services/data_decoder/public/cpp/data_decoder.h)
+facilitates this safe decoding process for several common data formats.
 
 ### Verifying The Trustworthiness Of A Source
 
