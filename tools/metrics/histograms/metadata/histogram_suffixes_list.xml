@@ -5128,14 +5128,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="FileBrowser.CrostiniSharedPaths.Depth"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FirstDownload" separator=".">
-  <obsolete>
-    Removed 2020-10.
-  </obsolete>
-  <suffix name="FirstDownload" label="First download after startup."/>
-  <affected-histogram name="MobileDownload.Background"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FirstPacketSplit" separator="_">
   <suffix name="first_packet_intact"
       label="with GET/POST headers often using only 1 packet"/>

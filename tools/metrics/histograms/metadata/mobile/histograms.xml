@@ -51,22 +51,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.AppMenu.SimilarSelection"
-    enum="AppMenuSimilarSelectionType" expires_after="M95">
-  <obsolete>
-    Deprecated as of 03/2021.
-  </obsolete>
-  <owner>gangwu@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Android: This metrics is recorded when users made similar selections on app
-    menu within a period of time. ex. a user selected downloading the current
-    page. After 5 seconds, the user opened the app menu again and selected
-    download manager. In this case, we would consider that Download and Download
-    Manager are similar selections.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
     expires_after="2022-06-26">
   <owner>gangwu@chromium.org</owner>
@@ -521,20 +505,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.NotifyFailure"
-    enum="SystemNotificationType" expires_after="2021-10-31">
-  <obsolete>
-    Deprecated 10/2021
-  </obsolete>
-  <owner>knollr@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
-  <summary>
-    Android: Represents the number of system notifications failed to be notified
-    by Android NotificationManager API. Recorded when the notification is shown
-    on Android.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.SystemNotification.Shown" enum="SystemNotificationType"
     expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
@@ -554,21 +524,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records a histogram for an infobar (both legacy and Messages) that the user
     did not interact with throughout its lifetime.
-  </summary>
-</histogram>
-
-<histogram name="MobileDownload.Background"
-    enum="MobileDownloadBackgroundDownloadEvent" expires_after="2020-10-11">
-  <obsolete>
-    Removed 2020-10.
-  </obsolete>
-  <owner>hnakashima@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Android: Records events for downloads started from the background, that is,
-    while the browser process is not running. Used to measure completion rate of
-    these downloads.
   </summary>
 </histogram>
 
@@ -723,26 +678,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="MobileFre.CctTos.EnterprisePolicyCheckSpeed{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2022-05-01">
-  <obsolete>
-    Deprecated and replaced with MobileFre.CctTos.EnterprisePolicyCheckSpeed2.*.
-    as of 11/2020. The starting time of this metrics is changed to when the
-    fragment attached to the FirstRunActivity.
-  </obsolete>
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: Records the time it takes from object initialization to the
-    enterprise policy check completing. This check is often skipped when its
-    result becomes irrelevant. Histogram has suffixes depending if the timing
-    was faster or slower than inflation.
-  </summary>
-  <token key="MobileFreInflationSpeedComparison"
-      variants="MobileFreInflationSpeedComparison"/>
-</histogram>
-
-<histogram
     name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed2{MobileFreInflationSpeedComparison}"
     units="ms" expires_after="2022-05-01">
   <owner>skym@chromium.org</owner>
@@ -751,25 +686,6 @@ chromium-metrics-reviews@google.com.
     Android: Records the time it takes from ToS fragment attached to the
     activity to the device ownership check completing.
     {MobileFreInflationSpeedComparison}
-  </summary>
-  <token key="MobileFreInflationSpeedComparison"
-      variants="MobileFreInflationSpeedComparison"/>
-</histogram>
-
-<histogram
-    name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2022-05-01">
-  <obsolete>
-    Deprecated and replaced with MobileFre.CctTos.IsDeviceOwnedCheckSpeed2.*. as
-    of 11/2020. The starting time of this metrics is changed to when the
-    fragment attached to the FirstRunActivity.
-  </obsolete>
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: Records the time it takes from object initialization to the device
-    ownership check completing. Histogram has suffixes depending if the timing
-    was faster or slower than inflation.
   </summary>
   <token key="MobileFreInflationSpeedComparison"
       variants="MobileFreInflationSpeedComparison"/>
@@ -864,29 +780,6 @@ chromium-metrics-reviews@google.com.
     Android: The amount of time spent between FRE started and native
     initialization. Recorded when native is fully initialized.
   </summary>
-</histogram>
-
-<histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}"
-    units="ms" expires_after="2022-05-01">
-  <obsolete>
-    Replaced by MobileFre.PolicyServiceInitDelayAfterNative.*2 due to bug fix as
-    of 05/2021. See https://crbug.com/1208942.
-  </obsolete>
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: The amount of time spent between native initialized and the
-    decision &quot;whether we need to wait to load policy service from
-    native&quot; has been made. The decision is made when no on-device policy is
-    found, or policy service is fully initialized. If the decision has been made
-    before native initialization, SystemClock#elapsedRealTime was recorded, in
-    which does not provide much useful information. Recorded during FRE only,
-    when on-device policy is {PolicyPresence}
-  </summary>
-  <token key="PolicyPresence">
-    <variant name=".WithoutPolicy" summary="not presented."/>
-    <variant name=".WithPolicy" summary="presented."/>
-  </token>
 </histogram>
 
 <histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}2"
@@ -1184,22 +1077,6 @@ chromium-metrics-reviews@google.com.
     window, so this is a retroactive count. For example, if a user uses Chrome
     in one day two months ago, then doesn't use Chrome at all, then when Chrome
     launches today it'll report the value during that 24-hour window.
-  </summary>
-</histogram>
-
-<histogram name="MobileStartup.Experimental.LaunchCause" enum="LaunchCause"
-    expires_after="2022-01-07">
-  <obsolete>
-    Removed Experimental label in 02/2021.
-  </obsolete>
-  <owner>mthiesse@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records what caused Chrome to be launched.
-
-    Recorded for all types of ChromeActivity, in all cases where Chrome becomes
-    visible to the user.
   </summary>
 </histogram>
 
