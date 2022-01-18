@@ -504,6 +504,10 @@ void MetricsService::InitPerUserMetrics() {
   client_->InitPerUserMetrics();
 }
 
+absl::optional<bool> MetricsService::GetCurrentUserMetricsConsent() const {
+  return client_->GetCurrentUserMetricsConsent();
+}
+
 void MetricsService::UpdateCurrentUserMetricsConsent(
     bool user_metrics_consent) {
   client_->UpdateCurrentUserMetricsConsent(user_metrics_consent);

@@ -23,6 +23,10 @@ class MetricsServiceAccessor {
   MetricsServiceAccessor(const MetricsServiceAccessor&) = delete;
   MetricsServiceAccessor& operator=(const MetricsServiceAccessor&) = delete;
 
+  // Returns the value assigned by
+  // SetForceIsMetricsReportingEnabledPrefLookup(). Default value is false.
+  static bool IsForceMetricsReportingEnabledPrefLookup();
+
  protected:
   // Constructor declared as protected to enable inheritance. Descendants should
   // disallow instantiation.

@@ -5,15 +5,18 @@
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 
 #include "base/guid.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_service_accessor.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/user_manager/user.h"
@@ -21,6 +24,8 @@
 namespace metrics {
 
 namespace {
+
+absl::optional<bool> g_is_managed_for_testing;
 
 std::string GenerateUserId() {
   return base::GenerateGUID();
@@ -30,11 +35,13 @@ std::string GenerateUserId() {
 
 PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
     MetricsServiceClient* metrics_service_client,
+    metrics_services_manager::MetricsServicesManager* metrics_services_manager,
     user_manager::UserManager* user_manager,
     PrefService* local_state,
     const MetricsLogStore::StorageLimits& storage_limits,
     const std::string& signing_key)
     : metrics_service_client_(metrics_service_client),
+      metrics_services_manager_(metrics_services_manager),
       user_manager_(user_manager),
       local_state_(local_state),
       storage_limits_(storage_limits),
@@ -45,9 +52,11 @@ PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
 
 PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
     MetricsServiceClient* metrics_service_client,
+    metrics_services_manager::MetricsServicesManager* metrics_services_manager,
     PrefService* local_state)
     : PerUserStateManagerChromeOS(
           metrics_service_client,
+          metrics_services_manager,
           user_manager::UserManager::Get(),
           local_state,
           metrics_service_client->GetStorageLimits(),
@@ -77,6 +86,45 @@ void PerUserStateManagerChromeOS::RegisterProfilePrefs(
                                 false);
 }
 
+// static
+absl::optional<bool> PerUserStateManagerChromeOS::GetUserConsentIfApplicable(
+    metrics_services_manager::MetricsServicesManager*
+        metrics_services_manager) {
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Non-official builds should always have metrics reporting disabled if not
+  // forced for testing.
+  if (!MetricsServiceAccessor::IsForceMetricsReportingEnabledPrefLookup())
+    return absl::nullopt;
+#endif
+
+  // The initial check should not call GetMetricsService() since this
+  // initializes metrics_service if it doesn't exist. Because
+  // GetMetricsService() will call
+  // ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(), calling
+  // GetMetricsService() here will result in an infinite loop.
+  //
+  // User manager is used as a proxy to see whether user consent should be
+  // looked at since user_manager must be initialized before any user is
+  // created.
+  //
+  // TODO(crbug/1272885): Expose a boolean that will indicate whether
+  // metrics_service has been initialized and use that to check whether metrics
+  // service is initialized rather than this proxy.
+  if (!user_manager::UserManager::IsInitialized() ||
+      !ash::DeviceSettingsService::IsInitialized()) {
+    return absl::nullopt;
+  }
+
+  // See GetCurrentUserReportingConsentIfApplicable() for when a consent is
+  // returned.
+  auto user_consent = metrics_services_manager->GetMetricsService()
+                          ->GetCurrentUserMetricsConsent();
+  if (!user_consent.has_value())
+    return absl::nullopt;
+
+  return user_consent.value();
+}
+
 absl::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()
     const {
   if (state_ != State::USER_LOG_STORE_HANDLED)
@@ -84,11 +132,26 @@ absl::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()
   return GetCurrentUserPrefs()->GetString(prefs::kMetricsUserId);
 }
 
-absl::optional<bool> PerUserStateManagerChromeOS::GetCurrentUserConsent()
+absl::optional<bool>
+PerUserStateManagerChromeOS::GetCurrentUserReportingConsentIfApplicable()
     const {
   if (state_ != State::USER_LOG_STORE_HANDLED)
     return absl::nullopt;
-  return GetCurrentUserPrefs()->GetBoolean(prefs::kMetricsUserConsent);
+
+  // Guest sessions with no device owner should use the guest's metrics
+  // consent set during guest OOBE flow with no device owner.
+  bool is_guest_with_no_owner =
+      current_user_->GetType() == user_manager::USER_TYPE_GUEST &&
+      !IsDeviceOwned();
+
+  if (is_guest_with_no_owner)
+    return GetCurrentUserPrefs()->GetBoolean(prefs::kMetricsUserConsent);
+
+  // Cases in which user permissions should be applied to metrics reporting.
+  if (IsUserAllowedToChangeConsent(current_user_) && GetDeviceMetricsConsent())
+    return GetCurrentUserPrefs()->GetBoolean(prefs::kMetricsUserConsent);
+
+  return absl::nullopt;
 }
 
 void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
@@ -150,9 +213,7 @@ void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
   // Notify metrics service of the consent change.
   UpdateCurrentUserId(new_user_id);
   user_prefs->SetBoolean(prefs::kMetricsUserConsent, metrics_consent);
-
-  if (!IsReportingPolicyManaged())
-    SetReportingState(metrics_consent);
+  SetReportingState(metrics_consent);
 }
 
 bool PerUserStateManagerChromeOS::ShouldUseUserLogStore() const {
@@ -192,6 +253,11 @@ bool PerUserStateManagerChromeOS::IsUserAllowedToChangeConsent(
          user_type == user_manager::USER_TYPE_ACTIVE_DIRECTORY;
 }
 
+// static
+void PerUserStateManagerChromeOS::SetIsManagedForTesting(bool is_managed) {
+  g_is_managed_for_testing = is_managed;
+}
+
 void PerUserStateManagerChromeOS::SetUserLogStore(
     std::unique_ptr<UnsentLogStore> log_store) {
   DCHECK(state_ == State::USER_PROFILE_READY ||
@@ -216,14 +282,13 @@ void PerUserStateManagerChromeOS::SetReportingState(bool metrics_consent) {
   // Should not be called if metrics reporting is managed.
   DCHECK(!IsReportingPolicyManaged());
 
-  if (metrics_consent) {
-    metrics_service_client_->GetMetricsService()->EnableReporting();
-  } else {
-    metrics_service_client_->GetMetricsService()->DisableReporting();
-  }
+  metrics_services_manager_->UpdateUploadPermissions(metrics_consent);
 }
 
 bool PerUserStateManagerChromeOS::IsReportingPolicyManaged() const {
+  if (g_is_managed_for_testing.has_value())
+    return g_is_managed_for_testing.value();
+
   return metrics_service_client_->IsReportingPolicyManaged();
 }
 
@@ -238,6 +303,11 @@ bool PerUserStateManagerChromeOS::GetDeviceMetricsConsent() const {
 
 bool PerUserStateManagerChromeOS::HasUserLogStore() const {
   return metrics_service_client_->GetMetricsService()->HasUserLogStore();
+}
+
+bool PerUserStateManagerChromeOS::IsDeviceOwned() const {
+  return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
+         ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
 }
 
 void PerUserStateManagerChromeOS::ActiveUserChanged(user_manager::User* user) {
@@ -375,8 +445,7 @@ bool PerUserStateManagerChromeOS::ShouldWaitForFirstConsent() const {
   // decision which log store to use must be deferred until the first consent
   // (done in ToS) is established.
   return current_user_->GetType() == user_manager::USER_TYPE_GUEST &&
-         ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-             ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_NONE;
+         !IsDeviceOwned();
 }
 
 }  // namespace metrics

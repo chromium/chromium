@@ -8,12 +8,14 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
@@ -39,6 +41,8 @@ class PerUserStateManagerChromeOS
   // lifetimes of the weak pointers exceed that of |this|.
   PerUserStateManagerChromeOS(
       MetricsServiceClient* metrics_service_client_,
+      metrics_services_manager::MetricsServicesManager*
+          metrics_services_manager,
       user_manager::UserManager* user_manager,
       PrefService* local_state,
       const MetricsLogStore::StorageLimits& storage_limits,
@@ -47,6 +51,8 @@ class PerUserStateManagerChromeOS
   // Does not own |metrics_service_client| and |local_state|. Lifetime of
   // these raw pointers should be managed by the caller.
   PerUserStateManagerChromeOS(MetricsServiceClient* metrics_service_client,
+                              metrics_services_manager::MetricsServicesManager*
+                                  metrics_services_manager,
                               PrefService* local_state);
 
   PerUserStateManagerChromeOS(const PerUserStateManagerChromeOS& other) =
@@ -58,6 +64,28 @@ class PerUserStateManagerChromeOS
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Returns the current user's consent if it should be used instead of the
+  // device policy for metrics reporting. All conditions must be satisfied for a
+  // value to be returned:
+  //
+  //    1. Official build or force pref-lookup for testing is enabled.
+  //    2. GetCurrentUserReportingConsentIfApplicable() should return a value.
+  //    3. Device reporting is enabled OR device is unowned.
+  //
+  // Returns absl::nullopt otherwise.
+  //
+  // Note: This differs from GetCurrentUserReportingConsentIfApplicable() in the
+  // following ways:
+  //
+  //    - Checks whether pref-lookup for testing is enabled and official build.
+  //    - Returns guest consent if device is not owned yet.
+  //
+  // This should only be used in ChromeMetricsServiceAccessor. Use
+  // GetCurrentUserReportingConsentIfApplicable() elsewhere.
+  static absl::optional<bool> GetUserConsentIfApplicable(
+      metrics_services_manager::MetricsServicesManager*
+          metrics_service_manager);
+
   // Returns the user_id of the current logged in user. If no user is logged in,
   // returns absl::nullopt.
   //
@@ -67,10 +95,21 @@ class PerUserStateManagerChromeOS
   // absl::nullopt since it is used to write to the pref.
   absl::optional<std::string> GetCurrentUserId() const;
 
-  // Returns the consent of the current logged in user. If no user is logged in,
-  // returns absl::nullopt. True means that the user has opted-into metrics
-  // collection during the session and False means that the user has opted-out.
-  absl::optional<bool> GetCurrentUserConsent() const;
+  // Returns the consent of the current logged in user only if current user's
+  // consent should be applied to metrics reporting.
+  //
+  // The cases in which this occurs are:
+  //
+  //    1) Regular users on non-managed devices.
+  //    2) Guest users on non-owned devices.
+  //
+  // If no user is logged in, returns absl::nullopt. True means that the user
+  // has opted-into metrics collection during the session and False means that
+  // the user has opted-out.
+  //
+  // Note: Use this function over GetUserConsentIfApplicable() to retrieve user
+  // metrics reporting status.
+  absl::optional<bool> GetCurrentUserReportingConsentIfApplicable() const;
 
   // Sets the metric consent for the current logged in user. If no user is
   // logged in, no-ops.
@@ -107,6 +146,13 @@ class PerUserStateManagerChromeOS
   // This will return false for managed device users as well as guest users.
   bool IsUserAllowedToChangeConsent(user_manager::User* user) const;
 
+  // Sets behavior of IsReportingPolicyManaged() for testing.
+  //
+  // TODO(crbug/1269950): Investigate why ash::LoginManagerTest does not work
+  // with ash::ScopedStubInstallAttributes. Remove this function once resolved
+  // as it is hack to force PerUserStateManagerChromeOS to return a fixed value.
+  static void SetIsManagedForTesting(bool is_managed);
+
  protected:
   // These methods are marked virtual to stub out for testing.
 
@@ -138,6 +184,13 @@ class PerUserStateManagerChromeOS
   // Returns true if user log store has been set to be used to persist metric
   // logs.
   virtual bool HasUserLogStore() const;
+
+  // Returns true if the device is owned either by a policy or a local owner.
+  //
+  // See //chrome/browser/ash/settings/device_settings_service.h for more
+  // details as to when a device is considered owned and how a device becomes
+  // owned.
+  virtual bool IsDeviceOwned() const;
 
  private:
   // Possible states for |this|.
@@ -214,6 +267,12 @@ class PerUserStateManagerChromeOS
 
   // Raw pointer to Metrics service client that should own |this|.
   MetricsServiceClient* const metrics_service_client_;
+
+  // Raw pointer to metrics service manager. It is used to push upload
+  // permission changes to services using metrics consent.
+  // |merics_services_manager_| should outlive |this|.
+  metrics_services_manager::MetricsServicesManager* const
+      metrics_services_manager_;
 
   // Raw pointer to user manager. User manager is used to listen to login/logout
   // events as well as retrieve metadata about users. |user_manager_| should

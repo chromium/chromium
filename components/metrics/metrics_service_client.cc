@@ -163,4 +163,9 @@ bool MetricsServiceClient::IsMetricsReportingForceEnabled() const {
   return ::metrics::IsMetricsReportingForceEnabled();
 }
 
+absl::optional<bool> MetricsServiceClient::GetCurrentUserMetricsConsent()
+    const {
+  return absl::nullopt;
+}
+
 }  // namespace metrics

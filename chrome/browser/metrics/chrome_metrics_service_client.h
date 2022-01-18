@@ -24,12 +24,17 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
+#endif
 
 class BrowserActivityWatcher;
 class PluginMetricsProvider;
@@ -64,6 +69,11 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Registers profile prefs used by this class.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // metrics::MetricsServiceClient:
   metrics::MetricsService* GetMetricsService() override;
@@ -101,6 +111,12 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   static void SetNotificationListenerSetupFailedForTesting(
       bool simulate_failure);
   bool ShouldResetClientIdsOnClonedInstall() override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void InitPerUserMetrics() override;
+  void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) override;
+  absl::optional<bool> GetCurrentUserMetricsConsent() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;
@@ -216,6 +232,11 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // PerUserStateManagerChromeOS that |this| is a client of.
+  std::unique_ptr<metrics::PerUserStateManagerChromeOS> per_user_state_manager_;
 #endif
 
   base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_{this};

@@ -71,4 +71,9 @@ void MetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
   g_force_official_enabled_test = value;
 }
 
+// static
+bool MetricsServiceAccessor::IsForceMetricsReportingEnabledPrefLookup() {
+  return g_force_official_enabled_test;
+}
+
 }  // namespace metrics

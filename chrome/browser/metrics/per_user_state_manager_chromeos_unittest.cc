@@ -34,7 +34,8 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
                           PrefService* local_state,
                           const MetricsLogStore::StorageLimits& storage_limits,
                           const std::string& signing_key)
-      : PerUserStateManagerChromeOS(nullptr,
+      : PerUserStateManagerChromeOS(/*metrics_service_client=*/nullptr,
+                                    /*metrics_services_manager=*/nullptr,
                                     user_manager,
                                     local_state,
                                     storage_limits,
@@ -48,6 +49,10 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
 
   void SetDeviceMetricsConsent(bool metrics_consent) {
     device_metrics_consent_ = metrics_consent;
+  }
+
+  void SetIsDeviceOwned(bool is_device_owned) {
+    is_device_owned_ = is_device_owned;
   }
 
   bool is_log_store_set() const { return is_log_store_set_; }
@@ -71,12 +76,15 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
 
   bool HasUserLogStore() const override { return is_log_store_set_; }
 
+  bool IsDeviceOwned() const override { return is_device_owned_; }
+
  private:
   bool is_log_store_set_ = false;
   bool is_client_id_reset_ = false;
   bool metrics_reporting_state_ = true;
   bool is_managed_ = false;
   bool device_metrics_consent_ = true;
+  bool is_device_owned_ = true;
 };
 
 }  // namespace
@@ -103,7 +111,6 @@ class PerUserStateManagerChromeOSTest : public testing::Test {
 
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
         factory.CreateSyncable(registry.get()));
-    PerUserStateManagerChromeOS::RegisterProfilePrefs(registry.get());
     profile_builder.SetPrefService(std::move(prefs));
     profile_ = profile_builder.Build();
 
@@ -121,7 +128,6 @@ class PerUserStateManagerChromeOSTest : public testing::Test {
 
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
         factory.CreateSyncable(registry.get()));
-    PerUserStateManagerChromeOS::RegisterProfilePrefs(registry.get());
     profile_builder.SetPrefService(std::move(prefs));
     profile_ = profile_builder.Build();
 
