@@ -34,6 +34,14 @@ using component_updater::ComponentUpdateService;
 
 namespace {
 
+// This is the last version of CT log lists that this version of Chrome will
+// accept. If a list is delivered with a compatibility version higher than this,
+// it will be ignored (though the emergency disable flag will still be followed
+// if it is set). This should never be decreased since that will cause CT
+// enforcement to eventually stop. This should also only be increased if Chrome
+// is compatible with the version it is being incremented to.
+const uint64_t kMaxSupportedCTCompatibilityVersion = 1;
+
 const char kGoogleOperatorName[] = "Google";
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
@@ -146,6 +154,11 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
 
   if (proto->disable_ct_enforcement()) {
     network_service->SetCtEnforcementEnabled(false);
+    return;
+  }
+
+  if (proto->log_list().compatibility_version() >
+      kMaxSupportedCTCompatibilityVersion) {
     return;
   }
 
