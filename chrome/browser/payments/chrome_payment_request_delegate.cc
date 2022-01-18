@@ -244,7 +244,7 @@ ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   // displays the top-level origin in its UI before the user can click on the
   // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return rfh && rfh->IsActive()
+  return rfh && rfh->IsActive() && rfh->IsRenderFrameLive()
              ? std::make_unique<content::InternalAuthenticatorImpl>(rfh)
              : nullptr;
 }

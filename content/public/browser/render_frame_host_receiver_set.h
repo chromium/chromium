@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 namespace content {
 
-class RenderFrameHost;
 class WebContents;
 
 // Owns a set of Channel-associated interface receivers with frame context on
@@ -49,6 +49,17 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
 
   void Bind(RenderFrameHost* render_frame_host,
             mojo::PendingAssociatedReceiver<Interface> pending_receiver) {
+    // If the RenderFrameHost does not have a live RenderFrame:
+    // 1. There is no point in binding receivers, as the renderer should not be
+    //    doing anything with this RenderFrameHost.
+    // 2. More problematic, `RenderFrameDeleted()` might not be called again
+    //    for `render_frame_host`, potentially leaving dangling pointers to the
+    //    RenderFrameHost (or other related objects) after the RenderFrameHost
+    //    itself is later deleted.
+    if (!render_frame_host->IsRenderFrameLive()) {
+      return;
+    }
+
     mojo::ReceiverId id =
         receivers_.Add(impl_, std::move(pending_receiver), render_frame_host);
     frame_to_receivers_map_[render_frame_host].push_back(id);
