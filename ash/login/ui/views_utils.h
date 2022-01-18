@@ -27,6 +27,7 @@ constexpr int kLoginDefaultFontSize = 13;
 
 // The most used font on login/lock screen.
 constexpr char kLoginDefaultFontName[] = "Roboto";
+constexpr char kGoogleSansFont[] = "Google Sans";
 
 constexpr int kDefaultLineHeight = 20;
 

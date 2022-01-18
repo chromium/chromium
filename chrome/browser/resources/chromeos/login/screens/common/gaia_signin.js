@@ -22,7 +22,7 @@ const HELP_CANT_ACCESS_ACCOUNT = 188036;
 // Amount of time allowed for video based SAML logins, to prevent a site from
 // keeping the camera on indefinitely.  This is a hard deadline and it will
 // not be extended by user activity.
-const VIDEO_LOGIN_TIMEOUT = 90 * 1000;
+const VIDEO_LOGIN_TIMEOUT = 180 * 1000;
 
 /**
  * The authentication mode for the screen.
@@ -424,7 +424,8 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   closeSaml_() {
-    this.cancel();
+    this.videoEnabled_ = false;
+    this.cancel(false /* isBackClicked */);
   }
 
   /**
@@ -677,10 +678,23 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   onVideoEnabledChange_() {
     if (this.videoEnabled_ && this.videoTimer_ === undefined) {
       this.videoTimer_ =
-          setTimeout(this.cancel.bind(this), VIDEO_LOGIN_TIMEOUT);
+          setTimeout(this.onVideoTimeout_.bind(this), VIDEO_LOGIN_TIMEOUT);
     } else {
       this.clearVideoTimer_();
     }
+  }
+
+  /**
+   * @private
+   */
+  onVideoTimeout_() {
+    if (!this.flagRedirectToDefaultIdPEnabled_)
+      return this.cancel();
+    // Explicitly disable video here to let `onVideoEnabledChange_()` handle
+    // timer start next time when `videoEnabled_` will be set to true on SAML
+    // page.
+    this.videoEnabled_ = false;
+    this.userActed('samlVideoTimeout');
   }
 
   /**
@@ -1237,6 +1251,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   onSamlPageChangeAccount_(e) {
     // The user requests to change the account. We must clear the email
     // field of the auth params.
+    this.videoEnabled_ = false;
     this.authenticatorParams_.email = '';
     this.screenMode_ = ScreenAuthMode.DEFAULT;
     this.loadAuthenticator_(false /* doSamlRedirect */);

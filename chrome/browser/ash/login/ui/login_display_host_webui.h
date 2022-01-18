@@ -85,7 +85,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void ShowOsInstallScreen() override;
   void ShowGuestTosScreen() override;
-  void HideOobeDialog() override;
+  void HideOobeDialog(bool saml_video_timeout = false) override;
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;
   void HandleDisplayCaptivePortal() override;

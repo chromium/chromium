@@ -35,9 +35,6 @@ constexpr int kVerticalPaddingRemoveAccountDialogDp = 8;
 
 constexpr int kRemoveUserButtonIdForTest = 1;
 
-// Font name of the username headline.
-constexpr char kFontNameUsername[] = "Google Sans";
-
 // Font size of the username headline.
 constexpr int kFontSizeUsername = 15;
 
@@ -163,8 +160,9 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     username_label_ =
         container->AddChildView(login_views_utils::CreateBubbleLabel(
             display_username, nullptr, SK_ColorGREEN,
-            gfx::FontList({kFontNameUsername}, gfx::Font::FontStyle::NORMAL,
-                          kFontSizeUsername, gfx::Font::Weight::MEDIUM),
+            gfx::FontList({login_views_utils::kGoogleSansFont},
+                          gfx::Font::FontStyle::NORMAL, kFontSizeUsername,
+                          gfx::Font::Weight::MEDIUM),
             kLineHeightUsername));
     email_label_ =
         container->AddChildView(login_views_utils::CreateBubbleLabel(email));

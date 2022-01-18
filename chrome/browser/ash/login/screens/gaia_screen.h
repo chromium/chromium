@@ -26,6 +26,7 @@ class GaiaScreen : public BaseScreen {
     CANCEL,
     ENTERPRISE_ENROLL,
     START_CONSUMER_KIOSK,
+    SAML_VIDEO_TIMEOUT,
   };
 
   static std::string GetResultString(Result result);

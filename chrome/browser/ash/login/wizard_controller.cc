@@ -1057,6 +1057,10 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
       break;
+    case GaiaScreen::Result::SAML_VIDEO_TIMEOUT:
+      LoginDisplayHost::default_host()->HideOobeDialog(
+          /*saml_video_timeout=*/true);
+      break;
   }
 }
 

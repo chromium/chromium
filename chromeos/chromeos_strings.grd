@@ -177,6 +177,14 @@ Try tapping the mic to ask me anything.
         <ph name="MANAGER">$1<ex>example.com</ex></ph> manages this user and may remotely manage settings and monitor user activity.
       </message>
 
+      <!-- Time out sign-in with camera screen -->
+      <message name="IDS_ASH_LOGIN_CAMERA_TIME_OUT_TITLE" desc="Text shown on camera usage timeout after the third-party SAML dialog is dismissed.">
+        Sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_ASH_LOGIN_CAMERA_TIME_OUT_SUBTITLE" desc="Description shown above the button that leads to login dialog. Shown on camera usage timeout after the third-party SAML dialog is dismissed.">
+        Enter your username and password or scan your QR code
+      </message>
+
       <!-- Pop-up enterprise management. -->
       <message name="IDS_ASH_LOGIN_ENTERPRISE_MANAGED_POP_UP" desc="Text shown in the management pop-up when user clicks on status tray enterprise management. MANAGER can be a domain or an email address.">
         This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="MANAGER">$2<ex>example.com</ex></ph>. Administrators may remotely configure the device.

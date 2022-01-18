@@ -78,8 +78,6 @@ constexpr float kOpaqueUserViewOpacity = 1.f;
 constexpr float kTransparentUserViewOpacity = 0.63f;
 constexpr float kUserFadeAnimationDurationMs = 180;
 
-constexpr char kAccountNameFontFamily[] = "Google Sans";
-
 constexpr char kUserViewClassName[] = "UserView";
 constexpr char kLoginUserImageClassName[] = "LoginUserImage";
 constexpr char kLoginUserLabelClassName[] = "LoginUserLabel";
@@ -276,7 +274,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
 
     const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
     const gfx::FontList font_list(
-        {kAccountNameFontFamily}, base_font_list.GetFontStyle(),
+        {login_views_utils::kGoogleSansFont}, base_font_list.GetFontStyle(),
         base_font_list.GetFontSize(), base_font_list.GetFontWeight());
 
     switch (style) {

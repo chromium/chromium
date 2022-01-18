@@ -9993,6 +9993,7 @@ chromium-metrics-reviews@google.com.
     </obsolete>
   </suffix>
   <suffix name="Gaia-signin.EnterpriseEnroll" label=""/>
+  <suffix name="Gaia-signin.SAMLVideoTimeout" label=""/>
   <suffix name="Gaia-signin.StartConsumerKiosk" label=""/>
   <suffix name="Gesture-navigation.Next" label=""/>
   <suffix name="Hid-detection.Next" label=""/>

@@ -22,6 +22,7 @@
 #include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/login_auth_user_view.h"
 #include "ash/login/ui/login_big_user_view.h"
+#include "ash/login/ui/login_camera_timeout_view.h"
 #include "ash/login/ui/login_detachable_base_model.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/login/ui/login_public_account_user_view.h"
@@ -924,13 +925,6 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
 
   users_ = std::move(new_users);
 
-  // If there are no users, show gaia signin if login.
-  if (users.empty() && screen_type_ == LockScreen::ScreenType::kLogin) {
-    Shell::Get()->login_screen_controller()->ShowGaiaSignin(
-        EmptyAccountId() /*prefilled_account*/);
-    return;
-  }
-
   // Allocate layout which is common between all densities.
   auto* main_layout =
       main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -939,6 +933,22 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
       views::BoxLayout::MainAxisAlignment::kCenter);
   main_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  // If there are no users, show GAIA signin if login.
+  if (users.empty() && screen_type_ == LockScreen::ScreenType::kLogin) {
+    // Create a UI that will be shown on camera usage timeout after the
+    // third-party SAML dialog has been dismissed. For more info check
+    // discussion under privacy review in FLB crbug.com/1221337.
+    if (features::IsRedirectToDefaultIdPEnabled()) {
+      login_camera_timeout_view_ =
+          main_view_->AddChildView(std::make_unique<LoginCameraTimeoutView>(
+              base::BindRepeating(&LockContentsView::OnBackToSigninButtonTapped,
+                                  weak_ptr_factory_.GetWeakPtr())));
+    }
+    Shell::Get()->login_screen_controller()->ShowGaiaSignin(
+        /*prefilled_account=*/EmptyAccountId());
+    return;
+  }
 
   if (!users.empty()) {
     auto primary_big_view =
@@ -1423,8 +1433,12 @@ void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
 
   UpdateBottomStatusIndicatorVisibility();
 
-  if (!oobe_dialog_visible_ && CurrentBigUserView())
+  if (!oobe_dialog_visible_ && CurrentBigUserView()) {
     CurrentBigUserView()->RequestFocus();
+  } else if (features::IsRedirectToDefaultIdPEnabled() &&
+             !oobe_dialog_visible_ && login_camera_timeout_view_) {
+    login_camera_timeout_view_->RequestFocus();
+  }
 }
 
 void LockContentsView::MaybeUpdateExpandedView(const AccountId& account_id,
@@ -2487,6 +2501,11 @@ void LockContentsView::OnBottomStatusIndicatorTapped() {
   if (bottom_status_indicator_state_ != BottomIndicatorState::kManagedDevice)
     return;
   management_bubble_->Show();
+}
+
+void LockContentsView::OnBackToSigninButtonTapped() {
+  Shell::Get()->login_screen_controller()->ShowGaiaSignin(
+      /*prefilled_account=*/EmptyAccountId());
 }
 
 BEGIN_METADATA(LockContentsView, NonAccessibleView)
