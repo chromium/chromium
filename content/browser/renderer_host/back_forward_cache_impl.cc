@@ -673,12 +673,12 @@ BackForwardCacheImpl::PopulateReasonsForPage(
   // Add the reasons for main document to the flattened list.
   flattened_result.AddReasonsFrom(main_document_specific_result);
 
-  GURL main_url = rfh->GetLastCommittedURL();
   // Call the recursive function that adds the reasons from the subtree to the
   // flattened list, and return the tree if needed.
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> result_tree =
-      PopulateReasonsForDocumentAndDescendants(rfh, main_url, flattened_result,
-                                               include_non_sticky, create_tree);
+      PopulateReasonsForDocumentAndDescendants(
+          rfh, rfh->GetLastCommittedOrigin(), flattened_result,
+          include_non_sticky, create_tree);
 
   if (!create_tree)
     return nullptr;
@@ -955,7 +955,7 @@ void BackForwardCacheImpl::PopulateReasonsForDocument(
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheImpl::PopulateReasonsForDocumentAndDescendants(
     RenderFrameHostImpl* rfh,
-    const GURL main_url,
+    const url::Origin& main_origin,
     BackForwardCacheCanStoreDocumentResult& flattened_result,
     bool include_non_sticky,
     bool create_tree) {
@@ -969,8 +969,8 @@ BackForwardCacheImpl::PopulateReasonsForDocumentAndDescendants(
   for (size_t i = 0; i < rfh->child_count(); i++) {
     std::unique_ptr<BackForwardCacheCanStoreTreeResult> child =
         PopulateReasonsForDocumentAndDescendants(
-            rfh->child_at(i)->current_frame_host(), main_url, flattened_result,
-            include_non_sticky, create_tree);
+            rfh->child_at(i)->current_frame_host(), main_origin,
+            flattened_result, include_non_sticky, create_tree);
     if (create_tree) {
       children_result.emplace_back(std::move(child));
     }
@@ -980,8 +980,9 @@ BackForwardCacheImpl::PopulateReasonsForDocumentAndDescendants(
     return nullptr;
 
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(
-      new BackForwardCacheCanStoreTreeResult(
-          rfh, main_url, result_for_this_document, std::move(children_result)));
+      new BackForwardCacheCanStoreTreeResult(rfh, main_origin,
+                                             result_for_this_document,
+                                             std::move(children_result)));
   return tree;
 }
 
@@ -1408,15 +1409,13 @@ bool BackForwardCache::DisabledReason::operator!=(
 
 BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     RenderFrameHostImpl* rfh,
-    const GURL main_document_url,
+    const url::Origin& main_document_origin,
     BackForwardCacheCanStoreDocumentResult& result_for_this_document,
     BackForwardCacheCanStoreTreeResult::ChildrenVector children)
     : document_result_(std::move(result_for_this_document)),
       children_(std::move(children)),
-      // TODO(yuzus): Instead of |main_document_url|, compare rfh's
-      // |GetLastCommittedURL()| with the main frame's |GetLastCommittedURL()|.
       is_same_origin_(
-          url::IsSameOriginWith(rfh->GetLastCommittedURL(), main_document_url)),
+          rfh->GetLastCommittedOrigin().IsSameOriginWith(main_document_origin)),
       url_(rfh->GetLastCommittedURL()) {}
 
 BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =

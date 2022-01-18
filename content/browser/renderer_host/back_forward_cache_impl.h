@@ -350,12 +350,12 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // Populates the reasons why this |rfh| and its subframes cannot enter the
   // back/forward cache.
-  // |main_url| is the URL of the outermost document. Refer to
+  // |main_origin| is the origin of the outermost document. Refer to
   // |PopulateReasonsForPage| for other params.
   std::unique_ptr<BackForwardCacheCanStoreTreeResult>
   PopulateReasonsForDocumentAndDescendants(
       RenderFrameHostImpl* rfh,
-      const GURL main_url,
+      const url::Origin& main_origin,
       BackForwardCacheCanStoreDocumentResult& flattened_result,
       bool include_non_sticky,
       bool create_tree);
@@ -510,7 +510,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
  private:
   BackForwardCacheCanStoreTreeResult(
       RenderFrameHostImpl* rfh,
-      const GURL main_document_url,
+      const url::Origin& main_document_origin,
       BackForwardCacheCanStoreDocumentResult& result_for_this_document,
       ChildrenVector children);
 
