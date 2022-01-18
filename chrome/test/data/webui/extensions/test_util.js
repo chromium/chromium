@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /** @fileoverview Common utilities for extension ui tests. */
-import {MockController, MockMethod} from '../mock_controller.js';
-import {isChildVisible} from '../test_util.js';
+import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestKioskBrowserProxy} from './test_kiosk_browser_proxy.js';
 

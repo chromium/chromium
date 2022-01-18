@@ -9,6 +9,7 @@ import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
@@ -630,6 +631,11 @@ generate_grd("build_grd") {
     "$target_gen_dir/tab_search/resources.grdp",
     "$target_gen_dir/web_ui_test_mojo_resources.grdp",
   ]
+
+  if (enable_extensions) {
+    deps += [ "extensions:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/extensions/resources.grdp" ]
+  }
 
   if (enable_print_preview) {
     deps += [ "print_preview:build_grdp" ]

@@ -6,7 +6,7 @@
 import 'chrome://extensions/extensions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChildVisible} from '../test_util.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 window.extension_code_section_tests = {};
 extension_code_section_tests.suiteName = 'ExtensionCodeSectionTest';

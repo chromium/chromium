@@ -11,7 +11,7 @@ import 'chrome://extensions/extensions.js';
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
-import {eventToPromise} from '../test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('ExtensionOptionsDialogTest', () => {
   test('show options dialog', async () => {

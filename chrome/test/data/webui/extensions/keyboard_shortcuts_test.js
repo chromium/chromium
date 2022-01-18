@@ -8,7 +8,7 @@ import {isValidKeyCode, Key, keystrokeToString} from 'chrome://extensions/extens
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isChildVisible} from '../test_util.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';

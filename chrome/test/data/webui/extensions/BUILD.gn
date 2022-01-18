@@ -1,0 +1,74 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_extensions, "enable extensions check failed")
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_extensions"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "extensions"
+}
+
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://extensions/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/extensions/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "activity_log_history_item_test.js",
+    "activity_log_history_test.js",
+    "activity_log_stream_item_test.js",
+    "activity_log_stream_test.js",
+    "activity_log_test.js",
+    "code_section_test.js",
+    "detail_view_test.js",
+    "error_console_test.js",
+    "error_page_test.js",
+    "extension_options_dialog_test.js",
+    "host_permissions_toggle_list_test.js",
+    "item_list_test.js",
+    "item_test.js",
+    "keyboard_shortcuts_test.js",
+    "kiosk_mode_manager_unit_test.js",
+    "kiosk_mode_test.js",
+    "load_error_test.js",
+    "manager_test.js",
+    "manager_test_with_activity_log_flag.js",
+    "manager_test_with_id_query_param.js",
+    "manager_unit_test.js",
+    "manager_unit_test_with_activity_log_flag.js",
+    "navigation_helper_test.js",
+    "options_dialog_test.js",
+    "pack_dialog_test.js",
+    "runtime_host_permissions_test.js",
+    "runtime_hosts_dialog_test.js",
+    "shortcut_input_test.js",
+    "sidebar_test.js",
+    "test_kiosk_browser_proxy.js",
+    "test_service.js",
+    "test_util.js",
+    "toggle_row_test.js",
+    "toolbar_test.js",
+  ]
+  deps = [ "//chrome/browser/resources/extensions:build_ts" ]
+  definitions = [
+    "//tools/typescript/definitions/developer_private.d.ts",
+    "//tools/typescript/definitions/activity_log_private.d.ts",
+  ]
+  extra_deps = [ "..:generate_definitions" ]
+}

@@ -6,7 +6,7 @@
 import {OptionsDialogMaxHeight, OptionsDialogMinWidth, Service} from 'chrome://extensions/extensions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {eventToPromise} from '../test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 window.extension_options_dialog_tests = {};
 extension_options_dialog_tests.suiteName = 'ExtensionOptionsDialogTests';

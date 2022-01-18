@@ -48,7 +48,7 @@ export const ItemMixin = dedupingMixin(
       return ItemMixin;
     });
 
-interface ItemMixinInterface {
+export interface ItemMixinInterface {
   appOrExtension(
       type: chrome.developerPrivate.ExtensionType, appLabel: string,
       extensionLabel: string): string;
