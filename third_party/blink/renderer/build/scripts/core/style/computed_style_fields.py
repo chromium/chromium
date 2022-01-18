@@ -76,12 +76,12 @@ class Group(object):
 class Enum(object):
     """Represents a generated enum in ComputedStyleBaseConstants."""
 
-    def __init__(self, type_name, keywords, is_set):
+    def __init__(self, type_name, keywords, set_type):
         self.type_name = type_name
         self.values = [
             NameStyleConverter(keyword).to_enum_value() for keyword in keywords
         ]
-        self.is_set = is_set
+        self.set_type = set_type
 
 
 class DiffGroup(object):

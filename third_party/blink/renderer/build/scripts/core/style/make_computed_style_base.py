@@ -232,11 +232,15 @@ def _create_enums(properties):
         if (property_['field_template'] in ('keyword', 'multi_keyword',
                                             'bitset_keyword')
                 and len(property_['include_paths']) == 0):
-            enum = Enum(
-                property_['type_name'],
-                property_['keywords'],
-                is_set=(property_['field_template'] in ('multi_keyword',
-                                                        'bitset_keyword')))
+            if property_['field_template'] == 'multi_keyword':
+                set_type = 'multi'
+            elif property_['field_template'] == 'bitset_keyword':
+                set_type = 'bitset'
+            else:
+                set_type = None
+            enum = Enum(property_['type_name'],
+                        property_['keywords'],
+                        set_type=set_type)
             if property_['field_template'] == 'multi_keyword':
                 assert property_['keywords'][0] == 'none', \
                     "First keyword in a 'multi_keyword' field must be " \
