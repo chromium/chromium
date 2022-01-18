@@ -240,14 +240,14 @@ TEST(InvalidationSetTest, Backing_Iterator) {
   }
 }
 
-TEST(InvalidationSetTest, Backing_GetStringImpl) {
+TEST(InvalidationSetTest, Backing_GetAtomicString) {
   BackingFlags flags;
   Backing<BackingType::kClasses> backing;
-  EXPECT_FALSE(backing.GetStringImpl(flags));
+  EXPECT_FALSE(backing.GetAtomicString(flags));
   backing.Add(flags, "a");
-  EXPECT_EQ("a", AtomicString(backing.GetStringImpl(flags)));
+  EXPECT_EQ("a", backing.GetAtomicString(flags));
   backing.Add(flags, "b");
-  EXPECT_FALSE(backing.GetStringImpl(flags));
+  EXPECT_FALSE(backing.GetAtomicString(flags));
   backing.Clear(flags);
 }
 

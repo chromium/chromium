@@ -266,10 +266,11 @@ bool InvalidationSet::HasEmptyBackings() const {
 StringImpl* InvalidationSet::FindAnyClass(Element& element) const {
   const SpaceSplitString& class_names = element.ClassNames();
   wtf_size_t size = class_names.size();
-  if (StringImpl* string_impl = classes_.GetStringImpl(backing_flags_)) {
+  if (const AtomicString& string_impl =
+          classes_.GetAtomicString(backing_flags_)) {
     for (wtf_size_t i = 0; i < size; ++i) {
-      if (Equal(string_impl, class_names[i].Impl()))
-        return string_impl;
+      if (Equal(string_impl.Impl(), class_names[i].Impl()))
+        return string_impl.Impl();
     }
   }
   if (const HashSet<AtomicString>* set = classes_.GetHashSet(backing_flags_)) {
@@ -283,9 +284,10 @@ StringImpl* InvalidationSet::FindAnyClass(Element& element) const {
 }
 
 StringImpl* InvalidationSet::FindAnyAttribute(Element& element) const {
-  if (StringImpl* string_impl = attributes_.GetStringImpl(backing_flags_)) {
-    if (element.HasAttributeIgnoringNamespace(AtomicString(string_impl)))
-      return string_impl;
+  if (const AtomicString& string_impl =
+          attributes_.GetAtomicString(backing_flags_)) {
+    if (element.HasAttributeIgnoringNamespace(string_impl))
+      return string_impl.Impl();
   }
   if (const HashSet<AtomicString>* set =
           attributes_.GetHashSet(backing_flags_)) {
