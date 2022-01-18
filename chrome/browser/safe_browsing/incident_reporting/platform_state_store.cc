@@ -17,6 +17,7 @@
 #include "chrome/browser/safe_browsing/incident_reporting/platform_state_store.h"
 
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(USE_PLATFORM_STATE_STORE)
 
@@ -127,14 +128,13 @@ void RestoreFromProtobuf(
 
 #endif  // USE_PLATFORM_STATE_STORE
 
-std::unique_ptr<base::DictionaryValue> Load(Profile* profile) {
+absl::optional<base::Value> Load(Profile* profile) {
 #if defined(USE_PLATFORM_STATE_STORE)
-  std::unique_ptr<base::DictionaryValue> value_dict(
-      new base::DictionaryValue());
+  base::Value value_dict(base::Value::Type::DICTIONARY);
   std::string data;
   PlatformStateStoreLoadResult result = ReadStoreData(profile, &data);
   if (result == PlatformStateStoreLoadResult::SUCCESS)
-    result = DeserializeIncidentsSent(data, value_dict.get());
+    result = DeserializeIncidentsSent(data, &value_dict);
   switch (result) {
     case PlatformStateStoreLoadResult::SUCCESS:
     case PlatformStateStoreLoadResult::CLEARED_DATA:
@@ -145,16 +145,15 @@ std::unique_ptr<base::DictionaryValue> Load(Profile* profile) {
     case PlatformStateStoreLoadResult::OPEN_FAILED:
     case PlatformStateStoreLoadResult::READ_FAILED:
     case PlatformStateStoreLoadResult::PARSE_ERROR:
-      // Return null for all error cases.
-      value_dict.reset();
-      break;
+      // Return nullopt for all error cases.
+      return absl::nullopt;
     case PlatformStateStoreLoadResult::NUM_RESULTS:
       NOTREACHED();
       break;
   }
   return value_dict;
 #else
-  return nullptr;
+  return absl::nullopt;
 #endif
 }
 
@@ -177,9 +176,8 @@ void SerializeIncidentsSent(const base::DictionaryValue* incidents_sent,
   store_data.SerializeToString(data);
 }
 
-PlatformStateStoreLoadResult DeserializeIncidentsSent(
-    const std::string& data,
-    base::DictionaryValue* value_dict) {
+PlatformStateStoreLoadResult DeserializeIncidentsSent(const std::string& data,
+                                                      base::Value* value_dict) {
   StateStoreData store_data;
   if (data.empty()) {
     value_dict->DictClear();

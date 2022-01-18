@@ -16,6 +16,11 @@
 
 class Profile;
 
+namespace base {
+class DictionaryValue;
+class Value;
+}  // namespace base
+
 namespace safe_browsing {
 
 enum class IncidentType : int32_t;
@@ -71,17 +76,17 @@ class StateStore {
     // obtaining this view will cause a serialize-and-write operation to be
     // scheduled when the transaction terminates. Use the store's
     // |incidents_sent_| member directly to simply query the preference.
-    base::DictionaryValue* GetPrefDict();
+    base::Value* GetPrefDict();
 
     // Replaces the contents of the underlying dictionary value.
-    void ReplacePrefDict(std::unique_ptr<base::DictionaryValue> pref_dict);
+    void ReplacePrefDict(base::Value pref_dict);
 
     // The store corresponding to this transaction.
     raw_ptr<StateStore> store_;
 
     // A ScopedUserPrefUpdate through which changes to the incidents_sent
     // preference are made.
-    std::unique_ptr<DictionaryPrefUpdateDeprecated> pref_update_;
+    std::unique_ptr<DictionaryPrefUpdate> pref_update_;
   };
 
   explicit StateStore(Profile* profile);
