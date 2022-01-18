@@ -7,13 +7,15 @@
 namespace net {
 
 NextProto NextProtoFromString(base::StringPiece proto_string) {
-  if (proto_string == "http1.1" || proto_string == "http/1.1")
+  if (proto_string == "http/1.1") {
     return kProtoHTTP11;
+  }
   if (proto_string == "h2") {
     return kProtoHTTP2;
   }
-  if (proto_string == "quic" || proto_string == "hq")
+  if (proto_string == "quic" || proto_string == "hq") {
     return kProtoQUIC;
+  }
 
   return kProtoUnknown;
 }
