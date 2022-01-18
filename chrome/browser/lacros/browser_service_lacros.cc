@@ -130,17 +130,13 @@ void BrowserServiceLacros::NewWindow(bool incognito,
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
 
-  bool session_restore_available = false;
-  if (should_trigger_session_restore) {
-    SessionService* session_service =
-        SessionServiceFactory::GetForProfileForSessionRestore(profile);
-    if (session_service && session_service->ShouldRestore(nullptr))
-      session_restore_available = true;
-  }
-
-  if (ProfilePicker::ShouldShowAtLaunch() && !session_restore_available &&
-      !incognito) {
-    // Profile picker does not support passing through the incognito param.
+  if (ProfilePicker::ShouldShowAtLaunch() && !incognito) {
+    // Profile picker does not support passing through the incognito param. It
+    // also does not support passing though the `should_trigger_session_restore`
+    // param but that's true very common (left clicking the launcher icon) so
+    // we can't skip the picker in this case. The default behavior for the first
+    // browser window supports session restore, additional windows are opened
+    // blank and thus it works reasonably well for BrowserServiceLacros.
     ProfilePicker::Show(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
   } else {
