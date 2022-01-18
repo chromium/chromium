@@ -32,9 +32,15 @@
 // report.
 - (int)pendingReportCount;
 
-// Returns exception code when there's a single pending report, or -1 if there's
-// a different number of pending reports.
-- (int)pendingReportException;
+// Returns true if there's a single pending report and sets the exception code
+// in the out |exception| parameter. Returns false if there's a different number
+// of pending reports.
+- (bool)pendingReportException:(NSNumber**)exception;
+
+// Returns true if there's a single pending report and sets the second-level
+// exception code in the out |exception_info| parameter. Returns false if
+// there's a different number of pending reports.
+- (bool)pendingReportExceptionInfo:(NSNumber**)exception_info;
 
 // Return an NSDictionary with a dictionary named "simplemap", an array named
 // "vector" and an array named "objects", representing the combination of all

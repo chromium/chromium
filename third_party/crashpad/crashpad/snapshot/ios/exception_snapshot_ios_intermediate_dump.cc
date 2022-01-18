@@ -131,9 +131,15 @@ bool ExceptionSnapshotIOSIntermediateDump::InitializeFromSignal(
 #endif
   }
 
-  GetDataValueFromMap(exception_data, Key::kSignalNumber, &exception_);
-  GetDataValueFromMap(exception_data, Key::kSignalCode, &exception_info_);
+  exception_ = EXC_SOFT_SIGNAL;
+  GetDataValueFromMap(exception_data, Key::kSignalNumber, &exception_info_);
   GetDataValueFromMap(exception_data, Key::kSignalAddress, &exception_address_);
+
+  codes_.push_back(exception_);
+  codes_.push_back(exception_info_);
+  uint32_t code;
+  GetDataValueFromMap(exception_data, Key::kSignalCode, &code);
+  codes_.push_back(code);
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;

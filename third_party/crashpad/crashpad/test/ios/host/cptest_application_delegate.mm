@@ -68,6 +68,24 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
   return database->GetPendingReports(pending_reports);
 }
 
+std::unique_ptr<crashpad::ProcessSnapshotMinidump>
+GetProcessSnapshotMinidumpFromSinglePending() {
+  std::vector<Report> pending_reports;
+  OperationStatus status = GetPendingReports(&pending_reports);
+  if (status != crashpad::CrashReportDatabase::kNoError ||
+      pending_reports.size() != 1) {
+    return nullptr;
+  }
+
+  auto reader = std::make_unique<crashpad::FileReader>();
+  auto process_snapshot = std::make_unique<crashpad::ProcessSnapshotMinidump>();
+  if (!reader->Open(pending_reports[0].file_path) ||
+      !process_snapshot->Initialize(reader.get())) {
+    return nullptr;
+  }
+  return process_snapshot;
+}
+
 [[clang::optnone]] void recurse(int counter) {
   // Fill up the stack faster.
   int arr[1024];
@@ -159,40 +177,36 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
   return pending_reports.size();
 }
 
-- (int)pendingReportException {
-  std::vector<Report> pending_reports;
-  OperationStatus status = GetPendingReports(&pending_reports);
-  if (status != crashpad::CrashReportDatabase::kNoError ||
-      pending_reports.size() != 1) {
-    return -1;
-  }
+- (bool)pendingReportException:(NSNumber**)exception {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot || !process_snapshot->Exception()->Exception())
+    return false;
+  *exception = [NSNumber
+      numberWithUnsignedInt:process_snapshot->Exception()->Exception()];
+  return true;
+}
 
-  auto reader = std::make_unique<crashpad::FileReader>();
-  reader->Open(pending_reports[0].file_path);
-  crashpad::ProcessSnapshotMinidump process_snapshot;
-  process_snapshot.Initialize(reader.get());
-  return static_cast<int>(process_snapshot.Exception()->Exception());
+- (bool)pendingReportExceptionInfo:(NSNumber**)exception_info {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot || !process_snapshot->Exception()->ExceptionInfo())
+    return false;
+
+  *exception_info = [NSNumber
+      numberWithUnsignedInt:process_snapshot->Exception()->ExceptionInfo()];
+  return true;
 }
 
 - (NSDictionary*)getAnnotations {
-  std::vector<Report> pending_reports;
-  OperationStatus status = GetPendingReports(&pending_reports);
-  if (status != crashpad::CrashReportDatabase::kNoError ||
-      pending_reports.size() != 1) {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot)
     return @{};
-  }
-
-  auto reader = std::make_unique<crashpad::FileReader>();
-  reader->Open(pending_reports[0].file_path);
-  crashpad::ProcessSnapshotMinidump process_snapshot;
-  process_snapshot.Initialize(reader.get());
 
   NSDictionary* dict = @{
     @"simplemap" : [@{} mutableCopy],
     @"vector" : [@[] mutableCopy],
     @"objects" : [@[] mutableCopy]
   };
-  for (const auto* module : process_snapshot.Modules()) {
+  for (const auto* module : process_snapshot->Modules()) {
     for (const auto& kv : module->AnnotationsSimpleMap()) {
       [dict[@"simplemap"] setValue:@(kv.second.c_str())
                             forKey:@(kv.first.c_str())];
@@ -215,19 +229,12 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
 }
 
 - (NSDictionary*)getProcessAnnotations {
-  std::vector<Report> pending_reports;
-  OperationStatus status = GetPendingReports(&pending_reports);
-  if (status != crashpad::CrashReportDatabase::kNoError ||
-      pending_reports.size() != 1) {
+  auto process_snapshot = GetProcessSnapshotMinidumpFromSinglePending();
+  if (!process_snapshot)
     return @{};
-  }
 
-  auto reader = std::make_unique<crashpad::FileReader>();
-  reader->Open(pending_reports[0].file_path);
-  crashpad::ProcessSnapshotMinidump process_snapshot;
-  process_snapshot.Initialize(reader.get());
   NSDictionary* dict = [@{} mutableCopy];
-  for (const auto& kv : process_snapshot.AnnotationsSimpleMap()) {
+  for (const auto& kv : process_snapshot->AnnotationsSimpleMap()) {
     [dict setValue:@(kv.second.c_str()) forKey:@(kv.first.c_str())];
   }
 
