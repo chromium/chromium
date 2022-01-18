@@ -39,9 +39,6 @@ function dispatchCustomEvent(element, eventType) {
 /** @type {!Map<string, function(!Element): !Promise>} */
 const viewAnimations = new Map();
 viewAnimations.set('fade-in', element => {
-  // The call to animate can have 2 methods of passing the keyframes, however as
-  // of the current closure version, only one of them is supported. See
-  // https://crbug.com/987842 for more info.
   const animation = element.animate(
       [{opacity: 0}, {opacity: 1}],
       /** @type {!KeyframeAnimationOptions } */ ({
@@ -53,14 +50,26 @@ viewAnimations.set('fade-in', element => {
   return whenFinished(animation);
 });
 viewAnimations.set('fade-out', element => {
-  // The call to animate can have 2 methods of passing the keyframes, however as
-  // of the current closure version, only one of them is supported. See
-  // https://crbug.com/987842 for more info.
   const animation = element.animate(
       [{opacity: 1}, {opacity: 0}],
       /** @type {!KeyframeAnimationOptions} */ ({
         duration: 180,
         easing: 'ease-in-out',
+        iterations: 1,
+      }));
+
+  return whenFinished(animation);
+});
+viewAnimations.set('slide-in-fade-in', element => {
+  const animation = element.animate(
+      [
+        {transform: 'translateX(8px)', opacity: 0},
+        {transform: 'translateX(0)', opacity: 1}
+      ],
+      /** @type {!KeyframeAnimationOptions} */ ({
+        duration: 300,
+        easing: 'cubic-bezier(0.0, 0.0, 0.2, 1)',
+        fill: 'forwards',
         iterations: 1,
       }));
 
