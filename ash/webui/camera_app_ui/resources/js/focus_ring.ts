@@ -43,6 +43,8 @@ export function setUIRect(rect: DOMRectReadOnly): void {
  * Shows focus ring on |el|.
  */
 function showFocus(el: HTMLElement) {
+  assert(ring !== null);
+  assert(ringCSSStyle !== null);
   const style = el.computedStyleMap();
   const size = getStyleValueInPx(style, '--focus-ring-size');
   const ringStyleValue = `${style.get('--focus-ring-style')}`;
