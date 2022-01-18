@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
     enum="CaptureModeBarButtonType" expires_after="2022-09-29">
-  <owner>chinsenj@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Recorded whenever a button from the bar widget displayed in Capture mode is
@@ -492,7 +492,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.CaptureConfiguration.{TabletOrClamshell}"
     enum="CaptureModeConfiguration" expires_after="2022-09-29">
-  <owner>chinsenj@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Recorded whenever a user performs a screen capture in {TabletOrClamshell}.
@@ -505,7 +505,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.CaptureRegionAdjusted.{TabletOrClamshell}"
     units="adjustments" expires_after="2022-09-29">
-  <owner>chinsenj@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Recorded whenever a user is in a region capture session in
@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.CaptureModeController.ConsecutiveScreenshots"
     units="consecutive screenshots" expires_after="2022-09-09">
-  <owner>chinsenj@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Records the number of consecutive screenshots the user takes within 5s of
@@ -542,7 +542,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshell}"
     enum="CaptureModeEntryType" expires_after="2022-09-09">
-  <owner>chinsenj@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Recorded whenever Capture mode is entered from {TabletOrClamshell}. The
@@ -597,7 +597,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.CaptureModeController.QuickAction"
     enum="CaptureQuickAction" expires_after="2022-09-09">
   <owner>shidi@chromium.org</owner>
-  <owner>chinsenj@chromium.org</owner>
   <summary>
     Track all quick actions on screenshot notification. Including: Edit in
     backlight, Go to Files, Delete File.
@@ -618,7 +617,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.CaptureModeController.ScreenRecordingLength"
     units="seconds" expires_after="2022-09-09">
   <owner>afakhry@chromium.org</owner>
-  <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Records the time of a successful video recording in capture mode. This
@@ -654,7 +652,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.CaptureModeController.SwitchesFromInitialCaptureMode"
     enum="Boolean" expires_after="2022-09-09">
-  <owner>chinsenj@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Emits true if a user has switched capture modes (fullscreen, region, window)
@@ -1074,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.ConsecutiveDailyVisits" units="days"
     expires_after="2022-04-24">
-  <owner>chinsenj@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     Emitted when a desk is destroyed or a user activates a desk they haven't
@@ -1089,8 +1087,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
-    expires_after="2022-02-19">
-  <owner>chinsenj@chromium.org</owner>
+    expires_after="2023-01-13">
+  <owner>afakhry@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The lifetime of the desk at index {DeskIndex} (1-indexed). Emitted when a
@@ -1323,7 +1321,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.WeeklyActiveDesks" units="active desks"
     expires_after="2022-03-24">
-  <owner>chinsenj@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of unique weekly active desks a user has interacted with in a
@@ -2268,7 +2266,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.ArrowKeyPresses" units="units"
     expires_after="2022-04-08">
-  <owner>chinsenj@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2289,7 +2286,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Items" units="units" expires_after="2022-04-08">
-  <owner>chinsenj@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2300,7 +2296,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
     expires_after="2022-04-08">
-  <owner>chinsenj@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2312,7 +2307,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.OverviewClosedItems" units="units"
     expires_after="2022-04-08">
-  <owner>chinsenj@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2344,7 +2338,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.SelectionDepth" units="items"
     expires_after="2022-04-08">
-  <owner>chinsenj@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
@@ -2367,7 +2360,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.TimeBetweenActiveWindowChanges" units="seconds"
     expires_after="2022-04-08">
-  <owner>chinsenj@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2380,7 +2372,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.TimeBetweenUse" units="ms"
     expires_after="2022-04-08">
-  <owner>chinsenj@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2392,7 +2383,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.TimeInOverview" units="ms"
     expires_after="2022-04-08">
-  <owner>chinsenj@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
