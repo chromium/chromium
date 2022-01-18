@@ -852,6 +852,26 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
+                       TestBypassJustificationTooLongDisablesBypassButton) {
+  enterprise_connectors::ContentAnalysisDialog::
+      SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
+
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  delegate->SetBypassRequiresJustification(true);
+  ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
+      std::move(delegate), ContentAnalysisDelegateBase::FinalResult::SUCCESS);
+  dialog->ShowResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
+
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  dialog->GetBypassJustificationTextareaForTesting()->InsertOrReplaceText(
+      u"This is a very long string. In fact, it is over two hundred characters "
+      u"long because that is the maximum length of a bypass justification that "
+      u"can be entered by a user. When the justification is this long, the "
+      u"user will not be able to submit it.");
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestOpenInDefaultPendingState) {
   ContentAnalysisDialog* dialog =
       CreateContentAnalysisDialog(std::make_unique<MockDelegate>());

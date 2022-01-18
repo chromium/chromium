@@ -64,6 +64,8 @@ constexpr int kMessageAndIconRowTrailingPadding = 48;
 constexpr int kSideIconBetweenChildSpacing = 16;
 constexpr int kPaddingBeforeBypassJustification = 16;
 
+constexpr size_t kMaxBypassJustificationLength = 200;
+
 // These time values are non-const in order to be overridden in test so they
 // complete faster.
 base::TimeDelta minimum_pending_dialog_time_ = base::Seconds(2);
@@ -270,7 +272,8 @@ void ContentAnalysisDialog::SuccessCallback() {
 void ContentAnalysisDialog::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  if (new_contents.size() == 0)
+  if (new_contents.size() == 0 ||
+      new_contents.size() > kMaxBypassJustificationLength)
     DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
   else
     DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
