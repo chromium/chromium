@@ -49,7 +49,9 @@ class DlpRulesManager : public KeyedService {
     kArc,       // ARC++ as a Guest OS.
     kCrostini,  // Crostini as a Guest OS.
     kPluginVm,  // Plugin VM (Parallels/Windows) as a Guest OS.
-    kMaxValue = kPluginVm
+    kUsb,       // Removable disk.
+    kDrive,     // Google drive for file storage.
+    kMaxValue = kDrive
   };
 
   // The enforcement level of the restriction set by DataLeakPreventionRulesList

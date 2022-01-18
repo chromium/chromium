@@ -19,6 +19,8 @@ message DlpPolicyEventDestination {
     ARC = 1;
     CROSTINI = 2;
     PLUGIN_VM = 3;
+    USB = 4;
+    DRIVE = 5;
   }
 
   // Either |url| or |component| should be set.

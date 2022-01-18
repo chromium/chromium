@@ -179,6 +179,13 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
       event_destination->set_component(
           DlpPolicyEventDestination_Component_PLUGIN_VM);
       break;
+    case (DlpRulesManager::Component::kUsb):
+      event_destination->set_component(DlpPolicyEventDestination_Component_USB);
+      break;
+    case (DlpRulesManager::Component::kDrive):
+      event_destination->set_component(
+          DlpPolicyEventDestination_Component_DRIVE);
+      break;
     case (DlpRulesManager::Component::kUnknownComponent):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);
