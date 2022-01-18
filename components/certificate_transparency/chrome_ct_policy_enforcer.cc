@@ -173,6 +173,9 @@ bool ChromeCTPolicyEnforcer::IsLogDisqualified(
     return false;
   }
   *disqualification_date = base::Time::UnixEpoch() + p->second;
+  if (base::Time::Now() < *disqualification_date) {
+    return false;
+  }
   return true;
 }
 

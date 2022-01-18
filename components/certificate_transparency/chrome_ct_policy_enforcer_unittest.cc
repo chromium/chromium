@@ -45,6 +45,8 @@ const char kGoogleAviatorLogID[] =
 static_assert(base::size(kGoogleAviatorLogID) - 1 == crypto::kSHA256Length,
               "Incorrect log ID length.");
 
+}  // namespace
+
 class ChromeCTPolicyEnforcerTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -540,6 +542,135 @@ TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
                                                     NetLogWithSource()));
 }
 
+TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
+  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
+      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+
+  // Clear the log list and add 2 disqualified logs, one with a disqualification
+  // date in the past and one in the future.
+  // The actual logs are irrelevant for this test, so we use Aviator for the one
+  // disqualified in the past, and a modified version of it for disqualified in
+  // the future.
+  const char kModifiedGoogleAviatorLogID[] =
+      "\x68\xf6\x98\xf8\x1f\x64\x82\xbe\x3a\x8c\xee\xb9\x28\x1d\x4c\xfc\x71\x51"
+      "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\x4f\xf4";
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::string> operated_by_google_logs;
+  std::map<std::string, OperatorHistoryEntry> log_operator_history;
+  base::Time past_disqualification = base::Time::Now() - base::Hours(1);
+  base::Time future_disqualification = base::Time::Now() + base::Hours(1);
+  disqualified_logs.emplace_back(
+      kModifiedGoogleAviatorLogID,
+      future_disqualification - base::Time::UnixEpoch());
+  disqualified_logs.emplace_back(
+      kGoogleAviatorLogID, past_disqualification - base::Time::UnixEpoch());
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                          operated_by_google_logs,
+                                          log_operator_history);
+
+  base::Time disqualification_time;
+  EXPECT_TRUE(chrome_policy_enforcer->IsLogDisqualified(
+      kGoogleAviatorLogID, &disqualification_time));
+  EXPECT_EQ(disqualification_time, past_disqualification);
+  EXPECT_FALSE(chrome_policy_enforcer->IsLogDisqualified(
+      kModifiedGoogleAviatorLogID, &disqualification_time));
+  EXPECT_EQ(disqualification_time, future_disqualification);
+}
+
+TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
+  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
+      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+
+  // Clear the log list and add a single disqualified log, with a
+  // disqualification date in the past;
+  const char kModifiedGoogleAviatorLogID[] =
+      "\x68\xf6\x98\xf8\x1f\x64\x82\xbe\x3a\x8c\xee\xb9\x28\x1d\x4c\xfc\x71\x51"
+      "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\x4f\xf4";
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::string> operated_by_google_logs;
+  std::map<std::string, OperatorHistoryEntry> log_operator_history;
+  disqualified_logs.emplace_back(
+      kModifiedGoogleAviatorLogID,
+      base::Time::Now() - base::Days(1) - base::Time::UnixEpoch());
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                          operated_by_google_logs,
+                                          log_operator_history);
+
+  base::Time unused;
+  // IsLogDisqualified should return false for a log that is not in the
+  // disqualified list.
+  EXPECT_FALSE(
+      chrome_policy_enforcer->IsLogDisqualified(kGoogleAviatorLogID, &unused));
+}
+
+TEST_F(ChromeCTPolicyEnforcerTest,
+       ConformsWithCTPolicyFutureRetirementDateLogs) {
+  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
+      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
+
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::string> operated_by_google_logs = {google_log_id_};
+  std::map<std::string, OperatorHistoryEntry> log_operator_history;
+
+  // Set all the log operators for these SCTs as disqualiied, with a timestamp
+  // one hour from now.
+  base::TimeDelta retirement_time =
+      base::Time::Now() + base::Hours(1) - base::Time::UnixEpoch();
+  // This mirrors how FillListWithSCTsOfOrigin generates log ids.
+  disqualified_logs.emplace_back(google_log_id_, retirement_time);
+  for (size_t i = 1; i < 5; ++i) {
+    disqualified_logs.emplace_back(
+        std::string(crypto::kSHA256Length, static_cast<char>(i)),
+        retirement_time);
+  }
+  std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
+
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                          operated_by_google_logs,
+                                          log_operator_history);
+
+  // SCTs should comply since retirement date is in the future.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_F(ChromeCTPolicyEnforcerTest,
+       DoesNotConformWithCTPolicyPastRetirementDateLogs) {
+  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
+      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
+
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::string> operated_by_google_logs = {google_log_id_};
+  std::map<std::string, OperatorHistoryEntry> log_operator_history;
+
+  // Set all the log operators for these SCTs as disqualiied, with a timestamp
+  // one hour ago.
+  base::TimeDelta retirement_time =
+      base::Time::Now() - base::Hours(1) - base::Time::UnixEpoch();
+  // This mirrors how FillListWithSCTsOfOrigin generates log ids.
+  disqualified_logs.emplace_back(google_log_id_, retirement_time);
+  for (size_t i = 1; i < 5; ++i) {
+    disqualified_logs.emplace_back(
+        std::string(crypto::kSHA256Length, static_cast<char>(i)),
+        retirement_time);
+  }
+  std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
+
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                          operated_by_google_logs,
+                                          log_operator_history);
+
+  // SCTs should not comply since retirement date is in the past.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
 class ChromeCTPolicyEnforcerTest2022Policy : public ChromeCTPolicyEnforcerTest {
  public:
   void SetUp() override {
@@ -844,7 +975,5 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
 }
-
-}  // namespace
 
 }  // namespace certificate_transparency

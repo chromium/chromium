@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -95,6 +96,10 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ChromeCTPolicyEnforcerTest,
+                           IsLogDisqualifiedTimestamp);
+  FRIEND_TEST_ALL_PREFIXES(ChromeCTPolicyEnforcerTest,
+                           IsLogDisqualifiedReturnsFalseOnUnknownLog);
   // Returns true if the log identified by |log_id| (the SHA-256 hash of the
   // log's DER-encoded SPKI) has been disqualified, and sets
   // |*disqualification_date| to the date of disqualification. Any SCTs that
