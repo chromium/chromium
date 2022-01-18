@@ -2307,7 +2307,7 @@ bool IsSigninForcedByPolicy() {
   // Immediately hide modals from the provider (alert views, action sheets,
   // popovers). They will be ultimately dismissed by their owners, but at least,
   // they are not visible.
-  provider::HideModalViewStack();
+  ios::provider::HideModalViewStack();
 
   // ChromeIdentityService is responsible for the dialogs displayed by the
   // services it wraps.
@@ -2355,7 +2355,7 @@ bool IsSigninForcedByPolicy() {
   [self closeSettingsOrSigninAnimated:NO completion:chosenCompletion];
 
   // Verify that no modal views are left presented.
-  provider::LogIfModalViewsArePresented();
+  ios::provider::LogIfModalViewsArePresented();
 }
 
 - (void)openMultipleTabsInMode:

@@ -13,6 +13,7 @@ namespace base {
 class CommandLine;
 }
 
+namespace ios {
 namespace provider {
 
 // Initializes global provider state. Must be called as soon as possible
@@ -29,5 +30,6 @@ void AppendSwitchesFromExperimentalSettings(
 void AttachBrowserAgents(Browser* browser);
 
 }  // namespace provider
+}  // namespace ios
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_APP_UTILS_APP_UTILS_API_H_

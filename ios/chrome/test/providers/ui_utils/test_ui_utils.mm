@@ -10,6 +10,7 @@
 #error "This file requires ARC support."
 #endif
 
+namespace ios {
 namespace provider {
 
 void InitializeUI() {
@@ -35,3 +36,4 @@ void LogIfModalViewsArePresented() {
 }
 
 }  // namespace provider
+}  // namespace ios

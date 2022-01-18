@@ -40,7 +40,7 @@ class IOSChromeUnitTestSuiteInitializer
   ~IOSChromeUnitTestSuiteInitializer() override {}
 
   void OnTestStart(const testing::TestInfo& test_info) override {
-    provider::Initialize();
+    ios::provider::Initialize();
 
     chrome_browser_provider_ = ios::CreateChromeBrowserProvider();
     ios::ChromeBrowserProvider* previous_provider =

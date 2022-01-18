@@ -848,8 +848,8 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
         accountManagerService:ChromeAccountManagerServiceFactory::
                                   GetForBrowserState(
                                       self.browser->GetBrowserState())
-                   logoVendor:provider::CreateLogoVendor(self.browser,
-                                                         self.webState)
+                   logoVendor:ios::provider::CreateLogoVendor(self.browser,
+                                                              self.webState)
       voiceSearchAvailability:&_voiceSearchAvailability];
   ntpMediator.browser = self.browser;
   ntpMediator.ntpViewController = self.ntpViewController;

@@ -16,7 +16,7 @@
 
 + (void)registerProviders {
   // Needs to happen before any function of the provider API is used.
-  provider::Initialize();
+  ios::provider::Initialize();
 
   std::unique_ptr<ios::ChromeBrowserProvider> provider =
       ios::CreateChromeBrowserProvider();

@@ -8,6 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
+namespace ios {
 namespace provider {
 
 void Initialize() {
@@ -25,3 +26,4 @@ void AttachBrowserAgents(Browser* browser) {
 }
 
 }  // namespace provider
+}  // namespace ios

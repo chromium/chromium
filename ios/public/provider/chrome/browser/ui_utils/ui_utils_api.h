@@ -14,6 +14,7 @@ namespace web {
 class WebState;
 }
 
+namespace ios {
 namespace provider {
 
 // Initializes UI global state for the provider.
@@ -33,5 +34,6 @@ void HideModalViewStack();
 void LogIfModalViewsArePresented();
 
 }  // namespace provider
+}  // namespace ios
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_UI_UTILS_UI_UTILS_API_H_

@@ -146,7 +146,7 @@ const CGFloat kGooglePayBadgeHeight = 22;
     _dateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_dateContainerView];
 
-    _monthInput = provider::CreateStyledTextField();
+    _monthInput = ios::provider::CreateStyledTextField();
     _monthInput.placeholder = l10n_util::GetNSString(
         IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH);
     _monthInput.accessibilityIdentifier = @"month_textField";
@@ -161,7 +161,7 @@ const CGFloat kGooglePayBadgeHeight = 22;
     _dateSeparator.translatesAutoresizingMaskIntoConstraints = NO;
     [_dateContainerView addSubview:_dateSeparator];
 
-    _yearInput = provider::CreateStyledTextField();
+    _yearInput = ios::provider::CreateStyledTextField();
     _yearInput.placeholder =
         l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR);
     _yearInput.accessibilityIdentifier = @"year_textField";
@@ -174,7 +174,7 @@ const CGFloat kGooglePayBadgeHeight = 22;
     _CVCContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_CVCContainerView];
 
-    _CVCInput = provider::CreateStyledTextField();
+    _CVCInput = ios::provider::CreateStyledTextField();
     _CVCInput.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _CVCInput.placeholder =
         l10n_util::GetNSString(IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC);

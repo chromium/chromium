@@ -1045,7 +1045,7 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     command_line->AppendSwitch(switches::kDisableThirdPartyKeyboardWorkaround);
   }
 
-  provider::AppendSwitchesFromExperimentalSettings(defaults, command_line);
+  ios::provider::AppendSwitchesFromExperimentalSettings(defaults, command_line);
 }
 
 void MonitorExperimentalSettingsChanges() {

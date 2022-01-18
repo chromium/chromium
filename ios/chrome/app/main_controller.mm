@@ -433,7 +433,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   _chromeMain = [ChromeMainStarter startChromeMain];
 
   // Initialize the provider UI global state.
-  provider::InitializeUI();
+  ios::provider::InitializeUI();
 
   // If the user has interacted with the app, then start (or continue) watching
   // for crashes. Otherwise, do not watch for crashes.
