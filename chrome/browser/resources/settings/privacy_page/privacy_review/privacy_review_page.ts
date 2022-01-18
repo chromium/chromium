@@ -190,7 +190,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         PrivacyReviewStep.COMPLETION,
         {
           onForwardNavigation: () => {
-            Router.getInstance().navigateToPreviousRoute();
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
