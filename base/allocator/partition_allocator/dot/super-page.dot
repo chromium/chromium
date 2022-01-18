@@ -26,8 +26,8 @@ digraph G {
         <TD PORT="green" BGCOLOR="palegreen" WIDTH="39">1</TD>
         <TD PORT="blue" BGCOLOR="cornflowerblue" WIDTH="79">2</TD>
         <TD PORT="gold" BGCOLOR="gold" WIDTH="239">6</TD>
-        <TD PORT="red2" BGCOLOR="crimson" WIDTH="79">2</TD>
-        <TD PORT="pink" BGCOLOR="deeppink" WIDTH="119">3</TD>
+        <TD PORT="red2" BGCOLOR="crimson" WIDTH="119">3</TD>
+        <TD PORT="pink" BGCOLOR="deeppink" WIDTH="39">1</TD>
         <TD WIDTH="79">...</TD>
         <!-- Tail Partition Page -->
         <TD BGCOLOR="darkgrey" WIDTH="39"></TD>
@@ -48,6 +48,8 @@ digraph G {
   metadata_page[xlabel="Metadata",label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
       <TR>
+        <!-- Guard Page Metadata -->
+        <TD BGCOLOR="darkgrey"> </TD>
         <!-- Red Slot Span Metadata -->
         <TD BGCOLOR="crimson">v</TD>
         <TD BGCOLOR="crimson">+</TD>
@@ -67,12 +69,13 @@ digraph G {
         <!-- Red Slot Span Metadata -->
         <TD BGCOLOR="crimson">v</TD>
         <TD BGCOLOR="crimson">+</TD>
+        <TD BGCOLOR="crimson">+</TD>
         <!-- Pink Slot Span Metadata -->
         <TD BGCOLOR="deeppink">v</TD>
-        <TD BGCOLOR="deeppink">+</TD>
-        <TD BGCOLOR="deeppink">+</TD>
         <!-- etc. -->
         <TD WIDTH="64">...</TD>
+        <!-- Guard Page Metadata -->
+        <TD BGCOLOR="darkgrey"> </TD>
       </TR>
     </TABLE>
   >]
