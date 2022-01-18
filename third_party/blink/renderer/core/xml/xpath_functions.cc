@@ -41,8 +41,7 @@
 #include <algorithm>
 #include <limits>
 
-namespace blink {
-namespace xpath {
+namespace blink::xpath {
 
 static inline bool IsWhitespace(UChar c) {
   return c == ' ' || c == '\n' || c == '\r' || c == '\t';
@@ -535,13 +534,6 @@ Value FunSubstringAfter::Evaluate(EvaluationContext& context) const {
   return s1.Substring(i + s2.length());
 }
 
-// Returns |value| clamped to the range [lo, hi].
-// TODO(dominicc): Replace with std::clamp when C++17 is allowed
-// per //styleguide/c++/c++11.md
-static double Clamp(const double value, const double lo, const double hi) {
-  return std::min(hi, std::max(lo, value));
-}
-
 // Computes the 1-based start and end (exclusive) string indices for
 // substring. This is all the positions [1, maxLen (inclusive)] where
 // start <= position < start + len
@@ -553,8 +545,8 @@ static std::pair<unsigned, unsigned> ComputeSubstringStartEnd(double start,
   if (std::isnan(start) || std::isnan(end))
     return std::make_pair(1, 1);
   // Neither start nor end are NaN, but may still be +/- Inf
-  const double clamped_start = Clamp(start, 1, max_len + 1);
-  const double clamped_end = Clamp(end, clamped_start, max_len + 1);
+  const double clamped_start = base::clamp<double>(start, 1, max_len + 1);
+  const double clamped_end = base::clamp(end, clamped_start, max_len + 1);
   return std::make_pair(static_cast<unsigned>(clamped_start),
                         static_cast<unsigned>(clamped_end));
 }
@@ -749,8 +741,8 @@ static void CreateFunctionMap() {
   };
 
   g_function_map = new HashMap<String, FunctionRec>;
-  for (size_t i = 0; i < base::size(functions); ++i)
-    g_function_map->Set(functions[i].name, functions[i].function);
+  for (const auto& function : functions)
+    g_function_map->Set(function.name, function.function);
 }
 
 Function* CreateFunction(const String& name) {
@@ -777,5 +769,4 @@ Function* CreateFunction(const String& name,
   return function;
 }
 
-}  // namespace xpath
-}  // namespace blink
+}  // namespace blink::xpath
