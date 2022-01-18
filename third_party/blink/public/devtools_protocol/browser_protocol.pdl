@@ -8626,6 +8626,7 @@ experimental domain Storage
       websql
       service_workers
       cache_storage
+      interest_groups
       all
       other
 
@@ -8643,6 +8644,37 @@ experimental domain Storage
     properties
       string issuerOrigin
       number count
+  
+  # Enum of interest group access types.
+  type InterestGroupAccessType extends string
+    enum
+      join
+      leave
+      update
+      bid
+      win
+  
+  # Ad advertising element inside an interest group.
+  type InterestGroupAd extends object
+    properties
+      string renderUrl
+      optional string metadata
+
+  # The full details of an interest group.
+  type InterestGroupDetails extends object
+    properties
+      string ownerOrigin
+      string name
+      number expirationTime
+      string joiningOrigin
+      optional string biddingUrl
+      optional string biddingWasmHelperUrl
+      optional string updateUrl
+      optional string trustedBiddingSignalsUrl
+      array of string trustedBiddingSignalsKeys
+      optional string userBiddingSignals
+      array of InterestGroupAd ads
+      array of InterestGroupAd adComponents
 
   # Clears storage for origin.
   command clearDataForOrigin
@@ -8743,6 +8775,19 @@ experimental domain Storage
       # True if any tokens were deleted, false otherwise.
       boolean didDeleteTokens
 
+  # Gets details for a named interest group.
+  experimental command getInterestGroupDetails
+    parameters
+      string ownerOrigin
+      string name
+    returns
+      InterestGroupDetails details
+
+  # Enables/Disables issuing of interestGroupAccessed events.
+  experimental command setInterestGroupTracking
+    parameters
+      boolean enable
+
   # A cache's contents have been modified.
   event cacheStorageContentUpdated
     parameters
@@ -8772,6 +8817,13 @@ experimental domain Storage
     parameters
       # Origin to update.
       string origin
+  
+  # One of the interest groups was accessed by the associated page.
+  event interestGroupAccessed
+    parameters
+      InterestGroupAccessType type
+      string ownerOrigin
+      string name
 
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo

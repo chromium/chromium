@@ -992,7 +992,8 @@
   {
     "prefix": "fledge",
     "bases": [
-      "http/tests/inspector-protocol/target/auto-attach-auction-worklet.js"
+      "http/tests/inspector-protocol/target/auto-attach-auction-worklet.js",
+      "http/tests/inspector-protocol/storage/interest-groups.js"
     ],
     "args": [
       "--enable-features=InterestGroupStorage,AdInterestGroupAPI,Fledge,FencedFrames:implementation_type/shadow_dom"

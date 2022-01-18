@@ -18,6 +18,7 @@
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
+#include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -28,6 +29,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
@@ -284,6 +286,7 @@ Response StorageHandler::Disable() {
   cache_storage_observer_.reset();
   indexed_db_observer_.reset();
   quota_override_handle_.reset();
+  SetInterestGroupTracking(false);
   return Response::Success();
 }
 
@@ -361,12 +364,8 @@ void StorageHandler::ClearDataForOrigin(
       storage_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   std::unordered_set<std::string> set(types.begin(), types.end());
   uint32_t remove_mask = 0;
-  if (set.count(Storage::StorageTypeEnum::Cookies)) {
+  if (set.count(Storage::StorageTypeEnum::Cookies))
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
-    // Interest groups should be cleared with cookies for its origin trial as
-    // they have the same privacy characteristics
-    remove_mask |= StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
-  }
   if (set.count(Storage::StorageTypeEnum::File_systems))
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS;
   if (set.count(Storage::StorageTypeEnum::Indexeddb))
@@ -381,6 +380,8 @@ void StorageHandler::ClearDataForOrigin(
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS;
   if (set.count(Storage::StorageTypeEnum::Cache_storage))
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE;
+  if (set.count(Storage::StorageTypeEnum::Interest_groups))
+    remove_mask |= StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
   if (set.count(Storage::StorageTypeEnum::All))
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_ALL;
 
@@ -638,6 +639,156 @@ void StorageHandler::ClearTrustTokens(
   storage_partition_->GetNetworkContext()->DeleteStoredTrustTokens(
       url::Origin::Create(GURL(issuerOrigin)),
       base::BindOnce(&SendClearTrustTokensStatus, std::move(callback)));
+}
+
+void StorageHandler::OnInterestGroupAccessed(
+    InterestGroupManager::InterestGroupObserverInterface::AccessType type,
+    const std::string& owner_origin,
+    const std::string& name) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  using AccessType =
+      InterestGroupManager::InterestGroupObserverInterface::AccessType;
+  std::string type_enum;
+  switch (type) {
+    case AccessType::kJoin:
+      type_enum = Storage::InterestGroupAccessTypeEnum::Join;
+      break;
+    case AccessType::kLeave:
+      type_enum = Storage::InterestGroupAccessTypeEnum::Leave;
+      break;
+    case AccessType::kUpdate:
+      type_enum = Storage::InterestGroupAccessTypeEnum::Update;
+      break;
+    case AccessType::kBid:
+      type_enum = Storage::InterestGroupAccessTypeEnum::Bid;
+      break;
+    case AccessType::kWin:
+      type_enum = Storage::InterestGroupAccessTypeEnum::Win;
+      break;
+  };
+  frontend_->InterestGroupAccessed(type_enum, owner_origin, name);
+}
+
+namespace {
+void SendGetInterestGroup(
+    std::unique_ptr<StorageHandler::GetInterestGroupDetailsCallback> callback,
+    absl::optional<StorageInterestGroup> storage_group) {
+  if (!storage_group) {
+    callback->sendFailure(Response::ServerError("Interest group not found"));
+    return;
+  }
+
+  const blink::InterestGroup& group = storage_group->interest_group;
+  auto trusted_bidding_signals_keys =
+      std::make_unique<protocol::Array<std::string>>();
+  if (group.trusted_bidding_signals_keys) {
+    for (const auto& key : group.trusted_bidding_signals_keys.value())
+      trusted_bidding_signals_keys->push_back(key);
+  }
+  auto ads =
+      std::make_unique<protocol::Array<protocol::Storage::InterestGroupAd>>();
+  if (group.ads) {
+    for (const auto& ad : *group.ads) {
+      auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
+                             .SetRenderUrl(ad.render_url.spec())
+                             .Build();
+      if (ad.metadata)
+        protocol_ad->SetMetadata(*ad.metadata);
+      ads->push_back(std::move(protocol_ad));
+    }
+  }
+  auto ad_components =
+      std::make_unique<protocol::Array<protocol::Storage::InterestGroupAd>>();
+  if (group.ad_components) {
+    for (const auto& ad : *group.ad_components) {
+      auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
+                             .SetRenderUrl(ad.render_url.spec())
+                             .Build();
+      if (ad.metadata)
+        protocol_ad->SetMetadata(*ad.metadata);
+      ad_components->push_back(std::move(protocol_ad));
+    }
+  }
+  auto protocol_group =
+      protocol::Storage::InterestGroupDetails::Create()
+          .SetOwnerOrigin(group.owner.Serialize())
+          .SetName(group.name)
+          .SetExpirationTime(group.expiry.ToJsTimeIgnoringNull())
+          .SetJoiningOrigin(storage_group->joining_origin.Serialize())
+          .SetTrustedBiddingSignalsKeys(std::move(trusted_bidding_signals_keys))
+          .SetAds(std::move(ads))
+          .SetAdComponents(std::move(ad_components))
+          .Build();
+  if (group.bidding_url)
+    protocol_group->SetBiddingUrl(group.bidding_url->spec());
+  if (group.bidding_wasm_helper_url)
+    protocol_group->SetBiddingWasmHelperUrl(
+        group.bidding_wasm_helper_url->spec());
+  if (group.update_url)
+    protocol_group->SetUpdateUrl(group.update_url->spec());
+  if (group.trusted_bidding_signals_url)
+    protocol_group->SetTrustedBiddingSignalsUrl(
+        group.trusted_bidding_signals_url->spec());
+  if (group.user_bidding_signals)
+    protocol_group->SetUserBiddingSignals(*group.user_bidding_signals);
+
+  callback->sendSuccess(std::move(protocol_group));
+}
+
+}  // namespace
+
+void StorageHandler::GetInterestGroupDetails(
+    const std::string& owner_origin_string,
+    const std::string& name,
+    std::unique_ptr<GetInterestGroupDetailsCallback> callback) {
+  if (!storage_partition_) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  InterestGroupManager* manager =
+      static_cast<StoragePartitionImpl*>(storage_partition_)
+          ->GetInterestGroupManager();
+  if (!manager) {
+    callback->sendFailure(
+        Response::ServerError("Interest group storage is disabled"));
+    return;
+  }
+
+  GURL owner_origin_url(owner_origin_string);
+  if (!owner_origin_url.is_valid()) {
+    callback->sendFailure(Response::ServerError("Invalid Owner Origin"));
+    return;
+  }
+  url::Origin owner_origin = url::Origin::Create(GURL(owner_origin_string));
+  DCHECK(!owner_origin.opaque());
+
+  manager->GetInterestGroup(
+      owner_origin, name,
+      base::BindOnce(&SendGetInterestGroup, std::move(callback)));
+}
+
+Response StorageHandler::SetInterestGroupTracking(bool enable) {
+  if (!storage_partition_)
+    return Response::InternalError();
+
+  InterestGroupManager* manager =
+      static_cast<StoragePartitionImpl*>(storage_partition_)
+          ->GetInterestGroupManager();
+  if (!manager)
+    return Response::ServerError("Interest group storage is disabled.");
+
+  if (enable) {
+    // Only add if we are not already registered as an observer. We only
+    // observe the interest group manager, so if we're observing anything then
+    // we are already registered.
+    if (!IsInObserverList())
+      manager->AddInterestGroupObserver(this);
+  } else {
+    // Removal doesn't care if we are not registered.
+    manager->RemoveInterestGroupObserver(this);
+  }
+  return Response::Success();
 }
 
 }  // namespace protocol

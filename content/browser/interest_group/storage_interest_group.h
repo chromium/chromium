@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -52,6 +53,8 @@ struct CONTENT_EXPORT StorageInterestGroup {
   absl::optional<KAnonymityData> name_kanon;
   absl::optional<KAnonymityData> update_url_kanon;
   std::vector<KAnonymityData> ads_kanon;
+  // Top level page origin from when the interest group was joined.
+  url::Origin joining_origin;
 };
 
 // Stream operator so KAnonymityData can be used in assertion statements.

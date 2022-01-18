@@ -61,6 +61,15 @@ class CONTENT_EXPORT InterestGroupManager {
   InterestGroupManager(const InterestGroupManager& other) = delete;
   InterestGroupManager& operator=(const InterestGroupManager& other) = delete;
 
+  class CONTENT_EXPORT InterestGroupObserverInterface
+      : public base::CheckedObserver {
+   public:
+    enum AccessType { kJoin, kLeave, kUpdate, kBid, kWin };
+    virtual void OnInterestGroupAccessed(AccessType type,
+                                         const std::string& owner_origin,
+                                         const std::string& name) = 0;
+  };
+
   /******** Proxy function calls to InterestGroupsStorage **********/
 
   // Joins an interest group. If the interest group does not exist, a new one
@@ -89,6 +98,11 @@ class CONTENT_EXPORT InterestGroupManager {
   void RecordInterestGroupWin(const ::url::Origin& owner,
                               const std::string& name,
                               const std::string& ad_json);
+  // Gets a single interest group.
+  void GetInterestGroup(
+      const url::Origin& owner,
+      const std::string& name,
+      base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
   void GetAllInterestGroupOwners(
@@ -122,6 +136,14 @@ class CONTENT_EXPORT InterestGroupManager {
     return *auction_process_manager_;
   }
 
+  void AddInterestGroupObserver(InterestGroupObserverInterface* observer) {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveInterestGroupObserver(InterestGroupObserverInterface* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
   // Allows the AuctionProcessManager to be overridden in unit tests, both to
   // allow not creating a new process, and mocking out the Mojo service
   // interface.
@@ -149,6 +171,10 @@ class CONTENT_EXPORT InterestGroupManager {
   void ReportUpdateFetchFailed(const url::Origin& owner,
                                const std::string& name,
                                bool net_disconnected);
+  void NotifyInterestGroupAccessed(
+      InterestGroupObserverInterface::AccessType type,
+      const std::string& owner_origin,
+      const std::string& name);
 
   // Owns and manages access to the InterestGroupStorage living on a different
   // thread.
@@ -163,6 +189,8 @@ class CONTENT_EXPORT InterestGroupManager {
   // All active network requests -- active requests will be cancelled when
   // destroyed.
   UrlLoadersList url_loaders_;
+
+  base::ObserverList<InterestGroupObserverInterface> observers_;
 
   // TODO(crbug.com/1186444): Do we need to test InterestGroupManager
   // destruction during update? If so, how?

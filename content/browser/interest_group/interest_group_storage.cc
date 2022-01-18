@@ -542,11 +542,13 @@ bool DoJoinInterestGroup(sql::Database& db,
 bool DoLoadInterestGroup(sql::Database& db,
                          const url::Origin& owner,
                          const std::string& name,
-                         blink::InterestGroup& group) {
+                         blink::InterestGroup& group,
+                         url::Origin* joining_origin) {
   // clang-format off
   sql::Statement load(
       db.GetCachedStatement(SQL_FROM_HERE,
         "SELECT expiration,"
+          "joining_origin,"
           "bidding_url,"
           "bidding_wasm_helper_url,"
           "update_url,"
@@ -572,16 +574,18 @@ bool DoLoadInterestGroup(sql::Database& db,
   group.expiry = load.ColumnTime(0);
   group.owner = owner;
   group.name = name;
-  group.bidding_url = DeserializeURL(load.ColumnString(1));
-  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(2));
-  group.update_url = DeserializeURL(load.ColumnString(3));
-  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(4));
+  if (joining_origin)
+    *joining_origin = DeserializeOrigin(load.ColumnString(1));
+  group.bidding_url = DeserializeURL(load.ColumnString(2));
+  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(3));
+  group.update_url = DeserializeURL(load.ColumnString(4));
+  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(5));
   group.trusted_bidding_signals_keys =
-      DeserializeStringVector(load.ColumnString(5));
-  if (load.GetColumnType(6) != sql::ColumnType::kNull)
-    group.user_bidding_signals = load.ColumnString(6);
-  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(7));
-  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(8));
+      DeserializeStringVector(load.ColumnString(6));
+  if (load.GetColumnType(7) != sql::ColumnType::kNull)
+    group.user_bidding_signals = load.ColumnString(7);
+  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(8));
+  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(9));
 
   return true;
 }
@@ -639,8 +643,10 @@ bool DoUpdateInterestGroup(sql::Database& db,
   // verify the interest group is valid before writing it to the database.
 
   blink::InterestGroup stored_group;
-  if (!DoLoadInterestGroup(db, update.owner, update.name, stored_group))
+  if (!DoLoadInterestGroup(db, update.owner, update.name, stored_group,
+                           nullptr)) {
     return false;
+  }
 
   // (Optimization) Don't do anything for expired interest groups.
   if (stored_group.expiry < now)
@@ -1103,8 +1109,10 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
     std::string name,
     base::Time now) {
   StorageInterestGroup db_interest_group;
-  if (!DoLoadInterestGroup(db, owner, name, db_interest_group.interest_group))
+  if (!DoLoadInterestGroup(db, owner, name, db_interest_group.interest_group,
+                           &db_interest_group.joining_origin)) {
     return absl::nullopt;
+  }
 
   if (!DoGetInterestGroupNameKAnonymity(db, owner,
                                         db_interest_group.interest_group.name,
@@ -1705,6 +1713,16 @@ void InterestGroupStorage::UpdateAdKAnonymity(
     DLOG(ERROR) << "Could not update k-anonymity for ad: "
                 << db_->GetErrorMessage();
   }
+}
+
+absl::optional<StorageInterestGroup> InterestGroupStorage::GetInterestGroup(
+    const url::Origin& owner,
+    const std::string& name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized())
+    return absl::nullopt;
+
+  return DoGetStoredInterestGroup(*db_, owner, name, base::Time::Now());
 }
 
 std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
