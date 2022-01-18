@@ -407,38 +407,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
-<histogram base="true"
-    name="Webapp.InstallResultExtensionDisabledReason.System.Profiles"
-    enum="ExtensionDisableReason" expires_after="2020-12-31">
-  <obsolete>
-    Removed 11/2020, as the relevant code path is no longer executed after BMO
-    launch.
-  </obsolete>
-  <owner>calamity@chromium.org</owner>
-  <owner>ortuno@chromium.org</owner>
-  <summary>
-    Records why System Web App .crx extension is disabled during System Web App
-    installs. Certain properties of the profile might cause Extensions to be
-    disabled as soon as they are installed. For example, kiosk profile might set
-    policies to disable all Extensions, including System Web Apps which are
-    considered Extensions.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="Webapp.InstallResultExtensionError.System.Profiles"
-    enum="ExtensionInstallationCrxInstallError" expires_after="2020-12-31">
-  <obsolete>
-    Removed 11/2020, as the relevant code path is no longer executed after BMO
-    launch.
-  </obsolete>
-  <owner>calamity@chromium.org</owner>
-  <owner>ortuno@chromium.org</owner>
-  <summary>
-    Records .crx extension error code when System Web App install fails.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.Launcher.LaunchResult"
     enum="WebAppLauncherLaunchResult" expires_after="2022-07-01">
   <owner>davidbienvenu@chromium.org</owner>
@@ -456,24 +424,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The result of updating a single Progressive Web App (PWA) launcher with the
     latest version of chrome_pwa_launcher.exe. Windows-only.
-  </summary>
-</histogram>
-
-<histogram name="WebApp.Migration.UserDisplayModeCleanUp"
-    enum="BooleanMigrated" expires_after="2021-01-01">
-  <obsolete>
-    Removed 12/2020.
-  </obsolete>
-  <owner>alancutter@chromium.org</owner>
-  <owner>dxie@google.com</owner>
-  <owner>loyso@google.com</owner>
-  <owner>mgiuca@google.com</owner>
-  <summary>
-    The result of deploying a follow up migration after a migration bug
-    (https://crbug.com/1125020) that caused users' web apps to open in a browser
-    tab instead of a standalone window. This follow up migration only runs once
-    at startup for all Chrome profiles. If it fails it will retry until
-    successful on subsequent start ups, metrics are only recorded on success.
   </summary>
 </histogram>
 
@@ -596,21 +546,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of shortcut creation for PWA.</summary>
 </histogram>
 
-<histogram name="WebApp.Shortcuts.Deletion.Success" enum="BooleanSuccess"
-    expires_after="M93">
-  <obsolete>
-    Removed on M93. Not needed anymore.
-  </obsolete>
-  <owner>phillis@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <owner>sunggch@microsoft.com</owner>
-  <summary>
-    Records the result of shortcut deletion for a PWA. This occurs when an
-    installed PWA is uninstalled, which can be triggered by user, policy admin,
-    or sync system depending on the situation.
-  </summary>
-</histogram>
-
 <histogram name="Webapp.SyncInitiatedUninstallResult" enum="BooleanSuccess"
     expires_after="2022-04-24">
   <owner>alancutter@chromium.org</owner>
@@ -697,33 +632,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records if uninstallation was successful. Uninstall can occur from the user,
     enterprise policy, device policy, or chrome sync.
-  </summary>
-</histogram>
-
-<histogram name="WebApp.UninstallDialog.AppMenuUninstallSuccess" enum="Boolean"
-    expires_after="M95">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of uninstalling a WebApp when the user clicks on
-    &quot;Uninstall&quot; from the 3-dot menu of the respective WebApp window.
-  </summary>
-</histogram>
-
-<histogram name="WebApp.UninstallDialog.AppsPageUninstallSuccess"
-    enum="Boolean" expires_after="M95">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of uninstalling an app from the chrome://apps page. This
-    happens whena user right-clicks on a greyed out webapp icon in the
-    chrome://apps page and clicks &quot;Uninstall&quot;.
   </summary>
 </histogram>
 
