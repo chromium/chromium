@@ -1443,5 +1443,51 @@ TEST_F(AccessibilityTest, IsInertInDisplayNone) {
   ASSERT_TRUE(ax_span_text->IsInert());
 }
 
+TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
+  ScopedInertAttributeForTest enabled_scope(true);
+  NonThrowableExceptionState exception_state;
+  SetBodyInnerHTML(R"HTML(
+    <canvas>
+      <section style="display: none">
+        <div tabindex="-1" id="div"></div>
+        <span tabindex="-1" id="span"></div>
+        <a tabindex="-1" id="a"></a>
+      </section>
+      <section style="display: none" inert>
+        <div tabindex="-1" id="div-inert"></div>
+        <span tabindex="-1" id="span-inert"></div>
+        <a tabindex="-1" id="a-inert"></a>
+      </section>
+    </div>
+  )HTML");
+
+  // Elements being used as relevant canvas fallback content can be focusable,
+  // even in a display:none subtree.
+  AXObject* div = GetAXObjectByElementId("div");
+  ASSERT_NE(div, nullptr);
+  ASSERT_TRUE(div->CanSetFocusAttribute());
+
+  AXObject* span = GetAXObjectByElementId("span");
+  ASSERT_NE(span, nullptr);
+  ASSERT_TRUE(span->CanSetFocusAttribute());
+
+  AXObject* a = GetAXObjectByElementId("a");
+  ASSERT_NE(a, nullptr);
+  ASSERT_TRUE(a->CanSetFocusAttribute());
+
+  // But they are not focusable if expressly inert.
+  AXObject* div_inert = GetAXObjectByElementId("div-inert");
+  ASSERT_NE(div_inert, nullptr);
+  ASSERT_FALSE(div_inert->CanSetFocusAttribute());
+
+  AXObject* span_inert = GetAXObjectByElementId("span-inert");
+  ASSERT_NE(span_inert, nullptr);
+  ASSERT_FALSE(span_inert->CanSetFocusAttribute());
+
+  AXObject* a_inert = GetAXObjectByElementId("a-inert");
+  ASSERT_NE(a_inert, nullptr);
+  ASSERT_FALSE(a_inert->CanSetFocusAttribute());
+}
+
 }  // namespace test
 }  // namespace blink
