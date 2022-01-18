@@ -84,8 +84,15 @@ class EmbeddedPolicyTestServer {
   void ConfigureRequestError(const std::string& request_type,
                              net::HttpStatusCode error_code);
 
-  GURL GetExternalPolicyDataURL(const std::string& policy_type,
-                                const std::string& entity_id) const;
+#if !BUILDFLAG(IS_ANDROID)
+  // Updates policy selected by |type| and optional |entity_id|. The
+  // |raw_policy| is served via an external endpoint. This does not trigger
+  // policy invalidation, hence test authors must manually trigger a policy
+  // fetch.
+  void UpdateExternalPolicy(const std::string& type,
+                            const std::string& entity_id,
+                            const std::string& raw_policy);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   // Default request handler.

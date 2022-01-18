@@ -81,7 +81,7 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
                     const std::string& serialized_policy);
 
   // Updates policy selected by |type| and optional |entity_id|. The
-  // |raw_policy| is served via an external data point. This does not trigger
+  // |raw_policy| is served via an external endpoint. This does not trigger
   // policy invalidation, hence test authors must manually trigger a policy
   // fetch.
   void UpdateExternalPolicy(const std::string& type,

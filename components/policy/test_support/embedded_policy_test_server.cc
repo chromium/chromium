@@ -10,6 +10,9 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/policy/proto/chrome_extension_policy.pb.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/failing_request_handler.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -28,6 +31,7 @@
 #include "components/policy/test_support/request_handler_for_remote_commands.h"
 #include "components/policy/test_support/request_handler_for_status_upload.h"
 #include "components/policy/test_support/test_server_helpers.h"
+#include "crypto/sha2.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -136,16 +140,28 @@ void EmbeddedPolicyTestServer::ConfigureRequestError(
       client_storage_.get(), policy_storage_.get(), request_type, error_code));
 }
 
-GURL EmbeddedPolicyTestServer::GetExternalPolicyDataURL(
-    const std::string& policy_type,
-    const std::string& entity_id) const {
-  GURL url = http_server_.GetURL(kExternalPolicyDataPath);
-  url = net::AppendOrReplaceQueryParameter(url, kExternalPolicyTypeParam,
-                                           policy_type);
-  url = net::AppendOrReplaceQueryParameter(url, kExternalEntityIdParam,
-                                           entity_id);
-  return url;
+#if !BUILDFLAG(IS_ANDROID)
+void EmbeddedPolicyTestServer::UpdateExternalPolicy(
+    const std::string& type,
+    const std::string& entity_id,
+    const std::string& raw_policy) {
+  // Register raw policy to be served by external endpoint.
+  policy_storage()->SetExternalPolicyPayload(type, entity_id, raw_policy);
+
+  // Register proto policy with details on how to fetch the raw policy.
+  GURL external_policy_url = http_server_.GetURL(kExternalPolicyDataPath);
+  external_policy_url = net::AppendOrReplaceQueryParameter(
+      external_policy_url, kExternalPolicyTypeParam, type);
+  external_policy_url = net::AppendOrReplaceQueryParameter(
+      external_policy_url, kExternalEntityIdParam, entity_id);
+
+  enterprise_management::ExternalPolicyData external_policy_data;
+  external_policy_data.set_download_url(external_policy_url.spec());
+  external_policy_data.set_secure_hash(crypto::SHA256HashString(raw_policy));
+  policy_storage()->SetPolicyPayload(type, entity_id,
+                                     external_policy_data.SerializeAsString());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
     const HttpRequest& request) {

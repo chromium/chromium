@@ -34,7 +34,9 @@
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/policy/test_support/local_policy_test_server.h"
+#include "components/policy/test_support/client_storage.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -99,8 +101,8 @@ const char kTestPolicy2JSON[] = "{\"Another\":\"turn_it_off\"}";
 
 class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
  protected:
-  ComponentCloudPolicyTest() {}
-  ~ComponentCloudPolicyTest() override {}
+  ComponentCloudPolicyTest() = default;
+  ~ComponentCloudPolicyTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
@@ -118,10 +120,17 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    test_server_.RegisterClient(kDMToken, kDeviceID, {} /* state_keys */);
-    EXPECT_TRUE(test_server_.UpdatePolicyData(
-        dm_protocol::kChromeExtensionPolicyType, kTestExtension, kTestPolicy));
+    ClientStorage::ClientInfo client_info;
+    client_info.device_id = kDeviceID;
+    client_info.device_token = kDMToken;
+    client_info.allowed_policy_types = {
+        policy::dm_protocol::kChromeExtensionPolicyType,
+        policy::dm_protocol::kChromeUserPolicyType,
+    };
+    test_server_.client_storage()->RegisterClient(client_info);
     ASSERT_TRUE(test_server_.Start());
+    test_server_.UpdateExternalPolicy(dm_protocol::kChromeExtensionPolicyType,
+                                      kTestExtension, kTestPolicy);
 
     std::string url = test_server_.GetServiceURL().spec();
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -239,7 +248,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
     run_loop.Run();
   }
 
-  LocalPolicyTestServer test_server_;
+  EmbeddedPolicyTestServer test_server_;
   scoped_refptr<const extensions::Extension> extension_;
   std::unique_ptr<ExtensionTestMessageListener> event_listener_;
   raw_ptr<CloudPolicyClient> client_ = nullptr;
@@ -276,8 +285,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_UpdateExtensionPolicy) {
   event_listener_ =
       std::make_unique<ExtensionTestMessageListener>("event", true);
   policy_listener.Reply("idle");
-  EXPECT_TRUE(test_server_.UpdatePolicyData(
-      dm_protocol::kChromeExtensionPolicyType, kTestExtension, kTestPolicy2));
+  test_server_.UpdateExternalPolicy(dm_protocol::kChromeExtensionPolicyType,
+                                    kTestExtension, kTestPolicy2);
   RefreshPolicies();
 
   // Check that the update event was received, and verify the new policy
@@ -304,8 +313,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
   event_listener_->Reply("idle");
   event_listener_.reset();
 
-  EXPECT_TRUE(test_server_.UpdatePolicyData(
-      dm_protocol::kChromeExtensionPolicyType, kTestExtension2, kTestPolicy2));
+  test_server_.UpdateExternalPolicy(dm_protocol::kChromeExtensionPolicyType,
+                                    kTestExtension2, kTestPolicy2);
   // Installing a new extension doesn't trigger another policy fetch because
   // the server always sends down the list of all extensions that have policy.
   // Fetch now that the configuration has been updated and before installing
@@ -400,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
 class KeyRotationComponentCloudPolicyTest : public ComponentCloudPolicyTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
-    test_server_.EnableAutomaticRotationOfSigningKeys();
+    test_server_.policy_storage()->signature_provider()->set_rotate_keys(true);
     ComponentCloudPolicyTest::SetUpInProcessBrowserTestFixture();
   }
 
@@ -437,8 +446,8 @@ IN_PROC_BROWSER_TEST_F(KeyRotationComponentCloudPolicyTest, MAYBE_Basic) {
   event_listener_ =
       std::make_unique<ExtensionTestMessageListener>("event", true);
   policy_listener.Reply("idle");
-  EXPECT_TRUE(test_server_.UpdatePolicyData(
-      dm_protocol::kChromeExtensionPolicyType, kTestExtension, kTestPolicy2));
+  test_server_.UpdateExternalPolicy(dm_protocol::kChromeExtensionPolicyType,
+                                    kTestExtension, kTestPolicy2);
   RefreshPolicies();
 
   // Check that the update event was received, and verify that the policy has
