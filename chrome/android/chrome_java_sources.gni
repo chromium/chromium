@@ -1088,7 +1088,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/SyncContentResolverDelegate.java",
   "java/src/org/chromium/chrome/browser/sync/SyncController.java",
   "java/src/org/chromium/chrome/browser/sync/SyncErrorNotifier.java",
-  "java/src/org/chromium/chrome/browser/sync/SyncUserDataWiper.java",
   "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",
   "java/src/org/chromium/chrome/browser/sync/settings/AccountManagementFragment.java",
   "java/src/org/chromium/chrome/browser/sync/settings/ClearDataProgressDialog.java",

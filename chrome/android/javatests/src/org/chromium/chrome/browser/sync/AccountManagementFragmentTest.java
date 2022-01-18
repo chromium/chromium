@@ -30,7 +30,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -121,7 +120,6 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @DisabledTest(message = "https://crbug.com/1272911")
     public void testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
         // The code under test doesn't care what account type this is, though in practice only

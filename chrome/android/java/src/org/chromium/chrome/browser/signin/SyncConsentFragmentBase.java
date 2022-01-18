@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.sync.SyncUserDataWiper;
 import org.chromium.chrome.browser.ui.signin.ConfirmSyncDataStateMachine;
 import org.chromium.chrome.browser.ui.signin.ConfirmSyncDataStateMachineDelegate;
 import org.chromium.chrome.browser.ui.signin.ConsentTextTracker;
@@ -478,9 +477,20 @@ public abstract class SyncConsentFragmentBase
 
                         // Don't start sign-in if this fragment has been destroyed.
                         if (mDestroyed) return;
-                        SyncUserDataWiper.wipeSyncUserDataIfRequired(wipeData).then((Void v) -> {
-                            onSyncAccepted(mSelectedAccountName, settingsClicked,
-                                    () -> mIsSigninInProgress = false);
+
+                        SigninManager signinManager =
+                                IdentityServicesProvider.get().getSigninManager(
+                                        Profile.getLastUsedRegularProfile());
+                        signinManager.runAfterOperationInProgress(() -> {
+                            if (wipeData) {
+                                signinManager.wipeSyncUserData(() -> {
+                                    onSyncAccepted(mSelectedAccountName, settingsClicked,
+                                            () -> mIsSigninInProgress = false);
+                                });
+                            } else {
+                                onSyncAccepted(mSelectedAccountName, settingsClicked,
+                                        () -> mIsSigninInProgress = false);
+                            }
                         });
                     }
 

@@ -163,7 +163,7 @@ public class SigninCheckerTest {
                     mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         });
         Assert.assertEquals(
-                2, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
+                3, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
@@ -224,9 +224,9 @@ public class SigninCheckerTest {
                     mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         });
 
-        // The check should be done once at activity start-up
+        // The check should be done once at account addition and once at activity start-up.
         Assert.assertEquals(
-                1, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
+                2, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }

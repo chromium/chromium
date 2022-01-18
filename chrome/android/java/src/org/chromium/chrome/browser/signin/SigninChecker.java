@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncUserDataWiper;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
@@ -152,29 +151,31 @@ public class SigninChecker
         if (ChildAccountStatus.isChild(status)) {
             assert childAccount != null;
             mSigninManager.onFirstRunCheckDone();
-            if (mSigninManager.isSyncOptInAllowed()) {
-                Log.d(TAG, "The child account sign-in starts.");
-                final SignInCallback signInCallback = new SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        final SyncService syncService = SyncService.get();
-                        if (syncService != null) {
-                            syncService.setFirstSetupComplete(
-                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+            mSigninManager.runAfterOperationInProgress(() -> {
+                if (mSigninManager.isSyncOptInAllowed()) {
+                    Log.d(TAG, "The child account sign-in starts.");
+                    final SignInCallback signInCallback = new SignInCallback() {
+                        @Override
+                        public void onSignInComplete() {
+                            final SyncService syncService = SyncService.get();
+                            if (syncService != null) {
+                                syncService.setFirstSetupComplete(
+                                        SyncFirstSetupCompleteSource.BASIC_FLOW);
+                            }
+                            ++mNumOfChildAccountChecksDone;
                         }
-                        ++mNumOfChildAccountChecksDone;
-                    }
 
-                    @Override
-                    public void onSignInAborted() {}
-                };
-                SyncUserDataWiper.wipeSyncUserData().then((Void v) -> {
-                    RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
-                    mSigninManager.signinAndEnableSync(
-                            SigninAccessPoint.FORCED_SIGNIN, childAccount, signInCallback);
-                });
-                return;
-            }
+                        @Override
+                        public void onSignInAborted() {}
+                    };
+                    mSigninManager.wipeSyncUserData(() -> {
+                        RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
+                        mSigninManager.signinAndEnableSync(
+                                SigninAccessPoint.FORCED_SIGNIN, childAccount, signInCallback);
+                    });
+                    return;
+                }
+            });
         }
         ++mNumOfChildAccountChecksDone;
     }

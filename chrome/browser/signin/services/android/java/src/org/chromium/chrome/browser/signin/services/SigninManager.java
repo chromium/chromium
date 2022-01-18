@@ -10,6 +10,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -157,7 +158,7 @@ public interface SigninManager {
             @SigninAccessPoint int accessPoint, Account account, @Nullable SignInCallback callback);
 
     /**
-     * Schedules the runnable to be invoked after currently ongoing a sign-in or sign-out operation
+     * Schedules the runnable to be invoked after all sign-in, sign-out, or sync data wipe operation
      * is finished. If there's no operation is progress, posts the callback to the UI thread right
      * away.
      */
@@ -205,4 +206,14 @@ public interface SigninManager {
      * @param primaryAccountId {@link CoreAccountId} of the primary account.
      */
     void reloadAllAccountsFromSystem(CoreAccountId primaryAccountId);
+
+    /**
+     * Wipes the user's bookmarks and sync data.
+     *
+     * Callers should make this call within a runAfterOperationInProgress() call in order to ensure
+     * serialization of wipe operations.
+     *
+     * @param wipeDataCallback A callback which will be called once the data is wiped.
+     */
+    Promise<Void> wipeSyncUserData(Runnable wipeDataCallback);
 }

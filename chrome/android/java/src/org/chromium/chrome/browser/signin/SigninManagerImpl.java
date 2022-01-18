@@ -15,12 +15,17 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
@@ -56,6 +61,8 @@ import java.util.List;
  */
 class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private static final String TAG = "SigninManager";
+    private static final int[] SYNC_DATA_TYPES = {BrowsingDataType.HISTORY, BrowsingDataType.CACHE,
+            BrowsingDataType.COOKIES, BrowsingDataType.PASSWORDS, BrowsingDataType.FORM_DATA};
 
     /**
      * Address of the native Signin Manager android.
@@ -90,6 +97,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      * various sign-out state.
      */
     private @Nullable SignOutState mSignOutState;
+
+    /** Tracks whether deletion of browsing data is in progress. */
+    private boolean mWipeUserDataInProgress;
 
     /**
      * Called by native to create an instance of SigninManager.
@@ -245,9 +255,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      */
     @Override
     public void signin(Account account, @Nullable SignInCallback callback) {
-        AccountInfoServiceProvider.get().getAccountInfoByEmail(account.name).then(accountInfo -> {
-            signinInternal(SignInState.createForSignin(accountInfo, callback));
-        });
+        signinInternal(SignInState.createForSignin(account, callback));
     }
 
     /**
@@ -268,39 +276,36 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     @Override
     public void signinAndEnableSync(@SigninAccessPoint int accessPoint, Account account,
             @Nullable SignInCallback callback) {
-        AccountInfoServiceProvider.get().getAccountInfoByEmail(account.name).then(accountInfo -> {
-            signinInternal(
-                    SignInState.createForSigninAndEnableSync(accessPoint, accountInfo, callback));
-        });
+        signinInternal(SignInState.createForSigninAndEnableSync(accessPoint, account, callback));
     }
 
-    private void signinInternal(SignInState signinState) {
+    private void signinInternal(SignInState signInState) {
         assert isSyncOptInAllowed() : "Sign-in isn't allowed!";
-        assert signinState != null : "SigninState shouldn't be null!";
+        assert signInState != null : "SigninState shouldn't be null!";
+        assert signInState.mCoreAccountInfo == null : "mCoreAccountInfo shouldn't be set!";
 
-        if (mSignInState != null) {
-            Log.w(TAG, "Ignoring sign-in request as another sign-in request is pending.");
-            if (signinState.mCallback != null) signinState.mCallback.onSignInAborted();
-            return;
-        }
+        // The mSignInState must be updated prior to the async processing below, as this indicates
+        // that a signin operation is in progress and prevents other sign in operations from being
+        // started until this one completes (see {@link isOperationInProgress()}).
+        mSignInState = signInState;
+        signInState = null;
 
-        if (mFirstRunCheckIsPending) {
-            Log.w(TAG, "Ignoring sign-in request until the First Run check completes.");
-            if (signinState.mCallback != null) signinState.mCallback.onSignInAborted();
-            return;
-        }
+        AccountInfoServiceProvider.get()
+                .getAccountInfoByEmail(mSignInState.mAccount.name)
+                .then(accountInfo -> {
+                    mSignInState.mCoreAccountInfo = accountInfo;
+                    notifySignInAllowedChanged();
 
-        mSignInState = signinState;
-        notifySignInAllowedChanged();
-
-        if (mSignInState.shouldTurnSyncOn()) {
-            Log.d(TAG, "Checking if account has policy management enabled");
-            fetchAndApplyCloudPolicy(
-                    mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
-        } else {
-            // Sign-in without sync doesn't enforce enterprise policy, so skip that step.
-            finishSignInAfterPolicyEnforced();
-        }
+                    if (mSignInState.shouldTurnSyncOn()) {
+                        Log.d(TAG, "Checking if account has policy management enabled");
+                        fetchAndApplyCloudPolicy(mSignInState.mCoreAccountInfo,
+                                this::finishSignInAfterPolicyEnforced);
+                    } else {
+                        // Sign-in without sync doesn't enforce enterprise policy, so skip that
+                        // step.
+                        finishSignInAfterPolicyEnforced();
+                    }
+                });
     }
 
     /**
@@ -413,29 +418,40 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         }
     }
 
-    /**
-     * Schedules the runnable to be invoked after currently ongoing a sign-in or sign-out operation
-     * is finished. If there's no operation is progress, posts the callback to the UI thread right
-     * away.
-     */
     @Override
     @MainThread
     public void runAfterOperationInProgress(Runnable runnable) {
         ThreadUtils.assertOnUiThread();
-        boolean isOperationInProgress = mSignInState != null || mSignOutState != null;
-        if (isOperationInProgress) {
+        if (isOperationInProgress()) {
             mCallbacksWaitingForPendingOperation.add(runnable);
             return;
         }
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, runnable);
     }
 
+    /**
+     * Whether an operation is in progress for which we should wait before
+     * scheduling users of {@link runAfterOperationInProgress}.
+     */
+    private boolean isOperationInProgress() {
+        ThreadUtils.assertOnUiThread();
+        return mSignInState != null || mSignOutState != null || mWipeUserDataInProgress;
+    }
+
+    /**
+     * Maybe notifies any callbacks registered via runAfterOperationInProgress().
+     *
+     * The callbacks are notified in FIFO order, and each callback is only notified if there is no
+     * outstanding work (either work which was outstanding at the time the callback was added, or
+     * which was scheduled by subsequently dequeued callbacks).
+     */
     private void notifyCallbacksWaitingForOperation() {
         ThreadUtils.assertOnUiThread();
-        for (Runnable callback : mCallbacksWaitingForPendingOperation) {
+        while (!mCallbacksWaitingForPendingOperation.isEmpty()) {
+            if (isOperationInProgress()) return;
+            Runnable callback = mCallbacksWaitingForPendingOperation.remove(0);
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback);
         }
-        mCallbacksWaitingForPendingOperation.clear();
     }
 
     /**
@@ -556,6 +572,47 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(primaryAccountId);
     }
 
+    /**
+     * Wipes the user's bookmarks and sync data.
+     *
+     * @param wipeDataCallback A callback which will be called once the data is wiped.
+     *
+     * TODO(crbug.com/1272911): this function and disableSyncAndWipeData() have very similar
+     * functionality, but with different implementations.  Consider merging them.
+     *
+     * TODO(crbug.com/1272911): add test coverage for this function (including its effect on
+     * notifyCallbacksWaitingForOperation()), after resolving the TODO above.
+     */
+    @Override
+    public Promise<Void> wipeSyncUserData(Runnable wipeDataCallback) {
+        assert !mWipeUserDataInProgress;
+        mWipeUserDataInProgress = true;
+
+        final Promise<Void> promise = new Promise<>();
+
+        final BookmarkModel model = new BookmarkModel();
+        model.finishLoadingBookmarkModel(new Runnable() {
+            @Override
+            public void run() {
+                model.removeAllUserBookmarks();
+                model.destroy();
+                BrowsingDataBridge.getInstance().clearBrowsingData(
+                        new BrowsingDataBridge.OnClearBrowsingDataListener() {
+                            @Override
+                            public void onBrowsingDataCleared() {
+                                assert mWipeUserDataInProgress;
+                                mWipeUserDataInProgress = false;
+                                wipeDataCallback.run();
+                                notifyCallbacksWaitingForOperation();
+                            }
+                        },
+                        SYNC_DATA_TYPES, TimePeriod.ALL_TIME);
+            }
+        });
+
+        return promise;
+    }
+
     private boolean isGooglePlayServicesPresent() {
         return !ExternalAuthUtils.getInstance().isGooglePlayServicesMissing(
                 ContextUtils.getApplicationContext());
@@ -602,39 +659,46 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         final SignInCallback mCallback;
 
         /**
+         * Contains the basic account information, which is available immediately at the start of
+         * the sign-in operation.
+         *
+         */
+        final Account mAccount;
+
+        /**
          * Contains the full Core account info, which can be retrieved only once account seeding is
          * complete
          */
-        final CoreAccountInfo mCoreAccountInfo;
+        @Nullable
+        CoreAccountInfo mCoreAccountInfo;
 
         /**
          * State for the sign-in flow that doesn't enable sync.
          *
-         * @param accountInfo The account to sign in to.
+         * @param account The account to sign in to.
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
-        static SignInState createForSignin(
-                CoreAccountInfo accountInfo, @Nullable SignInCallback callback) {
-            return new SignInState(null, accountInfo, callback);
+        static SignInState createForSignin(Account account, @Nullable SignInCallback callback) {
+            return new SignInState(null, account, callback);
         }
 
         /**
          * State for the sync consent flow.
          *
          * @param accessPoint {@link SigninAccessPoint} that has initiated the sign-in.
-         * @param accountInfo The account to sign in to.
+         * @param account The account to sign in to.
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
         static SignInState createForSigninAndEnableSync(@SigninAccessPoint int accessPoint,
-                CoreAccountInfo accountInfo, @Nullable SignInCallback callback) {
-            return new SignInState(accessPoint, accountInfo, callback);
+                Account account, @Nullable SignInCallback callback) {
+            return new SignInState(accessPoint, account, callback);
         }
 
-        private SignInState(@SigninAccessPoint Integer accessPoint, CoreAccountInfo accountInfo,
+        private SignInState(@SigninAccessPoint Integer accessPoint, Account account,
                 @Nullable SignInCallback callback) {
-            assert accountInfo != null : "CoreAccountInfo must be set and valid to progress.";
+            assert account != null : "Account must be set and valid to progress.";
             mAccessPoint = accessPoint;
-            mCoreAccountInfo = accountInfo;
+            mAccount = account;
             mCallback = callback;
         }
 
