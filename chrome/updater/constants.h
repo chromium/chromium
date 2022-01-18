@@ -200,6 +200,9 @@ constexpr int kErrorFailedToLockPrefsMutex = 1;
 // The server candidate failed to promote itself to active.
 constexpr int kErrorFailedToSwap = 2;
 
+// Client Errors.
+constexpr int kErrorRegistrationFailed = 1;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
