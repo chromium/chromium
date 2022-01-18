@@ -219,22 +219,22 @@ SearchResultTextItem& SearchResultTextItem::operator=(
 
 SearchResultTextItem::~SearchResultTextItem() = default;
 
-SearchResultTextItemType SearchResultTextItem::GetType() {
+SearchResultTextItemType SearchResultTextItem::GetType() const {
   return item_type;
 }
 
-const std::string& SearchResultTextItem::GetText() {
+const std::u16string& SearchResultTextItem::GetText() const {
   DCHECK_EQ(item_type, SearchResultTextItemType::kString);
   return raw_text.value();
 }
 
-SearchResultTextItem& SearchResultTextItem::SetText(std::string text) {
+SearchResultTextItem& SearchResultTextItem::SetText(std::u16string text) {
   DCHECK_EQ(item_type, SearchResultTextItemType::kString);
   raw_text = text;
   return *this;
 }
 
-const SearchResultTags& SearchResultTextItem::GetTextTags() {
+const SearchResultTags& SearchResultTextItem::GetTextTags() const {
   DCHECK_EQ(item_type, SearchResultTextItemType::kString);
   return text_tags.value();
 }
@@ -245,7 +245,7 @@ SearchResultTextItem& SearchResultTextItem::SetTextTags(SearchResultTags tags) {
   return *this;
 }
 
-gfx::ImageSkia SearchResultTextItem::GetIconFromCode() {
+gfx::ImageSkia SearchResultTextItem::GetIconFromCode() const {
   DCHECK_EQ(item_type, SearchResultTextItemType::kIconCode);
   return gfx::ImageSkia();
 }
@@ -256,7 +256,7 @@ SearchResultTextItem& SearchResultTextItem::SetIconCode(int code) {
   return *this;
 }
 
-gfx::ImageSkia SearchResultTextItem::GetIcon() {
+gfx::ImageSkia SearchResultTextItem::GetIcon() const {
   DCHECK_EQ(item_type, SearchResultTextItemType::kCustomIcon);
   return raw_icon.value();
 }

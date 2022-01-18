@@ -393,6 +393,8 @@ struct ASH_PUBLIC_EXPORT SearchResultTag {
     URL = 1 << 0,
     MATCH = 1 << 1,
     DIM = 1 << 2,
+    GREEN = 1 << 3,
+    RED = 1 << 4,
   };
 
   SearchResultTag();
@@ -432,24 +434,24 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   SearchResultTextItem& operator=(const SearchResultTextItem&);
   ~SearchResultTextItem();
 
-  SearchResultTextItemType GetType();
+  SearchResultTextItemType GetType() const;
 
-  const std::string& GetText();
-  SearchResultTextItem& SetText(std::string text);
+  const std::u16string& GetText() const;
+  SearchResultTextItem& SetText(std::u16string text);
 
-  const SearchResultTags& GetTextTags();
+  const SearchResultTags& GetTextTags() const;
   SearchResultTextItem& SetTextTags(SearchResultTags tags);
 
-  gfx::ImageSkia GetIconFromCode();
+  gfx::ImageSkia GetIconFromCode() const;
   SearchResultTextItem& SetIconCode(int icon_code);
 
-  gfx::ImageSkia GetIcon();
+  gfx::ImageSkia GetIcon() const;
   SearchResultTextItem& SetIcon(gfx::ImageSkia icon);
 
  private:
   SearchResultTextItemType item_type;
   // used for type SearchResultTextItemType::kString.
-  absl::optional<std::string> raw_text;
+  absl::optional<std::u16string> raw_text;
   absl::optional<SearchResultTags> text_tags;
   // used for type SearchResultTextItemType::kIconCode.
   absl::optional<int> icon_code;
