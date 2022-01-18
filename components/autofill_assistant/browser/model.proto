@@ -235,6 +235,10 @@ enum ProcessedActionStatusProto {
   // data to be resent.
   RESEND_USER_DATA = 36;
 
+  // The RenderFrameHost does not have a corresponding live RenderFrame, e.g.
+  // the renderer process may have crashed.
+  NO_RENDER_FRAME = 37;
+
   reserved 15, 23, 25, 32;
 }
 

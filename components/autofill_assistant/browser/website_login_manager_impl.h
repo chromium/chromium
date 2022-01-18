@@ -46,9 +46,10 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   void EditPasswordForLogin(const Login& login,
                             const std::string& new_password,
                             base::OnceCallback<void(bool)> callback) override;
-  std::string GeneratePassword(autofill::FormSignature form_signature,
-                               autofill::FieldSignature field_signature,
-                               uint64_t max_length) override;
+  absl::optional<std::string> GeneratePassword(
+      autofill::FormSignature form_signature,
+      autofill::FieldSignature field_signature,
+      uint64_t max_length) override;
 
   void PresaveGeneratedPassword(const Login& login,
                                 const std::string& password,

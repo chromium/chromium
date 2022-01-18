@@ -55,13 +55,23 @@ void GeneratePasswordForFormFieldAction::OnGetFormAndFieldDataForGeneration(
   }
 
   uint64_t max_length = field_data.max_length;
-  std::string password = delegate_->GetWebsiteLoginManager()->GeneratePassword(
-      autofill::CalculateFormSignature(form_data),
-      autofill::CalculateFieldSignatureForField(field_data), max_length);
+  absl::optional<std::string> password =
+      delegate_->GetWebsiteLoginManager()->GeneratePassword(
+          autofill::CalculateFormSignature(form_data),
+          autofill::CalculateFieldSignatureForField(field_data), max_length);
+
+  if (!password) {
+    // In theory, GeneratePassword() could fail for other reasons, but in
+    // practice, the only reason it can return absl::nullopt is if the
+    // RenderFrameHost does not have a live RenderFrame (e.g. the renderer
+    // process crashed).
+    EndAction(ClientStatus(NO_RENDER_FRAME));
+    return;
+  }
 
   delegate_->WriteUserData(base::BindOnce(
       &GeneratePasswordForFormFieldAction::StoreGeneratedPasswordToUserData,
-      weak_ptr_factory_.GetWeakPtr(), memory_key, password, form_data));
+      weak_ptr_factory_.GetWeakPtr(), memory_key, *password, form_data));
 
   EndAction(ClientStatus(ACTION_APPLIED));
 }

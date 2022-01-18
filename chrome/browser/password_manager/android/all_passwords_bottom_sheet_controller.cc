@@ -54,8 +54,10 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
   password_manager::ContentPasswordManagerDriverFactory* factory =
       password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
           web_contents_);
+  auto* focused_frame = web_contents->GetFocusedFrame();
+  CHECK(focused_frame->IsRenderFrameLive());
   password_manager::ContentPasswordManagerDriver* driver =
-      factory->GetDriverForFrame(web_contents_->GetFocusedFrame());
+      factory->GetDriverForFrame(focused_frame);
   driver_ = driver->AsWeakPtr();
   client_ = ChromePasswordManagerClient::FromWebContents(web_contents_);
 }
