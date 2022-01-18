@@ -790,14 +790,16 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocStatusForDisplay) {
   // Check the status of the user's FLoC is correctly returned. This depends
   // on whether the FLoC origin trial feature is enabled, and whether the user
   // has FLoC enabled.
+  // TODO(crbug.com/1287951): User control disabled while OT is not active.
   feature_list()->InitWithFeatures(
       {blink::features::kInterestCohortAPIOriginTrial}, {});
   profile()->GetTestingPrefService()->SetBoolean(
       prefs::kPrivacySandboxFlocEnabled, true);
   profile()->GetTestingPrefService()->SetBoolean(
       prefs::kPrivacySandboxApisEnabled, true);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_ACTIVE),
-            privacy_sandbox_settings()->GetFlocStatusForDisplay());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE),
+      privacy_sandbox_settings()->GetFlocStatusForDisplay());
 
   // The Privacy Sandbox APIs pref & FLoC pref should disable the trial when
   // either is disabled.
@@ -820,9 +822,9 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocStatusForDisplay) {
   feature_list()->Reset();
   feature_list()->InitWithFeatures(
       {}, {blink::features::kInterestCohortAPIOriginTrial});
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_PRIVACY_SANDBOX_FLOC_STATUS_ELIGIBLE_NOT_ACTIVE),
-            privacy_sandbox_settings()->GetFlocStatusForDisplay());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE),
+      privacy_sandbox_settings()->GetFlocStatusForDisplay());
 }
 
 TEST_F(PrivacySandboxSettingsTest, IsFlocIdResettable) {

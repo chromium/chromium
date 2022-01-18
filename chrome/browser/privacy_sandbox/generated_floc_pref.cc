@@ -42,37 +42,13 @@ extensions::settings_private::SetPrefResult GeneratedFlocPref::SetPref(
 
 std::unique_ptr<extensions::api::settings_private::PrefObject>
 GeneratedFlocPref::GetPrefObject() const {
-  auto* privacy_sandbox_pref =
-      profile_->GetPrefs()->FindPreference(prefs::kPrivacySandboxApisEnabled);
-  const bool privacy_sandbox_pref_enabled =
-      privacy_sandbox_pref->GetValue()->GetBool();
-
-  const bool real_floc_pref_enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kPrivacySandboxFlocEnabled);
-
+  // Disable FLoC control while OT not active.
+  // TODO(crbug.com/1287951): Perform cleanup / adjustment as required.
   auto floc_pref_object = std::make_unique<settings_api::PrefObject>();
   floc_pref_object->key = kGeneratedFlocPref;
   floc_pref_object->type = settings_api::PREF_TYPE_BOOLEAN;
-
-  // The generated pref is only enabled if both the Privacy Sandbox APIs pref,
-  // and the real FLoC pref, are both enabled enabled.
-  floc_pref_object->value = std::make_unique<base::Value>(
-      privacy_sandbox_pref_enabled && real_floc_pref_enabled);
-
-  // If the Privacy Sandbox APIs are disabled for any reason (including by
-  // policy), then user control over the generated pref is disabled.
-  floc_pref_object->user_control_disabled =
-      std::make_unique<bool>(!privacy_sandbox_pref_enabled);
-
-  // Management state is completely inherited from the Privacy Sandbox APIs
-  // pref. No management control is exposed over the real FLoC pref, and so
-  // it does not need to be considered.
-  if (!privacy_sandbox_pref->IsUserModifiable()) {
-    floc_pref_object->enforcement =
-        settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
-        floc_pref_object.get(), privacy_sandbox_pref);
-  }
+  floc_pref_object->value = std::make_unique<base::Value>(false);
+  floc_pref_object->user_control_disabled = std::make_unique<bool>(true);
 
   return floc_pref_object;
 }

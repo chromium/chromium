@@ -280,17 +280,8 @@ std::u16string PrivacySandboxSettings::GetFlocResetExplanationForDisplay()
 }
 
 std::u16string PrivacySandboxSettings::GetFlocStatusForDisplay() const {
-  const bool floc_feature_enabled = base::FeatureList::IsEnabled(
-      blink::features::kInterestCohortAPIOriginTrial);
-  const bool floc_setting_enabled = IsFlocAllowed();
-  if (floc_setting_enabled) {
-    return floc_feature_enabled
-               ? l10n_util::GetStringUTF16(
-                     IDS_PRIVACY_SANDBOX_FLOC_STATUS_ACTIVE)
-               : l10n_util::GetStringUTF16(
-                     IDS_PRIVACY_SANDBOX_FLOC_STATUS_ELIGIBLE_NOT_ACTIVE);
-  }
-
+  // FLoC always disabled while OT not active.
+  // TODO(crbug.com/1287951): Perform cleanup / adjustment as required.
   return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE);
 }
 
