@@ -4,7 +4,7 @@
 
 import("//third_party/blink/renderer/extensions/extensions.gni")
 
-blink_extensions_chromeos_sources("cros_window_management") {
+blink_extensions_chromeos_sources("window_management") {
   sources = [
     "cros_window.cc",
     "cros_window.h",
