@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
   // other platforms.
   chrome::ToggleFullscreenToolbar(browser());
 #endif
-  AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
 
   // Now the bookmark bar should show up in regular mode.
   EXPECT_FALSE(browser_view->IsFullscreen());

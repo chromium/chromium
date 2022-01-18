@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, TabChangesAvoidSpuriousFocus) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Create another tab.
-  AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED));
 
   // Begin recording focus changes.
   gfx::NativeWindow window = browser()->window()->GetNativeWindow();
