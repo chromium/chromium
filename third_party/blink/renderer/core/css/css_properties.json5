@@ -4954,7 +4954,7 @@
     {
       name: "-webkit-print-color-adjust",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      independent: false,  # Actually true, but setting it to false saves a precious bit in ComputedStyleBase.
+      independent: false,  // Actually true, but setting it to false saves a precious bit in ComputedStyleBase.
       inherited: true,
       field_template: "keyword",
       keywords: ["economy", "exact"],
