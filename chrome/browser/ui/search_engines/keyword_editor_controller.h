@@ -44,9 +44,9 @@ class KeywordEditorController {
   // Return true if the given |url| can be made the default.
   bool CanMakeDefault(const TemplateURL* url) const;
 
-  // Return true if the given |url| can be removed. A `url` can be removed if it
-  // is a normal entry (non-extension) and is not a prepopulated or default
-  // search engine.
+  // Return true if the given `url` can be removed. A `url` can be removed if it
+  // is a normal entry (non-extension) and is not the current default search
+  // engine.
   bool CanRemove(const TemplateURL* url) const;
 
   // Return true if the given `url` can be activated. A `url` can be activated
@@ -54,8 +54,8 @@ class KeywordEditorController {
   bool CanActivate(const TemplateURL* url) const;
 
   // Return true if the given `url` can be deactivated. A `url` can be
-  // deactivated if it is currently active and is not a prepopulated or default
-  // search engine.
+  // deactivated if it is currently active and is not a prepopulated engine or
+  // the current default search engine.
   bool CanDeactivate(const TemplateURL* url) const;
 
   // Remove the TemplateURL at the specified index in the TableModel.
