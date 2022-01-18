@@ -586,6 +586,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrivacyReview;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPrivacySandboxSettings3;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPushMessagingBackgroundMode;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
