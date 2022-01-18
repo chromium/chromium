@@ -10,12 +10,13 @@ import * as toast from '../../../toast.js';
 import {
   Facing,
   Metadata,
+  PreviewVideo,
   Resolution,
 } from '../../../type.js';
 import * as util from '../../../util.js';
 import {WaitableEvent} from '../../../waitable_event.js';
-import {ModeBase} from './mode_base.js';
 
+import {ModeBase} from './mode_base.js';
 import {
   Photo,
   PhotoFactory,
@@ -47,19 +48,18 @@ export interface PortraitHandler extends PhotoHandler {
  */
 export class Portrait extends Photo {
   constructor(
-      stream: MediaStream,
+      video: PreviewVideo,
       facing: Facing,
       captureResolution: Resolution,
       private readonly portraitHandler: PortraitHandler,
   ) {
-    super(stream, facing, captureResolution, portraitHandler);
+    super(video, facing, captureResolution, portraitHandler);
   }
 
   async start(): Promise<() => Promise<void>> {
     const timestamp = Date.now();
     if (this.crosImageCapture === null) {
-      this.crosImageCapture =
-          new CrosImageCapture(this.stream.getVideoTracks()[0]);
+      this.crosImageCapture = new CrosImageCapture(this.video.getVideoTrack());
     }
 
     let photoSettings: PhotoSettings;
@@ -138,7 +138,7 @@ export class PortraitFactory extends PhotoFactory {
 
   produce(): ModeBase {
     return new Portrait(
-        this.previewStream, this.facing, this.captureResolution,
+        this.previewVideo, this.facing, this.captureResolution,
         this.portraitHandler);
   }
 }

@@ -31,6 +31,7 @@ import {
   ErrorType,
   Facing,
   NoChunkError,
+  PreviewVideo,
   Resolution,
   VideoType,
 } from '../../../type.js';
@@ -141,11 +142,6 @@ export interface VideoHandler {
    */
   playShutterEffect(): void;
 
-  /**
-   * Gets preview video element.
-   */
-  getPreviewVideo(): HTMLVideoElement;
-
   onGifCaptureDone(gifResult: GifResult): Promise<void>;
 
   onVideoCaptureDone(videoResult: VideoResult): Promise<void>;
@@ -207,20 +203,20 @@ export class Video extends ModeBase {
    * @param stream Preview stream.
    */
   constructor(
-      stream: MediaStream,
+      video: PreviewVideo,
       private readonly captureConstraints: StreamConstraints|null,
       captureResolution: Resolution,
       private readonly snapshotResolution: Resolution,
       facing: Facing,
       private readonly handler: VideoHandler,
   ) {
-    super(stream, facing);
+    super(video, facing);
 
     this.captureResolution = (() => {
       if (captureResolution !== null) {
         return captureResolution;
       }
-      const {width, height} = stream.getVideoTracks()[0].getSettings();
+      const {width, height} = video.getVideoSettings();
       return new Resolution(width, height);
     })();
 
@@ -236,9 +232,9 @@ export class Video extends ModeBase {
     }
   }
 
-  updatePreview(stream: MediaStream): void {
+  updatePreview(video: PreviewVideo): void {
     assert(!state.get(state.State.RECORDING));
-    this.stream = stream;
+    this.video = video;
     this.crosImageCapture = new CrosImageCapture(this.getVideoTrack());
   }
 
@@ -259,7 +255,7 @@ export class Video extends ModeBase {
    */
   async isBlobVideoSnapshotEnabled(): Promise<boolean> {
     const deviceOperator = await DeviceOperator.getInstance();
-    const deviceId = this.stream.getVideoTracks()[0].getSettings().deviceId;
+    const {deviceId} = this.video.getVideoSettings();
     return deviceOperator !== null &&
         (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId));
   }
@@ -373,7 +369,7 @@ export class Video extends ModeBase {
     if (this.captureStream !== null) {
       return this.captureStream;
     }
-    return this.stream;
+    return this.video.getStream();
   }
 
   /**
@@ -403,7 +399,7 @@ export class Video extends ModeBase {
         // Blob stream is configured on the original device rather than the
         // virtual one when multi-stream is enabled.
         this.crosImageCapture =
-            new CrosImageCapture(this.stream.getVideoTracks()[0]);
+            new CrosImageCapture(this.video.getVideoTrack());
       } else {
         this.crosImageCapture = new CrosImageCapture(this.getVideoTrack());
       }
@@ -516,7 +512,7 @@ export class Video extends ModeBase {
   private async captureGif(): Promise<GifSaver> {
     // TODO(b:191950622): Grab frames from capture stream when multistream
     // enabled.
-    const video = this.handler.getPreviewVideo();
+    const video = this.video.video;
     let {videoWidth: width, videoHeight: height} = video;
     if (width > GIF_MAX_SIDE || height > GIF_MAX_SIDE) {
       const ratio = GIF_MAX_SIDE / Math.max(width, height);
@@ -640,7 +636,7 @@ export class VideoFactory extends ModeFactory {
       };
     }
     return new Video(
-        this.previewStream, captureConstraints, this.captureResolution,
+        this.previewVideo, captureConstraints, this.captureResolution,
         this.snapshotResolution, this.facing, this.handler);
   }
 }

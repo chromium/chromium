@@ -6,6 +6,7 @@ import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {Point} from '../../../geometry.js';
 import {
   Facing,
+  PreviewVideo,
   Resolution,
 } from '../../../type.js';
 
@@ -52,10 +53,6 @@ class DocumentPhotoHandler implements PhotoHandler {
     this.handler.playShutterEffect();
   }
 
-  waitPreviewReady(): Promise<void> {
-    return this.handler.waitPreviewReady();
-  }
-
   onPhotoError(): void {
     this.handler.onPhotoError();
   }
@@ -70,10 +67,10 @@ class DocumentPhotoHandler implements PhotoHandler {
  */
 export class Scan extends Photo {
   constructor(
-      stream: MediaStream, facing: Facing, captureResolution: Resolution,
+      video: PreviewVideo, facing: Facing, captureResolution: Resolution,
       scanHandler: ScanHandler) {
     super(
-        stream, facing, captureResolution,
+        video, facing, captureResolution,
         new DocumentPhotoHandler(scanHandler));
   }
 }
@@ -93,7 +90,7 @@ export class ScanFactory extends ModeFactory {
 
   produce(): ModeBase {
     return new Scan(
-        this.previewStream,
+        this.previewVideo,
         this.facing,
         this.captureResolution,
         this.handler,

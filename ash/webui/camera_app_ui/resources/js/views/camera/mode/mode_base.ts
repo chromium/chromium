@@ -10,6 +10,7 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
+  PreviewVideo,
   Resolution,
 } from '../../../type.js';
 
@@ -23,11 +24,11 @@ export abstract class ModeBase {
   private capture: Promise<() => Promise<void>>|null = null;
 
   /**
-   * @param stream Stream of current mode.
+   * @param video Preview video.
    * @param facing Camera facing of current mode.
    */
   constructor(
-      protected stream: MediaStream, protected readonly facing: Facing) {}
+      protected video: PreviewVideo, protected readonly facing: Facing) {}
 
   /**
    * Initiates video/photo capture operation.
@@ -89,9 +90,9 @@ export abstract class ModeBase {
   }
 
   /**
-   * Updates preview stream currently in used.
+   * Updates preview video currently in used.
    */
-  abstract updatePreview(stream: MediaStream): void;
+  abstract updatePreview(previewVideo: PreviewVideo): void;
 
   /**
    * Initiates video/photo capture operation under this mode.
@@ -107,6 +108,11 @@ export abstract class ModeBase {
 }
 
 export abstract class ModeFactory {
+  /**
+   * Preview video.
+   */
+  protected previewVideo: PreviewVideo|null = null;
+
   /**
    * Preview stream.
    */
@@ -125,16 +131,12 @@ export abstract class ModeFactory {
       protected readonly constraints: StreamConstraints,
       protected readonly captureResolution: Resolution) {}
 
-  protected get previewStream(): MediaStream {
-    return assertInstanceof(this.stream, MediaStream);
-  }
-
   setFacing(facing: Facing): void {
     this.facing = facing;
   }
 
-  setPreviewStream(stream: MediaStream): void {
-    this.stream = stream;
+  setPreviewVideo(previewVideo: PreviewVideo): void {
+    this.previewVideo = previewVideo;
   }
 
   /**

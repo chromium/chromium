@@ -4,11 +4,12 @@
 
 import {
   Facing,
+  PreviewVideo,
   Resolution,
 } from '../../../type.js';
 import * as util from '../../../util.js';
-import {ModeBase} from './mode_base.js';
 
+import {ModeBase} from './mode_base.js';
 import {
   Photo,
   PhotoFactory,
@@ -49,10 +50,6 @@ class SquarePhotoHandler implements PhotoHandler {
     this.handler.playShutterEffect();
   }
 
-  waitPreviewReady(): Promise<void> {
-    return this.handler.waitPreviewReady();
-  }
-
   onPhotoError(): void {
     this.handler.onPhotoError();
   }
@@ -76,12 +73,12 @@ class SquarePhotoHandler implements PhotoHandler {
  */
 export class Square extends Photo {
   constructor(
-      stream: MediaStream,
+      video: PreviewVideo,
       facing: Facing,
       captureResolution: Resolution,
       handler: PhotoHandler,
   ) {
-    super(stream, facing, captureResolution, new SquarePhotoHandler(handler));
+    super(video, facing, captureResolution, new SquarePhotoHandler(handler));
   }
 }
 
@@ -91,6 +88,6 @@ export class Square extends Photo {
 export class SquareFactory extends PhotoFactory {
   produce(): ModeBase {
     return new Square(
-        this.previewStream, this.facing, this.captureResolution, this.handler);
+        this.previewVideo, this.facing, this.captureResolution, this.handler);
   }
 }

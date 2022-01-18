@@ -15,9 +15,11 @@ import {
 } from '../../../mojo/util.js';
 import * as state from '../../../state.js';
 import {
+  CanceledError,
   Facing,
   Metadata,
   PerfEvent,
+  PreviewVideo,
   Resolution,
 } from '../../../type.js';
 import * as util from '../../../util.js';
@@ -44,8 +46,6 @@ export interface PhotoHandler {
    * Plays UI effect when taking photo.
    */
   playShutterEffect(): void;
-
-  waitPreviewReady(): Promise<void>;
 
   /**
    * Called when error happen in the capture process.
@@ -80,19 +80,17 @@ export class Photo extends ModeBase {
    *     support of setting resolution.
    */
   constructor(
-      stream: MediaStream, facing: Facing,
+      video: PreviewVideo, facing: Facing,
       protected readonly captureResolution: Resolution,
       protected readonly handler: PhotoHandler) {
-    super(stream, facing);
+    super(video, facing);
 
-    this.crosImageCapture =
-        new CrosImageCapture(this.stream.getVideoTracks()[0]);
+    this.crosImageCapture = new CrosImageCapture(this.video.getVideoTrack());
   }
 
-  updatePreview(stream: MediaStream): void {
-    this.stream = stream;
-    this.crosImageCapture =
-        new CrosImageCapture(this.stream.getVideoTracks()[0]);
+  updatePreview(previewVideo: PreviewVideo): void {
+    this.video = previewVideo;
+    this.crosImageCapture = new CrosImageCapture(this.video.getVideoTrack());
   }
 
   async start(): Promise<() => Promise<void>> {
@@ -120,6 +118,34 @@ export class Photo extends ModeBase {
     })();
 
     return async () => this.handler.onPhotoCaptureDone(pendingPhotoResult);
+  }
+
+  private async waitPreviewReady(): Promise<void> {
+    // Chrome use muted state on video track representing no frame input
+    // returned from preview video for a while and call |takePhoto()| with
+    // video track in muted state will fail with |kInvalidStateError| exception.
+    // To mitigate chance of hitting this error, here we ensure frame inputs
+    // from the preview and checked video muted state before taking photo.
+    const track = this.video.getVideoTrack();
+    const videoEl = this.video.video;
+    const waitFrame = async () => {
+      const onReady = new WaitableEvent<boolean>();
+      const callbackId = videoEl.requestVideoFrameCallback(() => {
+        onReady.signal(true);
+      });
+      (async () => {
+        await this.video.onExpired;
+        videoEl.cancelVideoFrameCallback(callbackId);
+        onReady.signal(false);
+      })();
+      const ready = await onReady.wait();
+      return ready;
+    };
+    do {
+      if (!await waitFrame()) {
+        throw new CanceledError('Preview is closed');
+      }
+    } while (track.muted);
   }
 
   private async takePhoto():
@@ -151,7 +177,7 @@ export class Photo extends ModeBase {
       waitForMetadata = new WaitableEvent();
       this.pendingResultForMetadata.push(waitForMetadata);
     }
-    await this.handler.waitPreviewReady();
+    await this.waitPreviewReady();
     const results = await this.crosImageCapture.takePhoto(photoSettings);
     this.handler.playShutterEffect();
     return {
@@ -165,7 +191,7 @@ export class Photo extends ModeBase {
    * @return Promise for the operation.
    */
   async addMetadataObserver(): Promise<void> {
-    if (!this.stream) {
+    if (this.video.isExpired()) {
       return;
     }
 
@@ -198,7 +224,7 @@ export class Photo extends ModeBase {
       this.pendingResultForMetadata.shift()?.signal(parsedMetadata);
     };
 
-    const deviceId = this.stream.getVideoTracks()[0].getSettings().deviceId;
+    const {deviceId} = this.video.getVideoSettings();
     this.metadataObserver = await deviceOperator.addMetadataObserver(
         deviceId, callback, StreamType.JPEG_OUTPUT);
   }
@@ -208,7 +234,7 @@ export class Photo extends ModeBase {
    * @return Promise for the operation.
    */
   async removeMetadataObserver(): Promise<void> {
-    if (!this.stream || this.metadataObserver === null) {
+    if (!this.video.isExpired || this.metadataObserver === null) {
       return;
     }
 
@@ -237,6 +263,6 @@ export class PhotoFactory extends ModeFactory {
 
   produce(): ModeBase {
     return new Photo(
-        this.previewStream, this.facing, this.captureResolution, this.handler);
+        this.previewVideo, this.facing, this.captureResolution, this.handler);
   }
 }

@@ -651,7 +651,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
       assert(this.constraints !== null);
       await this.modes.prepareDevice();
       await this.preview.open(this.constraints);
-      this.modes.current.updatePreview(this.preview.stream);
+      this.modes.current.updatePreview(this.preview.getVideo());
       await this.scanOptions.attachPreview(this.preview.getVideoElement());
     }
   }
@@ -813,10 +813,6 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   playShutterEffect(): void {
     sound.play(dom.get('#sound-shutter', HTMLAudioElement));
     animate.play(this.preview.getVideoElement());
-  }
-
-  waitPreviewReady(): Promise<void> {
-    return this.preview.waitReadyForTakePhoto();
   }
 
   async onGifCaptureDone({name, gifSaver, resolution, duration}: GifResult):
@@ -1121,7 +1117,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
               await this.checkEnablePTZ(c);
               this.options.updateValues(
                   stream, currentDeviceId, this.facingMode);
-              factory.setPreviewStream(stream);
+              factory.setPreviewVideo(this.preview.getVideo());
               factory.setFacing(this.facingMode);
               await this.modes.updateModeSelectionUI(c.deviceId);
               await this.modes.updateMode(

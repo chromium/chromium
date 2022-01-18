@@ -191,6 +191,38 @@ export interface PerfEntry {
 }
 
 /**
+ * A proxy to get preview video or stream with notification of when the video
+ * stream is expired.
+ */
+export class PreviewVideo {
+  private expired = false;
+
+  constructor(
+      readonly video: HTMLVideoElement, readonly onExpired: Promise<void>) {
+    (async () => {
+      await this.onExpired;
+      this.expired = true;
+    })();
+  }
+
+  getStream(): MediaStream {
+    return this.video.srcObject as MediaStream;
+  }
+
+  getVideoTrack(): MediaStreamTrack {
+    return this.getStream().getVideoTracks()[0];
+  }
+
+  getVideoSettings(): MediaTrackSettings {
+    return this.getVideoTrack().getSettings();
+  }
+
+  isExpired(): boolean {
+    return this.expired;
+  }
+}
+
+/**
  * Error reported in testing run.
  */
 export interface ErrorInfo {
