@@ -153,6 +153,11 @@ int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile);
 // missing).
 int GetFieldBitArrayForCreditCard(const autofill::CreditCard* card);
 
+// Resolves |selector|'s references to user data with the actual values.
+// Modifies |selector| in place.
+ClientStatus ResolveSelectorUserData(SelectorProto* selector,
+                                     const UserData* user_data);
+
 }  // namespace user_data
 }  // namespace autofill_assistant
 

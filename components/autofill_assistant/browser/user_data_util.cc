@@ -282,6 +282,29 @@ bool EvaluateNotEmpty(
   return it != mapping.end() && !it->second.empty();
 }
 
+ClientStatus MoveAutofillValueRegexpToTextFilter(
+    const UserData* user_data,
+    SelectorProto::PropertyFilter* value) {
+  if (!value->has_autofill_value_regexp()) {
+    return OkClientStatus();
+  }
+  if (user_data == nullptr) {
+    return ClientStatus(PRECONDITION_FAILED);
+  }
+  const AutofillValueRegexp& autofill_value_regexp =
+      value->autofill_value_regexp();
+  TextFilter text_filter;
+  text_filter.set_case_sensitive(
+      autofill_value_regexp.value_expression_re2().case_sensitive());
+  std::string re2;
+  ClientStatus re2_status =
+      GetFormattedClientValue(autofill_value_regexp, *user_data, &re2);
+  text_filter.set_re2(re2);
+  // Assigning text_filter will clear autofill_value_regexp.
+  *value->mutable_text_filter() = text_filter;
+  return re2_status;
+}
+
 }  // namespace
 
 std::vector<std::string> GetContactValidationErrors(
@@ -780,6 +803,39 @@ int GetFieldBitArrayForCreditCard(const autofill::CreditCard* card) {
   }
 
   return bit_array;
+}
+
+ClientStatus ResolveSelectorUserData(SelectorProto* selector,
+                                     const UserData* user_data) {
+  for (auto& filter : *selector->mutable_filters()) {
+    switch (filter.filter_case()) {
+      case SelectorProto::Filter::kProperty: {
+        ClientStatus filter_status = MoveAutofillValueRegexpToTextFilter(
+            user_data, filter.mutable_property());
+        if (!filter_status.ok()) {
+          return filter_status;
+        }
+        break;
+      }
+      case SelectorProto::Filter::kInnerText:
+      case SelectorProto::Filter::kValue:
+      case SelectorProto::Filter::kPseudoElementContent:
+      case SelectorProto::Filter::kCssStyle:
+      case SelectorProto::Filter::kCssSelector:
+      case SelectorProto::Filter::kEnterFrame:
+      case SelectorProto::Filter::kPseudoType:
+      case SelectorProto::Filter::kBoundingBox:
+      case SelectorProto::Filter::kNthMatch:
+      case SelectorProto::Filter::kLabelled:
+      case SelectorProto::Filter::kMatchCssSelector:
+      case SelectorProto::Filter::kOnTop:
+      case SelectorProto::Filter::FILTER_NOT_SET:
+        break;
+        // Do not add default here. In case a new filter gets added (that may
+        // contain a RegexpFilter) we want this to fail at compilation here.
+    }
+  }
+  return OkClientStatus();
 }
 
 }  // namespace user_data

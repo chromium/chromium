@@ -75,66 +75,6 @@ bool ConvertPseudoType(const PseudoType pseudo_type,
   }
   return false;
 }
-
-ClientStatus MoveAutofillValueRegexpToTextFilter(
-    const UserData* user_data,
-    SelectorProto::PropertyFilter* value) {
-  if (!value->has_autofill_value_regexp()) {
-    return OkClientStatus();
-  }
-  if (user_data == nullptr) {
-    return ClientStatus(PRECONDITION_FAILED);
-  }
-  const AutofillValueRegexp& autofill_value_regexp =
-      value->autofill_value_regexp();
-  TextFilter text_filter;
-  text_filter.set_case_sensitive(
-      autofill_value_regexp.value_expression_re2().case_sensitive());
-  std::string re2;
-  ClientStatus re2_status = user_data::GetFormattedClientValue(
-      autofill_value_regexp, *user_data, &re2);
-  text_filter.set_re2(re2);
-  // Assigning text_filter will clear autofill_value_regexp.
-  *value->mutable_text_filter() = text_filter;
-  return re2_status;
-}
-
-ClientStatus GetUserDataResolvedSelector(const Selector& selector,
-                                         const UserData* user_data,
-                                         SelectorProto* out_selector) {
-  SelectorProto copy = selector.proto;
-  for (auto& filter : *copy.mutable_filters()) {
-    switch (filter.filter_case()) {
-      case SelectorProto::Filter::kProperty: {
-        ClientStatus filter_status = MoveAutofillValueRegexpToTextFilter(
-            user_data, filter.mutable_property());
-        if (!filter_status.ok()) {
-          return filter_status;
-        }
-        break;
-      }
-      case SelectorProto::Filter::kInnerText:
-      case SelectorProto::Filter::kValue:
-      case SelectorProto::Filter::kPseudoElementContent:
-      case SelectorProto::Filter::kCssStyle:
-      case SelectorProto::Filter::kCssSelector:
-      case SelectorProto::Filter::kEnterFrame:
-      case SelectorProto::Filter::kPseudoType:
-      case SelectorProto::Filter::kBoundingBox:
-      case SelectorProto::Filter::kNthMatch:
-      case SelectorProto::Filter::kLabelled:
-      case SelectorProto::Filter::kMatchCssSelector:
-      case SelectorProto::Filter::kOnTop:
-      case SelectorProto::Filter::FILTER_NOT_SET:
-        break;
-        // Do not add default here. In case a new filter gets added (that may
-        // contain a RegexpFilter) we want this to fail at compilation here.
-    }
-  }
-  *out_selector = copy;
-  return OkClientStatus();
-}
-
 }  // namespace
 
 ElementFinder::Result::Result() = default;
@@ -170,8 +110,9 @@ void ElementFinder::Start(const Result& start_element, Callback callback) {
     return;
   }
 
+  selector_proto_ = selector_.proto;
   ClientStatus resolve_status =
-      GetUserDataResolvedSelector(selector_, user_data_, &selector_proto_);
+      user_data::ResolveSelectorUserData(&selector_proto_, user_data_);
   if (!resolve_status.ok()) {
     SendErrorResult(resolve_status);
     return;

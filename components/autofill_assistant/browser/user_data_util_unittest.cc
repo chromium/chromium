@@ -21,6 +21,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
@@ -1511,6 +1512,75 @@ TEST_F(UserDataUtilTextValueTest, GetCreditCardFieldBitArray) {
           Metrics::AutofillAssistantCreditCardFields::MASKED |
           Metrics::AutofillAssistantCreditCardFields::VALID_NUMBER,
       GetFieldBitArrayForCreditCard(&masked));
+}
+
+TEST_F(UserDataUtilTextValueTest, ResolveSelectorUserData) {
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  autofill::test::SetProfileInfo(&contact, "Jo.h*n", /* middle name */ "",
+                                 "Doe", "", "", "", "", "", "", "", "", "");
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
+
+  SelectorProto selector;
+  selector.add_filters()->set_css_selector("#test");
+
+  auto* filter = selector.add_filters();
+  auto* value = filter->mutable_property()->mutable_autofill_value_regexp();
+  value->mutable_profile()->set_identifier("contact");
+  auto* expression =
+      value->mutable_value_expression_re2()->mutable_value_expression();
+  expression->add_chunk()->set_text("My name is ");
+  expression->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_LAST));
+  expression->add_chunk()->set_text(", ");
+  expression->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_FIRST));
+  expression->add_chunk()->set_text(" ");
+  expression->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_LAST));
+
+  selector.add_filters()->mutable_enter_frame();
+  selector.add_filters()->mutable_nth_match()->set_index(0);
+  SelectorProto copy = selector;
+
+  ClientStatus status = ResolveSelectorUserData(&selector, &user_data_);
+
+  ASSERT_TRUE(status.ok());
+  ASSERT_EQ(selector.filters(1).property().text_filter().re2(),
+            "My name is Doe, Jo\\.h\\*n Doe");
+  ASSERT_EQ(selector.filters().size(), copy.filters().size());
+
+  // Other filters should remain unchanged
+  ASSERT_EQ(selector.filters(0), copy.filters(0));
+  ASSERT_EQ(selector.filters(2), copy.filters(2));
+  ASSERT_EQ(selector.filters(3), copy.filters(3));
+}
+
+TEST_F(UserDataUtilTextValueTest, ResolveSelectorUserDataError) {
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  autofill::test::SetProfileInfo(&contact, "Jo.h*n", /* middle name */ "",
+                                 "Doe", "", "", "", "", "", "", "", "", "");
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
+
+  SelectorProto selector;
+  selector.add_filters()->set_css_selector("#test");
+
+  auto* filter = selector.add_filters();
+  auto* value = filter->mutable_property()->mutable_autofill_value_regexp();
+  value->mutable_profile()->set_identifier("contact");
+  auto* expression =
+      value->mutable_value_expression_re2()->mutable_value_expression();
+  expression->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE));
+
+  ClientStatus status = ResolveSelectorUserData(&selector, &user_data_);
+
+  ASSERT_FALSE(status.ok());
 }
 
 }  // namespace
