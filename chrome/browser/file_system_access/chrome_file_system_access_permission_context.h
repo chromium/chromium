@@ -198,7 +198,7 @@ class ChromeFileSystemAccessPermissionContext
   // An origin can only specify up to `max_ids_per_origin_` custom IDs per
   // origin (not including the default ID). If this limit is exceeded, evict
   // using LRU.
-  void MaybeEvictEntries(std::unique_ptr<base::Value>& value);
+  void MaybeEvictEntries(base::Value& value);
 
   // Schedules triggering all open windows to update their File System Access
   // usage indicator icon. Multiple calls to this method can result in only a

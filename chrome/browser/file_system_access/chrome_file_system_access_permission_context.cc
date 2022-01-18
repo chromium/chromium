@@ -1181,15 +1181,15 @@ void ChromeFileSystemAccessPermissionContext::
 }
 
 void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
-    std::unique_ptr<base::Value>& value) {
-  if (!value->is_dict()) {
-    value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+    base::Value& value) {
+  if (!value.is_dict()) {
+    value = base::Value(base::Value::Type::DICTIONARY);
     return;
   }
 
   std::vector<std::pair<base::Time, std::string>> entries;
-  entries.reserve(value->DictSize());
-  for (auto entry : value->DictItems()) {
+  entries.reserve(value.DictSize());
+  for (auto entry : value.DictItems()) {
     // Don't evict the default ID.
     if (entry.first == kDefaultLastPickedDirectoryKey)
       continue;
@@ -1209,7 +1209,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
   base::ranges::sort(entries);
   size_t entries_to_remove = entries.size() - max_ids_per_origin_;
   for (size_t i = 0; i < entries_to_remove; ++i) {
-    bool did_remove_entry = value->RemoveKey(entries[i].second);
+    bool did_remove_entry = value.RemoveKey(entries[i].second);
     DCHECK(did_remove_entry);
   }
 }
@@ -1219,14 +1219,12 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const std::string& id,
     const base::FilePath& path,
     const PathType type) {
-  std::unique_ptr<base::Value> value =
-      content_settings::ToNullableUniquePtrValue(
-          content_settings()->GetWebsiteSetting(
-              origin.GetURL(), origin.GetURL(),
-              ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
-              /*info=*/nullptr));
-  if (!value)
-    value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  base::Value value = content_settings()->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+      /*info=*/nullptr);
+  if (!value.is_dict())
+    value = base::Value(base::Value::Type::DICTIONARY);
 
   // Create an entry into the nested dictionary.
   base::Value entry(base::Value::Type::DICTIONARY);
@@ -1234,32 +1232,29 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
   entry.SetIntKey(kPathTypeKey, static_cast<int>(type));
   entry.SetKey(kTimestampKey, base::TimeToValue(clock_->Now()));
 
-  value->SetKey(GenerateLastPickedDirectoryKey(id), std::move(entry));
+  value.SetKey(GenerateLastPickedDirectoryKey(id), std::move(entry));
 
   MaybeEvictEntries(value);
 
   content_settings_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
-      base::Value::FromUniquePtrValue(std::move(value)));
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, std::move(value));
 }
 
 ChromeFileSystemAccessPermissionContext::PathInfo
 ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id) {
-  std::unique_ptr<base::Value> value =
-      content_settings::ToNullableUniquePtrValue(
-          content_settings()->GetWebsiteSetting(
-              origin.GetURL(), origin.GetURL(),
-              ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
-              /*info=*/nullptr));
+  base::Value value = content_settings()->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+      /*info=*/nullptr);
 
   PathInfo path_info;
-  if (!value)
+  if (!value.is_dict())
     return path_info;
 
-  auto* entry = value->FindDictKey(GenerateLastPickedDirectoryKey(id));
+  auto* entry = value.FindDictKey(GenerateLastPickedDirectoryKey(id));
   if (!entry)
     return path_info;
 
