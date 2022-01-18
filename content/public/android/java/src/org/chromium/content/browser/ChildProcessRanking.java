@@ -300,6 +300,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             return;
         }
 
+        assert right >= left;
         final int gap = right - left;
 
         // If there is a large enough gap, place connection close to the end. This is a heuristic
@@ -368,7 +369,8 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
                     throw new RuntimeException("Not in low rank group " + connection);
                 }
                 if (connection.connection.getImportanceInGroup() <= importance) {
-                    throw new RuntimeException("Wrong group importance order " + connection);
+                    throw new RuntimeException("Wrong group importance order " + connection + " "
+                            + connection.connection.getImportanceInGroup() + " " + importance);
                 }
                 importance = connection.connection.getImportanceInGroup();
             } else {

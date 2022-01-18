@@ -767,14 +767,15 @@ public class ChildProcessConnection {
 
     public void updateGroupImportance(int group, int importanceInGroup) {
         assert isRunningOnLauncherThread();
-        if (!isConnected()) return;
         assert !mUnbound;
         assert mWaivedBinding.isBound();
         assert group != 0 || importanceInGroup == 0;
         if (mGroup != group || mImportanceInGroup != importanceInGroup) {
             mGroup = group;
             mImportanceInGroup = importanceInGroup;
-            mWaivedBinding.updateGroupImportance(group, importanceInGroup);
+            if (isConnected()) {
+                mWaivedBinding.updateGroupImportance(group, importanceInGroup);
+            }
         }
     }
 
