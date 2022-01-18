@@ -15,7 +15,8 @@
   #inclusive-ancestor-slotted-before,
   #inclusive-ancestor-host-before,
   #inclusive-ancestor-part-before,
-  #inclusive-ancestor-inner-part {
+  #inclusive-ancestor-inner-part,
+  #inclusive-ancestor-slot-fallback {
     width: 400px;
     container-type: inline-size;
   }
@@ -210,6 +211,23 @@
   </div>
 </div>
 
+<div id="inclusive-ancestor-slot-fallback">
+  <div><template shadowroot="open">
+    <style>
+      div {
+        width: 200px;
+        container-type: inline-size;
+      }
+      @container size(width = 200px) {
+        #t10 { color: green; }
+      }
+    </style>
+    <div>
+      <slot><span id="t10"></span></slot>
+    </div>
+  </template></div>
+</div>
+
 <script>
   setup(() => assert_implements_container_queries());
 
@@ -261,4 +279,9 @@
     const t9 = innerhost.shadowRoot.querySelector("#t9");
     assert_equals(getComputedStyle(t9).color, green);
   }, "Match container for ::part selector's originating element tree for exportparts");
+
+  test(() => {
+    const t10 = document.querySelector("#inclusive-ancestor-slot-fallback > div").shadowRoot.querySelector("#t10");
+    assert_equals(getComputedStyle(t10).color, green);
+  }, "Match container for slot light tree child fallback");
 </script>
