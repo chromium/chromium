@@ -244,17 +244,16 @@ inline bool IsTextControl(const Node* node) {
   return node && IsTextControl(*node);
 }
 
-// We can't use DEFINE_TYPE_CASTS for TextControl because macro
-// names and the destination type name are not matched.
-// e.g. ToTextControl() returns TextControlElement.
+// ToTextControl() is stricter than To<TextControlElement>(). ToTextControl()
+// does not accept HTMLInputElement with non-text types.
 #define DEFINE_TEXT_CONTROL_CASTS(Type, ArgType)                              \
   inline Type* ToTextControl(ArgType* node) {                                 \
-    SECURITY_DCHECK(!node || IsTextControl(*node));                           \
-    return static_cast<Type*>(node);                                          \
+    DCHECK(!node || IsTextControl(*node));                                    \
+    return To<TextControlElement>(node);                                      \
   }                                                                           \
   inline Type& ToTextControl(ArgType& node) {                                 \
-    SECURITY_DCHECK(IsTextControl(node));                                     \
-    return static_cast<Type&>(node);                                          \
+    DCHECK(IsTextControl(node));                                              \
+    return To<TextControlElement>(node);                                      \
   }                                                                           \
   inline Type* ToTextControlOrNull(ArgType* node) {                           \
     return node && IsTextControl(*node) ? static_cast<Type*>(node) : nullptr; \
