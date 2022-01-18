@@ -231,6 +231,10 @@ enum ProcessedActionStatusProto {
   // The requested value expression resulted in an empty string.
   EMPTY_VALUE_EXPRESSION_RESULT = 35;
 
+  // The RenderFrameHost does not have a corresponding live RenderFrame, e.g.
+  // the renderer process may have crashed.
+  NO_RENDER_FRAME = 37;
+
   reserved 15, 23, 25, 32;
 }
 

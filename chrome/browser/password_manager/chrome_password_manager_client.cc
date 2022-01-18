@@ -501,6 +501,8 @@ void ChromePasswordManagerClient::GeneratePassword(
 #else
   password_manager::ContentPasswordManagerDriver* content_driver =
       driver_factory_->GetDriverForFrame(web_contents()->GetFocusedFrame());
+  if (!content_driver)
+    return;
 #endif
   // Using unretained pointer is safe because |this| outlives
   // ContentPasswordManagerDriver that holds the connection.
@@ -999,6 +1001,9 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   if (PasswordGenerationController::AllowedForWebContents(web_contents())) {
     PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(
         password_generation_driver_receivers_.GetCurrentTargetFrame());
+    // This method is called over Mojo via a RenderFrameHostReceiverSet; the
+    // current target frame must be live.
+    DCHECK(driver);
 
     PasswordGenerationController* generation_controller =
         PasswordGenerationController::GetIfExisting(web_contents());
@@ -1015,6 +1020,9 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   password_manager::ContentPasswordManagerDriver* driver =
       driver_factory_->GetDriverForFrame(
           password_generation_driver_receivers_.GetCurrentTargetFrame());
+  // This method is called over Mojo via a RenderFrameHostReceiverSet; the
+  // current target frame must be live.
+  DCHECK(driver);
 
   // Attempt to show the autofill dropdown UI first.
   gfx::RectF element_bounds_in_top_frame_space =
@@ -1039,6 +1047,9 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
     const std::u16string& password_value) {
   auto* driver = driver_factory_->GetDriverForFrame(
       password_generation_driver_receivers_.GetCurrentTargetFrame());
+  // This method is called over Mojo via a RenderFrameHostReceiverSet; the
+  // current target frame must be live.
+  DCHECK(driver);
   gfx::RectF element_bounds_in_screen_space =
       GetBoundsInScreenSpace(TransformToRootCoordinates(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
@@ -1073,6 +1084,9 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
 
   PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(
       password_generation_driver_receivers_.GetCurrentTargetFrame());
+  // This method is called over Mojo via a RenderFrameHostReceiverSet; the
+  // current target frame must be live.
+  DCHECK(driver);
   password_manager_.OnPresaveGeneratedPassword(
       driver,
       password_manager::GetFormWithFrameAndFormMetaData(
@@ -1085,6 +1099,9 @@ void ChromePasswordManagerClient::PasswordNoLongerGenerated(
     const autofill::FormData& form_data) {
   PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(
       password_generation_driver_receivers_.GetCurrentTargetFrame());
+  // This method is called over Mojo via a RenderFrameHostReceiverSet; the
+  // current target frame must be live.
+  DCHECK(driver);
   password_manager_.OnPasswordNoLongerGenerated(
       driver, password_manager::GetFormWithFrameAndFormMetaData(
                   password_generation_driver_receivers_.GetCurrentTargetFrame(),
