@@ -14,7 +14,7 @@ const RECT_COLOR = 'rgba(249, 171, 0, 0.8)';
  * orientation.
  * @return The rotated [x, y].
  */
-function rotate(x: number, y: number, orientation: number): number[] {
+function rotate(x: number, y: number, orientation: number): [number, number] {
   switch (orientation) {
     case 0:
       return [x, y];
