@@ -84,19 +84,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="XR.WebXR.ReferenceSpace.Requested" enum="XRReferenceSpaceType"
-    expires_after="2021-03-15">
-  <obsolete>
-    Removed 03/2021.
-  </obsolete>
-  <owner>alcooper@chromium.org</owner>
-  <owner>xr-dev@chromium.org</owner>
-  <summary>
-    Records which reference space was requested when a site calls
-    XRSession.requestReferenceSpace().
-  </summary>
-</histogram>
-
 <histogram name="XR.WebXR.ReferenceSpace.Succeeded" enum="XRReferenceSpaceType"
     expires_after="2022-06-05">
   <owner>alcooper@chromium.org</owner>
