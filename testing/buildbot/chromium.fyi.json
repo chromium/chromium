@@ -27962,11 +27962,6 @@
       }
     ]
   },
-  "ios-catalyst": {
-    "additional_compile_targets": [
-      "form_activity_tab_helper_fuzzer"
-    ]
-  },
   "ios-reclient": {
     "additional_compile_targets": [
       "all"

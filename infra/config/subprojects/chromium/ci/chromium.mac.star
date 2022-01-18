@@ -182,6 +182,24 @@ ci.thin_tester(
 )
 
 ios_builder(
+    # We don't have necessary capacity to run this configuration in CQ, but it
+    # is part of the main waterfall
+    name = "ios-catalyst",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "ios|default",
+            short_name = "ctl",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.mac",
+            short_name = "ctl",
+        ),
+    ],
+)
+
+ios_builder(
     name = "ios-device",
     console_view_entry = [
         consoles.console_view_entry(
