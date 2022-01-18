@@ -498,7 +498,7 @@ public class ChromeProvidedSharingOptionsProvider {
                             mActivity, mShareParams.getFileUris().get(0), (bitmap) -> {
                                 SaveBitmapDelegate saveBitmapDelegate = new SaveBitmapDelegate(
                                         mActivity, bitmap, R.string.save_image_filename_prefix,
-                                        null, mTabProvider.get().getWindowAndroid());
+                                        null, mShareParams.getWindow());
                                 saveBitmapDelegate.save();
                             });
                 })
