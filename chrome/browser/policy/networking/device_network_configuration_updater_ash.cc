@@ -92,7 +92,7 @@ void DeviceNetworkConfigurationUpdaterAsh::Init() {
   // allowed is the Device Policy. If there is no Device Policy, then
   // data roaming should be allowed if this is a Cellular First device.
   if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged() &&
-      chromeos::switches::IsCellularFirstDevice()) {
+      ash::switches::IsCellularFirstDevice()) {
     network_device_handler_->SetCellularPolicyAllowRoaming(
         /*policy_allow_roaming=*/true);
   } else {

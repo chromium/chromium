@@ -5839,7 +5839,7 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
     SSLUITestNoCert::SetUpCommandLine(command_line);
     // Don't require policy for our sessions - this is required so the policy
     // code knows not to expect cached policy for the secondary profile.
-    command_line->AppendSwitchASCII(chromeos::switches::kProfileRequiresPolicy,
+    command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                     "false");
   }
 

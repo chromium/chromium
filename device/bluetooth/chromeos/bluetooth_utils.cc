@@ -73,7 +73,7 @@ BluetoothAdapter::DeviceList GetLimitedNumDevices(
 BluetoothAdapter::DeviceList FilterUnknownDevices(
     const BluetoothAdapter::DeviceList& devices) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::switches::IsUnfilteredBluetoothDevicesEnabled())
+  if (ash::switches::IsUnfilteredBluetoothDevicesEnabled())
     return devices;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -168,7 +168,7 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
     return false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::switches::IsUnfilteredBluetoothDevicesEnabled())
+  if (ash::switches::IsUnfilteredBluetoothDevicesEnabled())
     return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

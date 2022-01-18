@@ -80,7 +80,7 @@ class DefaultDelegate : public PlatformVerificationFlow::Delegate {
   bool IsInSupportedMode() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     return !command_line->HasSwitch(chromeos::switches::kSystemDevMode) ||
-           command_line->HasSwitch(chromeos::switches::kAllowRAInDevMode);
+           command_line->HasSwitch(switches::kAllowRAInDevMode);
   }
 };
 

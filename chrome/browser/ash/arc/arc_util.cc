@@ -365,7 +365,7 @@ bool SetArcPlayStoreEnabledForProfile(Profile* profile, bool enabled) {
   if (IsArcPlayStoreEnabledPreferenceManagedForProfile(profile)) {
     if (enabled && !IsArcPlayStoreEnabledForProfile(profile)) {
       LOG(WARNING) << "Attempt to enable disabled by policy ARC.";
-      if (chromeos::switches::IsTabletFormFactor()) {
+      if (ash::switches::IsTabletFormFactor()) {
         VLOG(1) << "Showing contact admin dialog managed user of tablet form "
                    "factor devices.";
         base::ThreadTaskRunnerHandle::Get()->PostTask(

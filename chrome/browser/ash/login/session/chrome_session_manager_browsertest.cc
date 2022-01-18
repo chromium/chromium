@@ -349,12 +349,11 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitch(switches::kGuestSession);
     command_line->AppendSwitch(::switches::kIncognito);
-    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "hash");
+    command_line->AppendSwitchASCII(switches::kLoginProfile, "hash");
     command_line->AppendSwitchASCII(
-        ash::switches::kLoginUser,
-        user_manager::GuestAccountId().GetUserEmail());
+        switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
   }
 
   // Test instance parameters.

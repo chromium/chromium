@@ -196,7 +196,7 @@ bool CrosSettings::IsUserAllowlisted(
     bool* wildcard_match,
     const absl::optional<user_manager::UserType>& user_type) const {
   // Skip allowlist check for tests.
-  if (chromeos::switches::ShouldSkipOobePostLogin()) {
+  if (switches::ShouldSkipOobePostLogin()) {
     return true;
   }
 

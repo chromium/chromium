@@ -173,7 +173,7 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
   // manually injected policy even though the profile itself is synchronously
   // initialized.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kWaitForInitialPolicyFetchForTest)) {
+          ash::switches::kWaitForInitialPolicyFetchForTest)) {
     waiting_for_policy_fetch_ = true;
   }
 
@@ -253,7 +253,7 @@ void UserCloudPolicyManagerAsh::Connect(
     // never be set (because we can't wait).
     CHECK(!waiting_for_policy_fetch_ ||
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              chromeos::switches::kWaitForInitialPolicyFetchForTest));
+              ash::switches::kWaitForInitialPolicyFetchForTest));
     if (!client()->is_registered() &&
         enforcement_type_ != PolicyEnforcement::kPolicyOptional) {
       // We expected to load policy, but we don't have policy, so exit the
@@ -559,7 +559,7 @@ void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
     // any of those flags set at startup anyway for ephemeral sessions.
     base::CommandLine command_line =
         base::CommandLine(base::CommandLine::NO_PROGRAM);
-    command_line.AppendSwitchASCII(chromeos::switches::kProfileRequiresPolicy,
+    command_line.AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                    policy_required ? "true" : "false");
     base::CommandLine::StringVector flags;
     flags.assign(command_line.argv().begin() + 1, command_line.argv().end());
@@ -590,7 +590,7 @@ void UserCloudPolicyManagerAsh::GetChromePolicy(PolicyMap* policy_map) {
 void UserCloudPolicyManagerAsh::FetchPolicyOAuthToken() {
   // By-pass token fetching for test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableGaiaServices)) {
+          ash::switches::kDisableGaiaServices)) {
     OnOAuth2PolicyTokenFetched(
         "fake_policy_token",
         GoogleServiceAuthError(GoogleServiceAuthError::NONE));
@@ -623,7 +623,7 @@ void UserCloudPolicyManagerAsh::FetchPolicyOAuthToken() {
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kWaitForInitialPolicyFetchForTest)) {
+          ash::switches::kWaitForInitialPolicyFetchForTest)) {
     // Some tests don't want to complete policy initialization until they have
     // manually injected policy. Do not treat this as a policy fetch error.
     return;

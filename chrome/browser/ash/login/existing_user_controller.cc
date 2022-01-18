@@ -219,7 +219,7 @@ bool IsUpdateRequiredDeadlineReached() {
 
 bool IsTestingMigrationUI() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kTestEncryptionMigrationUI);
+      switches::kTestEncryptionMigrationUI);
 }
 
 bool ShouldForceDircrypto(const AccountId& account_id) {
@@ -287,7 +287,7 @@ absl::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
           user_context.GetAccountId()) ==
           user_manager::ProfileRequiresPolicy::kPolicyRequired ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kProfileRequiresPolicy);
+          switches::kProfileRequiresPolicy);
 
   // Force-migrate all home directories if the user is known to have enterprise
   // policy, otherwise ask the user.

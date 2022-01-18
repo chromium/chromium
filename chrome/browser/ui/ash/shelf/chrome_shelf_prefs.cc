@@ -113,7 +113,7 @@ struct ComparePinInfo {
 // This is required because tablet form factor devices do not sync app
 // positions and pin preferences.
 const std::string GetShelfDefaultPinLayoutPref() {
-  if (chromeos::switches::IsTabletFormFactor())
+  if (ash::switches::IsTabletFormFactor())
     return prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor;
 
   return prefs::kShelfDefaultPinLayoutRolls;
@@ -130,7 +130,7 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
     return true;
 
   // Tablet form-factor devices do not have position sync.
-  if (chromeos::switches::IsTabletFormFactor())
+  if (ash::switches::IsTabletFormFactor())
     return true;
 
   const syncer::SyncUserSettings* settings = sync_service->GetUserSettings();

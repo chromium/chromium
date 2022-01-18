@@ -871,7 +871,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The browser will be launched after the user logs in.
-  if (command_line.HasSwitch(chromeos::switches::kLoginManager))
+  if (command_line.HasSwitch(ash::switches::kLoginManager))
     silent_launch = true;
 
   if (chrome::IsRunningInForcedAppMode()) {

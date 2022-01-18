@@ -555,7 +555,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
   // Note that while this applies to the whole sign-in profile / lock screen
   // profile, client certificates will only be selected for the StoragePartition
   // currently used in the sign-in frame (see SigninPartitionManager).
-  if (chromeos::switches::IsSigninFrameClientCertsEnabled() &&
+  if (ash::switches::IsSigninFrameClientCertsEnabled() &&
       (ash::ProfileHelper::IsSigninProfile(profile_) ||
        ash::ProfileHelper::IsLockScreenProfile(profile_))) {
     use_system_key_slot = true;

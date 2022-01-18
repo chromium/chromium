@@ -1789,7 +1789,7 @@ class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
   void SetUp() override {
     // We need to simulate the real on-device behavior for some tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kForceSystemCompositorMode);
+        switches::kForceSystemCompositorMode);
     TabletModeControllerTest::SetUp();
     // PowerManagerClient callback is a posted task.
     base::RunLoop().RunUntilIdle();

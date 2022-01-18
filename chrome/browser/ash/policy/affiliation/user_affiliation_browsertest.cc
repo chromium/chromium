@@ -135,10 +135,10 @@ class UserAffiliationBrowserTest
       const cryptohome::AccountIdentifier cryptohome_id =
           cryptohome::CreateAccountIdentifierFromAccountId(
               affiliation_mixin_.account_id());
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginUser,
+      command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                       cryptohome_id.account_id());
       command_line->AppendSwitchASCII(
-          chromeos::switches::kLoginProfile,
+          ash::switches::kLoginProfile,
           chromeos::UserDataAuthClient::GetStubSanitizedUsername(
               cryptohome_id));
     }

@@ -1887,7 +1887,7 @@ TEST_P(ArcAppModelBuilderTest, ForceCacheIcons) {
 
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kArcGeneratePlayAutoInstall);
+      ash::switches::kArcGeneratePlayAutoInstall);
 
   const std::string app_id = ArcAppTest::GetAppId(fake_apps()[0]);
 
@@ -2358,7 +2358,7 @@ TEST_P(ArcPlayStoreAppTest, StartPaiDisabled) {
 
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kArcDisablePlayAutoInstall);
+      ash::switches::kArcDisablePlayAutoInstall);
 
   arc::ArcSessionManager* session_manager = arc::ArcSessionManager::Get();
   ASSERT_TRUE(session_manager);
@@ -3309,7 +3309,7 @@ TEST_P(ArcAppModelBuilderTest, PackageSyncableServiceEnabled) {
 TEST_P(ArcAppModelBuilderTest, PackageSyncableServiceDisabled) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kArcDisableAppSync);
+      ash::switches::kArcDisableAppSync);
   EXPECT_FALSE(
       SyncServiceFactory::GetAsSyncServiceImplForProfile(profile_.get())
           ->GetRegisteredDataTypesForTest()

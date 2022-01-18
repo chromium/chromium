@@ -248,7 +248,7 @@ TEST_F(ArcAppInstallEventLogCollectorTest, LoginTypes) {
     // Check login after restart. No log is expected.
     ArcAppInstallEventLogCollector collector(delegate(), profile(), packages_);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kLoginUser);
+        ash::switches::kLoginUser);
     collector.OnLogin();
     EXPECT_EQ(1, delegate()->add_for_all_count());
   }

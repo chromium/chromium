@@ -81,12 +81,11 @@ const CommandLinePrefStore::BooleanSwitchToPreferenceMapEntry
         {safe_browsing::switches::kSbEnableEnhancedProtection,
          prefs::kSafeBrowsingEnhanced, true},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        {chromeos::switches::kEnableTouchpadThreeFingerClick,
+        {ash::switches::kEnableTouchpadThreeFingerClick,
          prefs::kEnableTouchpadThreeFingerClick, true},
         {switches::kEnableUnifiedDesktop,
          prefs::kUnifiedDesktopEnabledByDefault, true},
-        {chromeos::switches::kEnableCastReceiver, prefs::kCastReceiverEnabled,
-         true},
+        {ash::switches::kEnableCastReceiver, prefs::kCastReceiverEnabled, true},
 #endif
         {switches::kEnableLocalSyncBackend,
          syncer::prefs::kEnableLocalSyncBackend, true},

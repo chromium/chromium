@@ -284,12 +284,12 @@ browser_util::InitialBrowserAction GetInitialBrowserAction() {
 
 bool IsKeepAliveDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kDisableLacrosKeepAliveForTesting);
+      ash::switches::kDisableLacrosKeepAliveForTesting);
 }
 
 bool IsLoginLacrosOpeningDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kDisableLoginLacrosOpening);
+      ash::switches::kDisableLoginLacrosOpening);
 }
 
 }  // namespace
@@ -341,7 +341,7 @@ BrowserManager::BrowserManager(
 
   std::string socket_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          chromeos::switches::kLacrosMojoSocketForTesting);
+          ash::switches::kLacrosMojoSocketForTesting);
   if (!socket_path.empty()) {
     test_mojo_connection_manager_ =
         std::make_unique<crosapi::TestMojoConnectionManager>(
@@ -832,7 +832,7 @@ void BrowserManager::StartWithLogFile(
 
   std::string additional_env =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          chromeos::switches::kLacrosChromeAdditionalEnv);
+          ash::switches::kLacrosChromeAdditionalEnv);
   base::StringPairs env_pairs;
   if (base::SplitStringIntoKeyValuePairsUsingSubstr(additional_env, '=', "####",
                                                     &env_pairs)) {
@@ -874,7 +874,7 @@ void BrowserManager::StartWithLogFile(
 
   std::string additional_flags =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          chromeos::switches::kLacrosChromeAdditionalArgs);
+          ash::switches::kLacrosChromeAdditionalArgs);
   std::vector<base::StringPiece> delimited_flags =
       base::SplitStringPieceUsingSubstr(additional_flags, "####",
                                         base::TRIM_WHITESPACE,

@@ -543,7 +543,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
         switches::kDisableSync);
     // Necessary because no ProfileManager instance exists in this test.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+        ash::switches::kIgnoreUserProfileMappingForTests);
     // Necessary to skip cryptohome/profile sanity check in
     // ChromeUserManagerImpl for fake user login.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);

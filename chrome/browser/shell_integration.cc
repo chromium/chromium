@@ -158,10 +158,10 @@ void AppendProfileArgs(const base::FilePath& profile_path,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::FilePath profile = cmd_line.GetSwitchValuePath(
-      chromeos::switches::kLoginProfile);
+  base::FilePath profile =
+      cmd_line.GetSwitchValuePath(ash::switches::kLoginProfile);
   if (!profile.empty())
-    command_line->AppendSwitchPath(chromeos::switches::kLoginProfile, profile);
+    command_line->AppendSwitchPath(ash::switches::kLoginProfile, profile);
 #else
   if (!profile_path.empty())
     command_line->AppendSwitchPath(switches::kProfileDirectory,

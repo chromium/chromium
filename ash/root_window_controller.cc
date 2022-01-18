@@ -1260,7 +1260,7 @@ void RootWindowController::CreateSystemWallpaper(
   const bool is_boot_splash_screen =
       root_window_type == RootWindowType::PRIMARY &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kFirstExecAfterBoot);
+          switches::kFirstExecAfterBoot);
   if (is_boot_splash_screen)
     color = kChromeOsBootColor;
   system_wallpaper_ =

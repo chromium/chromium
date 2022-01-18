@@ -182,8 +182,8 @@ class CustomizationWallpaperDownloaderBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
   }
 
   void SetRequiredRetries(size_t retries) { required_retries_ = retries; }

@@ -391,13 +391,13 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
 
     result->number_pad_present =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
-            chromeos::switches::kHasNumberPad)
+            switches::kHasNumberPad)
             ? mojom::NumberPadPresence::kPresent
             : mojom::NumberPadPresence::kNotPresent;
 
     // Log if there is contradictory information.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            chromeos::switches::kHasNumberPad) &&
+            switches::kHasNumberPad) &&
         !device_info->event_device_info.HasNumberpad())
       LOG(ERROR) << "OS believes internal numberpad is implemented, but "
                     "evdev disagrees.";

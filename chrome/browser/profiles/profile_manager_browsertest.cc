@@ -262,7 +262,7 @@ class ProfileManagerBrowserTestBase : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpCommandLine(command_line);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+        ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
   }
 };
@@ -491,7 +491,7 @@ class ProfileManagerCrOSBrowserTest : public ProfileManagerBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Use a user hash other than the default chrome::kTestUserProfileDir
     // so that the prefix case is tested.
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                     "test-user-hash");
   }
 };

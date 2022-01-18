@@ -271,8 +271,8 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
     // The test app has to be allowlisted for sign-in screen.
     // This test is intentionally not migrated to the new
     // kAllowlistedExtensionID switch to test that the deprecated one keeps

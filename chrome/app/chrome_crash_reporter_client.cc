@@ -165,7 +165,7 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_guest_session = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kGuestSession);
+      ash::switches::kGuestSession);
   bool is_stable_channel =
       chrome::GetChannel() == version_info::Channel::STABLE;
 

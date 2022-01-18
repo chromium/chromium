@@ -57,14 +57,14 @@ void ChromeRLZTrackerDelegate::RegisterProfilePrefs(
   int rlz_ping_delay_seconds = 90;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kRlzPingDelay)) {
+          ash::switches::kRlzPingDelay)) {
     // Use a switch for overwriting the default delay because it doesn't seem
     // possible to manually override the Preferences file on Chrome OS: the file
     // is already loaded into memory by the time you modify it and any changes
     // made get overwritten by Chrome.
     rlz_ping_delay_seconds =
         std::stoi(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            chromeos::switches::kRlzPingDelay));
+            ash::switches::kRlzPingDelay));
   } else {
     rlz_ping_delay_seconds = 24 * 3600;
   }

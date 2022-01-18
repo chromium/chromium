@@ -692,8 +692,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest,
 class SyncConsentTimeoutTest : public SyncConsentTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::chromeos::switches::kOobeTriggerSyncTimeoutForTests);
+    command_line->AppendSwitch(switches::kOobeTriggerSyncTimeoutForTests);
     SyncConsentTest::SetUpCommandLine(command_line);
   }
 };

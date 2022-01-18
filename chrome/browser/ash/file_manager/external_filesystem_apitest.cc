@@ -529,7 +529,7 @@ class MultiProfileDriveFileSystemExtensionApiTest :
     // Don't require policy for our sessions - this is required because
     // this test creates a secondary profile synchronously, so we need to
     // let the policy code know not to expect cached policy.
-    command_line->AppendSwitchASCII(chromeos::switches::kProfileRequiresPolicy,
+    command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                     "false");
   }
 

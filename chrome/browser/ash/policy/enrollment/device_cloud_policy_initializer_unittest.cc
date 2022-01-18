@@ -64,7 +64,7 @@ void DeviceCloudPolicyInitializerTest::SetupZeroTouchFlag() {
   const ZeroTouchParam& param = GetParam();
   if (param.enable_zero_touch_flag != nullptr) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        chromeos::switches::kEnterpriseEnableZeroTouchEnrollment,
+        ash::switches::kEnterpriseEnableZeroTouchEnrollment,
         param.enable_zero_touch_flag);
   }
 }

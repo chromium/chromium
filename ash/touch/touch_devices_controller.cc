@@ -44,7 +44,7 @@ void TouchDevicesController::RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(
         prefs::kNaturalScroll,
         base::CommandLine::ForCurrentProcess()->HasSwitch(
-            chromeos::switches::kNaturalScrollDefault),
+            switches::kNaturalScrollDefault),
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   }
 }

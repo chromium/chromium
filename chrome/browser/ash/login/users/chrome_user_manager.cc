@@ -25,7 +25,7 @@ ChromeUserManager::~ChromeUserManager() {}
 
 bool ChromeUserManager::IsCurrentUserNew() const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kForceFirstRunUI))
+  if (command_line->HasSwitch(switches::kForceFirstRunUI))
     return true;
 
   return UserManagerBase::IsCurrentUserNew();

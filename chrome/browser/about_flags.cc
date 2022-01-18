@@ -3205,7 +3205,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kHideShelfControlsInTabletMode)},
     {"shelf-hover-previews", flag_descriptions::kShelfHoverPreviewsName,
      flag_descriptions::kShelfHoverPreviewsDescription, kOsCrOS,
-     SINGLE_VALUE_TYPE(chromeos::switches::kShelfHoverPreviews)},
+     SINGLE_VALUE_TYPE(ash::switches::kShelfHoverPreviews)},
     {"show-bluetooth-debug-log-toggle",
      flag_descriptions::kShowBluetoothDebugLogToggleName,
      flag_descriptions::kShowBluetoothDebugLogToggleDescription, kOsCrOS,
@@ -4354,7 +4354,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-touchscreen-calibration",
      flag_descriptions::kTouchscreenCalibrationName,
      flag_descriptions::kTouchscreenCalibrationDescription, kOsCrOS,
-     SINGLE_VALUE_TYPE(chromeos::switches::kEnableTouchCalibrationSetting)},
+     SINGLE_VALUE_TYPE(ash::switches::kEnableTouchCalibrationSetting)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"audio-url", flag_descriptions::kAudioUrlName,

@@ -347,9 +347,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   ::settings::AddPersonalizationOptionsStrings(html_source);
   ::settings::AddSecureDnsStrings(html_source);
 
-  html_source->AddBoolean("isRevenBranding",
-                          chromeos::switches::IsRevenBranding());
-  if (chromeos::switches::IsRevenBranding()) {
+  html_source->AddBoolean("isRevenBranding", switches::IsRevenBranding());
+  if (switches::IsRevenBranding()) {
     html_source->AddString(
         "enableHWDataUsage",
         l10n_util::GetStringFUTF8(

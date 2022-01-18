@@ -51,9 +51,8 @@ LoginPolicyTestBase::~LoginPolicyTestBase() = default;
 
 void LoginPolicyTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   OobeBaseTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(chromeos::switches::kDisableGaiaServices);
-  command_line->AppendSwitch(
-      chromeos::switches::kSkipForceOnlineSignInForTesting);
+  command_line->AppendSwitch(ash::switches::kDisableGaiaServices);
+  command_line->AppendSwitch(ash::switches::kSkipForceOnlineSignInForTesting);
 }
 
 void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {

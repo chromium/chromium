@@ -91,9 +91,9 @@ void OnConfigureUpstartJobs(std::deque<JobDesc> jobs,
 bool IsArcAvailable() {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (command_line->HasSwitch(chromeos::switches::kArcAvailability)) {
+  if (command_line->HasSwitch(ash::switches::kArcAvailability)) {
     const std::string value =
-        command_line->GetSwitchValueASCII(chromeos::switches::kArcAvailability);
+        command_line->GetSwitchValueASCII(ash::switches::kArcAvailability);
     DCHECK(value == kAvailabilityNone || value == kAvailabilityInstalled ||
            value == kAvailabilityOfficiallySupported)
         << "Unknown flag value: " << value;
@@ -105,20 +105,20 @@ bool IsArcAvailable() {
   // For transition, fallback to old flags.
   // TODO(hidehiko): Remove this and clean up whole this function, when
   // session_manager supports a new flag.
-  return command_line->HasSwitch(chromeos::switches::kEnableArc) ||
-         (command_line->HasSwitch(chromeos::switches::kArcAvailable) &&
+  return command_line->HasSwitch(ash::switches::kEnableArc) ||
+         (command_line->HasSwitch(ash::switches::kArcAvailable) &&
           base::FeatureList::IsEnabled(kEnableArcFeature));
 }
 
 bool IsArcVmEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kEnableArcVm);
+      ash::switches::kEnableArcVm);
 }
 
 bool IsArcVmRtVcpuEnabled(uint32_t cpus) {
   // TODO(kansho): remove switch after tast test use Finch instead.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kEnableArcVmRtVcpu)) {
+          ash::switches::kEnableArcVmRtVcpu)) {
     return true;
   }
   if (cpus == 2 && base::FeatureList::IsEnabled(kRtVcpuDualCore))
@@ -130,17 +130,17 @@ bool IsArcVmRtVcpuEnabled(uint32_t cpus) {
 
 bool IsArcVmUseHugePages() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcVmUseHugePages);
+      ash::switches::kArcVmUseHugePages);
 }
 
 bool IsArcVmDevConfIgnored() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kIgnoreArcVmDevConf);
+      ash::switches::kIgnoreArcVmDevConf);
 }
 
 bool IsUreadaheadDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcDisableUreadahead);
+      ash::switches::kArcDisableUreadahead);
 }
 
 ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
@@ -156,17 +156,17 @@ ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
                                        : ArcVmUreadaheadMode::READAHEAD
                                  : ArcVmUreadaheadMode::DISABLED;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcVmUreadaheadMode)) {
+          ash::switches::kArcVmUreadaheadMode)) {
     const std::string value =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            chromeos::switches::kArcVmUreadaheadMode);
+            ash::switches::kArcVmUreadaheadMode);
     if (value == kGenerate) {
       mode = ArcVmUreadaheadMode::GENERATE;
     } else if (value == kDisabled) {
       mode = ArcVmUreadaheadMode::DISABLED;
     } else {
       LOG(ERROR) << "Invalid parameter " << value << " for "
-                 << chromeos::switches::kArcVmUreadaheadMode;
+                 << ash::switches::kArcVmUreadaheadMode;
     }
   }
   return mode;
@@ -174,35 +174,35 @@ ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
 
 bool ShouldArcAlwaysStart() {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(chromeos::switches::kArcStartMode))
+  if (!command_line->HasSwitch(ash::switches::kArcStartMode))
     return false;
-  return command_line->GetSwitchValueASCII(chromeos::switches::kArcStartMode) ==
+  return command_line->GetSwitchValueASCII(ash::switches::kArcStartMode) ==
          kAlwaysStartWithNoPlayStore;
 }
 
 bool ShouldArcAlwaysStartWithNoPlayStore() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-             chromeos::switches::kArcStartMode) == kAlwaysStartWithNoPlayStore;
+             ash::switches::kArcStartMode) == kAlwaysStartWithNoPlayStore;
 }
 
 bool ShouldShowOptInForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcForceShowOptInUi);
+      ash::switches::kArcForceShowOptInUi);
 }
 
 bool IsArcKioskAvailable() {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (command_line->HasSwitch(chromeos::switches::kArcAvailability)) {
+  if (command_line->HasSwitch(ash::switches::kArcAvailability)) {
     std::string value =
-        command_line->GetSwitchValueASCII(chromeos::switches::kArcAvailability);
+        command_line->GetSwitchValueASCII(ash::switches::kArcAvailability);
     if (value == kAvailabilityInstalled)
       return true;
     return IsArcAvailable();
   }
 
   // TODO(hidehiko): Remove this when session_manager supports the new flag.
-  if (command_line->HasSwitch(chromeos::switches::kArcAvailable))
+  if (command_line->HasSwitch(ash::switches::kArcAvailable))
     return true;
 
   // If not special kiosk device case, use general ARC check.
@@ -247,7 +247,7 @@ bool IsArcAllowedForUser(const user_manager::User* user) {
 
 bool IsArcOptInVerificationDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kDisableArcOptInVerification);
+      ash::switches::kDisableArcOptInVerification);
 }
 
 absl::optional<int> GetWindowTaskId(const aura::Window* window) {
@@ -296,34 +296,34 @@ absl::optional<int> GetWindowTaskOrSessionId(const aura::Window* window) {
 
 bool IsArcForceCacheAppIcon() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcGeneratePlayAutoInstall);
+      ash::switches::kArcGeneratePlayAutoInstall);
 }
 
 bool IsArcDataCleanupOnStartRequested() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcDataCleanupOnStart);
+      ash::switches::kArcDataCleanupOnStart);
 }
 
 bool IsArcAppSyncFlowDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcDisableAppSync);
+      ash::switches::kArcDisableAppSync);
 }
 
 bool IsArcLocaleSyncDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcDisableLocaleSync);
+      ash::switches::kArcDisableLocaleSync);
 }
 
 bool IsArcPlayAutoInstallDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcDisablePlayAutoInstall);
+      ash::switches::kArcDisablePlayAutoInstall);
 }
 
 int32_t GetLcdDensityForDeviceScaleFactor(float device_scale_factor) {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kArcScale)) {
+  if (command_line->HasSwitch(ash::switches::kArcScale)) {
     const std::string dpi_str =
-        command_line->GetSwitchValueASCII(chromeos::switches::kArcScale);
+        command_line->GetSwitchValueASCII(ash::switches::kArcScale);
     int dpi;
     if (base::StringToInt(dpi_str, &dpi))
       return dpi;

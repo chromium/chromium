@@ -87,8 +87,7 @@ class UserManagerTest : public testing::Test {
   void SetUp() override {
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitch(::switches::kTestType);
-    command_line.AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+    command_line.AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 

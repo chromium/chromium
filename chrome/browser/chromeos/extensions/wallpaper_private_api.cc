@@ -85,7 +85,7 @@ constexpr char kSyncThemes[] = "syncThemes";
 
 bool IsOEMDefaultWallpaper() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kDefaultWallpaperIsOem);
+      ash::switches::kDefaultWallpaperIsOem);
 }
 
 // Saves |data| as |file_name| to directory with |key|. Return false if the
@@ -531,7 +531,7 @@ ExtensionFunction::ResponseAction WallpaperPrivateGetThumbnailFunction::Run() {
     // thumbnail. We should either resize it or include a wallpaper thumbnail in
     // addition to large and small wallpaper resolutions.
     thumbnail_path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-        chromeos::switches::kDefaultWallpaperSmall);
+        ash::switches::kDefaultWallpaperSmall);
   }
 
   WallpaperFunctionBase::GetNonBlockingTaskRunner()->PostTask(

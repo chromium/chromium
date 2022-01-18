@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, KioskOnlyTest) {
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
   base::ScopedAllowBlockingForTesting allow_io;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kEnableExtensionAssetsSharing);
+      ash::switches::kEnableExtensionAssetsSharing);
   base::ScopedTempDir cache_dir;
   ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
   ExtensionAssetsManagerChromeOS::SetSharedInstallDirForTesting(

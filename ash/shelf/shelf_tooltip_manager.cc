@@ -75,8 +75,7 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
   const ShelfAlignment alignment = shelf_->alignment();
   const SkColor shelf_background_color =
       shelf_->shelf_widget()->GetShelfBackgroundColor();
-  if (chromeos::switches::ShouldShowShelfHoverPreviews() &&
-      open_windows.size() > 0) {
+  if (switches::ShouldShowShelfHoverPreviews() && open_windows.size() > 0) {
     bubble_ = new ShelfTooltipPreviewBubble(view, open_windows, this, alignment,
                                             shelf_background_color);
   } else {

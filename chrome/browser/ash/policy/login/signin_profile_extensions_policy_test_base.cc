@@ -26,8 +26,8 @@ SigninProfileExtensionsPolicyTestBase::SigninProfileExtensionsPolicyTestBase(
 void SigninProfileExtensionsPolicyTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
   DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(ash::switches::kLoginManager);
+  command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
 }
 
 void SigninProfileExtensionsPolicyTestBase::SetUpOnMainThread() {

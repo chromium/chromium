@@ -17,7 +17,7 @@ UpgradeParams::PackageCacheMode GetPackagesCacheMode() {
   // Set packages cache mode coming from autotests.
   const std::string packages_cache_mode_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          chromeos::switches::kArcPackagesCacheMode);
+          ash::switches::kArcPackagesCacheMode);
   if (packages_cache_mode_string == kPackagesCacheModeSkipCopy)
     return UpgradeParams::PackageCacheMode::SKIP_SETUP_COPY_ON_INIT;
   if (packages_cache_mode_string == kPackagesCacheModeCopy)
@@ -35,7 +35,7 @@ UpgradeParams::UpgradeParams()
           !base::FeatureList::IsEnabled(arc::kBootCompletedBroadcastFeature)),
       packages_cache_mode(GetPackagesCacheMode()),
       skip_gms_core_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcDisableGmsCoreCache)),
+          ash::switches::kArcDisableGmsCoreCache)),
       enable_arc_nearby_share(
           base::FeatureList::IsEnabled(arc::kEnableArcNearbyShare)) {}
 

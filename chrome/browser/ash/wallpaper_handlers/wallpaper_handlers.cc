@@ -119,7 +119,7 @@ constexpr net::NetworkTrafficAnnotationTag kGooglePhotosCountTrafficAnnotation =
 // otherwise returns |url| as is. See https://crbug.com/914144.
 std::string MaybeConvertToTestUrl(std::string url) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kTestWallpaperServer)) {
+          ash::switches::kTestWallpaperServer)) {
     base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3",
                                            "chromecast-dev.sandbox");
   } else if (base::FeatureList::IsEnabled(

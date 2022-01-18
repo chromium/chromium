@@ -304,7 +304,7 @@ void WallpaperControllerClientImpl::SetInitialWallpaper() {
 
   // Guest wallpaper should be initialized when guest logs in.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kGuestSession)) {
+          ash::switches::kGuestSession)) {
     return;
   }
 

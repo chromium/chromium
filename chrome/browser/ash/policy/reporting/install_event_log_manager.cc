@@ -49,7 +49,7 @@ constexpr int kMaxSizeExpeditedUploadThreshold = 512;
 // reduced delay.
 bool FastUploadForTestsEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kInstallLogFastUploadForTests);
+      ash::switches::kInstallLogFastUploadForTests);
 }
 
 }  // namespace

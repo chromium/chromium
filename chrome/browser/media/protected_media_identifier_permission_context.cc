@@ -146,7 +146,7 @@ bool ProtectedMediaIdentifierPermissionContext::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(chromeos::switches::kSystemDevMode) &&
-      !command_line->HasSwitch(chromeos::switches::kAllowRAInDevMode)) {
+      !command_line->HasSwitch(ash::switches::kAllowRAInDevMode)) {
     DVLOG(1) << "Protected media identifier disabled in dev mode.";
     return false;
   }

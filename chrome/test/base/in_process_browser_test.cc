@@ -381,14 +381,14 @@ void InProcessBrowserTest::SetUp() {
   // (--login-user), or the guest session (--bwsi). This is essentially
   // the same as in `ChromeBrowserMainPartsAsh::PreEarlyInitialization`
   // but it will be done on device and only for tests.
-  if (!command_line->HasSwitch(chromeos::switches::kLoginManager) &&
-      !command_line->HasSwitch(chromeos::switches::kLoginUser) &&
-      !command_line->HasSwitch(chromeos::switches::kGuestSession)) {
+  if (!command_line->HasSwitch(ash::switches::kLoginManager) &&
+      !command_line->HasSwitch(ash::switches::kLoginUser) &&
+      !command_line->HasSwitch(ash::switches::kGuestSession)) {
     command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
+        ash::switches::kLoginUser,
         cryptohome::Identification(user_manager::StubAccountId()).id());
-    if (!command_line->HasSwitch(chromeos::switches::kLoginProfile)) {
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+    if (!command_line->HasSwitch(ash::switches::kLoginProfile)) {
+      command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                       chrome::kTestUserProfileDir);
     }
   }

@@ -245,7 +245,7 @@ class DisplayConfiguratorTest : public testing::Test {
 
     // Force system compositor mode to simulate on-device configurator behavior.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kForceSystemCompositorMode);
+        ash::switches::kForceSystemCompositorMode);
 
     native_display_delegate_ = new TestNativeDisplayDelegate(log_.get());
     configurator_.SetDelegateForTesting(

@@ -1187,14 +1187,14 @@ class MultiProfileDownloadNotificationTest
     DownloadNotificationTestBase::SetUpCommandLine(command_line);
 
     // Logs in to a dummy profile.
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginUser,
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                     kTestAccounts[DUMMY_ACCOUNT_INDEX].email);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                     kTestAccounts[DUMMY_ACCOUNT_INDEX].hash);
     // Don't require policy for our sessions - this is required because
     // this test creates a secondary profile synchronously, so we need to
     // let the policy code know not to expect cached policy.
-    command_line->AppendSwitchASCII(chromeos::switches::kProfileRequiresPolicy,
+    command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                     "false");
   }
 

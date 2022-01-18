@@ -40,7 +40,7 @@ TEST_F(ArcSwitchThrottleObserverTest, Default) {
 TEST_F(ArcSwitchThrottleObserverTest, Enforced) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kDisableArcCpuRestriction);
+      ash::switches::kDisableArcCpuRestriction);
   ArcSwitchThrottleObserver observer;
   int call_count = 0;
   int active_count = 0;

@@ -97,9 +97,8 @@ class BrowserGuestSessionNavigatorTest : public BrowserNavigatorTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     base::CommandLine command_line_copy = *command_line;
-    command_line_copy.AppendSwitchASCII(chromeos::switches::kLoginProfile,
-                                        "user");
-    command_line_copy.AppendSwitch(chromeos::switches::kGuestSession);
+    command_line_copy.AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+    command_line_copy.AppendSwitch(ash::switches::kGuestSession);
     ash::GetOffTheRecordCommandLine(GetGoogleURL(), command_line_copy,
                                     command_line);
   }

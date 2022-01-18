@@ -100,7 +100,7 @@ class PreinstalledWebAppUtilsTabletTest
   PreinstalledWebAppUtilsTabletTest() {
     if (GetParam()) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          chromeos::switches::kEnableTabletFormFactor);
+          ash::switches::kEnableTabletFormFactor);
     }
   }
   ~PreinstalledWebAppUtilsTabletTest() override = default;
@@ -142,7 +142,7 @@ class PreinstalledWebAppUtilsArcTest
   PreinstalledWebAppUtilsArcTest() {
     if (GetParam()) {
       base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-          chromeos::switches::kArcAvailability, "officially-supported");
+          ash::switches::kArcAvailability, "officially-supported");
     }
   }
   ~PreinstalledWebAppUtilsArcTest() override = default;

@@ -107,7 +107,7 @@ bool AllAllowlistedUsersPresent() {
 
 bool IsLazyWebUILoadingEnabled() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::chromeos::switches::kEnableOobeTestAPI)) {
+          switches::kEnableOobeTestAPI)) {
     // Load WebUI for the test API explicitly because it's Web API.
     return false;
   }

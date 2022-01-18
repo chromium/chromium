@@ -12,8 +12,7 @@ namespace base {
 class TimeDelta;
 }
 
-namespace chromeos {
-namespace switches {
+namespace ash::switches {
 
 // Prefer adding Features over switches. Features go in ash_features.h.
 //
@@ -347,15 +346,27 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ContextualNudgesResetShownCount();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUsingShelfAutoDim();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldClearFastInkBuffer();
 
-}  // namespace switches
-}  // namespace chromeos
+}  // namespace ash::switches
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-namespace switches {
-using namespace ::chromeos::switches;
-}
-}  // namespace ash
+namespace chromeos::switches {
+using ::ash::switches::IsOsInstallAllowed;
+using ::ash::switches::IsRevenBranding;
+using ::ash::switches::kAppOemManifestFile;
+using ::ash::switches::kArcTosHostForTests;
+using ::ash::switches::kDisableGaiaServices;
+using ::ash::switches::kEnableOobeTestAPI;
+using ::ash::switches::kEnableTouchCalibrationSetting;
+using ::ash::switches::kForceSystemCompositorMode;
+using ::ash::switches::kHasChromeOSKeyboard;
+using ::ash::switches::kLoginManager;
+using ::ash::switches::kOobeEulaUrlForTests;
+using ::ash::switches::kOobeScreenshotDirectory;
+using ::ash::switches::kOobeSkipPostLogin;
+using ::ash::switches::kPublicAccountsSamlAclUrl;
+using ::ash::switches::kSamlPasswordChangeUrl;
+using ::ash::switches::kShowOobeDevOverlay;
+}  // namespace chromeos::switches
 
 #endif  // ASH_CONSTANTS_ASH_SWITCHES_H_

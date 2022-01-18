@@ -127,7 +127,7 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
 
   // Show a warning info bar when kSafeMode switch is present.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kSafeMode)) {
+          ash::switches::kSafeMode)) {
     CreateSimpleAlertInfoBar(
         infobars::ContentInfoBarManager::FromWebContents(
             flags_ui->web_ui()->GetWebContents()),

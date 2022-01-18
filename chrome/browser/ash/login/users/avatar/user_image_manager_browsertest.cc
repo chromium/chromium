@@ -184,8 +184,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
     // to avoid having to set up a mock policy server. UserCloudPolicyManager
     // will shut down the profile if there's an error loading the initial
     // policy, so disable this behavior so we can inject policy directly.
-    command_line->AppendSwitch(
-        chromeos::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
   }
 
   void SetUpOnMainThread() override {

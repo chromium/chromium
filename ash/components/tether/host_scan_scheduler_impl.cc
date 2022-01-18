@@ -83,7 +83,7 @@ HostScanSchedulerImpl::~HostScanSchedulerImpl() {
 
 void HostScanSchedulerImpl::AttemptScanIfOffline() {
   const chromeos::NetworkTypePattern network_type_pattern =
-      chromeos::switches::ShouldTetherHostScansIgnoreWiredConnections()
+      switches::ShouldTetherHostScansIgnoreWiredConnections()
           ? chromeos::NetworkTypePattern::Wireless()
           : chromeos::NetworkTypePattern::Default();
   const chromeos::NetworkState* first_network =

@@ -61,11 +61,11 @@ void SessionFlagsManager::SetUpSessionRestore() {
 
 void SessionFlagsManager::SetDefaultLoginSwitches(
     const std::vector<Switch>& switches) {
-  default_switches_ = {{switches::kPolicySwitchesBegin, ""}};
+  default_switches_ = {{chromeos::switches::kPolicySwitchesBegin, ""}};
   default_switches_.insert(default_switches_.end(), switches.begin(),
                            switches.end());
   default_switches_.emplace_back(
-      std::make_pair(switches::kPolicySwitchesEnd, ""));
+      std::make_pair(chromeos::switches::kPolicySwitchesEnd, ""));
 }
 
 void SessionFlagsManager::AppendSwitchesToCommandLine(

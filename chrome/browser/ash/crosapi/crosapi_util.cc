@@ -367,7 +367,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
           : crosapi::mojom::BrowserInitParams::InitialKeepAlive::kDisabled;
 
   params->is_unfiltered_bluetooth_device_enabled =
-      chromeos::switches::IsUnfilteredBluetoothDevicesEnabled();
+      ash::switches::IsUnfilteredBluetoothDevicesEnabled();
 
   // Pass the accepted internal urls to lacros. Only accepted urls are allowed
   // to be passed via OpenURL from Lacros to Ash.

@@ -2221,13 +2221,13 @@ class DevToolsAllowedByCommandLineSwitch : public DevToolsExtensionForceInstallT
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-    // Same as |chromeos::switches::kForceDevToolsAvailable|, but used as a
+    // Same as `ash::switches::kForceDevToolsAvailable`, but used as a
     // literal here so it's possible to verify that the switch does not apply on
     // non-ChromeOS platforms.
     const std::string kForceDevToolsAvailableBase = "force-devtools-available";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_EQ(kForceDevToolsAvailableBase,
-              chromeos::switches::kForceDevToolsAvailable);
+              ash::switches::kForceDevToolsAvailable);
 #endif
     command_line->AppendSwitch("--" + kForceDevToolsAvailableBase);
   }

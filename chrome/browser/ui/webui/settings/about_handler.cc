@@ -147,7 +147,7 @@ base::FilePath GetRegulatoryLabelDirForRegion(const std::string& region) {
   base::FilePath region_path(kRegulatoryLabelsDirectory);
   const std::string model_subdir =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          chromeos::switches::kRegulatoryLabelDir);
+          ash::switches::kRegulatoryLabelDir);
   if (!model_subdir.empty()) {
     region_path = region_path.AppendASCII(model_subdir);
   }

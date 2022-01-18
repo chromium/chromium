@@ -39,7 +39,7 @@ bool IsAccountManaged(const Profile* profile) {
 
 bool IsArcDisabledForEnterprise() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kEnterpriseDisableArc);
+      ash::switches::kEnterpriseDisableArc);
 }
 
 std::set<std::string> GetRequestedPackagesFromArcPolicy(

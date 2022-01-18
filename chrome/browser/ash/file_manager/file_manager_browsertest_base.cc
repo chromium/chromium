@@ -1724,9 +1724,9 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   }
 
   if (options.guest_mode == IN_GUEST_MODE) {
-    command_line->AppendSwitch(chromeos::switches::kGuestSession);
-    command_line->AppendSwitchNative(chromeos::switches::kLoginUser, "$guest");
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchNative(ash::switches::kLoginUser, "$guest");
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
     command_line->AppendSwitch(switches::kIncognito);
     set_chromeos_user_ = false;
   }

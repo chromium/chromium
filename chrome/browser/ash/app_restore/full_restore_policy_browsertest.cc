@@ -36,7 +36,7 @@ class FullRestorePolicyBrowserTest
          ::full_restore::features::kArcGhostWindow},
         {});
     arc::SetArcAvailableCommandLineForTesting(command_line);
-    command_line->AppendSwitch(chromeos::switches::kEnableArcVm);
+    command_line->AppendSwitch(switches::kEnableArcVm);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

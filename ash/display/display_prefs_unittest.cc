@@ -329,7 +329,7 @@ TEST_F(DisplayPrefsTest, ListedLayoutOverrides) {
       chromeos::DISPLAY_POWER_INTERNAL_OFF_EXTERNAL_ON);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
+      switches::kFirstExecAfterBoot);
   LoadDisplayPreferences();
 
   // requested_power_state_ should be chromeos::DISPLAY_POWER_ALL_ON at boot
@@ -1392,7 +1392,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   LoggedInAsUser();
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
+      switches::kFirstExecAfterBoot);
 
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
@@ -1490,7 +1490,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayConnectedBeforeLoadingPrefs) {
   LoggedInAsUser();
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
+      switches::kFirstExecAfterBoot);
 
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())

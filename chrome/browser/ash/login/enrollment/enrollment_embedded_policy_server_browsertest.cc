@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        DeviceBlockDevmodeDisallowed) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kDisallowPolicyBlockDevMode);
+      switches::kDisallowPolicyBlockDevMode);
   enterprise_management::ChromeDeviceSettingsProto proto;
   proto.mutable_system_settings()->set_block_devmode(true);
   policy_server_.UpdateDevicePolicy(proto);

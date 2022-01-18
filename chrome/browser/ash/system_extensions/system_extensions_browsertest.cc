@@ -91,7 +91,7 @@ class SystemExtensionsSwitchBrowserTest : public SystemExtensionsBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchPath(chromeos::switches::kInstallSystemExtension,
+    command_line->AppendSwitchPath(ash::switches::kInstallSystemExtension,
                                    GetBasicSystemExtensionDir());
   }
 

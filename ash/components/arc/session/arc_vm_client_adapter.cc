@@ -136,11 +136,11 @@ ArcBinaryTranslationType IdentifyBinaryTranslationType(
     const StartParams& start_params) {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   const bool is_houdini_available =
-      command_line->HasSwitch(chromeos::switches::kEnableHoudini) ||
-      command_line->HasSwitch(chromeos::switches::kEnableHoudini64);
+      command_line->HasSwitch(ash::switches::kEnableHoudini) ||
+      command_line->HasSwitch(ash::switches::kEnableHoudini64);
   const bool is_ndk_translation_available =
-      command_line->HasSwitch(chromeos::switches::kEnableNdkTranslation) ||
-      command_line->HasSwitch(chromeos::switches::kEnableNdkTranslation64);
+      command_line->HasSwitch(ash::switches::kEnableNdkTranslation) ||
+      command_line->HasSwitch(ash::switches::kEnableNdkTranslation64);
 
   if (!is_houdini_available && !is_ndk_translation_available)
     return ArcBinaryTranslationType::NONE;

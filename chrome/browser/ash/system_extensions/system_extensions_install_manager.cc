@@ -56,11 +56,11 @@ void SystemExtensionsInstallManager::InstallUnpackedExtensionFromDir(
 
 void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(chromeos::switches::kInstallSystemExtension)) {
+  if (!command_line->HasSwitch(ash::switches::kInstallSystemExtension)) {
     return;
   }
-  base::FilePath system_extension_dir = command_line->GetSwitchValuePath(
-      chromeos::switches::kInstallSystemExtension);
+  base::FilePath system_extension_dir =
+      command_line->GetSwitchValuePath(ash::switches::kInstallSystemExtension);
 
   StartInstallation(
       base::BindOnce(

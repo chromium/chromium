@@ -82,13 +82,13 @@ class ComponentActiveDirectoryPolicyTest
     ExtensionBrowserTest::SetUpCommandLine(command_line);
 
     // Log in as Active Directory user.
-    command_line->AppendSwitchASCII(::chromeos::switches::kLoginUser,
+    command_line->AppendSwitchASCII(::ash::switches::kLoginUser,
                                     ::user_manager::kStubAdUserEmail);
 
     // Without this, user manager code will shut down Chrome since it can't
     // find any policy.
     command_line->AppendSwitchASCII(
-        ::chromeos::switches::kAllowFailedPolicyFetchForTest, "true");
+        ::ash::switches::kAllowFailedPolicyFetchForTest, "true");
   }
 
   void SetUpOnMainThread() override {

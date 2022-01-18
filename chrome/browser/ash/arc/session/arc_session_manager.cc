@@ -473,7 +473,7 @@ ArcSessionManager::ExpansionResult ReadSaltInternal() {
 // for the presence of kEnableHoudiniDlc flag in the command line.
 bool IsDlcRequired() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kEnableHoudiniDlc);
+      ash::switches::kEnableHoudiniDlc);
 }
 
 }  // namespace
@@ -1785,7 +1785,7 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   const bool is_arcvm = arc::IsArcVmEnabled();
   bool add_native_bridge_64bit_support = false;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcEnableNativeBridge64BitSupportExperiment)) {
+          ash::switches::kArcEnableNativeBridge64BitSupportExperiment)) {
     PrefService* local_pref_service = g_browser_process->local_state();
     if (base::FeatureList::IsEnabled(
             arc::kNativeBridge64BitSupportExperimentFeature)) {

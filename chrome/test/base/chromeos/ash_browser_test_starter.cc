@@ -27,7 +27,7 @@ AshBrowserTestStarter::~AshBrowserTestStarter() = default;
 
 bool AshBrowserTestStarter::HasLacrosArgument() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kLacrosChromePath);
+      ash::switches::kLacrosChromePath);
 }
 
 bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {

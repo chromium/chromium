@@ -155,12 +155,12 @@ ZeroTouchEnrollmentMode
 DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(
-          chromeos::switches::kEnterpriseEnableZeroTouchEnrollment)) {
+          ash::switches::kEnterpriseEnableZeroTouchEnrollment)) {
     return ZeroTouchEnrollmentMode::DISABLED;
   }
 
   std::string value = command_line->GetSwitchValueASCII(
-      chromeos::switches::kEnterpriseEnableZeroTouchEnrollment);
+      ash::switches::kEnterpriseEnableZeroTouchEnrollment);
   if (value == kZeroTouchEnrollmentForced) {
     return ZeroTouchEnrollmentMode::FORCED;
   }
@@ -171,7 +171,7 @@ DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
     return ZeroTouchEnrollmentMode::ENABLED;
   }
   LOG(WARNING) << "Malformed value \"" << value << "\" for switch --"
-               << chromeos::switches::kEnterpriseEnableZeroTouchEnrollment
+               << ash::switches::kEnterpriseEnableZeroTouchEnrollment
                << ". Ignoring switch.";
   return ZeroTouchEnrollmentMode::DISABLED;
 }
@@ -223,7 +223,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   // Don't create a MachineCertificateUploader or start the
   // AttestationPolicyObserver if machine cert requests are disabled.
   if (!(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableMachineCertRequest))) {
+          ash::switches::kDisableMachineCertRequest))) {
     machine_certificate_uploader_ =
         std::make_unique<ash::attestation::MachineCertificateUploaderImpl>(
             client());

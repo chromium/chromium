@@ -53,8 +53,8 @@ constexpr base::TimeDelta kSnapshotMaxLifetime = base::Days(30);
 bool IsRestoredSession() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
-  return command_line->HasSwitch(chromeos::switches::kLoginUser) &&
-         !command_line->HasSwitch(chromeos::switches::kLoginManager);
+  return command_line->HasSwitch(ash::switches::kLoginUser) &&
+         !command_line->HasSwitch(ash::switches::kLoginManager);
 }
 
 // Returns true if it is the first Chrome start up after reboot.

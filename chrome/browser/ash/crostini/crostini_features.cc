@@ -207,7 +207,7 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
   }
 
   bool kernelnext = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kKernelnextRestrictVMs);
+      ash::switches::kKernelnextRestrictVMs);
   bool kernelnext_override =
       base::FeatureList::IsEnabled(features::kKernelnextVMs);
   if (kernelnext && !kernelnext_override) {

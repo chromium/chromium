@@ -159,7 +159,7 @@ void ApplyUsapProfile(
 void ApplyDisableDownloadProvider(StartParams* params) {
   params->disable_download_provider =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcDisableDownloadProvider);
+          ash::switches::kArcDisableDownloadProvider);
 }
 
 void ApplyDisableUreadahed(StartParams* params) {
@@ -472,10 +472,10 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcPlayStoreAutoUpdate)) {
+          ash::switches::kArcPlayStoreAutoUpdate)) {
     const std::string value =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            chromeos::switches::kArcPlayStoreAutoUpdate);
+            ash::switches::kArcPlayStoreAutoUpdate);
     if (value == kOn) {
       params.play_store_auto_update =
           StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_ON;
@@ -486,25 +486,25 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
       VLOG(1) << "Play Store auto-update is forced off";
     } else {
       LOG(ERROR) << "Invalid parameter " << value << " for "
-                 << chromeos::switches::kArcPlayStoreAutoUpdate;
+                 << ash::switches::kArcPlayStoreAutoUpdate;
     }
   }
 
   params.arc_disable_system_default_app =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcDisableSystemDefaultApps);
+          ash::switches::kArcDisableSystemDefaultApps);
   if (params.arc_disable_system_default_app)
     VLOG(1) << "System default app(s) are disabled";
 
   params.disable_media_store_maintenance =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcDisableMediaStoreMaintenance);
+          ash::switches::kArcDisableMediaStoreMaintenance);
   if (params.disable_media_store_maintenance)
     VLOG(1) << "MediaStore maintenance task(s) are disabled";
 
   params.arc_generate_play_auto_install =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcGeneratePlayAutoInstall);
+          ash::switches::kArcGeneratePlayAutoInstall);
 
   VLOG(1) << "Starting ARC mini instance with lcd_density="
           << params.lcd_density

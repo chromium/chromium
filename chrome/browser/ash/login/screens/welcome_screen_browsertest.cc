@@ -152,7 +152,7 @@ class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {
   // WelcomeScreenBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kSystemDevMode);
+    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
   }
 };
 

@@ -873,7 +873,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-    cl->AppendSwitch(chromeos::switches::kGuestSession);
+    cl->AppendSwitch(ash::switches::kGuestSession);
     cl->AppendSwitch(::switches::kIncognito);
 #endif
 

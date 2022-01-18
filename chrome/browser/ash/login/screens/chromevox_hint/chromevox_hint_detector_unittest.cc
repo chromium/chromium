@@ -116,7 +116,7 @@ TEST_F(ChromeVoxHintDetectorTest, NoHintWithDisablingSwitch) {
 TEST_F(ChromeVoxHintDetectorTest, NoHintInDevMode) {
   auto command_line_ = std::make_unique<base::test::ScopedCommandLine>();
   command_line_->GetProcessCommandLine()->AppendSwitch(
-      switches::kSystemDevMode);
+      chromeos::switches::kSystemDevMode);
   ExpectChromeVoxHintWillNotBeGiven();
   StartDetection();
   runner_->FastForwardBy(kFullIdleDuration);
@@ -127,7 +127,7 @@ TEST_F(ChromeVoxHintDetectorTest, NoHintInDevMode) {
 TEST_F(ChromeVoxHintDetectorTest, HintInDevModeWithEnablingSwitch) {
   auto command_line_ = std::make_unique<base::test::ScopedCommandLine>();
   command_line_->GetProcessCommandLine()->AppendSwitch(
-      switches::kSystemDevMode);
+      chromeos::switches::kSystemDevMode);
   command_line_->GetProcessCommandLine()->AppendSwitch(
       switches::kEnableOOBEChromeVoxHintForDevMode);
   ExpectChromeVoxHintWillBeGiven();
@@ -140,7 +140,7 @@ TEST_F(ChromeVoxHintDetectorTest, HintInDevModeWithEnablingSwitch) {
 TEST_F(ChromeVoxHintDetectorTest, NoHintWithDisablingSwitchInDevMode) {
   auto command_line_ = std::make_unique<base::test::ScopedCommandLine>();
   command_line_->GetProcessCommandLine()->AppendSwitch(
-      switches::kSystemDevMode);
+      chromeos::switches::kSystemDevMode);
   command_line_->GetProcessCommandLine()->AppendSwitch(
       switches::kEnableOOBEChromeVoxHintForDevMode);
   command_line_->GetProcessCommandLine()->AppendSwitch(

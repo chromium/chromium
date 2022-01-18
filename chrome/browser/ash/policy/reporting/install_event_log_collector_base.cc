@@ -48,7 +48,7 @@ bool InstallEventLogCollectorBase::GetOnlineState() {
 void InstallEventLogCollectorBase::OnLogin() {
   // Don't log in case session is restared or recovered from crash.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kLoginUser) ||
+          ash::switches::kLoginUser) ||
       ExitTypeService::GetLastSessionExitType(profile_) == ExitType::kCrashed) {
     return;
   }

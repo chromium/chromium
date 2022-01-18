@@ -1368,7 +1368,7 @@ const AccountId& ChromeUserManagerImpl::GetGuestAccountId() const {
 
 bool ChromeUserManagerImpl::IsFirstExecAfterBoot() const {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
+      switches::kFirstExecAfterBoot);
 }
 
 void ChromeUserManagerImpl::AsyncRemoveCryptohome(
@@ -1408,7 +1408,7 @@ bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
 bool ChromeUserManagerImpl::HasBrowserRestarted() const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return base::SysInfo::IsRunningOnChromeOS() &&
-         command_line->HasSwitch(chromeos::switches::kLoginUser);
+         command_line->HasSwitch(switches::kLoginUser);
 }
 
 const gfx::ImageSkia& ChromeUserManagerImpl::GetResourceImagekiaNamed(

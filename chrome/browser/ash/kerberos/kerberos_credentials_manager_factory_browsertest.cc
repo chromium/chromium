@@ -20,8 +20,7 @@ class KerberosCredentialsManagerFactoryBrowserTest
     : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+    command_line->AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
   }
 };
 

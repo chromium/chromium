@@ -923,7 +923,7 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, UnregisterFails) {
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, DisableMachineCertReq) {
   // Simulate the flag --disable-machine-cert-request being provided to Chrome.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kDisableMachineCertRequest);
+      ash::switches::kDisableMachineCertRequest);
 
   // Set expectation that a request for a machine cert is never made.
   EXPECT_CALL(

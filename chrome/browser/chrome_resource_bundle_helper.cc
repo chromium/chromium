@@ -44,7 +44,7 @@ extern void InitializeLocalState(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kLoginManager)) {
+  if (command_line->HasSwitch(ash::switches::kLoginManager)) {
     PrefService* local_state = chrome_feature_list_creator->local_state();
     DCHECK(local_state);
 

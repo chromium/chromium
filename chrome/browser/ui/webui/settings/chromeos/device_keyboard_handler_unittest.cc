@@ -169,7 +169,7 @@ class KeyboardHandlerTest : public testing::Test {
 
 TEST_F(KeyboardHandlerTest, DefaultKeys) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kHasChromeOSKeyboard);
+      switches::kHasChromeOSKeyboard);
   handler_test_api_.Initialize();
   EXPECT_FALSE(HasLauncherKey());
   EXPECT_FALSE(HasCapsLock());
@@ -250,7 +250,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
 
   // An internal keyboard shouldn't change the defaults.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kHasChromeOSKeyboard);
+      switches::kHasChromeOSKeyboard);
   device_data_manager_test_api_.SetKeyboardDevices({internal_kbd});
   handler_test_api_.Initialize();
   EXPECT_TRUE(HasLauncherKey());

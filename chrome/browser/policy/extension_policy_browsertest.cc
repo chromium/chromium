@@ -2410,7 +2410,7 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+        ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
     PolicyTest::SetUpCommandLine(command_line);
   }

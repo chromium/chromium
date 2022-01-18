@@ -191,7 +191,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
     const extensions::Extension* extension) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kForceDevToolsAvailable))
+  if (command_line->HasSwitch(ash::switches::kForceDevToolsAvailable))
     return true;
 #endif
 

@@ -77,7 +77,7 @@ bool IsDriveAvailableForProfile(Profile* profile) {
 
   // Disable Drive for non-Gaia accounts.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableGaiaServices)) {
+          ash::switches::kDisableGaiaServices)) {
     return false;
   }
   if (!chromeos::LoginState::IsInitialized())

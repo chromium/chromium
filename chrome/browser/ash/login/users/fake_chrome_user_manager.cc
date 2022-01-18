@@ -337,7 +337,7 @@ const AccountId& FakeChromeUserManager::GetGuestAccountId() const {
 
 bool FakeChromeUserManager::IsFirstExecAfterBoot() const {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
+      switches::kFirstExecAfterBoot);
 }
 
 void FakeChromeUserManager::AsyncRemoveCryptohome(
@@ -370,7 +370,7 @@ bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
 bool FakeChromeUserManager::HasBrowserRestarted() const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return base::SysInfo::IsRunningOnChromeOS() &&
-         command_line->HasSwitch(chromeos::switches::kLoginUser);
+         command_line->HasSwitch(switches::kLoginUser);
 }
 
 const gfx::ImageSkia& FakeChromeUserManager::GetResourceImagekiaNamed(

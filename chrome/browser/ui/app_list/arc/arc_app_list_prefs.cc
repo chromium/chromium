@@ -978,7 +978,7 @@ void ArcAppListPrefs::SetDefaultAppsFilterLevel() {
   // Match this requirement and don't show pre-installed apps for managed users
   // in app list.
   if (arc::policy_util::IsAccountManaged(profile_)) {
-    if (profile_->IsChild() || chromeos::switches::IsTabletFormFactor()) {
+    if (profile_->IsChild() || ash::switches::IsTabletFormFactor()) {
       // For child accounts, filter only optional apps.
       // For tablet form factor devices, filter only optional apps.
       default_apps_->set_filter_level(

@@ -195,7 +195,7 @@ absl::optional<std::string> GetDisableReason(
 
   // Remove if device is tablet and app should be disabled.
   if (options.disable_if_tablet_form_factor &&
-      chromeos::switches::IsTabletFormFactor()) {
+      ash::switches::IsTabletFormFactor()) {
     return options.install_url.spec() + " disabled because device is tablet.";
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -324,7 +324,7 @@ std::string GetConfigDirectoryFromCommandLine() {
 std::string GetExtraConfigSubdirectory() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      chromeos::switches::kExtraWebAppsDir);
+      ash::switches::kExtraWebAppsDir);
 #else
   return std::string();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

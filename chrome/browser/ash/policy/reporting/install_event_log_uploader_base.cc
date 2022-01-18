@@ -24,7 +24,7 @@ const int kMaxRetryBackoffMs = 24 * 60 * 60 * 1000;  // 24 hours
 // backoff.
 bool FastUploadForTestsEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kInstallLogFastUploadForTests);
+      ash::switches::kInstallLogFastUploadForTests);
 }
 
 }  // namespace

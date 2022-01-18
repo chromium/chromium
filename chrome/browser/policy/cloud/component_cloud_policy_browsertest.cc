@@ -108,12 +108,12 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
     // ExtensionBrowserTest sets the login users to a non-managed value;
     // replace it. This is the default username sent in policy blobs from the
     // testserver.
-    command_line->AppendSwitchASCII(::chromeos::switches::kLoginUser,
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                     PolicyBuilder::kFakeUsername);
     // Let policy code know that policy is not required to be cached at startup
     // (it can be loaded asynchronously).
-    command_line->AppendSwitchASCII(
-        ::chromeos::switches::kProfileRequiresPolicy, "false");
+    command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
+                                    "false");
 #endif
   }
 

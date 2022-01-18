@@ -522,7 +522,7 @@ TEST_F(PreinstalledWebAppManagerTest, ExtraWebApps) {
   // directory apps are loaded from.
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      chromeos::switches::kExtraWebAppsDir, "model1");
+      ash::switches::kExtraWebAppsDir, "model1");
 
   const auto app_infos = LoadApps("extra_web_apps");
   EXPECT_EQ(1u, app_infos.size());
@@ -532,7 +532,7 @@ TEST_F(PreinstalledWebAppManagerTest, ExtraWebApps) {
 TEST_F(PreinstalledWebAppManagerTest, ExtraWebAppsNoMatchingDirectory) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      chromeos::switches::kExtraWebAppsDir, "model3");
+      ash::switches::kExtraWebAppsDir, "model3");
 
   const auto app_infos = LoadApps("extra_web_apps");
   EXPECT_EQ(0u, app_infos.size());

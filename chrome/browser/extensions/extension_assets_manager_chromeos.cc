@@ -254,7 +254,7 @@ bool ExtensionAssetsManagerChromeOS::CanShareAssets(
     const base::FilePath& unpacked_extension_root,
     bool updates_from_webstore_or_empty_update_url) {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kEnableExtensionAssetsSharing)) {
+          ash::switches::kEnableExtensionAssetsSharing)) {
     return false;
   }
 

@@ -576,10 +576,10 @@ class AppListClientGuestModeBrowserTest : public InProcessBrowserTest {
 
 void AppListClientGuestModeBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kGuestSession);
-  command_line->AppendSwitchASCII(chromeos::switches::kLoginUser,
+  command_line->AppendSwitch(ash::switches::kGuestSession);
+  command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                   user_manager::kGuestUserName);
-  command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+  command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                   TestingProfile::kTestUserProfileDir);
   command_line->AppendSwitch(switches::kIncognito);
 }

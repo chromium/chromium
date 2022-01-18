@@ -245,11 +245,11 @@ base::FilePath GetSessionLogDir(const base::CommandLine& command_line) {
   if (env->GetVar(env_vars::kSessionLogDir, &log_dir_str) &&
       !log_dir_str.empty()) {
     log_dir = base::FilePath(log_dir_str);
-  } else if (command_line.HasSwitch(chromeos::switches::kLoginProfile)) {
+  } else if (command_line.HasSwitch(ash::switches::kLoginProfile)) {
     base::PathService::Get(chrome::DIR_USER_DATA, &log_dir);
     base::FilePath profile_dir;
     std::string login_profile_value =
-        command_line.GetSwitchValueASCII(chromeos::switches::kLoginProfile);
+        command_line.GetSwitchValueASCII(ash::switches::kLoginProfile);
     if (login_profile_value == chrome::kLegacyProfileDir ||
         login_profile_value == chrome::kTestUserProfileDir) {
       profile_dir = base::FilePath(login_profile_value);
@@ -291,7 +291,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
     // For BWSI (Incognito) logins, we want to put the logs in the user
     // profile directory that is created for the temporary session instead
     // of in the system log directory, for privacy reasons.
-    if (command_line.HasSwitch(chromeos::switches::kGuestSession))
+    if (command_line.HasSwitch(ash::switches::kGuestSession))
       log_path = GetSessionLogFile(command_line);
 
     // On ChromeOS we log to the symlink.  We force creation of a new

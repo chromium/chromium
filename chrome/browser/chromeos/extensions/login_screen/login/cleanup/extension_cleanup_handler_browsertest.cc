@@ -61,9 +61,9 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
   }
 
   void SetUpOnMainThread() override {

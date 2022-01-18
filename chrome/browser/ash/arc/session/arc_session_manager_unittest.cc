@@ -990,7 +990,7 @@ TEST_F(ArcSessionManagerTest, IsDirectlyStartedOnInternalRestart) {
 TEST_F(ArcSessionManagerTest, DataCleanUpOnFirstStart) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kArcDataCleanupOnStart);
+      ash::switches::kArcDataCleanupOnStart);
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
@@ -1024,7 +1024,7 @@ TEST_F(ArcSessionManagerTest, DataCleanUpOnFirstStart) {
 TEST_F(ArcSessionManagerTest, DataCleanUpOnNextStart) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kArcDataCleanupOnStart);
+      ash::switches::kArcDataCleanupOnStart);
 
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);

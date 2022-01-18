@@ -442,7 +442,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   // Temporarily Disable AppListSyncableService for tablet form factor devices.
   // See crbug/1013732 for details.
   if (app_list::AppListSyncableServiceFactory::GetForProfile(profile_) &&
-      !chromeos::switches::IsTabletFormFactor()) {
+      !ash::switches::IsTabletFormFactor()) {
     if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
       // Runs in sync transport-mode and full-sync mode.
       controllers.push_back(

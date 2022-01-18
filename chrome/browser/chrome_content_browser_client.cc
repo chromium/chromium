@@ -2227,7 +2227,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   // On Chrome OS need to pass primary user homedir (in multi-profiles session).
   base::FilePath homedir;
   base::PathService::Get(base::DIR_HOME, &homedir);
-  command_line->AppendSwitchASCII(chromeos::switches::kHomedir,
+  command_line->AppendSwitchASCII(ash::switches::kHomedir,
                                   homedir.value().c_str());
 #endif
 
@@ -2251,10 +2251,10 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    const std::string& login_profile = browser_command_line.GetSwitchValueASCII(
-        chromeos::switches::kLoginProfile);
+    const std::string& login_profile =
+        browser_command_line.GetSwitchValueASCII(ash::switches::kLoginProfile);
     if (!login_profile.empty())
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+      command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                       login_profile);
 #endif
 

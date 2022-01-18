@@ -47,7 +47,7 @@ bool GetDeviceBlockDevModePolicyValue(
 
 bool IsDeviceBlockDevModePolicyAllowed() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisallowPolicyBlockDevMode)) {
+          ash::switches::kDisallowPolicyBlockDevMode)) {
     base::SysInfo::CrashIfChromeOSNonTestImage();
     return false;
   }

@@ -86,7 +86,7 @@ std::unique_ptr<views::View> LockScreen::MakeContentsView() {
   auto initial_note_action_state =
       Shell::Get()->tray_action()->GetLockScreenNoteState();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kShowLoginDevOverlay)) {
+          switches::kShowLoginDevOverlay)) {
     auto debug_view =
         std::make_unique<LockDebugView>(initial_note_action_state, type_);
     contents_view_ = debug_view->lock();

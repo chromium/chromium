@@ -814,13 +814,13 @@ bool WallpaperControllerImpl::ShouldShowInitialAnimation() {
   // The slower initial animation is only applicable if:
   // 1) It's the first run after system boot, not after user sign-out.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kFirstExecAfterBoot)) {
+          switches::kFirstExecAfterBoot)) {
     return false;
   }
   // 2) It's at the login screen.
   if (Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kLoginManager)) {
+          switches::kLoginManager)) {
     return false;
   }
   // 3) It's the first wallpaper being shown, not for the switching between
@@ -1950,23 +1950,23 @@ void WallpaperControllerImpl::SetDefaultWallpaperImpl(
   // Guest wallpaper, child wallpaper, customized default wallpaper, and regular
   // default wallpaper.
   if (user_type == user_manager::USER_TYPE_GUEST) {
-    const std::string switch_string =
-        use_small ? chromeos::switches::kGuestWallpaperSmall
-                  : chromeos::switches::kGuestWallpaperLarge;
+    const std::string switch_string = use_small
+                                          ? switches::kGuestWallpaperSmall
+                                          : switches::kGuestWallpaperLarge;
     file_path = command_line->GetSwitchValuePath(switch_string);
   } else if (user_type == user_manager::USER_TYPE_CHILD) {
-    const std::string switch_string =
-        use_small ? chromeos::switches::kChildWallpaperSmall
-                  : chromeos::switches::kChildWallpaperLarge;
+    const std::string switch_string = use_small
+                                          ? switches::kChildWallpaperSmall
+                                          : switches::kChildWallpaperLarge;
     file_path = command_line->GetSwitchValuePath(switch_string);
   } else if (!customized_default_small_path_.empty()) {
     DCHECK(!customized_default_large_path_.empty());
     file_path = use_small ? customized_default_small_path_
                           : customized_default_large_path_;
   } else {
-    const std::string switch_string =
-        use_small ? chromeos::switches::kDefaultWallpaperSmall
-                  : chromeos::switches::kDefaultWallpaperLarge;
+    const std::string switch_string = use_small
+                                          ? switches::kDefaultWallpaperSmall
+                                          : switches::kDefaultWallpaperLarge;
     file_path = command_line->GetSwitchValuePath(switch_string);
   }
 

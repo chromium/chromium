@@ -177,7 +177,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     local_state_.SetInitializationCompleted();
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kFirstExecAfterBoot);
+        ash::switches::kFirstExecAfterBoot);
   }
 
   void SetUp() override { SetDBusClientAvailability(true /* is_available */); }
@@ -214,7 +214,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
 
   void SetUpRestoredSessionCommandLine() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitch(chromeos::switches::kLoginUser);
+    command_line->AppendSwitch(ash::switches::kLoginUser);
   }
 
   void SetDBusClientAvailability(bool is_available) {

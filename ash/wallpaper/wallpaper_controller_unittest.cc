@@ -569,29 +569,29 @@ class WallpaperControllerTestBase : public AshTestBase {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     const base::FilePath small_file =
         default_wallpaper_path.Append(kDefaultSmallWallpaperName);
-    command_line->AppendSwitchASCII(chromeos::switches::kDefaultWallpaperSmall,
+    command_line->AppendSwitchASCII(switches::kDefaultWallpaperSmall,
                                     small_file.value());
     const base::FilePath large_file =
         default_wallpaper_path.Append(kDefaultLargeWallpaperName);
-    command_line->AppendSwitchASCII(chromeos::switches::kDefaultWallpaperLarge,
+    command_line->AppendSwitchASCII(switches::kDefaultWallpaperLarge,
                                     large_file.value());
 
     const base::FilePath guest_small_file =
         default_wallpaper_path.Append(kGuestSmallWallpaperName);
-    command_line->AppendSwitchASCII(chromeos::switches::kGuestWallpaperSmall,
+    command_line->AppendSwitchASCII(switches::kGuestWallpaperSmall,
                                     guest_small_file.value());
     const base::FilePath guest_large_file =
         default_wallpaper_path.Append(kGuestLargeWallpaperName);
-    command_line->AppendSwitchASCII(chromeos::switches::kGuestWallpaperLarge,
+    command_line->AppendSwitchASCII(switches::kGuestWallpaperLarge,
                                     guest_large_file.value());
 
     const base::FilePath child_small_file =
         default_wallpaper_path.Append(kChildSmallWallpaperName);
-    command_line->AppendSwitchASCII(chromeos::switches::kChildWallpaperSmall,
+    command_line->AppendSwitchASCII(switches::kChildWallpaperSmall,
                                     child_small_file.value());
     const base::FilePath child_large_file =
         default_wallpaper_path.Append(kChildLargeWallpaperName);
-    command_line->AppendSwitchASCII(chromeos::switches::kChildWallpaperLarge,
+    command_line->AppendSwitchASCII(switches::kChildWallpaperLarge,
                                     child_large_file.value());
 
     const int kWallpaperSize = 2;
@@ -2029,7 +2029,7 @@ TEST_P(WallpaperControllerTest, ReloadWallpaper) {
   // Show an always-on-top wallpaper.
   const base::FilePath image_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          chromeos::switches::kGuestWallpaperLarge);
+          switches::kGuestWallpaperLarge);
   CreateDefaultWallpapers();
   SetBypassDecode();
   ClearWallpaperCount();
@@ -2353,9 +2353,8 @@ TEST_P(WallpaperControllerTest, ShouldShowInitialAnimationAfterBoot) {
 
   // Simulate the login screen after system boot.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kLoginManager);
+      switches::kFirstExecAfterBoot);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kLoginManager);
   ClearLogin();
 
   // Show the first wallpaper. Verify that the slower animation should be used.
@@ -2389,8 +2388,7 @@ TEST_P(WallpaperControllerTest, ShouldNotShowInitialAnimationAfterSignOut) {
 
   // Simulate the login screen after user sign-out. Verify that the slower
   // animation should never be used.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kLoginManager);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kLoginManager);
   CreateAndSaveWallpapers(account_id_1);
   ClearLogin();
 
@@ -3103,7 +3101,7 @@ TEST_P(WallpaperControllerTest, AlwaysOnTopWallpaper) {
   // Show an always-on-top wallpaper.
   const base::FilePath image_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          chromeos::switches::kGuestWallpaperLarge);
+          switches::kGuestWallpaperLarge);
   controller_->ShowAlwaysOnTopWallpaper(image_path);
   RunAllTasksUntilIdle();
   EXPECT_EQ(2, GetWallpaperCount());

@@ -78,10 +78,9 @@ bool IsNewDevice(base::TimeDelta new_device_threshold) {
 bool IsTestingEnabled(const HatsConfig& hats_config) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (command_line->HasSwitch(
-          chromeos::switches::kForceHappinessTrackingSystem)) {
+  if (command_line->HasSwitch(switches::kForceHappinessTrackingSystem)) {
     auto switch_value = command_line->GetSwitchValueASCII(
-        chromeos::switches::kForceHappinessTrackingSystem);
+        switches::kForceHappinessTrackingSystem);
     return switch_value.empty() || hats_config.feature.name == switch_value;
   }
 

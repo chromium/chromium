@@ -69,8 +69,8 @@ ProfileInvalidationProviderFactoryLoginScreenBrowserTest::
 
 void ProfileInvalidationProviderFactoryLoginScreenBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+  command_line->AppendSwitch(ash::switches::kLoginManager);
+  command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
 }
 
 // Verify that no InvalidationService is instantiated for the login profile on
@@ -105,12 +105,11 @@ ProfileInvalidationProviderFactoryGuestBrowserTest::
 
 void ProfileInvalidationProviderFactoryGuestBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kGuestSession);
+  command_line->AppendSwitch(ash::switches::kGuestSession);
   command_line->AppendSwitch(::switches::kIncognito);
-  command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+  command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
   command_line->AppendSwitchASCII(
-      chromeos::switches::kLoginUser,
-      user_manager::GuestAccountId().GetUserEmail());
+      ash::switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
 }
 
 // Verify that no InvalidationService is instantiated for the login profile or

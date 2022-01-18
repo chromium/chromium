@@ -215,13 +215,12 @@ void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
 // static
 void AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
     base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(ash::switches::kLoginManager);
+  command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
   // LoginManager tests typically don't stand up a policy test server but
   // instead inject policies directly through a SessionManagerClient. So allow
   // policy fetches to fail - this is expected.
-  command_line->AppendSwitch(
-      chromeos::switches::kAllowFailedPolicyFetchForTest);
+  command_line->AppendSwitch(ash::switches::kAllowFailedPolicyFetchForTest);
 }
 
 }  // namespace policy

@@ -127,7 +127,7 @@ std::unique_ptr<base::DictionaryValue> LoadManifestOnFileThread(
 
 bool IsNormalSession() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             chromeos::switches::kGuestSession) &&
+             ash::switches::kGuestSession) &&
          user_manager::UserManager::IsInitialized() &&
          user_manager::UserManager::Get()->IsUserLoggedIn();
 }
@@ -540,7 +540,7 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     Add(IDR_ECHO_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));
 
-    if (!command_line->HasSwitch(chromeos::switches::kGuestSession)) {
+    if (!command_line->HasSwitch(ash::switches::kGuestSession)) {
       Add(IDR_WALLPAPERMANAGER_MANIFEST,
           base::FilePath(FILE_PATH_LITERAL("chromeos/wallpaper_manager")));
     }

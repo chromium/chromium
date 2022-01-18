@@ -107,7 +107,7 @@ void UpdateRequiredScreen::OnGetEolInfo(
     const chromeos::UpdateEngineClient::EolInfo& info) {
   //  TODO(crbug.com/1020616) : Handle if the device is left on this screen
   //  for long enough to reach Eol.
-  if (chromeos::switches::IsAueReachedForUpdateRequiredForTest() ||
+  if (switches::IsAueReachedForUpdateRequiredForTest() ||
       (!info.eol_date.is_null() && info.eol_date <= clock_->Now())) {
     EnsureScreenIsShown();
     if (view_) {

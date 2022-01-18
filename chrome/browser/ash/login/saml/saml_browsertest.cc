@@ -1084,7 +1084,7 @@ void SAMLPolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
   SamlTestBase::SetUpCommandLine(command_line);
 
   // Disable token check to allow offline sign-in for the fake gaia users.
-  command_line->AppendSwitch(chromeos::switches::kDisableGaiaServices);
+  command_line->AppendSwitch(switches::kDisableGaiaServices);
 }
 
 void SAMLPolicyTest::SetSAMLOfflineSigninTimeLimitPolicy(int limit) {

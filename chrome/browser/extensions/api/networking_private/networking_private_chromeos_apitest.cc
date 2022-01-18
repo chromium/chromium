@@ -147,10 +147,10 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     // uses the ProfileHelper to obtain the userhash crbug/238623.
     cryptohome::AccountIdentifier login_user;
     login_user.set_account_id(user_manager::CanonicalizeUserID(
-        command_line->GetSwitchValueNative(chromeos::switches::kLoginUser)));
+        command_line->GetSwitchValueNative(ash::switches::kLoginUser)));
     const std::string sanitized_user =
         UserDataAuthClient::GetStubSanitizedUsername(login_user);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                     sanitized_user);
   }
 

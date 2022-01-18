@@ -61,7 +61,7 @@ base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
 }  // namespace
 
 base::span<StaticAppId> GetDefaultPinnedAppsForFormFactor() {
-  if (chromeos::switches::IsTabletFormFactor()) {
+  if (ash::switches::IsTabletFormFactor()) {
     return GetTabletFormFactorDefaultPinnedApps();
   }
 

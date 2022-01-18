@@ -386,7 +386,7 @@ bool StatisticsProviderImpl::GetMachineStatistic(const std::string& name,
 
   // Test region should override VPD values.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kCrosRegion) &&
+          ash::switches::kCrosRegion) &&
       GetRegionalInformation(name, result)) {
     return true;
   }
@@ -619,9 +619,8 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     region_ = std::string();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kCrosRegion)) {
-    region_ =
-        command_line->GetSwitchValueASCII(chromeos::switches::kCrosRegion);
+  if (command_line->HasSwitch(ash::switches::kCrosRegion)) {
+    region_ = command_line->GetSwitchValueASCII(ash::switches::kCrosRegion);
     machine_info_[kRegionKey] = region_;
     VLOG(1) << "CrOS region set to '" << region_ << "'";
   }

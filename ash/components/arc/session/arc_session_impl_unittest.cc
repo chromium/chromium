@@ -697,7 +697,7 @@ TEST_F(ArcSessionImplTest, ArcStopInstanceSystemShutdown) {
 }
 
 struct PackagesCacheModeState {
-  // Possible values for chromeos::switches::kArcPackagesCacheMode
+  // Possible values for ash::switches::kArcPackagesCacheMode
   const char* chrome_switch;
   bool full_container;
   UpgradeParams::PackageCacheMode expected_packages_cache_mode;
@@ -724,7 +724,7 @@ TEST_P(ArcSessionImplPackagesCacheModeTest, PackagesCacheModes) {
   const PackagesCacheModeState& state = GetParam();
   if (state.chrome_switch) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(chromeos::switches::kArcPackagesCacheMode,
+    command_line->AppendSwitchASCII(ash::switches::kArcPackagesCacheMode,
                                     state.chrome_switch);
   }
 
@@ -750,7 +750,7 @@ TEST_P(ArcSessionImplGmsCoreCacheTest, GmsCoreCaches) {
 
   if (GetParam()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kArcDisableGmsCoreCache);
+        ash::switches::kArcDisableGmsCoreCache);
   }
 
   arc_session->StartMiniInstance();
@@ -893,7 +893,7 @@ TEST_F(ArcSessionImplTest, UreadaheadByDefault) {
 TEST_F(ArcSessionImplTest, DisableUreadahead) {
   base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitch(chromeos::switches::kArcDisableUreadahead);
+  command_line->AppendSwitch(ash::switches::kArcDisableUreadahead);
   auto arc_session = CreateArcSession();
   arc_session->StartMiniInstance();
   base::RunLoop().RunUntilIdle();

@@ -65,7 +65,7 @@ bool ShouldAutoDisplayUi(
   // picker if Chrome has been chosen by the user as the platform for this URL.
   // TODO(crbug.com/1225828): Handle this for lacros-chrome as well.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::switches::IsTabletFormFactor()) {
+  if (ash::switches::IsTabletFormFactor()) {
     if (ui_auto_display_service->GetLastUsedPlatformForTablets(url) ==
         IntentPickerAutoDisplayPref::Platform::kChrome) {
       return false;
@@ -163,7 +163,7 @@ void OnIntentPickerClosedChromeOs(
     bool should_persist) {
 // TODO(crbug.com/1225828): Handle this for lacros-chrome as well.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::switches::IsTabletFormFactor() && should_persist) {
+  if (ash::switches::IsTabletFormFactor() && should_persist) {
     // On devices of tablet form factor, until the user has decided to persist
     // the setting, the browser-side intent picker should always be seen.
     auto platform = IntentPickerAutoDisplayPref::Platform::kNone;

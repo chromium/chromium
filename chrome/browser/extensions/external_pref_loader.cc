@@ -54,7 +54,7 @@ constexpr base::FilePath::CharType kExternalExtensionJson[] =
 // TODO(crbug.com/1023268) This is a temporary measure and should be replaced.
 bool SkipInstallForChromeOSTablet(const base::FilePath& file_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::switches::IsTabletFormFactor())
+  if (!ash::switches::IsTabletFormFactor())
     return false;
 
   constexpr char const* kIdsNotToBeInstalledOnTabletFormFactor[] = {

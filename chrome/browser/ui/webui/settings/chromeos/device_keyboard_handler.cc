@@ -139,7 +139,7 @@ void KeyboardHandler::UpdateShowKeys() {
   const bool has_caps_lock = keyboards_state.has_external_apple_keyboard ||
                              keyboards_state.has_external_generic_keyboard ||
                              !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                                 chromeos::switches::kHasChromeOSKeyboard);
+                                 switches::kHasChromeOSKeyboard);
 
   base::Value keyboard_params(base::Value::Type::DICTIONARY);
   keyboard_params.SetKey("showCapsLock", base::Value(has_caps_lock));

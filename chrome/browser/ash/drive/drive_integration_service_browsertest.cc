@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest, GetThumbnailTest) {
 class DriveIntegrationServiceWithGaiaDisabledBrowserTest
     : public DriveIntegrationServiceBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kDisableGaiaServices);
+    command_line->AppendSwitch(ash::switches::kDisableGaiaServices);
   }
 };
 

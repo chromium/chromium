@@ -531,7 +531,7 @@ void AppListSyncableService::BuildModel() {
 
   // Install default page brakes for tablet form factor devices here as
   // these devices do not have app list sync turned on.
-  if (chromeos::switches::IsTabletFormFactor() && profile_->IsNewProfile()) {
+  if (ash::switches::IsTabletFormFactor() && profile_->IsNewProfile()) {
     DCHECK(
         !SyncServiceFactory::GetForProfile(profile_)->GetActiveDataTypes().Has(
             syncer::APP_LIST));

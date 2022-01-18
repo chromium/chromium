@@ -373,7 +373,7 @@ class EnterprisePlatformKeysLoginScreenTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
     command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
                                     kExtensionId);
   }

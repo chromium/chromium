@@ -858,7 +858,7 @@ void DisplayPrefs::LoadDisplayPreferences() {
   // powerd fails to send us one over D-Bus. Otherwise, we won't restore
   // displays correctly after retaking control when changing virtual terminals.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kFirstExecAfterBoot)) {
+          switches::kFirstExecAfterBoot)) {
     Shell::Get()->display_configurator()->InitializeDisplayPowerState();
     return;
   }

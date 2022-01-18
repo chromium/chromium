@@ -24,11 +24,11 @@ constexpr char kAlwaysStartWithNoPlayStore[] =
 
 void SetArcAlwaysStartWithoutPlayStoreForTesting() {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      chromeos::switches::kArcStartMode, kAlwaysStartWithNoPlayStore);
+      ash::switches::kArcStartMode, kAlwaysStartWithNoPlayStore);
 }
 
 void SetArcAvailableCommandLineForTesting(base::CommandLine* command_line) {
-  command_line->AppendSwitchASCII(chromeos::switches::kArcAvailability,
+  command_line->AppendSwitchASCII(ash::switches::kArcAvailability,
                                   kAvailabilityOfficiallySupported);
 }
 

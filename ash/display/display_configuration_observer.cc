@@ -30,7 +30,7 @@ void DisplayConfigurationObserver::OnDisplaysInitialized() {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   // Update the display pref with the initial power state.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kFirstExecAfterBoot))
+  if (command_line->HasSwitch(switches::kFirstExecAfterBoot))
     Shell::Get()->display_prefs()->MaybeStoreDisplayPrefs();
 }
 

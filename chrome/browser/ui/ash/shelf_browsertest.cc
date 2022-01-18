@@ -19,11 +19,11 @@
 class ShelfGuestSessionBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kGuestSession);
+    command_line->AppendSwitch(ash::switches::kGuestSession);
     command_line->AppendSwitch(::switches::kIncognito);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "hash");
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "hash");
     command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
+        ash::switches::kLoginUser,
         user_manager::GuestAccountId().GetUserEmail());
   }
 };

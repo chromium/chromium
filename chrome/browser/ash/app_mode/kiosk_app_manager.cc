@@ -274,9 +274,9 @@ bool KioskAppManager::GetSwitchesForSessionRestore(
   // should not be present for kiosk sessions.
   bool in_policy_switches_block = false;
   const std::string policy_switches_begin =
-      GetSwitchString(switches::kPolicySwitchesBegin);
+      GetSwitchString(chromeos::switches::kPolicySwitchesBegin);
   const std::string policy_switches_end =
-      GetSwitchString(switches::kPolicySwitchesEnd);
+      GetSwitchString(chromeos::switches::kPolicySwitchesEnd);
 
   for (const auto& it : current_command_line->argv()) {
     if (it == policy_switches_begin) {

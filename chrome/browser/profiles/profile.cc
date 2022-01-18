@@ -389,7 +389,7 @@ bool Profile::IsGuestSession() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool is_guest_session =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kGuestSession);
+          ash::switches::kGuestSession);
   return is_guest_session;
 #else
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

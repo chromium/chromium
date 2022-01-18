@@ -167,8 +167,8 @@ LoginScreenDefaultPolicyLoginScreenBrowsertest::
 void LoginScreenDefaultPolicyLoginScreenBrowsertest::SetUpCommandLine(
     base::CommandLine* command_line) {
   LoginScreenDefaultPolicyBrowsertestBase::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(ash::switches::kLoginManager);
+  command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
 }
 
 void LoginScreenDefaultPolicyLoginScreenBrowsertest::SetUpOnMainThread() {

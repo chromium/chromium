@@ -188,8 +188,7 @@ class ExtensionSessionsTest : public InProcessBrowserTest {
 
 void ExtensionSessionsTest::SetUpCommandLine(base::CommandLine* command_line) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  command_line->AppendSwitch(
-      chromeos::switches::kIgnoreUserProfileMappingForTests);
+  command_line->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
 }
 

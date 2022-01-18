@@ -262,7 +262,7 @@ TEST_F(TrayBluetoothHelperLegacyTest, OnBluetoothSystemStateChanged) {
 // enabled.
 TEST_F(TrayBluetoothHelperLegacyTest, UnfilteredBluetoothDevices) {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitch(chromeos::switches::kUnfilteredBluetoothDevices);
+  cmd_line->AppendSwitch(switches::kUnfilteredBluetoothDevices);
 
   // Set Bluetooth discovery simulation delay to 0 so the test doesn't have to
   // wait or use timers.

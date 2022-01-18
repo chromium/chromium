@@ -338,7 +338,7 @@ void MinimumVersionPolicyHandler::FetchEolInfo() {
 
 void MinimumVersionPolicyHandler::OnFetchEolInfo(
     const chromeos::UpdateEngineClient::EolInfo info) {
-  if (!chromeos::switches::IsAueReachedForUpdateRequiredForTest() &&
+  if (!ash::switches::IsAueReachedForUpdateRequiredForTest() &&
       (info.eol_date.is_null() || info.eol_date > update_required_time_)) {
     // End of life is not reached. Start update with |warning_time_|.
     eol_reached_ = false;

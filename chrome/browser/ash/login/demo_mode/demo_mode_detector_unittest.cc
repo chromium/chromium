@@ -141,7 +141,7 @@ TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchInDevMode) {
   // Set the command line dev mode switch.
   auto command_line_ = std::make_unique<base::test::ScopedCommandLine>();
   command_line_->GetProcessCommandLine()->AppendSwitch(
-      switches::kSystemDevMode);
+      chromeos::switches::kSystemDevMode);
 
   StartDemoModeDetection();
 

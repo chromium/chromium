@@ -91,7 +91,7 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
   TabScrubberChromeOSTest& operator=(const TabScrubberChromeOSTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kNaturalScrollDefault);
+    command_line->AppendSwitch(ash::switches::kNaturalScrollDefault);
   }
 
   void SetUpOnMainThread() override {

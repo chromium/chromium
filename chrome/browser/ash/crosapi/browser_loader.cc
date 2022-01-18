@@ -112,7 +112,7 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
   // rather than component manager.
   base::FilePath lacros_chrome_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          chromeos::switches::kLacrosChromePath);
+          ash::switches::kLacrosChromePath);
   if (!lacros_chrome_path.empty()) {
     OnLoadComplete(std::move(callback),
                    component_updater::CrOSComponentManager::Error::NONE,

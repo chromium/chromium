@@ -92,7 +92,7 @@ bool IsSignedOutMode() {
   // One example of using fake gaia login is in our automation tests, i.e.
   // Assistant Tast tests.
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kDisableGaiaServices);
+      switches::kDisableGaiaServices);
 }
 
 }  // namespace

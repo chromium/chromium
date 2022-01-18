@@ -225,7 +225,7 @@ constexpr char kOnboardingBackfillVersion[] = "0.0.0.0";
 base::TimeDelta GetActivityTimeBeforeOnboardingSurvey() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   const auto& time_switch =
-      chromeos::switches::kTimeBeforeOnboardingSurveyInSecondsForTesting;
+      switches::kTimeBeforeOnboardingSurveyInSecondsForTesting;
 
   if (!command_line->HasSwitch(time_switch)) {
     return kActivityTimeBeforeOnboardingSurvey;

@@ -240,8 +240,7 @@ void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
 
 void AddDebuggerResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool enable_debugger =
-      command_line->HasSwitch(::chromeos::switches::kShowOobeDevOverlay);
+  bool enable_debugger = command_line->HasSwitch(switches::kShowOobeDevOverlay);
   // Enable for ChromeOS-on-linux for developers and test images.
   if (enable_debugger && base::SysInfo::IsRunningOnChromeOS()) {
     LOG(WARNING) << "OOBE Debug overlay can only be used on test images";
@@ -256,8 +255,7 @@ void AddDebuggerResources(content::WebUIDataSource* source) {
 
 void AddTestAPIResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool enable_test_api =
-      command_line->HasSwitch(::chromeos::switches::kEnableOobeTestAPI);
+  bool enable_test_api = command_line->HasSwitch(switches::kEnableOobeTestAPI);
   if (enable_test_api) {
     source->AddResourcePath(kTestAPIJSPath, IDR_OOBE_TEST_API_JS);
     source->AddResourcePath(kTestAPIJsMPath, IDR_OOBE_TEST_API_M_JS);
@@ -635,8 +633,7 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool enable_debugger =
-      command_line->HasSwitch(::chromeos::switches::kShowOobeDevOverlay);
+  bool enable_debugger = command_line->HasSwitch(switches::kShowOobeDevOverlay);
   // TODO(crbug.com/1073095): Also enable for ChromeOS test images.
   // Enable for ChromeOS-on-linux for developers.
   bool test_mode = !base::SysInfo::IsRunningOnChromeOS();
@@ -646,8 +643,7 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
         std::make_unique<DebugOverlayHandler>(js_calls_container_.get()));
   }
 
-  bool enable_test_api =
-      command_line->HasSwitch(::chromeos::switches::kEnableOobeTestAPI);
+  bool enable_test_api = command_line->HasSwitch(switches::kEnableOobeTestAPI);
   if (enable_test_api) {
     AddWebUIHandler(
         std::make_unique<OobeTestAPIHandler>(js_calls_container_.get()));
