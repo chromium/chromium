@@ -20,6 +20,10 @@
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_WIN)
+#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#endif
+
 namespace net {
 class DhcpPacFileFetcher;
 class HostResolver;
@@ -30,11 +34,16 @@ class URLRequestContext;
 }  // namespace net
 
 namespace network {
-// Specialization of URLRequestContextBuilder that can create a
-// ProxyResolutionService that uses a Mojo ProxyResolver. The consumer is
-// responsible for providing the proxy_resolver::mojom::ProxyResolverFactory.
-// If a ProxyResolutionService is set directly via the URLRequestContextBuilder
-// API, it will be used instead.
+// Specialization of URLRequestContextBuilder that can create one or more
+// ProxyResolutionServices that use Mojo. This can be a
+// ConfiguredProxyResolutionService that uses a Mojo ProxyResolver or a
+// WindowsSystemProxyResolutionService that may mojo all proxy resolutions to a
+// utility process if enabled. The consumer is responsible for providing either
+// the proxy_resolver::mojom::ProxyResolverFactory or
+// proxy_resolver_win::mojom::WindowsSystemProxyResolver respectively. If a
+// ProxyResolutionService is set directly via the URLRequestContextBuilder API,
+// it will be used instead either of the ProxyResolutionService implementations
+// mentioned here.
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
     : public net::URLRequestContextBuilder {
  public:
@@ -51,6 +60,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
   void SetMojoProxyResolverFactory(
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
           mojo_proxy_resolver_factory);
+
+#if defined(OS_WIN)
+  void SetMojoWindowsSystemProxyResolver(
+      mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+          mojo_windows_system_proxy_resolver);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetDhcpWpadUrlClient(
@@ -78,6 +93,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
 
   mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
       mojo_proxy_resolver_factory_;
+
+#if defined(OS_WIN)
+  mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+      mojo_windows_system_proxy_resolver_;
+#endif
 };
 
 }  // namespace network

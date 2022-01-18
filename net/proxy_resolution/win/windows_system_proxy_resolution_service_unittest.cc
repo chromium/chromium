@@ -79,7 +79,7 @@ class MockWindowsSystemProxyResolver : public WindowsSystemProxyResolver {
   void set_windows_error(int windows_error) { windows_error_ = windows_error; }
 
   std::unique_ptr<Request> GetProxyForUrl(
-      const std::string& url,
+      const GURL& url,
       WindowsSystemProxyResolutionRequest* callback_target) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return std::make_unique<MockRequest>(callback_target, proxy_list_,

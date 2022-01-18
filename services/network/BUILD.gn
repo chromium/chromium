@@ -229,6 +229,13 @@ component("network_service") {
     ]
   }
 
+  if (is_win) {
+    sources += [
+      "windows_system_proxy_resolver_mojo.cc",
+      "windows_system_proxy_resolver_mojo.h",
+    ]
+  }
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
@@ -420,6 +427,10 @@ source_set("tests") {
       "dhcp_pac_file_fetcher_mojo_unittest.cc",
       "nss_temp_certs_cache_chromeos_unittest.cc",
     ]
+  }
+
+  if (is_win) {
+    sources += [ "windows_system_proxy_resolver_mojo_unittest.cc" ]
   }
 
   deps = [

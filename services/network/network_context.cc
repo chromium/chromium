@@ -2257,7 +2257,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
 #if BUILDFLAG(IS_WIN)
   if (params_->windows_system_proxy_resolver) {
-    // TODO(https://crbug.com/1032820): Connect to proxy_resolver_win service.
+    builder.SetMojoWindowsSystemProxyResolver(
+        std::move(params_->windows_system_proxy_resolver));
   }
 #endif
 

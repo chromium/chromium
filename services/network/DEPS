@@ -18,6 +18,7 @@ include_rules = [
   "+net",
   "+sandbox",
   "+services/proxy_resolver/public/mojom",
+  "+services/proxy_resolver_win/public/mojom",
   "+services/service_manager/public",
   "+third_party/boringssl/src/include",
   "+url",

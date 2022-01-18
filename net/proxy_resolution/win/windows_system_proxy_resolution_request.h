@@ -64,6 +64,9 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
                                        WinHttpStatus winhttp_status,
                                        int windows_error);
 
+  WindowsSystemProxyResolver::Request* GetProxyResolutionRequestForTesting();
+  void ResetProxyResolutionRequestForTesting();
+
  private:
   // Cancels the callback from the resolver for a previously started proxy
   // resolution.
