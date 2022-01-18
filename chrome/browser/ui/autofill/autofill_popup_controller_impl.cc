@@ -264,6 +264,10 @@ void AutofillPopupControllerImpl::ViewDestroyed() {
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
+  bool has_shift_modifier =
+      (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
+  bool has_non_shift_modifier =
+      (event.GetModifiers() & ~blink::WebInputEvent::kShiftKey);
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
       SelectPreviousLine();
@@ -287,14 +291,15 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
       Hide(PopupHidingReason::kUserAborted);
       return true;
     case ui::VKEY_DELETE:
-      return (event.GetModifiers() &
-              content::NativeWebKeyboardEvent::kShiftKey) &&
-             RemoveSelectedLine();
+      return has_shift_modifier && RemoveSelectedLine();
     case ui::VKEY_TAB:
-      // A tab press should cause the selected line to be accepted, but still
-      // return false so the tab key press propagates and changes the cursor
-      // location.
-      AcceptSelectedLine();
+      // We want TAB or Shift+TAB press to cause the selected line to be
+      // accepted, but still return false so the tab key press propagates and
+      // change the cursor location.
+      // We don't want to handle Mod+TAB for other modifiers because this may
+      // have other purposes (e.g., change the tab).
+      if (!has_non_shift_modifier)
+        AcceptSelectedLine();
       return false;
     case ui::VKEY_RETURN:
       return AcceptSelectedLine();
