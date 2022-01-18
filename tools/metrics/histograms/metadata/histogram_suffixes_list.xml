@@ -4835,33 +4835,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Event.Latency.OS_NO_VALIDATION.POSITIVE"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ExitFunnels" separator=".">
-  <suffix name="BackgroundOff" label=""/>
-  <suffix name="BackgroundOn" label=""/>
-  <suffix name="BrowserExit" label=""/>
-  <suffix name="EndSession" label=""/>
-  <suffix name="ES_CloseApp" label=""/>
-  <suffix name="ES_Critical" label=""/>
-  <suffix name="ES_Logoff" label=""/>
-  <suffix name="ES_Other" label=""/>
-  <suffix name="HungBrowserTerminated" label=""/>
-  <suffix name="KillProcess" label=""/>
-  <suffix name="LastWindowClose" label=""/>
-  <suffix name="MessageWindowHung" label=""/>
-  <suffix name="MessageWindowNotFound" label=""/>
-  <suffix name="MessageWindowVanished" label=""/>
-  <suffix name="ProcessSingletonIsShuttingDown" label=""/>
-  <suffix name="RendezvousToHungBrowser" label=""/>
-  <suffix name="SessionEnding" label=""/>
-  <suffix name="TraybarEndSession" label=""/>
-  <suffix name="TraybarExit" label=""/>
-  <suffix name="WatcherEndSession" label=""/>
-  <suffix name="WatcherLogoff" label=""/>
-  <suffix name="WatcherQueryEndSession" label=""/>
-  <suffix name="WM_ENDSESSION" label=""/>
-  <affected-histogram name="Stability.ExitFunnel"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ExpectedQueueingDurationThreshold" separator="_">
   <obsolete>
     Removed as of 08/2017. Replaced with ExpectedQueueingDurationThreshold.
@@ -5325,23 +5298,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GoogleSearch.AccessPoint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GoogleUpdate_Inline_InstallStatus" separator=".">
-  <obsolete>
-    Inline updates are deprecated as of M97.
-  </obsolete>
-  <suffix name="Canceled" label="Canceled"/>
-  <suffix name="Downloaded" label="Downloaded"/>
-  <suffix name="Downloading" label="Downloading"/>
-  <suffix name="Failed" label="Failed"/>
-  <suffix name="Installed" label="Installed"/>
-  <suffix name="Installing" label="Installing"/>
-  <suffix name="Pending" label="Pending"/>
-  <suffix name="RequiresUiIntent" label="Requires UI Intent"/>
-  <suffix name="Unknown" label="Unknown"/>
-  <suffix name="Untracked" label="Untracked Status (Not Known to UMA)"/>
-  <affected-histogram name="GoogleUpdate.Inline.StateChange.Error"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GoogleUpdate_Result_UpdateType" separator=".">
   <suffix base="true" name="Inline" label="Inline Updates">
     <obsolete>
@@ -5776,16 +5732,6 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <suffix name="HighDownloadBandwidth" label="download with high bandwidth."/>
   <affected-histogram name="Download.Parallelizable.FileSize"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="HistogramInconsistencies" separator=".">
-  <obsolete>
-    Removed in 2017.
-  </obsolete>
-  <suffix name="Cronet" label="Cronet histograms."/>
-  <affected-histogram name="Histogram.InconsistenciesBrowser"/>
-  <affected-histogram name="Histogram.InconsistenciesBrowserUnique"/>
-  <affected-histogram name="Histogram.InconsistentSnapshotBrowser"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="HstsState" separator=".">
@@ -9861,8 +9807,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="Oauth-enrollment.Completed" label=""/>
   <suffix name="Offline-login.Back" label=""/>
   <suffix name="Offline-login.ReloadOnlineLogin" label=""/>
-  <suffix name="Oobe-eula-md.AcceptedWithStats" label=""/>
   <suffix name="Oobe-eula-md.AcceptedWithoutStats" label=""/>
+  <suffix name="Oobe-eula-md.AcceptedWithStats" label=""/>
   <suffix name="Oobe-eula-md.Back" label=""/>
   <suffix name="Oobe-update.UpdateError" label=""/>
   <suffix name="Oobe-update.UpdateNotRequired" label=""/>
@@ -9889,7 +9835,7 @@ chromium-metrics-reviews@google.com.
     </obsolete>
   </suffix>
   <suffix name="Update.UpdateNotRequired" label="">
-   <obsolete>
+    <obsolete>
       Renamed to Oobe-update.
     </obsolete>
   </suffix>
@@ -11717,36 +11663,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Power.Mac.GPU1"/>
   <affected-histogram name="Power.Mac.GPUi"/>
   <affected-histogram name="Power.Mac.Total"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PpapiPluginName" separator="_">
-  <obsolete>
-    Removed Oct 14 2020.
-  </obsolete>
-  <suffix name="libpepflashplayer.so" label="Flash player on Linux or Cros"/>
-  <suffix name="libwidevinecdmadapter.so" label="Widevine CDM on Linux or Cros">
-    <obsolete>
-      Deprecated March 2018
-    </obsolete>
-  </suffix>
-  <suffix name="pepflashplayer.dll" label="Flash player on Windows"/>
-  <suffix name="PepperFlashPlayer.plugin" label="Flash player on Mac"/>
-  <suffix name="widevinecdmadapter.dll" label="Widevine CDM on Windows">
-    <obsolete>
-      Deprecated March 2018
-    </obsolete>
-  </suffix>
-  <suffix name="widevinecdmadapter.plugin" label="Widevine CDM on Mac">
-    <obsolete>
-      Deprecated March 2018
-    </obsolete>
-  </suffix>
-  <affected-histogram name="Plugin.PpapiBrokerLoadErrorCode"/>
-  <affected-histogram name="Plugin.PpapiBrokerLoadResult"/>
-  <affected-histogram name="Plugin.PpapiBrokerLoadTime"/>
-  <affected-histogram name="Plugin.PpapiPluginLoadErrorCode"/>
-  <affected-histogram name="Plugin.PpapiPluginLoadResult"/>
-  <affected-histogram name="Plugin.PpapiPluginLoadTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PrecacheCellular" separator=".">

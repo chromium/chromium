@@ -55,32 +55,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Histogram.InconsistentSnapshotBrowser" units="units"
-    expires_after="M85">
-  <obsolete>
-    Removed 07/2017.
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <summary>
-    The amount of discrepancy found when examining a single histogram's data in
-    the browser process for transmission via UMA. Inconsistent data is NOT
-    transmitted via UMA.
-  </summary>
-</histogram>
-
-<histogram name="Histogram.InconsistentSnapshotChildProcess" units="units"
-    expires_after="M85">
-  <obsolete>
-    Removed 07/2017.
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <summary>
-    The amount of discrepancy found when examining a single histogram's data in
-    a child process for transmission via UMA. Inconsistent data is NOT
-    transmitted via UMA.
-  </summary>
-</histogram>
-
 <histogram name="Histogram.MismatchedConstructionArguments"
     enum="HistogramNameHash" expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
@@ -91,44 +65,6 @@ chromium-metrics-reviews@google.com.
     different from a previous instantiation of the same name. Entries here have
     conflicting definitions and should be investigated. Data collected for the
     secondary definitions will be silently dropped.
-  </summary>
-</histogram>
-
-<histogram name="Histogram.PendingProcessNotResponding" units="processes"
-    expires_after="M79">
-  <obsolete>
-    Removed 06/2021.
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <summary>
-    When metrics services (UMA) ran an update, the number of child processes
-    that did not respond, providing histogram updates, before the timeout.
-  </summary>
-</histogram>
-
-<histogram name="Histogram.PermanentNameChanged" enum="HistogramNameHash"
-    expires_after="M85">
-  <obsolete>
-    No longer in the codebase as of 06/2021.
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>bcwhite@chromium.org</owner>
-  <summary>
-    The hash codes of histograms of which the external name storage was altered
-    after the histogram was created.
-  </summary>
-</histogram>
-
-<histogram name="Histogram.ReceivedProcessGroupCount" enum="BooleanEnabled"
-    expires_after="M79">
-  <obsolete>
-    Removed 06/2021.
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <summary>
-    When metrics services (UMA) ran an update, the number of times the process
-    groups (renderer processes and plugin/gpu processes) did not respond,
-    providing histogram updates, before the timeout.
   </summary>
 </histogram>
 
@@ -174,25 +110,6 @@ chromium-metrics-reviews@google.com.
     Variations Safe Mode experiment when the CleanExitBeacon is initialized.
     Reports the combined state of distinct beacons stored the beacon file and in
     Local State.
-  </summary>
-</histogram>
-
-<histogram name="UMA.CleanExitBeaconConsistency" enum="UmaCleanExitConsistency"
-    expires_after="2022-01-18">
-  <obsolete>
-    Deprecated 07/2021 in favor of CleanExitBeaconConsistency2. Version 2
-    changes semantics in some of the buckets, to support measuring the frequency
-    with which the Local State data is missing.
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>justincohen@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Recorded when the CleanExitBeacon is constructed. Reports the combined state
-    of distinct clean exit beacons stored in Local State and the Windows
-    registry (or NSUserDefaults on iOS). They are normally expected to be
-    identical.
   </summary>
 </histogram>
 
@@ -312,23 +229,6 @@ chromium-metrics-reviews@google.com.
     Records attempts to access a file for the purpose of extracting initial
     stability metrics.
   </summary>
-</histogram>
-
-<histogram name="UMA.FileMetricsProvider.MergeHistogram.{Type}"
-    enum="HistogramNameHash" expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Records which histograms were merged into the current log from external
-    sources. {Type}
-  </summary>
-  <token key="Type">
-    <variant name="NotReadOnly" summary="From non-read-only sources."/>
-    <variant name="ReadOnly" summary="From read-only sources."/>
-  </token>
 </histogram>
 
 <histogram name="UMA.InitSequence" enum="UmaInitSequence"
@@ -533,19 +433,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.MetricsService.Initialize" enum="Boolean"
-    expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>rkaplow@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Records true during the initialization of the metrics state, right at the
-    time of logging a count to launch_count in stability prefs.
-  </summary>
-</histogram>
-
 <histogram name="UMA.MetricsService.Initialize.Time" units="microseconds"
     expires_after="2022-08-01">
   <owner>asvitkine@chromium.org</owner>
@@ -611,35 +498,6 @@ chromium-metrics-reviews@google.com.
     updated only once per reporting cycle. {PersistentAllocatorType}
   </summary>
   <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
-</histogram>
-
-<histogram name="UMA.PersistentHistograms.DriveType" enum="WindowsDriveType"
-    expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Records the drive type the persistent histograms file opened on start up is
-    on. Only logged on Windows based on the result of the GetDriveTypeW() API.
-    Added to diagnose crbug.com/1176977.
-  </summary>
-</histogram>
-
-<histogram name="UMA.PersistentHistograms.HistogramsInStartupFile"
-    enum="HistogramNameHash" expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Records which histograms were found initially in the .pma file used by the
-    browser process for persistent histograms. The expectation is there should
-    be no entries there, but this histogram is added to diagnose a problem we're
-    seeing where this could be the cause. See crbug.com/1176977 for details.
-  </summary>
 </histogram>
 
 <histogram name="UMA.PersistentHistograms.InitResult"
@@ -801,20 +659,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.StructuredMetrics.ClientInitializationSuccessful"
-    enum="BooleanSuccess" expires_after="M97">
-  <obsolete>
-    Expired in M97 and removed from code in Jan 2022 for M99. This was reporting
-    100% success on all channels as of Jan 2022.
-  </obsolete>
-  <owner>jongahn@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <summary>
-    Emitted on initialization of structured metrics client. Records whether the
-    client was initialized successfully.
-  </summary>
-</histogram>
-
 <histogram name="UMA.StructuredMetrics.EventRecordingState"
     enum="StructuredMetricsEventRecordingState" expires_after="2022-04-24">
   <owner>tby@chromium.org</owner>
@@ -834,21 +678,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted each time a structured metric event is written. Records true if the
     mojo API was used.
-  </summary>
-</histogram>
-
-<histogram name="UMA.StructuredMetrics.InternalError"
-    enum="StructuredMetricsInternalError" expires_after="2022-02-27">
-  <obsolete>
-    Removed 10/08/2021. This histogram had a recording bug that grouped failed
-    key errors with failed event errors. Prefer to use InternalError2.
-  </obsolete>
-  <owner>tby@chromium.org</owner>
-  <owner>rkaplow@chromium.org</owner>
-  <owner>asvitkine@chromium.org</owner>
-  <summary>
-    Records unexpected internal errors of the structured metrics system. The
-    bucket proportion of this metric is not meaningful.
   </summary>
 </histogram>
 
@@ -883,24 +712,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     How many events are provided when the structured metrics system is called on
     to provide its current session data.
-  </summary>
-</histogram>
-
-<histogram name="UMA.StructuredMetrics.PrefReadError"
-    enum="PrefServiceReadError" expires_after="2021-12-01">
-  <obsolete>
-    Deprecated 10/2021 as structured metrics now stores data in protos rather
-    than prefs. Replaced with UMA.StructuredMetrics.InternalError2.
-  </obsolete>
-  <owner>tby@chromium.org</owner>
-  <owner>rkaplow@chromium.org</owner>
-  <owner>asvitkine@chromium.org</owner>
-  <summary>
-    When the structured metrics provider initializes, it reads the pref store
-    from disk that holds keys and unsent logs. If there was an error during that
-    read, this records the error code. PREF_READ_ERROR_NO_FILE is recorded
-    whenever a particular profile signs into a particular device for the first
-    time, so a reasonable number of errors are expected.
   </summary>
 </histogram>
 

@@ -99,37 +99,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.Android.StrongBindingOomRemainingBindingState"
-    enum="Android.ChildProcessBindingStateCombination"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed on 08/2021. No longer needed.
-  </obsolete>
-  <owner>boliu@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Record the state of child service bindings left when a child service with
-    strong binding is OOM killed by Android. Recorded when such a OOM kill is
-    detected by browser. Note this does not distinguish process type, and is for
-    example recorded for both GPU and renderer process.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Android.StrongBindingOomRemainingStrongBindingCount"
-    units="units" expires_after="2020-08-30">
-  <obsolete>
-    Removed on 08/2021. No longer needed.
-  </obsolete>
-  <owner>boliu@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Record the count of strongly bound child services left when a child service
-    with strong binding is OOM killed by Android. Recorded when such a OOM kill
-    is detected by browser. Note this does not distinguish process type, and is
-    for example count both GPU and renderer process.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Stability.Android.SystemExitReason"
     enum="AndroidProcessExitReason" expires_after="2022-07-03">
   <owner>boliu@chromium.org</owner>
@@ -323,56 +292,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.ExitFunnel" units="ms" expires_after="M85">
-  <obsolete>
-    Removed 10/2020 although this has been dead for many years.
-  </obsolete>
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Temporary instrumentation to record the Windows browser's exit path. See
-    http://crbug.com/412384.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Experimental.BrowserCrash" enum="Boolean"
-    expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Logged at the same time as the kBrowserCrash bucket of Stability.Counts2,
-    for debugging crbug.com/1176977.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Experimental.Counts" enum="StabilityEventType"
-    expires_after="2021-01-15">
-  <obsolete>
-    Removed 01/2021, replaced with Stability.Counts2.
-  </obsolete>
-  <owner>rkaplow@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Collects various counters related to stability. The majority of them are
-    crash types.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Experimental.Counts2" enum="StabilityEventType"
-    expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Like Stability.Counts2, but logged as a sparse histogram for debugging
-    crbug.com/1176977.
-  </summary>
-</histogram>
-
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
     expires_after="2022-06-12">
   <owner>fdoray@chromium.org</owner>
@@ -383,57 +302,6 @@ chromium-metrics-reviews@google.com.
     buckets of this histogram should be equal to the &quot;Total pageloads&quot;
     shown on Stability dashboards and can be used to diagnose changes to this
     value.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Experimental.ProcessId" units="process id"
-    expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Logs the process id as a histogram, to help debug crbug.com/1176977. Logged
-    with MOD 1000 to limit the number of distinct values reported.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Experimental.RandInt" units="random number"
-    expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Logs a random number in the range 0 to 999 to help debug crbug.com/1176977.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Experimental.SessionId" units="session id"
-    expires_after="2021-10-31">
-  <obsolete>
-    Removed 2021/09
-  </obsolete>
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Logs the UMA session id as a histogram, to help debug crbug.com/1176977.
-    Logged with MOD 1000 to limit the number of distinct values reported.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Internals.DataDiscardCount" units="counts"
-    expires_after="M77">
-  <obsolete>
-    Removed on 10/2020.
-  </obsolete>
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Number of times stability data was discarded. This is accumulated since the
-    last report, even across versions. This is logged during stability metric
-    recording for the following log sent.
   </summary>
 </histogram>
 
@@ -460,19 +328,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.Internals.InitialStabilityLogDeferredCount"
-    units="counts" expires_after="M77">
-  <obsolete>
-    Removed on 10/2020.
-  </obsolete>
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Number of times the initial stability log upload was deferred to the next
-    startup. This is logged during stability metric recording for the following
-    log sent.
-  </summary>
-</histogram>
-
 <histogram name="Stability.Internals.SystemCrashCount" units="crashes"
     expires_after="2022-10-20">
   <owner>davidbienvenu@chromium.org</owner>
@@ -480,19 +335,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of times a browser crash was detected, where the browser was last
     known to be alive in a Windows system session that terminated abnormally.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Internals.VersionMismatchCount" units="counts"
-    expires_after="M77">
-  <obsolete>
-    Removed on 10/2020.
-  </obsolete>
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Number of times the version number stored in prefs did not match the
-    serialized system profile version number. This is logged during stability
-    metric recording.
   </summary>
 </histogram>
 
@@ -604,19 +446,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.iOS.UTE.LowPowerModeEnabled" enum="BooleanEnabled"
-    expires_after="2021-12-12">
-  <obsolete>
-    Removed 11/2021
-  </obsolete>
-  <owner>michaeldo@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    The power mode of the device when a crash occurred. Logged on application
-    launch if the last session terminated in an unclean state.
-  </summary>
-</histogram>
-
 <histogram name="Stability.iOS.UTE.MobileSessionAppState" enum="IOSAppState"
     expires_after="2022-12-11">
   <owner>justincohen@chromium.org</owner>
@@ -701,20 +530,6 @@ chromium-metrics-reviews@google.com.
     before being killed. For first launch after upgrade, the crash reports may
     be discarded before this histogram is written to so it's not possible to
     determine if there's a valid crash log present or not.
-  </summary>
-</histogram>
-
-<histogram name="Stability.RendererUnresponsiveBeforeTermination"
-    enum="BooleanUnresponsive" expires_after="2020-04-26">
-  <obsolete>
-    Removed 12/2020.
-  </obsolete>
-  <owner>dtapuska@chromium.org</owner>
-  <summary>
-    If the renderer is considered unresponsive from the browser's perspective
-    before the process is terminated. This metric is being used to figure out
-    crash reports that have all idle threads and perhaps the process is being
-    terminated when it shouldn't be. crbug.com/615090.
   </summary>
 </histogram>
 

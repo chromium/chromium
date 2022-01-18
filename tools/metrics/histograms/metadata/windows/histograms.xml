@@ -22,19 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="FileOperations">
-  <variant name=".DeleteFile.NonRecursive" summary="">
-    <obsolete>
-      Removed in M95.
-    </obsolete>
-  </variant>
-  <variant name=".DeleteFile.Recursive" summary="">
-    <obsolete>
-      Removed in M95.
-    </obsolete>
-  </variant>
-</variants>
-
 <histogram name="Windows.ApplockerRunning" enum="Boolean" expires_after="M83">
   <owner>forshaw@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
@@ -78,18 +65,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.ComputeNativeWindowOcclusionTime" units="microseconds"
-    expires_after="M83">
-  <obsolete>
-    Removed 11/2020. As of June 15, 2020, data indicates that computing
-    occlusion is fast enough at all percentiles.
-  </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    The amount of CPU time a call to ComputeNativeWindowOcclusionStatus() takes.
-  </summary>
-</histogram>
-
 <histogram name="Windows.FileDeleteLastRetryError" enum="WinGetLastError"
     expires_after="2022-05-01">
   <owner>grt@chromium.org</owner>
@@ -108,41 +83,6 @@ chromium-metrics-reviews@google.com.
     The number of retries needed to successfully delete a file from
     GetDeleteFileCallback. 0 means it succeeded the first time, 9 means it never
     succeeded.
-  </summary>
-</histogram>
-
-<histogram name="Windows.FilesystemError{FileOperations}"
-    enum="WinGetLastError" expires_after="M81">
-  <obsolete>
-    Removed in M95.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    The Windows error code relating to a failed attempt to operate on a file or
-    a directory. {FileOperations}
-  </summary>
-  <token key="FileOperations" variants="FileOperations">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
-<histogram name="Windows.GetVersionExVersion" enum="WindowsVersion"
-    expires_after="never">
-  <obsolete>
-    Removed 10/2020 as this histogram has been replaced by the synthetic
-    histogram Windows.WindowsVersion generated from Windows.PatchLevel.
-  </obsolete>
-<!-- expires-never: Needed to measure Windows ecosystem. -->
-
-  <owner>wfh@chromium.org</owner>
-  <owner>brucedawson@chromium.org</owner>
-  <summary>
-    The Windows version (base::win::Version) as reported by GetVersionEx(). This
-    is queried shortly after startup.
   </summary>
 </histogram>
 
@@ -221,23 +161,6 @@ chromium-metrics-reviews@google.com.
     Windows.IsPinnedToTaskbar in that we do not check if the pin to taskbar verb
     is available on the shortcut and only relies on the shortcut existing in the
     User Pinned folder.
-  </summary>
-</histogram>
-
-<histogram name="Windows.Kernel32Version" enum="WindowsVersion"
-    expires_after="never">
-  <obsolete>
-    Removed 10/2020 as this histogram has been replaced by the synthetic
-    histogram Windows.WindowsVersionKernel32 generated from
-    Windows.PatchLevelKernel32.
-  </obsolete>
-<!-- expires-never: Needed to measure Windows ecosystem. -->
-
-  <owner>wfh@chromium.org</owner>
-  <owner>brucedawson@chromium.org</owner>
-  <summary>
-    The Windows version (base::win::Version) as reported by VerQueryValue() on
-    kernel32.dll. This is queried shortly after startup.
   </summary>
 </histogram>
 
@@ -349,25 +272,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.PostOperationState{FileOperations}"
-    enum="PostOperationState" expires_after="M81">
-  <obsolete>
-    Removed in M95.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    The state of an item in the filesystem following an operation on it.
-    {FileOperations}
-  </summary>
-  <token key="FileOperations" variants="FileOperations">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
     expires_after="2022-07-03">
   <owner>rkc@chromium.org</owner>
@@ -390,57 +294,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.ServiceStatus.SSP" units="WindowsServiceStatus"
-    expires_after="2021-12-12">
-  <obsolete>
-    Removed in M96.
-  </obsolete>
-  <owner>wfh@chromium.org</owner>
-  <owner>ajgo@chromium.org</owner>
-  <summary>
-    This records whether any SSP/AD providers are registered on the system. If
-    there are any then this typically means the network sandbox cannot
-    successfully engage. Recorded each time the browser attempts to start the
-    network service process. This metric is only recorded on Windows 10+.
-  </summary>
-</histogram>
-
 <histogram name="Windows.Tablet" enum="BooleanTablet" expires_after="M77">
   <owner>zturner@chromium.org</owner>
   <summary>Count of browser launches from a Windows tablet pc.</summary>
-</histogram>
-
-<histogram name="Windows.TmpFileDeleter.FailCount" units="files"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in M94.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>etiennep@chromium.org</owner>
-  <summary>
-    The number of files failed to be deleted in a single directory by the
-    browser process's tmp file deleter on Windows. These are files that were
-    left behind on previous runs when third-party software interfered with
-    Chrome's ability to delete its own temporary files. No value is emitted for
-    a directory if no delete attempts are made. Otherwise, the fail count will
-    be zero or more.
-  </summary>
-</histogram>
-
-<histogram name="Windows.TmpFileDeleter.SuccessCount" units="files"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in M94.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>etiennep@chromium.org</owner>
-  <summary>
-    The number of files deleted in a single directory by the browser process's
-    tmp file deleter on Windows. These are files that were left behind on
-    previous runs when third-party software interfered with Chrome's ability to
-    delete its own temporary files. No value is emitted for a directory if no
-    delete attempts are made. Otherwise, the success count will be zero or more.
-  </summary>
 </histogram>
 
 <histogram name="Windows.TouchDrag.Success" units="BooleanSuccess"
