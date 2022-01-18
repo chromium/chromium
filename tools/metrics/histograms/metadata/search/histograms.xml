@@ -1386,19 +1386,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.QueryTiles.NTP.Chip.SearchClicked" units="index"
-    expires_after="2022-04-01">
-  <obsolete>
-    Deprecated as of November 2021 since Query Tiles no longer use chips.
-  </obsolete>
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the index of the query tile chip that was clicked from the fake
-    search box on the new tab page.
-  </summary>
-</histogram>
-
 <histogram name="Search.QueryTiles.RequestStatus"
     enum="QueryTilesRequestStatus" expires_after="2022-04-01">
   <owner>qinmin@chromium.org</owner>
@@ -1597,21 +1584,6 @@ chromium-metrics-reviews@google.com.
     were selected, and true whenever the user has clicked on any suggestion to
     view the suggested query. Only records one entry per botton-sheet session.
     Recorded when the presentation UI is dismissed. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.RelatedSearches.NumberOfSuggestionsClicked"
-    units="selected" expires_after="M95">
-  <obsolete>
-    Deprecated as of August 2021 in favor of
-    Search.RelatedSearches.NumberOfSuggestionsClicked2
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>related-searches-vteam@google.com</owner>
-  <summary>
-    The number of suggestions that were chosen by the user in a bottom-sheet
-    session that showed any Related Searches. Written when the suggestions UI is
-    closed. Implemented for Android.
   </summary>
 </histogram>
 
