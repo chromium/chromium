@@ -47,6 +47,7 @@ using ui_test_utils::BrowserChangeObserver;
 
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AwaitTabCount(Browser* browser, int tab_count) {
   if (browser->tab_strip_model()->count() == tab_count)
     return;
@@ -73,6 +74,7 @@ void AwaitTabCount(Browser* browser, int tab_count) {
   browser->tab_strip_model()->AddObserver(&observer);
   observer.Wait();
 }
+#endif
 
 }  // namespace
 
@@ -220,6 +222,8 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
 class WebAppTabStripLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest {
  public:
@@ -318,6 +322,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
   EXPECT_EQ(reparent_web_contents,
             app_browser->tab_strip_model()->GetActiveWebContents());
 }
+#endif
 
 class WebAppDeclarativeLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest,
@@ -461,6 +466,8 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(browser(), {about_blank_, in_scope_1_});
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
 IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksExistingClientNavigate) {
   InstallTestApp(
@@ -499,6 +506,7 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1_});
 }
+#endif
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -510,6 +518,9 @@ INSTANTIATE_TEST_SUITE_P(
     /*persistence=*/testing::Values(false),
 #endif
     &WebAppDeclarativeLinkCapturingBrowserTest::ParamToString);
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
 
 class WebAppDeclarativeLinkCapturingPrerenderBrowserTest
     : public WebAppDeclarativeLinkCapturingBrowserTest {
@@ -588,6 +599,7 @@ INSTANTIATE_TEST_SUITE_P(
     /*persistence=*/testing::Values(false),
 #endif
     &WebAppDeclarativeLinkCapturingPrerenderBrowserTest::ParamToString);
+#endif
 
 class WebAppDeclarativeLinkCapturingOriginTrialBrowserTest
     : public WebAppLinkCapturingBrowserTest {
