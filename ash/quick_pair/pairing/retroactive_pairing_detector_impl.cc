@@ -4,11 +4,14 @@
 
 #include "ash/quick_pair/pairing/retroactive_pairing_detector_impl.h"
 
+#include "ash/public/cpp/session/session_controller.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/message_stream/message_stream.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -20,6 +23,25 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
 
+namespace {
+
+bool ShouldBeEnabledForLoginStatus(ash::LoginStatus status) {
+  switch (status) {
+    case ash::LoginStatus::NOT_LOGGED_IN:
+    case ash::LoginStatus::LOCKED:
+    case ash::LoginStatus::KIOSK_APP:
+    case ash::LoginStatus::GUEST:
+    case ash::LoginStatus::PUBLIC:
+      return false;
+    case ash::LoginStatus::USER:
+    case ash::LoginStatus::CHILD:
+    default:
+      return true;
+  }
+}
+
+}  // namespace
+
 namespace ash {
 namespace quick_pair {
 
@@ -27,6 +49,16 @@ RetroactivePairingDetectorImpl::RetroactivePairingDetectorImpl(
     PairerBroker* pairer_broker,
     MessageStreamLookup* message_stream_lookup)
     : message_stream_lookup_(message_stream_lookup) {
+  // If there is no signed in user, don't enabled the retroactive pairing
+  // scenario, so don't initiate any objects or observations.
+  if (!ShouldBeEnabledForLoginStatus(
+          Shell::Get()->session_controller()->login_status())) {
+    QP_LOG(VERBOSE)
+        << __func__
+        << ": No logged in user to enable retroactive pairing scenario";
+    return;
+  }
+
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&RetroactivePairingDetectorImpl::OnGetAdapter,
                      weak_ptr_factory_.GetWeakPtr()));
