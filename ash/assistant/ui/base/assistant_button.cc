@@ -26,7 +26,6 @@ namespace ash {
 namespace {
 
 // Appearance.
-constexpr float kInkDropHighlightOpacity = 0.08f;
 constexpr int kInkDropInset = 2;
 
 }  // namespace
@@ -45,9 +44,6 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
                                              base::Unretained(this))),
       listener_(listener),
       id_(button_id) {
-  constexpr SkColor kInkDropBaseColor = SK_ColorBLACK;
-  constexpr float kInkDropVisibleOpacity = 0.06f;
-
   // Avoid drawing default focus rings since Assistant buttons use
   // a custom highlight on focus.
   SetInstallFocusRingOnFocus(false);
@@ -60,8 +56,7 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
   // Ink drop.
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
-  views::InkDrop::Get(this)->SetBaseColor(kInkDropBaseColor);
-  views::InkDrop::Get(this)->SetVisibleOpacity(kInkDropVisibleOpacity);
+  UpdateInkDropColors();
   views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kInkDropInset));
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this));
   views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
@@ -69,7 +64,8 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
         auto highlight = std::make_unique<views::InkDropHighlight>(
             gfx::SizeF(host->size()),
             views::InkDrop::Get(host)->GetBaseColor());
-        highlight->set_visible_opacity(kInkDropHighlightOpacity);
+        highlight->set_visible_opacity(
+            views::InkDrop::Get(host)->GetVisibleOpacity());
         return highlight;
       },
       this));
@@ -130,14 +126,14 @@ std::unique_ptr<AssistantButton> AssistantButton::Create(
 void AssistantButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Note that the current assumption is that button bounds are square.
   DCHECK_EQ(width(), height());
-  SetFocusPainter(views::Painter::CreateSolidRoundRectPainter(
-      SkColorSetA(views::InkDrop::Get(this)->GetBaseColor(),
-                  0xff * kInkDropHighlightOpacity),
-      width() / 2 - kInkDropInset, gfx::Insets(kInkDropInset)));
+  UpdateFocusPainter();
 }
 
 void AssistantButton::OnThemeChanged() {
   views::View::OnThemeChanged();
+
+  UpdateFocusPainter();
+  UpdateInkDropColors();
 
   if (!icon_color_type_.has_value() || !icon_description_.has_value())
     return;
@@ -152,6 +148,25 @@ void AssistantButton::OnThemeChanged() {
 void AssistantButton::OnButtonPressed() {
   assistant::util::IncrementAssistantButtonClickCount(id_);
   listener_->OnButtonPressed(id_);
+}
+
+void AssistantButton::UpdateFocusPainter() {
+  ScopedAssistantLightModeAsDefault scoped_assistant_light_mode_as_default;
+  std::pair<SkColor, float> base_color_and_opacity =
+      ColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+  SetFocusPainter(views::Painter::CreateSolidRoundRectPainter(
+      SkColorSetA(base_color_and_opacity.first,
+                  0xff * base_color_and_opacity.second),
+      width() / 2 - kInkDropInset, gfx::Insets(kInkDropInset)));
+}
+
+void AssistantButton::UpdateInkDropColors() {
+  ScopedAssistantLightModeAsDefault scoped_assistant_light_mode_as_default;
+
+  std::pair<SkColor, float> base_color_and_opacity =
+      ColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+  views::InkDrop::Get(this)->SetBaseColor(base_color_and_opacity.first);
+  views::InkDrop::Get(this)->SetVisibleOpacity(base_color_and_opacity.second);
 }
 
 BEGIN_METADATA(AssistantButton, views::ImageButton)
