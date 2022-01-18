@@ -15,6 +15,7 @@
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -1269,6 +1270,22 @@ FileManagerPrivateIsTabletModeEnabledFunction::Run() {
   ash::TabletMode* tablet_mode = ash::TabletMode::Get();
   return RespondNow(OneArgument(
       base::Value(tablet_mode ? tablet_mode->InTabletMode() : false)));
+}
+
+ExtensionFunction::ResponseAction FileManagerPrivateOpenURLFunction::Run() {
+  using extensions::api::file_manager_private::OpenURL::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const GURL url(params->url);
+
+  if (!ash::NewWindowDelegate::GetPrimary()) {
+    return RespondNow(
+        Error("Could not get NewWindowDelegate's primary browser"));
+  }
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(url,
+                                                /*from_user_interaction=*/true);
+
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {

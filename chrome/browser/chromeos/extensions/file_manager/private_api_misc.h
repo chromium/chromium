@@ -559,6 +559,19 @@ class FileManagerPrivateIsTabletModeEnabledFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.openURL method.
+class FileManagerPrivateOpenURLFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.openURL",
+                             FILEMANAGERPRIVATE_OPENURL)
+
+ protected:
+  ~FileManagerPrivateOpenURLFunction() override = default;
+
+ private:
+  ResponseAction Run() override;
+};
+
 // Implements the chrome.fileManagerPrivate.openWindow method.
 class FileManagerPrivateOpenWindowFunction : public LoggedExtensionFunction {
  public:

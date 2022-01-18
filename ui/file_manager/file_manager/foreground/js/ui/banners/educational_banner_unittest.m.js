@@ -144,5 +144,9 @@ export async function testDismissWhenClickedAttributeWorksComponents(done) {
     done();
   };
   banner.addEventListener(Banner.Event.BANNER_DISMISSED_FOREVER, handler);
+
+  const mockVisitURL = mockUtilVisitURL();
   banner.shadowRoot.querySelector('[slot="extra-button"]').click();
+  assertEquals(mockVisitURL.getURL(), 'http://test.com');
+  mockVisitURL.restoreVisitURL();
 }

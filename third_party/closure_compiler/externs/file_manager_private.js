@@ -1346,6 +1346,12 @@ chrome.fileManagerPrivate.isTabletModeEnabled = function(callback) {};
 chrome.fileManagerPrivate.notifyDriveDialogResult = function(result) {};
 
 /**
+ * Opens a new browser tab and navigates to `URL`.
+ * @param {!string} URL
+ */
+chrome.fileManagerPrivate.openURL = function(URL) {};
+
+/**
  * Creates a new Files app window in the directory provided in `params`.
  * @param {!chrome.fileManagerPrivate.OpenWindowParams} params
  * @param {function(boolean): void} callback |result| Boolean result returned by

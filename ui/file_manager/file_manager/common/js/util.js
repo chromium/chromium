@@ -891,14 +891,16 @@ util.lastVisitedURL;
 /**
  * Visit the URL.
  *
- * If the browser is opening, the url is opened in a new tag, otherwise the url
+ * If the browser is opening, the url is opened in a new tab, otherwise the url
  * is opened in a new window.
  *
  * @param {!string} url URL to visit.
  */
 util.visitURL = url => {
   util.lastVisitedURL = url;
-  window.open(url);
+  // openURL opens URLs in the primary browser (ash vs lacros) as opposed to
+  // window.open which always opens URLs in ash-chrome.
+  chrome.fileManagerPrivate.openURL(url);
 };
 
 /**

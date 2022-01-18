@@ -31238,6 +31238,7 @@ Called by update_extension_histograms.py.-->
   <int value="1612" label="DEVELOPERPRIVATE_GETUSERSITESETTINGS"/>
   <int value="1613" label="ACTION_OPENPOPUP"/>
   <int value="1614" label="OS_TELEMETRY_GETCPUINFO"/>
+  <int value="1615" label="FILEMANAGERPRIVATE_OPENURL"/>
 </enum>
 
 <enum name="ExtensionIconState">
