@@ -78,8 +78,7 @@ IncomingStream::IncomingStream(
     : script_state_(script_state),
       on_abort_(std::move(on_abort)),
       data_pipe_(std::move(handle)),
-      read_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {}
+      read_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
 
 IncomingStream::~IncomingStream() = default;
 
@@ -92,14 +91,12 @@ void IncomingStream::Init(ExceptionState& exception_state) {
 void IncomingStream::InitWithExistingReadableStream(
     ReadableStream* stream,
     ExceptionState& exception_state) {
-  read_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                      WTF::BindRepeating(&IncomingStream::OnHandleReady,
-                                         WrapWeakPersistent(this)));
-  close_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                       WTF::BindRepeating(&IncomingStream::OnPeerClosed,
-                                          WrapWeakPersistent(this)));
+  read_watcher_.Watch(
+      data_pipe_.get(),
+      MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      WTF::BindRepeating(&IncomingStream::OnHandleReady,
+                         WrapWeakPersistent(this)));
 
   stream->InitWithCountQueueingStrategy(
       script_state_,
@@ -153,33 +150,7 @@ void IncomingStream::OnHandleReady(MojoResult result,
   DVLOG(1) << "IncomingStream::OnHandleReady() this=" << this
            << " result=" << result;
 
-  switch (result) {
-    case MOJO_RESULT_OK:
-      ReadFromPipeAndEnqueue();
-      break;
-
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      // Will be handled by |close_watcher_|.
-      break;
-
-    default:
-      NOTREACHED();
-  }
-}
-
-void IncomingStream::OnPeerClosed(MojoResult result,
-                                  const mojo::HandleSignalsState&) {
-  DVLOG(1) << "IncomingStream::OnPeerClosed() this=" << this
-           << " result=" << result;
-
-  switch (result) {
-    case MOJO_RESULT_OK:
-      HandlePipeClosed();
-      break;
-
-    default:
-      NOTREACHED();
-  }
+  ReadFromPipeAndEnqueue();
 }
 
 void IncomingStream::HandlePipeClosed() {
@@ -229,6 +200,9 @@ void IncomingStream::ReadFromPipeAndEnqueue() {
   DVLOG(1) << "IncomingStream::ReadFromPipeAndEnqueue() this=" << this
            << " in_two_phase_read_=" << in_two_phase_read_
            << " read_pending_=" << read_pending_;
+  if (is_pipe_closed_) {
+    return;
+  }
 
   // Protect against re-entrancy.
   if (in_two_phase_read_) {
@@ -262,7 +236,7 @@ void IncomingStream::ReadFromPipeAndEnqueue() {
       return;
 
     case MOJO_RESULT_FAILED_PRECONDITION:
-      // This will be handled by close_watcher_.
+      HandlePipeClosed();
       return;
 
     default:
@@ -318,7 +292,6 @@ void IncomingStream::ResetPipe() {
   DVLOG(1) << "IncomingStream::ResetPipe() this=" << this;
 
   read_watcher_.Cancel();
-  close_watcher_.Cancel();
   data_pipe_.reset();
 }
 
