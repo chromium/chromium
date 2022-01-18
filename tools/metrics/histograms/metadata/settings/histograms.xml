@@ -121,21 +121,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.HomePageIsCustomized" enum="Boolean"
-    expires_after="2020-08-28">
-  <obsolete>
-    Expired and removed from code as of 10/2020.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    Whether or not the user has customized their homepage. This is recorded for
-    all users with a configurable homepage, regardless of whether they have
-    explicitly disabled the home button in settings. Recorded for Android only
-    on deferred startup and when the user changes their homepage URL.
-  </summary>
-</histogram>
-
 <histogram name="Settings.JsonDataReadSizeKilobytes" units="KB"
     expires_after="2018-07-30">
   <owner>gab@chromium.org</owner>
@@ -171,21 +156,6 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-incognito@google.com</owner>
   <summary>
     Records the profile type for opening the Settings page from menu.
-  </summary>
-</histogram>
-
-<histogram name="Settings.PinnedTabEngineTypes" enum="OmniboxSearchEngineType"
-    expires_after="2022-01-02">
-  <obsolete>
-    Removed January 2022.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>csharp@chromium.org</owner>
-  <summary>
-    Tries to pretend pinned tab URLs are search URLs, and records the search
-    engine types of those URLs by comparing the TLD+1s of the URLs with those of
-    the different known search engines. Recorded when a profile is opened, if
-    there are pinned tabs. Note that at least one profile is opened on startup.
   </summary>
 </histogram>
 
@@ -377,53 +347,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether or not the home button is enabled in user preferences when a profile
     is loaded.
-  </summary>
-</histogram>
-
-<histogram name="Settings.ShowHomeButtonPreferenceState" enum="BooleanEnabled"
-    expires_after="M85">
-  <obsolete>
-    Expired and removed from code as of 10/2020.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    If the home button is enabled or disabled. This is only recorded if the
-    force homepage feature flag is enabled or the home button is partner
-    provided. Recorded for Android only on deferred startup and when the user
-    changes their home button enabled setting.
-
-    This histogram is currently being updated to
-    ShowHomeButtonPreferenceStateManaged and will eventually be removed.
-  </summary>
-</histogram>
-
-<histogram name="Settings.ShowHomeButtonPreferenceStateChanged"
-    enum="BooleanEnabled" expires_after="M88">
-  <obsolete>
-    Removed from code as of 10/2020.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    The new state of the show home button preference after it is changed by the
-    user. Recorded for Android only.
-  </summary>
-</histogram>
-
-<histogram name="Settings.ShowHomeButtonPreferenceStateManaged"
-    enum="HomeButtonPreferenceStateType" expires_after="M88">
-  <obsolete>
-    Removed from code as of 10/2020.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    If the home button is enabled or disabled, either by user or by policy.
-    Recorded for Android only on deferred startup and when the user changes
-    their home button enabled setting.
-
-    Note: HomeButtonPreferenceStateType#ManagedDisabled is currently not used.
   </summary>
 </histogram>
 
