@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/ntp/discover_feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview_delegate.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
@@ -89,6 +90,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
                                      DiscoverFeedDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
+                                     FeedControlDelegate,
                                      FeedMenuCommands,
                                      NewTabPageCommands,
                                      NewTabPageContentDelegate,
@@ -185,6 +187,9 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 // Metrics recorder for actions relating to the feed.
 @property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
+// Currently selected feed.
+@property(nonatomic, assign) FeedType selectedFeed;
+
 @end
 
 @implementation NewTabPageCoordinator
@@ -200,22 +205,26 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
     _prefService =
         ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
             ->GetPrefs();
-      _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-      _prefChangeRegistrar->Init(_prefService);
-      _prefObserverBridge.reset(new PrefObserverBridge(self));
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
-      _prefObserverBridge->ObserveChangesForPreference(
-          DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-          _prefChangeRegistrar.get());
-      _feedExpandedPref = [[PrefBackedBoolean alloc]
-          initWithPrefService:_prefService
-                     prefName:feed::prefs::kArticlesListVisible];
-      [_feedExpandedPref setObserver:self];
-      _discoverFeedProviderObserverBridge =
-          std::make_unique<DiscoverFeedObserverBridge>(self);
+    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
+    _prefChangeRegistrar->Init(_prefService);
+    _prefObserverBridge.reset(new PrefObserverBridge(self));
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
+    _prefObserverBridge->ObserveChangesForPreference(
+        DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+        _prefChangeRegistrar.get());
+    _feedExpandedPref = [[PrefBackedBoolean alloc]
+        initWithPrefService:_prefService
+                   prefName:feed::prefs::kArticlesListVisible];
+    [_feedExpandedPref setObserver:self];
+    _discoverFeedProviderObserverBridge =
+        std::make_unique<DiscoverFeedObserverBridge>(self);
+
+    // TODO(crbug.com/1277974): Make sure that we always want the Discover feed
+    // as default.
+    _selectedFeed = FeedType::kDiscoverFeed;
   }
   return self;
 }
@@ -263,14 +272,24 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   // Fetches feed header and conditionally fetches feed. Feed can only be
   // visible if feed header is visible.
   if ([self isFeedHeaderVisible]) {
-    self.feedHeaderViewController = [[FeedHeaderViewController alloc] init];
+    self.feedHeaderViewController = [[FeedHeaderViewController alloc]
+        initWithSelectedFeed:self.selectedFeed];
+    self.feedHeaderViewController.feedControlDelegate = self;
+
     [self updateFeedHeaderLabelText:self.feedHeaderViewController];
 
     // Requests a Discover feed here if the correct flags and prefs are enabled.
     if ([self shouldFeedBeVisible]) {
       if (IsWebChannelsEnabled()) {
         // TODO(crbug.com/1277504): Use unique property for Following feed.
-        self.discoverFeedViewController = [self followingFeed];
+        switch (self.selectedFeed) {
+          case FeedType::kDiscoverFeed:
+            self.discoverFeedViewController = [self discoverFeed];
+            break;
+          case FeedType::kFollowingFeed:
+            self.discoverFeedViewController = [self followingFeed];
+            break;
+        }
       } else {
         self.discoverFeedViewController = [self discoverFeed];
       }
@@ -510,6 +529,13 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   }
   self.viewPresented = visible;
   [self updateVisible];
+}
+
+#pragma mark - FeedControlDelegate
+
+- (void)handleFeedSelected:(FeedType)feedType {
+  self.selectedFeed = feedType;
+  [self updateNTPForFeed];
 }
 
 #pragma mark - FeedMenuCommands

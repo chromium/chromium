@@ -7,6 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
+// Enum representing the different feeds displayed on the NTP.
+enum class FeedType {
+  kDiscoverFeed = 0,
+  kFollowingFeed = 1,
+};
+
 // Represents the NTP collection view.
 extern NSString* const kNTPCollectionViewIdentifier;
 

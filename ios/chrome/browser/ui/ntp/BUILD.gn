@@ -107,6 +107,7 @@ source_set("ntp_internal") {
   sources = [
     "discover_feed_wrapper_view_controller.h",
     "discover_feed_wrapper_view_controller.mm",
+    "feed_control_delegate.h",
     "feed_header_view_controller.h",
     "feed_header_view_controller.mm",
     "feed_menu_commands.h",

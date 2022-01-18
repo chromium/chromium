@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
+
+@protocol FeedControlDelegate;
+
 @interface FeedHeaderViewController : UIViewController
 
 // Button for opening top-level feed menu.
@@ -15,7 +19,14 @@
 // The base title string of the feed header, excluding modifiers.
 @property(nonatomic, copy) NSString* titleText;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+// Delegate for controlling the presented feed.
+@property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
+
+// Initializes the header with the currently selected feed.
+- (instancetype)initWithSelectedFeed:(FeedType)selectedFeed
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
