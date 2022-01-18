@@ -7,6 +7,8 @@
  * code.
  */
 
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+
 /**
  * Checks if argument is an array with non-zero length.
  */
@@ -65,18 +67,33 @@ export function promisifyOnload(
 
 type WallpaperSelectionEvent =
     MouseEvent&{type: 'click'}|KeyboardEvent&{key: 'Enter'};
-/**
- * Returns true if this event is a user action to select an item.
- */
+/** Returns true if this event is a user action to select an item. */
 export function isSelectionEvent(event: Event):
     event is WallpaperSelectionEvent {
   return (event instanceof MouseEvent && event.type === 'click') ||
       (event instanceof KeyboardEvent && event.key === 'Enter');
 }
 
-/**
- * Sets a css variable to control the animation delay.
- */
+/** Returns the text to display for a number of images. */
+export function getCountText(x: number|null|undefined): string {
+  switch (x) {
+    case null:
+    case undefined:
+      return '';
+    case 0:
+      return loadTimeData.getString('zeroImages');
+    case 1:
+      return loadTimeData.getString('oneImage');
+    default:
+      if ('number' !== typeof x || x < 0) {
+        console.error('Received an impossible value');
+        return '';
+      }
+      return loadTimeData.getStringF('multipleImages', x);
+  }
+}
+
+/** Returns a css variable to control the animation delay. */
 export function getLoadingPlaceholderAnimationDelay(index: number): string {
   return `--animation-delay: ${index * 83}ms;`;
 }

@@ -19,30 +19,17 @@
   .row:focus-visible {
     outline: 0;
   }
-
-  .photo {
-    align-items: center;
-    background: rgba(0, 0, 0, 0.12);
-    display: flex;
-    justify-content: center;
-  }
-
-  .photo img {
-    flex: 1 1 auto;
-    height: 100%;
-    object-fit: cover;
-    width: 100%;
-  }
 </style>
 <iron-list id="grid" items="[[photosByRow_]]" as="row">
   <template>
     <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
       on-focus="onGridRowFocused_" on-keydown="onGridRowKeyDown_">
       <template is="dom-repeat" items="[[row]]" as="photo">
-        <wallpaper-grid-item>
-          <div class="photo" colindex$="[[index]]" tabindex="-1">
-            <img is="cr-auto-img" auto-src="[[photo.url]]"></img>
-          </div>
+        <wallpaper-grid-item
+          class="photo"
+          colindex$="[[index]]"
+          image-src="[[photo.url]]"
+          tabindex="-1">    
         </wallpaper-grid-item>
       </template>
     </div>

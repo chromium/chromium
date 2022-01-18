@@ -19,6 +19,7 @@ import {UserPreviewTest} from './user_preview_element_test.js';
 import {UserSubpageTest} from './user_subpage_element_test.js';
 import {WallpaperCollectionsTest} from './wallpaper_collections_element_test.js';
 import {WallpaperFullscreenTest} from './wallpaper_fullscreen_element_test.js';
+import {WallpaperGridItemTest} from './wallpaper_grid_item_element_test.js';
 import {WallpaperImagesTest} from './wallpaper_images_element_test.js';
 import {WallpaperObserverTest} from './wallpaper_observer_test.js';
 import {WallpaperPreviewTest} from './wallpaper_preview_element_test.js';
@@ -43,10 +44,11 @@ const testCases = [
   UserSubpageTest,
   WallpaperCollectionsTest,
   WallpaperFullscreenTest,
+  WallpaperGridItemTest,
   WallpaperImagesTest,
+  WallpaperObserverTest,
   WallpaperPreviewTest,
   WallpaperSelectedTest,
-  WallpaperObserverTest,
 ];
 
 for (const testCase of testCases) {

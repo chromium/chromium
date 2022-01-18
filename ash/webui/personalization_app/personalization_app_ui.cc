@@ -84,7 +84,11 @@ void AddStrings(content::WebUIDataSource* source) {
       {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER},
       {"themeLabel", IDS_PERSONALIZATION_APP_THEME_LABEL},
       {"darkColorMode", IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE},
-      {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE}};
+      {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE},
+      {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
+      {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
+      {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
+  };
   source->AddLocalizedStrings(kLocalizedStrings);
 
   if (features::IsWallpaperGooglePhotosIntegrationEnabled()) {

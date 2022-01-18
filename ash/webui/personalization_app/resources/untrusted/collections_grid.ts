@@ -10,7 +10,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Events, EventType, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../common/constants.js';
-import {getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
+import {getCountText, getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
 /**
@@ -80,27 +80,6 @@ interface RepeaterEvent extends CustomEvent {
   model: {
     item: Tile,
   };
-}
-
-/**
- * Get the text to display for number of images.
- */
-function getCountText(x: number|null|undefined): string {
-  switch (x) {
-    case undefined:
-    case null:
-      return '';
-    case 0:
-      return loadTimeData.getString('zeroImages');
-    case 1:
-      return loadTimeData.getString('oneImage');
-    default:
-      if ('number' !== typeof x || x < 0) {
-        console.error('Received an impossible value');
-        return '';
-      }
-      return loadTimeData.getStringF('multipleImages', x);
-  }
 }
 
 /** Returns the tile to display for the Google Photos collection. */

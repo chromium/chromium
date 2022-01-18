@@ -22,17 +22,85 @@
     }
   }
 
-  :host > ::slotted(*) {
+  :host(:focus-visible) {
+    outline: none;
+  }
+
+  .item {
+    background-color: rgba(0, 0, 0, 0.12);
     border-radius: var(--personalization-app-grid-item-border-radius);
     box-sizing: border-box;
     display: block;
     height: 100%;
     overflow: hidden;
+    position: relative;
     width: 100%;
   }
 
-  :host > ::slotted(*:focus-within) {
+  :host(:focus-visible) .item {
     outline: 2px solid var(--cros-focus-ring-color);
   }
+
+  img {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    object-fit: cover;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .text {
+    background: linear-gradient(
+        rgba(var(--google-grey-900-rgb), 0),
+        rgba(var(--google-grey-900-rgb), 55%));
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 50%;
+    justify-content: flex-end;
+    left: 0;
+    overflow: hidden;
+    padding: 8px;
+    position: absolute;
+    right: 0;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .primary-text,
+  .secondary-text {
+    color: white;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    text-overflow: ellipsis;
+    text-shadow: var(--personalization-app-text-shadow-elevation-1);
+  }
+
+  .primary-text {
+    font: var(--cros-headline-1-font);
+  }
+
+  .secondary-text {
+    font: var(--cros-annotation-2-font);
+  }
 </style>
-<slot></slot>
+<div class="item">
+  <template is="dom-if" if="[[isImageVisible_(imageSrc)]]">
+    <img is="cr-auto-img" auto-src="[[imageSrc]]"></img>
+  </template>
+  <template is="dom-if" if="[[isTextVisible_(primaryText, secondaryText)]]">
+    <div class="text">
+      <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]">
+        <p class="primary-text" title$="[[primaryText]]">[[primaryText]]</p>
+      </template>
+      <template is="dom-if" if="[[isSecondaryTextVisible_(secondaryText)]]">
+        <p class="secondary-text" title$="[[secondaryText]]">[[secondaryText]]</p>
+      </template>
+    </div>
+  </template>
+</div>

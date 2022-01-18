@@ -7,23 +7,17 @@
     height: 100%;
     width: 100%;
   }
-
-  .album {
-    align-items: center;
-    background: rgba(0, 0, 0, 0.12);
-    display: flex;
-    justify-content: center;
-  }
 </style>
 <iron-list id="grid" items="[[albums_]]" as="album" grid>
   <template>
-      <wallpaper-grid-item>
-        <template is="dom-if" if="[[album]]">
-          <div class="album" tabindex$="[[tabIndex]]"
-            on-click="onAlbumSelected_" on-keypress="onAlbumSelected_">
-            [[album.title]]
-          </div>
-        </template>
-      </wallpaper-grid-item>
+    <wallpaper-grid-item
+      class="album"
+      image-src="[[album.preview.url]]"
+      on-click="onAlbumSelected_"
+      on-keypress="onAlbumSelected_"
+      primary-text="[[album.title]]"
+      secondary-text="[[getSecondaryText_(album)]]"
+      tabindex$="[[tabIndex]]">
+    </wallpaper-grid-item>
   </template>
 </iron-list>

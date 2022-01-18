@@ -7,7 +7,6 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import './styles.js';
 import '../../common/styles.js';
 

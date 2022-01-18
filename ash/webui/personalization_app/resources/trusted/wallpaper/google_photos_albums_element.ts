@@ -14,7 +14,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isSelectionEvent} from '../../common/utils.js';
+import {getCountText, isSelectionEvent} from '../../common/utils.js';
 import {GooglePhotosAlbum} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -84,6 +84,11 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
     // iron-list will render incorrectly. Force relayout by invalidating the
     // iron-list when this element becomes visible.
     afterNextRender(this, () => this.$.grid.fire('iron-resize'));
+  }
+
+  /** Returns the secondary text to display for the specified |album|. */
+  private getSecondaryText_(album: GooglePhotosAlbum): string {
+    return getCountText(album.photoCount);
   }
 }
 

@@ -46,7 +46,7 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
 
     // Initially no album id selected. Photos should be absent.
-    const photoSelector = 'wallpaper-grid-item:not([hidden]) .photo';
+    const photoSelector = 'wallpaper-grid-item:not([hidden]).photo';
     assertEquals(querySelectorAll(photoSelector)!.length, 0);
 
     const {fetchGooglePhotosAlbum: fetchGooglePhotosAlbumPromise} =
