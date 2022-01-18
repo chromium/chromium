@@ -90,6 +90,12 @@ void AppListTestHelper::ToggleAndRunLoop(uint64_t display_id,
   WaitUntilIdle();
 }
 
+void AppListTestHelper::StartSlideAnimationOnBubbleAppsPage(
+    views::View* view,
+    int vertical_offset) {
+  GetBubbleAppsPage()->SlideViewIntoPosition(view, vertical_offset);
+}
+
 void AppListTestHelper::CheckVisibility(bool visible) {
   EXPECT_EQ(visible, app_list_controller_->IsVisible());
   EXPECT_EQ(visible, app_list_controller_->GetTargetVisibility(absl::nullopt));

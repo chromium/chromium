@@ -62,6 +62,8 @@ source_set("app_list") {
     "views/app_list_reorder_undo_container_view.h",
     "views/app_list_view.cc",
     "views/app_list_view.h",
+    "views/app_list_view_util.cc",
+    "views/app_list_view_util.h",
     "views/apps_container_view.cc",
     "views/apps_container_view.h",
     "views/apps_grid_context_menu.cc",

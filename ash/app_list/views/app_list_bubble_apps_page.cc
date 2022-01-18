@@ -14,6 +14,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_reorder_undo_container_view.h"
+#include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
@@ -66,6 +67,13 @@ constexpr int kHorizontalInteriorMargin = 20;
 
 // Insets for the separator between the continue section and apps.
 constexpr gfx::Insets kSeparatorInsets(0, 12);
+
+// A slide animation's duration.
+constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(250);
+
+// A slide animation's tween type.
+constexpr gfx::Tween::Type kSlideAnimationTweenType =
+    gfx::Tween::LINEAR_OUT_SLOW_IN;
 
 }  // namespace
 
@@ -223,63 +231,10 @@ void AppListBubbleAppsPage::StartShowAnimation() {
   // animation. No need to use SlideViewIntoPosition() because this view always
   // has a layer.
   StartSlideInAnimation(
-      scrollable_apps_grid_view_, vertical_offset,
+      scrollable_apps_grid_view_, vertical_offset, kSlideAnimationDuration,
+      kSlideAnimationTweenType,
       base::BindRepeating(&AppListBubbleAppsPage::OnAppsGridViewAnimationEnded,
                           weak_factory_.GetWeakPtr()));
-}
-
-void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
-                                                  int vertical_offset) {
-  // Abort any in-progress layer animation. Views might have temporary layers
-  // during animations that are cleaned up at the end. The code below needs to
-  // know the final desired layer state.
-  if (view->layer()) {
-    DCHECK(view->layer()->GetAnimator());
-    view->layer()->GetAnimator()->AbortAllAnimations();
-  }
-
-  // Add a layer for the view if it doesn't have one at baseline.
-  const bool create_layer = !view->layer();
-  if (create_layer) {
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
-  }
-
-  // If we created a layer for the view, undo that when the animation ends.
-  // The underlying views don't expose weak pointers directly, so use a weak
-  // pointer to this view, which owns its children.
-  auto cleanup = create_layer ? base::BindRepeating(
-                                    &AppListBubbleAppsPage::DestroyLayerForView,
-                                    weak_factory_.GetWeakPtr(), view)
-                              : base::DoNothing();
-  StartSlideInAnimation(view, vertical_offset, cleanup);
-}
-
-void AppListBubbleAppsPage::StartSlideInAnimation(
-    views::View* view,
-    int vertical_offset,
-    base::RepeatingClosure cleanup) {
-  DCHECK(view->layer());
-
-  // Animation spec:
-  //
-  // Y Position: Down (offset) → End position
-  // Duration: 250ms
-  // Ease: (0.00, 0.00, 0.20, 1.00)
-
-  // Set the initial offset via a layer transform.
-  gfx::Transform translate_down;
-  translate_down.Translate(0, vertical_offset);
-  view->layer()->SetTransform(translate_down);
-
-  // Animate the transform back to the identity transform.
-  constexpr gfx::Transform kIdentity;
-  views::AnimationBuilder()
-      .OnEnded(cleanup)
-      .OnAborted(cleanup)
-      .Once()
-      .SetDuration(base::Milliseconds(250))
-      .SetTransform(view, kIdentity, gfx::Tween::LINEAR_OUT_SLOW_IN);
 }
 
 void AppListBubbleAppsPage::StartHideAnimation() {
@@ -399,6 +354,27 @@ void AppListBubbleAppsPage::OnAppsGridViewAnimationEnded() {
   // the gradient mask layer.
   gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
   gradient_helper_->UpdateGradientZone();
+}
+
+void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
+                                                  int vertical_offset) {
+  // Animation spec:
+  //
+  // Y Position: Down (offset) → End position
+  // Duration: 250ms
+  // Ease: (0.00, 0.00, 0.20, 1.00)
+
+  const bool create_layer = PrepareForLayerAnimation(view);
+
+  // If we created a layer for the view, undo that when the animation ends.
+  // The underlying views don't expose weak pointers directly, so use a weak
+  // pointer to this view, which owns its children.
+  auto cleanup = create_layer ? base::BindRepeating(
+                                    &AppListBubbleAppsPage::DestroyLayerForView,
+                                    weak_factory_.GetWeakPtr(), view)
+                              : base::DoNothing();
+  StartSlideInAnimation(view, vertical_offset, kSlideAnimationDuration,
+                        kSlideAnimationTweenType, cleanup);
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

@@ -38,14 +38,13 @@ TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
   // Trigger a slide animation.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  auto* apps_page = helper->GetBubbleAppsPage();
   constexpr int kVerticalOffset = 20;
-  apps_page->SlideViewIntoPosition(recent_apps, kVerticalOffset);
+  helper->StartSlideAnimationOnBubbleAppsPage(recent_apps, kVerticalOffset);
   ASSERT_TRUE(recent_apps->layer());
   EXPECT_TRUE(recent_apps->layer()->GetAnimator()->is_animating());
 
   // While that animation is running, run another animation.
-  apps_page->SlideViewIntoPosition(recent_apps, kVerticalOffset);
+  helper->StartSlideAnimationOnBubbleAppsPage(recent_apps, kVerticalOffset);
   auto* compositor = recent_apps->layer()->GetCompositor();
   while (recent_apps->layer() &&
          recent_apps->layer()->GetAnimator()->is_animating()) {

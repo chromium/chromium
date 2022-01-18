@@ -74,6 +74,10 @@ class AppListTestHelper {
   // until animation finishes.
   void ToggleAndRunLoop(uint64_t display_id, AppListShowSource show_source);
 
+  // Slides a bubble apps page's component using a layer animation.
+  void StartSlideAnimationOnBubbleAppsPage(views::View* view,
+                                           int vertical_offset);
+
   // Check the visibility value of the app list and its target.
   // Fails in tests if either one doesn't match |visible|.
   // DEPRECATED: Prefer to EXPECT_TRUE or EXPECT_FALSE the visibility directly,
