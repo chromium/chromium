@@ -261,9 +261,6 @@ class AppLauncherHandler
   // The ids of apps to show on the NTP.
   std::set<std::string> visible_apps_;
 
-  // The ids of apps installed externally.
-  std::map<web_app::AppId, GURL> policy_installed_apps_;
-
   // The id of the extension we are prompting the user about (either enable or
   // uninstall).
   std::string extension_id_prompting_;

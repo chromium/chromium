@@ -462,6 +462,12 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     install_result_code_ = result_code;
   }
 
+  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(
+      const std::string& unhashed_app_id) {
+    return policy_manager().GetUrlRunOnOsLoginPolicyByUnhashedAppId(
+        unhashed_app_id);
+  }
+
  private:
   InstallResultCode install_result_code_ =
       InstallResultCode::kSuccessNewInstall;
@@ -545,15 +551,13 @@ TEST_P(WebAppPolicyManagerTest,
   SetWebAppSettingsDictPref(kWebAppSettingInvalidDefaultConfiguration);
   policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kNoContainerUrl),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy("http://foo.example"),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(
-      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
-      RunOnOsLoginPolicy::kAllowed);
 }
 
 TEST_P(WebAppPolicyManagerTest, WebAppSettingsNoDefaultConfiguration) {
@@ -578,15 +582,13 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsNoDefaultConfiguration) {
   policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
 
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
-            RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kBlocked);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kNoContainerUrl),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(
-      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
-      RunOnOsLoginPolicy::kAllowed);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy("http://foo.example"),
+            RunOnOsLoginPolicy::kAllowed);
 }
 
 TEST_P(WebAppPolicyManagerTest, WebAppSettingsWithDefaultConfiguration) {
@@ -596,15 +598,13 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsWithDefaultConfiguration) {
   policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
 
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
-            RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kNoContainerUrl),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(
-      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
-      RunOnOsLoginPolicy::kBlocked);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy("http://foo.example"),
+            RunOnOsLoginPolicy::kBlocked);
 }
 
 TEST_P(WebAppPolicyManagerTest, TwoForceInstalledApps) {
@@ -1108,24 +1108,21 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
   SetWebAppSettingsDictPref(kWebAppSettingInitialConfiguration);
   policy_manager().Start();
   AwaitPolicyManagerRefreshPolicySettings();
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
-            RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kNoContainerUrl),
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
 
   SetWebAppSettingsDictPref(kWebAppSettingWithDefaultConfiguration);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
-            RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kNoContainerUrl),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(
-      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
-      RunOnOsLoginPolicy::kBlocked);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy("http://foo.example"),
+            RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(2, mock_observer.GetOnPolicyChangedCalledCount());
   policy_manager().RemoveObserver(&mock_observer);
 }
@@ -1152,11 +1149,10 @@ TEST_P(WebAppPolicyManagerTest,
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
-            RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kNoContainerUrl),
             RunOnOsLoginPolicy::kAllowed);
 
   // Now apply WebSettings policy
@@ -1164,15 +1160,13 @@ TEST_P(WebAppPolicyManagerTest,
   policy_manager().AddObserver(&mock_observer);
   SetWebAppSettingsDictPref(kWebAppSettingWithDefaultConfiguration);
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
-            RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kNoContainerUrl),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(
-      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
-      RunOnOsLoginPolicy::kBlocked);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy("http://foo.example"),
+            RunOnOsLoginPolicy::kBlocked);
   policy_manager().RemoveObserver(&mock_observer);
 }
 
@@ -1186,15 +1180,13 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   policy_manager().Start();
   AwaitPolicyManagerAppsSynchronized();
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
-            RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager().GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kNoContainerUrl),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(
-      policy_manager().GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
-      RunOnOsLoginPolicy::kBlocked);
+  EXPECT_EQ(GetUrlRunOnOsLoginPolicy("http://foo.example"),
+            RunOnOsLoginPolicy::kBlocked);
 
   // Now add two sites, one that opens in a window and one that opens in a tab.
   base::Value list(base::Value::Type::LIST);

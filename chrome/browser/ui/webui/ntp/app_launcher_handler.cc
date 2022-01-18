@@ -277,10 +277,11 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
       base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
           is_locally_installed);
 
+  // TODO(crbug.com/1280773): This should use the WebAppRegistrar to determine
+  // if the user can configure Run on OS Login.
   value->SetBoolean(
       "mayToggleRunOnOsLoginMode",
-      web_app_provider_->policy_manager().GetUrlRunOnOsLoginPolicy(
-          policy_installed_apps_[app_id]) ==
+      web_app_provider_->policy_manager().GetUrlRunOnOsLoginPolicy(app_id) ==
           web_app::RunOnOsLoginPolicy::kAllowed);
 
   std::string runOnOsLoginModeString =
@@ -694,10 +695,6 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
       visible_apps_.insert((*it)->id());
     }
   }
-
-  policy_installed_apps_ =
-      web_app_provider_->registrar().GetExternallyInstalledApps(
-          web_app::ExternalInstallSource::kExternalPolicy);
 
   FillAppDictionary(&dictionary);
   web_ui()->CallJavascriptFunctionUnsafe("ntp.getAppsCallback", dictionary);

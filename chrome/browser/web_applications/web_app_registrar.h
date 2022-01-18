@@ -248,6 +248,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // entries in the web app manifest.
   DisplayMode GetEffectiveDisplayModeFromManifest(const AppId& app_id) const;
 
+  // Computes and returns the unhashed app id from entries in the web app
+  // manifest.
+  std::string GetComputedUnhashedAppId(const AppId& app_id) const;
+
   // Returns whether the app should be opened in tabbed window mode.
   bool IsTabbedWindowModeEnabled(const AppId& app_id) const;
 

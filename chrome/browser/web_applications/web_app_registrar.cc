@@ -386,6 +386,14 @@ DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
   return GetAppDisplayMode(app_id);
 }
 
+std::string WebAppRegistrar::GetComputedUnhashedAppId(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? GenerateAppIdUnhashed(web_app->manifest_id(),
+                                         web_app->start_url())
+                 : std::string();
+}
+
 bool WebAppRegistrar::IsTabbedWindowModeEnabled(const AppId& app_id) const {
   if (!base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip))
     return false;

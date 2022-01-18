@@ -126,9 +126,11 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   // No need to install a placeholder because there should be one already.
   install_options.wait_for_windows_closed = true;
   install_options.reinstall_placeholder = true;
-  install_options.run_on_os_login =
-      (GetUrlRunOnOsLoginPolicy(install_options.install_url) ==
-       RunOnOsLoginPolicy::kRunWindowed);
+
+  // TODO(crbug.com/1280773): Reevaluate if this is needed.
+  install_options.run_on_os_login = (GetUrlRunOnOsLoginPolicyByUnhashedAppId(
+                                         install_options.install_url.spec()) ==
+                                     RunOnOsLoginPolicy::kRunWindowed);
 
   // If the app is not a placeholder app, ExternallyManagedAppManager will
   // ignore the request.
@@ -230,8 +232,11 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     // apps but only if they are not being used.
     install_options.wait_for_windows_closed = true;
     install_options.reinstall_placeholder = true;
+
+    // TODO(crbug.com/1280773): Reevaluate if this is needed.
     install_options.run_on_os_login =
-        (GetUrlRunOnOsLoginPolicy(install_options.install_url) ==
+        (GetUrlRunOnOsLoginPolicyByUnhashedAppId(
+             install_options.install_url.spec()) ==
          RunOnOsLoginPolicy::kRunWindowed);
 
     absl::optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
@@ -301,7 +306,7 @@ void WebAppPolicyManager::RefreshPolicySettings() {
 
     WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
     if (by_url.Parse(iter.second, false)) {
-      settings_by_url_[url] = by_url;
+      settings_by_url_[url.spec()] = by_url;
     } else {
       LOG(WARNING) << "Malformed web app settings for " << url;
     }
@@ -314,12 +319,10 @@ void WebAppPolicyManager::RefreshPolicySettings() {
 }
 
 void WebAppPolicyManager::ApplyPolicySettings() {
-  std::map<AppId, GURL> policy_installed_apps =
-      app_registrar_->GetExternallyInstalledApps(
-          ExternalInstallSource::kExternalPolicy);
   for (const AppId& app_id : app_registrar_->GetAppIds()) {
-    RunOnOsLoginPolicy policy =
-        GetUrlRunOnOsLoginPolicy(policy_installed_apps[app_id]);
+    // TODO(crbug.com/1280773): Reevaluate if this code should belong here, or
+    // in WebAppRegistrar.
+    RunOnOsLoginPolicy policy = GetUrlRunOnOsLoginPolicy(app_id);
     if (policy == RunOnOsLoginPolicy::kBlocked) {
       sync_bridge_->SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kNotRun);
       OsHooksOptions os_hooks;
@@ -416,12 +419,16 @@ void WebAppPolicyManager::RemoveObserver(
 }
 
 RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicy(
-    absl::optional<GURL> url) const {
-  if (url) {
-    auto it = settings_by_url_.find(url.value());
-    if (it != settings_by_url_.end())
-      return it->second.run_on_os_login_policy;
-  }
+    const AppId& app_id) const {
+  return GetUrlRunOnOsLoginPolicyByUnhashedAppId(
+      app_registrar_->GetComputedUnhashedAppId(app_id));
+}
+
+RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByUnhashedAppId(
+    const std::string& unhashed_app_id) const {
+  auto it = settings_by_url_.find(unhashed_app_id);
+  if (it != settings_by_url_.end())
+    return it->second.run_on_os_login_policy;
   return default_settings_->run_on_os_login_policy;
 }
 

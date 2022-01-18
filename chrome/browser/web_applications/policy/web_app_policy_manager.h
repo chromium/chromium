@@ -84,7 +84,7 @@ class WebAppPolicyManager {
   // Checks if UI mode of disabled web apps is hidden.
   bool IsDisabledAppsModeHidden() const;
 
-  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(absl::optional<GURL> url) const;
+  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(const AppId& app_id) const;
 
   void AddObserver(WebAppPolicyManagerObserver* observer);
   void RemoveObserver(WebAppPolicyManagerObserver* observer);
@@ -139,6 +139,8 @@ class WebAppPolicyManager {
 
   void OverrideManifest(const GURL& custom_values_key,
                         blink::mojom::ManifestPtr& manifest) const;
+  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicyByUnhashedAppId(
+      const std::string& unhashed_app_id) const;
 
   // Parses install options from a Value, which represents one entry of the
   // kWepAppInstallForceList. If the value contains a custom_name or
@@ -179,7 +181,7 @@ class WebAppPolicyManager {
   bool is_refreshing_ = false;
   bool needs_refresh_ = false;
 
-  base::flat_map<GURL, WebAppSetting> settings_by_url_;
+  base::flat_map<std::string, WebAppSetting> settings_by_url_;
   base::flat_map<GURL, CustomManifestValues> custom_manifest_values_by_url_;
   std::unique_ptr<WebAppSetting> default_settings_;
   base::ObserverList<WebAppPolicyManagerObserver, /*check_empty=*/true>
