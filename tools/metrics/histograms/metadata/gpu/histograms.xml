@@ -811,7 +811,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EstablishGpuChannelSyncTime" units="ms"
-    expires_after="2022-05-13">
+    expires_after="2022-07-17">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1693,7 +1693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
-    enum="OverlayStrategies" expires_after="2022-05-15">
+    enum="OverlayStrategies" expires_after="2022-07-17">
   <owner>dcastagna@chromium.org</owner>
   <owner>hoegsberg@chromium.org</owner>
   <summary>

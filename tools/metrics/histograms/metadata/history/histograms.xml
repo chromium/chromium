@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.FinalState"
-    enum="HistoryClustersFinalState" expires_after="2022-05-15">
+    enum="HistoryClustersFinalState" expires_after="2022-07-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -395,7 +395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.InitialState"
-    enum="HistoryClustersInitialState" expires_after="2022-05-15">
+    enum="HistoryClustersInitialState" expires_after="2022-07-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.LinksOpened" units="links opened"
-    expires_after="2022-05-15">
+    expires_after="2022-07-17">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.NumQueries"
-    units="number queries made" expires_after="2022-05-15">
+    units="number queries made" expires_after="2022-07-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -430,7 +430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.BatchEntityLookupLatency" units="ms"
-    expires_after="2022-05-15">
+    expires_after="2022-07-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.BatchEntityLookupSize" units="count"
-    expires_after="2022-05-15">
+    expires_after="2022-07-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.GetClustersLatency" units="ms"
-    expires_after="2022-05-15">
+    expires_after="2022-07-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.NumClustersReturned"
-    units="number clusters returned" expires_after="2022-05-15">
+    units="number clusters returned" expires_after="2022-07-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.NumVisitsToCluster"
-    units="number visits" expires_after="2022-05-15">
+    units="number visits" expires_after="2022-07-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -626,7 +626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.ServiceLatency" units="ms"
-    expires_after="2022-05-15">
+    expires_after="2022-07-17">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>

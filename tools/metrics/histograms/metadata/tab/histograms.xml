@@ -1759,7 +1759,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Tabs.PersistedTabData.Storage.Save.File.FirstStorageRequestType"
-    enum="FileStorageRequestType" expires_after="2022-05-01">
+    enum="FileStorageRequestType" expires_after="2022-07-17">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
