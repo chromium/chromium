@@ -8,7 +8,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
-import {WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {FetchGooglePhotosAlbumsResponse, GooglePhotosAlbum, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isFilePath, isWallpaperImage} from '../utils.js';
 
@@ -82,26 +82,26 @@ export async function fetchGooglePhotosAlbum(
 
 /** Fetches the list of Google Photos albums and saves it to the store. */
 async function fetchGooglePhotosAlbums(
-    _: WallpaperProviderInterface, store: PersonalizationStore): Promise<void> {
+    provider: WallpaperProviderInterface,
+    store: PersonalizationStore): Promise<void> {
   store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
 
-  // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
-  // request that returns a list of fictitious Google Photos albums.
-  return new Promise(resolve => setTimeout(() => {
-                       store.dispatch(action.setGooglePhotosAlbumsAction([
-                         '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
-                         '0ec40478-9712-42e1-b5bf-3e75870ca042',
-                         '0a268a37-877a-4936-81d4-38cc84b0f596',
-                         '27597eb3-a42d-474c-ab39-592680dcf35a',
-                         'bdcd6ba5-ed70-4866-9bc0-87ccf87db08c',
-                       ].map((uuid, i) => {
-                         const album = new WallpaperCollection();
-                         album.id = uuid;
-                         album.name = `Album ${i}`;
-                         return album;
-                       })));
-                       resolve();
-                     }, 1000));
+  let albums: Array<GooglePhotosAlbum>|null = [];
+  let resumeToken: string|null|undefined = null;
+
+  do {
+    const {response} = await provider.fetchGooglePhotosAlbums(resumeToken) as
+        {response: FetchGooglePhotosAlbumsResponse};
+    if (!Array.isArray(response.albums)) {
+      console.warn('Failed to fetch Google Photos albums');
+      albums = null;
+      break;
+    }
+    albums.push(...response.albums);
+    resumeToken = response.resumeToken;
+  } while (resumeToken);
+
+  store.dispatch(action.setGooglePhotosAlbumsAction(albums));
 }
 
 /** Fetches the count of Google Photos photos and saves it to the store. */

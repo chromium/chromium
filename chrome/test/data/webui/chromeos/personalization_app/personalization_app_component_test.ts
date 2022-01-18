@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AmbientSubpageTest} from './ambient_subpage_element_test.js';
+import {GooglePhotosAlbumsTest} from './google_photos_albums_element_test.js';
 import {GooglePhotosCollectionTest} from './google_photos_collection_element_test.js';
 import {GooglePhotosPhotosByAlbumIdTest} from './google_photos_photos_by_album_id_element_test.js';
 import {LocalImagesTest} from './local_images_element_test.js';
@@ -29,6 +30,7 @@ window.console.warn = () => {};
 
 const testCases = [
   AmbientSubpageTest,
+  GooglePhotosAlbumsTest,
   GooglePhotosCollectionTest,
   GooglePhotosPhotosByAlbumIdTest,
   LocalImagesTest,

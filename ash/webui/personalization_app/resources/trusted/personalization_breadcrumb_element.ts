@@ -19,7 +19,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 
 import {isNonEmptyArray} from '../common/utils.js';
 
-import {WallpaperCollection} from './personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, WallpaperCollection} from './personalization_app.mojom-webui.js';
 import {Paths} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {isNonEmptyString} from './utils.js';
@@ -49,12 +49,8 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
         type: String,
       },
 
-      /**
-       * The current Google Photos album id to display.
-       */
-      googlePhotosAlbumId: {
-        type: String,
-      },
+      /** The current Google Photos album id to display. */
+      googlePhotosAlbumId: String,
 
       /**
        * The current path of the page.
@@ -73,12 +69,8 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
         type: Array,
       },
 
-      /**
-       * The list of Google Photos albums.
-       */
-      googlePhotosAlbums_: {
-        type: Array,
-      },
+      /** The list of Google Photos albums. */
+      googlePhotosAlbums_: Array,
 
       showBackButton_: {
         type: Boolean,
@@ -92,7 +84,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   path: string;
   private breadcrumbs_: string[];
   private collections_: WallpaperCollection[]|null;
-  private googlePhotosAlbums_: WallpaperCollection[]|null;
+  private googlePhotosAlbums_: GooglePhotosAlbum[]|null;
   private showBackButton_: boolean;
 
   connectedCallback() {
@@ -105,7 +97,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
 
   private computeBreadcrumbs_(
       path: string, collections: WallpaperCollection[]|null,
-      collectionId: string, googlePhotosAlbums: WallpaperCollection[]|null,
+      collectionId: string, googlePhotosAlbums: GooglePhotosAlbum[]|null,
       googlePhotosAlbumId: string|null): string[] {
     const breadcrumbs = [this.i18n('wallpaperLabel')];
 
@@ -127,7 +119,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
               googlePhotosAlbum =>
                   googlePhotosAlbum.id === googlePhotosAlbumId);
           if (googlePhotosAlbum) {
-            breadcrumbs.push(googlePhotosAlbum.name);
+            breadcrumbs.push(googlePhotosAlbum.title);
           }
         }
         break;

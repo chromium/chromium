@@ -7,7 +7,7 @@ import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CurrentWallpaper, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosAlbum, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 import {DisplayableImage} from '../personalization_reducers.js';
 
 /**
@@ -245,13 +245,11 @@ export function setGooglePhotosAlbumAction(
 
 export type SetGooglePhotosAlbumsAction = Action&{
   name: WallpaperActionName.SET_GOOGLE_PHOTOS_ALBUMS;
-  albums: WallpaperCollection[]|null;
+  albums: GooglePhotosAlbum[]|null;
 };
 
-/**
- * Sets the list of Google Photos albums. May be called with null on error.
- */
-export function setGooglePhotosAlbumsAction(albums: WallpaperCollection[]|
+/** Sets the list of Google Photos albums. May be called with null on error. */
+export function setGooglePhotosAlbumsAction(albums: GooglePhotosAlbum[]|
                                             null): SetGooglePhotosAlbumsAction {
   return {albums, name: WallpaperActionName.SET_GOOGLE_PHOTOS_ALBUMS};
 }

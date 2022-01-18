@@ -16,7 +16,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
-import {WallpaperCollection, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {initializeGooglePhotosData} from './wallpaper_controller.js';
@@ -73,7 +73,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   hidden: boolean;
 
   /** The list of albums. */
-  private albums_: WallpaperCollection[]|null|undefined;
+  private albums_: GooglePhotosAlbum[]|null|undefined;
 
   /** The list of photos. */
   private photos_: Url[]|null|undefined;

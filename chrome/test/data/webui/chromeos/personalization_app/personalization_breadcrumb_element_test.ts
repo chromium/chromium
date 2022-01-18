@@ -4,7 +4,7 @@
 
 /** @fileoverview Test suite for wallpaper-breadcrumb component.  */
 
-import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {PersonalizationBreadcrumb} from 'chrome://personalization/trusted/personalization_breadcrumb_element.js';
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -100,9 +100,9 @@ export function PersonalizationBreadcrumbTest() {
     // integration feature flag is enabled.
     loadTimeData.overrideValues({'googlePhotosLabel': 'Google Photos'});
 
-    const googlePhotosAlbum = new WallpaperCollection();
+    const googlePhotosAlbum = new GooglePhotosAlbum();
     googlePhotosAlbum.id = '9bd1d7a3-f995-4445-be47-53c5b58ce1cb';
-    googlePhotosAlbum.name = 'Album 0';
+    googlePhotosAlbum.title = 'Album 0';
 
     personalizationStore.data.wallpaper.googlePhotos.albums =
         [googlePhotosAlbum];
@@ -118,7 +118,7 @@ export function PersonalizationBreadcrumbTest() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer!, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      breadcrumbElement.i18n('googlePhotosLabel'), googlePhotosAlbum.name
+      breadcrumbElement.i18n('googlePhotosLabel'), googlePhotosAlbum.title
     ]);
   });
 

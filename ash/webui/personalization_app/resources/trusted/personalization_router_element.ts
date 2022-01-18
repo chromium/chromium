@@ -12,7 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {WallpaperCollection} from './personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, WallpaperCollection} from './personalization_app.mojom-webui.js';
 
 export enum Paths {
   Ambient = '/ambient',
@@ -94,10 +94,8 @@ export class PersonalizationRouter extends PolymerElement {
     this.goToRoute(Paths.CollectionImages, {id: collection.id});
   }
 
-  /**
-   * Navigate to a specific album in the Google Photos collection page.
-   */
-  selectGooglePhotosAlbum(album: WallpaperCollection) {
+  /** Navigate to a specific album in the Google Photos collection page. */
+  selectGooglePhotosAlbum(album: GooglePhotosAlbum) {
     this.goToRoute(
         Paths.GooglePhotosCollection, {googlePhotosAlbumId: album.id});
   }

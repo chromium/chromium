@@ -15,7 +15,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isSelectionEvent} from '../../common/utils.js';
-import {WallpaperCollection} from '../personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -50,7 +50,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   hidden: boolean;
 
   /** The list of albums. */
-  private albums_: WallpaperCollection[]|null|undefined;
+  private albums_: GooglePhotosAlbum[]|null|undefined;
 
   /** Whether the list of albums is currently loading. */
   private albumsLoading_: boolean;
@@ -67,7 +67,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   }
 
   /** Invoked on selection of an album. */
-  private onAlbumSelected_(e: Event&{model: {album: WallpaperCollection}}) {
+  private onAlbumSelected_(e: Event&{model: {album: GooglePhotosAlbum}}) {
     assert(e.model.album);
     if (isSelectionEvent(e)) {
       PersonalizationRouter.instance().selectGooglePhotosAlbum(e.model.album);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, GooglePhotosAlbum, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -93,6 +93,8 @@ export class TestWallpaperProvider extends
 
   private collections_: WallpaperCollection[]|null;
   private images_: WallpaperImage[]|null;
+  private googlePhotosAlbums_: GooglePhotosAlbum[]|undefined = [];
+  private googlePhotosCount_: number = 0;
   localImages: FilePath[]|null;
   localImageData: Record<string, string>;
   currentWallpaper: CurrentWallpaper;
@@ -134,17 +136,19 @@ export class TestWallpaperProvider extends
     this.methodCalled('fetchGooglePhotosAlbums');
     const response = new FetchGooglePhotosAlbumsResponse();
     response.albums =
-        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? [] :
-                                                                      undefined;
+        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ?
+        this.googlePhotosAlbums_ :
+        undefined;
     response.resumeToken = undefined;
     return Promise.resolve({response});
   }
 
   fetchGooglePhotosCount() {
     this.methodCalled('fetchGooglePhotosCount');
-    const count =
-        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? 0 : -1;
-    return Promise.resolve({count: count});
+    const count = loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ?
+        this.googlePhotosCount_ :
+        -1;
+    return Promise.resolve({count});
   }
 
   getLocalImages() {
@@ -213,6 +217,14 @@ export class TestWallpaperProvider extends
 
   setCollectionsToFail() {
     this.collections_ = null;
+  }
+
+  setGooglePhotosAlbums(googlePhotosAlbums: GooglePhotosAlbum[]|undefined) {
+    this.googlePhotosAlbums_ = googlePhotosAlbums;
+  }
+
+  setGooglePhotosCount(googlePhotosCount: number) {
+    this.googlePhotosCount_ = googlePhotosCount;
   }
 
   setImages(images: WallpaperImage[]) {

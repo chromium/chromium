@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import * as wallpaperAction from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
 import {fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -190,7 +190,7 @@ suite('Personalization app controller', () => {
   });
 
   test('sets Google Photos album in store', async () => {
-    const album = new WallpaperCollection();
+    const album = new GooglePhotosAlbum();
     album.id = '9bd1d7a3-f995-4445-be47-53c5b58ce1cb';
 
     // Attempts to `fetchGooglePhotosAlbum()` will fail unless the entire list
