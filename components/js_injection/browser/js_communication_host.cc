@@ -199,6 +199,13 @@ void JsCommunicationHost::NotifyFrameForAllDocumentStartJavaScripts(
 
 void JsCommunicationHost::NotifyFrameForWebMessageListener(
     content::RenderFrameHost* render_frame_host) {
+  // AddWebMessageHostFactory() uses this method with ForEachFrame() from JNI.
+  // Old entries are deleted from `js_to_browser_messagings_` by
+  // RenderFrameDeleted(); however, RenderFrameDeleted() will not be called if
+  // there is no live RenderFrame.
+  if (!render_frame_host->IsRenderFrameLive())
+    return;
+
   mojo::AssociatedRemote<mojom::JsCommunication> configurator_remote;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &configurator_remote);
