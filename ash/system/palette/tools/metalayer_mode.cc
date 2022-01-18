@@ -5,7 +5,8 @@
 #include "ash/system/palette/tools/metalayer_mode.h"
 
 #include "ash/assistant/assistant_controller_impl.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -137,8 +138,9 @@ void MetalayerMode::OnTouchEvent(ui::TouchEvent* event) {
     // Repetitive presses will create toasts with the same id which will be
     // ignored.
     Shell::Get()->toast_manager()->Show(
-        ToastData(kToastId, l10n_util::GetStringUTF16(
-                                IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_LOADING)));
+        ToastData(kToastId, ToastCatalogName::kAssistantLoading,
+                  l10n_util::GetStringUTF16(
+                      IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_LOADING)));
   } else {
     delegate()->RecordPaletteOptionsUsage(
         PaletteToolIdToPaletteTrayOptions(GetToolId()),

@@ -7,7 +7,8 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -100,7 +101,8 @@ class ToastManagerImplTest : public AshTestBase {
                         int32_t duration,
                         bool visible_on_lock_screen = false) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
-    manager()->Show(ToastData(id, base::ASCIIToUTF16(text), duration,
+    manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
+                              base::ASCIIToUTF16(text), duration,
                               visible_on_lock_screen));
     return id;
   }
@@ -114,7 +116,8 @@ class ToastManagerImplTest : public AshTestBase {
       localized_dismiss = base::ASCIIToUTF16(dismiss_text.value());
 
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
-    manager()->Show(ToastData(id, base::ASCIIToUTF16(text), duration,
+    manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
+                              base::ASCIIToUTF16(text), duration,
                               /*visible_on_lock_screen=*/false,
                               localized_dismiss));
     return id;
@@ -126,7 +129,8 @@ class ToastManagerImplTest : public AshTestBase {
                     const std::string& text,
                     int32_t duration,
                     bool visible_on_lock_screen = false) {
-    manager()->Show(ToastData(id, base::ASCIIToUTF16(text), duration,
+    manager()->Show(ToastData(id, ToastCatalogName::kToastManagerUnittest,
+                              base::ASCIIToUTF16(text), duration,
                               visible_on_lock_screen));
   }
 

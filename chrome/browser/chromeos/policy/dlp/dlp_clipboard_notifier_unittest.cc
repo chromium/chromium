@@ -28,6 +28,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/system/toast_catalog.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace policy {
 
 namespace {
@@ -72,8 +76,10 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
                     base::RepeatingCallback<void(views::Widget*)> proceed_cb,
                     base::RepeatingCallback<void(views::Widget*)> cancel_cb));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  MOCK_CONST_METHOD2(ShowToast,
-                     void(const std::string& id, const std::u16string& text));
+  MOCK_CONST_METHOD3(ShowToast,
+                     void(const std::string& id,
+                          ash::ToastCatalogName catalog_name,
+                          const std::u16string& text));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD2(CloseWidget,
                void(views::Widget* widget, views::Widget::ClosedReason reason));
@@ -377,7 +383,10 @@ TEST_P(ToastTestWithParam, BlockToast) {
       base::UTF8ToUTF16(origin.host()),
       l10n_util::GetStringUTF16(GetParam().expected_dst_name_id));
 
-  EXPECT_CALL(notifier, ShowToast(testing::_, expected_toast_str));
+  EXPECT_CALL(
+      notifier,
+      ShowToast(testing::_, ash::ToastCatalogName::kClipboardBlockedAction,
+                expected_toast_str));
 
   notifier.NotifyBlockedAction(&data_src, &data_dst);
 }
@@ -392,7 +401,9 @@ TEST_P(ToastTestWithParam, WarnToast) {
       IDS_POLICY_DLP_CLIPBOARD_WARN_ON_COPY_VM,
       l10n_util::GetStringUTF16(GetParam().expected_dst_name_id));
 
-  EXPECT_CALL(notifier, ShowToast(testing::_, expected_toast_str));
+  EXPECT_CALL(notifier, ShowToast(testing::_,
+                                  ash::ToastCatalogName::kClipboardWarnOnPaste,
+                                  expected_toast_str));
 
   EXPECT_CALL(notifier, CloseWidget(testing::_,
                                     views::Widget::ClosedReason::kUnspecified));

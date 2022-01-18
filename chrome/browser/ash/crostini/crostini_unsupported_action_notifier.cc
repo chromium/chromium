@@ -8,8 +8,9 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/toast_manager.h"
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -113,6 +114,7 @@ void CrostiniUnsupportedActionNotifier::
   if (!virtual_keyboard_unsupported_message_shown_) {
     ash::ToastData data = {
         /*id=*/"VKUnsupportedInCrostini",
+        ash::ToastCatalogName::kCrostiniUnsupportedVirtualKeyboard,
         /*text=*/
         l10n_util::GetStringUTF16(IDS_CROSTINI_UNSUPPORTED_VIRTUAL_KEYBOARD),
         /*timeout_ms=*/delegate_->ToastTimeoutMs()};
@@ -135,6 +137,7 @@ void CrostiniUnsupportedActionNotifier::
         base::UTF8ToUTF16(delegate_->GetLocalizedDisplayName(method));
     ash::ToastData data = {
         /*id=*/"IMEUnsupportedInCrostini",
+        ash::ToastCatalogName::kCrostiniUnsupportedIME,
         /*text=*/
         l10n_util::GetStringFUTF16(IDS_CROSTINI_UNSUPPORTED_IME, ime_name),
         /*timeout_ms=*/delegate_->ToastTimeoutMs()};

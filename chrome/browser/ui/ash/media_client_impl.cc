@@ -9,8 +9,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
@@ -397,6 +398,7 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
       ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOffToastId);
       ash::ToastData toast(
           kCameraPrivacySwitchOnToastId,
+          ash::ToastCatalogName::kCameraPrivacySwitchOn,
           l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_ON_TOAST),
           ash::ToastData::kDefaultToastDurationMs,
           /*visible_on_lock_screen=*/true);
@@ -432,6 +434,7 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
       ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOnToastId);
       ash::ToastData toast(
           kCameraPrivacySwitchOffToastId,
+          ash::ToastCatalogName::kCameraPrivacySwitchOff,
           l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_OFF_TOAST),
           ash::ToastData::kDefaultToastDurationMs,
           /*visible_on_lock_screen=*/true);

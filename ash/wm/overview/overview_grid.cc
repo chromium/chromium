@@ -17,6 +17,7 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -1429,6 +1430,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     // to be unassigned during overview.
     Shell::Get()->toast_manager()->Show(
         ToastData(kMoveVisibleOnAllDesksWindowToastId,
+                  ToastCatalogName::kMoveVisibleOnAllDesksWindow,
                   l10n_util::GetStringUTF16(
                       IDS_ASH_OVERVIEW_VISIBLE_ON_ALL_DESKS_TOAST)));
     return false;

@@ -13,7 +13,7 @@
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"

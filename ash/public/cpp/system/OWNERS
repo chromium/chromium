@@ -1,0 +1,6 @@
+file://ash/system/OWNERS
+
+kradtke@chromium.org
+
+per-file *catalog.h=set noparent
+per-file *catalog.h=file://chromeos/SECURITY_OWNERS

@@ -6,8 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
@@ -39,6 +40,7 @@ void BluetoothDeviceStatusUiHandler::OnDevicePaired(
     PairedBluetoothDevicePropertiesPtr device) {
   ash::ToastData toast_data(
       /*id=*/GetToastId(device.get()),
+      ash::ToastCatalogName::kBluetoothDevicePaired,
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
@@ -52,6 +54,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
     PairedBluetoothDevicePropertiesPtr device) {
   ash::ToastData toast_data(
       /*id=*/GetToastId(device.get()),
+      ash::ToastCatalogName::kBluetoothDeviceDisconnected,
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCONNECTED_TOAST,
@@ -65,6 +68,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
     PairedBluetoothDevicePropertiesPtr device) {
   ash::ToastData toast_data(
       /*id=*/GetToastId(device.get()),
+      ash::ToastCatalogName::kBluetoothDeviceConnected,
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,

@@ -6,7 +6,8 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -399,7 +400,7 @@ bool ShouldAllowSplitView() {
 
 void ShowAppCannotSnapToast() {
   Shell::Get()->toast_manager()->Show(
-      ToastData(kAppCannotSnapToastId,
+      ToastData(kAppCannotSnapToastId, ToastCatalogName::kAppCannotSnap,
                 l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP)));
 }
 

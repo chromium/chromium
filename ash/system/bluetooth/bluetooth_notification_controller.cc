@@ -9,8 +9,9 @@
 
 #include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system_tray_client.h"
-#include "ash/public/cpp/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "ash/shell.h"
@@ -129,8 +130,10 @@ void BluetoothPairingNotificationDelegate::Click(
                                            false /* by_user */);
 }
 
-void ShowToast(const std::string& id, const std::u16string& text) {
-  ash::ToastManager::Get()->Show(ash::ToastData(id, text));
+void ShowToast(const std::string& id,
+               ToastCatalogName catalog_name,
+               const std::u16string& text) {
+  ash::ToastManager::Get()->Show(ash::ToastData(id, catalog_name, text));
 }
 
 }  // namespace
@@ -318,6 +321,7 @@ void BluetoothNotificationController::NotifyAdapterDiscoverable() {
 
   ShowToast(
       kBluetoothDeviceDiscoverableToastId,
+      ToastCatalogName::kBluetoothAdapterDiscoverable,
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE,
                                  base::UTF8ToUTF16(adapter_->GetName())));
 }

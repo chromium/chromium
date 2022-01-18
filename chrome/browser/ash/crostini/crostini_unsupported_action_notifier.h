@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/public/cpp/toast_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/base/ime/ash/input_method_manager.h"

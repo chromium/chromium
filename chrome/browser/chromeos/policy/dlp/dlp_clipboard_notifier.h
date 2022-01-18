@@ -11,6 +11,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/system/toast_catalog.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace content {
 class WebContents;
 }
@@ -70,6 +74,7 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Virtual for tests to override.
   virtual void ShowToast(const std::string& id,
+                         ash::ToastCatalogName catalog_name,
                          const std::u16string& text) const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

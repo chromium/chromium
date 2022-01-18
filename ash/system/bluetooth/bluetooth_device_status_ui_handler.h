@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DEVICE_STATUS_UI_HANDLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

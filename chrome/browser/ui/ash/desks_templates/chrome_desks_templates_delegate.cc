@@ -7,8 +7,9 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -144,6 +145,7 @@ void ShowUnavailableAppToast(const std::vector<std::string>& unavailable_apps) {
   }
 
   ash::ToastData toast_data = {/*id=*/kAppNotAvailableTemplateToastName,
+                               ash::ToastCatalogName::kAppNotAvailable,
                                /*text=*/toast_string};
   ash::ToastManager::Get()->Show(toast_data);
 }

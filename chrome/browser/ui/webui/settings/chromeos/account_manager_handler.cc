@@ -7,8 +7,9 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager_factory.h"
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -86,8 +87,10 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
   }
 }
 
-void ShowToast(const std::string& id, const std::u16string& message) {
-  ash::ToastManager::Get()->Show(ash::ToastData(id, message));
+void ShowToast(const std::string& id,
+               ash::ToastCatalogName catalog_name,
+               const std::u16string& message) {
+  ash::ToastManager::Get()->Show(ash::ToastData(id, catalog_name, message));
 }
 
 class AccountBuilder {
@@ -444,7 +447,7 @@ void AccountManagerUIHandler::HandleRemoveAccount(const base::ListValue* args) {
   const std::string email = email_value->GetString();
   DCHECK(!email.empty());
 
-  ShowToast(kAccountRemovedToastId,
+  ShowToast(kAccountRemovedToastId, ash::ToastCatalogName::kAccountRemoved,
             l10n_util::GetStringFUTF16(
                 IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE,
                 base::UTF8ToUTF16(email)));

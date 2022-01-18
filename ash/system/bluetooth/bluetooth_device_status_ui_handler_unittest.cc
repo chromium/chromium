@@ -5,7 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"

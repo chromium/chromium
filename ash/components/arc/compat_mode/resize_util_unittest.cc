@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"

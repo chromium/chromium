@@ -43,7 +43,8 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
 #include "ash/shelf/home_button.h"
@@ -218,8 +219,10 @@ void NotifyShortcutChangesInRelease(PrefService* pref_service) {
   IncrementStartupNotificationCount(pref_service);
 }
 
-void ShowToast(std::string id, const std::u16string& text) {
-  ToastData toast(id, text, ToastData::kDefaultToastDurationMs,
+void ShowToast(std::string id,
+               ToastCatalogName catalog_name,
+               const std::u16string& text) {
+  ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDurationMs,
                   /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast);
 }
@@ -328,7 +331,7 @@ void HandleMoveActiveItem(const ui::Accelerator& accelerator, bool going_left) {
 void HandleNewDesk() {
   auto* desks_controller = DesksController::Get();
   if (!desks_controller->CanCreateDesks()) {
-    ShowToast(kVirtualDesksToastId,
+    ShowToast(kVirtualDesksToastId, ToastCatalogName::kVirtualDesksLimitMax,
               l10n_util::GetStringUTF16(IDS_ASH_DESKS_MAX_NUM_REACHED));
     return;
   }
@@ -350,7 +353,7 @@ void HandleRemoveCurrentDesk() {
 
   auto* desks_controller = DesksController::Get();
   if (!desks_controller->CanRemoveDesks()) {
-    ShowToast(kVirtualDesksToastId,
+    ShowToast(kVirtualDesksToastId, ToastCatalogName::kVirtualDesksLimitMin,
               l10n_util::GetStringUTF16(IDS_ASH_DESKS_MIN_NUM_REACHED));
     return;
   }
@@ -1003,44 +1006,44 @@ void HandleToggleAssistant(const ui::Accelerator& accelerator) {
       AssistantAllowedState::ALLOWED)) {
     case AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER:
       // Show a toast if the active user is not primary.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_SECONDARY_USER_TOAST_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_LOCALE:
       // Show a toast if the Assistant is disabled due to unsupported
       // locales.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_LOCALE_UNSUPPORTED_TOAST_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_POLICY:
       // Show a toast if the Assistant is disabled due to enterprise policy.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_BY_POLICY_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_DEMO_MODE:
       // Show a toast if the Assistant is disabled due to being in Demo
       // Mode.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_IN_DEMO_MODE_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION:
       // Show a toast if the Assistant is disabled due to being in public
       // session.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_IN_PUBLIC_SESSION_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_INCOGNITO:
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_IN_GUEST_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE:
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_BY_ACCOUNT_MESSAGE));
       return;

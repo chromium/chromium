@@ -11,8 +11,9 @@
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/components/arc/compat_mode/resize_confirmation_dialog_view.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
@@ -118,7 +119,7 @@ void TurnOffResizeLock(views::Widget* target_widget,
       "arc.compat_mode.turn_off_resize_lock";
   toast_manager->Cancel(kTurnOffResizeLockToastId);
   ash::ToastData toast(
-      kTurnOffResizeLockToastId,
+      kTurnOffResizeLockToastId, ash::ToastCatalogName::kAppResizable,
       l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_DISABLE_RESIZE_LOCK_TOAST));
   toast_manager->Show(toast);
 }

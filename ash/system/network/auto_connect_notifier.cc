@@ -6,8 +6,9 @@
 
 #include <string>
 
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -32,8 +33,10 @@ namespace {
 // a notification.
 constexpr const base::TimeDelta kNetworkConnectionTimeout = base::Seconds(3);
 
-void ShowToast(std::string id, const std::u16string& text) {
-  ash::ToastManager::Get()->Show(ToastData(id, text));
+void ShowToast(std::string id,
+               ToastCatalogName catalog_name,
+               const std::u16string& text) {
+  ash::ToastManager::Get()->Show(ToastData(id, catalog_name, text));
 }
 
 }  // namespace
@@ -141,7 +144,7 @@ void AutoConnectNotifier::DisplayToast(const chromeos::NetworkState* network) {
   NET_LOG(EVENT) << "Show AutoConnect Toast for: " << NetworkId(network);
   // Remove previous toast if one was already being shown.
   ash::ToastManager::Get()->Cancel(kAutoConnectToastId);
-  ShowToast(kAutoConnectToastId,
+  ShowToast(kAutoConnectToastId, ToastCatalogName::kNetworkAutoConnect,
             l10n_util::GetStringUTF16(IDS_ASH_NETWORK_AUTOCONNECT));
 }
 

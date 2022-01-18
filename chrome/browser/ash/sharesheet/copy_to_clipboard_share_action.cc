@@ -6,8 +6,9 @@
 
 #include <string>
 
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/flat_set.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
@@ -106,7 +107,7 @@ void CopyToClipboardShareAction::LaunchAction(
     controller->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
   }
 
-  ToastData toast(kToastId,
+  ToastData toast(kToastId, ToastCatalogName::kCopyToClipboardShareAction,
                   l10n_util::GetStringUTF16(
                       IDS_SHARESHEET_COPY_TO_CLIPBOARD_SUCCESS_TOAST_LABEL));
   ShowToast(toast);

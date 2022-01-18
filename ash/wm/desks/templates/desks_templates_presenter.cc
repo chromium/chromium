@@ -6,8 +6,9 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -137,6 +138,7 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
   if (!DesksController::Get()->CanCreateDesks()) {
     ToastData toast_data = {
         /*id=*/kMaximumDeskLaunchTemplateToastName,
+        ToastCatalogName::kMaximumDeskLaunchTemplate,
         /*text=*/
         l10n_util::GetStringFUTF16(
             IDS_ASH_DESKS_TEMPLATES_REACH_MAXIMUM_DESK_TOAST,
