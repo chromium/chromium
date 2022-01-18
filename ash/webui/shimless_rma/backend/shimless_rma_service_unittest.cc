@@ -2324,6 +2324,12 @@ TEST_F(ShimlessRmaServiceTest, ProvisioningComplete) {
       CreateStateReply(rmad::RmadState::kDeviceDestination,
                        rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kProvisionDevice);
+        EXPECT_EQ(state.provision_device().choice(),
+                  rmad::ProvisionDeviceState::RMAD_PROVISION_CHOICE_CONTINUE);
+      });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
       [&](mojom::State state, bool can_cancel, bool can_go_back,

@@ -744,6 +744,8 @@ void ShimlessRmaService::ProvisioningComplete(
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
+  state_proto_.mutable_provision_device()->set_choice(
+      rmad::ProvisionDeviceState::RMAD_PROVISION_CHOICE_CONTINUE);
   TransitionNextStateGeneric(std::move(callback));
 }
 
