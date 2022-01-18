@@ -2712,6 +2712,18 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.Projector.TranscriptsCount.{TabletOrClamshell}"
+    units="Number of transcripts" expires_after="2022-12-01">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Tracks the number of transcripts generated during a recording in
+    {TabletOrClamshell}, recorded each time the metadata file saved successfully
+    after a recording ends.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.Rotation.AnimationSmoothness" units="%"
     expires_after="2022-04-10">
   <owner>oshima@chromium.org</owner>

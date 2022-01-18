@@ -4,11 +4,11 @@
 
 #include "ash/projector/projector_metadata_controller.h"
 
+#include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,16 +81,21 @@ void ProjectorMetadataController::SaveMetadata(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&SaveFile, metadata_str, path),
-      base::BindOnce(
-          [](const base::FilePath& path, bool success) {
-            if (!success) {
-              LOG(ERROR) << "Failed to save the metadata file: " << path;
-              ProjectorUiController::ShowFailureNotification(
-                  IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
-              return;
-            }
-          },
-          path));
+      base::BindOnce(&ProjectorMetadataController::OnSaveFileResult,
+                     weak_factory_.GetWeakPtr(), path,
+                     metadata_->GetTranscriptsCount()));
+}
+
+void ProjectorMetadataController::OnSaveFileResult(const base::FilePath& path,
+                                                   size_t transcripts_count,
+                                                   bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to save the metadata file: " << path;
+    ProjectorUiController::ShowFailureNotification(
+        IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
+    return;
+  }
+  RecordTranscriptsCount(transcripts_count);
 }
 
 void ProjectorMetadataController::SetProjectorMetadataModelForTest(

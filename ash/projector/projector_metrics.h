@@ -5,6 +5,8 @@
 #ifndef ASH_PROJECTOR_PROJECTOR_METRICS_H_
 #define ASH_PROJECTOR_PROJECTOR_METRICS_H_
 
+#include <cstddef>
+
 namespace ash {
 
 // These enum values represent buttons on the Projector toolbar and log to UMA.
@@ -78,6 +80,9 @@ void RecordMarkerColorMetrics(ProjectorMarkerColor color);
 
 // Records the user's progress in the Projector creation flow.
 void RecordCreationFlowMetrics(ProjectorCreationFlow step);
+
+// Records the number of transcripts generated during a screencast recording.
+void RecordTranscriptsCount(size_t count);
 
 }  // namespace ash
 

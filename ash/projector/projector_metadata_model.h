@@ -96,6 +96,8 @@ class ASH_EXPORT ProjectorMetadata {
   void MarkKeyIdea();
   // Serializes the metadata for storage.
   std::string Serialize();
+  // Returns the number of transcripts.
+  size_t GetTranscriptsCount() const { return transcripts_.size(); }
 
  private:
   base::Value ToJson();
