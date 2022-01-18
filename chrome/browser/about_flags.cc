@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/android_sms/android_sms_switches.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
+#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -3861,6 +3862,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAddToHomescreenIPH,
                                     kAddToHomescreenIPHVariations,
                                     "AddToHomescreen")},
+    {"feature-notification-guide",
+     flag_descriptions::kFeatureNotificationGuideName,
+     flag_descriptions::kFeatureNotificationGuideDescription, kOsAll,
+     FEATURE_VALUE_TYPE(feature_guide::features::kFeatureNotificationGuide)},
     {"offline-pages-live-page-sharing",
      flag_descriptions::kOfflinePagesLivePageSharingName,
      flag_descriptions::kOfflinePagesLivePageSharingDescription, kOsAndroid,

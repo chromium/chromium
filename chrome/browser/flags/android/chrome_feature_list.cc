@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
+#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/jni_headers/ChromeFeatureList_jni.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
@@ -135,6 +136,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feature_engagement::kIPHSnooze,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
     &feature_engagement::kUseClientConfigIPH,
+    &feature_guide::features::kFeatureNotificationGuide,
     &feed::kFeedBackToTop,
     &feed::kFeedClearImageMemoryCache,
     &feed::kFeedImageMemoryCacheSizePercentage,

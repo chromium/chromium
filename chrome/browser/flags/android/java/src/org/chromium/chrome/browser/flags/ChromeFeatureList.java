@@ -332,6 +332,7 @@ public abstract class ChromeFeatureList {
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String EXPLICIT_LANGUAGE_ASK = "ExplicitLanguageAsk";
     public static final String EXPLORE_SITES = "ExploreSites";
+    public static final String FEATURE_NOTIFICATION_GUIDE = "FeatureNotificationGuide";
     public static final String FEED_BACK_TO_TOP = "FeedBackToTop";
     public static final String FEED_CLEAR_IMAGE_MEMORY_CACHE = "FeedClearImageMemoryCache";
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =

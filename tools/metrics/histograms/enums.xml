@@ -53606,6 +53606,7 @@ from previous Chrome versions.
   <int value="1558582" label="ResamplingInputEvents:enabled"/>
   <int value="1618593" label="AutofillUseConsistentPopupSettingsIcons:enabled"/>
   <int value="2070488" label="EnablePasswordsAccountStorageSavingUi:disabled"/>
+  <int value="3001424" label="FeatureNotificationGuide:enabled"/>
   <int value="3428212" label="OmniboxAggregateShortcuts:disabled"/>
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
   <int value="4277967" label="SideSearchStatePerTab:disabled"/>
@@ -54201,6 +54202,7 @@ from previous Chrome versions.
       label="AutofillEnableStickyManualFallbackForCards:enabled"/>
   <int value="439267320" label="ScreenTime:disabled"/>
   <int value="439525862" label="GlobalMediaControlsForCast:disabled"/>
+  <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
   <int value="444754854" label="LegacyTLSWarnings:disabled"/>
   <int value="446316019" label="enable-threaded-compositing"/>

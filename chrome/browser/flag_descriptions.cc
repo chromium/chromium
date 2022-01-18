@@ -3082,6 +3082,10 @@ const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =
     "Enables portal from new tab page to explore websites.";
 
+const char kFeatureNotificationGuideName[] = "Feature notification guide";
+const char kFeatureNotificationGuideDescription[] =
+    "Enables notifications about chrome features.";
+
 const char kFeedBackToTopName[] = "Back to top of the feeds";
 const char kFeedBackToTopDescription[] =
     "Enables showing a callout to help users return to the top of the feeds "

@@ -1750,6 +1750,9 @@ extern const char kEnableMixedContentDownloadDialogDescription[];
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 
+extern const char kFeatureNotificationGuideName[];
+extern const char kFeatureNotificationGuideDescription[];
+
 extern const char kFeedBackToTopName[];
 extern const char kFeedBackToTopDescription[];
 

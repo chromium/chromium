@@ -3107,6 +3107,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "feature-notification-guide",
+    "owners": [ "shaktisahu"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "fedcm",
     "owners": [ "goto", "webid-core@google.com"],
     "expiry_milestone": 110
