@@ -10,7 +10,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Promise;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -93,6 +92,11 @@ public interface SigninManager {
      * The user will be allowed to sign-in once this is signaled.
      */
     void onFirstRunCheckDone();
+
+    /**
+     * Returns true if sign in can be started now.
+     */
+    boolean isSigninAllowed();
 
     /**
      * Returns true if sync opt in can be started now.
@@ -215,5 +219,5 @@ public interface SigninManager {
      *
      * @param wipeDataCallback A callback which will be called once the data is wiped.
      */
-    Promise<Void> wipeSyncUserData(Runnable wipeDataCallback);
+    void wipeSyncUserData(Runnable wipeDataCallback);
 }

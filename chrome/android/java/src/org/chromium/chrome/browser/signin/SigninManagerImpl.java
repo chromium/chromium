@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -180,6 +179,16 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         if (isSyncOptInAllowed()) {
             notifySignInAllowedChanged();
         }
+    }
+
+    /**
+     * Returns true if sign in can be started now.
+     */
+    @Override
+    public boolean isSigninAllowed() {
+        return !mFirstRunCheckIsPending && mSignInState == null && mSigninAllowedByPolicy
+                && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null
+                && isSigninSupported();
     }
 
     /**
@@ -584,11 +593,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      * notifyCallbacksWaitingForOperation()), after resolving the TODO above.
      */
     @Override
-    public Promise<Void> wipeSyncUserData(Runnable wipeDataCallback) {
+    public void wipeSyncUserData(Runnable wipeDataCallback) {
         assert !mWipeUserDataInProgress;
         mWipeUserDataInProgress = true;
-
-        final Promise<Void> promise = new Promise<>();
 
         final BookmarkModel model = new BookmarkModel();
         model.finishLoadingBookmarkModel(new Runnable() {
@@ -609,8 +616,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                         SYNC_DATA_TYPES, TimePeriod.ALL_TIME);
             }
         });
-
-        return promise;
     }
 
     private boolean isGooglePlayServicesPresent() {
