@@ -7636,3 +7636,7 @@ crbug.com/1288136 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 
 # Sheriff 2022-01-18
 crbug.com/1287067 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/embedder-require-corp.https.html [ Failure Pass ]
+crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/redirect-loop-base-https-other-https.html [ Skip Pass Timeout ]
+crbug.com/1288264 [ Win ] http/tests/fetch/window/thorough/cors-preflight2-base-https-other-https.html [ Skip Pass Timeout ]
+crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker/thorough/nocors-base-https-other-https.html [ Skip Pass Timeout ]
+crbug.com/1288264 [ Win ] http/tests/security/aboutBlank/xss-DENIED-navigate-opener-document-write.html [ Pass Timeout ]
