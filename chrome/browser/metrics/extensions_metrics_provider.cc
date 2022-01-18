@@ -257,10 +257,8 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::REINSTALL},
       {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,
        ExtensionInstallProto::NOT_ALLOWLISTED},
-      // TODO(crbug.com/1268846): Uncomment after ExtensionInstallProto is
-      // updated in third party.
-      // {extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED,
-      // ExtensionInstallProto::NOT_ASH_KEEPLISTED},
+      {extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED,
+       ExtensionInstallProto::NOT_ASH_KEEPLISTED},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);
