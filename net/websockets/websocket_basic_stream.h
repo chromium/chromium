@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -147,7 +149,10 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   void AddToIncompleteControlFrameBody(base::span<const char> data);
 
   // Storage for pending reads.
-  const scoped_refptr<IOBufferWithSize> read_buffer_;
+  scoped_refptr<IOBufferWithSize> read_buffer_;
+
+  // The best read buffer size for the current throughput.
+  size_t target_read_buffer_size_;
 
   // The connection, wrapped in a ClientSocketHandle so that we can prevent it
   // from being returned to the pool.
@@ -194,6 +199,15 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   // User callback saved for asynchronous writes and reads.
   CompletionOnceCallback write_callback_;
   CompletionOnceCallback read_callback_;
+
+  // This keeps the timestamps to calculate the throughput.
+  base::queue<base::TimeTicks> read_start_timestamps_;
+
+  // The sum of the last few read size.
+  int rolling_byte_total_ = 0;
+
+  // This keeps the read size.
+  base::queue<int> recent_read_sizes_;
 };
 
 }  // namespace net

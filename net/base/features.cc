@@ -254,5 +254,17 @@ const base::Feature kExtraCookieValidityChecks{
 const base::Feature kRecordRadioWakeupTrigger{
     "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSwitchWebSocketReadBufferSize{
+    "SwitchWebSocketReadBufferSize", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kSmallReadBufferSize{
+    &kSwitchWebSocketReadBufferSize, "SmallReadBufferSize", 1000};
+
+const base::Feature kSwitchWebSocketThroughputWindow{
+    "SwitchWebSocketThroughputWindow", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kRollingAverageWindow{
+    &kSwitchWebSocketThroughputWindow, "RollingAverageWindow", 100};
+
 }  // namespace features
 }  // namespace net
