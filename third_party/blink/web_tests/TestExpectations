@@ -5849,6 +5849,13 @@ crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scr
 # Sheriff 2020-03-08
 crbug.com/1059645 external/wpt/pointerevents/pointerevent_coalesced_events_attributes.html [ Failure Pass ]
 
+# Temporarily disable to land DevTools changes
+crbug.com/1205856 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
+crbug.com/1205856 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
+crbug.com/1205856 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
+crbug.com/1205856 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
+crbug.com/1205856 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
+
 # Failing on Fuchsia due to dependency on FuchsiaMediaResourceProvider, which is not implemented in content_shell.
 crbug.com/1061226 [ Fuchsia ] fast/mediastream/MediaStream-onactive-oninactive.html [ Skip ]
 crbug.com/1061226 [ Fuchsia ] external/wpt/html/cross-origin-embedder-policy/credentialless/video.tentative.https.window.html [ Skip ]
