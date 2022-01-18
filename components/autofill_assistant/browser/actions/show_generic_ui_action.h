@@ -11,7 +11,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
-#include "components/autofill_assistant/browser/element_precondition.h"
+#include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
@@ -67,7 +67,7 @@ class ShowGenericUiAction : public Action,
   base::TimeTicks wait_time_start_;
   bool has_pending_wait_for_dom_ = false;
   bool should_end_action_ = false;
-  std::vector<std::unique_ptr<ElementPrecondition>> preconditions_;
+  std::vector<ElementConditionProto> preconditions_;
   ProcessActionCallback callback_;
   base::WeakPtrFactory<ShowGenericUiAction> weak_ptr_factory_{this};
 };

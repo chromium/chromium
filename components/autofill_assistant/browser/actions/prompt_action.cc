@@ -14,7 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-#include "components/autofill_assistant/browser/element_precondition.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "url/gurl.h"
 
@@ -83,15 +83,16 @@ void PromptAction::RegisterChecks(
   UpdateUserActions();
 
   for (size_t i = 0; i < preconditions_.size(); i++) {
-    preconditions_[i]->Check(checker,
-                             base::BindOnce(&PromptAction::OnPreconditionResult,
-                                            weak_ptr_factory_.GetWeakPtr(), i));
+    checker->AddElementConditionCheck(
+        preconditions_[i], base::BindOnce(&PromptAction::OnPreconditionResult,
+                                          weak_ptr_factory_.GetWeakPtr(), i));
   }
 
   if (auto_select_) {
-    auto_select_->Check(checker,
-                        base::BindOnce(&PromptAction::OnAutoSelectCondition,
-                                       weak_ptr_factory_.GetWeakPtr()));
+    checker->AddElementConditionCheck(
+        auto_select_.value(),
+        base::BindOnce(&PromptAction::OnAutoSelectCondition,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
   checker->AddAllDoneCallback(base::BindOnce(&PromptAction::OnElementChecksDone,
                                              weak_ptr_factory_.GetWeakPtr(),
@@ -107,31 +108,30 @@ void PromptAction::SetupConditions() {
 
   for (int i = 0; i < choice_count; i++) {
     auto& choice_proto = proto_.prompt().choices(i);
-    preconditions_[i] =
-        std::make_unique<ElementPrecondition>(choice_proto.show_only_when());
-    precondition_results_[i] = preconditions_[i]->empty();
+    preconditions_[i] = choice_proto.show_only_when();
+    precondition_results_[i] =
+        BatchElementChecker::IsElementConditionEmpty(preconditions_[i]);
     positive_precondition_changes_[i] = false;
   }
 
-  ElementConditionsProto auto_select;
+  ElementConditionProto auto_select;
+  auto* auto_select_any_of = auto_select.mutable_any_of();
   for (int i = 0; i < choice_count; i++) {
     auto& choice_proto = proto_.prompt().choices(i);
     if (choice_proto.has_auto_select_when()) {
-      ElementConditionProto* condition = auto_select.add_conditions();
+      ElementConditionProto* condition = auto_select_any_of->add_conditions();
       *condition = choice_proto.auto_select_when();
       condition->set_payload(base::NumberToString(i));
     }
   }
-  if (!auto_select.conditions().empty()) {
-    ElementConditionProto auto_select_condition;
-    *auto_select_condition.mutable_any_of() = auto_select;
-    auto_select_ = std::make_unique<ElementPrecondition>(auto_select_condition);
+  if (!auto_select_any_of->conditions().empty()) {
+    auto_select_ = auto_select;
   }
 }
 
 bool PromptAction::HasNonemptyPreconditions() {
   for (const auto& precondition : preconditions_) {
-    if (!precondition->empty())
+    if (!BatchElementChecker::IsElementConditionEmpty(precondition))
       return true;
   }
   return false;

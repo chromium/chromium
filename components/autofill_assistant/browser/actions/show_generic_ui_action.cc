@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
@@ -212,13 +213,12 @@ void ShowGenericUiAction::OnViewInflationFinished(bool first_inflation,
 
   for (const auto& element_check :
        proto_.show_generic_ui().periodic_element_checks().element_checks()) {
-    preconditions_.emplace_back(std::make_unique<ElementPrecondition>(
-        element_check.element_condition()));
+    preconditions_.emplace_back(element_check.element_condition());
   }
   if (proto_.show_generic_ui().allow_interrupt() ||
-      std::any_of(
-          preconditions_.begin(), preconditions_.end(),
-          [&](const auto& precondition) { return !precondition->empty(); })) {
+      base::ranges::any_of(preconditions_, [&](const auto& precondition) {
+        return !BatchElementChecker::IsElementConditionEmpty(precondition);
+      })) {
     has_pending_wait_for_dom_ = true;
 
     delegate_->WaitForDom(
@@ -252,9 +252,10 @@ void ShowGenericUiAction::RegisterChecks(
   }
 
   for (size_t i = 0; i < preconditions_.size(); i++) {
-    preconditions_[i]->Check(
-        checker, base::BindOnce(&ShowGenericUiAction::OnPreconditionResult,
-                                weak_ptr_factory_.GetWeakPtr(), i));
+    checker->AddElementConditionCheck(
+        preconditions_[i],
+        base::BindOnce(&ShowGenericUiAction::OnPreconditionResult,
+                       weak_ptr_factory_.GetWeakPtr(), i));
   }
   // Let WaitForDom know we're still waiting for elements.
   checker->AddAllDoneCallback(base::BindOnce(

@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/client_status.h"
-#include "components/autofill_assistant/browser/element_precondition.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/element.h"
 
@@ -47,7 +46,6 @@ class WaitForDomAction : public Action {
                           const ClientStatus& status);
   void UpdateElementStore();
 
-  std::unique_ptr<ElementPrecondition> wait_condition_;
   base::flat_map<std::string, DomObjectFrameStack> elements_;
 
   base::WeakPtrFactory<WaitForDomAction> weak_ptr_factory_{this};

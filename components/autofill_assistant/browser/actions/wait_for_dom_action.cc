@@ -69,8 +69,6 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
     ReportActionResult(std::move(callback), ClientStatus(INVALID_ACTION));
     return;
   }
-  wait_condition_ = std::make_unique<ElementPrecondition>(
-      proto_.wait_for_dom().wait_condition());
   delegate_->WaitForDomWithSlowWarning(
       max_wait_time, proto_.wait_for_dom().allow_interrupt(),
       /* observer= */ nullptr,
@@ -86,8 +84,8 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
 void WaitForDomAction::CheckElements(
     BatchElementChecker* checker,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  wait_condition_->Check(
-      checker,
+  checker->AddElementConditionCheck(
+      proto_.wait_for_dom().wait_condition(),
       base::BindOnce(&WaitForDomAction::OnWaitConditionDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

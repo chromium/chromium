@@ -70,8 +70,8 @@ void ScriptPrecondition::Check(
     std::move(callback).Run(false);
     return;
   }
-  element_precondition_.Check(
-      batch_checks,
+  batch_checks->AddElementConditionCheck(
+      element_precondition_,
       base::BindOnce(&RunCallbackWithoutData, std::move(callback)));
 }
 
