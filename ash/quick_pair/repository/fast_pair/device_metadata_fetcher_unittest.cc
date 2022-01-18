@@ -8,6 +8,7 @@
 
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
@@ -16,9 +17,14 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,6 +69,12 @@ constexpr char kEmptyResponse[] = "{}";
 constexpr char kInvalidResponse[] = "<html>404 error</html>";
 constexpr char kHexDeviceId[] = "07B";
 const int kDeviceId = 123;
+const char kDeviceMetadataFetchResult[] =
+    "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Result";
+const char kDeviceMetadataFetchNetError[] =
+    "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.NetError";
+const char kDeviceMetadataFetchHttpResponseError[] =
+    "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.HttpResponseError";
 
 }  // namespace
 
@@ -80,6 +92,7 @@ class DeviceMetadataFetcherTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   MockHttpFetcher* mock_http_fetcher_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -93,7 +106,8 @@ TEST_F(DeviceMetadataFetcherTest, ValidResponse) {
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
         std::string decoded;
         base::Base64Decode(kValidResponseEncoded, &decoded);
-        std::move(callback).Run(std::make_unique<std::string>(decoded));
+        std::move(callback).Run(std::make_unique<std::string>(decoded),
+                                nullptr);
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -127,8 +141,8 @@ TEST_F(DeviceMetadataFetcherTest, InvalidResponse) {
         ASSERT_EQ(0u,
                   url.spec().find(
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
-        std::move(callback).Run(
-            std::make_unique<std::string>(kInvalidResponse));
+        std::move(callback).Run(std::make_unique<std::string>(kInvalidResponse),
+                                nullptr);
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -146,7 +160,8 @@ TEST_F(DeviceMetadataFetcherTest, EmptyResponse) {
         ASSERT_EQ(0u,
                   url.spec().find(
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
-        std::move(callback).Run(std::make_unique<std::string>(kEmptyResponse));
+        std::move(callback).Run(std::make_unique<std::string>(kEmptyResponse),
+                                nullptr);
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -164,7 +179,7 @@ TEST_F(DeviceMetadataFetcherTest, NoResponse) {
         ASSERT_EQ(0u,
                   url.spec().find(
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
-        std::move(callback).Run(nullptr);
+        std::move(callback).Run(nullptr, nullptr);
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
@@ -174,6 +189,72 @@ TEST_F(DeviceMetadataFetcherTest, NoResponse) {
 
   device_metadata_fetcher_->LookupDeviceId(kDeviceId, callback.Get());
   task_environment.RunUntilIdle();
+}
+
+TEST_F(DeviceMetadataFetcherTest, RecordNetError) {
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchResult, 0);
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchNetError, 0);
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchHttpResponseError, 0);
+
+  EXPECT_CALL(*mock_http_fetcher_, ExecuteGetRequest)
+      .WillOnce([](const GURL& url, FetchCompleteCallback callback) {
+        ASSERT_EQ(0u,
+                  url.spec().find(
+                      "https://nearbydevices-pa.googleapis.com/v1/device/123"));
+        std::unique_ptr<FastPairHttpResult> http_result =
+            std::make_unique<FastPairHttpResult>(
+                /*net_error=*/net::ERR_CERT_COMMON_NAME_INVALID,
+                /*head=*/network::CreateURLResponseHead(
+                    net::HttpStatusCode::HTTP_NOT_FOUND)
+                    .get());
+        std::move(callback).Run(std::make_unique<std::string>(kInvalidResponse),
+                                std::move(http_result));
+      });
+
+  base::MockCallback<GetObservedDeviceCallback> callback;
+  EXPECT_CALL(callback, Run)
+      .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
+                       response) { ASSERT_EQ(absl::nullopt, response); });
+
+  device_metadata_fetcher_->LookupDeviceId(kDeviceId, callback.Get());
+  task_environment.RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchResult, 1);
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchNetError, 1);
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchHttpResponseError, 0);
+}
+
+TEST_F(DeviceMetadataFetcherTest, RecordHttpError) {
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchResult, 0);
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchNetError, 0);
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchHttpResponseError, 0);
+
+  EXPECT_CALL(*mock_http_fetcher_, ExecuteGetRequest)
+      .WillOnce([](const GURL& url, FetchCompleteCallback callback) {
+        ASSERT_EQ(0u,
+                  url.spec().find(
+                      "https://nearbydevices-pa.googleapis.com/v1/device/123"));
+        std::unique_ptr<FastPairHttpResult> http_result =
+            std::make_unique<FastPairHttpResult>(
+                /*net_error=*/net::OK,
+                /*head=*/network::CreateURLResponseHead(
+                    net::HttpStatusCode::HTTP_NOT_FOUND)
+                    .get());
+        std::move(callback).Run(std::make_unique<std::string>(kInvalidResponse),
+                                std::move(http_result));
+      });
+
+  base::MockCallback<GetObservedDeviceCallback> callback;
+  EXPECT_CALL(callback, Run)
+      .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
+                       response) { ASSERT_EQ(absl::nullopt, response); });
+
+  device_metadata_fetcher_->LookupDeviceId(kDeviceId, callback.Get());
+  task_environment.RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchResult, 1);
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchNetError, 0);
+  histogram_tester_.ExpectTotalCount(kDeviceMetadataFetchHttpResponseError, 1);
 }
 
 }  // namespace quick_pair

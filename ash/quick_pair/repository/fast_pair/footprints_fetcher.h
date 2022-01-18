@@ -21,6 +21,7 @@ namespace ash {
 namespace quick_pair {
 
 class HttpFetcher;
+class FastPairHttpResult;
 
 using UserReadDevicesCallback = base::OnceCallback<void(
     absl::optional<nearby::fastpair::UserReadDevicesResponse>)>;
@@ -44,15 +45,18 @@ class FootprintsFetcher {
  private:
   void OnGetComplete(UserReadDevicesCallback callback,
                      std::unique_ptr<HttpFetcher> http_fetcher,
-                     std::unique_ptr<std::string> response_body);
+                     std::unique_ptr<std::string> response_body,
+                     std::unique_ptr<FastPairHttpResult> http_result);
 
   void OnPostComplete(AddDeviceCallback callback,
                       std::unique_ptr<HttpFetcher> http_fetcher,
-                      std::unique_ptr<std::string> response_body);
+                      std::unique_ptr<std::string> response_body,
+                      std::unique_ptr<FastPairHttpResult> http_result);
 
   void OnDeleteComplete(DeleteDeviceCallback callback,
                         std::unique_ptr<HttpFetcher> http_fetcher,
-                        std::unique_ptr<std::string> response_body);
+                        std::unique_ptr<std::string> response_body,
+                        std::unique_ptr<FastPairHttpResult> http_result);
 
   base::WeakPtrFactory<FootprintsFetcher> weak_ptr_factory_{this};
 };

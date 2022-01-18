@@ -355,6 +355,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.HttpResponseError"
+    enum="HttpResponseCode" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the HTTP response error code from a failed HTTP GET request. Emitted
+    when the HTTP call fails. No metric is emitted on success.
+  </summary>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.NetError"
+    enum="NetErrorCodes" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the network error code from a failed HTTP GET request. Emitted when
+    the HTTP call fails. No metric is emitted on success.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
@@ -482,6 +506,42 @@ chromium-metrics-reviews@google.com.
     response that is able to be parsed. Emitted when the HTTP response is
     received from the Footprints server.
   </summary>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.{Method}.HttpResponseError"
+    enum="HttpResponseCode" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the HTTP response error from a failed HTTP call to the Footprints
+    server. Emitted when the HTTP {Method} request fails. No metric is emitted
+    on success.
+  </summary>
+  <token key="Method">
+    <variant name="Delete" summary="DELETE"/>
+    <variant name="Get" summary="GET"/>
+    <variant name="Post" summary="POST"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.{Method}.NetError"
+    enum="NetErrorCodes" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the network error code from a failed HTTP call to the Footprints
+    server. Emitted when the HTTP {Method} request fails. No metric is emitted
+    on success.
+  </summary>
+  <token key="Method">
+    <variant name="Delete" summary="DELETE"/>
+    <variant name="Get" summary="GET"/>
+    <variant name="Post" summary="POST"/>
+  </token>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.ErrorReason"

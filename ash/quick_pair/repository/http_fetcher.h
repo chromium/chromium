@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_HTTP_FETCHER_H_
 #define ASH_QUICK_PAIR_REPOSITORY_HTTP_FETCHER_H_
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -14,7 +15,8 @@ namespace ash {
 namespace quick_pair {
 
 using FetchCompleteCallback =
-    base::OnceCallback<void(std::unique_ptr<std::string>)>;
+    base::OnceCallback<void(std::unique_ptr<std::string>,
+                            std::unique_ptr<FastPairHttpResult>)>;
 
 // Makes HTTP GET requests and returns the response.
 class HttpFetcher {

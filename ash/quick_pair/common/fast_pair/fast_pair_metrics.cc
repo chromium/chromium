@@ -140,12 +140,28 @@ const char kMessageStreamConnectToServiceTime[] =
     "TotalConnectTime";
 const char kDeviceMetadataFetchResult[] =
     "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Result";
+const char kDeviceMetadataFetchNetError[] =
+    "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.NetError";
+const char kDeviceMetadataFetchHttpResponseError[] =
+    "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Get.HttpResponseError";
 const char kFootprintsFetcherDeleteResult[] =
     "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Delete.Result";
+const char kFootprintsFetcherDeleteNetError[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Delete.NetError";
+const char kFootprintsFetcherDeleteHttpResponseError[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Delete.HttpResponseError";
 const char kFootprintsFetcherPostResult[] =
     "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Post.Result";
+const char kFootprintsFetcherPostNetError[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Post.NetError";
+const char kFootprintsFetcherPostHttpResponseError[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Post.HttpResponseError";
 const char kFootprintsFetcherGetResult[] =
     "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.Result";
+const char kFootprintsFetcherGetNetError[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.NetError";
+const char kFootprintsFetcherGetHttpResponseError[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.HttpResponseError";
 const char kFastPairRepositoryCacheResult[] =
     "Bluetooth.ChromeOS.FastPair.FastPairRepository.Cache.Result";
 const char kHandshakeResult[] = "Bluetooth.ChromeOS.FastPair.Handshake.Result";
@@ -410,20 +426,60 @@ void RecordMessageStreamConnectToServiceTime(
                           total_connect_time);
 }
 
-void RecordDeviceMetadataFetchResult(bool success) {
-  base::UmaHistogramBoolean(kDeviceMetadataFetchResult, success);
+void RecordDeviceMetadataFetchResult(const FastPairHttpResult& result) {
+  base::UmaHistogramBoolean(kDeviceMetadataFetchResult, result.IsSuccess());
+
+  if (result.net_error()) {
+    base::UmaHistogramSparse(kDeviceMetadataFetchNetError,
+                             -*result.net_error());
+  }
+
+  if (result.http_response_error()) {
+    base::UmaHistogramSparse(kDeviceMetadataFetchHttpResponseError,
+                             *result.http_response_error());
+  }
 }
 
-void RecordFootprintsFetcherDeleteResult(bool success) {
-  base::UmaHistogramBoolean(kFootprintsFetcherDeleteResult, success);
+void RecordFootprintsFetcherDeleteResult(const FastPairHttpResult& result) {
+  base::UmaHistogramBoolean(kFootprintsFetcherDeleteResult, result.IsSuccess());
+
+  if (result.net_error()) {
+    base::UmaHistogramSparse(kFootprintsFetcherDeleteNetError,
+                             -*result.net_error());
+  }
+
+  if (result.http_response_error()) {
+    base::UmaHistogramSparse(kFootprintsFetcherDeleteHttpResponseError,
+                             *result.http_response_error());
+  }
 }
 
-void RecordFootprintsFetcherPostResult(bool success) {
-  base::UmaHistogramBoolean(kFootprintsFetcherPostResult, success);
+void RecordFootprintsFetcherPostResult(const FastPairHttpResult& result) {
+  base::UmaHistogramBoolean(kFootprintsFetcherPostResult, result.IsSuccess());
+
+  if (result.net_error()) {
+    base::UmaHistogramSparse(kFootprintsFetcherPostNetError,
+                             -*result.net_error());
+  }
+
+  if (result.http_response_error()) {
+    base::UmaHistogramSparse(kFootprintsFetcherPostHttpResponseError,
+                             *result.http_response_error());
+  }
 }
 
-void RecordFootprintsFetcherGetResult(bool success) {
-  base::UmaHistogramBoolean(kFootprintsFetcherGetResult, success);
+void RecordFootprintsFetcherGetResult(const FastPairHttpResult& result) {
+  base::UmaHistogramBoolean(kFootprintsFetcherGetResult, result.IsSuccess());
+
+  if (result.net_error()) {
+    base::UmaHistogramSparse(kFootprintsFetcherGetNetError,
+                             -*result.net_error());
+  }
+
+  if (result.http_response_error()) {
+    base::UmaHistogramSparse(kFootprintsFetcherGetHttpResponseError,
+                             *result.http_response_error());
+  }
 }
 
 void RecordFastPairRepositoryCacheResult(bool success) {

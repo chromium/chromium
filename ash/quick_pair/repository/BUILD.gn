@@ -110,7 +110,11 @@ source_set("unit_tests") {
     "//chromeos/services/bluetooth_config/public/cpp",
     "//components/prefs:test_support",
     "//device/bluetooth:mocks",
+    "//net",
     "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]

@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_METRICS_H_
 
 #include "ash/quick_pair/common/account_key_failure.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
@@ -204,16 +205,16 @@ void RecordMessageStreamConnectToServiceTime(
     base::TimeDelta total_connect_time);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordDeviceMetadataFetchResult(bool success);
+void RecordDeviceMetadataFetchResult(const FastPairHttpResult& result);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordFootprintsFetcherDeleteResult(bool success);
+void RecordFootprintsFetcherDeleteResult(const FastPairHttpResult& result);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordFootprintsFetcherPostResult(bool success);
+void RecordFootprintsFetcherPostResult(const FastPairHttpResult& result);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordFootprintsFetcherGetResult(bool success);
+void RecordFootprintsFetcherGetResult(const FastPairHttpResult& result);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordFastPairRepositoryCacheResult(bool success);

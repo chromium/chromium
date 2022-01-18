@@ -62,8 +62,6 @@ void FastPairRepositoryImpl::OnMetadataFetched(
     const std::string& normalized_model_id,
     DeviceMetadataCallback callback,
     absl::optional<nearby::fastpair::GetObservedDeviceResponse> response) {
-  RecordDeviceMetadataFetchResult(/*success=*/response.has_value());
-
   if (!response) {
     std::move(callback).Run(nullptr);
     return;

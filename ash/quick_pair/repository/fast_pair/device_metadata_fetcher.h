@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_FETCHER_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_FETCHER_H_
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -42,7 +43,8 @@ class DeviceMetadataFetcher {
 
  private:
   void OnFetchComplete(GetObservedDeviceCallback callback,
-                       std::unique_ptr<std::string> response_body);
+                       std::unique_ptr<std::string> response_body,
+                       std::unique_ptr<FastPairHttpResult> http_result);
   void OnJsonParsed(GetObservedDeviceCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
 
