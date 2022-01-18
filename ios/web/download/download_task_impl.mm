@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #include "base/strings/sys_string_conversions.h"
+#include "ios/web/download/download_result.h"
 #import "ios/web/public/download/download_task_observer.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
@@ -115,7 +116,7 @@ bool DownloadTaskImpl::IsDone() const {
 
 int DownloadTaskImpl::GetErrorCode() const {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return error_code_;
+  return download_result_.error_code();
 }
 
 int DownloadTaskImpl::GetHttpCode() const {
@@ -181,8 +182,8 @@ void DownloadTaskImpl::OnDownloadUpdated() {
     observer.OnDownloadUpdated(this);
 }
 
-void DownloadTaskImpl::OnDownloadFinished(int error_code) {
-  error_code_ = error_code;
+void DownloadTaskImpl::OnDownloadFinished(DownloadResult download_result) {
+  download_result_ = download_result;
   state_ = State::kComplete;
   OnDownloadUpdated();
 }

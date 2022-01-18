@@ -77,10 +77,10 @@ void DownloadNativeTaskImpl::Start(const base::FilePath& path,
           if (task)
             task->OnDownloadUpdated();
         }
-        completionHandler:^(int error_code) {
+        completionHandler:^(DownloadResult download_result) {
           DownloadNativeTaskImpl* task = weak_this.get();
           if (task)
-            task->OnDownloadFinished(error_code);
+            task->OnDownloadFinished(download_result);
         }];
   }
 }

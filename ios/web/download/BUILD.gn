@@ -23,6 +23,8 @@ source_set("download") {
     "download_native_task_bridge.mm",
     "download_native_task_impl.h",
     "download_native_task_impl.mm",
+    "download_result.h",
+    "download_result.mm",
     "download_session_task_impl.h",
     "download_session_task_impl.mm",
     "download_task_impl.h",

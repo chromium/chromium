@@ -10,6 +10,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #import "ios/net/cookies/system_cookie_util.h"
+#include "ios/web/download/download_result.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_task_observer.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -252,7 +253,7 @@ void DownloadSessionTaskImpl::ShutDown() {
   DownloadTaskImpl::ShutDown();
 }
 
-void DownloadSessionTaskImpl::OnDownloadFinished(int error_code) {
+void DownloadSessionTaskImpl::OnWriterDownloadFinished(int error_code) {
   // If downloads manager's flag is enabled, keeps the downloaded file. The
   // writer deletes it if it owns it, that's why it shouldn't owns it anymore
   // when the current download is finished.
@@ -261,7 +262,7 @@ void DownloadSessionTaskImpl::OnDownloadFinished(int error_code) {
   if (writer_->AsFileWriter())
     writer_->AsFileWriter()->DisownFile();
   session_task_ = nil;
-  DownloadTaskImpl::OnDownloadFinished(error_code);
+  DownloadTaskImpl::OnDownloadFinished(DownloadResult(error_code));
 }
 
 void DownloadSessionTaskImpl::OnWriterInitialized(
@@ -271,7 +272,7 @@ void DownloadSessionTaskImpl::OnWriterInitialized(
   writer_ = std::move(writer);
 
   if (writer_initialization_status != net::OK) {
-    OnDownloadFinished(writer_initialization_status);
+    OnWriterDownloadFinished(writer_initialization_status);
   } else if (original_url_.SchemeIs(url::kDataScheme)) {
     StartDataUrlParsing();
   } else {
@@ -292,9 +293,8 @@ NSURLSession* DownloadSessionTaskImpl::CreateSession(
         if (!weak_this.get()) {
           return;
         }
-
-        error_code_ =
-            GetNetErrorCodeFromNSError(error, task.currentRequest.URL);
+        download_result_ = DownloadResult(
+            GetNetErrorCodeFromNSError(error, task.currentRequest.URL));
         percent_complete_ = GetTaskPercentComplete(task);
         received_bytes_ = task.countOfBytesReceived;
         if (total_bytes_ == -1 || task.countOfBytesExpectedToReceive) {
@@ -319,11 +319,11 @@ NSURLSession* DownloadSessionTaskImpl::CreateSession(
 
         // Download has finished, so finalize the writer and signal completion.
         auto callback =
-            base::BindOnce(&DownloadSessionTaskImpl::OnDownloadFinished,
+            base::BindOnce(&DownloadSessionTaskImpl::OnWriterDownloadFinished,
                            weak_factory_.GetWeakPtr());
-        if (writer_->Finish(error_code_, std::move(callback)) !=
-            net::ERR_IO_PENDING) {
-          OnDownloadFinished(error_code_);
+        if (writer_->Finish(download_result_.error_code(),
+                            std::move(callback)) != net::ERR_IO_PENDING) {
+          OnWriterDownloadFinished(download_result_.error_code());
         }
       }
       dataBlock:^(scoped_refptr<net::IOBufferWithSize> buffer,
@@ -399,7 +399,7 @@ void DownloadSessionTaskImpl::StartDataUrlParsing() {
   std::string charset;
   std::string data;
   if (!net::DataURL::Parse(original_url_, &mime_type_, &charset, &data)) {
-    OnDownloadFinished(net::ERR_INVALID_URL);
+    OnWriterDownloadFinished(net::ERR_INVALID_URL);
     return;
   }
   auto callback = base::BindOnce(&DownloadSessionTaskImpl::OnDataUrlWritten,
@@ -416,10 +416,11 @@ void DownloadSessionTaskImpl::OnDataUrlWritten(int bytes_written) {
   percent_complete_ = 100;
   total_bytes_ = bytes_written;
   received_bytes_ = total_bytes_;
-  auto callback = base::BindOnce(&DownloadSessionTaskImpl::OnDownloadFinished,
-                                 weak_factory_.GetWeakPtr());
+  auto callback =
+      base::BindOnce(&DownloadSessionTaskImpl::OnWriterDownloadFinished,
+                     weak_factory_.GetWeakPtr());
   if (writer_->Finish(net::OK, std::move(callback)) != net::ERR_IO_PENDING) {
-    OnDownloadFinished(net::OK);
+    OnWriterDownloadFinished(net::OK);
   }
 }
 }  // namespace web

@@ -7,6 +7,8 @@
 
 #import <WebKit/WebKit.h>
 
+#include "ios/web/download/download_result.h"
+
 @class DownloadNativeTaskBridge;
 
 @protocol DownloadNativeTaskBridgeDelegate <NSObject>
@@ -36,7 +38,7 @@
 // Starts download and sets |progressionHandler| and |completionHandler|
 - (void)startDownload:(NSURL*)url
     progressionHandler:(void (^)())progressionHander
-     completionHandler:(void (^)(int error_code))completionHandler;
+     completionHandler:(web::DownloadCompletionHandler)completionHandler;
 
 @property(nonatomic, readonly) WKDownload* download API_AVAILABLE(ios(15));
 @property(nonatomic, readonly) NSURLResponse* response;

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "ios/web/download/download_result.h"
 #import "ios/web/public/download/download_task.h"
 #include "url/gurl.h"
 
@@ -18,6 +19,7 @@
 
 namespace web {
 
+class DownloadResult;
 class DownloadTaskObserver;
 class WebState;
 
@@ -83,7 +85,7 @@ class DownloadTaskImpl : public DownloadTask {
 
  protected:
   // Called when download was completed and the data writing was finished.
-  virtual void OnDownloadFinished(int error_code);
+  virtual void OnDownloadFinished(DownloadResult download_result);
 
   // Called when download task was updated.
   void OnDownloadUpdated();
@@ -95,7 +97,6 @@ class DownloadTaskImpl : public DownloadTask {
   State state_ = State::kNotStarted;
   GURL original_url_;
   NSString* http_method_ = nil;
-  int error_code_ = 0;
   int http_code_ = -1;
   int64_t total_bytes_ = -1;
   int64_t received_bytes_ = 0;
@@ -105,6 +106,7 @@ class DownloadTaskImpl : public DownloadTask {
   std::string mime_type_;
   NSString* identifier_ = nil;
   bool has_performed_background_download_ = false;
+  DownloadResult download_result_;
   WebState* web_state_ = nullptr;
   Delegate* delegate_ = nullptr;
 

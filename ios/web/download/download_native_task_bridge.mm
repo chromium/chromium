@@ -5,6 +5,8 @@
 #import "ios/web/download/download_native_task_bridge.h"
 
 #import "base/check.h"
+#include "ios/web/download/download_result.h"
+#include "net/base/net_errors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -14,7 +16,7 @@
   void (^_startDownloadBlock)(NSURL*);
   id<DownloadNativeTaskBridgeDelegate> _delegate;
   void (^_progressionHandler)();
-  void (^_completionHandler)(int error_code);
+  web::DownloadCompletionHandler _completionHandler;
   BOOL _observingDownloadProgress;
 }
 
@@ -68,7 +70,7 @@
 
 - (void)startDownload:(NSURL*)url
     progressionHandler:(void (^)())progressionHandler
-     completionHandler:(void (^)(int error_code))completionHandler {
+     completionHandler:(web::DownloadCompletionHandler)completionHandler {
   _progressionHandler = progressionHandler;
   _completionHandler = completionHandler;
 
@@ -103,15 +105,19 @@
 - (void)download:(WKDownload*)download
     didFailWithError:(NSError*)error
           resumeData:(NSData*)resumeData API_AVAILABLE(ios(15)) {
-  if (_completionHandler)
-    (_completionHandler)(error.code);
+  if (_completionHandler) {
+    web::DownloadResult download_result(net::ERR_FAILED, resumeData != nil);
+    (_completionHandler)(download_result);
+  }
 
   [self stopObservingDownloadProgress];
 }
 
 - (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(15)) {
-  if (_completionHandler)
-    (_completionHandler)(0);
+  if (_completionHandler) {
+    web::DownloadResult download_result(net::OK);
+    (_completionHandler)(download_result);
+  }
 
   [self stopObservingDownloadProgress];
 }

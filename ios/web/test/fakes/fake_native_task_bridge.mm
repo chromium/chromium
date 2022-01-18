@@ -33,7 +33,7 @@
 
 - (void)startDownload:(NSURL*)url
     progressionHandler:(void (^)())progressionHandler
-     completionHandler:(void (^)(int error_code))completionHandler {
+     completionHandler:(web::DownloadCompletionHandler)completionHandler {
   [super startDownload:url
       progressionHandler:progressionHandler
        completionHandler:completionHandler];

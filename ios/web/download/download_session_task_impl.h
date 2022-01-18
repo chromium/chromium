@@ -13,6 +13,7 @@ class URLFetcherResponseWriter;
 }
 
 namespace web {
+
 // Implementation of DownloadTaskImpl that uses NSURLRequest to perform the
 // download
 class DownloadSessionTaskImpl final : public DownloadTaskImpl {
@@ -41,9 +42,11 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
   void Start(const base::FilePath& path, Destination destination_hint) final;
   void Cancel() final;
   void ShutDown() final;
-  void OnDownloadFinished(int error_code) final;
 
  private:
+  // Called once net::URLFetcherResponseWriter completes the download
+  void OnWriterDownloadFinished(int error_code);
+
   // Called once the net::URLFetcherResponseWriter created in
   // Start() has been initialised. The download can be started
   // unless the initialisation has failed (as reported by the
