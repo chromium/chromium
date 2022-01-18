@@ -43,6 +43,7 @@ interface PrivacyReviewStepComponents {
   nextStep?: PrivacyReviewStep;
   onForwardNavigation?(): void;
   previousStep?: PrivacyReviewStep;
+  onBackwardNavigation?(): void;
   isAvailable(): boolean;
 }
 
@@ -180,6 +181,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.WELCOME_NEXT_BUTTON);
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.NextClickWelcome');
           },
         },
       ],
@@ -190,6 +193,13 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
             Router.getInstance().navigateToPreviousRoute();
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON);
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.NextClickCompletion');
+            Router.getInstance().navigateToPreviousRoute();
+          },
+          onBackwardNavigation: () => {
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.BackClickCompletion');
           },
           previousStep: PrivacyReviewStep.COOKIES,
           isAvailable: () => true,
@@ -203,6 +213,12 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.MSBB_NEXT_BUTTON);
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.NextClickMSBB');
+          },
+          onBackwardNavigation: () => {
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.BackClickMSBB');
           },
           isAvailable: () => true,
         },
@@ -224,6 +240,12 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON);
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.NextClickHistorySync');
+          },
+          onBackwardNavigation: () => {
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.BackClickHistorySync');
           },
           // Allow the history sync card to be shown while `syncStatus_` is
           // unavailable. Otherwise we would skip it in
@@ -240,6 +262,12 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON);
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.NextClickSafeBrowsing');
+          },
+          onBackwardNavigation: () => {
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.BackClickSafeBrowsing');
           },
           isAvailable: () => this.shouldShowSafeBrowsingCard_(),
         },
@@ -253,6 +281,12 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
                 TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE);
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.NextClickCookies');
+          },
+          onBackwardNavigation: () => {
+            this.metricsBrowserProxy_.recordAction(
+                'Settings.PrivacyGuide.BackClickCookies');
           },
           previousStep: PrivacyReviewStep.SAFE_BROWSING,
           isAvailable: () => this.shouldShowCookiesCard_(),
@@ -335,6 +369,11 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   }
 
   private navigateBackward_(playAnimation: boolean) {
+    const components =
+        this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)!;
+    if (components.onBackwardNavigation) {
+      components.onBackwardNavigation();
+    }
     this.navigateToCard_(
         this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)!
             .previousStep!,

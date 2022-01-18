@@ -366,7 +366,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private onPrivacyReviewClick_() {
-    // TODO(crbug/1215630): Implement metrics.
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.StartPrivacySettings');
     Router.getInstance().navigateTo(
         routes.PRIVACY_REVIEW, /* dynamicParams */ undefined,
         /* removeSearch */ true);

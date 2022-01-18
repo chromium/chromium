@@ -329,17 +329,25 @@ suite('PrivacyReviewPage', function() {
         'recordPrivacyGuideNextNavigationHistogram');
     assertEquals(PrivacyGuideInteractions.WELCOME_NEXT_BUTTON, result);
 
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickWelcome');
+
     setSyncEnabled(true);
     assertMsbbCardVisible();
   });
 
-  test('msbbBackNavigation', function() {
+  test('msbbBackNavigation', async function() {
     navigateToStep(PrivacyReviewStep.MSBB);
     assertMsbbCardVisible();
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     flush();
     assertWelcomeCardVisible();
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickMSBB');
   });
 
   test('msbbForwardNavigationSyncOn', async function() {
@@ -353,6 +361,10 @@ suite('PrivacyReviewPage', function() {
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideNextNavigationHistogram');
     assertEquals(PrivacyGuideInteractions.MSBB_NEXT_BUTTON, result);
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickMSBB');
   });
 
   test('msbbForwardNavigationSyncOff', function() {
@@ -371,6 +383,10 @@ suite('PrivacyReviewPage', function() {
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     assertMsbbCardVisible();
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickHistorySync');
   });
 
   test('historySyncNavigatesAwayOnSyncOff', function() {
@@ -404,6 +420,11 @@ suite('PrivacyReviewPage', function() {
         const result = await testMetricsBrowserProxy.whenCalled(
             'recordPrivacyGuideNextNavigationHistogram');
         assertEquals(PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON, result);
+
+        const actionResult =
+            await testMetricsBrowserProxy.whenCalled('recordAction');
+        assertEquals(
+            actionResult, 'Settings.PrivacyGuide.NextClickHistorySync');
       });
 
   test(
@@ -425,6 +446,10 @@ suite('PrivacyReviewPage', function() {
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     assertHistorySyncCardVisible();
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickSafeBrowsing');
   });
 
   test('safeBrowsingCardBackNavigationSyncOff', function() {
@@ -475,6 +500,11 @@ suite('PrivacyReviewPage', function() {
             'recordPrivacyGuideNextNavigationHistogram');
         assertEquals(
             PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON, result);
+
+        const actionResult =
+            await testMetricsBrowserProxy.whenCalled('recordAction');
+        assertEquals(
+            actionResult, 'Settings.PrivacyGuide.NextClickSafeBrowsing');
       });
 
   test('safeBrowsingCardForwardNavigationShouldHideCookiesCard', function() {
@@ -496,6 +526,10 @@ suite('PrivacyReviewPage', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     flush();
     assertSafeBrowsingCardVisible();
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCookies');
   });
 
   test('cookiesCardBackNavigationShouldHideSafeBrowsingCard', function() {
@@ -520,6 +554,10 @@ suite('PrivacyReviewPage', function() {
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideNextNavigationHistogram');
     assertEquals(PrivacyGuideInteractions.COOKIES_NEXT_BUTTON, result);
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickCookies');
   });
 
   test('cookiesCardGetsUpdated', function() {
@@ -558,6 +596,10 @@ suite('PrivacyReviewPage', function() {
                                       '#backButton')!.click();
     flush();
     assertCookiesCardVisible();
+
+    const actionResult =
+        await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');
   });
 
   test('completionCardBackToSettingsNavigation', function() {
@@ -574,6 +616,11 @@ suite('PrivacyReviewPage', function() {
                  'recordPrivacyGuideNextNavigationHistogram');
              assertEquals(
                  PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON, result);
+
+             const actionResult =
+                 await testMetricsBrowserProxy.whenCalled('recordAction');
+             assertEquals(
+                 actionResult, 'Settings.PrivacyGuide.NextClickCompletion');
            })
         .then(function() {
           assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());

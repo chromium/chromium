@@ -9,6 +9,7 @@
  */
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
@@ -22,6 +23,8 @@ export class PrivacyReviewPromoElement extends PolymerElement {
   }
 
   private onPrivacyReviewClick_() {
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        'Settings.PrivacyGuide.StartPromo');
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
   }
 }
