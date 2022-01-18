@@ -6105,7 +6105,9 @@
     "PartitionAllocLargeThreadCacheSizeAndroid": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_weblayer",
+                "android_webview"
             ],
             "experiments": [
                 {
