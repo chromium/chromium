@@ -158,11 +158,11 @@ void DispatchResourceReplyOrDefaultParams(
 // begin the map instead of IPC_BEGIN_MESSAGE_MAP. The reason is that the macros
 // in src/ipc are all closely tied together, and there might be errors for
 // unused variables or other errors if they're used with these macros.
-#define PPAPI_BEGIN_MESSAGE_MAP(class_name, msg) \
-  { \
-    typedef class_name _IpcMessageHandlerClass ALLOW_UNUSED_TYPE; \
-    const IPC::Message& ipc_message__ = msg; \
-    switch (ipc_message__.type()) { \
+#define PPAPI_BEGIN_MESSAGE_MAP(class_name, msg)                 \
+  {                                                              \
+    using _IpcMessageHandlerClass [[maybe_unused]] = class_name; \
+    const IPC::Message& ipc_message__ = msg;                     \
+    switch (ipc_message__.type()) {
 
 // Note that this only works for message with 1 or more parameters. For
 // 0-parameter messages you need to use the _0 version below (since there are
