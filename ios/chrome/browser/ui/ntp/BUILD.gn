@@ -285,6 +285,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
