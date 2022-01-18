@@ -419,6 +419,10 @@ external/wpt/css/css-page/page-size-010.xht [ Skip ]
 external/wpt/css/css-page/page-size-011.xht [ Skip ]
 external/wpt/css/css-page/page-size-012.xht [ Skip ]
 
+# change on files below caused thousands of failures, skip them temprorary.
+external/wpt/webdriver/tests/support/defaults.py [ Skip ]
+external/wpt/webdriver/tests/support/fixtures.py [ Skip ]
+
 # This test includes arbitrary html in unit test names (via parametrize) which
 # is currently not well handled in WebDriverExpectations, and causes Lint error
 # crbug.com/1167318
