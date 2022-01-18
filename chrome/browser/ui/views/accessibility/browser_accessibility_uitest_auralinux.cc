@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
                          ->GetNativeViewAccessible());
 
   GURL url(url::kAboutBlankURL);
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
