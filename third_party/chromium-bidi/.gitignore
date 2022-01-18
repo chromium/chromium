@@ -1,9 +1,7 @@
+.build
+.cache
+.idea
+__pycache__
+logs/
+chromium-bidi.iml
 node_modules/
-src/bidiMapper/.build/
-tests/__pycache__/
-package-lock.json
-src/.build/
-log.txt
-.local-chromium/
-/.idea/
-/chromium-bidi.iml
