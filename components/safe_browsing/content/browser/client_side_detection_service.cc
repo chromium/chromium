@@ -106,6 +106,8 @@ ClientSideDetectionService::~ClientSideDetectionService() {
 
 void ClientSideDetectionService::Shutdown() {
   url_loader_factory_.reset();
+  delegate_.reset();
+  enabled_ = false;
 }
 
 void ClientSideDetectionService::OnPrefsUpdated() {
