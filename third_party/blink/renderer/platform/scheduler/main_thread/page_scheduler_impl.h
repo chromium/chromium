@@ -199,7 +199,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
     USING_FAST_MALLOC(PageLifecycleStateTracker);
 
    public:
-    explicit PageLifecycleStateTracker(PageSchedulerImpl*, PageLifecycleState);
+    explicit PageLifecycleStateTracker(PageLifecycleState);
     PageLifecycleStateTracker(const PageLifecycleStateTracker&) = delete;
     PageLifecycleStateTracker& operator=(const PageLifecycleStateTracker&) =
         delete;
@@ -216,7 +216,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
     static void RecordPageLifecycleStateTransition(
         PageLifecycleStateTransition);
 
-    PageSchedulerImpl* page_scheduler_impl_;
     PageLifecycleState current_state_;
   };
 

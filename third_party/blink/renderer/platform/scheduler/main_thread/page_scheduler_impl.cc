@@ -196,9 +196,9 @@ PageSchedulerImpl::PageSchedulerImpl(
       foreground_timers_throttled_wake_up_interval_(
           GetForegroundTimersThrottledWakeUpInterval()) {
   page_lifecycle_state_tracker_ = std::make_unique<PageLifecycleStateTracker>(
-      this, kDefaultPageVisibility == PageVisibilityState::kVisible
-                ? PageLifecycleState::kActive
-                : PageLifecycleState::kHiddenBackgrounded);
+      kDefaultPageVisibility == PageVisibilityState::kVisible
+          ? PageLifecycleState::kActive
+          : PageLifecycleState::kHiddenBackgrounded);
   do_throttle_cpu_time_callback_.Reset(base::BindRepeating(
       &PageSchedulerImpl::DoThrottleCPUTime, base::Unretained(this)));
   do_intensively_throttle_wake_ups_callback_.Reset(
@@ -933,10 +933,8 @@ PageLifecycleState PageSchedulerImpl::GetPageLifecycleState() const {
 }
 
 PageSchedulerImpl::PageLifecycleStateTracker::PageLifecycleStateTracker(
-    PageSchedulerImpl* page_scheduler_impl,
     PageLifecycleState state)
-    : page_scheduler_impl_(page_scheduler_impl),
-      current_state_(kDefaultPageLifecycleState) {
+    : current_state_(kDefaultPageLifecycleState) {
   SetPageLifecycleState(state);
 }
 
