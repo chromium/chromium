@@ -538,6 +538,20 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return nil;
 }
 
++ (NSError*)waitForWebStateNotContainingElement:(ElementSelector*)selector {
+  bool success = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return !web::test::IsWebViewContainingElement(
+        chrome_test_util::GetCurrentWebState(), selector);
+  });
+  if (!success) {
+    NSString* NSErrorDescription = [NSString
+        stringWithFormat:@"Failed waiting for web state without element %@",
+                         selector.selectorDescription];
+    return testing::NSErrorWithLocalizedDescription(NSErrorDescription);
+  }
+  return nil;
+}
+
 + (NSError*)waitForWebStateContainingTextInIFrame:(NSString*)text {
   std::string stringText = base::SysNSStringToUTF8(text);
   bool success = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {

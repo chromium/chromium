@@ -520,6 +520,11 @@ UIWindow* GetAnyKeyWindow() {
       [ChromeEarlGreyAppInterface waitForWebStateContainingElement:selector]);
 }
 
+- (void)waitForWebStateNotContainingElement:(ElementSelector*)selector {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface
+      waitForWebStateNotContainingElement:selector]);
+}
+
 - (void)waitForMainTabCount:(NSUInteger)count {
   __block NSUInteger actualCount = [ChromeEarlGreyAppInterface mainTabCount];
   NSString* conditionName = [NSString

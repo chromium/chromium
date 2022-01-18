@@ -249,6 +249,10 @@
 // otherwise nil.
 + (NSError*)waitForWebStateContainingElement:(ElementSelector*)selector;
 
+// Waits for the current web state to no longer contain an element matching
+// |selector|. On failure, returns an NSError, otherwise nil.
++ (NSError*)waitForWebStateNotContainingElement:(ElementSelector*)selector;
+
 // Waits for the current web state's frames to contain |text|.
 // If not succeed returns an NSError indicating  why the operation failed,
 // otherwise nil.

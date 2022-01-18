@@ -494,6 +494,11 @@ UIWindow* GetAnyKeyWindow();
 // If the condition is not met within a timeout a GREYAssert is induced.
 - (void)waitForWebStateContainingElement:(ElementSelector*)selector;
 
+// Waits for the current web state to NOT contain an element matching
+// |selector|. If the condition is not met within a timeout a GREYAssert is
+// induced.
+- (void)waitForWebStateNotContainingElement:(ElementSelector*)selector;
+
 // Attempts to submit form with |formID| in the current WebState.
 // Induces a GREYAssert if the operation fails.
 - (void)submitWebStateFormWithID:(const std::string&)formID;
