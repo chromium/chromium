@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/layers/shared_element_layer_impl.h"
+#include "cc/layers/document_transition_content_layer_impl.h"
 
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/layer_impl.h"
@@ -13,29 +13,33 @@
 namespace cc {
 
 // static
-std::unique_ptr<SharedElementLayerImpl> SharedElementLayerImpl::Create(
+std::unique_ptr<DocumentTransitionContentLayerImpl>
+DocumentTransitionContentLayerImpl::Create(
     LayerTreeImpl* tree_impl,
     int id,
     const viz::SharedElementResourceId& resource_id) {
   return base::WrapUnique(
-      new SharedElementLayerImpl(tree_impl, id, resource_id));
+      new DocumentTransitionContentLayerImpl(tree_impl, id, resource_id));
 }
 
-SharedElementLayerImpl::SharedElementLayerImpl(
+DocumentTransitionContentLayerImpl::DocumentTransitionContentLayerImpl(
     LayerTreeImpl* tree_impl,
     int id,
     const viz::SharedElementResourceId& resource_id)
     : LayerImpl(tree_impl, id), resource_id_(resource_id) {}
 
-SharedElementLayerImpl::~SharedElementLayerImpl() = default;
+DocumentTransitionContentLayerImpl::~DocumentTransitionContentLayerImpl() =
+    default;
 
-std::unique_ptr<LayerImpl> SharedElementLayerImpl::CreateLayerImpl(
+std::unique_ptr<LayerImpl> DocumentTransitionContentLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) {
-  return SharedElementLayerImpl::Create(tree_impl, id(), resource_id_);
+  return DocumentTransitionContentLayerImpl::Create(tree_impl, id(),
+                                                    resource_id_);
 }
 
-void SharedElementLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
-                                         AppendQuadsData* append_quads_data) {
+void DocumentTransitionContentLayerImpl::AppendQuads(
+    viz::CompositorRenderPass* render_pass,
+    AppendQuadsData* append_quads_data) {
   float device_scale_factor = layer_tree_impl()->device_scale_factor();
 
   gfx::Rect quad_rect(
@@ -62,8 +66,8 @@ void SharedElementLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   append_quads_data->has_shared_element_resources = true;
 }
 
-const char* SharedElementLayerImpl::LayerTypeAsString() const {
-  return "cc::SharedElementLayerImpl";
+const char* DocumentTransitionContentLayerImpl::LayerTypeAsString() const {
+  return "cc::DocumentTransitionContentLayerImpl";
 }
 
 }  // namespace cc

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_LAYERS_SHARED_ELEMENT_LAYER_H_
-#define CC_LAYERS_SHARED_ELEMENT_LAYER_H_
+#ifndef CC_LAYERS_DOCUMENT_TRANSITION_CONTENT_LAYER_H_
+#define CC_LAYERS_DOCUMENT_TRANSITION_CONTENT_LAYER_H_
+
+#include <memory>
 
 #include "base/logging.h"
-
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "components/viz/common/shared_element_resource_id.h"
@@ -14,13 +15,15 @@
 namespace cc {
 
 // A layer that renders a texture cached in the Viz process.
-class CC_EXPORT SharedElementLayer : public Layer {
+class CC_EXPORT DocumentTransitionContentLayer : public Layer {
  public:
-  static scoped_refptr<SharedElementLayer> Create(
+  static scoped_refptr<DocumentTransitionContentLayer> Create(
       const viz::SharedElementResourceId& resource_id);
 
-  SharedElementLayer(const SharedElementLayer&) = delete;
-  SharedElementLayer& operator=(const SharedElementLayer&) = delete;
+  DocumentTransitionContentLayer(const DocumentTransitionContentLayer&) =
+      delete;
+  DocumentTransitionContentLayer& operator=(
+      const DocumentTransitionContentLayer&) = delete;
 
   const viz::SharedElementResourceId& resource_id() const {
     return resource_id_;
@@ -30,14 +33,15 @@ class CC_EXPORT SharedElementLayer : public Layer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
  protected:
-  explicit SharedElementLayer(const viz::SharedElementResourceId& resource_id);
+  explicit DocumentTransitionContentLayer(
+      const viz::SharedElementResourceId& resource_id);
 
  private:
-  ~SharedElementLayer() override;
+  ~DocumentTransitionContentLayer() override;
 
   const viz::SharedElementResourceId resource_id_;
 };
 
 }  // namespace cc
 
-#endif  // CC_LAYERS_SHARED_ELEMENT_LAYER_H_
+#endif  // CC_LAYERS_DOCUMENT_TRANSITION_CONTENT_LAYER_H_

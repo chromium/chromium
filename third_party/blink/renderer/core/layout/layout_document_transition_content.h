@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_DOCUMENT_TRANSITION_CONTENT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "cc/layers/shared_element_layer.h"
+#include "cc/layers/document_transition_content_layer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_content_element.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
@@ -37,7 +37,7 @@ class CORE_EXPORT LayoutDocumentTransitionContent : public LayoutReplaced {
   }
   CompositingReasons AdditionalCompositingReasons() const override;
 
-  scoped_refptr<cc::SharedElementLayer> layer_;
+  scoped_refptr<cc::DocumentTransitionContentLayer> layer_;
 };
 
 }  // namespace blink

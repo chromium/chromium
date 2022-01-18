@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_LAYERS_SHARED_ELEMENT_LAYER_IMPL_H_
-#define CC_LAYERS_SHARED_ELEMENT_LAYER_IMPL_H_
+#ifndef CC_LAYERS_DOCUMENT_TRANSITION_CONTENT_LAYER_IMPL_H_
+#define CC_LAYERS_DOCUMENT_TRANSITION_CONTENT_LAYER_IMPL_H_
 
 #include <memory>
 
@@ -13,17 +13,19 @@
 
 namespace cc {
 
-class CC_EXPORT SharedElementLayerImpl : public LayerImpl {
+class CC_EXPORT DocumentTransitionContentLayerImpl : public LayerImpl {
  public:
-  static std::unique_ptr<SharedElementLayerImpl> Create(
+  static std::unique_ptr<DocumentTransitionContentLayerImpl> Create(
       LayerTreeImpl* tree_impl,
       int id,
       const viz::SharedElementResourceId& resource_id);
 
-  SharedElementLayerImpl(const SharedElementLayerImpl&) = delete;
-  ~SharedElementLayerImpl() override;
+  DocumentTransitionContentLayerImpl(
+      const DocumentTransitionContentLayerImpl&) = delete;
+  ~DocumentTransitionContentLayerImpl() override;
 
-  SharedElementLayerImpl& operator=(const SharedElementLayerImpl&) = delete;
+  DocumentTransitionContentLayerImpl& operator=(
+      const DocumentTransitionContentLayerImpl&) = delete;
 
   // LayerImpl overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
@@ -31,9 +33,10 @@ class CC_EXPORT SharedElementLayerImpl : public LayerImpl {
                    AppendQuadsData* append_quads_data) override;
 
  protected:
-  SharedElementLayerImpl(LayerTreeImpl* tree_impl,
-                         int id,
-                         const viz::SharedElementResourceId& resource_id);
+  DocumentTransitionContentLayerImpl(
+      LayerTreeImpl* tree_impl,
+      int id,
+      const viz::SharedElementResourceId& resource_id);
 
  private:
   const char* LayerTypeAsString() const override;
@@ -43,4 +46,4 @@ class CC_EXPORT SharedElementLayerImpl : public LayerImpl {
 
 }  // namespace cc
 
-#endif  // CC_LAYERS_SHARED_ELEMENT_LAYER_IMPL_H_
+#endif  // CC_LAYERS_DOCUMENT_TRANSITION_CONTENT_LAYER_IMPL_H_
