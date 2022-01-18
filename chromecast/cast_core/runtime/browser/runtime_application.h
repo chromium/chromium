@@ -59,6 +59,9 @@ class RuntimeApplication {
   virtual bool Launch(
       const cast::runtime::LaunchApplicationRequest& request) = 0;
 
+  // Returns whether this instance is associated with cast streaming.
+  virtual bool IsStreamingApplication() const = 0;
+
  protected:
   void set_application_config(cast::common::ApplicationConfig app_config) {
     app_config_ = std::move(app_config);

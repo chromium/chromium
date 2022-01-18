@@ -169,12 +169,17 @@ void CastContentBrowserClient::CreateMediaService(
   if (!video_geometry_setter_service_) {
     CreateVideoGeometrySetterServiceOnMediaThread();
   }
+
+  // Using base::Unretained is safe here because this class will persist for
+  // the duration of the browser process' lifetime.
   auto mojo_media_client = std::make_unique<media::CastMojoMediaClient>(
       GetCmaBackendFactory(),
       base::BindRepeating(&CastContentBrowserClient::CreateCdmFactory,
                           base::Unretained(this)),
       GetVideoModeSwitcher(), GetVideoResolutionPolicy(),
-      browser_main_parts()->media_connector());
+      browser_main_parts()->media_connector(),
+      base::BindRepeating(&CastContentBrowserClient::IsBufferingEnabled,
+                          base::Unretained(this)));
   mojo_media_client->SetVideoGeometrySetterService(
       video_geometry_setter_service_.get());
 

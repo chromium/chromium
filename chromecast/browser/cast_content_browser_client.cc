@@ -726,6 +726,10 @@ void CastContentBrowserClient::GetApplicationMediaInfo(
   }
 }
 
+bool CastContentBrowserClient::IsBufferingEnabled() {
+  return true;
+}
+
 absl::optional<service_manager::Manifest>
 CastContentBrowserClient::GetServiceManifestOverlay(
     base::StringPiece service_name) {
@@ -998,7 +1002,7 @@ void CastContentBrowserClient::BindMediaRenderer(
           GetCmaBackendFactory(), std::move(media_task_runner),
           GetVideoModeSwitcher(), GetVideoResolutionPolicy(),
           base::UnguessableToken::Create(), nullptr /* frame_interfaces */,
-          browser_main_parts()->connector()),
+          browser_main_parts()->connector(), true /* is_buffering_enabled */),
       std::move(receiver));
 }
 

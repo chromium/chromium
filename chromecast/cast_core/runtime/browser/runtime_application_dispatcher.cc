@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_service.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_watcher.h"
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
@@ -51,12 +52,14 @@ RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
     CastWebService* web_service,
     CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
     cast_streaming::NetworkContextGetter network_context_getter,
-    media::VideoPlaneController* video_plane_controller)
+    media::VideoPlaneController* video_plane_controller,
+    RuntimeApplicationWatcher* application_watcher)
     : GrpcServer(base::SequencedTaskRunnerHandle::Get()),
       web_service_(web_service),
       network_context_getter_(std::move(network_context_getter)),
       metrics_recorder_(event_builder_factory),
-      video_plane_controller_(video_plane_controller) {
+      video_plane_controller_(video_plane_controller),
+      application_watcher_(application_watcher) {
   DCHECK(web_service_);
   DCHECK(video_plane_controller_);
 }
@@ -90,7 +93,7 @@ bool RuntimeApplicationDispatcher::Start(
 }
 
 void RuntimeApplicationDispatcher::Stop() {
-  app_.reset();
+  ResetApp();
 
   if (heartbeat_) {
     heartbeat_->Finish(grpc::Status::CANCELLED);
@@ -118,30 +121,45 @@ void RuntimeApplicationDispatcher::LoadApplication(
     const cast::runtime::LoadApplicationRequest& request,
     cast::runtime::LoadApplicationResponse* response,
     GrpcMethod* callback) {
-  const std::string& app_id = request.application_config().app_id();
-
-  if (openscreen::cast::IsCastStreamingReceiverAppId(app_id)) {
-    // Deliberately copy |network_context_getter_|.
-    app_ = std::make_unique<StreamingRuntimeApplication>(
-        web_service_, task_runner_, network_context_getter_,
-        video_plane_controller_);
-  } else {
-    app_ = std::make_unique<WebRuntimeApplication>(web_service_, task_runner_);
-  }
-  if (!app_->Load(request)) {
-    app_.reset();
+  if (!request.has_application_config()) {
     std::stringstream err_stream;
     err_stream
-        << "failed to load RuntimeApplication (session id: "
-        << request.cast_session_id() << ", app id: "
-        << (request.has_application_config()
-                ? request.application_config().app_id()
-                : "NONE")
-        << ", grpc endpoint: "
+        << "Invalid LoadApplication call (session id: "
+        << request.cast_session_id() << ", grpc endpoint: "
         << (request.has_runtime_application_service_info()
                 ? request.runtime_application_service_info().grpc_endpoint()
                 : "NONE")
         << ")";
+    callback->StepGRPC(grpc::Status(grpc::INTERNAL, err_stream.str()));
+    return;
+  }
+
+  const std::string& app_id = request.application_config().app_id();
+  if (openscreen::cast::IsCastStreamingReceiverAppId(app_id)) {
+    // Deliberately copy |network_context_getter_|.
+    app_ = std::make_unique<StreamingRuntimeApplication>(
+        request.application_config(), web_service_, task_runner_,
+        network_context_getter_, video_plane_controller_);
+  } else {
+    app_ = std::make_unique<WebRuntimeApplication>(request.application_config(),
+                                                   web_service_, task_runner_);
+  }
+
+  if (application_watcher_) {
+    application_watcher_->OnRuntimeApplicationChanged(app_.get());
+  }
+
+  if (!app_->Load(request)) {
+    std::stringstream err_stream;
+    err_stream
+        << "failed to load RuntimeApplication (session id: "
+        << request.cast_session_id()
+        << ", app id: " << app_->app_config().app_id() << ", grpc endpoint: "
+        << (request.has_runtime_application_service_info()
+                ? request.runtime_application_service_info().grpc_endpoint()
+                : "NONE")
+        << ")";
+    ResetApp();
     callback->StepGRPC(grpc::Status(grpc::INTERNAL, err_stream.str()));
     return;
   }
@@ -165,7 +183,7 @@ void RuntimeApplicationDispatcher::LaunchApplication(
                        ? request.cast_media_service_info().grpc_endpoint()
                        : "NONE")
                << ")";
-    app_.reset();
+    ResetApp();
     callback->StepGRPC(grpc::Status(grpc::INTERNAL, err_stream.str()));
     return;
   }
@@ -178,7 +196,7 @@ void RuntimeApplicationDispatcher::StopApplication(
     GrpcMethod* callback) {
   response->set_app_id(app_->app_config().app_id());
   response->set_cast_session_id(app_->cast_session_id());
-  app_.reset();
+  ResetApp();
   callback->StepGRPC(grpc::Status::OK);
 }
 
@@ -256,6 +274,13 @@ void RuntimeApplicationDispatcher::OnMetricsRecorderServiceStopped(
   DVLOG(2) << "MetricsRecorderService stopped";
   metrics_recorder_service_.reset();
   callback->StepGRPC(grpc::Status::OK);
+}
+
+void RuntimeApplicationDispatcher::ResetApp() {
+  app_.reset();
+  if (application_watcher_) {
+    application_watcher_->OnRuntimeApplicationChanged(nullptr);
+  }
 }
 
 const std::string&

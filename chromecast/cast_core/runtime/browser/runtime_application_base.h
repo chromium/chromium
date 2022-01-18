@@ -36,7 +36,8 @@ class RuntimeApplicationBase
   using CoreApplicationServiceGrpc = cast::v2::CoreApplicationService::Stub;
 
   // |web_service| is expected to exist for the lifetime of this instance.
-  RuntimeApplicationBase(mojom::RendererType renderer_type_used,
+  RuntimeApplicationBase(cast::common::ApplicationConfig app_config,
+                         mojom::RendererType renderer_type_used,
                          CastWebService* web_service,
                          scoped_refptr<base::SequencedTaskRunner> task_runner);
 

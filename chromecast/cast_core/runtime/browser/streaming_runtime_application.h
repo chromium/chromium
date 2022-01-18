@@ -29,6 +29,7 @@ class StreamingRuntimeApplication final
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   StreamingRuntimeApplication(
+      cast::common::ApplicationConfig app_config,
       CastWebService* web_service,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       cast_streaming::NetworkContextGetter network_context_getter,
@@ -42,6 +43,7 @@ class StreamingRuntimeApplication final
   void InitializeApplication(CoreApplicationServiceGrpc* grpc_stub,
                              CastWebContents* cast_web_contents) override;
   void StopApplication() override;
+  bool IsStreamingApplication() const override;
 
   // StreamingReceiverSessionClient::Handler implementation:
   void OnStreamingSessionStarted() override;

@@ -16,6 +16,7 @@
 namespace chromecast {
 
 RuntimeApplicationBase::RuntimeApplicationBase(
+    cast::common::ApplicationConfig app_config,
     mojom::RendererType renderer_type_used,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -25,6 +26,8 @@ RuntimeApplicationBase::RuntimeApplicationBase(
       renderer_type_(renderer_type_used) {
   DCHECK(web_service_);
   DCHECK(task_runner_);
+
+  set_application_config(std::move(app_config));
 }
 
 RuntimeApplicationBase::~RuntimeApplicationBase() {

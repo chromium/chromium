@@ -32,11 +32,13 @@ const char kStreamingPageUrlTemplate[] =
 }  // namespace
 
 StreamingRuntimeApplication::StreamingRuntimeApplication(
+    cast::common::ApplicationConfig app_config,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
     media::VideoPlaneController* video_plane_controller)
-    : RuntimeApplicationBase(mojom::RendererType::MOJO_RENDERER,
+    : RuntimeApplicationBase(std::move(app_config),
+                             mojom::RendererType::MOJO_RENDERER,
                              web_service,
                              std::move(task_runner)),
       video_plane_controller_(video_plane_controller),
@@ -124,6 +126,10 @@ void StreamingRuntimeApplication::StopApplication() {
   receiver_session_client_.reset();
   RuntimeApplicationBase::StopApplication();
   message_port_service_.reset();
+}
+
+bool StreamingRuntimeApplication::IsStreamingApplication() const {
+  return true;
 }
 
 void StreamingRuntimeApplication::MainFrameReadyToCommitNavigation(

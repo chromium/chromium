@@ -46,7 +46,8 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
       },
       this);
   auto cast_runtime_service = std::make_unique<CastRuntimeService>(
-      web_service, std::move(network_context_getter), video_plane_controller);
+      web_service, std::move(network_context_getter), video_plane_controller,
+      this);
   cast_runtime_service_ = cast_runtime_service.get();
   return cast_runtime_service;
 }
@@ -111,14 +112,10 @@ CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
 std::unique_ptr<blink::URLLoaderThrottle>
 CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
     content::WebContents* web_contents) {
-  CastRuntimeService* cast_runtime_service = GetCastRuntimeService();
-  DCHECK(cast_runtime_service);
-
-  RuntimeApplication* app = cast_runtime_service->GetRuntimeApplication();
-  DCHECK(app);
+  DCHECK(runtime_application_);
 
   url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager =
-      app->GetUrlRewriteRulesManager();
+      runtime_application_->GetUrlRewriteRulesManager();
   DCHECK(url_rewrite_rules_manager);
 
   const auto& rules = url_rewrite_rules_manager->GetCachedRules();
@@ -129,6 +126,17 @@ CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
 
   return std::make_unique<url_rewrite::URLLoaderThrottle>(
       rules, base::BindRepeating(&IsHeaderCorsExempt));
+}
+
+bool CastRuntimeContentBrowserClient::IsBufferingEnabled() {
+  return !is_runtime_application_for_streaming_.load();
+}
+
+void CastRuntimeContentBrowserClient::OnRuntimeApplicationChanged(
+    RuntimeApplication* application) {
+  runtime_application_ = application;
+  is_runtime_application_for_streaming_.store(
+      runtime_application_ && runtime_application_->IsStreamingApplication());
 }
 
 }  // namespace chromecast

@@ -171,6 +171,13 @@ cast_source_set("streaming_receiver_session_client") {
   ]
 }
 
+cast_source_set("runtime_application_watcher") {
+  sources = [
+    "runtime_application_watcher.cc",
+    "runtime_application_watcher.h",
+  ]
+}
+
 cast_source_set("runtime_application_dispatcher") {
   sources = [
     "runtime_application_base.cc",
@@ -188,6 +195,7 @@ cast_source_set("runtime_application_dispatcher") {
     ":grpc_webui",
     ":metrics_recorder",
     ":runtime_application",
+    ":runtime_application_watcher",
     "//base",
     "//chromecast/browser:browser_base",
     "//chromecast/cast_core/runtime/browser/grpc",
@@ -243,6 +251,7 @@ cast_source_set("browser") {
 
   deps = [
     ":cast_runtime_service",
+    ":runtime_application_watcher",
     "//base",
     "//chromecast/cast_core/runtime/common:cors_exempt_headers",
     "//components/url_rewrite/browser",

@@ -15,9 +15,11 @@
 namespace chromecast {
 
 WebRuntimeApplication::WebRuntimeApplication(
+    cast::common::ApplicationConfig app_config,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : RuntimeApplicationBase(mojom::RendererType::MOJO_RENDERER,
+    : RuntimeApplicationBase(std::move(app_config),
+                             mojom::RendererType::MOJO_RENDERER,
                              web_service,
                              std::move(task_runner)) {}
 
@@ -63,6 +65,10 @@ void WebRuntimeApplication::InitializeApplication(
       bindings_manager_->CreateRemote());
 
   SetApplicationStarted();
+}
+
+bool WebRuntimeApplication::IsStreamingApplication() const {
+  return true;
 }
 
 void WebRuntimeApplication::InnerContentsCreated(

@@ -45,7 +45,8 @@ class MediaPipelineImpl {
   // Initialize the media pipeline: the pipeline is configured based on
   // |load_type|.
   void Initialize(LoadType load_type,
-                  std::unique_ptr<CmaBackend> media_pipeline_backend);
+                  std::unique_ptr<CmaBackend> media_pipeline_backend,
+                  bool is_buffering_enabled);
 
   void SetClient(MediaPipelineClient client);
   void SetCdm(const base::UnguessableToken* cdm_id);

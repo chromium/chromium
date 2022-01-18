@@ -306,6 +306,10 @@ class CastContentBrowserClient
                                bool* mixer_audio_enabled,
                                content::RenderFrameHost* render_frame_host);
 
+  // Returns whether buffering should be used for the CMA Pipeline created for
+  // this runtime instance. May be called from any thread.
+  virtual bool IsBufferingEnabled();
+
  private:
   // Create device cert/key
   virtual scoped_refptr<net::X509Certificate> DeviceCert();

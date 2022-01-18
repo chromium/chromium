@@ -132,7 +132,8 @@ class PipelineHelper {
                                   &last_push_pts_[STREAM_VIDEO]));
 
     media_pipeline_ = std::make_unique<MediaPipelineImpl>();
-    media_pipeline_->Initialize(kLoadTypeURL, std::move(backend));
+    media_pipeline_->Initialize(kLoadTypeURL, std::move(backend),
+                                /* is_buffering_enabled */ true);
 
     if (have_audio_) {
       ::media::AudioDecoderConfig audio_config(

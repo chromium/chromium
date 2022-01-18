@@ -24,7 +24,7 @@ namespace chromecast {
 
 class CastWebService;
 class WebCryptoServer;
-class RuntimeApplication;
+class RuntimeApplicationWatcher;
 
 namespace receiver {
 class MediaManager;
@@ -47,7 +47,8 @@ class CastRuntimeService
 
   CastRuntimeService(CastWebService* web_service,
                      NetworkContextGetter network_context_getter,
-                     media::VideoPlaneController* video_plane_controller);
+                     media::VideoPlaneController* video_plane_controller,
+                     RuntimeApplicationWatcher* application_watcher);
   ~CastRuntimeService() override;
 
   // Returns WebCryptoServer.
@@ -55,9 +56,6 @@ class CastRuntimeService
 
   // Returns MediaManager.
   virtual receiver::MediaManager* GetMediaManager();
-
-  // Returns a pointer to RuntimeApplication.
-  virtual RuntimeApplication* GetRuntimeApplication();
 
  protected:
   // CastService implementation:

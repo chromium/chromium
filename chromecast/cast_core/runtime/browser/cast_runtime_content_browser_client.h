@@ -5,14 +5,19 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_CONTENT_BROWSER_CLIENT_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_CONTENT_BROWSER_CLIENT_H_
 
+#include <atomic>
+
 #include "chromecast/browser/cast_content_browser_client.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_watcher.h"
 
 namespace chromecast {
 
 class CastRuntimeService;
 class CastFeatureListCreator;
+class RuntimeApplication;
 
-class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
+class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient,
+                                        public RuntimeApplicationWatcher {
  public:
   static std::unique_ptr<CastRuntimeContentBrowserClient> Create(
       CastFeatureListCreator* feature_list_creator);
@@ -49,10 +54,22 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
       int frame_tree_node_id) override;
+  bool IsBufferingEnabled() override;
 
  private:
+  // RuntimeApplicationWatcher overrides:
+  void OnRuntimeApplicationChanged(RuntimeApplication* application) override;
+
   std::unique_ptr<blink::URLLoaderThrottle> CreateUrlRewriteRulesThrottle(
       content::WebContents* web_contents);
+
+  // The current application running in this runtime, or nullptr if no such app
+  // exists
+  RuntimeApplication* runtime_application_ = nullptr;
+
+  // Tracks whether the current application is a streaming application, for the
+  // purposes of disabling buffering.
+  std::atomic_bool is_runtime_application_for_streaming_{false};
 
   // An instance of |CastRuntimeService| created once during the lifetime of the
   // runtime.

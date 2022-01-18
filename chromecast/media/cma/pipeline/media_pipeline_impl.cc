@@ -112,12 +112,14 @@ MediaPipelineImpl::~MediaPipelineImpl() {
 
 void MediaPipelineImpl::Initialize(
     LoadType load_type,
-    std::unique_ptr<CmaBackend> media_pipeline_backend) {
+    std::unique_ptr<CmaBackend> media_pipeline_backend,
+    bool is_buffering_enabled) {
   LOG(INFO) << __FUNCTION__;
   DCHECK(thread_checker_.CalledOnValidThread());
   media_pipeline_backend_ = std::move(media_pipeline_backend);
 
-  if (load_type == kLoadTypeURL || load_type == kLoadTypeMediaSource) {
+  if ((load_type == kLoadTypeURL || load_type == kLoadTypeMediaSource) &&
+      is_buffering_enabled) {
     base::TimeDelta low_threshold(kLowBufferThresholdURL);
     base::TimeDelta high_threshold(kHighBufferThresholdURL);
     if (load_type == kLoadTypeMediaSource) {

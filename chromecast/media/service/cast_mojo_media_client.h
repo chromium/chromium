@@ -26,12 +26,14 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
   using CreateCdmFactoryCB =
       base::RepeatingCallback<std::unique_ptr<::media::CdmFactory>(
           ::media::mojom::FrameInterfaceFactory*)>;
+  using EnableBufferingCB = base::RepeatingCallback<bool()>;
 
   CastMojoMediaClient(CmaBackendFactory* backend_factory,
                       const CreateCdmFactoryCB& create_cdm_factory_cb,
                       VideoModeSwitcher* video_mode_switcher,
                       VideoResolutionPolicy* video_resolution_policy,
-                      external_service_support::ExternalConnector* connector);
+                      external_service_support::ExternalConnector* connector,
+                      EnableBufferingCB enable_buffering_cb);
 
   CastMojoMediaClient(const CastMojoMediaClient&) = delete;
   CastMojoMediaClient& operator=(const CastMojoMediaClient&) = delete;
@@ -65,6 +67,7 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
   VideoModeSwitcher* video_mode_switcher_;
   VideoResolutionPolicy* video_resolution_policy_;
   external_service_support::ExternalConnector* const connector_;
+  const EnableBufferingCB enable_buffering_cb_;
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   VideoGeometrySetterService* video_geometry_setter_;

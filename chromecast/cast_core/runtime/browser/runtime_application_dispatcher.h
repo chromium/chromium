@@ -27,6 +27,7 @@ class VideoPlaneController;
 
 class CastWebService;
 class RuntimeApplication;
+class RuntimeApplicationWatcher;
 
 class RuntimeApplicationDispatcher final : public GrpcServer,
                                            public RuntimeServiceDelegate,
@@ -36,7 +37,8 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
       CastWebService* web_service,
       CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
       cast_streaming::NetworkContextGetter network_context_getter,
-      media::VideoPlaneController* video_plane_controller);
+      media::VideoPlaneController* video_plane_controller,
+      RuntimeApplicationWatcher* application_watcher);
   ~RuntimeApplicationDispatcher() override;
 
   // Starts and stops the runtime service, including the gRPC completion queue.
@@ -97,6 +99,7 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
   void SendHeartbeat();
   void OnRecordComplete();
   void OnMetricsRecorderServiceStopped(GrpcMethod* callback);
+  void ResetApp();
 
   // MetricsRecorderGrpc implementation:
   void Record(const cast::metrics::RecordRequest& request) override;
@@ -125,6 +128,7 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
   std::unique_ptr<CastRuntimeMetricsRecorderService> metrics_recorder_service_;
 
   media::VideoPlaneController* video_plane_controller_;
+  RuntimeApplicationWatcher* application_watcher_;
 
   base::WeakPtrFactory<RuntimeApplicationDispatcher> weak_factory_{this};
 };

@@ -17,7 +17,8 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
                                     public CastWebContents::Observer {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
-  WebRuntimeApplication(CastWebService* web_service,
+  WebRuntimeApplication(cast::common::ApplicationConfig app_config,
+                        CastWebService* web_service,
                         scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~WebRuntimeApplication() override;
 
@@ -27,6 +28,7 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
                      cast::web::MessagePortStatus* response) override;
   void InitializeApplication(CoreApplicationServiceGrpc* grpc_stub,
                              CastWebContents* cast_web_contents) override;
+  bool IsStreamingApplication() const override;
 
   // CastWebContents::Observer implementation:
   void InnerContentsCreated(CastWebContents* inner_contents,

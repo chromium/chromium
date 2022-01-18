@@ -61,7 +61,8 @@ CastRenderer::CastRenderer(
     VideoResolutionPolicy* video_resolution_policy,
     const base::UnguessableToken& overlay_plane_id,
     ::media::mojom::FrameInterfaceFactory* frame_interfaces,
-    external_service_support::ExternalConnector* connector)
+    external_service_support::ExternalConnector* connector,
+    bool is_buffering_enabled)
     : backend_factory_(backend_factory),
       task_runner_(task_runner),
       video_mode_switcher_(video_mode_switcher),
@@ -74,6 +75,7 @@ CastRenderer::CastRenderer(
       media_task_runner_factory_(
           new BalancedMediaTaskRunnerFactory(kMaxDeltaFetcher)),
       video_geometry_setter_service_(nullptr),
+      is_buffering_enabled_(is_buffering_enabled),
       weak_factory_(this) {
   DCHECK(backend_factory_);
   LOG(INFO) << __FUNCTION__ << ": " << this;
@@ -223,7 +225,7 @@ void CastRenderer::OnGetMultiroomInfo(
       &CastRenderer::OnBufferingStateChange, weak_factory_.GetWeakPtr());
   pipeline_.reset(new MediaPipelineImpl());
   pipeline_->SetClient(std::move(pipeline_client));
-  pipeline_->Initialize(load_type, std::move(backend));
+  pipeline_->Initialize(load_type, std::move(backend), is_buffering_enabled_);
 
   // TODO(servolk): Implement support for multiple streams. For now use the
   // first enabled audio and video streams to preserve the existing behavior.

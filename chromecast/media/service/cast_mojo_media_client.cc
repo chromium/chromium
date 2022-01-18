@@ -4,6 +4,8 @@
 
 #include "chromecast/media/service/cast_mojo_media_client.h"
 
+#include <utility>
+
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/service/cast_renderer.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
@@ -19,12 +21,14 @@ CastMojoMediaClient::CastMojoMediaClient(
     const CreateCdmFactoryCB& create_cdm_factory_cb,
     VideoModeSwitcher* video_mode_switcher,
     VideoResolutionPolicy* video_resolution_policy,
-    external_service_support::ExternalConnector* connector)
+    external_service_support::ExternalConnector* connector,
+    CastMojoMediaClient::EnableBufferingCB enable_buffering_cb)
     : backend_factory_(backend_factory),
       create_cdm_factory_cb_(create_cdm_factory_cb),
       video_mode_switcher_(video_mode_switcher),
       video_resolution_policy_(video_resolution_policy),
-      connector_(connector) {
+      connector_(connector),
+      enable_buffering_cb_(std::move(enable_buffering_cb)) {
   DCHECK(backend_factory_);
   DCHECK(connector_);
 }
@@ -45,7 +49,8 @@ std::unique_ptr<::media::Renderer> CastMojoMediaClient::CreateCastRenderer(
   DCHECK(video_geometry_setter_);
   auto cast_renderer = std::make_unique<CastRenderer>(
       backend_factory_, task_runner, video_mode_switcher_,
-      video_resolution_policy_, overlay_plane_id, frame_interfaces, connector_);
+      video_resolution_policy_, overlay_plane_id, frame_interfaces, connector_,
+      enable_buffering_cb_.Run());
   cast_renderer->SetVideoGeometrySetterService(video_geometry_setter_);
   return cast_renderer;
 }
