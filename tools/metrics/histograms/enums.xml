@@ -28245,11 +28245,11 @@ Called by update_document_policy_enum.py.-->
   <int value="931" label="OnPrintEnterpriseConnector"/>
   <int value="932" label="UserAgentReduction"/>
   <int value="933" label="OriginAgentClusterDefaultEnabled"/>
-  <int value="934" label="DeviceLoginWebUILazyLoading"/>
+  <int value="934" label="DeviceLoginScreenWebUILazyLoading"/>
   <int value="935" label="ProjectorEnabled"/>
   <int value="936" label="PhoneHubCameraRollAllowed"/>
   <int value="937" label="EcheAllowed"/>
-  <int value="938" label="DeviceKeylockerForStorageEncryptEnabled"/>
+  <int value="938" label="DeviceKeylockerForStorageEncryptionEnabled"/>
   <int value="939" label="ReportCRDSessions"/>
   <int value="940" label="DeviceRunAutomaticCleanupOnLogin"/>
 </enum>
