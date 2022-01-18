@@ -2365,6 +2365,15 @@ void LayoutObject::MarkContainerChainForOverflowRecalcIfNeeded(
 void LayoutObject::SetNeedsOverflowRecalc(
     OverflowRecalcType overflow_recalc_type) {
   NOT_DESTROYED();
+  if (UNLIKELY(IsLayoutFlowThread())) {
+    // If we're a flow thread inside an NG multicol container, just redirect to
+    // the multicol container, since the overflow recalculation walks down the
+    // NG fragment tree, and the flow thread isn't represented there.
+    if (auto* multicol_container = DynamicTo<LayoutNGBlockFlow>(Parent())) {
+      multicol_container->SetNeedsOverflowRecalc(overflow_recalc_type);
+      return;
+    }
+  }
   bool mark_container_chain_layout_overflow_recalc =
       !SelfNeedsLayoutOverflowRecalc();
 
