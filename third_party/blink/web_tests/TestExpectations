@@ -7633,3 +7633,6 @@ crbug.com/1256763 virtual/gpu-rasterization/images/color-profile-background-imag
 crbug.com/1287093 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/document-referrer.html [ Failure Pass ]
 crbug.com/1287093 [ Linux ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/document-referrer.html [ Failure Pass ]
 crbug.com/1288136 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-005.https.html [ Failure Pass ]
+
+# Sheriff 2022-01-18
+crbug.com/1287067 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/embedder-require-corp.https.html [ Failure Pass ]
