@@ -431,7 +431,9 @@ void CrostiniExportImport::OnExportContainerProgress(
     const StreamingExportStatus& status) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED() << container_id << " has no status_tracker to update";
+    LOG(WARNING) << container_id
+                 << " has no status_tracker to update, perhaps Chrome crashed "
+                    "while an export was in progress.";
     return;
   }
 
@@ -570,7 +572,9 @@ void CrostiniExportImport::OnImportContainerProgress(
     uint64_t minimum_required_space) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED() << container_id << " has no status_tracker to update";
+    LOG(WARNING) << container_id
+                 << " has no status_tracker to update, perhaps Chrome crashed "
+                    "while an import was in progress.";
     return;
   }
 
