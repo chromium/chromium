@@ -25,7 +25,7 @@ Google and Chromium style
 [targets C++17](https://google.github.io/styleguide/cppguide.html#C++_Version).
 Additionally, some features of supported C++ versions remain forbidden. The
 status of Chromium's C++ support is covered in more detail in
-[Modern C++ use in Chromium](c++11.md).
+[Modern C++ use in Chromium](c++-features.md).
 
 ## Naming
 
