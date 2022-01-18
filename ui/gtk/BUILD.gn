@@ -14,6 +14,7 @@ import("//tools/generate_stubs/rules.gni")
 
 assert(is_linux || is_chromeos_lacros || is_chromeos,
        "This file should only be referenced on Linux")
+assert(use_gio, "GIO is required for building with GTK")
 
 source_set("gtk_types") {
   visibility = [ ":gtk_stubs" ]
@@ -101,20 +102,18 @@ component("gtk") {
     "select_file_dialog_impl_portal.cc",
     "select_file_dialog_impl_portal.h",
     "settings_provider.h",
+    "settings_provider_gsettings.cc",
+    "settings_provider_gsettings.h",
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
     "window_frame_provider_gtk.cc",
     "window_frame_provider_gtk.h",
   ]
   defines = [ "IS_GTK_IMPL" ]
-  configs += [ "//build/config/linux/pangocairo" ]
-  if (use_gio) {
-    sources += [
-      "settings_provider_gsettings.cc",
-      "settings_provider_gsettings.h",
-    ]
-    configs += [ "//build/linux:gio_config" ]
-  }
+  configs += [
+    "//build/config/linux/pangocairo",
+    "//build/linux:gio_config",
+  ]
 
   deps = [
     ":gtk_stubs",
