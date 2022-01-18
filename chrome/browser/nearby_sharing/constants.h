@@ -38,9 +38,9 @@ constexpr base::TimeDelta kInvalidateDelay = base::Milliseconds(500);
 // Time between successive progress updates.
 constexpr base::TimeDelta kMinProgressUpdateFrequency = base::Milliseconds(100);
 
-// TODO(crbug.com/1129069): Set this to true when WiFi LAN is supported to
-// enable logic that checks for an internet connection for managing surfaces and
-// the utility process lifecycle.
-constexpr bool kIsWifiLanSupported = false;
+// Whether or not WifiLan is supported for advertising or discovery. Support as
+// a bandwidth upgrade medium is behind a feature flag.
+constexpr bool kIsWifiLanAdvertisingSupported = false;
+constexpr bool kIsWifiLanDiscoverySupported = false;
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CONSTANTS_H_

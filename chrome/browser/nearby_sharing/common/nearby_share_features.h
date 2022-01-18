@@ -16,6 +16,7 @@ extern const base::Feature kNearbySharingDeviceContacts;
 extern const base::Feature kNearbySharingOnePageOnboarding;
 extern const base::Feature kNearbySharingSelfShare;
 extern const base::Feature kNearbySharingWebRtc;
+extern const base::Feature kNearbySharingWifiLan;
 
 }  // namespace features
 

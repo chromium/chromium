@@ -4920,6 +4920,10 @@ const char kNearbySharingSelfShareName[] = "Nearby Sharing Self Share";
 const char kNearbySharingSelfShareDescription[] =
     "Enables seamless sharing between a user's own devices.";
 
+const char kNearbySharingWifiLanName[] = "Nearby Sharing WifiLan";
+const char kNearbySharingWifiLanDescription[] =
+    "Enables WifiLan as a Nearby Share transfer medium.";
+
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
 const char kPcieBillboardNotificationDescription[] =
     "Enable Pcie peripheral billboard notification.";

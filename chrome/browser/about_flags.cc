@@ -429,7 +429,7 @@ const FeatureEntry::Choice kForceUpdateMenuTypeChoices[] = {
     {flag_descriptions::kUpdateMenuTypeUnsupportedOSVersion,
      switches::kForceUpdateMenuType, "unsupported_os_version"},
 };
-#else  // !defined(OS_ANDROID)
+#else   // !defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kReaderModeOfferInSettings[] = {
     {switches::kReaderModeDiscoverabilityParamName,
      switches::kReaderModeOfferInSettings}};
@@ -6428,6 +6428,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNearbySharingSelfShareName,
      flag_descriptions::kNearbySharingSelfShareDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNearbySharingSelfShare)},
+    {"nearby-sharing-wifilan", flag_descriptions::kNearbySharingWifiLanName,
+     flag_descriptions::kNearbySharingWifiLanDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kNearbySharingWifiLan)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

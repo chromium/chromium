@@ -2825,6 +2825,9 @@ extern const char kNearbySharingOnePageOnboardingDescription[];
 extern const char kNearbySharingSelfShareName[];
 extern const char kNearbySharingSelfShareDescription[];
 
+extern const char kNearbySharingWifiLanName[];
+extern const char kNearbySharingWifiLanDescription[];
+
 extern const char kPcieBillboardNotificationName[];
 extern const char kPcieBillboardNotificationDescription[];
 

@@ -54809,6 +54809,7 @@ from previous Chrome versions.
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
   <int value="894434593" label="TabRestoreSubMenus:enabled"/>
   <int value="898311758" label="ReaderMode:disabled"/>
+  <int value="899347105" label="NearbySharingWifiLan:enabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
   <int value="902839593" label="WebContentsForceDark:disabled"/>
@@ -54961,6 +54962,7 @@ from previous Chrome versions.
   <int value="1019857902"
       label="disable-hide-inactive-stacked-tab-close-buttons"/>
   <int value="1020127284" label="HardwareSecureDecryption:enabled"/>
+  <int value="1021266345" label="NearbySharingWifiLan:disabled"/>
   <int value="1021573543" label="QuickSettingsPWA:disabled"/>
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>

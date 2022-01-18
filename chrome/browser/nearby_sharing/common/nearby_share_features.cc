@@ -40,4 +40,8 @@ const base::Feature kNearbySharingSelfShare{"NearbySharingSelfShare",
 const base::Feature kNearbySharingWebRtc{"NearbySharingWebRtc",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables use of WifiLan in Nearby Share.
+const base::Feature kNearbySharingWifiLan{"NearbySharingWifiLan",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
