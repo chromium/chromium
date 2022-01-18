@@ -762,6 +762,10 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
   compositor_frame.metadata.begin_frame_ack.has_damage = true;
   compositor_frame.metadata.device_scale_factor = 1;
   compositor_frame.metadata.may_contain_video = true;
+  // If we're submitting frames even if we're not visible, then also turn off
+  // throttling.  This is for picture in picture, which can be throttled if the
+  // opener window is minimized without this.
+  compositor_frame.metadata.may_throttle_if_undrawn_frames = force_submit_;
 
   // Specify size of shared quad state and quad lists so that RenderPass doesn't
   // allocate using the defaults of 32 and 128 since we only append one quad.
