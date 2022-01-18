@@ -54,7 +54,7 @@
   <thead>
     <tr>
       <th>#</th>
-      <th id="filename" onclick="changeState({sort:, 'filename'})">Filename</th>
+      <th id="filename" onclick="changeState({sort: 'filename'})">Filename</th>
       <th id="isize" colspan="2" onclick="changeState({sort: 'isize'})" title="The size of the individual file. Also shown as percentage of the total file size.">Individual Size (B) &#9432;</th>
       <th id="tsize" colspan="2" onclick="changeState({sort: 'tsize'})" title="The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total build size.">Expanded Size (B) &#9432;</th>
       <th id="asize" colspan="2" onclick="changeState({sort: 'asize'})" title="The size added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total build size.">Added Size (B) &#9432;</th>
