@@ -38,6 +38,8 @@
 namespace blink {
 
 class CSSStyleSheet;
+class Element;
+class HTMLSlotElement;
 class PartNames;
 class RuleData;
 class SelectorFilter;
@@ -148,6 +150,30 @@ class CORE_EXPORT ElementRuleCollector {
   PseudoId GetPseudoId() const { return pseudo_style_request_.pseudo_id; }
 
   void AddMatchedRulesToTracker(StyleRuleUsageTracker*) const;
+
+  // Temporarily swap the StyleRecalcContext with one which points to the
+  // closest query container for matching ::slotted rules for a given slot.
+  class SlottedRulesScope {
+   public:
+    SlottedRulesScope(ElementRuleCollector& collector, HTMLSlotElement& slot)
+        : context_(&collector.style_recalc_context_,
+                   collector.style_recalc_context_.ForSlottedRules(slot)) {}
+
+   private:
+    base::AutoReset<StyleRecalcContext> context_;
+  };
+
+  // Temporarily swap the StyleRecalcContext with one which points to the
+  // closest query container for matching ::part rules for a given host.
+  class PartRulesScope {
+   public:
+    PartRulesScope(ElementRuleCollector& collector, Element& host)
+        : context_(&collector.style_recalc_context_,
+                   collector.style_recalc_context_.ForPartRules(host)) {}
+
+   private:
+    base::AutoReset<StyleRecalcContext> context_;
+  };
 
  private:
   struct PartRequest {

@@ -12,8 +12,9 @@ namespace blink {
 
 namespace {
 
-Element* ClosestInclusiveAncestorContainer(Element& element) {
-  for (auto* container = &element; container;
+Element* ClosestInclusiveAncestorContainer(Element& element,
+                                           Element* stay_within = nullptr) {
+  for (auto* container = &element; container && container != stay_within;
        container = container->ParentOrShadowHostElement()) {
     if (container->GetContainerQueryEvaluator())
       return container;
@@ -62,6 +63,35 @@ StyleRecalcContext StyleRecalcContext::ForSlotChildren(
   Element* host = slot.OwnerShadowHost();
   DCHECK(host);
   return StyleRecalcContext{FromInclusiveAncestors(*host)};
+}
+
+StyleRecalcContext StyleRecalcContext::ForSlottedRules(
+    HTMLSlotElement& slot) const {
+  if (!RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
+    return *this;
+
+  // The current container is the shadow-including inclusive ancestors of the
+  // host. When matching ::slotted rules, the closest container may be found in
+  // the shadow-including inclusive ancestry of the slot. If we reach the host,
+  // the current container is still the closest one.
+  if (Element* shadow_container =
+          ClosestInclusiveAncestorContainer(slot, slot.OwnerShadowHost())) {
+    return StyleRecalcContext{shadow_container};
+  }
+  return *this;
+}
+
+StyleRecalcContext StyleRecalcContext::ForPartRules(Element& host) const {
+  if (!container || !RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
+    return *this;
+
+  // The closest container for matching ::part rules is the originating host.
+  // There is no need to walk past the current container.
+  if (Element* host_container =
+          ClosestInclusiveAncestorContainer(host, container)) {
+    return StyleRecalcContext{host_container};
+  }
+  return *this;
 }
 
 }  // namespace blink

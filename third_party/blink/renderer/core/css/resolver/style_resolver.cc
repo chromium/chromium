@@ -512,17 +512,20 @@ static void MatchSlottedRules(const Element& element,
   if (!slot)
     return;
 
-  HeapVector<Member<ScopedStyleResolver>> resolvers;
+  HeapVector<std::pair<Member<HTMLSlotElement>, Member<ScopedStyleResolver>>>
+      resolvers;
   for (; slot; slot = slot->AssignedSlot()) {
     if (ScopedStyleResolver* resolver =
-            slot->GetTreeScope().GetScopedStyleResolver())
-      resolvers.push_back(resolver);
+            slot->GetTreeScope().GetScopedStyleResolver()) {
+      resolvers.push_back(std::make_pair(slot, resolver));
+    }
   }
   for (auto it = resolvers.rbegin(); it != resolvers.rend(); ++it) {
+    ElementRuleCollector::SlottedRulesScope scope(collector, *(*it).first);
     collector.ClearMatchedRules();
-    (*it)->CollectMatchingSlottedRules(collector);
+    (*it).second->CollectMatchingSlottedRules(collector);
     collector.SortAndTransferMatchedRules();
-    collector.FinishAddingAuthorRulesForTreeScope((*it)->GetTreeScope());
+    collector.FinishAddingAuthorRulesForTreeScope((*it).first->GetTreeScope());
   }
 }
 
@@ -620,6 +623,7 @@ void StyleResolver::MatchPseudoPartRules(const Element& element,
   while (current_names.size()) {
     TreeScope& tree_scope = host->GetTreeScope();
     if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver()) {
+      ElementRuleCollector::PartRulesScope scope(collector, *host);
       collector.ClearMatchedRules();
       resolver->CollectMatchingPartPseudoRules(collector, current_names,
                                                for_shadow_pseudo);

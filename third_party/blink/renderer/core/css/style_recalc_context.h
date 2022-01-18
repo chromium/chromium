@@ -37,6 +37,14 @@ class CORE_EXPORT StyleRecalcContext {
   // context with the container adjusted as necessary.
   StyleRecalcContext ForSlotChildren(const HTMLSlotElement& slot) const;
 
+  // Called to update the context when matching ::slotted rules for shadow host
+  // children. ::slotted rules may query containers inside the slot's shadow
+  // tree as well.
+  StyleRecalcContext ForSlottedRules(HTMLSlotElement& slot) const;
+
+  // Called to update the context when matching ::part rules for shadow hosts.
+  StyleRecalcContext ForPartRules(Element& host) const;
+
   // Set to the nearest container (for container queries), if any.
   // This is used to evaluate container queries in ElementRuleCollector.
   Element* container = nullptr;
