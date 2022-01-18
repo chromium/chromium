@@ -33,7 +33,7 @@ FAIL checkStopAfterSetLocalAnswer promise_test: Unhandled rejection with value: 
 FAIL checkStopAfterClose assert_equals: Stopping a transceiver on a closed PC should throw. throws InvalidStateError expected "InvalidStateError" but got "TypeError"
 FAIL checkLocalRollback assert_equals: expected "[{currentDirection:null,direction:\"sendrecv\",receiver:{track:{kind:\"audio\"}},sender:{track:{}}}]" but got "[]"
 FAIL checkRollbackAndSetRemoteOfferWithDifferentType promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Rollback not supported in Plan B"
-FAIL checkRemoteRollback promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Rollback not supported in Plan B"
+FAIL checkRemoteRollback promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote rollback sdp: Rollback not supported in Plan B"
 FAIL checkMsectionReuse promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'mid')"
 FAIL checkStopAfterCreateOfferWithReusedMsection promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'stop')"
 FAIL checkAddIceCandidateToStoppedTransceiver promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'stop')"
