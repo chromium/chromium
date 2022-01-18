@@ -177,6 +177,10 @@ class WebStateImpl;
 - (void)createFullPagePDFWithCompletion:
     (void (^)(NSData* PDFDocumentData))completion;
 
+// Tries to dismiss the presented states of the media (fullscreen or Picture in
+// Picture).
+- (void)closeMediaPresentations;
+
 // Creates a web view if it's not yet created. Returns the web view.
 - (WKWebView*)ensureWebViewCreated;
 

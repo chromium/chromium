@@ -69,6 +69,7 @@ source_set("incognito_reauth_scene_agent") {
     "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/web/public",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
