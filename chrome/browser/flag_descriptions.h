@@ -2639,6 +2639,9 @@ extern const char
 extern const char
     kExperimentalAccessibilitySwitchAccessMultistepAutomationDescription[];
 
+extern const char kExtendedOpenVpnSettingsName[];
+extern const char kExtendedOpenVpnSettingsDescription[];
+
 extern const char kMagnifierContinuousMouseFollowingModeSettingName[];
 extern const char kMagnifierContinuousMouseFollowingModeSettingDescription[];
 

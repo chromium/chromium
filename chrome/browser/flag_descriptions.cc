@@ -4607,6 +4607,11 @@ const char
         "Enable multistep automation for Switch Access, which is a project for "
         "the 2021 accessibility sprint.";
 
+const char kExtendedOpenVpnSettingsName[] = "Enable extended OpenVPN settings";
+const char kExtendedOpenVpnSettingsDescription[] =
+    "Enable displaying additional configuration properties of already "
+    "configured OpenVPN networks.";
+
 const char kMagnifierContinuousMouseFollowingModeSettingName[] =
     "Enable ability to choose continuous mouse following mode in Magnifier "
     "settings";

@@ -53633,6 +53633,7 @@ from previous Chrome versions.
   <int value="26945819" label="EnhancedDeskAnimations:disabled"/>
   <int value="27507364" label="apps-keep-chrome-alive"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
+  <int value="31693434" label="ExtendedOpenVpnSettings:enabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
   <int value="32057053" label="EnterpriseReportingInBrowser:disabled"/>
   <int value="32242305" label="NtpRecipeTasksModule:enabled"/>
@@ -55466,6 +55467,7 @@ from previous Chrome versions.
   <int value="1379571437" label="ExoPointerLock:disabled"/>
   <int value="1379944457" label="EnableMessagesWebPush:disabled"/>
   <int value="1380367827" label="AllowDisableTouchpadHapticFeedback:enabled"/>
+  <int value="1381267110" label="ExtendedOpenVpnSettings:disabled"/>
   <int value="1381746642" label="enable-automatic-password-saving"/>
   <int value="1381817717" label="EduCoexistence:enabled"/>
   <int value="1382107019" label="LevelDBPerformRewrite:disabled"/>

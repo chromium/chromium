@@ -3075,6 +3075,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "extended-open-vpn-settings",
+    "owners": [ "gflegar@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "extension-content-verification",
     "owners": [ "//extensions/OWNERS" ],
     "expiry_milestone": 86

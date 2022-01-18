@@ -479,6 +479,11 @@ const base::Feature kEnableDesksTrackpadSwipeImprovements{
 const base::Feature kEnableDnsProxy{"EnableDnsProxy",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables displaying additional OpenVPN configuration values on the network
+// details page.
+const base::Feature kExtendedOpenVpnSettings{"ExtendedOpenVpnSettings",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables setting the device hostname.
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1508,6 +1513,10 @@ bool IsEcheSWADebugModeEnabled() {
 
 bool IsESimPolicyEnabled() {
   return base::FeatureList::IsEnabled(kESimPolicy);
+}
+
+bool IsExtendedOpenVpnSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kExtendedOpenVpnSettings);
 }
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {

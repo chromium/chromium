@@ -286,6 +286,15 @@ Polymer({
       }
     },
 
+    /** @private {boolean} */
+    isExtendedOpenVpnSettingsEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('extendedOpenVpnSettingsEnabled') &&
+            loadTimeData.getBoolean('extendedOpenVpnSettingsEnabled');
+      }
+    },
+
     /**
      * When true, all inputs that allow state to be changed (e.g., toggles,
      * inputs) are disabled.
