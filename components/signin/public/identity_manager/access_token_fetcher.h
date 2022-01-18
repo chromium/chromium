@@ -251,7 +251,7 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   raw_ptr<ProfileOAuth2TokenService> token_service_;
   // Suppress unused typedef warnings in some compiler builds when DCHECK is
   // disabled.
-  raw_ptr<PrimaryAccountManager> primary_account_manager_ ALLOW_UNUSED_TYPE;
+  [[maybe_unused]] raw_ptr<PrimaryAccountManager> primary_account_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const ScopeSet scopes_;
   const Mode mode_;

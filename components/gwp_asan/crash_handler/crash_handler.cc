@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
 #include "components/gwp_asan/crash_handler/crash_analyzer.h"
@@ -42,9 +41,8 @@ BufferExtensionStreamDataSource::BufferExtensionStreamDataSource(
     uint32_t stream_type,
     const Crash& crash)
     : crashpad::MinidumpUserExtensionStreamDataSource(stream_type) {
-  bool result = crash.SerializeToString(&data_);
+  [[maybe_unused]] bool result = crash.SerializeToString(&data_);
   DCHECK(result);
-  ALLOW_UNUSED_LOCAL(result);
 }
 
 size_t BufferExtensionStreamDataSource::StreamDataSize() {

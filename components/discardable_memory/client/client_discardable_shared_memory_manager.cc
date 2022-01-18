@@ -38,14 +38,15 @@ size_t GetDefaultAllocationSize() {
   // memory usage overhead. 4MB is measured as the ideal size according to the
   // usage statistics. For low-end devices, we care about lowering the memory
   // usage and 1MB is good for the most basic cases.
-  const size_t kDefaultAllocationSize = 4 * kOneMegabyteInBytes;
-  const size_t kDefaultLowEndDeviceAllocationSize = kOneMegabyteInBytes;
+  [[maybe_unused]] const size_t kDefaultAllocationSize =
+      4 * kOneMegabyteInBytes;
+  [[maybe_unused]] const size_t kDefaultLowEndDeviceAllocationSize =
+      kOneMegabyteInBytes;
 
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
   // On Windows 32 bit, use a smaller chunk, as address space fragmentation may
   // make a 4MiB allocation impossible to fulfill in the browser process.
   // See crbug.com/983348 for details.
-  ALLOW_UNUSED_LOCAL(kDefaultAllocationSize);
   return kDefaultLowEndDeviceAllocationSize;
 #elif BUILDFLAG(IS_FUCHSIA)
   // Low end Fuchsia devices may be very constrained, so use smaller allocations
@@ -54,7 +55,6 @@ size_t GetDefaultAllocationSize() {
                                          : kDefaultAllocationSize;
 
 #else
-  ALLOW_UNUSED_LOCAL(kDefaultLowEndDeviceAllocationSize);
   return kDefaultAllocationSize;
 #endif
 }

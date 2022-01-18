@@ -11,7 +11,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -130,7 +129,7 @@ int64_t GetFirstColumn(sql::Statement& s) {
 }
 
 template <>
-ALLOW_UNUSED_TYPE std::string GetFirstColumn(sql::Statement& s) {
+[[maybe_unused]] std::string GetFirstColumn(sql::Statement& s) {
   return s.ColumnString(0);
 }
 

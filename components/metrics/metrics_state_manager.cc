@@ -17,7 +17,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
@@ -254,7 +253,7 @@ MetricsStateManager::MetricsStateManager(
   DCHECK(!load_client_info_.is_null());
   ResetMetricsIDsIfNecessary();
 
-  bool is_first_run = false;
+  [[maybe_unused]] bool is_first_run = false;
   int64_t install_date = local_state_->GetInt64(prefs::kInstallDate);
 
   // Set the install date if this is our first run.
@@ -272,9 +271,7 @@ MetricsStateManager::MetricsStateManager(
     ForceClientIdCreation();
   }
 
-#if BUILDFLAG(IS_WIN)
-  ALLOW_UNUSED_LOCAL(is_first_run);
-#else
+#if !BUILDFLAG(IS_WIN)
   if (is_first_run) {
     // If this is a first run (no install date) and there's no client id, then
     // generate a provisional client id now. This id will be used for field

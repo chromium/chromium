@@ -37,9 +37,9 @@ PrimaryAccountMutatorImpl::PrimaryAccountMutatorImpl(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |account_consistency_| is not used on CHROMEOS_ASH, however it is preferred
-  // to have it defined to avoid a lof of ifdefs in the header file.
-  signin::AccountConsistencyMethod unused = account_consistency_;
-  ALLOW_UNUSED_LOCAL(unused);
+  // to have it defined to avoid a lot of ifdefs in the header file.
+  [[maybe_unused]] signin::AccountConsistencyMethod unused =
+      account_consistency_;
 #endif
 }
 

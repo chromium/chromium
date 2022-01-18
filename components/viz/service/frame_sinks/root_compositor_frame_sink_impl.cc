@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/platform_thread.h"
@@ -520,7 +519,6 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
     display_client_->OnDisplayReceivedCALayerParams(ca_layer_params);
 #else
   NOTREACHED();
-  ALLOW_UNUSED_LOCAL(display_client_);
 #endif
 }
 
@@ -538,7 +536,6 @@ void RootCompositorFrameSinkImpl::DisplayDidCompleteSwapWithSize(
   }
 #else
   NOTREACHED();
-  ALLOW_UNUSED_LOCAL(display_client_);
 #endif
 }
 

@@ -4,12 +4,10 @@
 
 #include "components/feed/core/v2/public/test/stub_feed_api.h"
 
-#include "base/compiler_specific.h"
-
 namespace feed {
 
 namespace {
-ALLOW_UNUSED_TYPE void EnsureStubFeedApiHasNoPureVirtualFunctions() {
+[[maybe_unused]] void EnsureStubFeedApiHasNoPureVirtualFunctions() {
   (void)StubFeedApi();
 }
 }  // namespace

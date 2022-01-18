@@ -1512,16 +1512,17 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     if (MakeCurrent(/*need_framebuffer=*/true)) {
       if (gl_surface_->IsSurfaceless()) {
 #if defined(USE_OZONE)
-        bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                          ->GetPlatformRuntimeProperties()
-                                          .needs_background_image;
-        bool supports_non_backed_solid_color_images =
+        [[maybe_unused]] bool needs_background_image =
+            ui::OzonePlatform::GetInstance()
+                ->GetPlatformRuntimeProperties()
+                .needs_background_image;
+        [[maybe_unused]] bool supports_non_backed_solid_color_images =
             ui::OzonePlatform::GetInstance()
                 ->GetPlatformRuntimeProperties()
                 .supports_non_backed_solid_color_buffers;
 #else   // defined(USE_OZONE)
-        bool needs_background_image = false;
-        bool supports_non_backed_solid_color_images = false;
+        [[maybe_unused]] bool needs_background_image = false;
+        [[maybe_unused]] bool supports_non_backed_solid_color_images = false;
 #endif  // !defined(USE_OZONE)
 
 #if !BUILDFLAG(IS_WIN)
@@ -1535,8 +1536,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
             supports_non_backed_solid_color_images);
 #else   // !BUILDFLAG(IS_WIN)
         NOTIMPLEMENTED();
-        ALLOW_UNUSED_LOCAL(needs_background_image);
-        ALLOW_UNUSED_LOCAL(supports_non_backed_solid_color_images);
 #endif  // BUILDFLAG(IS_WIN)
       } else {
         if (dependency_->NeedsSupportForExternalStencil()) {
@@ -1592,16 +1591,17 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 #endif
 
 #if defined(USE_OZONE)
-  bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                    ->GetPlatformRuntimeProperties()
-                                    .needs_background_image;
-  bool supports_non_backed_solid_color_images =
+  [[maybe_unused]] bool needs_background_image =
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .needs_background_image;
+  [[maybe_unused]] bool supports_non_backed_solid_color_images =
       ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
           .supports_non_backed_solid_color_buffers;
 #else   // defined(USE_OZONE)
-  bool needs_background_image = false;
-  bool supports_non_backed_solid_color_images = false;
+  [[maybe_unused]] bool needs_background_image = false;
+  [[maybe_unused]] bool supports_non_backed_solid_color_images = false;
 #endif  // !defined(USE_OZONE)
 
 #if !BUILDFLAG(IS_WIN)
@@ -1627,8 +1627,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     return true;
   }
 #endif  // !BUILDFLAG(IS_WIN)
-  ALLOW_UNUSED_LOCAL(needs_background_image);
-  ALLOW_UNUSED_LOCAL(supports_non_backed_solid_color_images);
 
   std::unique_ptr<SkiaOutputDeviceVulkan> output_device;
   if (!gpu_preferences_.disable_vulkan_surface) {

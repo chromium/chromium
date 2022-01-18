@@ -156,7 +156,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   mojo::AssociatedReceiver<mojom::CompositorFrameSink>
       compositor_frame_sink_receiver_;
   // |display_client_| may be NullRemote on platforms that do not use it.
-  mojo::Remote<mojom::DisplayClient> display_client_;
+  [[maybe_unused]] mojo::Remote<mojom::DisplayClient> display_client_;
   mojo::AssociatedReceiver<mojom::DisplayPrivate> display_private_receiver_;
 
   std::unique_ptr<VSyncParameterListener> vsync_listener_;

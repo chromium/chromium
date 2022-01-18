@@ -5,7 +5,6 @@
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -169,7 +168,7 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
     return EmeConfigRule::NOT_SUPPORTED;
   }
 
-  bool hw_secure_codecs_required =
+  [[maybe_unused]] bool hw_secure_codecs_required =
       hw_secure_requirement && *hw_secure_requirement;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -216,8 +215,6 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
   // above.
   if (robustness >= Robustness::HW_SECURE_CRYPTO)
     return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
-
-  ALLOW_UNUSED_LOCAL(hw_secure_codecs_required);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return EmeConfigRule::SUPPORTED;
