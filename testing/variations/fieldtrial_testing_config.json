@@ -3298,29 +3298,6 @@
             ]
         }
     ],
-    "DevToolsLayoutHats": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "probability": "1.0",
-                        "user_prompted": "true"
-                    },
-                    "enable_features": [
-                        "HaTSDesktopDevToolsLayoutPanel"
-                    ]
-                }
-            ]
-        }
-    ],
     "DexFixer": [
         {
             "platforms": [

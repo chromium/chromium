@@ -122,9 +122,6 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   survey_configs.emplace_back(&features::kHaTSDesktopDevToolsIssuesCSP,
                               "devtools-issues-csp",
                               "c9fjDmwjb0ugnJ3q1cK0USeAJJ9C");
-  survey_configs.emplace_back(&features::kHaTSDesktopDevToolsLayoutPanel,
-                              "devtools-layout-panel",
-                              "hhoMFLFq70ugnJ3q1cK0XYpqkErh");
 
   // Settings surveys.
   survey_configs.emplace_back(
