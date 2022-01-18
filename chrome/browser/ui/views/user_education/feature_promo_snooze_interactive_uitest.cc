@@ -151,7 +151,8 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     // Opening 6 or more tabs is the triggering event for tab groups
     // IPH.
     for (int i = 0; i < 5; ++i)
-      AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+      ASSERT_TRUE(
+          AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
 
     ASSERT_EQ(should_show,
               promo_controller_->BubbleIsShowing(
