@@ -2123,38 +2123,6 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
   return nearest_index;
 }
 
-std::string AXPlatformNodeBase::GetInvalidValue() const {
-  const AXPlatformNodeBase* target = this;
-  // The aria-invalid=spelling/grammar need to be exposed as text attributes for
-  // a range matching the visual underline representing the error.
-  if (static_cast<ax::mojom::InvalidState>(
-          target->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState)) ==
-          ax::mojom::InvalidState::kNone &&
-      target->IsText() && target->GetParent()) {
-    // Text nodes need to reflect the invalid state of their parent object,
-    // otherwise spelling and grammar errors communicated through aria-invalid
-    // won't be reflected in text attributes.
-    target = static_cast<AXPlatformNodeBase*>(
-        FromNativeViewAccessible(target->GetParent()));
-  }
-
-  std::string invalid_value("");
-  // Note: spelling+grammar errors case is disallowed and not supported. It
-  // could possibly arise with aria-invalid on the ancestor of a spelling error,
-  // but this is not currently described in any spec and no real-world use cases
-  // have been found.
-  switch (static_cast<ax::mojom::InvalidState>(
-      target->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState))) {
-    case ax::mojom::InvalidState::kNone:
-    case ax::mojom::InvalidState::kFalse:
-      break;
-    case ax::mojom::InvalidState::kTrue:
-      invalid_value = "true";
-      break;
-  }
-  return invalid_value;
-}
-
 ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
   ui::TextAttributeList attributes;
 
@@ -2228,13 +2196,6 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
       attributes.push_back(std::make_pair("text-underline-style", "solid"));
     }
   }
-
-  // Screen readers look at the text attributes to determine if something is
-  // misspelled, so we need to propagate any spelling attributes from immediate
-  // parents of text-only objects.
-  std::string invalid_value = GetInvalidValue();
-  if (!invalid_value.empty())
-    attributes.push_back(std::make_pair("invalid", invalid_value));
 
   std::string language = GetDelegate()->GetLanguage();
   if (!language.empty()) {

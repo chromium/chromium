@@ -558,8 +558,6 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
       size_t* old_len,
       size_t* new_len);
 
-  std::string GetInvalidValue() const;
-
   // Based on the characteristics of this object, such as its role and the
   // presence of a multiselectable attribute, returns the maximum number of
   // selectable children that this object could potentially contain.
