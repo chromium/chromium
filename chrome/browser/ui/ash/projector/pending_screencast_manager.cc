@@ -174,7 +174,7 @@ PendingSreencastManager::~PendingSreencastManager() {
 }
 
 void PendingSreencastManager::OnUnmounted() {
-  if (pending_screencast_cache_.empty()) {
+  if (!pending_screencast_cache_.empty()) {
     pending_screencast_cache_.clear();
     // Since DriveFS is unmounted, screencasts stop uploading. Notifies pending
     // screencast status has changed.
