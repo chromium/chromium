@@ -126,7 +126,7 @@ class DisplayColorManagerTest : public testing::Test {
                       .Append(FILE_PATH_LITERAL("display"))
                       .Append(FILE_PATH_LITERAL("test_data"));
     path_override_ = std::make_unique<base::ScopedPathOverride>(
-        chromeos::DIR_DEVICE_DISPLAY_PROFILES, color_path_);
+        DIR_DEVICE_DISPLAY_PROFILES, color_path_);
 
     quirks::QuirksManager::Initialize(
         std::unique_ptr<quirks::QuirksManager::Delegate>(
@@ -484,10 +484,10 @@ TEST_F(DisplayColorManagerTest, VpdCalibration) {
   int64_t product_id = 0x0;  // No matching product ID, so no Quirks ICC.
   const base::FilePath& icc_path = color_path_.Append("06af5c10.icc");
   auto vpd_dir_override = std::make_unique<base::ScopedPathOverride>(
-      chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD);
+      DIR_DEVICE_DISPLAY_PROFILES_VPD);
   base::FilePath vpd_dir;
-  EXPECT_TRUE(base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD,
-                                     &vpd_dir));
+  EXPECT_TRUE(
+      base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &vpd_dir));
   EXPECT_TRUE(base::CopyFile(icc_path,
                              vpd_dir.Append(quirks::IdToFileName(product_id))));
 
@@ -521,10 +521,10 @@ TEST_F(DisplayColorManagerTest, VpdCalibrationWithQuirks) {
   int64_t product_id = 0x06af5c10;
   const base::FilePath& icc_path = color_path_.Append("4c834a42.icc");
   auto vpd_dir_override = std::make_unique<base::ScopedPathOverride>(
-      chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD);
+      DIR_DEVICE_DISPLAY_PROFILES_VPD);
   base::FilePath vpd_dir;
-  EXPECT_TRUE(base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD,
-                                     &vpd_dir));
+  EXPECT_TRUE(
+      base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &vpd_dir));
   EXPECT_TRUE(base::CopyFile(icc_path,
                              vpd_dir.Append(quirks::IdToFileName(product_id))));
 

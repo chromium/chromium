@@ -158,8 +158,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
           chromeos::SessionManagerClient::Get());
 
       const base::FilePath device_policy_external_data_path =
-          base::PathService::CheckedGet(
-              chromeos::DIR_DEVICE_POLICY_EXTERNAL_DATA);
+          base::PathService::CheckedGet(ash::DIR_DEVICE_POLICY_EXTERNAL_DATA);
 
       auto external_data_manager =
           std::make_unique<DevicePolicyCloudExternalDataManager>(

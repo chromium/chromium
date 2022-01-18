@@ -189,8 +189,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   // exposing policy for extensions.
   if (!component_policy_disabled_for_testing_) {
     const base::FilePath component_policy_cache_dir =
-        base::PathService::CheckedGet(
-            chromeos::DIR_SIGNIN_PROFILE_COMPONENT_POLICY);
+        base::PathService::CheckedGet(ash::DIR_SIGNIN_PROFILE_COMPONENT_POLICY);
     CHECK(signin_profile_forwarding_schema_registry_);
     CreateComponentCloudPolicyService(
         dm_protocol::kChromeSigninExtensionPolicyType,

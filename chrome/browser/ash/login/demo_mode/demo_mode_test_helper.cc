@@ -35,7 +35,7 @@ DemoModeTestHelper::DemoModeTestHelper()
 
   CHECK(components_temp_dir_.CreateUniqueTempDir());
   components_path_override_ = std::make_unique<base::ScopedPathOverride>(
-      chromeos::DIR_PREINSTALLED_COMPONENTS, components_temp_dir_.GetPath());
+      DIR_PREINSTALLED_COMPONENTS, components_temp_dir_.GetPath());
 
   CHECK(base::CreateDirectory(GetDemoResourcesPath()));
   CHECK(base::CreateDirectory(GetPreinstalledDemoResourcesPath()));

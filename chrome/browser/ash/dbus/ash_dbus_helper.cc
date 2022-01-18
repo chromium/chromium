@@ -68,6 +68,8 @@
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #endif
 
+namespace ash {
+
 namespace {
 
 // If running on desktop, override paths so that enrollment and cloud policy
@@ -76,14 +78,12 @@ void OverrideStubPathsIfNeeded() {
   base::FilePath user_data_dir;
   if (!base::SysInfo::IsRunningOnChromeOS() &&
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-    chromeos::RegisterStubPathOverrides(user_data_dir);
+    RegisterStubPathOverrides(user_data_dir);
     chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
   }
 }
 
 }  // namespace
-
-namespace ash {
 
 void InitializeDBus() {
   using chromeos::InitializeDBusClient;

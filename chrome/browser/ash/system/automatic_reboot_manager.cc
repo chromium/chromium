@@ -84,7 +84,7 @@ void SaveUpdateRebootNeededUptime() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   base::FilePath update_reboot_needed_uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPDATE_REBOOT_NEEDED_UPTIME,
+  CHECK(base::PathService::Get(FILE_UPDATE_REBOOT_NEEDED_UPTIME,
                                &update_reboot_needed_uptime_file));
   const base::TimeDelta last_update_reboot_needed_uptime =
       ReadTimeDeltaFromFile(update_reboot_needed_uptime_file);
@@ -92,7 +92,7 @@ void SaveUpdateRebootNeededUptime() {
     return;
 
   base::FilePath uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPTIME, &uptime_file));
+  CHECK(base::PathService::Get(FILE_UPTIME, &uptime_file));
   const base::TimeDelta uptime = ReadTimeDeltaFromFile(uptime_file);
   if (uptime.is_zero())
     return;
@@ -137,9 +137,9 @@ struct SystemEventTimes {
 
 SystemEventTimes GetSystemEventTimes() {
   base::FilePath uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPTIME, &uptime_file));
+  CHECK(base::PathService::Get(FILE_UPTIME, &uptime_file));
   base::FilePath update_reboot_needed_uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPDATE_REBOOT_NEEDED_UPTIME,
+  CHECK(base::PathService::Get(FILE_UPDATE_REBOOT_NEEDED_UPTIME,
                                &update_reboot_needed_uptime_file));
   return SystemEventTimes(
       ReadTimeDeltaFromFile(uptime_file),

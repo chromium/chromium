@@ -127,7 +127,7 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   InitLogging();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::RegisterPathProvider();
+  ash::RegisterPathProvider();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::dbus_paths::RegisterPathProvider();

@@ -799,7 +799,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   // For Chrome OS demo sessions, add pre-installed demo extensions and apps.
   if (ash::DemoExtensionsExternalLoader::SupportedForProfile(profile)) {
     base::FilePath cache_dir;
-    CHECK(base::PathService::Get(chromeos::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
+    CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
                                  &cache_dir));
     auto loader =
         base::MakeRefCounted<ash::DemoExtensionsExternalLoader>(cache_dir);

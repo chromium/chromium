@@ -314,7 +314,7 @@ StartupCustomizationDocument::StartupCustomizationDocument()
     // Temporarily allow it until we fix http://crosbug.com/11103
     base::ThreadRestrictions::ScopedAllowIO allow_io;
     base::FilePath startup_customization_manifest;
-    base::PathService::Get(chromeos::FILE_STARTUP_CUSTOMIZATION_MANIFEST,
+    base::PathService::Get(FILE_STARTUP_CUSTOMIZATION_MANIFEST,
                            &startup_customization_manifest);
     LoadManifestFromFile(startup_customization_manifest);
   }

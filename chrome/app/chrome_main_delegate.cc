@@ -822,7 +822,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 
   chrome::RegisterPathProvider();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::RegisterPathProvider();
+  ash::RegisterPathProvider();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::dbus_paths::RegisterPathProvider();
@@ -1034,7 +1034,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
   // command line flags. Maybe move the chrome PathProvider down here also?
   int alt_preinstalled_components_dir =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      chromeos::DIR_PREINSTALLED_COMPONENTS;
+      ash::DIR_PREINSTALLED_COMPONENTS;
 #else
       chrome::DIR_INTERNAL_PLUGINS;
 #endif

@@ -349,7 +349,7 @@ void DisplayColorManager::QueryVpdForCalibration(
     return;
 
   base::FilePath directory;
-  base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD, &directory);
+  base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &directory);
   const std::string icc_name = quirks::IdToFileName(product_code);
   const base::FilePath icc_path = directory.Append(icc_name);
 

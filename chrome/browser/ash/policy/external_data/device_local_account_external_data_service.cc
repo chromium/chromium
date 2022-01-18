@@ -27,7 +27,7 @@ DeviceLocalAccountExternalDataService::DeviceLocalAccountExternalDataService(
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : parent_(parent), backend_task_runner_(std::move(backend_task_runner)) {
   const base::FilePath cache_dir = base::PathService::CheckedGet(
-      chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA);
+      ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA);
   resource_cache_ =
       std::make_unique<ResourceCache>(cache_dir, backend_task_runner_,
                                       /* max_cache_size */ absl::nullopt);

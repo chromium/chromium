@@ -43,7 +43,7 @@ namespace browsertest_util {
 void CreateAndInitializeLocalCache() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath extension_cache_dir;
-  CHECK(base::PathService::Get(chromeos::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
+  CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
                                &extension_cache_dir));
   base::FilePath cache_init_file = extension_cache_dir.Append(
       extensions::LocalExtensionCache::kCacheReadyFlagFileName);

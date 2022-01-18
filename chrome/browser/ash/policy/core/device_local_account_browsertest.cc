@@ -589,7 +589,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
   base::FilePath GetExtensionCacheDirectoryForAccountID(
       const std::string& account_id) {
     base::FilePath extension_cache_root_dir;
-    if (!base::PathService::Get(chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS,
+    if (!base::PathService::Get(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS,
                                 &extension_cache_root_dir)) {
       ADD_FAILURE();
     }
