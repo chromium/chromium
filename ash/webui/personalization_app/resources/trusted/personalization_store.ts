@@ -4,7 +4,7 @@
 
 import {Action, Store} from 'chrome://resources/js/cr/ui/store.js';
 import {StoreClient, StoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -106,14 +106,13 @@ const PersonalizationStoreClientImpl: PersonalizationStoreClient&
     };
 
 export const WithPersonalizationStore: {
-  new (): PolymerElement&I18nBehavior&IronResizableBehavior&
+  new (): PolymerElement&I18nMixinInterface&IronResizableBehavior&
   PersonalizationStoreClient&StoreClientInterface
 } =
     mixinBehaviors(
         [
           StoreClient,
           PersonalizationStoreClientImpl,
-          I18nBehavior,
           IronResizableBehavior,
         ],
-        PolymerElement);
+        I18nMixin(PolymerElement));
