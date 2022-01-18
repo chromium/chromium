@@ -206,8 +206,34 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(
 }
 
 void LazyLoadImageObserver::StopMonitoring(Element* element) {
-  if (lazy_load_intersection_observer_)
+  if (lazy_load_intersection_observer_) {
     lazy_load_intersection_observer_->unobserve(element);
+  }
+}
+
+bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent() {
+  if (!lazy_load_intersection_observer_) {
+    return false;
+  }
+  bool resources_have_started_loading = false;
+  HeapVector<Member<Element>> to_be_unobserved;
+  for (const IntersectionObservation* observation :
+       lazy_load_intersection_observer_->Observations()) {
+    Element* element = observation->Target();
+    if (auto* image_element = DynamicTo<HTMLImageElement>(element)) {
+      const_cast<HTMLImageElement*>(image_element)
+          ->LoadDeferredImageBlockingLoad();
+      resources_have_started_loading = true;
+    }
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      style->LoadDeferredImages(element->GetDocument());
+      resources_have_started_loading = true;
+    }
+    to_be_unobserved.push_back(element);
+  }
+  for (Element* element : to_be_unobserved)
+    lazy_load_intersection_observer_->unobserve(element);
+  return resources_have_started_loading;
 }
 
 void LazyLoadImageObserver::LoadIfNearViewport(

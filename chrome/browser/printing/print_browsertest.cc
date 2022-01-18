@@ -934,6 +934,25 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LegacyLayoutEngineFallback) {
   EXPECT_EQ(new_height, 0);
 }
 
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetched) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL(
+      "/printing/lazy-loaded-image-offscreen.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  const char kExpression[] = "target.offsetHeight";
+
+  double old_height = content::EvalJs(contents, kExpression).ExtractDouble();
+
+  PrintAndWaitUntilPreviewIsReady();
+
+  // The non-printed document should have loaded the image, which will have
+  // a different height.
+  double new_height = content::EvalJs(contents, kExpression).ExtractDouble();
+  EXPECT_NE(old_height, new_height);
+}
+
 // Before invoking print preview, page scale is changed to a different value.
 // Test that when print preview is ready, in other words when printing is
 // finished, the page scale factor gets reset to initial scale.

@@ -124,6 +124,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidCommitProvisionalLoad(ui::PageTransition transition) {}
   virtual void DidFailProvisionalLoad() {}
   virtual void DidFinishLoad() {}
+  virtual void DidFinishLoadForPrinting() {}
   virtual void DidDispatchDOMContentLoadedEvent() {}
   virtual void DidHandleOnloadEvents() {}
   virtual void DidCreateScriptContext(v8::Local<v8::Context> context,

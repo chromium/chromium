@@ -247,6 +247,7 @@ class PrintRenderFrameHelper
       absl::optional<blink::WebNavigationType> navigation_type) override;
   void DidFailProvisionalLoad() override;
   void DidFinishLoad() override;
+  void DidFinishLoadForPrinting() override;
   void ScriptedPrint(bool user_initiated) override;
 
   void BindPrintRenderFrameReceiver(
@@ -436,7 +437,8 @@ class PrintRenderFrameHelper
 
   // WARNING: |this| may be gone after this method returns when |type| is
   // PRINT_PREVIEW_SCRIPTED.
-  void RequestPrintPreview(PrintPreviewRequestType type);
+  void RequestPrintPreview(PrintPreviewRequestType type,
+                           bool already_notified_frame);
 
   // Checks whether print preview should continue or not.
   // Returns true if canceling, false if continuing.
@@ -655,6 +657,8 @@ class PrintRenderFrameHelper
     int count_ = 0;
   };
 
+  void WaitForLoad(PrintPreviewRequestType type);
+
   ScriptingThrottler scripting_throttler_;
 
   bool print_node_in_progress_ = false;
@@ -673,10 +677,13 @@ class PrintRenderFrameHelper
   // is enabled.
   std::unique_ptr<content::AXTreeSnapshotter> snapshotter_;
 
-  // Used to fix a race condition where the source is a PDF and print preview
-  // hangs because RequestPrintPreview is called before DidStopLoading() is
-  // called. This is a store for the RequestPrintPreview() call and its
-  // parameters so that it can be invoked after DidStopLoading.
+  // Used for two reasons:
+  // * To give the document time to finish loading any pending resources that
+  //   are desired for printing.
+  // * To fix a race condition where the source is a PDF and print preview
+  //   hangs because RequestPrintPreview is called before DidStopLoading() is
+  //   called. This is a store for the RequestPrintPreview() call and its
+  //   parameters so that it can be invoked after DidStopLoading.
   base::OnceClosure on_stop_loading_closure_;
 
   // Stores the quit closures of Mojo responses.

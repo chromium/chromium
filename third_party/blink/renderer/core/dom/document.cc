@@ -3003,6 +3003,12 @@ void Document::DisplayNoneChangedForFrame() {
       StyleChangeReasonForTracing::Create(style_change_reason::kFrame));
 }
 
+bool Document::WillPrintSoon() {
+  loading_for_print_ =
+      EnsureLazyLoadImageObserver().LoadAllImagesAndBlockLoadEvent();
+  return loading_for_print_;
+}
+
 void Document::SetPrinting(PrintingState state) {
   bool was_printing = Printing();
   printing_ = state;
@@ -3597,6 +3603,9 @@ bool Document::CheckCompletedInternal() {
     GetFrame()->GetFrameScheduler()->OnLoad();
 
     DetectJavascriptFrameworksOnLoad(*this);
+  } else if (loading_for_print_) {
+    loading_for_print_ = false;
+    GetFrame()->Client()->DispatchDidFinishLoadForPrinting();
   }
 
   if (auto* view = View()) {

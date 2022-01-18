@@ -197,6 +197,10 @@ class CORE_EXPORT IntersectionObserver final
   // sleep() calls to tests to wait for notifications to show up.
   static void SetThrottleDelayEnabledForTesting(bool);
 
+  const HeapLinkedHashSet<WeakMember<IntersectionObservation>>& Observations() {
+    return observations_;
+  }
+
  private:
   bool NeedsDelivery() const { return !active_observations_.IsEmpty(); }
   void ProcessCustomWeakness(const LivenessBroker&);

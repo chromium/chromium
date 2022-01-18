@@ -553,6 +553,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void RunScriptsAtDocumentIdle() override;
   void DidHandleOnloadEvents() override;
   void DidFinishLoad() override;
+  void DidFinishLoadForPrinting() override;
   void DidFinishSameDocumentNavigation(
       blink::WebHistoryCommitType commit_type,
       bool is_synchronously_committed,

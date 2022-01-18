@@ -484,6 +484,10 @@ void LocalFrameClientImpl::DispatchDidFinishLoad() {
   web_frame_->DidFinish();
 }
 
+void LocalFrameClientImpl::DispatchDidFinishLoadForPrinting() {
+  web_frame_->DidFinishLoadForPrinting();
+}
+
 void LocalFrameClientImpl::BeginNavigation(
     const ResourceRequest& request,
     mojom::RequestContextFrameType frame_type,

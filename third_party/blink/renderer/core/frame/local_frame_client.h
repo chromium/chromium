@@ -151,6 +151,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
                                    WebHistoryCommitType) = 0;
   virtual void DispatchDidDispatchDOMContentLoadedEvent() = 0;
   virtual void DispatchDidFinishLoad() = 0;
+  virtual void DispatchDidFinishLoadForPrinting() {}
 
   virtual void BeginNavigation(
       const ResourceRequest&,

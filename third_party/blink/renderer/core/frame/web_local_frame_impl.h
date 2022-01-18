@@ -296,6 +296,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebPlugin* GetPluginToPrint(const WebNode& constrain_to_node) override;
   uint32_t PrintBegin(const WebPrintParams&,
                       const WebNode& constrain_to_node) override;
+  bool WillPrintSoon() override;
   float GetPrintPageShrink(uint32_t page) override;
   float PrintPage(uint32_t page_to_print, cc::PaintCanvas*) override;
   void PrintEnd() override;
@@ -468,6 +469,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void DidFailLoad(const ResourceError&, WebHistoryCommitType);
   void DidFinish();
+  void DidFinishLoadForPrinting();
 
   void SetClient(WebLocalFrameClient* client) { client_ = client; }
 

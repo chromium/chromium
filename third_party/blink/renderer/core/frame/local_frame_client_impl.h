@@ -109,6 +109,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DispatchDidFailLoad(const ResourceError&, WebHistoryCommitType) override;
   void DispatchDidDispatchDOMContentLoadedEvent() override;
   void DispatchDidFinishLoad() override;
+  void DispatchDidFinishLoadForPrinting() override;
 
   void BeginNavigation(
       const ResourceRequest&,

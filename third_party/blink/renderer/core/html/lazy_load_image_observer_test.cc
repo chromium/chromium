@@ -236,6 +236,43 @@ TEST_P(LazyLoadImagesSimTest, CSSBackgroundImage) {
   }
 }
 
+TEST_P(LazyLoadImagesSimTest, LoadAllImagesCSSBackgroundImageIfPrinting) {
+  bool is_lazyload_image_enabled = GetParam();
+  SetLazyLoadEnabled(is_lazyload_image_enabled);
+  SimRequest image_resource("https://example.com/img.png", "image/png");
+  LoadMainResource(R"HTML(
+        <style>
+        #deferred_image {
+          height:200px;
+          background-image: url('img.png');
+        }
+        </style>
+        <div style='height:10000px;'></div>
+        <div id="deferred_image"></div>
+      )HTML");
+
+  if (!is_lazyload_image_enabled)
+    image_resource.Complete(ReadTestImage());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ExpectCSSBackgroundImageDeferredState("deferred_image", kPseudoIdNone,
+                                        is_lazyload_image_enabled);
+
+  EXPECT_EQ(0, GetDocument().Fetcher()->BlockingRequestCount());
+
+  if (is_lazyload_image_enabled) {
+    EXPECT_TRUE(GetDocument().WillPrintSoon());
+
+    // The loads in this case are blocking the load event.
+    EXPECT_EQ(1, GetDocument().Fetcher()->BlockingRequestCount());
+
+    image_resource.Complete(ReadTestImage());
+    ExpectCSSBackgroundImageDeferredState("deferred_image", kPseudoIdNone,
+                                          false);
+  }
+}
+
 TEST_P(LazyLoadImagesSimTest, CSSBackgroundImagePseudoStyleBefore) {
   VerifyCSSBackgroundImageInPseudoStyleDeferred(R"HTML(
     .pseudo-element::before {
@@ -886,6 +923,37 @@ TEST_F(LazyLoadAutomaticImagesTest, AttributeChangedFromLazyToUnset) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
+  EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
+}
+
+TEST_F(LazyLoadAutomaticImagesTest, LoadAllImagesIfPrinting) {
+  TestLoadImageExpectingLazyLoad("id='my_image' loading='lazy'");
+
+  // The body's load event should have already fired.
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_FALSE(ConsoleMessages().Contains("child frame element onload"));
+
+  Element* img = GetDocument().getElementById("my_image");
+  ASSERT_TRUE(img);
+
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(ConsoleMessages().Contains("image onload"));
+
+  SimSubresourceRequest img_resource("https://example.com/image.png",
+                                     "image/png");
+
+  EXPECT_EQ(0, GetDocument().Fetcher()->BlockingRequestCount());
+
+  EXPECT_TRUE(GetDocument().WillPrintSoon());
+
+  // The loads in this case are blocking the load event.
+  EXPECT_EQ(1, GetDocument().Fetcher()->BlockingRequestCount());
+
+  img_resource.Complete(ReadTestImage());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
 }
 

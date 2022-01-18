@@ -839,6 +839,11 @@ class CORE_EXPORT Document : public ContainerNode,
     return printing_ == kPrinting || printing_ == kFinishingPrinting;
   }
   void SetPrinting(PrintingState);
+  // Call this if printing is about to begin, so that any unloaded resources
+  // (such as lazy-loaded images) necessary for printing are requested and
+  // marked as blocking load. Returns whether any resources have started
+  // loading as a result.
+  bool WillPrintSoon();
 
   enum PaintPreviewState {
     // A paint preview is not in the process of being captured.
@@ -1783,6 +1788,8 @@ class CORE_EXPORT Document : public ContainerNode,
   friend class HasMatchedCacheScope;
   friend class CanvasRenderingAPIUkmMetricsTest;
   friend class OffscreenCanvasRenderingAPIUkmMetricsTest;
+  FRIEND_TEST_ALL_PREFIXES(LazyLoadAutomaticImagesTest,
+                           LoadAllImagesIfPrinting);
   FRIEND_TEST_ALL_PREFIXES(FrameFetchContextSubresourceFilterTest,
                            DuringOnFreeze);
   FRIEND_TEST_ALL_PREFIXES(DocumentTest, FindInPageUkm);
@@ -2362,6 +2369,9 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<HTMLMetaElement>> meta_theme_color_elements_;
 
   Member<ResizeObserver> intrinsic_size_observer_;
+
+  // Whether any resource loads that block printing are happening.
+  bool loading_for_print_ = false;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

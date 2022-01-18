@@ -1223,6 +1223,10 @@ void PrintRenderFrameHelper::DidFinishLoad() {
     std::move(on_stop_loading_closure_).Run();
 }
 
+void PrintRenderFrameHelper::DidFinishLoadForPrinting() {
+  DidFinishLoad();
+}
+
 void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
   if (!IsScriptInitiatedPrintAllowed(web_frame, user_initiated))
@@ -1243,7 +1247,8 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     print_preview_context_.InitWithFrame(web_frame);
-    RequestPrintPreview(PRINT_PREVIEW_SCRIPTED);
+    RequestPrintPreview(PRINT_PREVIEW_SCRIPTED,
+                        /*already_notified_frame=*/false);
 #endif
   } else {
     web_frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
@@ -1364,9 +1369,9 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
     return;
   }
   print_preview_context_.InitWithFrame(frame);
-  RequestPrintPreview(has_selection
-                          ? PRINT_PREVIEW_USER_INITIATED_SELECTION
-                          : PRINT_PREVIEW_USER_INITIATED_ENTIRE_FRAME);
+  RequestPrintPreview(has_selection ? PRINT_PREVIEW_USER_INITIATED_SELECTION
+                                    : PRINT_PREVIEW_USER_INITIATED_ENTIRE_FRAME,
+                      /*already_notified_frame=*/false);
 }
 
 void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
@@ -1893,7 +1898,8 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     print_preview_context_.InitWithNode(node);
-    RequestPrintPreview(PRINT_PREVIEW_USER_INITIATED_CONTEXT_NODE);
+    RequestPrintPreview(PRINT_PREVIEW_USER_INITIATED_CONTEXT_NODE,
+                        /*already_notified_frame=*/false);
 #endif
   } else {
     // Make a copy of the node, in case RenderView::OnContextMenuClosed() resets
@@ -2494,11 +2500,38 @@ void PrintRenderFrameHelper::ShowScriptedPrintPreview() {
   }
 }
 
-void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
+void PrintRenderFrameHelper::WaitForLoad(PrintPreviewRequestType type) {
+  static constexpr base::TimeDelta kLoadEventTimeout = base::Seconds(2);
+
+  if (type == PRINT_PREVIEW_SCRIPTED) {
+    on_stop_loading_closure_ =
+        base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
+                       weak_ptr_factory_.GetWeakPtr());
+  } else {
+    on_stop_loading_closure_ =
+        base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
+                       weak_ptr_factory_.GetWeakPtr(), type, true);
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PrintRenderFrameHelper::DidFinishLoadForPrinting,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kLoadEventTimeout);
+  }
+}
+
+void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
+                                                 bool already_notified_frame) {
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
-  print_preview_context_.DispatchBeforePrintEvent(weak_this);
+  if (!already_notified_frame) {
+    print_preview_context_.DispatchBeforePrintEvent(weak_this);
+  }
   if (!weak_this)
     return;
+
+  // TODO(chrishtr): make async work for scripted print.
+  if (type != PRINT_PREVIEW_SCRIPTED && !already_notified_frame) {
+    is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
+  }
 
   const bool is_from_arc = print_preview_context_.IsForArc();
   const bool is_modifiable = print_preview_context_.IsModifiable();
@@ -2523,13 +2556,14 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
       // 2. ShowScriptedPrintPreview() shows preview once the document has been
       //    loaded.
       is_scripted_preview_delayed_ = true;
-      if (is_loading_ && print_preview_context_.IsPlugin()) {
-        // Wait for DidStopLoading. Plugins may not know the correct
-        // |is_modifiable| value until they are fully loaded, which occurs when
-        // DidStopLoading() is called. Defer showing the preview until then.
-        on_stop_loading_closure_ =
-            base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
-                           weak_ptr_factory_.GetWeakPtr());
+      if (is_loading_) {
+        // Wait for DidStopLoading, for two reasons:
+        // * To give the document time to finish loading any pending resources
+        ///  that are desired for printing.
+        // * Plugins may not know the correct|is_modifiable| value until they
+        //   are fully loaded, which occurs when DidStopLoading() is called.
+        //   Defer showing the preview until then.
+        WaitForLoad(type);
       } else {
         base::ThreadTaskRunnerHandle::Get()->PostTask(
             FROM_HERE,
@@ -2560,13 +2594,9 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
       return;
     }
     case PRINT_PREVIEW_USER_INITIATED_ENTIRE_FRAME: {
-      // Wait for DidStopLoading. Continuing with this function while
-      // |is_loading_| is true will cause print preview to hang when try to
-      // print a PDF document.
-      if (is_loading_ && print_preview_context_.IsPlugin()) {
-        on_stop_loading_closure_ =
-            base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
-                           weak_ptr_factory_.GetWeakPtr(), type);
+      // See comment under PRINT_PREVIEW_SCRIPTED.
+      if (is_loading_) {
+        WaitForLoad(type);
         return;
       }
 
@@ -2579,10 +2609,9 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
       break;
     }
     case PRINT_PREVIEW_USER_INITIATED_CONTEXT_NODE: {
-      if (is_loading_ && print_preview_context_.IsPlugin()) {
-        on_stop_loading_closure_ =
-            base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
-                           weak_ptr_factory_.GetWeakPtr(), type);
+      // See comment under PRINT_PREVIEW_SCRIPTED.
+      if (is_loading_) {
+        WaitForLoad(type);
         return;
       }
 

@@ -4058,6 +4058,11 @@ void RenderFrameImpl::DidFinishLoad() {
                                       ".MainFrameDidFinishLoad");
 }
 
+void RenderFrameImpl::DidFinishLoadForPrinting() {
+  for (auto& observer : observers_)
+    observer.DidFinishLoadForPrinting();
+}
+
 void RenderFrameImpl::DidFinishSameDocumentNavigation(
     blink::WebHistoryCommitType commit_type,
     bool is_synchronously_committed,

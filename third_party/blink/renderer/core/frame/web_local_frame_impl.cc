@@ -1759,6 +1759,10 @@ WebPlugin* WebLocalFrameImpl::GetPluginToPrint(
   return plugin_container ? plugin_container->Plugin() : nullptr;
 }
 
+bool WebLocalFrameImpl::WillPrintSoon() {
+  return GetFrame()->GetDocument()->WillPrintSoon();
+}
+
 uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
                                        const WebNode& constrain_to_node) {
   WebPluginContainerImpl* plugin_container =
@@ -2311,6 +2315,10 @@ void WebLocalFrameImpl::DidFinish() {
     plugin->DidFinishLoading();
 
   Client()->DidFinishLoad();
+}
+
+void WebLocalFrameImpl::DidFinishLoadForPrinting() {
+  Client()->DidFinishLoadForPrinting();
 }
 
 HitTestResult WebLocalFrameImpl::HitTestResultForVisualViewportPos(

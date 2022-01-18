@@ -103,6 +103,9 @@ class CORE_EXPORT HTMLImageElement final
   void LoadDeferredImage() {
     GetImageLoader().LoadDeferredImage(referrer_policy_);
   }
+  void LoadDeferredImageBlockingLoad() {
+    GetImageLoader().LoadDeferredImage(referrer_policy_, true);
+  }
   void SetImageForTest(ImageResourceContent* content) {
     GetImageLoader().SetImageForTest(content);
   }

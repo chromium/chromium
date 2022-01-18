@@ -52,6 +52,10 @@ class LazyLoadImageObserver final
 
   void Trace(Visitor*) const;
 
+  // Loads all currently known lazy-loaded images. Returns whether any
+  // resources started loading as a result.
+  bool LoadAllImagesAndBlockLoadEvent();
+
  private:
   void LoadIfNearViewport(const HeapVector<Member<IntersectionObserverEntry>>&);
 

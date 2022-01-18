@@ -443,7 +443,8 @@ void ImageLoader::DoUpdateFromElement(
     scoped_refptr<const DOMWrapperWorld> world,
     UpdateFromElementBehavior update_behavior,
     network::mojom::ReferrerPolicy referrer_policy,
-    UpdateType update_type) {
+    UpdateType update_type,
+    bool force_blocking) {
   // FIXME: According to
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content.html#the-img-element:the-img-element-55
   // When "update image" is called due to environment changes and the load
@@ -548,7 +549,8 @@ void ImageLoader::DoUpdateFromElement(
     // If we're now loading in a once-deferred image, make sure it doesn't block
     // the load event.
     if (was_deferred_explicitly_ &&
-        lazy_image_load_state_ == LazyImageLoadState::kFullImage) {
+        lazy_image_load_state_ == LazyImageLoadState::kFullImage &&
+        !force_blocking) {
       params.SetLazyImageNonBlocking();
     }
 
@@ -619,7 +621,8 @@ void ImageLoader::DoUpdateFromElement(
 
 void ImageLoader::UpdateFromElement(
     UpdateFromElementBehavior update_behavior,
-    network::mojom::ReferrerPolicy referrer_policy) {
+    network::mojom::ReferrerPolicy referrer_policy,
+    bool force_blocking) {
   if (!element_->GetDocument().IsActive()) {
     return;
   }
@@ -661,7 +664,8 @@ void ImageLoader::UpdateFromElement(
 
   if (ShouldLoadImmediately(ImageSourceToKURL(image_source_url))) {
     DoUpdateFromElement(element_->GetExecutionContext()->GetCurrentWorld(),
-                        update_behavior, referrer_policy, UpdateType::kSync);
+                        update_behavior, referrer_policy, UpdateType::kSync,
+                        force_blocking);
     return;
   }
   // Allow the idiom "img.src=''; img.src='.." to clear down the image before an
@@ -931,7 +935,8 @@ ScriptPromise ImageLoader::Decode(ScriptState* script_state,
 }
 
 void ImageLoader::LoadDeferredImage(
-    network::mojom::ReferrerPolicy referrer_policy) {
+    network::mojom::ReferrerPolicy referrer_policy,
+    bool force_blocking) {
   if (lazy_image_load_state_ != LazyImageLoadState::kDeferred)
     return;
   DCHECK(!image_complete_);
@@ -944,7 +949,7 @@ void ImageLoader::LoadDeferredImage(
     frame->Client()->DidObserveLazyLoadBehavior(
         WebLocalFrameClient::LazyLoadBehavior::kLazyLoadedImage);
   }
-  UpdateFromElement(kUpdateNormal, referrer_policy);
+  UpdateFromElement(kUpdateNormal, referrer_policy, force_blocking);
 }
 
 void ImageLoader::ElementDidMoveToNewDocument() {
