@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
@@ -528,11 +529,15 @@ void ExtensionManagement::Refresh() {
   if (dict_pref) {
     // Parse new extension management preference.
 
+    bool defer_load_settings = base::FeatureList::IsEnabled(
+        features::kExtensionDeferredIndividualSettings);
     std::unordered_set<std::string> installed_extensions;
-    auto* extension_prefs = ExtensionPrefs::Get(profile_);
-    auto extensions_info = extension_prefs->GetInstalledExtensionsInfo();
-    for (auto& extension_info : *extensions_info)
-      installed_extensions.insert(extension_info->extension_id);
+    if (defer_load_settings) {
+      auto* extension_prefs = ExtensionPrefs::Get(profile_);
+      auto extensions_info = extension_prefs->GetInstalledExtensionsInfo();
+      for (auto& extension_info : *extensions_info)
+        installed_extensions.insert(extension_info->extension_id);
+    }
 
     for (auto iter : dict_pref->DictItems()) {
       if (iter.first == schema_constants::kWildcard)
@@ -565,29 +570,31 @@ void ExtensionManagement::Refresh() {
             continue;
           }
 
-          auto should_defer = [&extension_id, &installed_extensions](
-                                  const base::Value* subdict,
-                                  const SettingsIdMap* settings_by_id) {
-            // If in legacy force list, don't defer since already have an
-            // entry. This ensures that the entry in these settings matches
-            // the entry in the forcelist. Also don't defer if the extension
-            // is installed.
-            if (base::Contains(*settings_by_id, extension_id) ||
-                base::Contains(installed_extensions, extension_id)) {
-              return false;
-            }
-            auto* install_mode =
-                subdict->FindStringKey(schema_constants::kInstallationMode);
-            if (!install_mode)
-              return true;
-            // Don't defer if the extension needs to be installed.
-            return *install_mode != schema_constants::kForceInstalled &&
-                   *install_mode != schema_constants::kNormalInstalled;
-          };
+          if (defer_load_settings) {
+            auto should_defer = [&extension_id, &installed_extensions](
+                                    const base::Value* subdict,
+                                    const SettingsIdMap* settings_by_id) {
+              // If in legacy force list, don't defer since already have an
+              // entry. This ensures that the entry in these settings matches
+              // the entry in the forcelist. Also don't defer if the extension
+              // is installed.
+              if (base::Contains(*settings_by_id, extension_id) ||
+                  base::Contains(installed_extensions, extension_id)) {
+                return false;
+              }
+              auto* install_mode =
+                  subdict->FindStringKey(schema_constants::kInstallationMode);
+              if (!install_mode)
+                return true;
+              // Don't defer if the extension needs to be installed.
+              return *install_mode != schema_constants::kForceInstalled &&
+                     *install_mode != schema_constants::kNormalInstalled;
+            };
 
-          if (should_defer(subdict, &settings_by_id_)) {
-            deferred_ids_.insert(extension_id);
-            continue;
+            if (should_defer(subdict, &settings_by_id_)) {
+              deferred_ids_.insert(extension_id);
+              continue;
+            }
           }
 
           internal::IndividualSettings* by_id = AccessById(extension_id);
