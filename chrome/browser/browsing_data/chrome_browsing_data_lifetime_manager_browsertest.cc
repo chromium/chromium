@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 
+#include <array>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -59,12 +60,17 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
 namespace {
 
 enum class BrowserType { Default, Incognito };
+
+constexpr std::array<const char*, 7> kSiteDataTypes{
+    "Cookie", "LocalStorage",  "SessionStorage", "IndexedDb",
+    "WebSql", "ServiceWorker", "CacheStorage"};
 
 }  // namespace
 
@@ -83,6 +89,7 @@ class ChromeBrowsingDataLifetimeManagerTest
     GetProfile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
                                   base::Value(true));
   }
+
   void ApplyBrowsingDataLifetimeDeletion(base::StringPiece pref) {
     auto* browsing_data_lifetime_manager =
         ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(GetProfile());
@@ -92,10 +99,27 @@ class ChromeBrowsingDataLifetimeManagerTest
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     browsing_data_lifetime_manager->SetBrowsingDataRemoverObserverForTesting(
         &completion_observer);
+    // The pref needs to be cleared so that the browsing data deletion is
+    // triggered even if the same pref value is set twice in a row.
+    GetProfile()->GetPrefs()->ClearPref(
+        browsing_data::prefs::kBrowsingDataLifetime);
     GetProfile()->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
                                   *base::JSONReader::Read(pref));
 
     completion_observer.BlockUntilCompletion();
+  }
+
+  void SetupSiteData(content::WebContents* web_contents) {
+    for (const char* data_type : kSiteDataTypes) {
+      SetDataForType(data_type, web_contents);
+      EXPECT_TRUE(HasDataForType(data_type, web_contents));
+    }
+  }
+
+  void CheckSiteData(content::WebContents* web_contents, bool has_site_data) {
+    for (const char* data_type : kSiteDataTypes) {
+      EXPECT_EQ(HasDataForType(data_type), has_site_data) << data_type;
+    }
   }
 };
 
@@ -134,7 +158,10 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   EXPECT_TRUE(HasDataForType("Cookie"));
 
   // Expect that cookies are deleted.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
   ApplyBrowsingDataLifetimeDeletion(kCookiesPref);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
   EXPECT_FALSE(HasDataForType("Cookie"));
 
   url = embedded_test_server()->GetURL("/cachetime");
@@ -146,6 +173,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   EXPECT_EQ(net::OK, content::LoadBasicRequest(network_context(), url));
 
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
   ApplyBrowsingDataLifetimeDeletion(kCachePref);
   EXPECT_NE(net::OK, content::LoadBasicRequest(network_context(), url));
 }
@@ -160,6 +189,18 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
       R"([{"time_to_live_in_hours": 1, "data_types":["download_history"]}])";
   DownloadAnItem();
   VerifyDownloadCount(1u);
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  // The download is not deleted since the page where it happened is still
+  // opened.
+  VerifyDownloadCount(1u);
+
+  // Navigate away.
+  GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  VerifyDownloadCount(1u);
+
+  // The download should now be deleted since the page where it happened is not
+  // active.
   ApplyBrowsingDataLifetimeDeletion(kPref);
   VerifyDownloadCount(0u);
 }
@@ -213,21 +254,26 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
-
-  const std::vector<std::string> kTypes{
-      "Cookie",    "LocalStorage", "FileSystem",    "SessionStorage",
-      "IndexedDb", "WebSql",       "ServiceWorker", "CacheStorage"};
-
-  for (const auto& data_type : kTypes) {
-    SetDataForType(data_type);
-    EXPECT_TRUE(HasDataForType(data_type));
-  }
-
+  SetupSiteData(GetActiveWebContents());
   ApplyBrowsingDataLifetimeDeletion(kPref);
 
-  for (const auto& data_type : kTypes) {
-    EXPECT_FALSE(HasDataForType(data_type)) << data_type;
-  }
+#if !defined(OS_ANDROID)
+  // The site data is not deleted since the page where it happened is still
+  // opened.
+  CheckSiteData(GetActiveWebContents(), /*has_site_data=*/true);
+
+  // Navigate away.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+
+  // The site should now be deleted since the page where it happened is not
+  // active.
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+#else
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+#endif
+  CheckSiteData(GetActiveWebContents(), /*has_site_data=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
@@ -250,6 +296,120 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
+                       KeepsOtherTabData) {
+  if (IsIncognito())
+    return;
+
+  static constexpr char kPref[] =
+      R"([{"time_to_live_in_hours": 1, "data_types":
+      ["cookies_and_other_site_data"]}])";
+
+  GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  auto* first_tab = GetActiveWebContents();
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* second_tab = GetActiveWebContents();
+  DCHECK_NE(first_tab, second_tab);
+
+  SetupSiteData(first_tab);
+  SetupSiteData(second_tab);
+
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+
+  // The site data is not deleted since the page where it happened is still
+  // opened.
+  CheckSiteData(first_tab, /*has_site_data=*/true);
+  CheckSiteData(second_tab, /*has_site_data=*/true);
+
+  // Navigate away first tab.
+  ASSERT_TRUE(content::NavigateToURL(first_tab, GURL(url::kAboutBlankURL)));
+
+  // The site data is not deleted since the domain of the data is still in use.
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  ASSERT_TRUE(content::NavigateToURL(first_tab, url));
+  CheckSiteData(first_tab, /*has_site_data=*/true);
+  CheckSiteData(second_tab, /*has_site_data=*/true);
+
+  // Navigate away second tab.
+  ASSERT_TRUE(content::NavigateToURL(second_tab, GURL(url::kAboutBlankURL)));
+
+  // The site data is not deleted since the domain of the data is still in use.
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  ASSERT_TRUE(content::NavigateToURL(second_tab, url));
+  CheckSiteData(first_tab, /*has_site_data=*/true);
+  CheckSiteData(second_tab, /*has_site_data=*/true);
+
+  // Navigate away both tabs.
+  ASSERT_TRUE(content::NavigateToURL(first_tab, GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(content::NavigateToURL(second_tab, GURL(url::kAboutBlankURL)));
+
+  // The site data is not deleted since the domain of the data is still in use.
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  ASSERT_TRUE(content::NavigateToURL(first_tab, url));
+  ASSERT_TRUE(content::NavigateToURL(second_tab, url));
+  CheckSiteData(first_tab, /*has_site_data=*/false);
+  CheckSiteData(second_tab, /*has_site_data=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
+                       KeepsOtherWindowData) {
+  if (IsIncognito())
+    return;
+
+  static constexpr char kPref[] =
+      R"([{"time_to_live_in_hours": 1, "data_types":
+      ["cookies_and_other_site_data"]}])";
+
+  GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  SetupSiteData(GetActiveWebContents());
+
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+
+  // The site data is not deleted since the page where it happened is still
+  // opened.
+  CheckSiteData(GetActiveWebContents(), /*has_site_data=*/true);
+
+  // Open current url in new tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  content::WebContents* new_tab = nullptr;
+  for (auto* b : *BrowserList::GetInstance()) {
+    if (b != browser())
+      new_tab = b->tab_strip_model()->GetActiveWebContents();
+  }
+
+  ASSERT_TRUE(new_tab);
+  ASSERT_NE(new_tab, GetActiveWebContents());
+
+  // Navigate away current tab.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+
+  // The site data is not deleted since the page's domain is opened in another
+  // tab.
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  CheckSiteData(GetActiveWebContents(), /*has_site_data=*/true);
+
+  // Navigate away both tabs.
+  ASSERT_TRUE(content::NavigateToURL(new_tab, GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(url::kAboutBlankURL)));
+
+  ApplyBrowsingDataLifetimeDeletion(kPref);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  CheckSiteData(GetActiveWebContents(), /*has_site_data=*/false);
+}
+
 // Disabled because "autofill::AddTestProfile" times out when sync is disabled.
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
                        DISABLED_Autofill) {
