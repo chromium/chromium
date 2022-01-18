@@ -66,7 +66,7 @@ std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
 }
 
 bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
-  return rfh && rfh->IsActive() &&
+  return rfh && rfh->IsActive() && rfh->IsRenderFrameLive() &&
          rfh->IsFeatureEnabled(
              blink::mojom::PermissionsPolicyFeature::kPayment);
 }
@@ -252,9 +252,16 @@ ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   // displays the top-level origin in its UI before the user can click on the
   // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return FrameSupportsPayments(rfh)
-             ? std::make_unique<content::InternalAuthenticatorImpl>(rfh)
-             : nullptr;
+  // Lifetime of the created authenticator is externally managed by the
+  // authenticator factory, but is generally tied to the RenderFrame by
+  // listening for `RenderFrameDeleted()`. `FrameSupportsPayments()` already
+  // performs this check on our behalf, so the DCHECK() here is just for
+  // documentation purposes: this ensures that `RenderFrameDeleted()` will be
+  // called at some point.
+  if (!FrameSupportsPayments(rfh))
+    return nullptr;
+  DCHECK(rfh->IsRenderFrameLive());
+  return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
 }
 
 scoped_refptr<PaymentManifestWebDataService>

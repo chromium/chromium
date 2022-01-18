@@ -38,19 +38,6 @@ AudibleMetrics* GetAudibleMetrics() {
   return metrics;
 }
 
-static void OnAudioOutputDeviceIdTranslated(
-    base::WeakPtr<MediaWebContentsObserver> observer,
-    const MediaPlayerId& player_id,
-    const absl::optional<std::string>& raw_device_id) {
-  if (!raw_device_id)
-    return;
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MediaWebContentsObserver::OnReceivedTranslatedDeviceId,
-                     std::move(observer), player_id, raw_device_id.value()));
-}
-
 }  // anonymous namespace
 
 // Maintains state for a single player.  Issues WebContents and power-related
@@ -398,8 +385,41 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnAudioOutputSinkChanged(const std::string& hashed_device_id) {
-  media_web_contents_observer_->OnAudioOutputSinkChanged(media_player_id_,
-                                                         hashed_device_id);
+  auto* render_frame_host =
+      RenderFrameHost::FromID(media_player_id_.frame_routing_id);
+  DCHECK(render_frame_host);
+
+  auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
+      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID());
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          // TODO(dcheng): GetMediaDeviceIDForHMAC should not be overloaded,
+          // which would avoid the need for static_casts / wrapper lambdas
+          // (which are not zero cost).
+          static_cast<void (*)(
+              blink::mojom::MediaDeviceType, std::string, url::Origin,
+              std::string, scoped_refptr<base::SequencedTaskRunner>,
+              base::OnceCallback<void(const absl::optional<std::string>&)>)>(
+              &MediaStreamManager::GetMediaDeviceIDForHMAC),
+          blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT,
+          salt_and_origin.device_id_salt, std::move(salt_and_origin.origin),
+          hashed_device_id, content::GetUIThreadTaskRunner({}),
+          base::BindOnce(
+              &MediaPlayerObserverHostImpl::OnReceivedTranslatedDeviceId,
+              weak_factory_.GetWeakPtr())));
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnReceivedTranslatedDeviceId(
+        const absl::optional<std::string>& translated_id) {
+  if (!translated_id)
+    return;
+
+  media_web_contents_observer_->OnAudioOutputSinkChangedWithRawDeviceId(
+      media_player_id_, *translated_id);
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -530,36 +550,7 @@ void MediaWebContentsObserver::OnMediaPlaying() {
   has_played_before_ = true;
 }
 
-void MediaWebContentsObserver::OnAudioOutputSinkChanged(
-    const MediaPlayerId& player_id,
-    std::string hashed_device_id) {
-  auto* render_frame_host = RenderFrameHost::FromID(player_id.frame_routing_id);
-  DCHECK(render_frame_host);
-
-  auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID());
-
-  auto callback_on_io_thread = base::BindOnce(
-      [](const std::string& salt, const url::Origin& origin,
-         const std::string& hashed_device_id,
-         base::OnceCallback<void(const absl::optional<std::string>&)>
-             callback) {
-        MediaStreamManager::GetMediaDeviceIDForHMAC(
-            blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT, salt,
-            std::move(origin), hashed_device_id,
-            base::SequencedTaskRunnerHandle::Get(), std::move(callback));
-      },
-      salt_and_origin.device_id_salt, std::move(salt_and_origin.origin),
-      hashed_device_id,
-      base::BindOnce(&OnAudioOutputDeviceIdTranslated,
-                     weak_ptr_factory_.GetWeakPtr(), player_id));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, std::move(callback_on_io_thread));
-}
-
-void MediaWebContentsObserver::OnReceivedTranslatedDeviceId(
+void MediaWebContentsObserver::OnAudioOutputSinkChangedWithRawDeviceId(
     const MediaPlayerId& player_id,
     const std::string& raw_device_id) {
   session_controllers_manager_->OnAudioOutputSinkChanged(player_id,

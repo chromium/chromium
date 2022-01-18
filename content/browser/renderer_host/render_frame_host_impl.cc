@@ -3166,6 +3166,7 @@ void RenderFrameHostImpl::RenderFrameDeleted() {
   CHECK_NE(render_frame_state_, RenderFrameState::kDeleting);
   bool was_created = is_render_frame_created();
   render_frame_state_ = RenderFrameState::kDeleting;
+  render_frame_scoped_weak_ptr_factory_.InvalidateWeakPtrs();
 
   // If the current status is different than the new status, the delegate
   // needs to be notified.
@@ -8531,6 +8532,15 @@ void RenderFrameHostImpl::TearDownMojoConnection() {
   pepper_instance_map_.clear();
   pepper_hung_detectors_.Clear();
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+  // Audio stream factories are tied to a live RenderFrame: see
+  // //content/browser/media/forwarding_audio_stream_factory.h.
+  // Eagerly reset now to ensure that it is impossible to create streams
+  // associated with a RenderFrameHost without a live RenderFrame;
+  // otherwise, the `RenderFrameDeleted()` signal used to clean up streams
+  // will never fire.
+  audio_service_audio_output_stream_factory_.reset();
+  audio_service_audio_input_stream_factory_.reset();
 }
 
 bool RenderFrameHostImpl::IsFocused() {
@@ -9369,12 +9379,19 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
   // the commit which in turns updates the browser's token before this method
   // could be called.
   DCHECK(GetAXTreeID().token());
+  // `render_accessibility_host_` is reset in `TearDownMojoConnection()`, but
+  // this Mojo endpoint lives on another sequence and posts tasks back to this
+  // `RenderFrameHostImpl` on the UI thread. After the reset, there may still be
+  // tasks in flight: use `render_frame_scoped_weak_ptr_factory_` to ensure
+  // those tasks are dropped if they arrive after the reset of their
+  // corresponding RenderAccessibilityHost.
   render_accessibility_host_ = base::SequenceBound<RenderAccessibilityHost>(
       base::FeatureList::IsEnabled(
           features::kRenderAccessibilityHostDeserializationOffMainThread)
           ? base::ThreadPool::CreateSequencedTaskRunner({})
           : base::SequencedTaskRunnerHandle::Get(),
-      weak_ptr_factory_.GetWeakPtr(), std::move(receiver), GetAXTreeID());
+      render_frame_scoped_weak_ptr_factory_.GetWeakPtr(), std::move(receiver),
+      GetAXTreeID());
 }
 
 void RenderFrameHostImpl::CancelPrerendering(
