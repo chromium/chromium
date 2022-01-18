@@ -822,8 +822,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
   manager->OnScreenCaptureStarted(
-      kLabel, {media_id}, kApplicationTitle,
-      base::BindOnce([]() { FAIL() << "Stop callback should not be called."; }),
+      kLabel, {media_id}, kApplicationTitle, base::BindRepeating([]() {
+        FAIL() << "Stop callback should not be called.";
+      }),
       base::DoNothing());
 
   EXPECT_FALSE(
@@ -925,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   DlpContentManagerAsh* manager = helper_->GetContentManager();
   base::MockCallback<content::MediaStreamUI::StateChangeCallback>
       state_change_cb;
-  base::MockCallback<base::OnceClosure> stop_cb;
+  base::MockCallback<base::RepeatingClosure> stop_cb;
   // Explicitly specify that the stop callback should never be invoked.
   EXPECT_CALL(stop_cb, Run()).Times(0);
   testing::InSequence s;
@@ -975,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   DlpContentManagerAsh* manager = helper_->GetContentManager();
   base::MockCallback<content::MediaStreamUI::StateChangeCallback>
       state_change_cb;
-  base::MockCallback<base::OnceClosure> stop_cb;
+  base::MockCallback<base::RepeatingClosure> stop_cb;
   // Explicitly specify that the the screen share cannot be resumed.
   EXPECT_CALL(state_change_cb,
               Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))

@@ -114,7 +114,7 @@ class DlpContentManagerAsh : public DlpContentManager,
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_capture_ids,
       const std::u16string& application_title,
-      base::OnceClosure stop_callback,
+      base::RepeatingClosure stop_callback,
       content::MediaStreamUI::StateChangeCallback state_change_callback);
 
   // Called when screen capture is stopped.
@@ -154,8 +154,6 @@ class DlpContentManagerAsh : public DlpContentManager,
         const std::u16string& application_title,
         base::OnceClosure stop_callback,
         content::MediaStreamUI::StateChangeCallback state_change_callback);
-    ScreenShareInfo(const ScreenShareInfo& other) = delete;
-    ScreenShareInfo& operator=(const ScreenShareInfo& other) = delete;
     ~ScreenShareInfo();
 
     bool operator==(const ScreenShareInfo& other) const;

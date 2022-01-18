@@ -196,14 +196,13 @@ void DlpContentManagerAsh::OnScreenCaptureStarted(
     const std::string& label,
     std::vector<content::DesktopMediaID> screen_capture_ids,
     const std::u16string& application_title,
-    base::OnceClosure stop_callback,
+    base::RepeatingClosure stop_callback,
     content::MediaStreamUI::StateChangeCallback state_change_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const content::DesktopMediaID& id : screen_capture_ids) {
     auto screen_share_info = std::make_unique<ScreenShareInfo>(
-        label, id, application_title, std::move(stop_callback),
-        state_change_callback);
+        label, id, application_title, stop_callback, state_change_callback);
     DCHECK(std::find_if(
                running_screen_shares_.begin(), running_screen_shares_.end(),
                [&screen_share_info](
