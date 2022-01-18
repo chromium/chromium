@@ -9,7 +9,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -80,13 +79,12 @@ TEST(ResourceCoalitionTests, Basics) {
 
   base::TimeTicks begin = base::TimeTicks::Now();
   constexpr base::TimeDelta busy_time = base::Seconds(1);
-  volatile double number = 1;
+  [[maybe_unused]] volatile double number = 1;
   while (base::TimeTicks::Now() < (begin + busy_time)) {
     for (int i = 0; i < 10000; ++i) {
       number *= base::RandDouble() / std::numeric_limits<double>::max() * 2;
     }
   }
-  ALLOW_UNUSED_LOCAL(number);
 
   auto sample = coalition.GetDataRate();
   EXPECT_TRUE(sample.has_value());

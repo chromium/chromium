@@ -16,11 +16,10 @@ namespace chrome_cleaner {
 // static
 scoped_refptr<MojoTaskRunner> MojoTaskRunner::Create() {
   // Ensures thread-safe and unique initialization of the mojo lib.
-  static bool mojo_initialization = []() {  // Leaked.
+  [[maybe_unused]] static bool mojo_initialization = []() {  // Leaked.
     mojo::core::Init();
     return true;
   }();
-  ANALYZER_ALLOW_UNUSED(mojo_initialization);
 
   scoped_refptr<MojoTaskRunner> mojo_task_runner(new MojoTaskRunner());
   return mojo_task_runner->Initialize() ? mojo_task_runner : nullptr;

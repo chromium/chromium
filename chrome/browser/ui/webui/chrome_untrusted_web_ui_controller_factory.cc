@@ -52,14 +52,13 @@ namespace {
 // constructing from a vector is O(n log n).
 WebUIConfigList CreateConfigs() {
   WebUIConfigList config_list;
-  auto register_config =
+  // Delete [[maybe_unused]] once register_config is used outside of Chrome OS.
+  [[maybe_unused]] auto register_config =
       [&config_list](std::unique_ptr<ui::WebUIConfig> config) {
         DCHECK_EQ(config->scheme(), content::kChromeUIUntrustedScheme);
         const std::string& host = config->host();
         config_list.emplace_back(host, std::move(config));
       };
-  // Delete once register_config is used outside of Chrome OS.
-  ALLOW_UNUSED_LOCAL(register_config);
 
   // Register WebUIConfigs below.
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

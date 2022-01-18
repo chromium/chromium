@@ -83,14 +83,12 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
     return;
   }
 
-#if BUILDFLAG(IS_MAC)
   // File handler registration is done via shortcuts creation on MacOS,
   // WebAppShortcutManager::BuildShortcutInfoForWebApp collects file handler
   // information to shortcut_info->file_handler_extensions, then used by MacOS
   // implementation of |internals::CreatePlatformShortcuts|. So we avoid
   // creating shortcuts twice here.
-  ALLOW_UNUSED_LOCAL(profile_);
-#else
+#if !BUILDFLAG(IS_MAC)
   const apps::FileHandlers* file_handlers = GetEnabledFileHandlers(app_id);
   if (file_handlers) {
     RegisterFileHandlersWithOs(app_id, GetRegistrar()->GetAppShortName(app_id),

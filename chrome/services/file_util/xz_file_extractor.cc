@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "third_party/lzma_sdk/7zCrc.h"
 #include "third_party/lzma_sdk/Xz.h"
 #include "third_party/lzma_sdk/XzCrc64.h"
@@ -145,12 +144,11 @@ class XzState {
 }  // namespace
 
 XzFileExtractor::XzFileExtractor() {
-  static const bool initialized = []() {
+  [[maybe_unused]] static const bool initialized = []() {
     CrcGenerateTable();
     Crc64GenerateTable();
     return true;
   }();
-  ANALYZER_ALLOW_UNUSED(initialized);
 }
 
 XzFileExtractor::~XzFileExtractor() = default;

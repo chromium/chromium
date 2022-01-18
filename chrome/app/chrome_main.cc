@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
@@ -121,8 +120,8 @@ int ChromeMain(int argc, const char** argv) {
   base::CommandLine::Init(params.argc, params.argv);
 #endif  // BUILDFLAG(IS_WIN)
   base::CommandLine::Init(0, nullptr);
-  base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
-  ALLOW_UNUSED_LOCAL(command_line);
+  [[maybe_unused]] base::CommandLine* command_line(
+      base::CommandLine::ForCurrentProcess());
 
 #if BUILDFLAG(IS_WIN)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

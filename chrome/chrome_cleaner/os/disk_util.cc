@@ -336,7 +336,7 @@ bool PathHasActiveExtension(const base::FilePath& file_path) {
 
 void InitializeDiskUtil() {
   // Only do this once.
-  static bool init_once = []() -> bool {
+  [[maybe_unused]] static bool init_once = []() -> bool {
     // Initialize the binary extension, so it can be used from different threads
     // without the initial creation race.
     DCHECK(g_active_extensions.empty());
@@ -346,7 +346,6 @@ void InitializeDiskUtil() {
     DCHECK(!g_active_extensions.empty());
     return true;
   }();
-  ANALYZER_ALLOW_UNUSED(init_once);
 }
 
 bool ExpandEnvPath(const base::FilePath& path, base::FilePath* expanded_path) {

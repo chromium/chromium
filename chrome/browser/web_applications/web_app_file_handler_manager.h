@@ -113,7 +113,7 @@ class WebAppFileHandlerManager {
   static bool disable_automatic_file_handler_cleanup_for_testing_;
   bool disable_os_integration_for_testing_ = false;
 
-  const raw_ptr<Profile> profile_;
+  [[maybe_unused]] const raw_ptr<Profile> profile_;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
   base::WeakPtrFactory<WebAppFileHandlerManager> weak_ptr_factory_{this};

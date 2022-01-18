@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -2476,7 +2475,7 @@ void BrowserView::OnTabStripModelChanged(
   if (change.type() != TabStripModelChange::kInserted)
     return;
 
-  for (const auto& contents : change.GetInsert()->contents) {
+  for ([[maybe_unused]] const auto& contents : change.GetInsert()->contents) {
 #if defined(USE_AURA)
     // WebContents inserted in tabs might not have been added to the root
     // window yet. Per http://crbug/342672 add them now since drawing the
@@ -2489,8 +2488,6 @@ void BrowserView::OnTabStripModelChanged(
                                             root_window->GetBoundsInScreen());
       DCHECK(contents.contents->GetNativeView()->GetRootWindow());
     }
-#else
-    ALLOW_UNUSED_LOCAL(contents);
 #endif
     web_contents_close_handler_->TabInserted();
   }

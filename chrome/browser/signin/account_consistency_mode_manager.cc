@@ -66,12 +66,11 @@ bool CanEnableDiceForBuild() {
   }
 
   // Only log this once.
-  static bool logged_warning = []() {
+  [[maybe_unused]] static bool logged_warning = []() {
     LOG(WARNING) << "Desktop Identity Consistency cannot be enabled as no "
                     "OAuth client ID and client secret have been configured.";
     return true;
   }();
-  ALLOW_UNUSED_LOCAL(logged_warning);
 
   return false;
 }

@@ -282,10 +282,10 @@ TEST_F(WebAppRegistrarTest, FilterApps) {
   Registry registry = CreateRegistryForTesting("https://example.com/path", 100);
   auto ids = RegisterAppsForTesting(std::move(registry));
 
-  for (const WebApp& web_app : mutable_registrar().FilterAppsMutable(
+  for ([[maybe_unused]] const WebApp& web_app :
+       mutable_registrar().FilterAppsMutable(
            [](const WebApp& web_app) { return false; })) {
     NOTREACHED();
-    ALLOW_UNUSED_LOCAL(web_app);
   }
 
   for (const WebApp& web_app : mutable_registrar().FilterAppsMutable(
@@ -317,8 +317,8 @@ TEST_F(WebAppRegistrarTest, GetApps) {
   RegisterApp(std::move(web_app_in_sync2));
 
   int all_apps_count = 0;
-  for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
-    ALLOW_UNUSED_LOCAL(web_app);
+  for ([[maybe_unused]] const WebApp& web_app :
+       registrar().GetAppsIncludingStubs()) {
     ++all_apps_count;
   }
   EXPECT_EQ(12, all_apps_count);
@@ -336,8 +336,7 @@ TEST_F(WebAppRegistrarTest, GetApps) {
   UnregisterApp(web_app_id_in_sync2);
 
   not_in_sync_install_count = 0;
-  for (const WebApp& web_app : registrar().GetApps()) {
-    ALLOW_UNUSED_LOCAL(web_app);
+  for ([[maybe_unused]] const WebApp& web_app : registrar().GetApps()) {
     ++not_in_sync_install_count;
   }
   EXPECT_EQ(10, not_in_sync_install_count);

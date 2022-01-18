@@ -40,8 +40,6 @@ bool ChromeCameraPanTiltZoomPermissionContextDelegate::
   // The PTZ permission is automatically granted on Android. It is safe to do so
   // because pan and tilt are not supported on Android.
   *content_setting_result = CONTENT_SETTING_ALLOW;
-  // Suppress unused private field warning on Android.
-  ALLOW_UNUSED_LOCAL(browser_context_);
   return true;
 #elif BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
   // Extensions running in kiosk mode that have declared the "videoCapture"

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -376,8 +375,8 @@ class WebAppInstallManagerTest
   int GetNumFullyInstalledApps() const {
     int num_apps = 0;
 
-    for (const WebApp& app : fake_registry_controller_->registrar().GetApps()) {
-      ALLOW_UNUSED_LOCAL(app);
+    for ([[maybe_unused]] const WebApp& app :
+         fake_registry_controller_->registrar().GetApps()) {
       ++num_apps;
     }
 
