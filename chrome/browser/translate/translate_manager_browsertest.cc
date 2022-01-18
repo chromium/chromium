@@ -291,10 +291,11 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
     ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
     // Load a page with hrefTranslate tags.
-    AddTabAtIndex(0,
-                  GURL(embedded_test_server()->GetURL(
-                      "www.google.com", "/href_translate_test.html")),
-                  ui::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(
+        AddTabAtIndex(0,
+                      GURL(embedded_test_server()->GetURL(
+                          "www.google.com", "/href_translate_test.html")),
+                      ui::PAGE_TRANSITION_TYPED));
     ResetObserver();
     chrome_translate_client = GetChromeTranslateClient();
     WaitUntilLanguageDetermined(chrome_translate_client);
@@ -389,8 +390,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -413,10 +415,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   // Open a new tab with a page in Korean with incorrect HTML language
   // attribute specified. The language attribute should not be overridden by the
   // language detection.
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0,
       GURL(embedded_test_server()->GetURL("/korean_page_lang_conflict.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -434,10 +436,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   // Open a new tab with a page in French with incorrect HTML language
   // attribute specified. The language attribute should be overridden by the
   // language detection.
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0,
       GURL(embedded_test_server()->GetURL("/french_page_lang_conflict.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -454,8 +456,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationSuccess) {
   base::HistogramTester histograms;
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -485,8 +488,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationSuccess) {
 // Disabled due to flakiness: https://crbug.com/1202065.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
                        DISABLED_PageTranslationAboutBlank) {
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
 
   // Open a pop-up window and leave it at the initial about:blank URL.
@@ -557,9 +561,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Load a page with hrefTranslate tags.
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0, GURL(embedded_test_server()->GetURL("/href_translate_test.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -601,10 +605,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateUnsupported) {
   SetTranslateScript(kTestValidScript);
 
   // Load a page with hrefTranslate tags.
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -659,10 +663,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateConflict) {
   SetTranslateScript(kTestValidScript);
 
   // Load a page with hrefTranslate tags.
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
@@ -712,10 +716,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateNoHrefLang) {
   SetTranslateScript(kTestValidScript);
 
   // Load a page with hrefTranslate tags.
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
@@ -1069,8 +1073,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationError) {
   // error.
   // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1095,8 +1100,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1124,8 +1130,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1153,8 +1160,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1180,8 +1188,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1209,8 +1218,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1238,8 +1248,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1310,10 +1321,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Load a German page and detect it's language
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1351,9 +1362,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   base::HistogramTester histograms;
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0, GURL(embedded_test_server()->GetURL("/translate/fr_iframe_test.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1403,8 +1414,9 @@ class TranslateManagerWithSubFrameSupportBrowserTest
 IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
                        DISABLED_PageLanguageDetection) {
   // Open a new tab with a page in English.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/english_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/english_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1431,10 +1443,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   // Open a new tab with a page in French with incorrect HTML language
   // attribute specified. The language attribute should be overridden by the
   // language detection.
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0,
       GURL(embedded_test_server()->GetURL("/french_page_lang_conflict.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1445,10 +1457,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   // Open a new tab with a page in Korean with incorrect HTML language
   // attribute specified. The language attribute should not be overridden by the
   // language detection.
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0,
       GURL(embedded_test_server()->GetURL("/korean_page_lang_conflict.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1464,8 +1476,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1499,10 +1512,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Load a German page and detect it's language
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1556,9 +1569,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Load a German page and detect it's language
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0, GURL(embedded_test_server()->GetURL("/href_translate_test.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1595,10 +1608,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Load a German page and detect it's language
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1646,10 +1659,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Load a German page and detect it's language
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1698,10 +1711,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Load a German page and detect it's language
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1754,10 +1767,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
       ->AddLanguagePairToAlwaysTranslateList("fr", "zh-CN");
 
   // Load a German page and detect it's language
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1802,8 +1815,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   TranslateManager* manager = chrome_translate_client->GetTranslateManager();
@@ -1825,8 +1839,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1854,8 +1869,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1885,8 +1901,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1914,8 +1931,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1941,8 +1959,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -1971,8 +1990,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -2000,8 +2020,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(0, GURL(embedded_test_server()->GetURL("/french_page.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(
+      0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -2073,10 +2094,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   // Load a German page and detect it's language
-  AddTabAtIndex(0,
-                GURL(embedded_test_server()->GetURL(
-                    "www.google.com", "/href_translate_test.html")),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0,
+                            GURL(embedded_test_server()->GetURL(
+                                "www.google.com", "/href_translate_test.html")),
+                            ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -2112,9 +2133,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0, GURL(embedded_test_server()->GetURL("/translate/fr_iframe_test.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
@@ -2179,9 +2200,9 @@ IN_PROC_BROWSER_TEST_F(
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       0, GURL(embedded_test_server()->GetURL("/translate/fr_iframe_test.html")),
-      ui::PAGE_TRANSITION_TYPED);
+      ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
