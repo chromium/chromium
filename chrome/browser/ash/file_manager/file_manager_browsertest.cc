@@ -1392,7 +1392,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableGenericDocumentsProvider(),
         TestCase("showAvailableStorageDocProvider")
             .EnableGenericDocumentsProvider()
-            .FilesSwa()));
+            .FilesSwa(),
+        TestCase("openHelpPageFromDownloadsVolume"),
+        TestCase("openHelpPageFromDownloadsVolume").FilesSwa(),
+        TestCase("openHelpPageFromDriveVolume"),
+        TestCase("openHelpPageFromDriveVolume").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesTooltip, /* files_tooltip.js */

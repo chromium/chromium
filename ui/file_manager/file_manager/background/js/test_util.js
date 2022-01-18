@@ -289,6 +289,15 @@ test.util.sync.getLastVisitedURL = contentWindow => {
 };
 
 /**
+ * Returns a string translation from its translation ID.
+ * @param {string} id The id of the translated string.
+ * @return {string}
+ */
+test.util.sync.getTranslatedString = (contentWindow, id) => {
+  return contentWindow.fileManager.getTranslatedString(id);
+};
+
+/**
  * Executes Javascript code on a webview and returns the result.
  *
  * @param {Window} contentWindow Window to be tested.

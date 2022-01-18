@@ -441,6 +441,62 @@ testcase.showSendFeedbackAction = async () => {
 };
 
 /**
+ * Tests that clicking the gear menu's help button from a Downloads location
+ * navigates the user to the Files app's help page.
+ */
+testcase.openHelpPageFromDownloadsVolume = async () => {
+  // Open Files App on Downloads.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  await remoteCall.waitForElement(appId, '#file-list');
+
+  // Click the gear menu button.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check that #volume-help is shown and enabled and click it.
+  const volumeHelpQuery = '#gear-menu:not([hidden]) ' +
+      'cr-menu-item[command=\'#volume-help\']:not([disabled]):not([hidden])';
+  await remoteCall.waitAndClickElement(appId, volumeHelpQuery);
+
+  // Check that the last visited URL is the Files app's help page.
+  const filesHelpURL = await remoteCall.callRemoteTestUtil(
+      'getTranslatedString', appId, ['FILES_APP_HELP_URL']);
+  chrome.test.assertEq(
+      filesHelpURL,
+      await remoteCall.callRemoteTestUtil('getLastVisitedURL', appId, []));
+};
+
+/**
+ * Tests that clicking the gear menu's help button from a drive location
+ * navigates the user to the Google drive help page.
+ */
+testcase.openHelpPageFromDriveVolume = async () => {
+  // Open Files App on Downloads.
+  const appId = await openNewWindow(RootPath.DRIVE);
+  await remoteCall.waitForElement(appId, '#file-list');
+
+  // Click the gear menu button.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check that #volume-help is shown and enabled and click it.
+  const volumeHelpQuery = '#gear-menu:not([hidden]) ' +
+      'cr-menu-item[command=\'#volume-help\']:not([disabled]):not([hidden])';
+  await remoteCall.waitAndClickElement(appId, volumeHelpQuery);
+
+  // Check that the last visited URL is the Google Drive's help page.
+  const driveHelpURL = await remoteCall.callRemoteTestUtil(
+      'getTranslatedString', appId, ['GOOGLE_DRIVE_HELP_URL']);
+  chrome.test.assertEq(
+      driveHelpURL,
+      await remoteCall.callRemoteTestUtil('getLastVisitedURL', appId, []));
+};
+
+/**
  * Tests that the link of the volume space info item in the gear menu is
  * disabled when the files app is opened on the Google Drive section, and active
  * otherwise. The volume space info item should only link to the storage

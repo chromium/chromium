@@ -615,6 +615,15 @@ export class FileManager extends EventTarget {
   }
 
   /**
+   * Returns a string translation from its translation ID.
+   * @param {string} id The id of the translated string.
+   * @return {string}
+   */
+  getTranslatedString(id) {
+    return str(id);
+  }
+
+  /**
    * One time initialization for app state controller to load view option from
    * local storage.
    * @return {!Promise<void>}
