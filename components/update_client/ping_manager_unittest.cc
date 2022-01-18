@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <initializer_list>
 #include <limits>
 #include <memory>
 #include <string>
@@ -465,6 +466,30 @@ TEST_P(PingManagerTest, SendPing) {
       }
     interceptor->Reset();
   }
+
+  // Tests the presence of the `domain joined` in the ping request.
+  {
+    for (const auto is_managed : std::initializer_list<absl::optional<bool>>{
+             absl::nullopt, false, true}) {
+      config_->SetIsMachineExternallyManaged(is_managed);
+      EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
+      Component component(*update_context, "abc");
+      component.crx_component_ = CrxComponent();
+      component.previous_version_ = base::Version("1.0");
+      component.AppendEvent(component.MakeEventUpdateComplete());
+      ping_manager_->SendPing(component, *metadata_, MakePingCallback());
+
+      RunThreads();
+
+      ASSERT_EQ(interceptor->GetCount(), 1);
+      const auto root = base::JSONReader::Read(interceptor->GetRequestBody(0));
+      interceptor->Reset();
+
+      ASSERT_TRUE(root);
+      EXPECT_EQ(is_managed, root->FindBoolPath("request.domainjoined"));
+    }
+  }
+  config_->SetIsMachineExternallyManaged(absl::nullopt);
 }
 
 // Tests that sending the ping fails when the component requires encryption but

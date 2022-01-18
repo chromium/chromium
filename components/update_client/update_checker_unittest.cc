@@ -4,8 +4,10 @@
 
 #include "components/update_client/update_checker.h"
 
+#include <initializer_list>
 #include <map>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -1190,13 +1192,14 @@ TEST_P(UpdateCheckerTest, DomainJoined) {
                        base::Unretained(this)));
     RunThreads();
 
-    ASSERT_GE(post_interceptor_->GetCount(), 1);
-    const auto root = base::JSONReader::Read(
-        post_interceptor_->GetRequestBody(post_interceptor_->GetCount() - 1));
-    ASSERT_TRUE(root);
+    ASSERT_EQ(post_interceptor_->GetCount(), 1);
+    const auto root =
+        base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
+    post_interceptor_->Reset();
 
     // What is injected in the update checker by the configurator must
     // match what is sent in the update check.
+    ASSERT_TRUE(root);
     EXPECT_EQ(is_managed, root->FindBoolPath("request.domainjoined"));
   }
 }

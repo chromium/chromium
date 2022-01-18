@@ -118,8 +118,8 @@ void PingSender::SendPing(const Component& component,
               config_->GetProdId(), config_->GetBrowserVersion().GetString(),
               config_->GetLang(), config_->GetChannel(),
               config_->GetOSLongName(), config_->GetDownloadPreference(),
-              absl::nullopt, config_->ExtraRequestParams(), nullptr,
-              std::move(apps))),
+              config_->IsMachineExternallyManaged(),
+              config_->ExtraRequestParams(), nullptr, std::move(apps))),
       false, base::BindOnce(&PingSender::SendPingComplete, this));
 }
 
