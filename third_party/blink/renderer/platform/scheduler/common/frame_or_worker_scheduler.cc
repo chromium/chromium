@@ -4,16 +4,20 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/callback.h"
+
 namespace blink {
 
 FrameOrWorkerScheduler::LifecycleObserverHandle::LifecycleObserverHandle(
-    FrameOrWorkerScheduler* scheduler,
-    Observer* observer)
-    : scheduler_(scheduler->GetWeakPtr()), observer_(observer) {}
+    FrameOrWorkerScheduler* scheduler)
+    : scheduler_(scheduler->GetWeakPtr()) {}
 
 FrameOrWorkerScheduler::LifecycleObserverHandle::~LifecycleObserverHandle() {
   if (scheduler_)
-    scheduler_->RemoveLifecycleObserver(observer_);
+    scheduler_->RemoveLifecycleObserver(this);
 }
 
 FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
@@ -68,25 +72,28 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
 }
 
 std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle>
-FrameOrWorkerScheduler::AddLifecycleObserver(ObserverType type,
-                                             Observer* observer) {
-  DCHECK(observer);
-  observer->OnLifecycleStateChanged(CalculateLifecycleState(type));
-  lifecycle_observers_.Set(observer, type);
-  return std::make_unique<LifecycleObserverHandle>(this, observer);
+FrameOrWorkerScheduler::AddLifecycleObserver(
+    ObserverType type,
+    OnLifecycleStateChangedCallback callback) {
+  callback.Run(CalculateLifecycleState(type));
+  auto handle = std::make_unique<LifecycleObserverHandle>(this);
+  lifecycle_observers_.Set(
+      handle.get(), std::make_unique<ObserverState>(type, std::move(callback)));
+  return handle;
 }
 
-void FrameOrWorkerScheduler::RemoveLifecycleObserver(Observer* observer) {
-  DCHECK(observer);
-  const auto found = lifecycle_observers_.find(observer);
+void FrameOrWorkerScheduler::RemoveLifecycleObserver(
+    LifecycleObserverHandle* handle) {
+  DCHECK(handle);
+  const auto found = lifecycle_observers_.find(handle);
   DCHECK(lifecycle_observers_.end() != found);
   lifecycle_observers_.erase(found);
 }
 
 void FrameOrWorkerScheduler::NotifyLifecycleObservers() {
   for (const auto& observer : lifecycle_observers_) {
-    observer.key->OnLifecycleStateChanged(
-        CalculateLifecycleState(observer.value));
+    observer.value->GetCallback().Run(
+        CalculateLifecycleState(observer.value->GetObserverType()));
   }
 }
 
@@ -98,5 +105,12 @@ FrameOrWorkerScheduler::GetDocumentBoundWeakPtr() {
 base::WeakPtr<FrameOrWorkerScheduler> FrameOrWorkerScheduler::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+FrameOrWorkerScheduler::ObserverState::ObserverState(
+    FrameOrWorkerScheduler::ObserverType observer_type,
+    FrameOrWorkerScheduler::OnLifecycleStateChangedCallback callback)
+    : observer_type_(observer_type), callback_(callback) {}
+
+FrameOrWorkerScheduler::ObserverState::~ObserverState() = default;
 
 }  // namespace blink

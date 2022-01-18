@@ -550,7 +550,7 @@ class FrameSchedulerImplStopInBackgroundDisabledTest
 
 namespace {
 
-class MockLifecycleObserver final : public FrameScheduler::Observer {
+class MockLifecycleObserver {
  public:
   MockLifecycleObserver()
       : not_throttled_count_(0u),
@@ -570,7 +570,7 @@ class MockLifecycleObserver final : public FrameScheduler::Observer {
     EXPECT_EQ(stopped_count_expectation, stopped_count_) << from.ToString();
   }
 
-  void OnLifecycleStateChanged(SchedulingLifecycleState state) override {
+  void OnLifecycleStateChanged(SchedulingLifecycleState state) {
     switch (state) {
       case SchedulingLifecycleState::kNotThrottled:
         not_throttled_count_++;
@@ -586,6 +586,11 @@ class MockLifecycleObserver final : public FrameScheduler::Observer {
         break;
         // We should not have another state, and compiler checks it.
     }
+  }
+
+  FrameOrWorkerScheduler::OnLifecycleStateChangedCallback GetCallback() {
+    return base::BindRepeating(&MockLifecycleObserver::OnLifecycleStateChanged,
+                               base::Unretained(this));
   }
 
  private:
@@ -1102,7 +1107,7 @@ TEST_F(FrameSchedulerImplTestWithUnfreezableLoading,
   EXPECT_EQ(2, counter);
 }
 
-// Tests if throttling observer interfaces work.
+// Tests if throttling observer callbacks work.
 TEST_F(FrameSchedulerImplTest, LifecycleObserver) {
   std::unique_ptr<MockLifecycleObserver> observer =
       std::make_unique<MockLifecycleObserver>();
@@ -1116,7 +1121,7 @@ TEST_F(FrameSchedulerImplTest, LifecycleObserver) {
                                throttled_count, stopped_count);
 
   auto observer_handle = frame_scheduler_->AddLifecycleObserver(
-      FrameScheduler::ObserverType::kLoader, observer.get());
+      FrameScheduler::ObserverType::kLoader, observer->GetCallback());
 
   // Initial state should be synchronously notified here.
   // We assume kNotThrottled is notified as an initial state, but it could
@@ -1215,10 +1220,11 @@ TEST_F(FrameSchedulerImplTest, SubesourceLoadingPaused) {
 
   // Adding the observers should recieve a non-throttled response
   auto loader_observer_handle = frame_scheduler_->AddLifecycleObserver(
-      FrameScheduler::ObserverType::kLoader, loader_observer.get());
+      FrameScheduler::ObserverType::kLoader, loader_observer->GetCallback());
 
   auto worker_observer_handle = frame_scheduler_->AddLifecycleObserver(
-      FrameScheduler::ObserverType::kWorkerScheduler, worker_observer.get());
+      FrameScheduler::ObserverType::kWorkerScheduler,
+      worker_observer->GetCallback());
 
   loader_observer->CheckObserverState(
       FROM_HERE, ++loader_not_throttled_count, loader_hidden_count,
@@ -1245,7 +1251,7 @@ TEST_F(FrameSchedulerImplTest, SubesourceLoadingPaused) {
     auto loader_observer_added_after_stopped_handle =
         frame_scheduler_->AddLifecycleObserver(
             FrameScheduler::ObserverType::kLoader,
-            loader_observer_added_after_stopped.get());
+            loader_observer_added_after_stopped->GetCallback());
     // This observer should see stopped when added.
     loader_observer_added_after_stopped->CheckObserverState(FROM_HERE, 0, 0, 0,
                                                             1u);
