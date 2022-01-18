@@ -17,7 +17,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/signin/signin_promo.h"
 #endif
 

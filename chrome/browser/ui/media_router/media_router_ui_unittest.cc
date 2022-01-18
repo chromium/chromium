@@ -39,7 +39,7 @@
 #include "ui/display/display.h"
 #include "url/origin.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "ui/base/cocoa/permissions_utils.h"
 #endif
@@ -484,7 +484,7 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForTab) {
 }
 
 TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForDesktop) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::mac::IsAtLeastOS10_15())
     ui_->set_screen_capture_allowed_for_testing(true);
 #endif
@@ -508,7 +508,7 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForPresentation) {
       20);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
   // Failure due to a lack of screen capture permissions only happens on macOS
   // 10.15 or later. See crbug.com/1087236 for more info.

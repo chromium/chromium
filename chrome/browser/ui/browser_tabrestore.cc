@@ -188,7 +188,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
     raw_web_contents->WasHidden();
   } else {
     const bool should_activate =
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
         // Activating a window on another space causes the system to switch to
         // that space. Since the session restore process shows and activates
         // windows itself, activating windows here should be safe to skip.
@@ -210,9 +210,9 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
 // On OS_MAC, app restorations take longer than the normal browser window to
 // be restored and that will cause LoadRestoredTabIfVisible() to fail.
 // Skip LoadRestoreTabIfVisible if OS_MAC && the browser is an app browser.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (browser->type() != Browser::Type::TYPE_APP)
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     LoadRestoredTabIfVisible(browser, raw_web_contents);
 
   return raw_web_contents;

@@ -46,7 +46,7 @@ DragOperation DropBookmarks(Profile* profile,
                             bool copy) {
   DCHECK(profile);
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bookmarks::ScopedGroupBookmarkActions group_drops(model);
 #endif
   if (data.IsFromProfilePath(profile->GetPath())) {

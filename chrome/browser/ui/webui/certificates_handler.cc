@@ -1150,11 +1150,11 @@ CertificatesHandler::GetCertInfoFromCallbackArgs(const base::Value& args,
 }
 
 bool CertificatesHandler::IsClientCertificateManagementAllowed(Slot slot) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!IsClientCertificateManagementAllowedPolicy(slot)) {
     return false;
   }
-#endif  //  defined(OS_CHROMEOS)
+#endif  //  BUILDFLAG(IS_CHROMEOS)
 
   return ShouldDisplayClientCertificates();
 }
@@ -1170,13 +1170,13 @@ bool CertificatesHandler::IsCACertificateManagementAllowed(
   if (!Profile::FromWebUI(web_ui())->IsMainProfile()) {
     return false;
   }
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!IsCACertificateManagementAllowedPolicy(source)) {
     return false;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return true;
 }
@@ -1194,7 +1194,7 @@ bool CertificatesHandler::ShouldDisplayClientCertificates() {
   return true;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 bool CertificatesHandler::IsClientCertificateManagementAllowedPolicy(
     Slot slot) {
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -1244,7 +1244,7 @@ bool CertificatesHandler::IsCACertificateManagementAllowedPolicy(
       return policy_value != CACertificateManagementPermission::kNone;
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool CertificatesHandler::CanDeleteCertificate(
     const CertificateManagerModel::CertInfo* cert_info) {
@@ -1281,7 +1281,7 @@ bool CertificatesHandler::CanEditCertificate(
   return IsCACertificateManagementAllowed(source);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void CertificatesHandler::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Allow users to manage all client certificates by default. This can be
@@ -1296,6 +1296,6 @@ void CertificatesHandler::RegisterProfilePrefs(
       prefs::kCACertificateManagementAllowed,
       static_cast<int>(CACertificateManagementPermission::kAll));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace certificate_manager

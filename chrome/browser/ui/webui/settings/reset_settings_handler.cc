@@ -37,10 +37,10 @@
 #include "chrome/common/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace settings {
 
@@ -271,7 +271,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
   // Set up the localized strings for the triggered profile reset dialog.
   // Custom reset tool names are supported on Windows only.
   std::u16string reset_tool_name;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   Profile* profile = Profile::FromWebUI(web_ui());
   TriggeredProfileResetter* triggered_profile_resetter =
       TriggeredProfileResetterFactory::GetForBrowserContext(profile);
@@ -282,7 +282,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
     // Now that a reset UI has been shown, don't trigger again for this profile.
     triggered_profile_resetter->ClearResetTrigger();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (reset_tool_name.empty()) {
     reset_tool_name = l10n_util::GetStringUTF16(

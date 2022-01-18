@@ -11,6 +11,7 @@
 #include "base/containers/id_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_manager_model.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -76,10 +77,10 @@ class CertificatesHandler : public content::WebUIMessageHandler,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Register profile preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   // View certificate.
@@ -212,7 +213,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   // Returns true if the user may manage CA certificates.
   bool IsCACertificateManagementAllowed(CertificateSource source);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns true if the user may manage certificates on |slot| according
   // to ClientCertificateManagementAllowed policy.
   bool IsClientCertificateManagementAllowedPolicy(Slot slot);
@@ -220,7 +221,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   // Returns true if the user may manage certificates according
   // to CACertificateManagementAllowed policy.
   bool IsCACertificateManagementAllowedPolicy(CertificateSource source);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns true if the certificate represented by |cert_info| can be deleted.
   bool CanDeleteCertificate(const CertificateManagerModel::CertInfo* cert_info);

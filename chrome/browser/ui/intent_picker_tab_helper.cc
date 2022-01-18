@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
@@ -23,7 +24,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #endif
 
@@ -68,7 +69,7 @@ void IntentPickerTabHelper::SetShouldShowIcon(
   if (!tab_helper)
     return;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (should_show_icon && !tab_helper->should_show_icon_) {
     // This point doesn't exactly match when the icon is shown in the UI (e.g.
     // if the tab is not active), but recording here corresponds more closely to

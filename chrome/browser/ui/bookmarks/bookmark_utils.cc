@@ -277,7 +277,7 @@ ui::ImageModel GetBookmarkFolderIcon(
     BookmarkFolderIconType icon_type,
     absl::variant<ui::ColorId, SkColor> color) {
   int default_id = IDR_FOLDER_CLOSED;
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // This block must be #ifdefed because only these platforms actually have this
   // resource ID.
   if (icon_type == BookmarkFolderIconType::kManaged)
@@ -287,11 +287,11 @@ ui::ImageModel GetBookmarkFolderIcon(
                             absl::variant<ui::ColorId, SkColor> color,
                             const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // TODO(bsep): vectorize the Windows versions: crbug.com/564112
     folder =
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(default_id);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     SkColor sk_color;
     if (absl::holds_alternative<SkColor>(color)) {
       sk_color = absl::get<SkColor>(color);

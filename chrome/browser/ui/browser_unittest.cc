@@ -92,7 +92,7 @@ TEST_F(BrowserUnitTest, ReloadCrashedTab) {
 
 // This tests a workaround which is not necessary on Mac.
 // https://crbug.com/719230
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SetBackgroundColorForNewTab DISABLED_SetBackgroundColorForNewTab
 #else
 #define MAYBE_SetBackgroundColorForNewTab SetBackgroundColorForNewTab

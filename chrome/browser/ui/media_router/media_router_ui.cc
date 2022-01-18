@@ -57,7 +57,7 @@
 #include "ui/display/display.h"
 #include "url/origin.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "ui/base/cocoa/permissions_utils.h"
 #endif
@@ -102,7 +102,7 @@ void RunRouteResponseCallbacks(
     std::move(callback).Run(result);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool RequiresScreenCapturePermission(MediaCastMode cast_mode) {
   return base::mac::IsAtLeastOS10_15() &&
          cast_mode == MediaCastMode::DESKTOP_MIRROR;
@@ -222,7 +222,7 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
   logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                    "CreateRoute requested by MediaRouterViewsUI.", sink_id, "",
                    "");
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (RequiresScreenCapturePermission(cast_mode)) {
     const bool screen_capture_allowed =
         screen_capture_allowed_for_testing_.has_value()
@@ -613,7 +613,7 @@ void MediaRouterUI::SendIssueForRouteTimeout(
   AddIssue(issue_info);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void MediaRouterUI::SendIssueForScreenPermission(const MediaSink::Id& sink_id) {
   std::string issue_title = l10n_util::GetStringUTF8(
       IDS_MEDIA_ROUTER_ISSUE_MAC_SCREEN_CAPTURE_PERMISSION_ERROR);

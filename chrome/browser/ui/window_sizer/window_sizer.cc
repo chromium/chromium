@@ -173,7 +173,7 @@ void WindowSizer::GetBrowserWindowBoundsAndShowState(
       browser, window_bounds, show_state);
 }
 
-#if !defined(OS_LINUX)
+#if !BUILDFLAG(IS_LINUX)
 // Linux has its own implementation, see WindowSizerLinux.
 // static
 void WindowSizer::GetBrowserWindowBoundsAndShowState(
@@ -194,7 +194,7 @@ void WindowSizer::GetBrowserWindowBoundsAndShowState(
   *bounds = specified_bounds;
   sizer.DetermineWindowBoundsAndShowState(specified_bounds, bounds, show_state);
 }
-#endif  // !defined(OS_LINUX)
+#endif  // !BUILDFLAG(IS_LINUX)
 
 void WindowSizer::DetermineWindowBoundsAndShowState(
     const gfx::Rect& specified_bounds,
@@ -271,7 +271,7 @@ gfx::Rect WindowSizer::GetDefaultWindowBounds(
                                kWindowMaxDefaultWidth);
   int default_height = work_area.height() - 2 * kWindowTilePixels;
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // For wider aspect ratio displays at higher resolutions, we might size the
   // window narrower to allow two windows to easily be placed side-by-side.
   gfx::Rect screen_size =
@@ -291,7 +291,7 @@ gfx::Rect WindowSizer::GetDefaultWindowBounds(
     default_width = static_cast<int>(work_area.width() / 2. -
         1.5 * kWindowTilePixels);
   }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
   return gfx::Rect(kWindowTilePixels + work_area.x(),
                    kWindowTilePixels + work_area.y(), default_width,
                    default_height);
@@ -337,7 +337,7 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
         bounds->y(), work_area.y(), work_area.bottom() - bounds->height()));
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Limit the maximum height.  On the Mac the sizer is on the
   // bottom-right of the window, and a window cannot be moved "up"
   // past the menubar.  If the window is too tall you'll never be able
@@ -366,7 +366,7 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
   // and migrate to base::clamp().
   bounds->set_y(BrokenClampThatShouldNotBeUsed(bounds->y(), min_y, max_y));
   bounds->set_x(BrokenClampThatShouldNotBeUsed(bounds->x(), min_x, max_x));
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 // static

@@ -9,7 +9,7 @@
 
 void InstallChromeJavaScriptAppModalDialogViewFactory();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void InstallChromeJavaScriptAppModalDialogViewCocoaFactory();
 #endif
 

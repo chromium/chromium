@@ -50,7 +50,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/process/process.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -58,7 +58,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/gfx/native_widget_types.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace web_app {
 
@@ -74,7 +74,7 @@ bool IsAppInstalled(Profile* profile, const AppId& app_id) {
   return installed;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // ScopedKeepAlive not only keeps the process from terminating early
 // during uninstall, it also ensures the process will terminate when it
 // is destroyed if there is no active browser window.
@@ -107,7 +107,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
   }
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 DisplayMode GetExtensionDisplayMode(Profile* profile,
                                     const extensions::Extension* extension) {
@@ -395,7 +395,7 @@ void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(
 bool WebAppUiManagerImpl::CanReparentAppTabToWindow(
     const AppId& app_id,
     bool shortcut_created) const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS it is only possible to reparent the window when the shortcut (app
   // shim) was created. See https://crbug.com/915571.
   return shortcut_created;
@@ -474,7 +474,7 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
   windows_closed_requests_map_.erase(app_id);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
     const AppId& app_id) {
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
@@ -482,7 +482,7 @@ void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
       FROM_HERE, base::BindOnce(&UninstallWebAppWithDialogFromStartupSwitch,
                                 app_id, profile_, provider));
 }
-#endif  //  defined(OS_WIN)
+#endif  //  BUILDFLAG(IS_WIN)
 
 bool WebAppUiManagerImpl::IsBrowserForInstalledApp(Browser* browser) {
   if (browser->profile() != profile_)

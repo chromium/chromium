@@ -20,7 +20,7 @@
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 

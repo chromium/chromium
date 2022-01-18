@@ -83,10 +83,10 @@
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/string_split.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -151,7 +151,7 @@ class ForcedSigninDiceTurnSyncOnHelperDelegate
   }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Returns a list of valid signin domains that were passed in
 // |email_domains_parameter| as an argument to the gcpw signin dialog.
@@ -360,7 +360,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
   if (reason == HandlerSigninReason::kFetchLstOnly) {
     // Constants are only available on Windows for the Google Credential
     // Provider for Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::string json_retval;
     base::Value args(base::Value::Type::DICTIONARY);
     args.SetKey(credential_provider::kKeyEmail, base::Value(email_));
@@ -374,7 +374,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     handler_->SendLSTFetchResultsMessage(args);
 #else
     NOTREACHED() << "Google Credential Provider is only available on Windows";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
     return;
   }
@@ -523,7 +523,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
                    GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   params.SetString("gaiaPath", url.path().substr(1));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (reason == HandlerSigninReason::kFetchLstOnly) {
     std::string email_domains;
     if (net::GetValueForKeyInQuery(
@@ -573,7 +573,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
       flow = "enterprisefsi";
       break;
     case HandlerSigninReason::kFetchLstOnly: {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // Treat a sign in request that specifies a gaia id that must be validated
       // as a reauth request. We only get a gaia id from GCPW when trying to
       // reauth an existing user on the system.
@@ -701,7 +701,7 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
   std::string validate_email;
   net::GetValueForKeyInQuery(params.url, "validateEmail", &validate_email);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (reason == HandlerSigninReason::kFetchLstOnly) {
     std::string validate_gaia_id;
     net::GetValueForKeyInQuery(
@@ -796,7 +796,7 @@ void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
 
   if (reason == HandlerSigninReason::kFetchLstOnly) {
     base::Value error_value(base::Value::Type::DICTIONARY);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // If the error contains an integer error code, send it as part of the
     // result.
     if (error.type() ==

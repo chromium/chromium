@@ -23,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -103,7 +103,7 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
   SecureDnsHandlerTest& operator=(const SecureDnsHandlerTest&) = delete;
 
  protected:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SecureDnsHandlerTest()
       // Mark as not enterprise managed to prevent the secure DNS mode from
       // being downgraded to off.
@@ -191,7 +191,7 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain_;
 #endif
 };
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicyChange) {
 
 // On platforms where enterprise policies do not have default values, test
 // that DoH is disabled when non-DoH policies are set.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, OtherPoliciesSet) {
   policy::PolicyMap policy_map;
   SetPolicyForPolicyKey(&policy_map, policy::key::kIncognitoModeAvailability,

@@ -132,7 +132,7 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsBundledURLWithQueryParam) {
 }
 
 TEST_F(DevToolsUIDataSourceTest, TestDevToolsBundledFileURLWithSwitch) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const char* flag_value = "file://C:/tmp/";
 #else
   const char* flag_value = "file://tmp/";
@@ -205,7 +205,7 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteURLWithSwitch) {
 }
 
 TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteFileURLWithSwitch) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const char* flag_value = "file://C:/tmp/";
 #else
   const char* flag_value = "file://tmp/";
@@ -221,7 +221,7 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteFileURLWithSwitch) {
 
 TEST_F(DevToolsUIDataSourceTest,
        TestDevToolsRemoteFileURLWithSwitchAndParameters) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const char* flag_value = "file://C:/tmp/";
 #else
   const char* flag_value = "file://tmp/";

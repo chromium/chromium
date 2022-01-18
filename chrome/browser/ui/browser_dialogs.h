@@ -26,8 +26,8 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/web_applications/web_app_id.h"
 #endif
 
@@ -80,8 +80,8 @@ class WebDialogDelegate;
 struct SelectedFileInfo;
 }  // namespace ui
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 namespace web_app {
 struct UrlHandlerLaunchParams;
 }
@@ -185,7 +185,7 @@ void ShowWebAppIdentityUpdateDialog(
 // without any user interaction.
 void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a
 // web app. The |allowed| is true when the user allows the app to launch.
 // |remember_user_choice| is true if the user wants to persist the decision.
@@ -205,10 +205,10 @@ void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
                                 Profile* profile,
                                 const web_app::AppId& app_id,
                                 WebAppLaunchAcceptanceCallback close_callback);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 // Callback that runs when the Web App URL Handler Intent Picker dialog is
 // closed. `accepted` is true when the dialog is accepted, false otherwise.
 // `launch_params` contains information of the app that is selected to open by
@@ -259,7 +259,7 @@ void ShowPWAInstallBubble(
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Shows the print job confirmation dialog bubble anchored to the toolbar icon
 // for the extension.
@@ -274,15 +274,15 @@ void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                                     const std::u16string& printer_name,
                                     base::OnceCallback<void(bool)> callback);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // Bridging methods that show/hide the toolkit-views based Task Manager on Mac.
 task_manager::TaskManagerTableModel* ShowTaskManagerViews(Browser* browser);
 void HideTaskManagerViews();
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if defined(TOOLKIT_VIEWS)
 
@@ -421,7 +421,7 @@ enum class DialogIdentifier {
 // Record an UMA metric counting the creation of a dialog box of this type.
 void RecordDialogCreation(DialogIdentifier identifier);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Shows the settings reset prompt dialog asking the user if they want to reset
 // some of their settings.
@@ -444,7 +444,7 @@ void ShowChromeCleanerRebootPrompt(
     Browser* browser,
     safe_browsing::ChromeCleanerRebootDialogController* dialog_controller);
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Displays a dialog to notify the user that the extension installation is
 // blocked due to policy. It also show additional information from administrator

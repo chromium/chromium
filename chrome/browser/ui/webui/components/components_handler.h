@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/update_client/update_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -42,7 +43,7 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   // ServiceObserver implementation.
   void OnEvent(Events event, const std::string& id) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Callback for the "crosUrlComponentsRedirect" message.
   void HandleCrosUrlComponentsRedirect(const base::ListValue* args);
 #endif

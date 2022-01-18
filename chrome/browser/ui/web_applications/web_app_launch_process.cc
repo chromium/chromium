@@ -34,7 +34,7 @@
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #endif
 
@@ -82,7 +82,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
   bool is_file_handling = false;
   std::tie(launch_url, is_file_handling) = GetLaunchUrl(share_target);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1265381): URL Handlers allows web apps to be opened with
   // associated origin URLs. There's no utility function to test whether a URL
   // is in a web app's extended scope at the moment.

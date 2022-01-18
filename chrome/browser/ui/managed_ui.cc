@@ -79,7 +79,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
   return enterprise_util::IsBrowserManaged(profile);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
   absl::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
@@ -108,7 +108,7 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::u16string GetDeviceManagedUiWebUILabel() {

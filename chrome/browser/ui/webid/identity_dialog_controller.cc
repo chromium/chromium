@@ -113,7 +113,7 @@ void IdentityDialogController::ShowAccountsDialog(
     AccountSelectionCallback on_selected) {
   // IDP scheme is expected to always be `https://`.
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::move(on_selected)
       .Run(accounts[0].account_id,
            accounts[0].login_state ==

@@ -31,7 +31,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -124,7 +124,7 @@ class MediaEngagementScoreDetailsProviderImpl
 
   // Pref is not available on Android.
   bool GetBlockAutoplayPref() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return false;
 #else
     return profile_->GetPrefs()->GetBoolean(prefs::kBlockAutoplayEnabled);

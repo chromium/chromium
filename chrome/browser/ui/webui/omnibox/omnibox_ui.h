@@ -12,7 +12,7 @@
 
 class OmniboxPageHandler;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class OmniboxPopupHandler;
 #endif
 
@@ -30,7 +30,7 @@ class OmniboxUI : public ui::MojoWebUIController {
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(mojo::PendingReceiver<mojom::OmniboxPageHandler> receiver);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // This is needed for the Views native UI to call into the WebUI code.
   OmniboxPopupHandler* popup_handler() { return popup_handler_.get(); }
 #endif
@@ -38,7 +38,7 @@ class OmniboxUI : public ui::MojoWebUIController {
  private:
   std::unique_ptr<OmniboxPageHandler> omnibox_handler_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<OmniboxPopupHandler> popup_handler_;
 #endif
 

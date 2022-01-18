@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/singleton.h"
+#include "build/build_config.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller_factory.h"
@@ -55,7 +56,7 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
                         const std::vector<int>& desired_sizes_in_pixel,
                         favicon_base::FaviconResultsCallback callback) const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Called to retrieve a list of URLs which can be handled by this browser.
   // For Ash this means that they are shown in an SWA application and for
   // Lacros it means that Lacros will handle them themselves.

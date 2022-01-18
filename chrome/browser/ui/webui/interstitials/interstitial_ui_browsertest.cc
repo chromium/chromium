@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialViewSource) {
 // chrome://interstitials (using chrome://interstitials/ssl).
 
 // Test is currently flaky on Windows (crbug.com/926392)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InterstitialWithPathViewSource \
   DISABLED_InterstitialWithPathViewSource
 #else

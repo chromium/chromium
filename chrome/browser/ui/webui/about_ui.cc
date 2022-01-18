@@ -54,7 +54,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
 
@@ -82,10 +82,10 @@
 #include "chrome/browser/lacros/lacros_url_handling.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
 
@@ -508,7 +508,7 @@ void AppendHeader(std::string* output, const std::string& unescaped_title) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // This function returns true if Lacros is the primary browser - or if the
 // calling browser is Lacros.
 bool isLacrosPrimaryOrCurrentBrowser() {
@@ -552,7 +552,7 @@ void AppendFooter(std::string* output) {
   output->append("</body>\n</html>\n");
 }
 
-#else  // !defined(OS_CHROMEOS)
+#else  // BUILDFLAG(IS_CHROMEOS)
 
 void AppendBody(std::string *output) {
   output->append("</head>\n<body>\n");
@@ -562,7 +562,7 @@ void AppendFooter(std::string *output) {
   output->append("</body>\n</html>\n");
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace about_ui
 
@@ -656,7 +656,7 @@ std::string ChromeURLs() {
   return html;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
 std::string AboutLinuxProxyConfig() {
   std::string data;
   AppendHeader(&data,
@@ -712,7 +712,7 @@ void AboutUIHTMLSource::StartDataRequest(
       response =
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(idr);
     }
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
   } else if (source_name_ == chrome::kChromeUILinuxProxyConfigHost) {
     response = AboutLinuxProxyConfig();
 #endif
@@ -724,7 +724,7 @@ void AboutUIHTMLSource::StartDataRequest(
     CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
     return;
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   } else if (source_name_ == chrome::kChromeUITermsHost) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!path.empty()) {
@@ -786,7 +786,7 @@ AboutUI::AboutUI(content::WebUI* web_ui, const std::string& name)
     : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Set up the chrome://theme/ source.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 #endif
@@ -795,7 +795,7 @@ AboutUI::AboutUI(content::WebUI* web_ui, const std::string& name)
       profile, std::make_unique<AboutUIHTMLSource>(name, profile));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
                                          const std::string& message,
@@ -813,4 +813,4 @@ bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
   return true;
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)

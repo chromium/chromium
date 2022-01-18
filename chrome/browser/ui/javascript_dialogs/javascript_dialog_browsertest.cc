@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   chrome::CloseTab(browser());
 // There are differences in the implementations of Views on different platforms
 // that cause different dismissal causes.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On MacOS 10.13, |kDialogClosed| is logged, while for other versions
   // |kCancelDialogsCalled| is logged. Expect only one but not both.
   EXPECT_TRUE(tester.GetLastDismissalCause() ==

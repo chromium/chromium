@@ -29,7 +29,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
 #endif
@@ -39,7 +39,7 @@ class TimestampDelegate {
  public:
   virtual ~TimestampDelegate() = default;
   virtual base::Time GetSystemTime();
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   virtual base::Time FetchChromeCleanerScanCompletionTimestamp();
 #endif
 };
@@ -49,7 +49,7 @@ class TimestampDelegate {
 // software.
 class SafetyCheckHandler
     : public settings::SettingsPageUIHandler,
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
       public safe_browsing::ChromeCleanerController::Observer,
 #endif
       public password_manager::BulkLeakCheckServiceInterface::Observer,
@@ -134,7 +134,7 @@ class SafetyCheckHandler
   std::u16string GetStringForParentRan(base::Time safety_check_completion_time,
                                        base::Time system_time);
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Constructs the string for the Chrome cleaner 'safe' state which depicts
   // how long ago its last check ran.
   std::u16string GetStringForChromeCleanerRan();
@@ -207,7 +207,7 @@ class SafetyCheckHandler
   // that case, if any of those were re-enabled.
   void CheckExtensions();
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Checks for unwanted software via the Chrome Cleanup Tool. Only on Windows.
   void CheckChromeCleaner();
 #endif
@@ -223,7 +223,7 @@ class SafetyCheckHandler
                                Blocklisted blocklisted,
                                ReenabledUser reenabled_user,
                                ReenabledAdmin reenabled_admin);
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void OnChromeCleanerCheckResult(ChromeCleanerResult result);
 #endif
 
@@ -241,7 +241,7 @@ class SafetyCheckHandler
                                         Blocklisted blocklisted,
                                         ReenabledUser reenabled_user,
                                         ReenabledAdmin reenabled_admin);
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::u16string GetStringForChromeCleaner(ChromeCleanerStatus status,
                                            base::Time cct_completion_time,
                                            base::Time system_time);

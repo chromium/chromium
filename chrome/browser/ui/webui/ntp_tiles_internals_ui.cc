@@ -90,13 +90,13 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(
     case ntp_tiles::TileSource::POPULAR_BAKED_IN:
     case ntp_tiles::TileSource::POPULAR:
     case ntp_tiles::TileSource::EXPLORE:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return true;
 #else
       return false;
 #endif
     case ntp_tiles::TileSource::CUSTOM_LINKS:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return false;
 #else
       return true;

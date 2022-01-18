@@ -109,7 +109,7 @@ class PermissionBubbleKioskBrowserTest : public PermissionBubbleBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
  private:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Toggling fullscreen mode on Mac can be flaky for tests run in parallel
   // because only one window may be animating into or out of fullscreen at a
   // time.

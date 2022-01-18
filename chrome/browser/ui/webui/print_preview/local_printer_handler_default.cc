@@ -25,11 +25,11 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/common/printing/printer_capabilities_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/threading/thread_restrictions.h"
 #endif
 
@@ -45,7 +45,7 @@ namespace {
 
 scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
   // USER_VISIBLE because the result is displayed in the print preview dialog.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   static constexpr base::TaskTraits kTraits = {
       base::MayBlock(), base::TaskPriority::USER_VISIBLE};
 #endif
@@ -53,7 +53,7 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
 #if defined(USE_CUPS)
   // CUPS is thread safe.
   return base::ThreadPool::CreateTaskRunner(kTraits);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Windows drivers are likely not thread-safe and need to be accessed on the
   // UI thread.
   return content::GetUIThreadTaskRunner(
@@ -147,7 +147,7 @@ void OnDidFetchCapabilities(
 // static
 PrinterList LocalPrinterHandlerDefault::EnumeratePrintersAsync(
     const std::string& locale) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Blocking is needed here because Windows printer drivers are oftentimes
   // not thread-safe and have to be accessed on the UI thread.
   base::ScopedAllowBlocking allow_blocking;
@@ -170,11 +170,11 @@ base::Value LocalPrinterHandlerDefault::FetchCapabilitiesAsync(
     const std::string& device_name,
     const std::string& locale) {
   PrinterSemanticCapsAndDefaults::Papers user_defined_papers;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   user_defined_papers = GetMacCustomPaperSizes();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Blocking is needed here because Windows printer drivers are oftentimes
   // not thread-safe and have to be accessed on the UI thread.
   base::ScopedAllowBlocking allow_blocking;
@@ -200,7 +200,7 @@ base::Value LocalPrinterHandlerDefault::FetchCapabilitiesAsync(
 // static
 std::string LocalPrinterHandlerDefault::GetDefaultPrinterAsync(
     const std::string& locale) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Blocking is needed here because Windows printer drivers are oftentimes
   // not thread-safe and have to be accessed on the UI thread.
   base::ScopedAllowBlocking allow_blocking;

@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/search/search_ipc_router.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 

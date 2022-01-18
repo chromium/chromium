@@ -460,7 +460,7 @@ class DetachToBrowserTabDragControllerTest
               // Disable NativeWinOcclusion to avoid it interfering with test
               // for dragging over occluded browser window.
               features::kCalculateNativeWinOcclusion,
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
         });
   }
   DetachToBrowserTabDragControllerTest(
@@ -481,7 +481,7 @@ class DetachToBrowserTabDragControllerTest
     // be obscured by other windows if there are any. This should be fixed in
     // order to be consistent with other platforms.
     EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   InputSource input_source() const {
@@ -1486,7 +1486,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(3u, browser_list->size());
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 

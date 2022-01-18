@@ -127,7 +127,7 @@ void WebAppMenuModel::Build() {
 
 // Chrome OS's app list is prominent enough to not need a separate uninstall
 // option in the app menu.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK(browser()->app_controller());
   if (browser()->app_controller()->IsInstalled()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -137,7 +137,7 @@ void WebAppMenuModel::Build() {
                 ui::EscapeMenuLabelAmpersands(
                     browser()->app_controller()->GetAppShortName())));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   AddSeparator(ui::LOWER_SEPARATOR);
 
   CreateZoomMenu();

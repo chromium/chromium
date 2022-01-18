@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
 }
 
 // RecoveryInstallGlobalError only exists on Windows and Mac.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
                        InvokeUi_RecoveryInstallGlobalError) {
   ShowAndVerifyUi();

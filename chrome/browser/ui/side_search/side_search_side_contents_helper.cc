@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
@@ -20,11 +21,11 @@ namespace {
 constexpr char kSideSearchQueryParam[] = "sidesearch";
 constexpr char kSideSearchVersion[] = "1";
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kChromeOSUserAgent[] =
     "Mozilla/5.0 (X11; CrOS x86_64 14233.0.0) AppleWebKit/537.36 (KHTML, like "
     "Gecko) Chrome/96.0.4650.0 Safari/537.36";
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class SideSearchContentsThrottle : public content::NavigationThrottle {
  public:
@@ -168,11 +169,11 @@ void SideSearchSideContentsHelper::LoadURL(const GURL& url) {
   // Fake the user agent on non ChromeOS systems to allow for development and
   // testing. This is needed as the side search SRP is only served to ChromeOS
   // user agents.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   load_url_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   load_url_params.override_user_agent =
       content::NavigationController::UA_OVERRIDE_TRUE;
-#endif  // defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   web_contents()->GetController().LoadURLWithParams(load_url_params);
 
@@ -193,12 +194,12 @@ SideSearchSideContentsHelper::SideSearchSideContentsHelper(
                         "SideSearch.LoadCompletedTime") {
   Observe(web_contents);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   web_contents->SetUserAgentOverride(
       blink::UserAgentOverride::UserAgentOnly(kChromeOSUserAgent), true);
   web_contents->SetRendererInitiatedUserAgentOverrideOption(
       content::NavigationController::UA_OVERRIDE_TRUE);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   web_contents->SetDelegate(this);
 }

@@ -15,7 +15,7 @@ namespace {
 
 SadTabKind SadTabKindFromTerminationStatus(base::TerminationStatus status) {
   switch (status) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
       return SAD_TAB_KIND_KILLED_BY_OOM;
 #endif

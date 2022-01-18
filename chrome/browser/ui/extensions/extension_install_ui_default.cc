@@ -101,16 +101,16 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
       return;
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/1286603): Show Toast for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ShowToast(kExtensionInstallSuccessToastId,
               l10n_util::GetStringFUTF16(IDS_EXTENSION_NOTIFICATION_INSTALLED,
                                          base::UTF8ToUTF16(extension->name())));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS)
     OpenAppInstalledUI(extension->id());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return;
   }
 
@@ -135,7 +135,7 @@ void ExtensionInstallUIDefault::OnInstallFailure(
 }
 
 void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // chrome://apps/ is not available on ChromeOS.
   // Toast is shown for Ash (not yet Lacros: crbug.com/1286603).
   NOTREACHED();

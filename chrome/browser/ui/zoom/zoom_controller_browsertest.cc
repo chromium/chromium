@@ -79,7 +79,7 @@ class ZoomControllerBrowserTest : public InProcessBrowserTest {
   }
 };  // ZoomControllerBrowserTest
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CrashedTabsDoNotChangeZoom DISABLED_CrashedTabsDoNotChangeZoom
 #else
 #define MAYBE_CrashedTabsDoNotChangeZoom CrashedTabsDoNotChangeZoom
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, NavigationResetsManualMode) {
 }
 
 // Mac does not have touchscreen pinch.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Ensure that when a history navigation restores the page scale factor from a
 // previous pinch zoom, the browser is notified of the page scale restoration.
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   EXPECT_TRUE(chrome::CanResetZoom(web_contents));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_ZOOM_NORMAL));
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 // TODO(https://crbug.com/1260291): Add support for Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)

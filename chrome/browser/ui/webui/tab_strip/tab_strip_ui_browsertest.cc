@@ -110,7 +110,7 @@ const std::string TabStripUIBrowserTest::tab_query_js(
 // https://crbug.com/1246369: Test is flaky on Linux/Windows, disabled for
 // investigation.
 // https://crbug.com/1263485: Also flaky on chromeos.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ActivatingTabClosesEmbedder DISABLED_ActivatingTabClosesEmbedder
 #else
 #define MAYBE_ActivatingTabClosesEmbedder ActivatingTabClosesEmbedder

@@ -365,7 +365,7 @@ bool GetGestureCommand(ui::GestureEvent* event, int* command) {
       return true;
     }
   }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   return false;
 }
 
@@ -491,7 +491,7 @@ void GetAnyTabAudioStates(const Browser* browser,
     }
   }
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -1621,7 +1621,7 @@ void BrowserView::FullscreenStateChanged() {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(restore_pre_fullscreen_bounds_callback_));
   }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void BrowserView::SetToolbarButtonProvider(ToolbarButtonProvider* provider) {
@@ -3664,7 +3664,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   // TODO(crbug.com/1034783): Implement at lower layers to avoid transitions.
 #if BUILDFLAG(IS_MAC)
   bool entering_cross_screen_fullscreen = false;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   bool swapping_screens_during_fullscreen = false;
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
@@ -3675,7 +3675,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
         current_display.id() != display_id) {
 #if BUILDFLAG(IS_MAC)
       entering_cross_screen_fullscreen = true;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
       // Fullscreen windows must exit fullscreen to move to another display.
       if (IsFullscreen()) {
@@ -3732,13 +3732,13 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   else if (entering_cross_screen_fullscreen)
     delay = base::Milliseconds(1);
   frame_->SetFullscreen(fullscreen, delay);
-#else   // OS_MAC
+#else   // BUILDFLAG(IS_MAC)
   frame_->SetFullscreen(fullscreen);
   // On Mac, the pre-fullscreen bounds must be restored after an asynchronous
   // transition out of the fullscreen workspace; see http://crbug.com/1039874
   if (!fullscreen && restore_pre_fullscreen_bounds_callback_)
     std::move(restore_pre_fullscreen_bounds_callback_).Run();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   // Enable immersive before the browser refreshes its list of enabled commands.
   const bool should_stay_in_immersive =

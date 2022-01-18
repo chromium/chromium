@@ -15,23 +15,23 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/webui/sandbox/sandbox_handler.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/common/sandbox_status_extension_android.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 #include "sandbox/policy/sandbox.h"
 #endif
 
 namespace {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 static void SetSandboxStatusData(content::WebUIDataSource* source) {
   // Get expected sandboxing status of renderers.
   const int status =
@@ -71,7 +71,7 @@ content::WebUIDataSource* CreateDataSource() {
   source->SetDefaultResource(IDR_SANDBOX_INTERNALS_HTML);
   source->AddResourcePath("sandbox_internals.js", IDR_SANDBOX_INTERNALS_JS);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   SetSandboxStatusData(source);
   source->UseStringsJs();
 #endif
@@ -83,7 +83,7 @@ content::WebUIDataSource* CreateDataSource() {
 
 SandboxInternalsUI::SandboxInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   web_ui->AddMessageHandler(
       std::make_unique<sandbox_handler::SandboxHandler>());
 #endif
@@ -93,7 +93,7 @@ SandboxInternalsUI::SandboxInternalsUI(content::WebUI* web_ui)
 
 void SandboxInternalsUI::WebUIRenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   mojo::AssociatedRemote<chrome::mojom::SandboxStatusExtension> sandbox_status;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &sandbox_status);

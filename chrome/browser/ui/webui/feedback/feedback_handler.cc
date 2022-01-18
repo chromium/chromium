@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/feedback/child_web_dialog.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
@@ -57,7 +58,7 @@ void FeedbackHandler::RegisterMessages() {
   web_ui()->RegisterDeprecatedMessageCallback(
       "showDialog", base::BindRepeating(&FeedbackHandler::HandleShowDialog,
                                         base::Unretained(this)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterDeprecatedMessageCallback(
       "showAssistantLogsInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowAssistantLogsInfo,
@@ -66,7 +67,7 @@ void FeedbackHandler::RegisterMessages() {
       "showBluetoothLogsInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowBluetoothLogsInfo,
                           base::Unretained(this)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterDeprecatedMessageCallback(
       "showSystemInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowSystemInfo,
@@ -80,7 +81,7 @@ void FeedbackHandler::HandleShowDialog(const base::ListValue* args) {
   dialog_->Show();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void FeedbackHandler::HandleShowAssistantLogsInfo(const base::ListValue* args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
                 ChildPageURL("html/assistant_logs_info.html"), std::u16string(),
@@ -93,7 +94,7 @@ void FeedbackHandler::HandleShowBluetoothLogsInfo(const base::ListValue* args) {
                 /*dialog_width=*/400, /*dialog_height=*/120,
                 /*can_resize=*/false, /*can_minimize=*/false);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FeedbackHandler::HandleShowSystemInfo(const base::ListValue* args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,

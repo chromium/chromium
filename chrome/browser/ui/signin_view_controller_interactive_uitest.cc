@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
 
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 // Press Ctrl/Cmd+T, which will open a new tab.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_T, /*control=*/false, /*shift=*/false, /*alt=*/false,
       /*command=*/true));
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 // Tests that the confirm button is focused by default in the signin email
 // confirmation dialog.
 // TODO(http://crbug.com/1286855): Flaky on MacOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EmailConfirmationDefaultFocus \
   DISABLED_EmailConfirmationDefaultFocus
 #else

@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/layout_constants.h"
 
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 int GetCocoaLayoutConstant(LayoutConstant constant) {
   switch (constant) {
     case BOOKMARK_BAR_HEIGHT:

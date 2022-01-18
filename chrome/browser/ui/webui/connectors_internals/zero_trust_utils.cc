@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -18,7 +18,7 @@
 #include "crypto/signature_verifier.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace enterprise_connectors {
 namespace utils {
@@ -66,7 +66,7 @@ void TrySetSignal(base::flat_map<std::string, std::string>& map,
       std::vector<base::StringPiece>(values.begin(), values.end()), ", ");
 }
 
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 connectors_internals::mojom::KeyTrustLevel ParseTrustLevel(
     BPKUR::KeyTrustLevel trust_level) {
@@ -92,7 +92,7 @@ connectors_internals::mojom::KeyType AlgorithmToType(
   }
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -171,7 +171,7 @@ base::flat_map<std::string, std::string> SignalsToMap(
 }
 
 connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   auto* key_manager = g_browser_process->browser_policy_connector()
                           ->chrome_browser_cloud_management_controller()
                           ->GetDeviceTrustKeyManager();
@@ -189,7 +189,7 @@ connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
           connectors_internals::mojom::KeyType::UNKNOWN);
     }
   }
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return connectors_internals::mojom::KeyInfo::New(
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED,
       connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,

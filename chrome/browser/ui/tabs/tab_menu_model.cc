@@ -122,7 +122,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     AddSeparator(ui::NORMAL_SEPARATOR);
 
     if (send_tab_to_self::GetValidDeviceCount(tab_strip->profile()) == 1) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       AddItem(TabStripModel::CommandSendTabToSelfSingleTarget,
               l10n_util::GetStringFUTF16(
                   IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
@@ -141,7 +141,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
           std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
               tab_strip->GetWebContentsAt(index),
               send_tab_to_self::SendTabToSelfMenuType::kTab);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       AddSubMenuWithStringId(TabStripModel::CommandSendTabToSelf,
                              IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
                              send_tab_to_self_sub_menu_model_.get());

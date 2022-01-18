@@ -95,11 +95,11 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
@@ -143,7 +143,7 @@ Browser* OpenPopupAndWait(Browser* browser,
   return popup_browser;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::vector<std::wstring> GetFileExtensionsForProgId(
     const std::wstring& file_handler_prog_id) {
   const std::wstring prog_id_path =
@@ -161,7 +161,7 @@ std::vector<std::wstring> GetFileExtensionsForProgId(
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -244,13 +244,13 @@ class WebAppBrowserTest_Tabbed : public WebAppBrowserTest {
 };
 
 // TODO(crbug.com/1257751): Stabilize the test.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #define DISABLE_POSIX(TEST) DISABLED_##TEST
 #else
 #define DISABLE_POSIX(TEST) TEST
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 using WebAppBrowserTest_ShortcutMenu = WebAppBrowserTest;
 #endif
 
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OpenInChrome) {
 }
 
 // Check the 'App info' menu button for web app windows.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // Disabled on Linux because the test only completes unless unrelated
 // events are received to wake up the message loop.
 #define MAYBE_AppInfoOpensPageInfo DISABLED_AppInfoOpensPageInfo
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
 // Tests that using window.open to create a popup window out of scope results in
 // a correctly sized window.
 // TODO(crbug.com/1234260): Stabilize the test.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_OffScopePWAPopupsHaveCorrectSize \
   DISABLED_OffScopePWAPopupsHaveCorrectSize
 #else
@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 // Tests that using window.open to create a popup window in scope results in
 // a correctly sized window.
 // TODO(crbug.com/1234260): Stabilize the test.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_InScopePWAPopupsHaveCorrectSize \
   DISABLED_InScopePWAPopupsHaveCorrectSize
 #else
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoTabSelectedMenuCrash) {
 
 // Tests that PWA menus have an uninstall option.
 // TODO(crbug.com/1271118): Flaky on mac arm64.
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 #define MAYBE_UninstallMenuOption DISABLED_UninstallMenuOption
 #else
 #define MAYBE_UninstallMenuOption UninstallMenuOption
@@ -835,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_UninstallMenuOption) {
   int index = -1;
   const bool found = app_menu_model->GetModelAndIndexForCommandId(
       WebAppMenuModel::kUninstallAppCommandId, &model, &index);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(found);
 #else
   EXPECT_TRUE(found);
@@ -848,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_UninstallMenuOption) {
                             MENU_ACTION_UNINSTALL_APP, 1);
   tester.ExpectUniqueSample("WrenchMenu.MenuAction", MENU_ACTION_UNINSTALL_APP,
                             1);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Tests that both installing a PWA and creating a shortcut app are disabled for
@@ -1065,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
   ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
                        DISABLE_POSIX(ShortcutIconCorrectColor)) {
   os_hooks_suppress_.reset();
@@ -1094,10 +1094,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   base::FilePath shortcut_path;
   auto* provider = WebAppProvider::GetForTest(profile());
   std::vector<SkColor> expected_pixel_colors = {SkColorSetRGB(92, 92, 92)};
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   shortcut_path = shortcut_override->chrome_apps_folder.GetPath().Append(
       provider->registrar().GetAppShortName(app_id) + ".app");
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   shortcut_path = shortcut_override->application_menu.GetPath().AppendASCII(
       provider->registrar().GetAppShortName(app_id) + ".lnk");
   expected_pixel_colors.push_back(SkColorSetRGB(91, 91, 91));
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
   struct ShortcutsMenuItem {
    public:
@@ -1210,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
 }
 #endif
 
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   os_hooks_suppress_.reset();
 
@@ -1239,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   EXPECT_EQ(provider->registrar().GetAppShortName(app_id),
             GetInstallableAppName());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
   std::wstring shortcut_filename = converter.from_bytes(
       provider->registrar().GetAppShortName(app_id) + ".lnk");
@@ -1249,13 +1249,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
       shortcut_override->application_menu.GetPath().Append(shortcut_filename);
   EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
   EXPECT_TRUE(base::PathExists(app_menu_shortcut_path));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   std::string shortcut_filename =
       provider->registrar().GetAppShortName(app_id) + ".app";
   base::FilePath app_shortcut_path =
       shortcut_override->chrome_apps_folder.GetPath().Append(shortcut_filename);
   EXPECT_TRUE(base::PathExists(app_shortcut_path));
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   std::string shortcut_filename = "chrome-" + app_id + "-Default.desktop";
   base::FilePath desktop_shortcut_path =
       shortcut_override->desktop.GetPath().Append(shortcut_filename);
@@ -1272,12 +1272,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
       }));
   run_loop_uninstall.Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_FALSE(base::PathExists(desktop_shortcut_path));
   EXPECT_FALSE(base::PathExists(app_menu_shortcut_path));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   EXPECT_FALSE(base::PathExists(app_shortcut_path));
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   EXPECT_FALSE(base::PathExists(desktop_shortcut_path));
 #endif
 }  // namespace web_app
@@ -1547,7 +1547,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SubframeRedirectsToWebApp) {
       EvalJs(subframe, "document.body.innerText.trim();").ExtractString());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
   BrowserList* const browser_list = BrowserList::GetInstance();
@@ -1579,7 +1579,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopupLocationBar) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
   const GURL app_url = GetSecureAppURL();
@@ -1781,7 +1781,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
       app_id);
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
  public:
   WebAppBrowserTest_FileHandler() {
@@ -1804,7 +1804,7 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
 };
 
 // TODO(crbug.com/1270961): Flaky on Win and Mac.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppFileHandler DISABLED_WebAppFileHandler
 #else
 #define MAYBE_WebAppFileHandler WebAppFileHandler
@@ -1835,7 +1835,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
   content::RunAllTasksUntilIdle();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::wstring prog_id =
       GetProgIdForApp(browser()->profile()->GetPath(), app_id);
   const std::vector<std::wstring> file_handler_prog_ids =
@@ -1863,7 +1863,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
       EXPECT_TRUE(key.HasValue(file_handler_prog_id.data()));
     }
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   std::vector<GURL> test_file_urls;
   for (auto extension : expected_extensions) {
     const base::FilePath test_file_path =
@@ -1914,7 +1914,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
       }));
   run_loop_uninstall.Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Check file associations after the web app is uninstalled.
 
   // Check that HKCU/Software Classes/<filext>/ doesn't have the ProgId.

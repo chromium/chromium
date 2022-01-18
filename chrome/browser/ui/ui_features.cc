@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ui_features.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui_features.h"
 
@@ -253,12 +254,12 @@ const base::Feature kWebUITabStripContextMenuAfterTap {
 const base::Feature kWebUIFeedback{"WebUIFeedback",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const base::Feature kChromeOSTabSearchCaptionButton{
     "ChromeOSTabSearchCaptionButton", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Enabled an experiment which increases the prominence to grant MacOS system
 // location permission to Chrome when location permissions have already been
 // approved. https://crbug.com/1211052
@@ -288,7 +289,7 @@ int GetLocationPermissionsExperimentLabelPromptLimit() {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Moves the Tab Search button into the browser frame's caption button area on
 // Windows 10 (crbug.com/1223847).

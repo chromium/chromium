@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory_registry.h"
 
 // TODO: as more platforms are tested for reliability we will add them here.
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/user_education/tutorial/browser_tutorial_service_factory.h"
 #endif
 
@@ -24,10 +24,10 @@ TutorialServiceManager* TutorialServiceManager::GetInstance() {
 
 TutorialService* TutorialServiceManager::GetTutorialServiceForProfile(
     Profile* profile) {
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return BrowserTutorialServiceFactory::GetForProfile(profile);
 #endif
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   return nullptr;
 #endif
 }

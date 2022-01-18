@@ -80,7 +80,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Attempts to uninstall the given web app id. Meant to be used with OS-level
   // uninstallation support/hooks.
   void UninstallWebAppFromStartupSwitch(const AppId& app_id);

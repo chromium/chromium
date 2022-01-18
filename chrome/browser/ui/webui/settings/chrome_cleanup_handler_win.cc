@@ -275,16 +275,16 @@ void ChromeCleanupHandler::HandleNotifyChromeCleanupLearnMoreClicked(
 
 void ChromeCleanupHandler::HandleGetMoreItemsPluralString(
     const base::ListValue* args) {
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   GetPluralString(IDS_SETTINGS_RESET_CLEANUP_DETAILS_MORE, args);
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void ChromeCleanupHandler::HandleGetItemsToRemovePluralString(
     const base::ListValue* args) {
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   GetPluralString(IDS_SETTINGS_RESET_CLEANUP_DETAILS_ITEMS_TO_BE_REMOVED, args);
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void ChromeCleanupHandler::GetPluralString(int id,

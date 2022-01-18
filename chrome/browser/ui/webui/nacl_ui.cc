@@ -44,7 +44,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -196,7 +196,7 @@ void NaClDomHandler::AddOperatingSystemInfo(base::ListValue* list) {
   // TODO(jvoung): refactor this to share the extra windows labeling
   // with about:flash, or something.
   std::string os_label = version_info::GetOSType();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::OSInfo* os = base::win::OSInfo::GetInstance();
   switch (os->version()) {
     case base::win::Version::XP:

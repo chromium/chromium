@@ -79,7 +79,7 @@ int ChildURLCountTotal(const BookmarkNode* node) {
                          count_children);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns in |urls|, the url and title pairs for each open tab in browser.
 void GetURLsAndFoldersForOpenTabs(
     Browser* browser,
@@ -143,7 +143,7 @@ OpenedWebContentsSet OpenAllHelper(content::PageNavigator* navigator,
 
 }  // namespace
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void OpenAllIfAllowed(
     Browser* browser,
     base::OnceCallback<content::PageNavigator*()> get_navigator,
@@ -321,6 +321,6 @@ void GetURLsAndFoldersForTabEntries(
     }
   }
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace chrome

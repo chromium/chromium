@@ -239,7 +239,7 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::ListValue* args) {
 
   AllowJavascript();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::Value result("Saving...");
   FireWebUIListener("save-dump-progress", result);
 

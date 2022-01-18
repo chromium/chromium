@@ -11,11 +11,12 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/update_client/crx_update_item.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/webui_url_constants.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -24,7 +25,7 @@
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_url_handling.h"
 #endif
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ComponentsHandler::ComponentsHandler(
     component_updater::ComponentUpdateService* component_updater)
@@ -43,7 +44,7 @@ void ComponentsHandler::RegisterMessages() {
       "checkUpdate", base::BindRepeating(&ComponentsHandler::HandleCheckUpdate,
                                          base::Unretained(this)));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterDeprecatedMessageCallback(
       "crosUrlComponentsRedirect",
       base::BindRepeating(&ComponentsHandler::HandleCrosUrlComponentsRedirect,
@@ -68,14 +69,14 @@ void ComponentsHandler::HandleRequestComponentsData(
   result.SetKey("components",
                 base::Value::FromUniquePtrValue(LoadComponents()));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool showSystemFlagsLink = crosapi::browser_util::IsLacrosEnabled();
 #else
   const bool showSystemFlagsLink = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   result.SetBoolean("showOsLink", showSystemFlagsLink);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   ResolveJavascriptCallback(callback_id, result);
 }
@@ -171,7 +172,7 @@ std::u16string ComponentsHandler::ServiceStatusToString(
   return l10n_util::GetStringUTF16(IDS_COMPONENTS_UNKNOWN);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void ComponentsHandler::HandleCrosUrlComponentsRedirect(
     const base::ListValue* args) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -182,7 +183,7 @@ void ComponentsHandler::HandleCrosUrlComponentsRedirect(
   crosapi::BrowserManager::Get()->OpenUrl(GURL(chrome::kChromeUIComponentsUrl));
 #endif
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ComponentsHandler::OnDemandUpdate(const std::string& component_id) {
   component_updater_->GetOnDemandUpdater().OnDemandUpdate(

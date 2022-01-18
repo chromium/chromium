@@ -27,7 +27,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/google_update_util.h"
 #endif
 
@@ -85,7 +85,7 @@ void OnDialogAccepted(content::PageNavigator* navigator,
         GURL(update_browser_redirect_url), content::Referrer(),
         WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
         false));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   } else {
     DCHECK(UpgradeDetector::GetInstance()->is_outdated_install_no_au());
     UMA_HISTOGRAM_CUSTOM_COUNTS("OutdatedUpgradeBubble.NumLaterPerEnableAU",
@@ -105,7 +105,7 @@ void OnDialogAccepted(content::PageNavigator* navigator,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
         base::BindOnce(&google_update::ElevateIfNeededToReenableUpdates));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 }
 

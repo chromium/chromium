@@ -11,8 +11,8 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-#if !defined(OS_ANDROID)
-// gn check doesn't understand "#if !defined(OS_ANDROID)" and fails this
+#if !BUILDFLAG(IS_ANDROID)
+// gn check doesn't understand "#if !BUILDFLAG(IS_ANDROID)" and fails this
 // non-Android include on Android.
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"  // nogncheck
 #endif
@@ -28,23 +28,23 @@ class InternalsUI : public ui::MojoWebUIController {
   explicit InternalsUI(content::WebUI* web_ui);
   ~InternalsUI() override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void BindInterface(
       mojo::PendingReceiver<
           mojom::user_education_internals::UserEducationInternalsPageHandler>
           receiver);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Add resources and message handler for chrome://internals/query-tiles.
   void AddQueryTilesInternals(content::WebUI* web_ui);
 
   // Add resources and message handler for chrome://internals/lens.
   void AddLensInternals(content::WebUI* web_ui);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUIDataSource> source_;

@@ -10,13 +10,13 @@
 #include "content/public/test/browser_test.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
 using BrowserCommandControllerInteractiveTest =
     FullscreenKeyboardBrowserTestBase;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky http://crbug.com/852285
 #define MAYBE_ShortcutsShouldTakeEffectInWindowMode \
   DISABLED_ShortcutsShouldTakeEffectInWindowMode
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(FinishTestAndVerifyResult());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(zijiehe): Figure out why this test crashes on Mac OSX. The suspicious
 // command is "SendFullscreenShortcutAndWait()". See, http://crbug.com/738949.
 #define MAYBE_KeyEventsShouldBeConsumedByWebPageInBrowserFullscreen \
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(IsInBrowserFullscreen());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/850594
 #define MAYBE_KeyEventsShouldBeConsumedByWebPageInJsFullscreenExceptForEsc \
   DISABLED_KeyEventsShouldBeConsumedByWebPageInJsFullscreenExceptForEsc
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(FinishTestAndVerifyResult());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Triggers a DCHECK in MacViews: http://crbug.com/823478
 #define MAYBE_KeyEventsShouldBeConsumedByWebPageInJsFullscreenExceptForF11 \
   DISABLED_KeyEventsShouldBeConsumedByWebPageInJsFullscreenExceptForF11
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(FinishTestAndVerifyResult());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(zijiehe): Figure out why this test crashes on Mac OSX. The suspicious
 // command is "SendFullscreenShortcutAndWait()". See, http://crbug.com/738949.
 #define MAYBE_ShortcutsShouldTakeEffectInBrowserFullscreen \
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(SendShortcutsAndExpectNotPrevented(false));
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // HTML fullscreen is automatically exited after some commands are executed,
 // such as Ctrl + T (new tab). But some commands won't have this effect, such as
 // Ctrl + N (new window).
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerInteractiveTest,
                        MAYBE_ShortcutsShouldTakeEffectInJsFullscreen) {
 // This test is flaky. See http://crbug.com/759704.
 // TODO(zijiehe): Find out the root cause.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return;
 #endif
   ASSERT_NO_FATAL_FAILURE(SendShortcutsAndExpectNotPrevented(true));

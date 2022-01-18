@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/global_media_controls/media_notification_device_monitor.h"
+
 #include <algorithm>
 #include <iterator>
 
@@ -12,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 
 // MediaNotificationDeviceMonitor
@@ -23,7 +25,7 @@ MediaNotificationDeviceMonitor::Create(
 // The device monitor implementation on linux does not reliably detect
 // connection changes for some devices. In this case we fall back to polling the
 // device provider. See crbug.com/1112480 for more information.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   return std::make_unique<PollingDeviceMonitorImpl>(device_provider);
 #else
   return std::make_unique<SystemMonitorDeviceMonitorImpl>();
@@ -42,7 +44,7 @@ void MediaNotificationDeviceMonitor::RemoveDevicesChangedObserver(
 
 MediaNotificationDeviceMonitor::MediaNotificationDeviceMonitor() = default;
 
-#if !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV))
+#if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV))
 // SystemMonitorDeviceMonitorImpl
 SystemMonitorDeviceMonitorImpl::SystemMonitorDeviceMonitorImpl() {
   base::SystemMonitor::Get()->AddDevicesChangedObserver(this);

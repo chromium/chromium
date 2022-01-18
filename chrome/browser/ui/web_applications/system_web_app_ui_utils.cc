@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -195,7 +196,7 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
 
   auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(url.DeprecatedGetOriginAsURL() == provider->registrar()
                                                .GetAppLaunchUrl(params.app_id)
                                                .DeprecatedGetOriginAsURL() ||

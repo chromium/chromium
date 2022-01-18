@@ -33,7 +33,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
 };
 
 // Flaky on Windows: https://crbug.com/1247547.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AppRegistrarNotifiesProfileDeletion \
   DISABLED_AppRegistrarNotifiesProfileDeletion
 #else

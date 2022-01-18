@@ -60,7 +60,7 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
     {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
     {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
     {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"os-components-text1", IDS_COMPONENTS_OS_TEXT1_LABEL},
     {"os-components-text2", IDS_COMPONENTS_OS_TEXT2_LABEL},
     {"os-components-link", IDS_COMPONENTS_OS_LINK},

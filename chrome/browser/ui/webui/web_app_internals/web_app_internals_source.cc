@@ -23,7 +23,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
@@ -35,7 +35,7 @@ constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
 constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
 constexpr char kIconErrorLog[] = "IconErrorLog";
 constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
 constexpr char kWebAppDirectoryDiskState[] = "WebAppDirectoryDiskState";
@@ -61,7 +61,7 @@ base::Value BuildIndexJson() {
   index.Append(kExternallyManagedWebAppPrefs);
   index.Append(kIconErrorLog);
   index.Append(kInstallationProcessErrorLog);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   index.Append(kAppShimRegistryLocalStorage);
 #endif
   index.Append(kWebAppDirectoryDiskState);
@@ -223,7 +223,7 @@ base::Value BuildInstallProcessErrorLogJson(web_app::WebAppProvider& provider) {
   return root;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 base::Value BuildAppShimRegistryLocalStorageJson() {
   base::Value root(base::Value::Type::DICTIONARY);
   root.SetKey(kAppShimRegistryLocalStorage,
@@ -259,7 +259,7 @@ void BuildWebAppInternalsJson(
   root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
   root.Append(BuildIconErrorLogJson(*provider));
   root.Append(BuildInstallProcessErrorLogJson(*provider));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   root.Append(BuildAppShimRegistryLocalStorageJson());
 #endif
   base::ThreadPool::PostTaskAndReplyWithResult(

@@ -191,12 +191,12 @@ extern const base::Feature kWebUITabStripContextMenuAfterTap;
 
 extern const base::Feature kWebUIFeedback;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const base::Feature kChromeOSTabSearchCaptionButton;
 #endif
 
 // Cocoa to views migration.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 extern const base::Feature kLocationPermissionsExperiment;
 
 extern const base::Feature kViewsFirstRunDialog;
@@ -207,7 +207,7 @@ int GetLocationPermissionsExperimentBubblePromptLimit();
 int GetLocationPermissionsExperimentLabelPromptLimit();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const base::Feature kWin10TabSearchCaptionButton;
 #endif
 

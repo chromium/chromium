@@ -180,7 +180,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
 
   switch (params.disposition) {
     case WindowOpenDisposition::SWITCH_TO_TAB:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {
       std::pair<Browser*, int> index =
           GetIndexAndBrowserOfExistingTab(profile, params);
@@ -766,7 +766,7 @@ bool IsHostAllowedInIncognito(const GURL& url) {
     return true;
 
   if (host == chrome::kChromeUIChromeSigninHost) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Allow incognito mode for the chrome-signin url if we only want to
     // retrieve the login scope token without touching any profiles. This
     // option is only available on Windows for use with Google Credential
@@ -775,7 +775,7 @@ bool IsHostAllowedInIncognito(const GURL& url) {
            signin_metrics::Reason::kFetchLstOnly;
 #else
     return false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   // Most URLs are allowed in incognito; the following are exceptions.

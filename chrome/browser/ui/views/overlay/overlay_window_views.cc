@@ -1111,7 +1111,7 @@ void OverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
     controller_->Close(true /* should_pause_video */);
     event->SetHandled();
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   views::Widget::OnKeyEvent(event);
 }

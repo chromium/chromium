@@ -127,7 +127,7 @@ class MediaRouterUI : public CastDialogController,
 
   void SimulateDocumentAvailableForTest();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void set_screen_capture_allowed_for_testing(bool allowed) {
     screen_capture_allowed_for_testing_ = allowed;
   }
@@ -249,7 +249,7 @@ class MediaRouterUI : public CastDialogController,
 
 // Creates and sends an issue if casting fails due to lack of screen
 // permissions.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void SendIssueForScreenPermission(const MediaSink::Id& sink_id);
 #endif
 
@@ -376,7 +376,7 @@ class MediaRouterUI : public CastDialogController,
   // controlling window.
   std::unique_ptr<WebContentsDisplayObserver> display_observer_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   absl::optional<bool> screen_capture_allowed_for_testing_;
 #endif
   raw_ptr<LoggerImpl> logger_;

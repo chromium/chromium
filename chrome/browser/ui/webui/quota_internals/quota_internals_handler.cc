@@ -22,7 +22,7 @@ using content::BrowserContext;
 namespace {
 
 bool IsStoragePressureEnabled() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;

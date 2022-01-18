@@ -40,12 +40,12 @@ class MockWebAppLaunchManager : public WebAppLaunchManager {
               (override));
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kCurrentDirectory[] =
     FILE_PATH_LITERAL("\\path");
 #else
 const base::FilePath::CharType kCurrentDirectory[] = FILE_PATH_LITERAL("/path");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 const char kTestAppId[] = "test_app_id";
 

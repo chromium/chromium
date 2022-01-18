@@ -157,7 +157,7 @@ class ThumbnailTabHelperBrowserTest : public InProcessBrowserTest {
 };
 
 // Flaky on Mac: https://crbug.com/1288117
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
 #else
 #define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperBrowserTest,
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 
 // Flaky on Win: https://crbug.com/1211377
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CapturesRestoredTabWhenRequested \
   DISABLED_CapturesRestoredTabWhenRequested
 #else

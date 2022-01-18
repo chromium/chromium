@@ -32,13 +32,13 @@
 #include "chrome/common/webui_url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #endif
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 static constexpr char kBluetoothSettingsUri[] =
     "x-apple.systempreferences:com.apple.preference.security?Privacy_"
     "Bluetooth";
@@ -85,7 +85,7 @@ void ChromeBluetoothChooserController::OpenAdapterOffHelpUrl() const {
 }
 
 void ChromeBluetoothChooserController::OpenPermissionPreferences() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (web_contents_) {
     ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
         GURL(kBluetoothSettingsUri), web_contents_.get(),

@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectAllOnClick) {
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 #else
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-#endif  // OS_LINUX && !OS_CHROMEOS
+#endif
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 }
 
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectionClipboard) {
   EXPECT_EQ(u"http://www.goo4567123gle.com/", omnibox_view->GetText());
   EXPECT_EQ(18U, omnibox_view_views->GetCursorPosition());
 }
-#endif  // OS_LINUX && !OS_CHROMEOS
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
 #if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeInitRespectsIME) {
   omnibox_view_views->OnInputMethodChanged();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_URL, omnibox_view_views->GetTextInputType());
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // ClickOnView(VIEW_ID_OMNIBOX) does not set focus to omnibox on Mac.
 // Looks like the same problem as in the SelectAllOnClick().

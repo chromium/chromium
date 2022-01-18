@@ -74,7 +74,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void HandleRefreshUpdateStatus(const base::ListValue* args);
   void RefreshUpdateStatus();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Promotes the updater for all users.
   void PromoteUpdater(const base::ListValue* args);
 #endif
@@ -150,7 +150,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                        int64_t size,
                        const std::u16string& fail_message);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Callback method which forwards promotion state to the page.
   void SetPromotionState(VersionUpdater::PromotionState state);
 #endif

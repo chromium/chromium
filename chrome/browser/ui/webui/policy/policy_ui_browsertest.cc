@@ -512,13 +512,13 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
         it.key(), std::string(), std::string(), nullptr, false));
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Add policies found in the Policy Precedence table.
   for (auto* policy : policy::metapolicy::kPrecedence) {
     expected_policies.push_back(PopulateExpectedPolicy(
         policy, std::string(), std::string(), nullptr, false));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
@@ -601,20 +601,20 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
           kUnknownPolicyWithDots, expected_values[kUnknownPolicyWithDots],
           "Platform", values.Get(kUnknownPolicyWithDots), true));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Add policies found in the Policy Precedence table.
   for (auto* policy : policy::metapolicy::kPrecedence) {
     expected_policies.push_back(PopulateExpectedPolicy(
         policy, std::string(), std::string(), values.Get(policy), false));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
   VerifyPolicies(expected_policies);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class PolicyPrecedenceUITest
     : public PolicyUITest,
       public ::testing::WithParamInterface<std::tuple<
@@ -701,7 +701,7 @@ INSTANTIATE_TEST_SUITE_P(PolicyPrecedenceUITestInstance,
                          testing::Combine(testing::Values(false, true),
                                           testing::Values(false, true),
                                           testing::Values(false, true)));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(https://crbug.com/1027135) Add tests to verify extension policies are
 // exported correctly.
@@ -835,13 +835,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
         it.key(), std::string(), std::string(), nullptr, false));
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Add policies found in the precedence policy table.
   for (auto* policy : policy::metapolicy::kPrecedence) {
     expected_chrome_policies.push_back(PopulateExpectedPolicy(
         policy, std::string(), std::string(), nullptr, false));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Add extension policy to expected policy list.
   std::vector<std::vector<std::string>> expected_policies =

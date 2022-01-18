@@ -42,7 +42,7 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/crashpad.h"
 #endif
 
@@ -189,11 +189,11 @@ void CrashesDOMHandler::UpdateUI() {
 #endif
 
   bool using_crashpad = false;
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   using_crashpad = true;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // ChromeOS uses crash_sender instead of Crashpad for uploads even when
   // Crashpad is enabled for dump generation.
   using_crashpad = crash_reporter::IsCrashpadEnabled();

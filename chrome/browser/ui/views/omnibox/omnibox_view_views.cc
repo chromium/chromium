@@ -546,7 +546,7 @@ void OmniboxViewViews::OnInputMethodChanged() {
 #if BUILDFLAG(IS_WIN)
   // Update the input type with the input method on Windows for CJK.
   SetTextInputType(GetPreferredTextInputType());
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 ui::TextInputType OmniboxViewViews::GetPreferredTextInputType() const {
@@ -563,7 +563,7 @@ ui::TextInputType OmniboxViewViews::GetPreferredTextInputType() const {
     if (input_method && input_method->IsInputLocaleCJK())
       return ui::TEXT_INPUT_TYPE_SEARCH;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   return ui::TEXT_INPUT_TYPE_URL;
 }
 

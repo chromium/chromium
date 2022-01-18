@@ -72,7 +72,7 @@ NavigateParams NavigateParamsForShareTarget(
   NavigateParams nav_params(browser, share_target.action,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   std::vector<std::string> names;
   std::vector<std::string> values;
   std::vector<bool> is_value_file_uris;
@@ -203,7 +203,7 @@ NavigateParams NavigateParamsForShareTarget(
   // TODO(crbug.com/1153194): Support Web Share Target on Windows.
   // TODO(crbug.com/1153195): Support Web Share Target on Mac.
   NOTIMPLEMENTED();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return nav_params;
 }

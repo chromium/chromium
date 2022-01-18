@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/flags/flags_ui_handler.h"
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -50,7 +51,7 @@ void FlagsUIHandler::RegisterMessages() {
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsUIHandler::HandleResetAllFlags,
                           base::Unretained(this)));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kCrosUrlFlagsRedirect,
       base::BindRepeating(&FlagsUIHandler::HandleCrosUrlFlagsRedirect,
@@ -113,7 +114,7 @@ void FlagsUIHandler::SendExperimentalFeatures() {
 #endif
   results.SetBoolean(flags_ui::kShowSystemFlagsLink, showSystemFlagsLink);
 
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   version_info::Channel channel = chrome::GetChannel();
   results.SetBoolean(
       flags_ui::kShowBetaChannelPromotion,
@@ -201,7 +202,7 @@ void FlagsUIHandler::HandleResetAllFlags(const base::ListValue* args) {
   about_flags::ResetAllFlags(flags_storage_.get());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void FlagsUIHandler::HandleCrosUrlFlagsRedirect(const base::ListValue* args) {
   about_flags::CrosUrlFlagsRedirect();
 }

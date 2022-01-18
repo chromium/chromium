@@ -51,12 +51,12 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
 #import "skia/ext/skia_utils_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <shellapi.h>
@@ -83,7 +83,7 @@ void AutoAcceptDialogCallback(
 }  // namespace
 
 SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::FilePath icon_path =
       shortcut_path.AppendASCII("Contents/Resources/app.icns");
   base::ScopedCFTypeRef<CFDictionaryRef> empty_dict(
@@ -98,7 +98,7 @@ SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
   SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
   return bitmap.getColor(0, 0);
 #else
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SHFILEINFO file_info = {0};
   if (SHGetFileInfo(shortcut_path.value().c_str(), FILE_ATTRIBUTE_NORMAL,
                     &file_info, sizeof(file_info),

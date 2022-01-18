@@ -230,7 +230,7 @@ bool IsValidChromeSigninReason(const GURL& url) {
       // Used by the profile picker.
       return true;
     case signin_metrics::Reason::kFetchLstOnly:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // Used by the Google Credential Provider for Windows.
       return true;
 #else

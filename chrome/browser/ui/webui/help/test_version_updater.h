@@ -27,7 +27,7 @@ class TestVersionUpdater : public VersionUpdater {
   void SetReturnedStatus(Status status) { status_ = status; }
 
 // VersionUpdater implementation:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PromoteUpdater() const override {}
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)

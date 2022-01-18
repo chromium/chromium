@@ -429,7 +429,7 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
     authority_url = auth_info.challenger.GetURL();
   } else {
     *authority = url_formatter::FormatUrlForSecurityDisplay(request_url);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Android concatenates with a space rather than displaying on two separate
     // lines, so it needs some surrounding text.
     *authority =

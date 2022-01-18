@@ -47,7 +47,7 @@ bool EnableSuspiciousExtensionsBubble() {
 }
 
 bool EnableSettingsApiBubble() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return true;
 #else
   return g_override_for_testing ==
@@ -56,7 +56,7 @@ bool EnableSettingsApiBubble() {
 }
 
 bool EnableProxyOverrideBubble() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return true;
 #else
   return g_override_for_testing ==
@@ -76,7 +76,7 @@ bool EnableDevModeBubble() {
   if (command_line->HasSwitch(switches::kEnableAutomation))
     return false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (chrome::GetChannel() >= version_info::Channel::BETA)
     return true;
 #endif

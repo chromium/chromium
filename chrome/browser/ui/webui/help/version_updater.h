@@ -93,7 +93,7 @@ class VersionUpdater {
   virtual void CheckForUpdate(StatusCallback status_callback,
                               PromoteCallback promote_callback) = 0;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Make updates available for all users.
   virtual void PromoteUpdater() const = 0;
 #endif

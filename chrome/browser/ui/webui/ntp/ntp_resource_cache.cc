@@ -59,7 +59,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif
 

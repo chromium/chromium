@@ -116,7 +116,7 @@ TEST_F(SerialChooserControllerTest, PortsAddedAndRemoved) {
   port->token = base::UnguessableToken::Create();
   port->display_name = "Test Port 1";
   port->path = base::FilePath(FILE_PATH_LITERAL("/dev/ttyS0"));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This path will be ignored and not generate additional chooser entries or
   // be displayed in the device name.
   port->alternate_path = base::FilePath(FILE_PATH_LITERAL("/dev/alternateS0"));
