@@ -60,7 +60,7 @@ void DelayedTaskHandleDelegate::WillRunTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsValid());
   // The task must be removed from the heap before running it.
-  DCHECK(heap_handle_.IsValid());
+  DCHECK(!heap_handle_.IsValid());
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
