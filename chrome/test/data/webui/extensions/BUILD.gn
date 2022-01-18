@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -44,8 +45,6 @@ ts_library("build_ts") {
     "item_list_test.js",
     "item_test.js",
     "keyboard_shortcuts_test.js",
-    "kiosk_mode_manager_unit_test.js",
-    "kiosk_mode_test.js",
     "load_error_test.js",
     "manager_test.js",
     "manager_test_with_activity_log_flag.js",
@@ -59,12 +58,20 @@ ts_library("build_ts") {
     "runtime_hosts_dialog_test.js",
     "shortcut_input_test.js",
     "sidebar_test.js",
-    "test_kiosk_browser_proxy.js",
-    "test_service.js",
-    "test_util.js",
-    "toggle_row_test.js",
+    "test_service.ts",
+    "test_util.ts",
+    "toggle_row_test.ts",
     "toolbar_test.js",
   ]
+
+  if (is_chromeos_ash) {
+    in_files += [
+      "kiosk_mode_manager_unit_test.js",
+      "kiosk_mode_test.js",
+      "test_kiosk_browser_proxy.ts",
+    ]
+  }
+
   deps = [ "//chrome/browser/resources/extensions:build_ts" ]
   definitions = [
     "//tools/typescript/definitions/developer_private.d.ts",

@@ -4,10 +4,12 @@
 
 import 'chrome://extensions/extensions.js';
 
+import {ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('extensions-toggle-row', function() {
-  let row;
+  let row: ExtensionsToggleRowElement;
 
   setup(function() {
     document.body.innerHTML = `
@@ -16,7 +18,7 @@ suite('extensions-toggle-row', function() {
       </extensions-toggle-row>
     `;
 
-    row = document.getElementById('row');
+    row = document.querySelector('extensions-toggle-row')!;
     assertFalse(row.checked);
   });
 

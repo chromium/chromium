@@ -27,7 +27,7 @@ export interface ToolbarDelegate {
 
   /** Updates all extensions. */
   updateAllExtensions(extensions: chrome.developerPrivate.ExtensionInfo[]):
-      Promise<string>;
+      Promise<void>;
 }
 
 interface ExtensionsToolbarElement {

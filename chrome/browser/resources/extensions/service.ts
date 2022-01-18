@@ -15,10 +15,14 @@ import {Dialog, navigation, Page} from './navigation_helper.js';
 import {PackDialogDelegate} from './pack_dialog.js';
 import {ToolbarDelegate} from './toolbar.js';
 
-export class Service implements ActivityLogDelegate, ActivityLogEventDelegate,
-                                ErrorPageDelegate, ItemDelegate,
-                                KeyboardShortcutDelegate, LoadErrorDelegate,
-                                PackDialogDelegate, ToolbarDelegate {
+export interface ServiceInterface extends ActivityLogDelegate,
+                                          ActivityLogEventDelegate,
+                                          ErrorPageDelegate, ItemDelegate,
+                                          KeyboardShortcutDelegate,
+                                          LoadErrorDelegate, PackDialogDelegate,
+                                          ToolbarDelegate {}
+
+export class Service implements ServiceInterface {
   private isDeleting_: boolean = false;
   private eventsToIgnoreOnce_: Set<string> = new Set();
 
@@ -301,8 +305,7 @@ export class Service implements ActivityLogDelegate, ActivityLogEventDelegate,
     chrome.developerPrivate.packDirectory(rootPath, keyPath, flag, callback);
   }
 
-  updateAllExtensions(extensions: chrome.developerPrivate.ExtensionInfo[]):
-      Promise<string> {
+  updateAllExtensions(extensions: chrome.developerPrivate.ExtensionInfo[]) {
     /**
      * Attempt to reload local extensions. If an extension fails to load, the
      * user is prompted to try updating the broken extension using loadUnpacked
@@ -313,7 +316,7 @@ export class Service implements ActivityLogDelegate, ActivityLogEventDelegate,
              chrome.metricsPrivate.recordUserAction('Options_UpdateExtensions');
            })
         .then(() => {
-          return new Promise((resolve, reject) => {
+          return new Promise<void>((resolve, reject) => {
             const loadLocalExtensions = async () => {
               for (const extension of extensions) {
                 if (extension.location === 'UNPACKED') {
@@ -325,7 +328,7 @@ export class Service implements ActivityLogDelegate, ActivityLogEventDelegate,
                   }
                 }
               }
-              resolve('Loaded local extensions.');
+              resolve();
             };
             loadLocalExtensions();
           });

@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {KioskAppSettings, KioskBrowserProxy, KioskSettings} from 'chrome://extensions/extensions.js';
+
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 
-/** @implements {KioskBrowserProxy} */
-export class TestKioskBrowserProxy extends TestBrowserProxy {
+export class TestKioskBrowserProxy extends TestBrowserProxy implements
+    KioskBrowserProxy {
+  private initialSettings_: KioskSettings;
+  private appSettings_: KioskAppSettings;
+
   constructor() {
     super([
       'initializeKioskAppSettings',
@@ -17,13 +22,11 @@ export class TestKioskBrowserProxy extends TestBrowserProxy {
       'setDisableBailoutShortcut',
     ]);
 
-    /** @private {!KioskSettings} */
     this.initialSettings_ = {
       kioskEnabled: true,
       autoLaunchEnabled: false,
     };
 
-    /** @private {!KioskAppSettings} */
     this.appSettings_ = {
       apps: [],
       disableBailout: false,
@@ -31,50 +34,41 @@ export class TestKioskBrowserProxy extends TestBrowserProxy {
     };
   }
 
-  /** @param {!KioskAppSettings} */
-  setAppSettings(settings) {
+  setAppSettings(settings: KioskAppSettings) {
     this.appSettings_ = settings;
   }
 
-  /** @param {!KioskSettings} */
-  setInitialSettings(settings) {
+  setInitialSettings(settings: KioskSettings) {
     this.initialSettings_ = settings;
   }
 
-  /** @override */
   initializeKioskAppSettings() {
     this.methodCalled('initializeKioskAppSettings');
     return Promise.resolve(this.initialSettings_);
   }
 
-  /** @override */
   getKioskAppSettings() {
     this.methodCalled('getKioskAppSettings');
     return Promise.resolve(this.appSettings_);
   }
 
-  /** @override */
-  addKioskApp(appId) {
+  addKioskApp(appId: string) {
     this.methodCalled('addKioskApp', appId);
   }
 
-  /** @override */
-  disableKioskAutoLaunch(appId) {
+  disableKioskAutoLaunch(appId: string) {
     this.methodCalled('disableKioskAutoLaunch', appId);
   }
 
-  /** @override */
-  enableKioskAutoLaunch(appId) {
+  enableKioskAutoLaunch(appId: string) {
     this.methodCalled('enableKioskAutoLaunch', appId);
   }
 
-  /** @override */
-  removeKioskApp(appId) {
+  removeKioskApp(appId: string) {
     this.methodCalled('removeKioskApp', appId);
   }
 
-  /** @override */
-  setDisableBailoutShortcut(disableBailout) {
+  setDisableBailoutShortcut(disableBailout: boolean) {
     this.methodCalled('setDisableBailoutShortcut', disableBailout);
   }
 }

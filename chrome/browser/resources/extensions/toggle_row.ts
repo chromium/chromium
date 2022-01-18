@@ -88,5 +88,11 @@ export class ExtensionsToggleRowElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-toggle-row': ExtensionsToggleRowElement;
+  }
+}
+
 customElements.define(
     ExtensionsToggleRowElement.is, ExtensionsToggleRowElement);
