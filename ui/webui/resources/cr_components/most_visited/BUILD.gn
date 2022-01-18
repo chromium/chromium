@@ -49,11 +49,6 @@ generate_grd("build_grdp") {
   grd_prefix = "cr_components_most_visited"
   out_grd = "$target_gen_dir/resources.grdp"
 
-  # Manually include the the pre-JS modules Mojo file because NTP still uses it,
-  # even though it is not used by most_visited.ts
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = [ "most_visited.mojom-lite.js" ]
-
   deps = [
     ":build_ts",
     ":mojom_webui_js",
