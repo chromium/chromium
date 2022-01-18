@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FullscreenOnFileURL) {
   GURL file_url(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kEmptyFile)));
-  AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
   GetFullscreenController()->EnterFullscreenModeForTab(
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
   GURL file_url(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kEmptyFile)));
-  AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
   EnterActiveTabFullscreen();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
   GURL file_url(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kEmptyFile)));
-  AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
   EnterActiveTabFullscreen();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/false));
   ASSERT_TRUE(GetExclusiveAccessManager()

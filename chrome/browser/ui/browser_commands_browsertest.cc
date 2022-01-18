@@ -50,8 +50,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabs) {
   constexpr int kTabCount = 3;
   std::vector<ReloadObserver> watcher_vec(kTabCount);
   for (int i = 0; i < kTabCount; i++) {
-    AddTabAtIndexToBrowser(browser(), i + 1, GURL(kUrl),
-                           ui::PAGE_TRANSITION_LINK, false);
+    ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), i + 1, GURL(kUrl),
+                                       ui::PAGE_TRANSITION_LINK, false));
     content::WebContents* tab =
         browser()->tab_strip_model()->GetWebContentsAt(i + 1);
     watcher_vec[i].SetWebContents(tab);
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveActiveTabToNewWindow) {
 
   // Should be disabled with 1 tab.
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW));
-  AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK));
   // Two tabs is enough for it to be meaningful to pop one out.
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW));
 
@@ -175,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   GURL url2("chrome://about");
   GURL url3("chrome://terms");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK);
-  AddTabAtIndex(2, url3, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK));
+  ASSERT_TRUE(AddTabAtIndex(2, url3, ui::PAGE_TRANSITION_LINK));
   // Select the first tab.
   browser()->tab_strip_model()->ToggleSelectionAt(0);
   // First and third (since it's active) should be selected

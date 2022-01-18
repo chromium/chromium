@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
@@ -2619,7 +2619,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CanDuplicateTab) {
       base::FilePath(kTitle1File)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
 
   int active_index = browser()->tab_strip_model()->active_index();
   EXPECT_EQ(0, active_index);

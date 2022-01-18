@@ -137,7 +137,8 @@ void FullscreenKeyboardBrowserTestBase::StartFullscreenLockPage() {
   ASSERT_EQ(0, GetActiveTabIndex());
   ASSERT_EQ(1U, GetBrowserCount());
   // Add a second tab for counting and focus purposes.
-  AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
   ASSERT_EQ(2, GetTabCount());
   ASSERT_EQ(1U, GetBrowserCount());
 
