@@ -5394,6 +5394,7 @@
         'additional_compile_targets': [
           'rust_build_tests',
         ],
+        'mixins': [ 'marshmallow' ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           # Currently `build_rust_unit_tests` is false on Android (because
