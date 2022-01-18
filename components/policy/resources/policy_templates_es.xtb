@@ -3099,7 +3099,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 
       Si no se asigna ningún valor a esta política, no se aplicará la selección automática en ningún sitio web.</translation>
 <translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
-<translation id="4617338332148204752">Saltarla comprobación de metaetiquetas en <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="4617338332148204752">Saltarla comprobación de etiquetas meta en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="4624417808625504735">Impedir que JavaScript use JIT en estos sitios</translation>
 <translation id="4625915093043961294">Configurar lista de admisión de instalación de extensiones</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido mostrados</translation>
@@ -6231,11 +6231,11 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
           Ten en cuenta que el límite superior real del tamaño del portapapeles se basa en el tamaño máximo del mensaje del canal de datos webRTC, y esta política no lo controla.</translation>
 <translation id="8294750666104911727">Normalmente, las páginas con X-UA-Compatible establecido en chrome=1 se mostrarán en <ph name="PRODUCT_FRAME_NAME" />, independientemente de la política ChromeFrameRendererSettings.
 
-          Si habilitas esta opción, las páginas no se escanearán para buscar metaetiquetas.
+          Si habilitas esta opción, las páginas no se escanearán para buscar etiquetas meta.
 
-          Si inhabilitas esta opción, las páginas se escanearán para buscar metaetiquetas.
+          Si inhabilitas esta opción, las páginas se escanearán para buscar etiquetas meta.
 
-          Si no se establece esta política, las páginas se escanearán para buscar metaetiquetas.</translation>
+          Si no se establece esta política, las páginas se escanearán para buscar etiquetas meta.</translation>
 <translation id="8294904880343779205">Determina si se puede eliminar el historial de trabajos de impresión.
 
       Los trabajos de impresión almacenados de forma local se pueden eliminar usando la aplicación de gestión de impresión o eliminando el historial de navegación del usuario.
