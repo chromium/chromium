@@ -9111,9 +9111,9 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
         CompositorFrameTransitionDirective::Effect::kCoverLeft);
 
     root_sink_->SubmitCompositorFrame(local_surface_id, std::move(frame));
-    auto* surface = root_sink_->GetLastCreatedSurfaceForTesting();
-    ASSERT_TRUE(surface);
-    surface->GetSurfaceSavedFrameStorage()->CompleteForTesting();
+    root_sink_->GetSurfaceAnimationManagerForTesting()
+        ->GetSurfaceSavedFrameStorageForTesting()
+        ->CompleteForTesting();
   }
   AggregateFrame(surface_id);
 

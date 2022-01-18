@@ -28,7 +28,6 @@
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_dependency_deadline.h"
-#include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -272,8 +271,6 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   std::unique_ptr<gfx::DelegatedInkMetadata> TakeDelegatedInkMetadata();
 
-  SurfaceSavedFrameStorage* GetSurfaceSavedFrameStorage();
-
   base::WeakPtr<Surface> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
   // Always placed the given |copy_request| on the root render pass.
@@ -397,8 +394,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   bool is_latency_info_taken_ = false;
 
   const raw_ptr<SurfaceAllocationGroup> allocation_group_;
-
-  SurfaceSavedFrameStorage surface_saved_frame_storage_{this};
 
   bool has_damage_from_interpolated_frame_ = false;
 

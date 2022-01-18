@@ -235,6 +235,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   bool IsEvicted(const LocalSurfaceId& local_surface_id) const;
 
+  SurfaceAnimationManager* GetSurfaceAnimationManagerForTesting();
+
  private:
   friend class CompositorFrameSinkSupportTest;
   friend class DisplayTest;

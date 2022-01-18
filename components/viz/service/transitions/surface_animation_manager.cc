@@ -292,6 +292,22 @@ std::unique_ptr<gfx::AnimationCurve> CreateTransformCurve(
 
 }  // namespace
 
+class SurfaceAnimationManager::StorageWithSurface {
+ public:
+  StorageWithSurface(SurfaceSavedFrameStorage* storage, Surface* surface)
+      : storage_(storage) {
+    DCHECK(!storage_->has_active_surface());
+    storage_->set_active_surface(surface);
+  }
+
+  ~StorageWithSurface() { storage_->set_active_surface(nullptr); }
+
+  SurfaceSavedFrameStorage* operator->() { return storage_; }
+
+ private:
+  raw_ptr<SurfaceSavedFrameStorage> storage_;
+};
+
 SurfaceAnimationManager::SurfaceAnimationManager(
     SharedBitmapManager* shared_bitmap_manager)
     : animation_slowdown_factor_(
@@ -307,8 +323,9 @@ void SurfaceAnimationManager::SetDirectiveFinishedCallback(
 
 bool SurfaceAnimationManager::ProcessTransitionDirectives(
     const std::vector<CompositorFrameTransitionDirective>& directives,
-    SurfaceSavedFrameStorage* storage) {
+    Surface* active_surface) {
   bool started_animation = false;
+  StorageWithSurface storage(&surface_saved_frame_storage_, active_surface);
   for (auto& directive : directives) {
     // Don't process directives with sequence ids smaller than or equal to the
     // last seen one. It is possible that we call this with the same frame
@@ -347,7 +364,7 @@ bool SurfaceAnimationManager::ProcessTransitionDirectives(
 
 bool SurfaceAnimationManager::ProcessSaveDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+    StorageWithSurface& storage) {
   // We need to be in the idle state in order to save.
   if (state_ != State::kIdle)
     return false;
@@ -357,7 +374,7 @@ bool SurfaceAnimationManager::ProcessSaveDirective(
 
 bool SurfaceAnimationManager::ProcessAnimateDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+    StorageWithSurface& storage) {
   // We can only begin an animate if we are currently idle.
   if (state_ != State::kIdle)
     return false;
@@ -395,7 +412,7 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
 
 bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+    StorageWithSurface& storage) {
   // We can only begin an animate if we are currently idle. The renderer sends
   // this in response to a notification of the capture completing successfully.
   if (state_ != State::kIdle)
@@ -418,7 +435,7 @@ bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
 
 bool SurfaceAnimationManager::ProcessReleaseDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+    StorageWithSurface& storage) {
   if (state_ != State::kAnimatingRenderer)
     return false;
 
@@ -1258,6 +1275,11 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
   }
 
   surface->SetInterpolatedFrame(std::move(resolved_frame));
+}
+
+SurfaceSavedFrameStorage*
+SurfaceAnimationManager::GetSurfaceSavedFrameStorageForTesting() {
+  return &surface_saved_frame_storage_;
 }
 
 base::TimeDelta SurfaceAnimationManager::ApplySlowdownFactor(

@@ -203,7 +203,7 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   if (!transition_directives.empty()) {
     bool started_animation =
         surface_animation_manager_.ProcessTransitionDirectives(
-            transition_directives, surface->GetSurfaceSavedFrameStorage());
+            transition_directives, surface);
 
     // If we started an animation, then we must need a begin frame for the code
     // below to work properly.
@@ -1188,6 +1188,11 @@ bool CompositorFrameSinkSupport::IsEvicted(
              last_evicted_local_surface_id_.embed_token() &&
          local_surface_id.parent_sequence_number() <=
              last_evicted_local_surface_id_.parent_sequence_number();
+}
+
+SurfaceAnimationManager*
+CompositorFrameSinkSupport::GetSurfaceAnimationManagerForTesting() {
+  return &surface_animation_manager_;
 }
 
 void CompositorFrameSinkSupport::DestroySelf() {

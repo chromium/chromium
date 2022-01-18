@@ -801,8 +801,4 @@ std::unique_ptr<gfx::DelegatedInkMetadata> Surface::TakeDelegatedInkMetadata() {
   return active_frame_data_->TakeDelegatedInkMetadata();
 }
 
-SurfaceSavedFrameStorage* Surface::GetSurfaceSavedFrameStorage() {
-  return &surface_saved_frame_storage_;
-}
-
 }  // namespace viz
