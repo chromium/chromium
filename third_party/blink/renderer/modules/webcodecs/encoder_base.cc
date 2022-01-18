@@ -110,8 +110,7 @@ void EncoderBase<Traits>::configure(const ConfigType* config,
 
   Request* request = MakeGarbageCollected<Request>();
   request->reset_count = reset_count_;
-  if (media_encoder_ && active_config_ &&
-      state_.AsEnum() == V8CodecState::Enum::kConfigured &&
+  if (active_config_ && state_.AsEnum() == V8CodecState::Enum::kConfigured &&
       CanReconfigure(*active_config_, *parsed_config)) {
     request->type = Request::Type::kReconfigure;
   } else {
