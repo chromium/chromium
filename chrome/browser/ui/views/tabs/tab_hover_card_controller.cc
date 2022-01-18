@@ -218,11 +218,11 @@ void TabHoverCardController::UpdateHoverCard(
   // then when the fade timer elapses we won't incorrectly try to fade in on the
   // wrong tab.
   if (target_tab_ != tab) {
+    delayed_show_timer_.Stop();
     target_tab_observation_.Reset();
     if (tab)
       target_tab_observation_.Observe(tab);
     target_tab_ = tab;
-    delayed_show_timer_.Stop();
   }
 
   // If there's nothing to attach to then there's no point in creating a card.
@@ -320,6 +320,10 @@ void TabHoverCardController::UpdateOrShowCard(
         base::BindOnce(&TabHoverCardController::ShowHoverCard,
                        base::Unretained(this), true, tab));
   } else {
+    // Just in case, cancel the timer. This shouldn't cancel a delayed capture
+    // since delayed capture only happens when the hover card already exists,
+    // and this code is only invoked if there is no hover card yet.
+    delayed_show_timer_.Stop();
     DCHECK_EQ(target_tab_, tab);
     ShowHoverCard(is_initial, tab);
   }
@@ -373,6 +377,7 @@ void TabHoverCardController::HideHoverCard() {
 
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
+    delayed_show_timer_.Stop();
     hover_card_observation_.Reset();
     event_sniffer_.reset();
     slide_progressed_subscription_ = base::CallbackListSubscription();

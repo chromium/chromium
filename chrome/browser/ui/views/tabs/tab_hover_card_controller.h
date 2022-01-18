@@ -116,8 +116,6 @@ class TabHoverCardController : public views::ViewObserver,
   // the mouse reenters within a given amount of time.
   base::TimeTicks last_mouse_exit_timestamp_;
 
-  base::OneShotTimer delayed_show_timer_;
-
   raw_ptr<Tab> target_tab_ = nullptr;
   const raw_ptr<TabStrip> tab_strip_;
   raw_ptr<TabHoverCardBubbleView> hover_card_ = nullptr;
@@ -144,6 +142,9 @@ class TabHoverCardController : public views::ViewObserver,
   base::CallbackListSubscription fade_complete_subscription_;
   base::CallbackListSubscription slide_progressed_subscription_;
   base::CallbackListSubscription slide_complete_subscription_;
+
+  // Ensure that this timer is destroyed before anything else is cleaned up.
+  base::OneShotTimer delayed_show_timer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_CONTROLLER_H_

@@ -895,6 +895,7 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
           controller_.get(),
           base::BindRepeating(&TabStrip::tabs_view_model,
                               base::Unretained(this)))),
+      hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
       drag_context_(std::make_unique<TabDragContextImpl>(this)) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
@@ -1850,11 +1851,8 @@ void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
     update_type = HoverCardUpdateType::kAnimating;
   }
 
-  if (!hover_card_controller_) {
-    if (!tab)
-      return;
-    hover_card_controller_ = std::make_unique<TabHoverCardController>(this);
-  }
+  if (!hover_card_controller_)
+    return;
 
   hover_card_controller_->UpdateHoverCard(tab, update_type);
 }
