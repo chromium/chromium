@@ -189,7 +189,7 @@ static bool ShouldIgnoreListItem(Node* node) {
       IsA<HTMLOListElement>(*parent)) {
     AtomicString role = AccessibleNode::GetPropertyOrARIAAttribute(
         parent, AOMStringProperty::kRole);
-    if (!role.IsEmpty() && role != "list")
+    if (!role.IsEmpty() && role != "list" && role != "directory")
       return true;
   }
   return false;
