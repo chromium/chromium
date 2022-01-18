@@ -136,7 +136,7 @@ export class GalleryButton implements ResultSaver {
     this.coverPhoto.classList.toggle('draggable', cover?.draggable ?? false);
     this.coverPhoto.src = cover?.url ?? '';
 
-    if (cover !== null) {
+    if (file !== null) {
       ChromeHelper.getInstance().monitorFileDeletion(file.name, () => {
         this.checkCover();
       });

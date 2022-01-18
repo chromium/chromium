@@ -126,7 +126,7 @@ export async function initialize(): Promise<void> {
  * @return Promise for the result.
  */
 export async function saveBlob(
-    blob: Blob, name: string): Promise<FileAccessEntry|null> {
+    blob: Blob, name: string): Promise<FileAccessEntry> {
   const file = await cameraDir.createFile(name);
   assert(file !== null);
 
