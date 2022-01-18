@@ -16,7 +16,7 @@
       <ph name="URL">$1<ex>maps.google.com</ex></ph> wants to see text and images copied to the clipboard
     </message>
     <message name="IDS_NFC_INFOBAR_TEXT" desc="Text requesting permission for a site to use NFC">
-      <ph name="URL">$1<ex>google.com</ex></ph> wants to send and receive info when you tap your phone on an NFC device
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to see and change information on NFC devices that you tap with your phone
     </message>
     <message name="IDS_VR_INFOBAR_TEXT" desc="Text requesting permission for a site to use VR">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to use your virtual reality device and data

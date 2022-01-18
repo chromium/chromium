@@ -429,10 +429,10 @@
   <!-- NFC -->
 
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NFC_ASK" desc="Summary text explaining that sites need to ask for permission before using NFC and that it is the recommended setting.">
-    Ask before allowing sites to send and receive info when you tap NFC devices (recommended)
+    Ask before allowing sites to see and change information on NFC devices (recommended)
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NFC_BLOCKED" desc="Summary text explaining that sites are blocked from using NFC.">
-    Block sites from sending and receiving info when you tap NFC devices
+    Block sites from seeing and changing information on NFC devices
   </message>
   <message name="IDS_ANDROID_NFC_OFF_GLOBALLY" desc="The message to show when NFC has been turned off globally in Android. Contains a link to the settings menu to enable NFC.">
     NFC is off for this device. Turn it on in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
