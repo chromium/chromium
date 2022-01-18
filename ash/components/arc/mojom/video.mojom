@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module arc.mojom;
 
@@ -60,7 +60,7 @@ interface VideoAcceleratorFactory {
            protected_buffer_manager);
 
   // Create a new |video_decoder| instance.
-  [MinVersion=8]
+  [MinVersion=9]
   CreateVideoDecoder@4(
       pending_receiver<VideoDecoder> video_decoder);
 
