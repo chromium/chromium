@@ -6330,7 +6330,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     }
     if (cached_values_only ? cached_is_hidden_via_style : IsHiddenViaStyle())
       string_builder = string_builder + " isHiddenViaCSS";
-    if (GetNode() && GetNode()->IsInert())
+    if (cached_values_only ? cached_is_inert_ : IsInert())
       string_builder = string_builder + " isInert";
     if (IsMissingParent())
       string_builder = string_builder + " isMissingParent";
