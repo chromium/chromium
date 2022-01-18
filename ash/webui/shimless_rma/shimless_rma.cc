@@ -76,6 +76,7 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"backButtonLabel", IDS_SHIMLESS_RMA_BACK_BUTTON},
       {"nextButtonLabel", IDS_SHIMLESS_RMA_NEXT_BUTTON},
       {"skipButtonLabel", IDS_SHIMLESS_RMA_SKIP_BUTTON},
+      {"okButtonLabel", IDS_SHIMLESS_RMA_OK_BUTTON},
       // Landing page
       {"welcomeTitleText", IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE},
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},
@@ -85,6 +86,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"validatedComponentsFailText",
        IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL},
       {"getStartedButtonLabel", IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL},
+      {"unqualifiedComponentsTitle",
+       IDS_SHIMLESS_RMA_UNQUALIFIED_COMPONENTS_TITLE},
       // Network connect page
       {"connectNetworkTitleText", IDS_SHIMLESS_RMA_CONNECT_PAGE_TITLE},
       {"connectNetworkDescriptionText",

@@ -17,10 +17,17 @@
         icon="[[getVerificationIcon_(isCompliant_)]]"
         hidden$="[[verificationInProgress_]]" class="small-icon">
       </iron-icon>
-      [[verificationMessage_]]
-    </div>
-    <div hidden$="[[verificationInProgress_]]">
-      <p id="errorMessage" hidden="[[isCompliant_]]">[[errorMessage_]]</p>
+      <span hidden$="[[!verificationInProgress_]]">
+        [[i18n('validatingComponentsText')]]
+      </span>
+      <span hidden$="[[verificationInProgress_]]">
+        <span hidden$="[[!isCompliant_]]">
+          [[i18n('validatedComponentsSuccessText')]]
+        </span>
+        <span inner-h-t-m-l="[[verificationFailedMessage_]]"
+            hidden$="[[isCompliant_]]">
+        </span>
+      </span>
     </div>
   </div>
   <div slot="body">
@@ -29,3 +36,14 @@
     </iron-icon>
   </div>
 </base-page>
+
+<cr-dialog id="unqualifiedComponentsDialog" on-cancel="closeDialog_"
+    ignore-popstate>
+  <div slot="title">[[i18n('unqualifiedComponentsTitle')]]</div>
+  <div slot="body" id="dialogBody">[[componentsList_]]</div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="closeDialog_">
+      [[i18n('okButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -2128,6 +2128,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_SKIP_BUTTON" desc="Default text for the button used to skip to the next step of RMA finalization.">
         Skip
       </message>
+      <message name="IDS_SHIMLESS_RMA_OK_BUTTON" desc="Default text for OK button used to acknowledge and close dialogs.">
+        OK
+      </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">
         Chromebook repair
@@ -2142,10 +2145,13 @@ Try tapping the mic to ask me anything.
         Components are installed correctly.
       </message>
       <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL" translateable="false" desc="Validation check found that device components are NOT approved for this device.">
-        Components could not be validated. If you are certain you are using qualified components updating Chrome OS may resolve this issue.
+        <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> found. To make sure all qualified components are identified, update your ChromeOS to the latest version.
       </message>
       <message name="IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL" desc="The label for the button to start the RMA process.">
         Get started
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UNQUALIFIED_COMPONENTS_TITLE" desc="The title for the dialog showing the list of components unqualfiied by Chrome OS.">
+        Unqualified components
       </message>
       <!-- Network connect page -->
       <message name="IDS_SHIMLESS_RMA_CONNECT_PAGE_TITLE" desc="Title for the connect to wifi page.">
