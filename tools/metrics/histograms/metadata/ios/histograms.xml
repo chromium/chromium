@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.CaptivePortal.SecureConnectionFailed"
+    enum="CaptivePortalStatus" expires_after="2022-06-10">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    The result of a captive portal check triggered by a failed secure
+    connection. Logged once per failed secure connection.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
     expires_after="2022-09-24">
   <owner>ajuma@chromium.org</owner>
