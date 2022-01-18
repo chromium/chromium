@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://eladalon1983.github.io/region-capture/
-// TODO(crbug.com/1247761): Link to more official spec once published.
+// https://w3c.github.io/mediacapture-region/
 [
     Exposed = Window,
     RuntimeEnabled = RegionCapture
