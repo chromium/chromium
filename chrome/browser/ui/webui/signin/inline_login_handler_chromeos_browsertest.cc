@@ -56,6 +56,7 @@ namespace {
 constexpr char kEmailKey[] = "email";
 constexpr char kPasswordKey[] = "password";
 constexpr char kGaiaIdKey[] = "gaiaId";
+constexpr char kIsAvailableInArcKey[] = "isAvailableInArc";
 constexpr char kSecondaryAccount1Email[] = "secondary1@example.com";
 constexpr char kSecondaryAccountOAuthCode[] = "fake_oauth_code";
 constexpr char kSecondaryAccountRefreshToken[] = "fake_refresh_token";
@@ -102,6 +103,7 @@ base::Value GetCompleteLoginArgs(const std::string& email) {
   dict.SetKey(kEmailKey, base::Value(email));
   dict.SetKey(kPasswordKey, base::Value("fake password"));
   dict.SetKey(kGaiaIdKey, base::Value(signin::GetTestGaiaIdForEmail(email)));
+  dict.SetKey(kIsAvailableInArcKey, base::Value(true));
   return dict;
 }
 

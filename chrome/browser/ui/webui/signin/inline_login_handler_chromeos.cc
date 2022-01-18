@@ -251,11 +251,14 @@ void InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin(
   bool is_new_account = !base::Contains(
       accounts, params.gaia_id,
       [](const account_manager::Account& account) { return account.key.id(); });
-  // TODO(crbug.com/1260909): Set `is_available_in_arc` to the value chosen by
-  // the user.
+  bool is_available_in_arc = params.is_available_in_arc;
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (profile->IsChild())
+    is_available_in_arc = true;
+
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
       std::make_unique<SigninHelper::ArcHelper>(
-          /*is_available_in_arc=*/true, /*is_account_addition=*/is_new_account,
+          is_available_in_arc, /*is_account_addition=*/is_new_account,
           ash::AccountAppsAvailabilityFactory::GetForProfile(
               Profile::FromWebUI(web_ui())));
   CreateSigninHelper(params, std::move(arc_helper));

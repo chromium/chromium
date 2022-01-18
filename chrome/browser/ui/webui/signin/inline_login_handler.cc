@@ -202,6 +202,8 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
 
   params.choose_what_to_sync =
       dict.FindBoolKey("chooseWhatToSync").value_or(false);
+  params.is_available_in_arc =
+      dict.FindBoolKey("isAvailableInArc").value_or(false);
 
   CompleteLogin(params);
 }
