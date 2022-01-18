@@ -23,24 +23,6 @@ using testing::ElementsAre;
 
 double kEps = 1.0e-5;
 
-class FakeExpert : public FtrlExpert {
- public:
-  void SetNextScores(const std::vector<double>& scores) {
-    next_scores_ = scores;
-  }
-
-  ~FakeExpert() override = default;
-
-  std::vector<double> Score(const std::vector<std::string>& items) override {
-    return next_scores_;
-  }
-
-  void Train(const std::string& item) override {}
-
- private:
-  std::vector<double> next_scores_;
-};
-
 }  // namespace
 
 class FtrlOptimizerTest : public testing::Test {
@@ -49,10 +31,15 @@ class FtrlOptimizerTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
-  FtrlOptimizer::Params TestingParams() {
+  FtrlOptimizer::Proto GetProto() {
+    return FtrlOptimizer::Proto(GetPath(), base::Seconds(0));
+  }
+
+  FtrlOptimizer::Params TestingParams(size_t num_experts) {
     FtrlOptimizer::Params params;
     params.alpha = 1.0;
     params.gamma = 0.1;
+    params.num_experts = num_experts;
     return params;
   }
 
@@ -92,63 +79,36 @@ class FtrlOptimizerTest : public testing::Test {
 
 // Instantiate and call some methods.
 TEST_F(FtrlOptimizerTest, SmokeTest) {
-  std::vector<std::unique_ptr<FtrlExpert>> experts;
-  auto expert = std::make_unique<FakeExpert>();
-  auto* expert_ptr = expert.get();
-  experts.push_back(std::move(expert));
-  expert_ptr->SetNextScores({0.5});
-  FtrlOptimizer ftrl(GetPath(), TestingParams(), std::move(experts));
-  ftrl.Score({"abcd"});
+  FtrlOptimizer ftrl(GetProto(), TestingParams(/*num_experts=*/2u));
+  ftrl.Score({"abcd"}, {{0.1}, {0.2}});
   ftrl.Train("abcd");
   Wait();
-  ftrl.Score({"abcd"});
+  ftrl.Score({"abcd"}, {{0.1}, {0.2}});
   ftrl.Train("abcd");
 }
 
 // Given some weights and scores, check we calculate the weighted average
 // correctly.
 TEST_F(FtrlOptimizerTest, Score) {
-  std::vector<std::unique_ptr<FtrlExpert>> experts;
-  auto expert_one = std::make_unique<FakeExpert>();
-  auto expert_two = std::make_unique<FakeExpert>();
-  auto* expert_one_ptr = expert_one.get();
-  auto* expert_two_ptr = expert_two.get();
-  experts.push_back(std::move(expert_one));
-  experts.push_back(std::move(expert_two));
-
-  expert_one_ptr->SetNextScores({0.1, 0.2});
-  expert_two_ptr->SetNextScores({0.3, 0.4});
-
   WriteWeightsToDisk({0.3, 0.7});
-  FtrlOptimizer ftrl(GetPath(), TestingParams(), std::move(experts));
+  FtrlOptimizer ftrl(GetProto(), TestingParams(/*num_experts=*/2u));
   Wait();
 
   // Expected scores are:
   // 0.1*0.3 + 0.3*0.7 == 0.24
   // 0.2*0.3 + 0.4*0.7 == 0.34
-  EXPECT_THAT(ftrl.Score({"a", "b"}),
+  EXPECT_THAT(ftrl.Score({"a", "b"}, {{0.1, 0.2}, {0.3, 0.4}}),
               ElementsAre(DoubleEq(0.24), DoubleEq(0.34)));
 }
 
 // Check that two experts, one that predicts correctly and one incorrectly, get
 // the right score adjustments after training.
 TEST_F(FtrlOptimizerTest, Train) {
-  std::vector<std::unique_ptr<FtrlExpert>> experts;
-  auto expert_one = std::make_unique<FakeExpert>();
-  auto expert_two = std::make_unique<FakeExpert>();
-  auto* expert_one_ptr = expert_one.get();
-  auto* expert_two_ptr = expert_two.get();
-  experts.push_back(std::move(expert_one));
-  experts.push_back(std::move(expert_two));
-
-  expert_one_ptr->SetNextScores({0.2, 0.1});
-  expert_two_ptr->SetNextScores({0.1, 0.2});
-
   WriteWeightsToDisk({0.5, 0.5});
-  FtrlOptimizer ftrl(GetPath(), TestingParams(), std::move(experts));
+  FtrlOptimizer ftrl(GetProto(), TestingParams(/*num_experts=*/2u));
   Wait();
 
-  ftrl.Score({"a", "b"});
+  ftrl.Score({"a", "b"}, {{0.2, 0.1}, {0.1, 0.2}});
   ftrl.Train("a");
   Wait();
 

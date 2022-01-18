@@ -15,41 +15,28 @@
 
 namespace app_list {
 
-// Represents a single expert in the FTRL optimizer.
-class FtrlExpert {
- public:
-  FtrlExpert() {}
-  virtual ~FtrlExpert() {}
-
-  FtrlExpert(const FtrlExpert&) = delete;
-  FtrlExpert& operator=(const FtrlExpert&) = delete;
-
-  virtual std::vector<double> Score(const std::vector<std::string>& items) = 0;
-  virtual void Train(const std::string& item) = 0;
-};
-
 // A class implementing the follow-the-regularized-leader optimization
 // algorithm.
 //
 // ALGORITHM
 // =========
 //
-// This is an ensemble model over experts E[i], keeping a weight for each W[i].
+// This is an ensemble model over experts, keeping a weight for each W[i].
 // The Score method takes a vector of items, and requests a score from each
 // expert. The final score for an item is simply a weighted average:
 //
-// Score(item):
-//   return sum(W[i] * E[i].Score(item))
+// Score(item, expert_scores):
+//   return sum(W[i] * expert_scores[i])
 //
 // After the user clicks an item, the weights are then updated to reflect the
 // accuracy of each expert, like so:
 //
 // Train(item):
 //   for expert i:
-//     if E[i] did not rank item in its last scores:
+//     if expert i did not rank item in its last scores:
 //       loss = 1
 //     else
-//       loss = (rank of item in E[i]'s last scores) / scores.size
+//       loss = (rank of item in expert i's last scores) / scores.size
 //
 //     w[i] = gamma/num_experts + (1-gamma) exp(-alpha * loss) * w[i]
 //
@@ -69,22 +56,25 @@ class FtrlOptimizer {
   // All user-settable parameters of the FTRL optimizer. The defaults should be
   // customized as-needed.
   struct Params {
-    // How long to wait until writing any updates to disk.
-    base::TimeDelta write_delay = base::Seconds(5);
     // TODO(crbug.com/1199206): These need tweaking.
     double alpha = 0.1;
     double gamma = 0.1;
+    size_t num_experts = 0;
   };
 
-  FtrlOptimizer(const base::FilePath& path,
-                const Params& params,
-                std::vector<std::unique_ptr<FtrlExpert>>&& experts);
+  using Proto = PersistentProto<FtrlOptimizerProto>;
+
+  FtrlOptimizer(FtrlOptimizer::Proto, const Params& params);
   ~FtrlOptimizer();
 
   FtrlOptimizer(const FtrlOptimizer&) = delete;
   FtrlOptimizer& operator=(const FtrlOptimizer&) = delete;
 
-  std::vector<double> Score(const std::vector<std::string>& items);
+  // Score the given |items| using the given |scores| from experts. The outer
+  // vector of |scores| must be Params.num_experts long, with inner vectors the
+  // same length as |items|.
+  std::vector<double> Score(std::vector<std::string>&& items,
+                            std::vector<std::vector<double>>&& expert_scores);
 
   void Train(const std::string& item);
 
@@ -94,8 +84,6 @@ class FtrlOptimizer {
   void OnProtoRead(ReadStatus status);
 
   Params params_;
-
-  std::vector<std::unique_ptr<FtrlExpert>> experts_;
 
   // The items most recently passed to |Score|.
   std::vector<std::string> last_items_;

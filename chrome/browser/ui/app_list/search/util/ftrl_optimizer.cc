@@ -33,15 +33,12 @@ void Normalize(google::protobuf::RepeatedField<double>& values) {
 
 }  // namespace
 
-FtrlOptimizer::FtrlOptimizer(const base::FilePath& path,
-                             const Params& params,
-                             std::vector<std::unique_ptr<FtrlExpert>>&& experts)
-    : params_(params),
-      experts_(std::move(experts)),
-      proto_(path, params.write_delay) {
+FtrlOptimizer::FtrlOptimizer(FtrlOptimizer::Proto proto, const Params& params)
+    : params_(params), proto_(std::move(proto)) {
   DCHECK_GT(params.alpha, 0.0);
   DCHECK_GE(params.gamma, 0.0);
   DCHECK_LE(params.gamma, 1.0);
+  DCHECK_GT(params.num_experts, 0u);
 
   proto_.RegisterOnRead(
       base::BindOnce(&FtrlOptimizer::OnProtoRead, weak_factory_.GetWeakPtr()));
@@ -51,35 +48,32 @@ FtrlOptimizer::FtrlOptimizer(const base::FilePath& path,
 FtrlOptimizer::~FtrlOptimizer() {}
 
 std::vector<double> FtrlOptimizer::Score(
-    const std::vector<std::string>& items) {
+    std::vector<std::string>&& items,
+    std::vector<std::vector<double>>&& expert_scores) {
   size_t num_items = items.size();
-  size_t num_experts = experts_.size();
+  size_t num_experts = params_.num_experts;
 
   std::vector<double> result(num_items, 0.0);
   if (!proto_.initialized())
     return result;
 
   const auto& weights = proto_->weights();
-  DCHECK_EQ(proto_->weights_size(), num_experts);
-  last_expert_scores_.clear();
+  DCHECK_EQ(expert_scores.size(), num_experts);
+  DCHECK_EQ(weights.size(), num_experts);
   for (size_t i = 0; i < num_experts; ++i) {
-    const auto& scores = experts_[i]->Score(items);
-    DCHECK_EQ(scores.size(), num_items);
+    const auto& scores_i = expert_scores[i];
+    DCHECK_EQ(scores_i.size(), num_items);
     for (size_t j = 0; j < num_items; ++j)
-      result[j] += weights[i] * scores[j];
-    last_expert_scores_.push_back(scores);
+      result[j] += weights[i] * scores_i[j];
   }
 
-  last_items_ = items;
+  last_expert_scores_ = std::move(expert_scores);
+  last_items_ = std::move(items);
 
   return result;
 }
 
 void FtrlOptimizer::Train(const std::string& item) {
-  // Train each constituent expert.
-  for (auto& expert : experts_)
-    expert->Train(item);
-
   // If |last_items_| is empty, experts had no chance at prediction and we
   // should early exit. This could happen if |proto_| finishes initializing
   // after Score but before Train.
@@ -103,8 +97,12 @@ void FtrlOptimizer::Train(const std::string& item) {
 }
 
 double FtrlOptimizer::Loss(size_t expert, const std::string& item) {
-  DCHECK(!last_items_.empty());
-  DCHECK_LT(expert, last_expert_scores_.size());
+  size_t num_experts = params_.num_experts;
+  size_t num_items = last_items_.size();
+
+  DCHECK_GT(num_items, 0u);
+  DCHECK_EQ(last_expert_scores_.size(), num_experts);
+  DCHECK_LT(expert, num_experts);
 
   // Find the score of the launched item.
   auto& scores = last_expert_scores_[expert];
@@ -130,11 +128,11 @@ double FtrlOptimizer::Loss(size_t expert, const std::string& item) {
 
 void FtrlOptimizer::OnProtoRead(ReadStatus status) {
   if (!proto_->has_version() || proto_->version() != kVersion ||
-      experts_.size() != proto_->weights_size()) {
+      params_.num_experts != proto_->weights_size()) {
     proto_.Purge();
     proto_->set_version(kVersion);
-    for (size_t i = 0; i < experts_.size(); ++i)
-      proto_->add_weights(1.0 / experts_.size());
+    for (size_t i = 0; i < params_.num_experts; ++i)
+      proto_->add_weights(1.0 / params_.num_experts);
   }
   DCHECK_LE(std::abs(Total(proto_->weights()) - 1.0), 1.0e-5);
 }

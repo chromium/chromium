@@ -13,7 +13,7 @@
 
 namespace app_list {
 
-// Interface for all kinds of rankers. These are ultiamtely owned and called by
+// Interface for all kinds of rankers. These are ultimately owned and called by
 // SearchController.
 class Ranker {
  public:
