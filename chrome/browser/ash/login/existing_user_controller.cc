@@ -447,6 +447,8 @@ void ExistingUserController::UpdateLoginDisplay(
       user_manager::UserManager::Get();
   // By default disable offline login from the error screen.
   ErrorScreen::AllowOfflineLogin(false /* allowed */);
+  // Counts regular device users that can log in.
+  int regular_users_counter = 0;
   for (auto* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
@@ -459,6 +461,7 @@ void ExistingUserController::UpdateLoginDisplay(
         user->GetType() == user_manager::USER_TYPE_CHILD ||
         user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
       ErrorScreen::AllowOfflineLogin(true /* allowed */);
+      regular_users_counter++;
     }
     const bool meets_allowlist_requirements =
         !user->HasGaiaAccount() ||
@@ -466,6 +469,10 @@ void ExistingUserController::UpdateLoginDisplay(
     if (meets_allowlist_requirements && user->using_saml())
       saml_users_for_password_sync.push_back(user);
   }
+
+  // Records total number of users on the login screen.
+  base::UmaHistogramCounts100("Login.NumberOfUsersOnLoginScreen",
+                              regular_users_counter);
 
   auto login_users = ExtractLoginUsers(users);
 

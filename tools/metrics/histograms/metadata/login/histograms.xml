@@ -118,6 +118,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Login.NumberOfUsersOnLoginScreen" units="units"
+    expires_after="M105">
+  <owner>mslus@chromium.org</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Records the number of users the login screen was initialized with. It is
+    emitted on processing the user list before displaying the screen. The count
+    includes all Regular, Child and Active Directory users.
+  </summary>
+</histogram>
+
 <histogram name="Login.OfflineLoginWithHiddenUserPods"
     enum="ChromeOSHiddenUserPodsOfflineLogin" expires_after="M105">
   <owner>mslus@chromium.org</owner>
