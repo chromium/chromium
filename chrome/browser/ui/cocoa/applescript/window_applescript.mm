@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
@@ -137,6 +138,14 @@
     AppleScript::SetError(AppleScript::errInvalidTabIndex);
 }
 
+- (NSString*)givenName {
+  return base::SysUTF8ToNSString(_browser->user_title());
+}
+
+- (void)setGivenName:(NSString*)name {
+  _browser->SetWindowUserTitle(base::SysNSStringToUTF8(name));
+}
+
 - (NSString*)mode {
   Profile* profile = _browser->profile();
   if (profile->IsOffTheRecord())
@@ -255,7 +264,7 @@
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString*)key {
-  [[self nativeHandle] setValue:(id)value forKey:key];
+  [[self nativeHandle] setValue:value forKey:key];
 }
 
 - (void)handlesCloseScriptCommand:(NSCloseCommand*)command {

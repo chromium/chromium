@@ -32,6 +32,11 @@
       <element description="The tabs contained within the window." type="tab">
         <cocoa key="tabs"/>
       </element>
+      <!-- "given name" is the user title as set by Window: Name Window... -->
+      <property name="given name" code="GNam" description="The given name of the window." type="text">
+        <cocoa key="givenName"/>
+      </property>
+      <!-- "name" is an alias for "title" -->
       <property name="name" code="pnam" description="The full title of the window." type="text" access="r">
         <cocoa key="title"/>
       </property>
