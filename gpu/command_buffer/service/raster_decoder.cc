@@ -61,6 +61,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/wrapped_sk_image.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/rgba_to_yuva.h"
@@ -821,12 +822,22 @@ class RasterDecoderImpl final : public RasterDecoder,
     bool sync_cpu = gpu::ShouldVulkanSyncCpuForSkiaSubmit(
         shared_context_state_->vk_context_provider());
     if (signal_semaphores.empty()) {
-      if (surface)
+      if (surface) {
         surface->flush();
-      else
+      } else {
         gr_context()->flush();
-      if (sync_cpu)
+      }
+
+      // If DrDc is enabled, submit the gr_context() to ensure correct ordering
+      // of vulkan commands between raster and display compositor.
+      // TODO(vikassoni): This submit could be happening more often than
+      // intended resulting in perf penalty. Explore ways to reduce it by
+      // trying to issue submit only once per draw call for both gpu main and
+      // drdc thread gr_context. Also add metric to see how often submits are
+      // happening per frame.
+      if (sync_cpu || is_drdc_enabled_) {
         gr_context()->submit(sync_cpu);
+      }
       return;
     }
 
@@ -985,6 +996,8 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   const bool is_raw_draw_enabled_;
 
+  const bool is_drdc_enabled_;
+
   raw_ptr<gl::GLApi> api_ = nullptr;
 
   base::WeakPtrFactory<DecoderContext> weak_ptr_factory_{this};
@@ -1101,7 +1114,8 @@ RasterDecoderImpl::RasterDecoderImpl(
           this,
           gpu_preferences_.disable_oopr_debug_crash_dump)),
       is_privileged_(is_privileged),
-      is_raw_draw_enabled_(features::IsUsingRawDraw()) {
+      is_raw_draw_enabled_(features::IsUsingRawDraw()),
+      is_drdc_enabled_(features::IsDrDcEnabled()) {
   DCHECK(shared_context_state_);
   shared_context_state_->AddContextLostObserver(this);
 }

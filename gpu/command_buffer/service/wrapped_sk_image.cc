@@ -9,6 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -26,6 +29,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
@@ -112,7 +116,8 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
                  SkAlphaType alpha_type,
                  uint32_t usage,
                  size_t estimated_size,
-                 scoped_refptr<SharedContextState> context_state)
+                 scoped_refptr<SharedContextState> context_state,
+                 const bool thread_safe)
       : ClearTrackingSharedImageBacking(mailbox,
                                         format,
                                         size,
@@ -121,24 +126,60 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
                                         alpha_type,
                                         usage,
                                         estimated_size,
-                                        false /* is_thread_safe */),
+                                        thread_safe),
         context_state_(std::move(context_state)) {
     DCHECK(!!context_state_);
+
+    // If the backing is meant to be thread safe, then grab the task runner to
+    // destroy the object later on same thread on which it was created on. Note
+    // that SkSurface and GrBackendTexture are not thread safe and hence should
+    // be destroyed on same thread on which it was created on.
+    if (is_thread_safe()) {
+      // If backing is thread safe, then ensure that we have a task runner to
+      // destroy backing on correct thread. Webview doesn't have a task runner
+      // but it uses and shares this backing on a single thread (on render
+      // passes for display compositor) and DrDc is disabled on webview. Hence
+      // using is_thread_safe() to grab task_runner is enough to ensure
+      // correctness.
+      DCHECK(base::ThreadTaskRunnerHandle::IsSet());
+      task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    }
   }
 
   WrappedSkImage(const WrappedSkImage&) = delete;
   WrappedSkImage& operator=(const WrappedSkImage&) = delete;
 
   ~WrappedSkImage() override {
-    context_state_->MakeCurrent(nullptr);
-    promise_texture_.reset();
-    context_state_->EraseCachedSkSurface(this);
+    auto destroy_resources = [](scoped_refptr<SharedContextState> context_state,
+                                sk_sp<SkPromiseImageTexture> promise_texture,
+                                GrBackendTexture backend_texture) {
+      DCHECK(promise_texture);
+      context_state->MakeCurrent(nullptr);
+      context_state->EraseCachedSkSurface(promise_texture.get());
+      promise_texture.reset();
 
-    if (backend_texture_.isValid())
-      DeleteGrBackendTexture(context_state_.get(), &backend_texture_);
+      if (backend_texture.isValid())
+        DeleteGrBackendTexture(context_state.get(), &backend_texture);
 
-    if (!context_state_->context_lost())
-      context_state_->set_need_context_state_reset(true);
+      if (!context_state->context_lost())
+        context_state->set_need_context_state_reset(true);
+    };
+
+    // Since the representation from this backing can be created on either gpu
+    // main or drdc thread, the last representation ref and hence the backing
+    // could be destroyed in any thread irrespective of the thread it was
+    // created on. Hence we need to ensure that the resources are destroyed on
+    // the thread they were created on.
+    if (task_runner_ && !task_runner_->BelongsToCurrentThread()) {
+      auto destruction_cb =
+          base::BindPostTask(task_runner_, base::BindOnce(destroy_resources));
+      std::move(destruction_cb)
+          .Run(std::move(context_state_), std::move(promise_texture_),
+               std::move(backend_texture_));
+    } else {
+      destroy_resources(std::move(context_state_), std::move(promise_texture_),
+                        std::move(backend_texture_));
+    }
   }
 
   // SharedImageBacking implementation.
@@ -194,13 +235,23 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
         /*gpu_compositing=*/true, format());
   }
 
-  sk_sp<SkSurface> GetSkSurface(int final_msaa_count,
-                                const SkSurfaceProps& surface_props) {
+  sk_sp<SkSurface> GetSkSurface(
+      int final_msaa_count,
+      const SkSurfaceProps& surface_props,
+      scoped_refptr<SharedContextState> context_state) {
+    // This method should only be called on the same thread on which this
+    // backing is created on. Hence adding a dcheck on context_state to ensure
+    // this.
+    DCHECK_EQ(context_state_, context_state);
     if (context_state_->context_lost())
       return nullptr;
     DCHECK(context_state_->IsCurrent(nullptr));
 
-    auto surface = context_state_->GetCachedSkSurface(this);
+    // Note that we are using |promise_texture_| as a key to the cache below
+    // since it is safe to do so. |promise_texture_| is not destroyed until we
+    // remove the entry from the cache.
+    DCHECK(promise_texture_);
+    auto surface = context_state_->GetCachedSkSurface(promise_texture_.get());
     if (!surface || final_msaa_count != surface_msaa_count_ ||
         surface_props != surface->props()) {
       surface = SkSurface::MakeFromBackendTexture(
@@ -209,17 +260,22 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
           &surface_props);
       if (!surface) {
         LOG(ERROR) << "MakeFromBackendTexture() failed.";
-        context_state_->EraseCachedSkSurface(this);
+        context_state_->EraseCachedSkSurface(promise_texture_.get());
         return nullptr;
       }
       surface_msaa_count_ = final_msaa_count;
-      context_state_->CacheSkSurface(this, surface);
+      context_state_->CacheSkSurface(promise_texture_.get(), surface);
     }
     return surface;
   }
 
-  bool SkSurfaceUnique() {
-    return context_state_->CachedSkSurfaceIsUnique(this);
+  bool SkSurfaceUnique(scoped_refptr<SharedContextState> context_state) {
+    // This method should only be called on the same thread on which this
+    // backing is created on. Hence adding a dcheck on context_state to ensure
+    // this.
+    DCHECK_EQ(context_state_, context_state);
+    DCHECK(promise_texture_);
+    return context_state_->CachedSkSurfaceIsUnique(promise_texture_.get());
   }
 
   sk_sp<SkPromiseImageTexture> promise_texture() { return promise_texture_; }
@@ -337,6 +393,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   SharedMemoryRegionWrapper shared_memory_wrapper_;
 
   uint64_t tracing_id_ = 0;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 class WrappedSkImage::RepresentationSkia
@@ -344,8 +401,10 @@ class WrappedSkImage::RepresentationSkia
  public:
   RepresentationSkia(SharedImageManager* manager,
                      SharedImageBacking* backing,
-                     MemoryTypeTracker* tracker)
-      : SharedImageRepresentationSkia(manager, backing, tracker) {}
+                     MemoryTypeTracker* tracker,
+                     scoped_refptr<SharedContextState> context_state)
+      : SharedImageRepresentationSkia(manager, backing, tracker),
+        context_state_(std::move(context_state)) {}
 
   ~RepresentationSkia() override { DCHECK(!write_surface_); }
 
@@ -354,8 +413,8 @@ class WrappedSkImage::RepresentationSkia
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override {
-    auto surface =
-        wrapped_sk_image()->GetSkSurface(final_msaa_count, surface_props);
+    auto surface = wrapped_sk_image()->GetSkSurface(
+        final_msaa_count, surface_props, context_state_);
     if (!surface)
       return nullptr;
     int save_count = surface->getCanvas()->save();
@@ -379,7 +438,7 @@ class WrappedSkImage::RepresentationSkia
       surface.reset();
       write_surface_ = nullptr;
 
-      DCHECK(wrapped_sk_image()->SkSurfaceUnique());
+      DCHECK(wrapped_sk_image()->SkSurfaceUnique(context_state_));
     }
   }
 
@@ -403,6 +462,7 @@ class WrappedSkImage::RepresentationSkia
   }
 
   raw_ptr<SkSurface> write_surface_ = nullptr;
+  scoped_refptr<SharedContextState> context_state_;
 };
 
 class WrappedSkImage::RepresentationMemory
@@ -432,7 +492,8 @@ class WrappedSkImage::RepresentationMemory
 
 WrappedSkImageFactory::WrappedSkImageFactory(
     scoped_refptr<SharedContextState> context_state)
-    : context_state_(std::move(context_state)) {}
+    : context_state_(std::move(context_state)),
+      is_drdc_enabled_(features::IsDrDcEnabled()) {}
 
 WrappedSkImageFactory::~WrappedSkImageFactory() = default;
 
@@ -446,12 +507,22 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     bool is_thread_safe) {
-  DCHECK(!is_thread_safe);
+  // Ensure that the backing is treated as thread safe only when DrDc is enabled
+  // for vulkan context.
+  // TODO(vikassoni): Wire |is_thread_safe| flag in remaining
+  // CreateSharedImage() factory methods also. Without this flag, backing will
+  // always be considered as thread safe when DrDc is enabled for vulkan mode
+  // even though it might be used on a single thread (RenderPass for example).
+  // That should be fine for now since we do not have/use any locks in backing.
+  DCHECK(!is_thread_safe ||
+         (context_state_->GrContextIsVulkan() && is_drdc_enabled_));
   size_t estimated_size = EstimatedSize(format, size);
   auto texture = std::make_unique<WrappedSkImage>(
       base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, estimated_size,
-      context_state_);
+      context_state_,
+      /*is_thread_safe=*/is_thread_safe &&
+          context_state_->GrContextIsVulkan() && is_drdc_enabled_);
   if (!texture->Initialize())
     return nullptr;
   return texture;
@@ -470,7 +541,8 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
   auto texture = std::make_unique<WrappedSkImage>(
       base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, estimated_size,
-      context_state_);
+      context_state_, /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
+                          is_drdc_enabled_);
   if (!texture->InitializeWithData(data, /*stride=*/0))
     return nullptr;
   return texture;
@@ -518,7 +590,8 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
   auto texture = std::make_unique<WrappedSkImage>(
       base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, info.computeMinByteSize(),
-      context_state_);
+      context_state_, /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
+                          is_drdc_enabled_);
   if (!texture->InitializeWithGMB(std::move(shm_wrapper)))
     return nullptr;
 
@@ -558,7 +631,20 @@ bool WrappedSkImageFactory::IsSupported(uint32_t usage,
                                         GrContextType gr_context_type,
                                         bool* allow_legacy_mailbox,
                                         bool is_pixel_used) {
-  if (!CanUseWrappedSkImage(usage, gr_context_type) || thread_safe) {
+  // Note that this backing support thread safety only for vulkan mode because
+  // the underlying vulkan resources like vulkan images can be shared across
+  // multiple vulkan queues. Also note that this backing currently only supports
+  // thread safety for DrDc mode where both gpu main and drdc thread uses/shared
+  // a single vulkan queue to submit work and hence do not need to synchronize
+  // the reads/writes using semaphores. For this backing to support thread
+  // safety across multiple queues, we need to synchronize the reads/writes via
+  // semaphores.
+  if (thread_safe &&
+      (!is_drdc_enabled_ || gr_context_type != GrContextType::kVulkan)) {
+    return false;
+  }
+
+  if (!CanUseWrappedSkImage(usage, gr_context_type)) {
     return false;
   }
   if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
@@ -576,8 +662,8 @@ std::unique_ptr<SharedImageRepresentationSkia> WrappedSkImage::ProduceSkia(
   if (context_state_->context_lost())
     return nullptr;
 
-  DCHECK_EQ(context_state_, context_state.get());
-  return std::make_unique<RepresentationSkia>(manager, this, tracker);
+  return std::make_unique<RepresentationSkia>(manager, this, tracker,
+                                              std::move(context_state));
 }
 
 std::unique_ptr<SharedImageRepresentationMemory> WrappedSkImage::ProduceMemory(

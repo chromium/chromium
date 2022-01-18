@@ -77,6 +77,7 @@ class GPU_GLES2_EXPORT WrappedSkImageFactory
                             GrContextType gr_context_type) const;
 
   scoped_refptr<SharedContextState> context_state_;
+  const bool is_drdc_enabled_;
 };
 
 }  // namespace raster
