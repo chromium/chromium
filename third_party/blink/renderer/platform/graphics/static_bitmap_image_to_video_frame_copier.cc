@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 
+#include "base/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -84,6 +85,7 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
 
   // Try async reading if image is texture backed.
   if (image->CurrentFrameKnownToBeOpaque() || can_discard_alpha_) {
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     if (accelerated_frame_pool_enabled_) {
       if (!accelerated_frame_pool_) {
         accelerated_frame_pool_ =
@@ -110,7 +112,7 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
           };
       auto blit_done_callback =
           WTF::Bind(blit_done_lambda, weak_ptr_factory_.GetWeakPtr(),
-                    context_provider, image, std::move(callback));
+                    context_provider, image, std::move(split_callback.first));
 
       // TODO(https://crbug.com/1224279): This assumes that all
       // StaticBitmapImages are 8-bit sRGB. Expose the color space and pixel
@@ -130,7 +132,7 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
       return;
     }
     ReadYUVPixelsAsync(image, context_provider->ContextProvider(),
-                       std::move(callback));
+                       std::move(split_callback.second));
   } else {
     ReadARGBPixelsAsync(image, context_provider->ContextProvider(),
                         std::move(callback));
