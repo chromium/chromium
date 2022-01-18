@@ -14,12 +14,26 @@ namespace quick_pair {
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
  public:
-  void NotifyPoweredChanged(bool powered) {
-    device::BluetoothAdapter::NotifyAdapterPoweredChanged(powered);
-  }
+  void NotifyPoweredChanged(bool powered);
+
+  bool IsPresent() const override;
+
+  void SetBluetoothIsPresent(bool present);
+
+  device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override;
+
+  void SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+          hardware_offloading_status);
 
  private:
   ~FakeBluetoothAdapter() = default;
+
+  bool is_bluetooth_present_ = true;
+  device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+      hardware_offloading_status_ = device::BluetoothAdapter::
+          LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
 };
 
 }  // namespace quick_pair

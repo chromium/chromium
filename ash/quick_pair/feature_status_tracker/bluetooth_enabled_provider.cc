@@ -23,15 +23,32 @@ BluetoothEnabledProvider::~BluetoothEnabledProvider() = default;
 void BluetoothEnabledProvider::AdapterPoweredChanged(
     device::BluetoothAdapter* adapter,
     bool powered) {
+  if (!HasHardwareSupport()) {
+    SetEnabledAndInvokeCallback(/*is_enabled=*/false);
+    return;
+  }
+
   SetEnabledAndInvokeCallback(powered);
 }
 
 void BluetoothEnabledProvider::OnAdapterReceived(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   adapter_ = adapter;
-  adapter_observation_.Observe(adapter_.get());
 
+  if (!HasHardwareSupport()) {
+    SetEnabledAndInvokeCallback(/*is_enabled=*/false);
+    return;
+  }
+
+  adapter_observation_.Observe(adapter_.get());
   SetEnabledAndInvokeCallback(adapter_->IsPowered());
+}
+
+bool BluetoothEnabledProvider::HasHardwareSupport() {
+  return adapter_.get() && adapter_->IsPresent() &&
+         adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
+             device::BluetoothAdapter::
+                 LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
 }
 
 }  // namespace quick_pair

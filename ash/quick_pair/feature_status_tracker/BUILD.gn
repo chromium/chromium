@@ -46,6 +46,7 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_bluetooth_adapter.cc",
     "fake_bluetooth_adapter.h",
     "fake_feature_status_tracker.cc",
     "fake_feature_status_tracker.h",
