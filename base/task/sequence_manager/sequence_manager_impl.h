@@ -26,7 +26,6 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
-#include "base/task/common/task_annotator.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/enqueue_order.h"
