@@ -270,7 +270,9 @@
         <cocoa key="uniqueID"/>
       </property>
       <property name="title" code="pnam" description="The title of the folder." type="text"/>
-      <property name="index" code="indx" description="Returns the index with respect to its parent bookmark folder" type="number" access="r"/>
+      <property name="parent index" code="Pidx" description="Returns the index with respect to its parent bookmark folder" type="number" access="r">
+        <cocoa key="index"/>
+      </property>
     </class>
 
     <class name="bookmark item" code="CrBI" description="An item consists of an URL and the title of a bookmark">
@@ -280,7 +282,9 @@
       </property>
       <property name="title" code="pnam" description="The title of the bookmark item." type="text"/>
       <property name="URL" code="URL " description="The URL of the bookmark." type="text"/>
-      <property name="index" code="indx" description="Returns the index with respect to its parent bookmark folder" type="number" access="r"/>
+      <property name="parent index" code="Pidx" description="Returns the index with respect to its parent bookmark folder" type="number" access="r">
+        <cocoa key="index"/>
+      </property>
     </class>
 
     <command name="reload" code="CrSuRlod" description="Reload a tab.">
