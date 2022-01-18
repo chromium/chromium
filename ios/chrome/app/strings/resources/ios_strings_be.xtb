@@ -82,6 +82,7 @@
 <translation id="1605658421715042784">Капіраваць відарыс</translation>
 <translation id="1608337082864370066">Пошук скапіраванага відарыса</translation>
 <translation id="1612730193129642006">Паказаць сетку ўкладак</translation>
+<translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1650222530560417226">Каб пачаць збор журналаў кансолі JavaScript і памылак з усіх укладак, націсніце кнопку "Пачаць вядзенне журнала". Журналы будуць збірацца (і захоўвацца толькі ў памяці), пакуль гэта старонка не будзе закрыта або пакуль вы не націснеце "Спыніць вядзенне журнала".</translation>
 <translation id="1657011748321897393">Абагуліць не ўдалося: няма падключэння да сеткі.</translation>
@@ -94,7 +95,6 @@
 <translation id="1690731385917361335">Няма элементаў</translation>
 <translation id="1692118695553449118">Сінхранізацыя ўключана</translation>
 <translation id="1700629756560807968">Выбрана: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="1726573592754903697">Менеджар пароляў Google</translation>
 <translation id="1740468249224277719">Каб усталяваць, націсніце двойчы.</translation>
 <translation id="1752547299766512813">Захоўваць паролі</translation>
 <translation id="1753905327828125965">Часцей за ўсё наведваліся</translation>
@@ -247,6 +247,7 @@
 <translation id="3184767182050912705">Разблакіраваць, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3224641773458703735">Каб экспартаваць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
+<translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3230318355092723906">Калі сінхранізацыя выключана, вы па-ранейшаму можаце праглядаць усе свае закладкі, гісторыю, паролі і іншыя налады на гэтай прыладзе. Зробленыя вамі змяненні не будуць сінхранізавацца з вашым уліковым запісам.</translation>
 <translation id="3240426699337459095">Спасылка скапіравана</translation>
 <translation id="3244271242291266297">ММ</translation>
@@ -423,7 +424,6 @@
 <translation id="4901778704868714008">Захаваць...</translation>
 <translation id="4904877109095351937">Пазначыць як прачытанае</translation>
 <translation id="4908869848243824489">Рэкамендацыі ад Google</translation>
-<translation id="4930268273022498155">Выдаліць існуючыя даныя. Каб вярнуць іх, можна пераключыцца назад на карыстальніка <ph name="USER_EMAIL1" />.</translation>
 <translation id="4930714375720679147">Уключыць</translation>
 <translation id="4941089862236492464">Узнікла праблема з абагульваннем вашага элемента.</translation>
 <translation id="4944543191714094452">Пошук на старонцы…</translation>
@@ -505,6 +505,7 @@
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
 <translation id="5802829331520313983">Наладзіць…</translation>
 <translation id="5803566855766646066">Сапраўды адхіліць гэту новую картку?</translation>
+<translation id="5804241973901381774">Дазволы</translation>
 <translation id="5812974770859303494">Дадаць у...</translation>
 <translation id="5816228676161003208">Гэта дазваляе паскорыць пошук пры выкарыстанні голасу.</translation>
 <translation id="581659025233126501">Уключыць сінхранізацыю</translation>
@@ -570,7 +571,6 @@
 <translation id="6284652193729350524">Прапаноўваць перакласці з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Каб уключыць Бяспечны прагляд, адкрыйце старонку <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" /> і націсніце на пункт "Бяспечны прагляд".</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
-<translation id="6324528485781869530">Перакл. ул. запіс сінхранізацыі</translation>
 <translation id="6324669097367352121">Налады ўваходу</translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
 <translation id="633809752005859102">Нешта пайшло зусім не так. Мы будзем разбірацца з гэтым.</translation>

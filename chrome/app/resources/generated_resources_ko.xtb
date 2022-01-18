@@ -24,7 +24,6 @@
 <translation id="1017280919048282932">사전에 추가(&amp;A)</translation>
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에 저장된 비밀번호를 표시합니다.</translation>
-<translation id="1024304340821219537">웹사이트와 공유하는 내용</translation>
 <translation id="1026655690966755180">포트 추가</translation>
 <translation id="1026822031284433028">이미지 로드</translation>
 <translation id="1029317248976101138">확대</translation>
@@ -90,7 +89,6 @@
 <translation id="1087965115100412394">사이트에서 MIDI 기기에 연결하도록 허용하지 않음</translation>
 <translation id="1088654056000736875">Chrome이 컴퓨터에서 유해 소프트웨어를 삭제하는 중입니다...</translation>
 <translation id="1088659085457112967">읽기 모드 시작</translation>
-<translation id="1089606299949659462">검토 완료</translation>
 <translation id="1090126737595388931">실행 중인 백그라운드 앱 없음</translation>
 <translation id="1090541560108055381">페어링하기 전에 두 기기의 코드가 동일한지 확인하세요.</translation>
 <translation id="1091767800771861448">건너뛰려면 Esc 키를 누르세요(비공식 빌드만 해당).</translation>
@@ -654,7 +652,6 @@
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1644852018355792105">기기(<ph name="DEVICE" />) 블루투스 암호 입력</translation>
 <translation id="1645516838734033527">Smart Lock을 사용하려면 <ph name="DEVICE_TYPE" />의 보안 유지를 위해 휴대전화에 화면 잠금을 설정해야 합니다.</translation>
-<translation id="1646793251510634025">검색 및 탐색 최적화 설정 검토</translation>
 <translation id="1646982517418478057">이 인증서를 암호화하려면 비밀번호를 입력하세요.</translation>
 <translation id="1648528859488547844">위치 파악에 Wi‑Fi 또는 모바일 네트워크 사용</translation>
 <translation id="164936512206786300">블루투스 기기 페어링 해제</translation>
@@ -2162,7 +2159,6 @@
 <translation id="3151786313568798007">방향</translation>
 <translation id="3154429428035006212">1달 이상 오프라인 상태</translation>
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
-<translation id="3157665603750177985">시크릿 모드가 아닐 경우 사이트는 쿠키를 사용하여 사용자의 다른 사이트 내 탐색 활동을 확인하여 개인 맞춤 광고 표시 등의 작업을 할 수 있습니다.</translation>
 <translation id="3157931365184549694">복구</translation>
 <translation id="3158033540161634471">지문 설정</translation>
 <translation id="3158770568048368350">이로 인해 모바일 네트워크의 연결이 잠깐 끊어질 수 있습니다.</translation>
@@ -2266,7 +2262,6 @@
 <translation id="3289668031376215426">자동 대문자화</translation>
 <translation id="3289856944988573801">업데이트를 확인하려면 이더넷 또는 Wi-Fi를 사용하세요.</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
-<translation id="3291436823898732747">개선된 탐색: 예를 들어, 사용자가 입력을 시작하기도 전에 검색주소창에 추천 항목이 표시됩니다.</translation>
 <translation id="3293644607209440645">이 페이지 전송</translation>
 <translation id="32939749466444286">Linux 컨테이너가 시작되지 않았습니다. 다시 시도해 주세요.</translation>
 <translation id="3294437725009624529">게스트</translation>
@@ -2952,6 +2947,7 @@
 <translation id="3957844511978444971">선택한 Google 서비스 설정을 승인하려면 '동의'를 탭하세요.</translation>
 <translation id="3958088479270651626">북마크 및 설정 가져오기</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3962119236270174787">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 대응하는 표준 보호 기능입니다.</translation>
 <translation id="3963721102035795474">리더 모드</translation>
 <translation id="3964480518399667971">셀룰러 네트워크 끄기</translation>
 <translation id="3965811923470826124">다음 항목 사용</translation>
@@ -4377,7 +4373,6 @@
 <translation id="5505307013568720083">잉크 부족</translation>
 <translation id="5505794066310932198">Commander 전환</translation>
 <translation id="5507756662695126555">부인 방지</translation>
-<translation id="5507795078844206688">방문한 페이지의 URL(예: https://www.google.com)</translation>
 <translation id="5509693895992845810">다른 이름으로 저장(&amp;A)...</translation>
 <translation id="5509914365760201064">발행기관: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google에서 이미지 설명 가져오기</translation>
@@ -5617,7 +5612,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" />은(는) 루트로 실행할 수 없습니다.</translation>
 <translation id="6812841287760418429">변경사항 유지</translation>
 <translation id="6813907279658683733">전체 화면</translation>
-<translation id="6814033694018386318">Google과 공유되는 정보</translation>
 <translation id="6817174620439930047">사이트에서 시스템 전용 메시지를 사용하여 MIDI 기기에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="6818198425579322765">페이지 번역 출발어</translation>
 <translation id="6818802132960437751">내장 바이러스 보호 기능</translation>
@@ -5681,7 +5675,6 @@
 <translation id="6876469544038980967">도움이 되지 않음</translation>
 <translation id="6878422606530379992">센서가 허용됨</translation>
 <translation id="6880587130513028875">이 페이지에서 이미지가 차단되었습니다.</translation>
-<translation id="6882836635272038266">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 대응하는 표준 보호 기능입니다.</translation>
 <translation id="6883319974225028188">시스템에서 기기 구성을 저장하지 못했습니다.</translation>
 <translation id="6884474387073389421">선택한 로그인 데이터를 삭제하시겠습니까?</translation>
 <translation id="6885771755599377173">시스템 정보 미리보기</translation>
@@ -6130,13 +6123,11 @@
 <translation id="7366415735885268578">사이트 추가</translation>
 <translation id="7366909168761621528">인터넷 사용정보</translation>
 <translation id="7367714965999718019">QR 코드 생성기</translation>
-<translation id="7367758267317684635">동기화된 모든 기기에 Chrome 기록이 표시됩니다.</translation>
 <translation id="736877393389250337"><ph name="ALTERNATIVE_BROWSER_NAME" />에서 <ph name="URL" /> 페이지를 열 수 없습니다. 시스템 관리자에게 문의하세요.</translation>
 <translation id="7370592524170198497">이더넷 EAP:</translation>
 <translation id="7371490947952970241">이 기기에서 기본 위치 설정을 사용 중지하여 위치를 사용 중지할 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.</translation>
 <translation id="7371917887111892735">탭이 고정된 탭 폭으로 줄어듦</translation>
 <translation id="7374376573160927383">USB 기기 관리</translation>
-<translation id="7376543451826039186">더 빠른 탐색: 예를 들어, 현재 페이지를 기준으로 특정 추가 콘텐츠가 미리 로드됩니다.</translation>
 <translation id="7376553024552204454">이동 시 마우스 커서 강조표시</translation>
 <translation id="737728204345822099">이 사이트를 방문한 기록이 보안 키에 보관될 수 있습니다.</translation>
 <translation id="7377451353532943397">계속해서 센서 액세스 차단</translation>
@@ -6688,7 +6679,6 @@
 <translation id="7897900149154324287">이후에 이동식 기기를 분리하기 전에 파일 앱에서 이동식 기기를 꺼내야 합니다. 그렇지 않으면 데이터가 손실될 수 있습니다.</translation>
 <translation id="7898725031477653577">항상 번역</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
-<translation id="7901914889562552258">페이지 측정항목을 바탕으로 Chrome 성능 개선</translation>
 <translation id="7903290522161827520">브라우저 구성요소를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="7903345046358933331">페이지에서 응답이 없습니다. 페이지가 응답할 때까지 기다리거나 페이지를 닫으세요.</translation>
 <translation id="7903742244674067440">다음 인증기관을 식별하는 인증서가 등록되어 있습니다.</translation>
@@ -6857,7 +6847,6 @@
 <translation id="8058986560951482265">일정하지 않음</translation>
 <translation id="8059417245945632445">기기 검사(&amp;I)</translation>
 <translation id="8059456211585183827">저장할 수 있는 프린터가 없습니다.</translation>
-<translation id="8059756367095071170">기록 동기화 여부 검토</translation>
 <translation id="8061091456562007989">이전 설정으로 되돌리기</translation>
 <translation id="8061970399284390013">맞춤법 및 문법 검사</translation>
 <translation id="8061991877177392872">다른 기기의 어시스턴트에서 이미 Voice Match를 설정한 것 같습니다. 이전에 녹음된 음성을 사용하여 이 기기에서 음성 모델을 만들었습니다.</translation>
@@ -7431,7 +7420,6 @@
 <translation id="8681614230122836773">Chrome이 컴퓨터에서 유해한 소프트웨어를 발견했습니다.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" />이(가) 연결되었으며 사용 가능함</translation>
 <translation id="8683081248374354009">그룹 재설정</translation>
-<translation id="8683526617475118045">사용 설정했을 때의 이점</translation>
 <translation id="8688672835843460752">사용 가능</translation>
 <translation id="8690129572193755009">사이트에서 프로토콜 처리를 요청할 수 있음</translation>
 <translation id="8695139659682234808">설정 완료 후 자녀 보호 기능 추가</translation>
@@ -7485,7 +7473,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> 대신 <ph name="PROTOCOL" /> 링크 열기</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">페이지를 번역할 언어 선택</translation>
-<translation id="8737916108453753541">탐색 동작을 이해하기 위해 URL이 Google에 공유됩니다.</translation>
 <translation id="8740247629089392745">이 Chromebook을 <ph name="SUPERVISED_USER_NAME" />님에게 전달할 수 있습니다. 설정이 거의 끝났습니다. 기기를 살펴보세요.</translation>
 <translation id="8741944563400125534">스위치 제어 설정 가이드</translation>
 <translation id="8742998548129056176">기기 및 기기 사용 방식에 관한 일반적인 정보(배터리 수준, 시스템 및 앱 활동, 오류 등)입니다. 데이터는 Android를 개선하는 데 사용되며 일부 수집 정보는 Google 앱과 파트너(Android 개발자 등)가 앱 및 제품을 개선하는 데도 도움이 됩니다.</translation>
@@ -7723,7 +7710,6 @@
 <translation id="897525204902889653">격리 서비스</translation>
 <translation id="8975396729541388937">수신한 이메일의 링크를 클릭하여 언제든지 수신 거부할 수 있습니다.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
-<translation id="897659847306974642">동기화된 어느 기기에서나 탐색 세션을 이어서 계속할 수 있습니다.</translation>
 <translation id="8977811652087512276">잘못된 비밀번호이거나 손상된 파일입니다.</translation>
 <translation id="8978154919215542464">사용 - 모든 항목 동기화</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" />에서</translation>

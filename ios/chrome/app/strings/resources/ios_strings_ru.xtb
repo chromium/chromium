@@ -82,6 +82,7 @@
 <translation id="1605658421715042784">Копировать изображение</translation>
 <translation id="1608337082864370066">Поиск по скопированному изображению</translation>
 <translation id="1612730193129642006">Показать сетку таблицы</translation>
+<translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1650222530560417226">Чтобы фиксировать журналы консоли JavaScript и ошибки на всех вкладках, нажмите кнопку "Начать запись журнала". Журналы будут записываться и храниться в памяти, пока вы не закроете страницу или не нажмете кнопку "Остановить запись журнала".</translation>
 <translation id="1657011748321897393">Не удалось опубликовать запись из-за ошибки сети.</translation>
@@ -94,7 +95,6 @@
 <translation id="1690731385917361335">Закладок нет</translation>
 <translation id="1692118695553449118">Синхронизация включена</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="1726573592754903697">Диспетчер паролей Google</translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1752547299766512813">Сохр. пароли</translation>
 <translation id="1753905327828125965">Наиболее посещаемые</translation>
@@ -247,6 +247,7 @@
 <translation id="3184767182050912705">Разблокировать с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3224641773458703735">Чтобы экспортировать пароли, настройте на устройстве код доступа.</translation>
+<translation id="3227137524299004712">Микрофон</translation>
 <translation id="3230318355092723906">Когда синхронизация отключена, на этом устройстве по-прежнему доступны закладки, история, пароли и другие настройки. Однако никакие изменения не будут сохраняться в вашем аккаунте.</translation>
 <translation id="3240426699337459095">Готово</translation>
 <translation id="3244271242291266297">ММ</translation>
@@ -423,7 +424,6 @@
 <translation id="4901778704868714008">Сохранить</translation>
 <translation id="4904877109095351937">Отметить как прочитанное</translation>
 <translation id="4908869848243824489">Рекомендации от Google</translation>
-<translation id="4930268273022498155">Удалить сохраненные данные. Чтобы снова получить к ним доступ, переключитесь на аккаунт <ph name="USER_EMAIL1" />.</translation>
 <translation id="4930714375720679147">Включить</translation>
 <translation id="4941089862236492464">Не удалось опубликовать запись.</translation>
 <translation id="4944543191714094452">Найти на странице…</translation>
@@ -505,6 +505,7 @@
 <translation id="5782227691023083829">Перевод...</translation>
 <translation id="5802829331520313983">Настроить</translation>
 <translation id="5803566855766646066">Удалить новую карту?</translation>
+<translation id="5804241973901381774">Разрешения</translation>
 <translation id="5812974770859303494">Добавить…</translation>
 <translation id="5816228676161003208">Это нужно, чтобы использовать голосовой поиск</translation>
 <translation id="581659025233126501">Включить синхронизацию</translation>
@@ -570,7 +571,6 @@
 <translation id="6284652193729350524">Предлагать перевести страницы на этом языке (<ph name="LANGUAGE" />)</translation>
 <translation id="6293101329759844770">Чтобы включить Безопасный просмотр, откройте <ph name="BEGIN_LINK" />сервисы Google<ph name="END_LINK" /> и нажмите "Безопасный просмотр".</translation>
 <translation id="6321526113093607004">Добавить в закладки</translation>
-<translation id="6324528485781869530">Смена аккаунта</translation>
 <translation id="6324669097367352121">Настройки входа</translation>
 <translation id="6337234675334993532">Шифрование</translation>
 <translation id="633809752005859102">Произошла ошибка. Мы постараемся ее устранить.</translation>

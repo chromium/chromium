@@ -82,6 +82,7 @@
 <translation id="1605658421715042784">तस्बिर प्रतिलिपि गर्नुहोस्</translation>
 <translation id="1608337082864370066">प्रतिलिपि गरिएको छविको खोजी गर्नुहोस्</translation>
 <translation id="1612730193129642006">ट्याबको ग्रिड देखाउनुहोस्</translation>
+<translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1650222530560417226">सबै ट्याबहरूबाट JavaScript कन्सोलका भावी लग तथा त्रुटिहरू सङ्कलन गर्न "लग गर्न सुरु गर्नुहोस्" नामक बटन ट्याप गर्नुहोस्। यो पृष्ठ बन्द नगरेसम्म वा "लग गर्न छाड्नुहोस्" नामक बटन ट्याप नगरेसम्म लगहरू सङ्कलन गरिने छ (र मेमोरीमा मात्र भण्डारण गरिने छ)।</translation>
 <translation id="1657011748321897393">साझेदारी असफल भयो किनभने तपाईं सञ्जालमा जडित हुनुहुँदैन।</translation>
@@ -94,7 +95,6 @@
 <translation id="1690731385917361335">कुनै वस्तुहरू छैन</translation>
 <translation id="1692118695553449118">सिंक खुला छ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> चयन गरियो</translation>
-<translation id="1726573592754903697">Google पासवर्ड म्यानेजर</translation>
 <translation id="1740468249224277719">स्थापना गर्न डबल ट्याप गर्नुहोस्।</translation>
 <translation id="1752547299766512813">पासवर्डहरू सेभ गर्नुहोस्</translation>
 <translation id="1753905327828125965">धेरै भ्रमण गरिएको</translation>
@@ -247,6 +247,7 @@
 <translation id="3184767182050912705">"<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />" प्रयोग गरेर अनलक गर्नुहोस्</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3224641773458703735">पासवर्डहरू निर्यात गर्नका लागि सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>
+<translation id="3227137524299004712">माइक्रोफोन</translation>
 <translation id="3230318355092723906">सिंक गर्ने सुविधा अफ गरिएका बेला पनि तपाईं यो डिभाइसमा आफ्ना सबै बुकमार्क, इतिहास, पासवर्ड र अन्य सेटिङ देख्न सक्नुहुन्छ। तपाईंले यी कुरा परिवर्तन गर्नुभयो भने ती परिवर्तन तपाईंको खातामा सिंक हुने छैनन्।</translation>
 <translation id="3240426699337459095">लिंक प्रतिलिपि गरियो</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -423,7 +424,6 @@
 <translation id="4901778704868714008">सेभ गर्नुहोस्...</translation>
 <translation id="4904877109095351937">पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="4908869848243824489">Google को Discover</translation>
-<translation id="4930268273022498155">विद्यमान डेटा मेट्नुहोस्। तपाईं फेरि <ph name="USER_EMAIL1" /> मा बदलेर त्यो डेटा प्राप्त गर्न सक्नुहुन्छ।</translation>
 <translation id="4930714375720679147">सक्रिय गर्नुहोस्</translation>
 <translation id="4941089862236492464">माफ गर्नुहोस्, तपाईंको वस्तु साझेदारी गर्दा समस्या भयो।</translation>
 <translation id="4944543191714094452">पृष्ठमा फेला पार्नुहोस्…</translation>
@@ -505,6 +505,7 @@
 <translation id="5782227691023083829">अनुवाद गर्दै...</translation>
 <translation id="5802829331520313983">सेटअप गर्नुहोस्…</translation>
 <translation id="5803566855766646066">तपाईंले यो नयाँ कार्ड हटाउन खोज्नुभएकै हो?</translation>
+<translation id="5804241973901381774">अनुमतिहरू</translation>
 <translation id="5812974770859303494">यहाँ हाल्नुहोस्…</translation>
 <translation id="5816228676161003208">यसले तपाईँलाई आफ्नो आवाजको प्रयोग गरी अझ छिटो खोज्न दिन्छ।</translation>
 <translation id="581659025233126501">सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
@@ -570,7 +571,6 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
 <translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
-<translation id="6324528485781869530">सिंक गरिने खाता बदल्नुहोस्</translation>
 <translation id="6324669097367352121">सेटिङहरूमा साइन इन गर्नुहोस्</translation>
 <translation id="6337234675334993532">इन्क्रिप्सन</translation>
 <translation id="633809752005859102">केही वास्तवमै गडबड भएको छ। हामी त्यसमा काम गर्नेछौ।</translation>

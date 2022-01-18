@@ -3613,9 +3613,6 @@
 <translation id="5370279767682621504">在非默认端口上启用 HTTP/0.9 支持</translation>
 <translation id="5371152055157582429">用户可以自定义“新标签页”页面背景</translation>
 <translation id="5377606826822211923">控制用户对来源不受信任的 Android 应用的使用</translation>
-<translation id="5377668121137111316">将此政策设为 True 会使屏幕键盘保持开启状态。将此政策设为 False 会使屏幕键盘保持关闭状态。
-
-      如果您设置了此政策，用户便无法更改它。如果您未设置此政策，屏幕键盘最初会处于关闭状态，但用户可随时开启它。</translation>
 <translation id="537786648513450280">控制设备对来源不受信任的 Android 应用的使用</translation>
 <translation id="5379858577608862519">此政策用于指定是否允许将端口转发到 Crostini 容器。
 
@@ -3895,13 +3892,6 @@
       如果此政策未设置，用户便可在语言设置中开启或关闭拼写检查。 </translation>
 <translation id="5655553344896004108">允许使用已弃用的 U2F Security Key API</translation>
 <translation id="5656177735561364047">启用“共享剪贴板”功能</translation>
-<translation id="5657576769650058122">如果此政策已启用，屏幕虚拟键盘（一种 Chrome 操作系统输入设备）会保持开启状态。如果此政策已停用，该键盘会保持关闭状态。
-
-      如果您设置了此政策，用户便无法更改它。（不过，他们可以开启/关闭无障碍屏幕键盘，该键盘的优先级高于虚拟键盘。请参见 VirtualKeyboardEnabled 政策。）
-
-      如果您不设置此政策，该键盘会处于关闭状态，但用户可以更改它。
-
-       注意：您也可考虑使用启发法来确定何时显示该键盘。</translation>
 <translation id="5657752663637568277">此政策旨在控制是否在打印预览对话框或设置页面内向用户显示 <ph name="CLOUD_PRINT_NAME" />弃用警告。
       如果此政策设为 True，系统会隐藏弃用警告。
       如果此政策设为 False 或未设置，系统会显示弃用警告。</translation>
@@ -4273,6 +4263,11 @@
 
       注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
 <translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
+<translation id="6130229425991722726">如果此政策设为 0（默认值），您可以访问开发者工具和 JavaScript 控制台，但无法在由企业政策安装的扩展程序中访问。如果此政策设为 1，无论在什么情境下（包括在由企业政策安装的扩展程序中），您都可以访问开发者工具和 JavaScript 控制台。如果此政策设为 2，您既无法访问开发者工具，也无法检查网站元素。
+
+      此设置亦能关闭用于打开开发者工具或 JavaScript 控制台的键盘快捷键及菜单（或上下文菜单）条目。
+
+      自 <ph name="PRODUCT_NAME" /> 99 版起，此设置还可控制“查看网页源代码”功能的入口点。如果您将此政策设为“DeveloperToolsDisallowed”（值 2），用户便无法通过键盘快捷键或上下文菜单查看源代码。若要完全阻止查看源代码，您还必须将“view-source:*”添加到 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策中。</translation>
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>

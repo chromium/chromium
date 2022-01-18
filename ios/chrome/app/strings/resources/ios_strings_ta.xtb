@@ -82,6 +82,7 @@
 <translation id="1605658421715042784">படத்தை நகலெடு</translation>
 <translation id="1608337082864370066">நகலெடுத்த படத்தைத் தேடவும்</translation>
 <translation id="1612730193129642006">தாவல் கட்டத்தைக் காட்டும் பட்டன்</translation>
+<translation id="1620510694547887537">கேமரா</translation>
 <translation id="1644574205037202324">வரலாறு</translation>
 <translation id="1650222530560417226">எதிர்காலத்தில் அனைத்து தாவல்களிலிருந்தும் JavaScript கன்சோல் பதிவுகளையும் பிழைகளையும் சேகரிக்க, “பதிவுசெய்யத் தொடங்கு” பட்டனைத் தட்டவும். இந்தப் பக்கம் மூடப்படும் வரை அல்லது “பதிவுசெய்வதை நிறுத்து” பட்டனைத் தட்டும் வரை பதிவுகள் சேகரிக்கப்படும் (அவை நினைவகத்தில் மட்டுமே சேமிக்கப்படும்).</translation>
 <translation id="1657011748321897393">நெட்வொர்க்குடன் இணைக்கப்படாததால் பகிர்தல் தோல்வியடைந்தது.</translation>
@@ -94,7 +95,6 @@
 <translation id="1690731385917361335">உருப்படிகள் இல்லை</translation>
 <translation id="1692118695553449118">ஒத்திசைவு இயக்கத்தில்</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> தேர்ந்தெடுக்கப்பட்டன</translation>
-<translation id="1726573592754903697">Google கடவுச்சொல் நிர்வாகி</translation>
 <translation id="1740468249224277719">நிறுவ, இருமுறை தட்டவும்.</translation>
 <translation id="1752547299766512813">கடவுச்சொற்களைச் சேமி</translation>
 <translation id="1753905327828125965">அதிகமாகப் பார்க்கப்பட்டவை</translation>
@@ -247,6 +247,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> மூலம் அன்லாக் செய்</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
 <translation id="3224641773458703735">கடவுச்சொற்களை ஏற்ற, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
+<translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3230318355092723906">ஒத்திசைவு முடக்கப்பட்டிருந்தாலும் இந்தச் சாதனத்திலுள்ள புக்மார்க்குகள், இதுவரை பார்த்தவை, கடவுச்சொற்கள், பிற அமைப்புகள் ஆகிய அனைத்தையும் உங்களால் பார்க்க முடியும். மாற்றங்களைச் செய்தால் அவை உங்கள் கணக்குடன் ஒத்திசைக்கப்படாது.</translation>
 <translation id="3240426699337459095">இணைப்பு நகலெடுக்கப்பட்டது</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -423,7 +424,6 @@
 <translation id="4901778704868714008">சேமி...</translation>
 <translation id="4904877109095351937">படித்ததாகக் குறி</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
-<translation id="4930268273022498155">ஏற்கனவே உள்ள தரவை நீக்கவும். மீண்டும் <ph name="USER_EMAIL1" />க்கு மாற்றுவதன் மூலம் அதை மீட்டெடுக்கலாம்.</translation>
 <translation id="4930714375720679147">இயக்கு</translation>
 <translation id="4941089862236492464">மன்னிக்கவும், உங்கள் உருப்படியைப் பகிர்வதில் ஒரு பிரச்சனை ஏற்பட்டது.</translation>
 <translation id="4944543191714094452">பக்கத்தில் கண்டறிக…</translation>
@@ -505,6 +505,7 @@
 <translation id="5782227691023083829">மொழிபெயர்க்கிறது...</translation>
 <translation id="5802829331520313983">அமை…</translation>
 <translation id="5803566855766646066">இந்தப் புதிய கார்டை நிராகரிக்க வேண்டுமா?</translation>
+<translation id="5804241973901381774">அனுமதிகள்</translation>
 <translation id="5812974770859303494">இதில் சேர்...</translation>
 <translation id="5816228676161003208">இதன் மூலம் உங்கள் குரலைப் பயன்படுத்தி வேகமாகத் தேடலாம்.</translation>
 <translation id="581659025233126501">ஒத்திசைவை இயக்கு</translation>
@@ -570,7 +571,6 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> க்கு மொழிபெயர்</translation>
 <translation id="6293101329759844770">’பாதுகாப்பு உலாவலை’ இயக்க, <ph name="BEGIN_LINK" />Google சேவைகள்<ph name="END_LINK" /> என்பதைத் திறந்து ’பாதுகாப்பு உலாவல்’ என்பதைத் தட்டவும்.</translation>
 <translation id="6321526113093607004">புக்மார்க்குகளில் சேர்</translation>
-<translation id="6324528485781869530">ஒத்திசைவுக் கணக்கை மாற்றவும்</translation>
 <translation id="6324669097367352121">உள்நுழைவு அமைப்புகள்</translation>
 <translation id="6337234675334993532">என்க்ரிப்ஷன்</translation>
 <translation id="633809752005859102">நிச்சயமாக ஏதோ தவறு ஏற்பட்டுள்ளது. அதைச் சரிசெய்வோம்.</translation>

@@ -3636,9 +3636,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="5370279767682621504">Activer la compatibilité avec HTTP 0.9 sur les ports non utilisés par défaut</translation>
 <translation id="5371152055157582429">Les utilisateurs peuvent personnaliser l'arrière-plan de la page "Nouvel onglet"</translation>
 <translation id="5377606826822211923">Contrôler l'accès par l'utilisateur aux applications Android provenant de sources non approuvées</translation>
-<translation id="5377668121137111316">Définissez cette règle sur "True" pour maintenir le clavier virtuel activé. Définissez cette règle sur "False" pour le maintenir désactivé.
-
-      Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si cette règle n'est pas définie, le clavier virtuel est désactivé par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="537786648513450280">Contrôler l'accès de l'appareil aux applications Android provenant de sources non approuvées</translation>
 <translation id="5379858577608862519">Spécifie si le transfert de port dans les conteneurs Crostini est autorisé.
 
@@ -3923,13 +3920,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle n'est pas définie, les utilisateurs peuvent activer ou désactiver le correcteur orthographique à leur guise dans les paramètres linguistiques. </translation>
 <translation id="5655553344896004108">Autoriser l'utilisation de l'API U2F Security Key obsolète</translation>
 <translation id="5656177735561364047">Activer la fonctionnalité de presse-papiers partagé</translation>
-<translation id="5657576769650058122">Si cette règle est activée, le clavier virtuel à l'écran (un périphérique d'entrée Chrome OS) reste activé. Si cette règle est désactivée, ce clavier le reste également.
-
-      Si vous la configurez, les utilisateurs ne peuvent pas la modifier. (Toutefois, ils peuvent activer ou désactiver un clavier d'accessibilité à l'écran qui prévaut sur le clavier virtuel. Pour en savoir plus, consultez la règle VirtualKeyboardEnabled.)
-
-      Si cette règle n'est pas configurée, le clavier est désactivé, mais les utilisateurs peuvent modifier ce paramètre.
-
-       Remarque : Des règles heuristiques peuvent également déterminer quand le clavier doit être affiché.</translation>
 <translation id="5657752663637568277">Cette règle détermine si les avertissements d'abandon de <ph name="CLOUD_PRINT_NAME" /> sont présentés aux utilisateurs dans la boîte de dialogue d'aperçu avant impression ou dans les pages de paramètres.
       Si cette règle est définie sur "True", les avertissements d'abandon seront masqués.
       Si cette règle est définie sur "False" ou n'est pas configurée, les avertissements d'abandon seront affichés.</translation>

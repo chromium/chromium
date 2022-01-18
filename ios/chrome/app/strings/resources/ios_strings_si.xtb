@@ -82,6 +82,7 @@
 <translation id="1605658421715042784">රූපය පිටපත් කරන්න</translation>
 <translation id="1608337082864370066">ඔබ පිටපත් කළ රූපය සොයන්න</translation>
 <translation id="1612730193129642006">පටිති ජාලකය පෙන්වන්න</translation>
+<translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
 <translation id="1650222530560417226">සියලුම පටිතිවලින් අනාගත ජාවාස්ක්‍රිප්ට් කොන්සෝල ලොග සහ දෝෂ එකතු කිරීමට "ලොග් කිරීම පටන් ගන්න" බොත්තමට තට්ටු කරන්න. මෙම පිටුව වසන තෙක් හෝ "ලොග් කිරීම නවත්වන්න" තට්ටු කරන තෙක් ලොග් කිරීම් රැස් කරනු ලැබේ (සහ මතකය තුළ පමණක් ගබඩා කරනු ලැබේ).</translation>
 <translation id="1657011748321897393">ඔබ ජාලයට සම්බන්ධ වී නැති නිසා බෙදා ගැනීම අසාර්ථක විය.</translation>
@@ -94,7 +95,6 @@
 <translation id="1690731385917361335">අයිතම නොමැත</translation>
 <translation id="1692118695553449118">සමමුහුව ක්‍රියාත්මකයි</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ක් තෝරා ගන්නා ලදි</translation>
-<translation id="1726573592754903697">Google මුරපද කළමනාකරු</translation>
 <translation id="1740468249224277719">ස්ථාපනය කිරීමට දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="1752547299766512813">මුරපද සුරකින්න</translation>
 <translation id="1753905327828125965">වැඩියෙන්ම පිවිසි</translation>
@@ -247,6 +247,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> සමගින් අගුලු හරින්න</translation>
 <translation id="3207960819495026254">පිටුසලකුණු කළ</translation>
 <translation id="3224641773458703735">මුරපද නිර්යාත කිරීමට, ඔබ ප්‍රථමයෙන් ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
+<translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
 <translation id="3230318355092723906">සමමුහුර්ත කිරීම ක්‍රියාවිරහිත විට, ඔබට තවම ඔබගේ සියලු පිටුසන්, ඉතිහාසය, මුරපද සහ වෙනත් සැකසීම් මෙම උපාංගයෙහි දැකිය හැකිය. ඔබ වෙනස් කිරීම් සිදු කළහොත්, ඒවා ඔබගේ ගිණුමට සමමුහුර්ත නොවනු ඇත.</translation>
 <translation id="3240426699337459095">සබැඳිය පිටපත් කරන ලදි</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -423,7 +424,6 @@
 <translation id="4901778704868714008">සුරකින්න...</translation>
 <translation id="4904877109095351937">කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="4908869848243824489">Google වෙතින් Discover</translation>
-<translation id="4930268273022498155">පවතින දත්ත මකන්න. ඔබට <ph name="USER_EMAIL1" /> වෙත ආපසු මාරු වීම මඟින් එය ඔබට යළි ලබා ගත හැකිය.</translation>
 <translation id="4930714375720679147">ක්‍රියාත්මක කරන්න</translation>
 <translation id="4941089862236492464">කනගාටුයි, ඔබේ අයිතමය බෙදා ගැනීමේ ගැටලුවක් විය.</translation>
 <translation id="4944543191714094452">පිටුව තුළ සොයන්න…</translation>
@@ -505,6 +505,7 @@
 <translation id="5782227691023083829">පරිවර්තනය කරමින්...</translation>
 <translation id="5802829331520313983">පිහිටුවන්න…</translation>
 <translation id="5803566855766646066">ඔබට මෙම අලුත් කාඩ්පත ඉවත ලෑ යුතු බව ඔබට තහවුරුද?</translation>
+<translation id="5804241973901381774">අවසර</translation>
 <translation id="5812974770859303494">වෙත එක් කරන්න...</translation>
 <translation id="5816228676161003208">මෙය ඔබට ඔබේ හඬ භාවිතයෙන් වේගයෙන් සෙවීමට ඉඩ දෙයි.</translation>
 <translation id="581659025233126501">සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න</translation>
@@ -570,7 +571,6 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> පරිවර්තන කිරීමට පිරිනමන්න</translation>
 <translation id="6293101329759844770">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මක කිරීමට, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> විවෘත කර සුරක්ෂිත බ්‍රවුස් කිරීම තට්ටු කරන්න.</translation>
 <translation id="6321526113093607004">පිටුසන් වෙත එක් කරන්න</translation>
-<translation id="6324528485781869530">සමමුහුර්ත ගිණුම මාරු කරන්න</translation>
 <translation id="6324669097367352121">පුරනය වීමේ සැකසීම්</translation>
 <translation id="6337234675334993532">සංකේතනය</translation>
 <translation id="633809752005859102">යම් දෙයක් සැබවින්ම වැරදී ගියේය. අපි ඒ පිළිබඳව කටයුතු කරන්නෙමු.</translation>
