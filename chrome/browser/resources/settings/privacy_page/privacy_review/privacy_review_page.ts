@@ -25,7 +25,7 @@ import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manag
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
@@ -404,8 +404,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       }
       Router.getInstance().updateRouteParams(
           new URLSearchParams('step=' + step));
-      // TODO(crbug/1215630): Programmatically put the focus to the
-      // corresponding element.
     }
   }
 
@@ -466,6 +464,16 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   private showAnySettingFragment_(): boolean {
     return this.privacyReviewStep_ !== PrivacyReviewStep.WELCOME &&
         this.privacyReviewStep_ !== PrivacyReviewStep.COMPLETION;
+  }
+
+  private onViewEnterStart_(event: Event) {
+    // The |view-enter-start| event was dispatched to the fragment that is now
+    // becoming visible. Every fragment has a |header| class element that can
+    // be focused programmatically.
+    const elementToFocus =
+        assert((event.target! as HTMLElement)
+                   .shadowRoot!.querySelector<HTMLElement>('.header'));
+    afterNextRender(this, () => elementToFocus!.focus());
   }
 }
 

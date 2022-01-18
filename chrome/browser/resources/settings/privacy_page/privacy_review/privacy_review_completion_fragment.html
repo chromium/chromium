@@ -6,11 +6,8 @@
   }
 
   .header {
-    align-items: center;
-    display: flex;
     flex: 1;
     flex-direction: column;
-    justify-content: space-between;
     padding: 36px 120px 16px 120px;
     row-gap: 8px;
     text-align: center;
@@ -26,7 +23,7 @@
     width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
   }
 </style>
-<div class="header">
+<div class="header" tabindex="-1">
   <picture>
     <source
         srcset="./images/privacy_review/completion_banner_dark.svg"

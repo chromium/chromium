@@ -56,7 +56,7 @@
   }
 </style>
 <div class="privacy-review-card">
-  <cr-view-manager id="viewManager">
+  <cr-view-manager id="viewManager" on-view-enter-start="onViewEnterStart_">
     <privacy-review-welcome-fragment id="[[privacyReviewStepEnum_.WELCOME]]"
         class="managed-fragment" on-start-button-click="onNextButtonClick_"
         slot="view">
