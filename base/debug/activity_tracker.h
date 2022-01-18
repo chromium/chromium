@@ -20,6 +20,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -29,9 +30,12 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
+
+#if DCHECK_IS_ON()
+#include "base/threading/platform_thread_ref.h"
+#endif
 
 namespace base {
 

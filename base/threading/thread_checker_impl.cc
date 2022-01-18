@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"

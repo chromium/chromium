@@ -20,6 +20,10 @@
 
 class GURL;
 
+namespace base {
+class Time;
+}
+
 namespace sync_pb {
 class HistoryDeleteDirectiveSpecifics;
 }

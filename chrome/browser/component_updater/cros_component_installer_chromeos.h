@@ -17,6 +17,10 @@
 #include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace component_updater {
 
 class ComponentUpdateService;

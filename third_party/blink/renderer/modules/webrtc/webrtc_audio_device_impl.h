@@ -13,6 +13,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_not_impl.h"

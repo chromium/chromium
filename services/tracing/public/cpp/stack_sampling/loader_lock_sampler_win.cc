@@ -4,6 +4,8 @@
 
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/native_library.h"
 #include "base/win/windows_types.h"

@@ -4,6 +4,8 @@
 
 #include "net/base/prioritized_dispatcher.h"
 
+#include <ostream>
+
 #include "base/check_op.h"
 
 namespace net {

@@ -6,6 +6,8 @@
 
 #include <wrl/implements.h>
 
+#include <ostream>
+
 #include "base/check_op.h"
 
 namespace base {

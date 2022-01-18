@@ -17,6 +17,7 @@
 
 namespace base {
 class OneShotTimer;
+class TimeDelta;
 }  // namespace base
 
 namespace net {
