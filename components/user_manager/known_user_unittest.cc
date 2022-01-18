@@ -59,6 +59,10 @@ class KnownUserTest : public testing::Test {
 
   PrefService* local_state() { return &local_state_; }
 
+  const base::Value* FindPrefs(const AccountId& account_id) {
+    return KnownUser(local_state()).FindPrefs(account_id);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -70,11 +74,7 @@ class KnownUserTest : public testing::Test {
 };
 
 TEST_F(KnownUserTest, FindPrefsNonExisting) {
-  KnownUser known_user(local_state());
-  const base::DictionaryValue* value = nullptr;
-  bool read_success = known_user.FindPrefs(kDefaultAccountId, &value);
-  EXPECT_FALSE(read_success);
-  EXPECT_FALSE(value);
+  EXPECT_FALSE(FindPrefs(kDefaultAccountId));
 }
 
 TEST_F(KnownUserTest, FindPrefsExisting) {
@@ -82,9 +82,7 @@ TEST_F(KnownUserTest, FindPrefsExisting) {
   const std::string kCustomPrefName = "custom_pref";
   known_user.SetStringPref(kDefaultAccountId, kCustomPrefName, "value");
 
-  const base::DictionaryValue* value = nullptr;
-  bool read_success = known_user.FindPrefs(kDefaultAccountId, &value);
-  EXPECT_TRUE(read_success);
+  const base::Value* value = FindPrefs(kDefaultAccountId);
   ASSERT_TRUE(value);
 
   const std::string* pref_value = value->FindStringKey(kCustomPrefName);
@@ -107,19 +105,9 @@ TEST_F(KnownUserTest, FindPrefsIgnoresEphemeralGaiaUsers) {
   known_user.SetStringPref(kAccountIdEphemeralGaia, kCustomPrefName, "value");
   known_user.SetStringPref(kAccountIdEphemeralAd, kCustomPrefName, "value");
 
-  {
-    const base::DictionaryValue* value = nullptr;
-    bool read_success = known_user.FindPrefs(kAccountIdEphemeralGaia, &value);
-    EXPECT_FALSE(read_success);
-    EXPECT_FALSE(value);
-  }
+  EXPECT_FALSE(FindPrefs(kAccountIdEphemeralGaia));
 
-  {
-    const base::DictionaryValue* value = nullptr;
-    bool read_success = known_user.FindPrefs(kAccountIdEphemeralAd, &value);
-    EXPECT_TRUE(read_success);
-    EXPECT_TRUE(value);
-  }
+  EXPECT_TRUE(FindPrefs(kAccountIdEphemeralAd));
 }
 
 TEST_F(KnownUserTest, FindPrefsMatchForUnknownAccountType) {
@@ -134,12 +122,9 @@ TEST_F(KnownUserTest, FindPrefsMatchForUnknownAccountType) {
 
   known_user.SetStringPref(kAccountIdUnknown, "some_pref", "some_value");
 
-  // Looking it up by AccountId always succeeds, no matter which AccountType is
-  // used for the lookup.
-  const base::DictionaryValue* value = nullptr;
-  EXPECT_TRUE(known_user.FindPrefs(kAccountIdUnknown, &value));
-  EXPECT_TRUE(known_user.FindPrefs(kAccountIdGaia, &value));
-  EXPECT_TRUE(known_user.FindPrefs(kAccountIdAd, &value));
+  EXPECT_TRUE(FindPrefs(kAccountIdUnknown));
+  EXPECT_TRUE(FindPrefs(kAccountIdGaia));
+  EXPECT_TRUE(FindPrefs(kAccountIdAd));
 }
 
 TEST_F(KnownUserTest, FindPrefsMatchForGaiaAccountWithEmail) {
@@ -151,35 +136,28 @@ TEST_F(KnownUserTest, FindPrefsMatchForGaiaAccountWithEmail) {
 
   known_user.SaveKnownUser(AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdA));
 
-  const base::DictionaryValue* value = nullptr;
-
   // Finding by itself should work
-  EXPECT_TRUE(known_user.FindPrefs(
-      AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdA), &value));
+  EXPECT_TRUE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdA)));
   // Finding by gaia id should also work even if the e-mail doesn't match.
-  EXPECT_TRUE(known_user.FindPrefs(
-      AccountId::FromUserEmailGaiaId(kEmailB, kGaiaIdA), &value));
+  EXPECT_TRUE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailB, kGaiaIdA)));
   // Finding by e-mail should also work even if the gaia id doesn't match.
   // TODO(https://crbug.com/1190902): This should likely be EXPECT_FALSE going
   // forward.
-  EXPECT_TRUE(known_user.FindPrefs(
-      AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdB), &value));
+  EXPECT_TRUE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdB)));
   // Finding by just gaia id without any e-mail doesn't work (because the
   // resulting AccountId is not considered valid).
-  EXPECT_FALSE(known_user.FindPrefs(AccountId::FromGaiaId(kGaiaIdA), &value));
+  EXPECT_FALSE(FindPrefs(AccountId::FromGaiaId(kGaiaIdA)));
 
   // An unrelated gaia AccountId with the same Account Type doesn't find
   // anything.
-  EXPECT_FALSE(known_user.FindPrefs(
-      AccountId::FromUserEmailGaiaId(kEmailB, kGaiaIdB), &value));
+  EXPECT_FALSE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailB, kGaiaIdB)));
 
   // Looking up an AccountId stored as gaia by an unknown-type AccountId with
   // the same e-mail address succeeds.
-  EXPECT_TRUE(known_user.FindPrefs(AccountId::FromUserEmail(kEmailA), &value));
+  EXPECT_TRUE(FindPrefs(AccountId::FromUserEmail(kEmailA)));
 
   // Looking up an AccountId stored as gaia by an AccountId with type Ad fails.
-  EXPECT_FALSE(known_user.FindPrefs(
-      AccountId::AdFromUserEmailObjGuid(kEmailA, "guid"), &value));
+  EXPECT_FALSE(FindPrefs(AccountId::AdFromUserEmailObjGuid(kEmailA, "guid")));
 }
 
 TEST_F(KnownUserTest, FindPrefsMatchForAdAccountWithEmail) {
@@ -189,33 +167,26 @@ TEST_F(KnownUserTest, FindPrefsMatchForAdAccountWithEmail) {
 
   known_user.SaveKnownUser(AccountId::AdFromUserEmailObjGuid(kEmailA, "a"));
 
-  const base::DictionaryValue* value = nullptr;
-
   // Finding by itself should work
-  EXPECT_TRUE(known_user.FindPrefs(
-      AccountId::AdFromUserEmailObjGuid(kEmailA, "a"), &value));
+  EXPECT_TRUE(FindPrefs(AccountId::AdFromUserEmailObjGuid(kEmailA, "a")));
   // Finding by guid should also work even if the e-mail doesn't match.
-  EXPECT_TRUE(known_user.FindPrefs(
-      AccountId::AdFromUserEmailObjGuid(kEmailB, "a"), &value));
+  EXPECT_TRUE(FindPrefs(AccountId::AdFromUserEmailObjGuid(kEmailB, "a")));
   // Finding by e-mail should also work even if the guid doesn't match.
-  EXPECT_TRUE(known_user.FindPrefs(
-      AccountId::AdFromUserEmailObjGuid(kEmailA, "b"), &value));
+  EXPECT_TRUE(FindPrefs(AccountId::AdFromUserEmailObjGuid(kEmailA, "b")));
   // Finding by just AD guid  without any e-mail doesn't work (because the
   // resulting AccountId is not considered valid).
-  EXPECT_FALSE(known_user.FindPrefs(AccountId::AdFromObjGuid("a"), &value));
+  EXPECT_FALSE(FindPrefs(AccountId::AdFromObjGuid("a")));
 
   // An unrelated AD AccountId with the same Account Type doesn't find
   // anything.
-  EXPECT_FALSE(known_user.FindPrefs(
-      AccountId::AdFromUserEmailObjGuid(kEmailB, "b"), &value));
+  EXPECT_FALSE(FindPrefs(AccountId::AdFromUserEmailObjGuid(kEmailB, "b")));
 
   // Looking up an AccountId stored as AD by an unknown-type AccountId with
   // the same e-mail address succeeds.
-  EXPECT_TRUE(known_user.FindPrefs(AccountId::FromUserEmail(kEmailA), &value));
+  EXPECT_TRUE(FindPrefs(AccountId::FromUserEmail(kEmailA)));
 
   // Looking up an AccountId stored as AD by an AccountId with type gaia fails.
-  EXPECT_FALSE(known_user.FindPrefs(
-      AccountId::FromUserEmailGaiaId(kEmailA, "gaia_id"), &value));
+  EXPECT_FALSE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailA, "gaia_id")));
 }
 
 TEST_F(KnownUserTest, UpdatePrefsWithoutClear) {
@@ -223,23 +194,14 @@ TEST_F(KnownUserTest, UpdatePrefsWithoutClear) {
   constexpr char kPrefName1[] = "pref1";
   constexpr char kPrefName2[] = "pref2";
 
-  {
-    base::DictionaryValue update;
-    update.SetKey(kPrefName1, base::Value("pref1_value1"));
-    known_user.UpdatePrefs(kDefaultAccountId, update, /*clear=*/false);
-  }
+  known_user.SetPath(kDefaultAccountId, kPrefName1,
+                     base::Value("pref1_value1"));
 
-  {
-    base::DictionaryValue update;
-    update.SetKey(kPrefName1, base::Value("pref1_value2"));
-    known_user.UpdatePrefs(kDefaultAccountId, update, /*clear=*/false);
-  }
+  known_user.SetPath(kDefaultAccountId, kPrefName1,
+                     base::Value("pref1_value2"));
 
-  {
-    base::DictionaryValue update;
-    update.SetKey(kPrefName2, base::Value("pref2_value1"));
-    known_user.UpdatePrefs(kDefaultAccountId, update, /*clear=*/false);
-  }
+  known_user.SetPath(kDefaultAccountId, kPrefName2,
+                     base::Value("pref2_value1"));
 
   EXPECT_EQ(absl::make_optional(std::string("pref1_value2")),
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName1));
@@ -252,17 +214,13 @@ TEST_F(KnownUserTest, UpdatePrefsWithClear) {
   constexpr char kPrefName1[] = "pref1";
   constexpr char kPrefName2[] = "pref2";
 
-  {
-    base::DictionaryValue update;
-    update.SetKey(kPrefName1, base::Value("pref1_value1"));
-    known_user.UpdatePrefs(kDefaultAccountId, update, /*clear=*/false);
-  }
+  known_user.SetPath(kDefaultAccountId, kPrefName1,
+                     base::Value("pref1_value1"));
 
-  {
-    base::DictionaryValue update;
-    update.SetKey(kPrefName2, base::Value("pref2_value1"));
-    known_user.UpdatePrefs(kDefaultAccountId, update, /*clear=*/true);
-  }
+  known_user.SetPath(kDefaultAccountId, kPrefName2,
+                     base::Value("pref2_value1"));
+
+  known_user.SetPath(kDefaultAccountId, kPrefName1, absl::nullopt);
 
   EXPECT_EQ(absl::nullopt,
             GetStringPrefValue(&known_user, kDefaultAccountId, kPrefName1));
@@ -710,7 +668,7 @@ struct PrefTypeInfoValue {
   using PrefType = base::Value;
   using PrefTypeForReading = const base::Value*;
 
-  static constexpr auto SetFunc = &KnownUser::SetPref;
+  static constexpr auto SetFunc = &KnownUser::SetPath;
   static constexpr auto GetFunc = &KnownUser::GetPref;
 
   static PrefType CreatePrefValue() { return base::Value("test"); }

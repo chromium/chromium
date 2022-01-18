@@ -20,7 +20,6 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -50,18 +49,12 @@ class USER_MANAGER_EXPORT KnownUser final {
   KnownUser(const KnownUser& other) = delete;
   KnownUser& operator=(const KnownUser& other) = delete;
 
-  // Performs a lookup of properties associated with |account_id|. If found,
-  // returns |true| and fills |out_value|. |out_value| can be NULL, if
-  // only existence check is required.
-  bool FindPrefs(const AccountId& account_id,
-                 const base::DictionaryValue** out_value);
-
-  // Updates (or creates) properties associated with |account_id| based
-  // on |values|. |clear| defines if existing properties are cleared (|true|)
-  // or if it is just a incremental update (|false|).
-  void UpdatePrefs(const AccountId& account_id,
-                   const base::DictionaryValue& values,
-                   bool clear);
+  // Updates (or creates) properties associated with |account_id|. Updates
+  // value found by |path| with |opt_value|. If |opt_value| has no value it
+  // clears the |path| in properties.
+  void SetPath(const AccountId& account_id,
+               const std::string& path,
+               absl::optional<base::Value> opt_value);
 
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
@@ -101,11 +94,6 @@ class USER_MANAGER_EXPORT KnownUser final {
   bool GetPref(const AccountId& account_id,
                const std::string& path,
                const base::Value** out_value);
-
-  // Updates user's identified by |account_id| value preference |path|.
-  void SetPref(const AccountId& account_id,
-               const std::string& path,
-               base::Value in_value);
 
   // Removes user's identified by |account_id| preference |path|.
   void RemovePref(const AccountId& account_id, const std::string& path);
@@ -255,10 +243,13 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   std::string GetPendingOnboardingScreen(const AccountId& account_id);
 
+  bool UserExists(const AccountId& account_id);
+
   // Register known user prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
+  friend class KnownUserTest;
   friend class UserManagerBase;
 
   FRIEND_TEST_ALL_PREFIXES(KnownUserTest,
@@ -266,8 +257,9 @@ class USER_MANAGER_EXPORT KnownUser final {
   FRIEND_TEST_ALL_PREFIXES(KnownUserTest, CleanObsoletePrefs);
   FRIEND_TEST_ALL_PREFIXES(KnownUserTest, MigrateOfflineSigninLimit);
 
-  // Removes |path| from account_id's known user dictionary.
-  void ClearPref(const AccountId& account_id, const std::string& path);
+  // Performs a lookup of properties associated with |account_id|. Returns
+  // nullptr if not found.
+  const base::Value* FindPrefs(const AccountId& account_id);
 
   // Removes all user preferences associated with |account_id|.
   // Not exported as code should not be calling this outside this component
@@ -289,22 +281,6 @@ class USER_MANAGER_EXPORT KnownUser final {
 // TODO(https://crbug.com/1150434): Migrate callers and remove this.
 namespace known_user {
 // Methods for storage/retrieval of per-user properties in Local State.
-
-// Performs a lookup of properties associated with |account_id|. If found,
-// returns |true| and fills |out_value|. |out_value| can be NULL, if
-// only existence check is required.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::FindPrefs
-// instead.
-bool USER_MANAGER_EXPORT FindPrefs(const AccountId& account_id,
-                                   const base::DictionaryValue** out_value);
-
-// Updates (or creates) properties associated with |account_id| based
-// on |values|. |clear| defines if existing properties are cleared (|true|)
-// or if it is just a incremental update (|false|).
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser:: instead.
-void USER_MANAGER_EXPORT UpdatePrefs(const AccountId& account_id,
-                                     const base::DictionaryValue& values,
-                                     bool clear);
 
 // Returns true if |account_id| preference by |path| does exist,
 // fills in |out_value|. Otherwise returns false.
@@ -357,12 +333,6 @@ void USER_MANAGER_EXPORT SetIntegerPref(const AccountId& account_id,
 bool USER_MANAGER_EXPORT GetPref(const AccountId& account_id,
                                  const std::string& path,
                                  const base::Value** out_value);
-
-// Updates user's identified by |account_id| value preference |path|.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::SetPref instead.
-void USER_MANAGER_EXPORT SetPref(const AccountId& account_id,
-                                 const std::string& path,
-                                 base::Value in_value);
 
 // Removes user's identified by |account_id| preference |path|.
 // TODO(https://crbug.com/1150434): Deprecated, use KnownUser::RemovePref

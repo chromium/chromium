@@ -31,6 +31,7 @@
 #include "chromeos/metrics/login_event_recorder.h"
 #include "components/account_id/account_id.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
@@ -461,19 +462,13 @@ void Remove(const base::WeakPtr<AuthAttemptState>& attempt,
 
 CryptohomeAuthenticator::CryptohomeAuthenticator(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    PrefService* local_state,
     std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
     AuthStatusConsumer* consumer)
     : Authenticator(consumer),
       task_runner_(std::move(task_runner)),
+      local_state_(local_state),
       safe_mode_delegate_(std::move(safe_mode_delegate)),
-      migrate_attempted_(false),
-      remove_attempted_(false),
-      resync_attempted_(false),
-      ephemeral_mount_attempted_(false),
-      already_reported_success_(false),
-      owner_is_verified_(false),
-      user_can_login_(false),
-      remove_user_data_on_failure_(false),
       delayed_login_failure_(AuthFailure::NONE) {}
 
 void CryptohomeAuthenticator::AuthenticateToLogin(
@@ -503,11 +498,12 @@ void CryptohomeAuthenticator::CompleteLogin(
 
   // Reset the verified flag.
   owner_is_verified_ = false;
-  if (!user_manager::known_user::FindPrefs(
-          current_state_->user_context->GetAccountId(), nullptr)) {
-    // Save logged in user into local state as early as possible.
-    user_manager::known_user::SaveKnownUser(
-        current_state_->user_context->GetAccountId());
+  if (local_state_.get()) {
+    user_manager::KnownUser known_user(local_state_);
+    if (!known_user.UserExists(current_state_->user_context->GetAccountId())) {
+      // Save logged in user into local state as early as possible.
+      known_user.SaveKnownUser(current_state_->user_context->GetAccountId());
+    }
   }
 
   StartMount(current_state_->AsWeakPtr(),

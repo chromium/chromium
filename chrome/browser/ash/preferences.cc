@@ -1041,9 +1041,10 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     if (value &&
         prefs_->IsManagedPreference(::prefs::kParentAccessCodeConfig) &&
         user_->IsChild()) {
-      user_manager::known_user::SetPref(
-          user_->GetAccountId(), ::prefs::kKnownUserParentAccessCodeConfig,
-          value->Clone());
+      user_manager::KnownUser known_user(g_browser_process->local_state());
+      known_user.SetPath(user_->GetAccountId(),
+                         ::prefs::kKnownUserParentAccessCodeConfig,
+                         value->Clone());
       parent_access::ParentAccessService::Get().LoadConfigForUser(user_);
     } else {
       user_manager::known_user::RemovePref(

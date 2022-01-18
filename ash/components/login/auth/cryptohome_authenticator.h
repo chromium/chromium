@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -22,6 +23,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AuthFailure;
+class PrefService;
 
 namespace ash {
 
@@ -98,6 +100,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) CryptohomeAuthenticator
   };
 
   CryptohomeAuthenticator(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                          PrefService* local_state,
                           std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
                           AuthStatusConsumer* consumer);
 
@@ -232,28 +235,30 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) CryptohomeAuthenticator
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  const base::raw_ptr<PrefService> local_state_;
+
   std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;
 
   std::unique_ptr<AuthAttemptState> current_state_;
-  bool migrate_attempted_;
-  bool remove_attempted_;
-  bool resync_attempted_;
-  bool ephemeral_mount_attempted_;
+  bool migrate_attempted_ = false;
+  bool remove_attempted_ = false;
+  bool resync_attempted_ = false;
+  bool ephemeral_mount_attempted_ = false;
 
   // When the user has changed their password, but gives us the old one, we will
   // be able to mount their cryptohome, but online authentication will fail.
   // This allows us to present the same behavior to the caller, regardless
   // of the order in which we receive these results.
-  bool already_reported_success_;
+  bool already_reported_success_ = false;
   base::Lock success_lock_;  // A lock around |already_reported_success_|.
 
   // Flags signaling whether the owner verification has been done and the result
   // of it.
-  bool owner_is_verified_;
-  bool user_can_login_;
+  bool owner_is_verified_ = false;
+  bool user_can_login_ = false;
 
   // Flag indicating to delete the user's cryptohome the login fails.
-  bool remove_user_data_on_failure_;
+  bool remove_user_data_on_failure_ = false;
 
   // When |remove_user_data_on_failure_| is set, we delay calling
   // consumer_->OnAuthFailure() until we removed the user cryptohome.
