@@ -99,11 +99,9 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
   // Initialization of remote tracks starts on the webrtc signaling thread and
   // finishes on the main thread.
   void InitializeRemoteAudioTrack(
-      const scoped_refptr<webrtc::AudioTrackInterface>& webrtc_audio_track,
-      ExecutionContext* execution_context);
+      const scoped_refptr<webrtc::AudioTrackInterface>& webrtc_audio_track);
   void InitializeRemoteVideoTrack(
-      const scoped_refptr<webrtc::VideoTrackInterface>& webrtc_video_track,
-      ExecutionContext* execution_context);
+      const scoped_refptr<webrtc::VideoTrackInterface>& webrtc_video_track);
   void FinalizeRemoteTrackInitializationOnMainThread();
   void EnsureTrackIsInitialized();
 
