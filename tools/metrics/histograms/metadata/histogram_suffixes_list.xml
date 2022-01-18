@@ -9601,7 +9601,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.Background.FinalSavePageResult"/>
   <affected-histogram name="OfflinePages.Background.LoadingErrorStatusCode"/>
   <affected-histogram name="OfflinePages.Background.OfflinerRequestStatus"/>
-  <affected-histogram name="OfflinePages.Background.OffliningPreviewStatus"/>
   <affected-histogram name="OfflinePages.Background.SavePageFromCCT"/>
   <affected-histogram name="OfflinePages.Background.TimeToCanceled"/>
   <affected-histogram name="OfflinePages.Background.TimeToSaved"/>

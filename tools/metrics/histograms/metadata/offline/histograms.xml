@@ -142,21 +142,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflineIndicator.ShownDuration" units="ms"
-    expires_after="2021-07-11">
-  <obsolete>
-    Removed M90. Replaced by OfflineIndicator.ShownDurationV2.
-  </obsolete>
-  <owner>curranmax@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <owner>sinansahin@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The duration the offline indicator was shown. Recorded when the offline
-    indicator hides.
-  </summary>
-</histogram>
-
 <histogram name="OfflineIndicator.ShownDurationV2" units="ms"
     expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
@@ -464,19 +449,6 @@ chromium-metrics-reviews@google.com.
   <owner>offline-dev@chromium.org</owner>
   <summary>
     Status code of background offlining (loading and saving) requests.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.OffliningPreviewStatus"
-    enum="BooleanEnabled" expires_after="2021-01-25">
-  <obsolete>
-    Removed 22 Jan 2021.
-  </obsolete>
-  <owner>petewil@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Whether any previews were selected for a page we were asked to make
-    available offline.
   </summary>
 </histogram>
 
