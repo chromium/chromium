@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 
 namespace ui {
 class WindowAndroid;
