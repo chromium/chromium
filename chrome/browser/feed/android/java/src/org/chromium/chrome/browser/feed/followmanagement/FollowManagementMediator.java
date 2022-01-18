@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFaviconFetcher;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -32,15 +33,24 @@ import java.util.List;
 class FollowManagementMediator {
     private static final String TAG = "FollowManagementMdtr";
     private ModelList mModelList;
+    private Observer mObserver;
     private Context mContext;
     private WebFeedFaviconFetcher mFaviconFetcher;
+
+    public interface Observer {
+        /** An operation failed because there is no network connection. */
+        void networkConnectionError();
+        /** An operation failed for an unknown reason. */
+        void otherOperationError();
+    }
 
     /**
      * Build a FollowManagementMediator.
      */
-    FollowManagementMediator(
-            Context context, ModelList modelList, WebFeedFaviconFetcher faviconFetcher) {
+    FollowManagementMediator(Context context, ModelList modelList, Observer observer,
+            WebFeedFaviconFetcher faviconFetcher) {
         mModelList = modelList;
+        mObserver = observer;
         mContext = context;
         mFaviconFetcher = faviconFetcher;
 
@@ -51,13 +61,13 @@ class FollowManagementMediator {
         mModelList.add(listItem);
 
         // Control flow is to refresh the feeds, then get the feed list, then display it.
-        // TODO(https://.crbug.com/1197286) Add a spinner while waiting for results.
+        // TODO(https://crbug.com/1197286) Add a spinner while waiting for results.
         WebFeedBridge.refreshFollowedWebFeeds(this::getFollowedWebFeeds);
     }
 
     // Once the list of feeds has been refreshed, get the list.
     private void getFollowedWebFeeds(boolean success) {
-        // TODO(https://.crbug.com/1197286) If this fails, show a snackbar with a failure message.
+        // TODO(https://crbug.com/1197286) If this fails, show a snackbar with a failure message.
         WebFeedBridge.getAllFollowedWebFeeds(this::fillRecyclerView);
     }
 
@@ -145,6 +155,7 @@ class FollowManagementMediator {
                     FeedUserActionType.TAPPED_FOLLOW_ON_MANAGEMENT_SURFACE);
             // The lambda will set the item as subscribed if the follow operation succeeds.
             WebFeedBridge.followFromId(id, results -> {
+                reportRequestStatus(results.requestStatus);
                 itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY,
                         results.requestStatus == SUCCESS);
                 itemModel.set(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY, true);
@@ -154,6 +165,7 @@ class FollowManagementMediator {
                     FeedUserActionType.TAPPED_UNFOLLOW_ON_MANAGEMENT_SURFACE);
             // The lambda will set the item as unsubscribed if the unfollow operation succeeds.
             WebFeedBridge.unfollow(id, results -> {
+                reportRequestStatus(results.requestStatus);
                 itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY,
                         results.requestStatus != SUCCESS);
                 itemModel.set(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY, true);
@@ -162,5 +174,13 @@ class FollowManagementMediator {
 
         itemModel.set(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY, false);
         itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY, !subscribed);
+    }
+
+    void reportRequestStatus(@WebFeedSubscriptionRequestStatus int status) {
+        if (status == WebFeedSubscriptionRequestStatus.FAILED_OFFLINE) {
+            mObserver.networkConnectionError();
+        } else if (status != WebFeedSubscriptionRequestStatus.SUCCESS) {
+            mObserver.otherOperationError();
+        }
     }
 }

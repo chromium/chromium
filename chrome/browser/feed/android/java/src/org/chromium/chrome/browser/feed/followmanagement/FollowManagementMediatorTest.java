@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed.followmanagement;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -72,6 +73,8 @@ public class FollowManagementMediatorTest {
 
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock
+    private FollowManagementMediator.Observer mObserver;
 
     TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
 
@@ -84,7 +87,7 @@ public class FollowManagementMediatorTest {
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
 
         mFollowManagementMediator =
-                new FollowManagementMediator(mActivity, mModelList, mFaviconFetcher);
+                new FollowManagementMediator(mActivity, mModelList, mObserver, mFaviconFetcher);
 
         // WebFeedBridge.refreshFollowedWebFeeds() gets called once with non-null pointer to a
         // callback.
@@ -151,6 +154,7 @@ public class FollowManagementMediatorTest {
                 new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));
 
         assertEquals("ID1 title=Title1 url=https://www.one.com/ subscribed", modelListToString());
+        verify(mObserver, times(1)).networkConnectionError();
     }
 
     @Test
@@ -191,10 +195,11 @@ public class FollowManagementMediatorTest {
 
         verify(mWebFeedBridgeJni).followWebFeedById(eq(ID1), mFollowCallbackCaptor.capture());
         mFollowCallbackCaptor.getValue().onResult(new WebFeedBridge.FollowResults(
-                WebFeedSubscriptionRequestStatus.FAILED_OFFLINE, null));
+                WebFeedSubscriptionRequestStatus.FAILED_UNKNOWN_ERROR, null));
 
         assertEquals(
                 "ID1 title=Title1 url=https://www.one.com/ not-subscribed", modelListToString());
+        verify(mObserver, times(1)).otherOperationError();
     }
 
     @Test

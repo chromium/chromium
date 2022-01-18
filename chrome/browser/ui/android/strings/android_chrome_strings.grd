@@ -3021,6 +3021,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_FOLLOW_MANAGE_WAITING_FOR_CONTENT" desc="Label this web feed source as waiting for content so the user will know to check  back later.">
         Waiting for content
       </message>
+      <message name="IDS_FEED_FOLLOW_UNKNOWN_ERROR" desc="Toast displayed when a failure occurs attempting to follow or unfollow a web feed.">
+        Something went wrong. Try again later.
+      </message>
+      <message name="IDS_FEED_FOLLOW_NO_CONNECTION_ERROR" desc="Toast displayed when there is no network connection when the user tries to follow or unfollow a web feed.">
+        No connection. Try again later.
+      </message>
       <message name="IDS_NTP_TURN_OFF_FEED" desc="Content description to turn off the feed from the feed header overflow menu.">
         Turn off
       </message>
