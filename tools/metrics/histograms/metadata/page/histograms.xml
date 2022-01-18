@@ -57,11 +57,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Window">
   <variant name="SessionWindow"/>
-  <variant name="SessionWindowByInputs">
-    <obsolete>
-      Removed in 06/2021.
-    </obsolete>
-  </variant>
 </variants>
 
 <histogram name="PageActionController.ExtensionsWithPageActions" units="units"
@@ -71,26 +66,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of Extensions that have Page Actions. Measured once per startup
     per profile.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint2" units="ms"
-    expires_after="2021-07-31">
-  <obsolete>
-    Replaced by PageLoad.PaintTiming.NavigationToLargestContentfulPaint3 in Jan
-    2021 to increase the bucket range.
-  </obsolete>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <summary>
-    Records the time from frame navigation start to FirstContentfulPaint of each
-    ad frame that receives a FirstContentfulPaint. The time could be quite
-    large, as some ads don't paint until they're scrolled into view. But the
-    metric is still useful in aggregate.
-
-    Recorded for all ad frames with non-zero bytes or cpu usage that receive a
-    FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
   </summary>
 </histogram>
 
@@ -315,25 +290,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.Ads.Memory.MissedMeasurementCount"
-    units="count" expires_after="2021-04-18">
-  <obsolete>
-    Removed 02/2021. Seen to be ~0.04 (sample mean) compared to a sample mean
-    UpdateCount of ~58.38 measured over all OSes for Dev and Canary for ending
-    date 10/28/2020 with 7-day aggregation.
-  </obsolete>
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The number of V8 per-frame memory measurements received by
-    AdsPageLoadMetricsObserver after the corresponding RenderFrameHost has
-    already been destroyed. Only recorded if the page has at least one
-    identified ad frame. Recorded in PageLoadMetrics when the page is destroyed.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Clients.Ads.Memory.UpdateCount" units="count"
     expires_after="2022-06-12">
   <owner>cammie@chromium.org</owner>
@@ -356,37 +312,6 @@ chromium-metrics-reviews@google.com.
     Total number of network bytes that went towards loading ad resources for a
     single page over it's entire lifetime. This includes resources that did not
     finish or were canceled. Only recorded for pages with non-zero ad bytes.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.AMP.Experimental.LayoutInstability.MaxCumulativeShiftScore.Subframe.SessionWindow.Gap1000ms.Max5000ms.Bucketing50_GoodRange"
-    units="scorex10000" expires_after="2021-10-01">
-  <obsolete>
-    Removed in 10/2021.
-  </obsolete>
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Experimental version of
-    PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore.Subframe.SessionWindow.Gap1000ms.Max5000ms
-    which uses 50 buckets for the 0.0-0.1 range.
-
-    This metric will be removed when bucket size is decided in crbug.com/1230786
-
-    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
-    occurred in the AMP subframe. The gap between two consecutive shifts in a
-    window is not bigger than 1000ms and the maximum window size is 5000ms. This
-    metric's integral value is 10x the fractional cumulative layout shift score
-    described in the explainer. If {Bfcache} is triggered, we record the metric
-    when the user navigates away or closes the page after the page was restored
-    from back-forward cache. Otherwise, we record it at the end of the page
-    lifetime, such as when the page is being navigated away from or when a tab
-    is being closed.
-
-    Recorded for non same-document AMP navigations in the main frame, at the end
-    of the AMP document lifetime, such as when the document is being navigated
-    away from.
   </summary>
 </histogram>
 
@@ -866,18 +791,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.ServiceWorker2.PageTransition"
-    enum="CorePageTransition" expires_after="M85">
-  <obsolete>
-    Expired in October 2020. Removed from the code in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <summary>
-    The core transition type for main frame page loads controlled by a service
-    worker that has a fetch event handler.
-  </summary>
-</histogram>
-
 <histogram base="true"
     name="PageLoad.Clients.StaleWhileRevalidate.PaintTiming.FirstContentfulPaint"
     units="ms" expires_after="M75">
@@ -898,104 +811,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from parse start to first contentful paint. Recorded for
     pages that contain a resource that may benefit from stale while revalidate.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.SubresourceLoading.CookiesQueryTime"
-    units="ms" expires_after="M90">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    How long the query to the cookie manager took to complete. Recorded on every
-    query response.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin"
-    units="days" expires_after="M90">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The number of days since any origin in the redirect chain was last visited,
-    according to the history service. Recorded whenever there was a previous
-    visit to record.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin"
-    enum="BooleanPreviouslyVisited" expires_after="M90">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Whether or not there was a previous visit to any origin in the redirect
-    chain, as reported by the history service. Each positive entry corresponds
-    to a single entry in
-    &quot;PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin&quot;.
-    Recorded on page end for every committed page load.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.SubresourceLoading.HistoryQueryTime"
-    units="ms" expires_after="M90">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    How long the query to the history service took to complete. Recorded on
-    every query response.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached"
-    units="count of subresources" expires_after="M90">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The count of CSS or JS subresources on a page that were loaded from cache
-    before FCP occurred. Only recorded for Lite mode (AKA Data Saver) users.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached"
-    units="count of subresources" expires_after="M90">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The count of CSS or JS subresources on a page that were loaded from the
-    network before FCP occurred. Only recorded for Lite mode (AKA Data Saver)
-    users.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.SubresourceLoading.MainFrameHadCookies"
-    enum="Boolean" expires_after="M90">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Whether or not any main frame request in the redirect chain had cookies.
   </summary>
 </histogram>
 
@@ -1266,92 +1081,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Experimental.CompletedResources.Cache2"
-    units="resources" expires_after="2020-05-30">
-  <obsolete>
-    Removed 12/2021.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The number of completed resources loaded from the cache via the browser
-    process for a page load. Recorded when the page load is terminated. Includes
-    resources from both the http and memory cache.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.CompletedResources.Network"
-    units="resources" expires_after="M77">
-  <obsolete>
-    Removed 12/2021.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The number of completed resources loaded from the network via the browser
-    process for a page load. Recorded when the page load is terminated.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.CompletedResources.Total2"
-    units="resources" expires_after="2020-05-30">
-  <obsolete>
-    Removed 12/2021.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The total number of completed resources loaded via the browser process for a
-    page load. Recorded when the page load is terminated.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.EarlyHints.EarlyHintsToFinalResponseStart"
-    units="ms" expires_after="2021-09-28">
-  <obsolete>
-    Removed 09/2021.
-  </obsolete>
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The interval between when the headers of the 103 Early Hints response is
-    received in reply to the final HTTP request and when the headers of the
-    final HTTP response is received for the main resource of a main frame
-    navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.EarlyHints.FinalRequestStartToEarlyHints"
-    units="ms" expires_after="2021-09-28">
-  <obsolete>
-    Removed 09/2021.
-  </obsolete>
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The interval between when the final HTTP request is sent and when the
-    headers of the 103 Early Hints response is received in reply to the request
-    for the main resource of a main frame navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.EarlyHints.FirstRequestStartToEarlyHints"
-    units="ms" expires_after="2021-09-28">
-  <obsolete>
-    Removed 09/2021.
-  </obsolete>
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The interval between when the first HTTP request is sent and when the
-    headers of the 103 Early Hints response is received in reply to the request
-    for the main resource of a main frame navigation.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Experimental.InputTiming.InputToNavigationStart"
     units="ms" expires_after="2021-12-26">
   <owner>sullivan@chromium.org</owner>
@@ -1388,60 +1117,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time between the OS-level keypress/tap event in the omnibox and
     navigation start, for navigations from the omnibox.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms.Bucketing50_GoodRange"
-    units="scorex10000" expires_after="2021-10-01">
-  <obsolete>
-    Removed in 10/2021.
-  </obsolete>
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Experimental version of
-    PageLoad.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms
-    which uses 50 buckets for the 0.0-0.1 range.
-
-    This metric will be removed when bucket size is decided in crbug.com/1230786
-
-    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
-    occurred in after back forward cache restore. The gap between two
-    consecutive shifts in a window is not bigger than 1000ms and the maximum
-    window size is 5000ms. This metric's integral value is 10x the fractional
-    cumulative layout shift score described in the explainer. If {Bfcache} is
-    triggered, we record the metric when the user navigates away or closes the
-    page after the page was restored from back-forward cache. Otherwise, we
-    record it at the end of the page lifetime, such as when the page is being
-    navigated away from or when a tab is being closed.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms.Bucketing50_GoodRange"
-    units="scorex10000" expires_after="2021-10-01">
-  <obsolete>
-    Removed in 10/2021.
-  </obsolete>
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Experimental version of
-    PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms
-    which uses 50 buckets for the 0.0-0.1 range.
-
-    This metric will be removed when bucket size is decided in crbug.com/1230786
-
-    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
-    occurred in a Window. The gap between two consecutive shifts in a window is
-    not bigger than 1000ms and the maximum window size is 5000ms. This metric's
-    integral value is 10x the fractional cumulative layout shift score described
-    in the explainer. If {Bfcache} is triggered, we record the metric when the
-    user navigates away or closes the page after the page was restored from
-    back-forward cache. Otherwise, we record it at the end of the page lifetime,
-    such as when the page is being navigated away from or when a tab is being
-    closed.
   </summary>
 </histogram>
 
@@ -1635,23 +1310,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time relative to navigation start that navigation commit message for a
     main frame navigation is sent to a renderer process.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.PageLoadType"
-    enum="PageVisitFinalStatus" expires_after="2022-08-30">
-  <obsolete>
-    Removed 10/2021, replaced with PageLoad.Experimental.PageVisitFinalStatus.
-  </obsolete>
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Determines the PageLoadType for this page load. That is, records whether the
-    page was never foregrounded, was foregrounded but did not reach FCP, or did
-    reach FCP. The metric is recorded at the end of each page load. As usual
-    with PageLoad metrics, we consider app backgrounding on Android to be the
-    end of page load as well as the app could be evicted by Android anytime
-    after that happens.
   </summary>
 </histogram>
 
@@ -1929,26 +1587,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="PageLoad.HeavyAds.ComputedType2"
-    enum="HeavyAdStatus2" expires_after="2021-02-01">
-  <obsolete>
-    Removed 01/2020, use PageLoad.HeavyAds.ComputedTypeWithThresholdNoise
-    instead.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records heavy ad type for each ad frame, as determined by the first
-    threshold hit (see FrameData::HeavyadStatus). This is recorded regardless of
-    feature flag or other conditions that prevent the heavy ad intervention from
-    occuring. Recored for all ad frames with non-zero bytes. Recorded when the
-    ad frame destroyed or when the page is destroyed.
-
-    It is possible for multiple thresholds to be hit at the same time, with the
-    higher valued enums winning those race conditions.
-  </summary>
-</histogram>
-
 <histogram base="true" name="PageLoad.HeavyAds.ComputedTypeWithThresholdNoise"
     enum="HeavyAdStatus2" expires_after="2022-02-01">
   <owner>johnidel@chromium.org</owner>
@@ -2148,36 +1786,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PageLoad.Internal.ClientRedirect.FirstPaintToNavigation"
-    units="ms" expires_after="M77">
-  <obsolete>
-    Removed 12/2021.
-  </obsolete>
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    The delay between first paint and a client-side redirect navigation, for
-    pages that reported a first paint. This metric is only intended to help in
-    choosing a heuristic delay to distinguish between client-side redirects and
-    other client initiated navigations, and will be deprecated in M54. Please
-    contact bmcquade@chromium.org before using this metric.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.ClientRedirect.NavigationWithoutPaint"
-    enum="Boolean" expires_after="2021-08-09">
-  <obsolete>
-    Removed 12/2021.
-  </obsolete>
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    Counts how often a client-side redirect was initiated from a page that did
-    not report a first paint. This metric is only intended to help in choosing a
-    heuristic delay to distinguish between client-side redirects and other
-    client initiated navigations, and will be deprecated in M54. Please contact
-    bmcquade@chromium.org before using this metric.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Internal.ErrorCode" enum="InternalErrorLoadEvent"
     expires_after="2022-06-26">
   <owner>csharrison@chromium.org</owner>
@@ -2191,21 +1799,6 @@ chromium-metrics-reviews@google.com.
     enum="BooleanForeground" expires_after="2021-10-10">
   <owner>bmcquade@chromium.org</owner>
   <summary>Whether a navigation started in the foreground.</summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.OutOfOrderInterFrameTiming" units="ms"
-    expires_after="M77">
-  <obsolete>
-    Removed 12/2021.
-  </obsolete>
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    The difference in magnitude between existing and updated timing, for
-    inter-frame timings that are received out of order. Page load metrics
-    observes timing updates in all frames on a page. It's possible for timings
-    in different frames to arrive out of order. This metric tracks how often
-    this happens, along with the magnitude of the difference.
-  </summary>
 </histogram>
 
 <histogram name="PageLoad.Internal.PageLoadCompleted.AfterAppBackground"
@@ -2230,44 +1823,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The status of PageLoadTiming structs received from the render process over
     IPC.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint.ContentType"
-    enum="LargestContentType" expires_after="2021-12-11">
-  <obsolete>
-    Replaced by
-    PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType. Stopped
-    being recorded on Nov 2021.
-  </obsolete>
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures whether the largest contentful paint, whose timestamp is measured
-    by PageLoad.PaintTiming.NavigationToLargestContentfulPaint, comes from text
-    or image. This value is recorded whenever
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint is recorded.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint.MainFrame.ContentType"
-    enum="LargestContentType" expires_after="2021-12-11">
-  <obsolete>
-    Replaced by
-    PageLoad.Internal.PaintTiming.LargestContentfulPaint.MainFrame.ContentType.
-    Stopped being recorded on Nov 2021.
-  </obsolete>
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures whether the largest contentful paint in the main frame, whose
-    timestamp is measured by
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame, comes
-    from text or image. This value is recorded whenever
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame is
-    recorded.
   </summary>
 </histogram>
 
@@ -2309,17 +1864,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.Prerender" enum="BooleanHit"
-    expires_after="M77">
-  <obsolete>
-    Removed 12/2021.
-  </obsolete>
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    Counts the number of prerender navigations. Only logs true values.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Internal.Prerender2.Event"
     enum="PageLoadPrerenderEvent" expires_after="2022-06-12">
   <owner>asamidoi@chromium.org</owner>
@@ -2328,88 +1872,6 @@ chromium-metrics-reviews@google.com.
     Counts page load events related to Prerender2, like navigation in
     prerendered main frame and prerendering activation navigation. Recorded when
     those events are observed in PageLoadTracker.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.ProvisionalAbortChainSize.ForwardBack"
-    units="length" expires_after="2018-08-30">
-  <obsolete>
-    Removed 01/2022.
-  </obsolete>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    This histogram counts the number of provisional loads aborted by other
-    navigations, until a final forward back navigation commits.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.ProvisionalAbortChainSize.NewNavigation"
-    units="length" expires_after="M77">
-  <obsolete>
-    Removed 01/2022.
-  </obsolete>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    This histogram counts the number of provisional loads aborted by new
-    navigations, until a final new navigation commits.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.ProvisionalAbortChainSize.NoCommit"
-    units="length" expires_after="2018-08-30">
-  <obsolete>
-    Removed 01/2022.
-  </obsolete>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    This histogram counts the number of provisional loads aborted by new
-    navigations. In this case the chain never ends with a commit. This is logged
-    on the next abort signal comes in (e.g. tab close or new navigation).
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.ProvisionalAbortChainSize.Reload"
-    units="length" expires_after="2018-08-30">
-  <obsolete>
-    Removed 01/2022.
-  </obsolete>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    This histogram counts the number of provisional loads aborted by other
-    navigations, until a final reload navigation commits.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.ProvisionalAbortChainSize.SameURL"
-    units="length" expires_after="2018-08-30">
-  <obsolete>
-    Removed 01/2022.
-  </obsolete>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    This histogram counts the number of consecutive provisional loads aborted by
-    other navigations with the same url (before redirects). It's logged when a
-    provisional abort does not share a URL, or when a load finally commits. Note
-    that we don't log chains of length 0.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.Renderer.PaintTiming.SwapResult"
-    enum="SwapResult" expires_after="M81">
-  <obsolete>
-    Removed as of 2021-07.
-  </obsolete>
-  <owner>panicker@chromium.org</owner>
-  <summary>
-    For first paint, first contentful paint, first meaningful paint, first text
-    paint, and first image paint, we use the swap timestamp of the corresponding
-    paint, which is the timestamp the CC SwapPromise was positively fulfilled
-    (i.e. DidSwap() was invoked). If the swap did not occur (DidNotSwap() was
-    invoked), we use the timestamp when the swap promise fails. However, in the
-    future we may stop reporting timestamps for certain failure reasons. This
-    metric records whether or not the swap occurred, and the reason for failure
-    if it failed. The distribution of this metric will help determine the effect
-    of not reporting timestamps in certain cases.
   </summary>
 </histogram>
 
@@ -2717,43 +2179,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint"
-    units="ms" expires_after="2021-04-18">
-  <obsolete>
-    Replaced by PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 on Oct
-    2020.
-  </obsolete>
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures the time from navigation timing's navigation start to the time the
-    largest content (text or image) is first painted, across all frames. See
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint for more
-    information. This experimental version includes content that has been
-    removed.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint.MainFrame"
-    units="ms" expires_after="2021-04-25">
-  <obsolete>
-    Replaced by
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame on Oct
-    2020.
-  </obsolete>
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures the time from navigation timing's navigation start to the time the
-    largest content (text or image) is first painted, for main frame documents.
-    See PageLoad.PaintTiming.NavigationToLargestContentfulPaint for more
-    information. This experimental version includes content that has been
-    removed.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"
     units="ms" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
@@ -2840,55 +2265,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Second"/>
     <variant name="Third"/>
   </token>
-</histogram>
-
-<histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2022-04-17">
-  <obsolete>
-    Replaced by PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
-    Stopped being recorded on Nov 2021.
-  </obsolete>
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    Measures the time from navigation timing's navigation start to the time the
-    largest content (text or image) is first painted, across all frames.
-    Excludes any content painted after user input. The value is recorded at the
-    end of each page load unless there is an abort or user input before text or
-    image paint. See http://bit.ly/fcp_plus_plus for details. Stable since M79;
-    previous versions are experimental and subject to fluctuation between
-    releases. Note: This histogram is being replaced by
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 and will become
-    obsolete soon.
-
-    Do not modify this metric in any way without contacting
-    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
-
-    Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame"
-    units="ms" expires_after="2022-04-17">
-  <obsolete>
-    Replaced by
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame. Stopped
-    being recorded on Nov 2021.
-  </obsolete>
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures the time from navigation timing's navigation start to the time the
-    largest content (text or image) is first painted, for main frame documents.
-    Excludes any content painted after user input. The value is recorded at the
-    end of each page load unless there is an abort or user input before text or
-    image paint. See http://bit.ly/fcp_plus_plus for details. Note: This
-    histogram is being replaced by
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame and will
-    become obsolete soon.
-  </summary>
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"

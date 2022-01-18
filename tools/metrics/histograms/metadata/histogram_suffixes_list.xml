@@ -590,8 +590,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
-      name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint2"/>
-  <affected-histogram
       name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint3"/>
   <affected-histogram name="PageLoad.Bytes"/>
   <affected-histogram name="PageLoad.Cpu"/>
@@ -614,7 +612,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.FrameCounts.AdFrames.Total"/>
   <affected-histogram name="PageLoad.FrameCounts.AnyParentFrame.AdFrames"/>
   <affected-histogram name="PageLoad.HeavyAds.ComputedType"/>
-  <affected-histogram name="PageLoad.HeavyAds.ComputedType2"/>
   <affected-histogram name="PageLoad.HeavyAds.ComputedTypeWithThresholdNoise"/>
   <affected-histogram name="PageLoad.HeavyAds.InterventionType"/>
   <affected-histogram name="PageLoad.HeavyAds.InterventionType2"/>
@@ -1852,11 +1849,6 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="CertificateTransparencyProtocol" separator=".">
   <suffix name="QUIC" label=""/>
   <suffix name="SSL" label=""/>
-  <affected-histogram
-      name="Net.CertificateTransparency.ConnectionComplianceStatus2"/>
-  <affected-histogram
-      name="Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2"/>
-  <affected-histogram name="Net.CertificateTransparency.EVCompliance2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="CertificateTypeAlgorithms" separator=".">
@@ -2520,7 +2512,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="OnWriteError" label=""/>
   <suffix name="Unknown" label=""/>
   <affected-histogram name="Net.QuicSession.ConnectionMigration"/>
-  <affected-histogram name="Net.QuicSession.ConnectionMigrationProbeSuccess"/>
   <affected-histogram
       name="Net.QuicSession.HandshakeStatusOnConnectionMigration"/>
   <affected-histogram name="Net.QuicSession.PathValidationSuccess"/>
@@ -5926,7 +5917,6 @@ chromium-metrics-reviews@google.com.
       label="A cached resource existed and was updated over the network."/>
   <suffix name="Validated"
       label="A cached resource existed and was validated over the network."/>
-  <affected-histogram name="HttpCache.AfterSend"/>
   <affected-histogram name="HttpCache.BeforeSend"/>
   <affected-histogram name="HttpCache.PercentBeforeSend"/>
 </histogram_suffixes>
@@ -10160,8 +10150,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstTextPaint"/>
   <affected-histogram
-      name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad"/>
@@ -10220,7 +10208,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="AfterBuffering"
       label="Recorded after buffering of timing updates in the browser
              process has completed."/>
-  <affected-histogram name="PageLoad.Internal.OutOfOrderInterFrameTiming"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsAfterPaint" separator=".">
@@ -10374,7 +10361,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
-  <affected-histogram name="PageLoad.Experimental.CompletedResources.Network"/>
   <affected-histogram
       name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
@@ -10443,8 +10429,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
-  <affected-histogram
-      name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsFromGoogleSearch" separator="."
@@ -10532,8 +10516,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstTextPaint"/>
   <affected-histogram
-      name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
   <affected-histogram name="PageLoad.ParseTiming.ParseDuration"/>
@@ -10571,7 +10553,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
-  <affected-histogram name="PageLoad.Experimental.CompletedResources.Network"/>
   <affected-histogram
       name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
@@ -10865,7 +10846,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Total"/>
   <affected-histogram name="PageLoad.Experimental.CompletedResources.Cache"/>
-  <affected-histogram name="PageLoad.Experimental.CompletedResources.Network"/>
   <affected-histogram name="PageLoad.Experimental.CompletedResources.Total"/>
   <affected-histogram
       name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
@@ -10937,25 +10917,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PageLoadMetricsMediaPlayed" separator=".">
-  <obsolete>
-    Removed May 2018 (M68)
-  </obsolete>
-  <suffix name="MediaPlayed" label="Limited to pages where media was played."/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.Bytes.Cache"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.Bytes.Network"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.Bytes.Total"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.CompletedResources.Cache"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.CompletedResources.Network"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.CompletedResources.Total"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PageLoadMetricsNoCommit" separator=".">
   <suffix name="NoCommit" label="Limited to page loads that did not commit."/>
   <affected-histogram
@@ -10971,26 +10932,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Experimental.PageTiming.FirstPaintToPageEnd"/>
   <affected-histogram
       name="PageLoad.Experimental.PageTiming.NavigationToPageEnd"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PageLoadMetricsNoMediaPlayed" separator=".">
-  <obsolete>
-    Removed May 2018 (M68)
-  </obsolete>
-  <suffix name="NoMediaPlayed"
-      label="Limited to pages where no media was played."/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.Bytes.Cache"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.Bytes.Network"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.Bytes.Total"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.CompletedResources.Cache"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.CompletedResources.Network"/>
-  <affected-histogram
-      name="PageLoad.Clients.SubresourceFilter.Experimental.CompletedResources.Total"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsPaintInfo" separator=".">
@@ -11992,7 +11933,6 @@ chromium-metrics-reviews@google.com.
       label="Prefetch is completely disabled."/>
   <suffix name="ContentPrefetchPrefetchOn"
       label="prefetch is enabled but prerender is disabled."/>
-  <affected-histogram name="HttpCache.EntryLockWait"/>
   <affected-histogram name="Net.HttpTimeToFirstByte"/>
   <affected-histogram name="PLT.Abandoned"/>
   <affected-histogram name="PLT.BeginToFinish"/>
@@ -12020,7 +11960,6 @@ chromium-metrics-reviews@google.com.
       label="prerender is enabled with multiple simultanious prerenders."/>
   <suffix name="PrerenderNoUse"
       label="prerender is enabled, but pages are not swapped in."/>
-  <affected-histogram name="HttpCache.EntryLockWait"/>
   <affected-histogram name="Net.HttpTimeToFirstByte"/>
   <affected-histogram name="PLT.Abandoned"/>
   <affected-histogram name="PLT.BeginToFinish"/>
@@ -16634,7 +16573,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Issuance" label="Trust token issuance"/>
   <suffix name="Redemption" label="Trust token redemption"/>
   <suffix name="Signing" label="SRR attachment and outgoing request signing"/>
-  <affected-histogram name="Net.TrustTokens.FetchFailedReason"/>
   <affected-histogram name="Net.TrustTokens.NetErrorForFetchFailure"/>
   <affected-histogram
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Failure"/>
