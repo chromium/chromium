@@ -66,14 +66,6 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
 }
 
 IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
-  // TODO(https://crbug.com/977629): Currently, chrome.test.runWithUserGesture()
-  // doesn't support Service Worker-based extensions, so this is a workaround.
-  using ScopedUserGestureForTests =
-      ExtensionFunction::ScopedUserGestureForTests;
-  std::unique_ptr<ScopedUserGestureForTests> scoped_user_gesture;
-  if (GetParam() == ContextType::kServiceWorker)
-    scoped_user_gesture = std::make_unique<ScopedUserGestureForTests>();
-
   // Auto-confirm the uninstall dialog.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);

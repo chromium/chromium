@@ -119,11 +119,6 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptRemoveCSS) {
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, UserGesture) {
-  // TODO(https://crbug.com/977629): Gesture support for testing is not
-  // available for Service Worker-based extensions.
-  if (GetParam() == ContextType::kServiceWorker)
-    return;
-
   ASSERT_TRUE(RunExtensionTest("executescript/user_gesture")) << message_;
 }
 

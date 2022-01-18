@@ -40,16 +40,22 @@ void UserGesturesNativeHandler::IsProcessingUserGesture(
 
 void UserGesturesNativeHandler::RunWithUserActivationForTest(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  // TODO(lazyboy): This won't work for Service Workers. Address this once we're
-  // certain that we need this for workers.
+  CHECK_EQ(args.Length(), 1);
+  CHECK(args[0]->IsFunction());
+
   if (context()->web_frame()) {
     context()->web_frame()->NotifyUserActivation(
         blink::mojom::UserActivationNotificationType::kTest);
+    context()->SafeCallFunction(v8::Local<v8::Function>::Cast(args[0]), 0,
+                                nullptr);
+  } else if (context()->IsForServiceWorker()) {
+    // Note |scoped_extension_interaction| requires a HandleScope.
+    const v8::HandleScope handle_scope(context()->isolate());
+    const std::unique_ptr<InteractionProvider::Scope> scoped_interaction =
+        ExtensionInteractionProvider::Scope::ForWorker(context()->v8_context());
+    context()->SafeCallFunction(v8::Local<v8::Function>::Cast(args[0]), 0,
+                                nullptr);
   }
-  CHECK_EQ(args.Length(), 1);
-  CHECK(args[0]->IsFunction());
-  context()->SafeCallFunction(v8::Local<v8::Function>::Cast(args[0]), 0,
-                              nullptr);
 }
 
 }  // namespace extensions

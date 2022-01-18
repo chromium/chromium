@@ -120,22 +120,8 @@ class ExtensionManagementApiTest
     extension_ids_[name] = extension->id();
   }
 
-  using ScopedUserGestureForTests =
-      ExtensionFunction::ScopedUserGestureForTests;
-
-  void MaybeCreateScopedUserGesture() {
-    // TODO(crbug.com/977629): Support for chrome.test.runWithUserGesture for
-    // service worker-based extensions is not implemented. For now, work around
-    // it by simulating a user gesture for the entire test.
-    if (GetParam() == ContextType::kServiceWorker)
-      scoped_user_gesture_ = std::make_unique<ScopedUserGestureForTests>();
-  }
-
   // Maps installed extension names to their IDs.
   std::map<std::string, std::string> extension_ids_;
-
- private:
-  std::unique_ptr<ScopedUserGestureForTests> scoped_user_gesture_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -144,16 +130,6 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionManagementApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
-
-// TODO(crbug.com/977629): Support for chrome.test.runWithUserGesture for
-// service worker-based extensions is not implemented. For now, don't run
-// those tests, since they mix subtests where user gestures are present and
-// missing.
-using ExtensionManagementApiTestWithUserGesture = ExtensionManagementApiTest;
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionManagementApiTestWithUserGesture,
-                         ::testing::Values(ContextType::kPersistentBackground));
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Basics) {
   LoadExtensions();
@@ -175,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoPermission) {
   ASSERT_TRUE(RunExtensionTest("management/no_permission"));
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithUserGesture, Uninstall) {
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Uninstall) {
   LoadExtensions();
   // Confirmation dialog will be shown for uninstallations except for self.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
@@ -183,8 +159,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithUserGesture, Uninstall) {
   ASSERT_TRUE(RunExtensionTest("management/uninstall"));
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithUserGesture,
-                       CreateAppShortcut) {
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, CreateAppShortcut) {
   LoadExtensions();
   base::FilePath basedir = test_data_dir_.AppendASCII("management");
   LoadNamedExtension(basedir, "packaged_app");
@@ -193,8 +168,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithUserGesture,
   ASSERT_TRUE(RunExtensionTest("management/create_app_shortcut"));
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithUserGesture,
-                       GenerateAppForLink) {
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, GenerateAppForLink) {
   web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile()));
   ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link"));
 }
@@ -221,7 +195,6 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 IN_PROC_BROWSER_TEST_P(GenerateAppForLinkWithLacrosWebAppsApiTest,
                        GenerateAppForLink) {
   web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile()));
-  MaybeCreateScopedUserGesture();
   ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link_lacros"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -449,7 +422,6 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
 // Tests actions on extensions when no management policy is in place.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
   LoadExtensions();
-  MaybeCreateScopedUserGesture();
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   extensions::ExtensionRegistry* registry =
@@ -593,8 +565,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
 #else
 #define MAYBE_LaunchType LaunchType
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithUserGesture,
-                       MAYBE_LaunchType) {
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, MAYBE_LaunchType) {
   LoadExtensions();
   base::FilePath basedir = test_data_dir_.AppendASCII("management");
   LoadNamedExtension(basedir, "packaged_app");
