@@ -248,8 +248,9 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
     allow_list_.insert(test_folder.begin(), test_folder.end());
 #endif
 
-    allow_list_.insert(std::begin(kAllowListPrefixesForPlatform),
-                       std::end(kAllowListPrefixesForPlatform));
+    for (const char* platform_prefix : kAllowListPrefixesForPlatform) {
+      allow_list_.emplace(platform_prefix);
+    }
   }
 
   void SetUpOnMainThread() override {
