@@ -1041,16 +1041,12 @@ const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kProjectorManagedUser{"ProjectorManagedUser",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to enable Projector in status tray.
-const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to enable Projector annotator or marker tools.
 // The annotator tools are newer and based on the ink library.
 // The marker tools are older and based on fast ink.
 // We are deprecating the old marker tools in favor of the annotator tools.
 const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1795,11 +1791,6 @@ bool IsProjectorAllUserEnabled() {
 
 bool IsProjectorManagedUserEnabled() {
   return base::FeatureList::IsEnabled(kProjectorManagedUser);
-}
-
-bool IsProjectorFeaturePodEnabled() {
-  return IsProjectorEnabled() &&
-         base::FeatureList::IsEnabled(kProjectorFeaturePod);
 }
 
 bool IsProjectorAnnotatorEnabled() {

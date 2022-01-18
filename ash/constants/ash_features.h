@@ -396,7 +396,6 @@ extern const base::Feature kProductivityLauncherAnimation;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProjectorManagedUser;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorFeaturePod;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorAnnotator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickDim;
