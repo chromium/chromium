@@ -41,7 +41,7 @@ class CastAppDiscoveryServiceTest : public testing::Test {
             *CastMediaSource::FromMediaSourceId("cast:AAAAAAAA?clientId=2")),
         source_b_1_(
             *CastMediaSource::FromMediaSourceId("cast:BBBBBBBB?clientId=1")) {
-    ON_CALL(socket_service_, GetSocket(_))
+    ON_CALL(socket_service_, GetSocket(testing::Matcher<int>(_)))
         .WillByDefault(testing::Return(&socket_));
     task_runner_->RunPendingTasks();
   }

@@ -71,6 +71,15 @@ std::unique_ptr<CastSocket> CastSocketServiceImpl::RemoveSocket(
   return socket;
 }
 
+void CastSocketService::CloseSocket(int channel_id) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  auto* socket = GetSocket(channel_id);
+  if (socket) {
+    socket->Close(base::BindOnce([](int x) {}));
+    RemoveSocket(socket->id());
+  }
+}
+
 CastSocket* CastSocketServiceImpl::GetSocket(int channel_id) const {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(channel_id > 0);

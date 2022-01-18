@@ -105,7 +105,7 @@ class CastMessageHandlerTest : public testing::Test {
             kTestUserAgentString,
             "66.0.3331.0",
             "en-US") {
-    ON_CALL(cast_socket_service_, GetSocket(_))
+    ON_CALL(cast_socket_service_, GetSocket(testing::Matcher<int>(_)))
         .WillByDefault(testing::Return(&cast_socket_));
   }
 

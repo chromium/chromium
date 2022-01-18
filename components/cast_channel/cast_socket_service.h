@@ -30,6 +30,10 @@ class CastSocketService {
   // CastSocketRegistry. Returns nullptr if no such CastSocket exists.
   virtual std::unique_ptr<CastSocket> RemoveSocket(int channel_id) = 0;
 
+  // Attempts to close an open CastSocket connection corresponding to the given
+  // |ip_endpoint|. Does nothing if the socket_id doesn't exist.
+  virtual void CloseSocket(int channel_id);
+
   // Returns the socket corresponding to |channel_id| if one exists, or nullptr
   // otherwise.
   virtual CastSocket* GetSocket(int channel_id) const = 0;

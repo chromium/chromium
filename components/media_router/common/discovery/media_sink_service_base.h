@@ -73,7 +73,7 @@ class MediaSinkServiceBase {
   // Notifies |observers_| that the sink has been added, updated, or removed.
   // Also invokes |StartTimer()|.
   void AddOrUpdateSink(const MediaSinkInternal& sink);
-  void RemoveSink(const MediaSinkInternal& sink);
+  virtual void RemoveSink(const MediaSinkInternal& sink);
   void RemoveSinkById(const MediaSink::Id& sink_id);
 
   const base::flat_map<MediaSink::Id, MediaSinkInternal>& GetSinks() const;

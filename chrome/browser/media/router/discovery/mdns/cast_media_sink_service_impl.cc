@@ -399,8 +399,13 @@ void CastMediaSinkServiceImpl::OnNetworksChanged(
   dial_sink_failure_count_.clear();
   if (!IsNetworkIdUnknownOrDisconnected(last_network_id)) {
     std::vector<MediaSinkInternal> current_sinks;
-    for (const auto& entry : GetSinks())
-      current_sinks.push_back(entry.second);
+    for (const auto& entry : GetSinks()) {
+      // AccessCode sinks should not be cached because of expiration -- this is
+      // handled elsewhere instead.
+      if (!entry.second.cast_data().discovered_by_access_code) {
+        current_sinks.push_back(entry.second);
+      }
+    }
 
     sink_cache_[last_network_id] = std::move(current_sinks);
   }
@@ -721,6 +726,21 @@ void CastMediaSinkServiceImpl::BindLogger(
 
 bool CastMediaSinkServiceImpl::HasSink(const MediaSink::Id& sink_id) {
   return base::Contains(GetSinks(), sink_id);
+}
+
+void CastMediaSinkServiceImpl::RemoveSink(const MediaSinkInternal& sink) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MediaSinkServiceBase::RemoveSink(sink);
+
+  // Need a PostTask() here because CloseSocket() will release the memory of
+  // |socket|. Need to make sure all tasks on |socket| finish before deleting
+  // the object.
+  task_runner_->PostNonNestableTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&cast_channel::CastSocketService::CloseSocket),
+          base::Unretained(cast_socket_service_),
+          sink.cast_data().cast_channel_id));
 }
 
 }  // namespace media_router

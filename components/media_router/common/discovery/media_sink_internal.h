@@ -53,6 +53,9 @@ struct CastSinkExtraData {
   // True if Cast channel is opened from DIAL sink.
   bool discovered_by_dial = false;
 
+  // True if Cast Device was discovered via access code.
+  bool discovered_by_access_code = false;
+
   CastSinkExtraData();
   CastSinkExtraData(const CastSinkExtraData& other);
   CastSinkExtraData(CastSinkExtraData&& other);

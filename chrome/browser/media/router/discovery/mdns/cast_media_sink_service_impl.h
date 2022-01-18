@@ -112,6 +112,14 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // Check to see if the given cast sink exists the sinks_.
   bool HasSink(const MediaSink::Id& sink_id);
 
+  // Function that handles complete removal of a cast sink from the media
+  // router. Deals with removing cast socket and any instances of the cast sink
+  // recorded throughout the router.
+  void RemoveCastSinkFromRouter(const MediaSinkInternal& sink);
+
+  // MediaSinkServiceBase overrides.
+  void RemoveSink(const MediaSinkInternal& sink) override;
+
  private:
   friend class CastMediaSinkServiceImplTest;
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
@@ -172,6 +180,9 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            OpenChannelNewIPSameSink);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest, TestHasSink);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest, TestRemoveSink);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
+                           TestAccessCodeSinkNotAddedToNetworkCache);
 
   // Holds parameters controlling Cast channel retry strategy.
   struct RetryParams {
@@ -237,7 +248,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
       const MediaSinkInternal& sink);
 
   // Invoked when opening cast channel on IO thread completes.
-  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
+  // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or
+  // access code sink.
   // |backoff_entry|: backoff entry passed to |OnChannelErrorMayRetry| callback
   // if open channel fails.
   // |start_time|: time at which corresponding |OpenChannel| was called.
@@ -253,7 +265,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // opening channel in a delay specified by |backoff_entry| if current failure
   // count is less than max retry attempts. Or invoke |OnChannelError| if retry
   // is not allowed.
-  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
+  // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or
+  // access code sink.
   // |backoff_entry|: backoff entry holds failure count and calculates back-off
   // for next retry.
   // |error_state|: error encountered when opending cast channel.
@@ -263,7 +276,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                               SinkSource sink_source);
 
   // Invoked when opening cast channel succeeds.
-  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
+  // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or
+  // access code sink.
   // |socket|: raw pointer of newly created cast channel. Does not take
   // ownership of |socket|.
   void OnChannelOpenSucceeded(MediaSinkInternal cast_sink,

@@ -106,6 +106,7 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
   }
   extra_data.capabilities =
       ConvertDeviceCapabilitiesToInt(discovery_device.device_capabilities());
+  extra_data.discovered_by_access_code = true;
 
   const std::string& processed_uuid =
       MediaSinkInternal::ProcessDeviceUUID(unique_id);

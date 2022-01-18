@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_address.h"
@@ -142,6 +142,7 @@ TEST_F(AccessCodeMediaSinkUtilTest, MediaSinkCreatedCorrectly) {
   int port_value = 0;
   EXPECT_EQ(true, base::StringToInt(kExpectedPort, &port_value));
   expected_extra_data.ip_endpoint = net::IPEndPoint(expected_ip, port_value);
+  expected_extra_data.discovered_by_access_code = true;
 
   media_router::MediaSink expected_sink(
       base::StringPrintf("cast:<%s>", kExpectedSinkId), kExpectedDisplayName,
