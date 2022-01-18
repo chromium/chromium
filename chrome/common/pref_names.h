@@ -905,6 +905,7 @@ extern const char kMacRestoreLocationPermissionsExperimentCount[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kEnrollmentIdUploadedOnChromad[];
+extern const char kLastChromadMigrationAttemptTime[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
