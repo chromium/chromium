@@ -22,7 +22,6 @@
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using std::find;
 using std::map;
 using std::string;
 using sync_pb::ClientToServerMessage;

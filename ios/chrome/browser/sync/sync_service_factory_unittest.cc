@@ -89,13 +89,13 @@ class SyncServiceFactoryTest : public PlatformTest {
   void CheckDefaultDatatypesInSetExcept(syncer::ModelTypeSet types,
                                         syncer::ModelTypeSet exception_types) {
     std::vector<syncer::ModelType> defaults = DefaultDatatypes();
-    std::vector<syncer::ModelType>::iterator iter;
-    for (iter = defaults.begin(); iter != defaults.end(); ++iter) {
-      if (exception_types.Has(*iter))
-        EXPECT_FALSE(types.Has(*iter))
-            << *iter << " found in dataypes map, shouldn't be there.";
-      else
-        EXPECT_TRUE(types.Has(*iter)) << *iter << " not found in datatypes map";
+    for (syncer::ModelType type : defaults) {
+      if (exception_types.Has(type)) {
+        EXPECT_FALSE(types.Has(type))
+            << type << " found in dataypes map, shouldn't be there.";
+      } else {
+        EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
+      }
     }
   }
 

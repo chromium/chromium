@@ -118,8 +118,9 @@ class SyncServiceFactoryTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     datatypes.push_back(syncer::APP_LIST);
-    if (arc::IsArcAllowedForProfile(profile()))
+    if (arc::IsArcAllowedForProfile(profile())) {
       datatypes.push_back(syncer::ARC_PACKAGE);
+    }
     if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
       datatypes.push_back(syncer::OS_PREFERENCES);
       datatypes.push_back(syncer::OS_PRIORITY_PREFERENCES);
@@ -161,13 +162,13 @@ class SyncServiceFactoryTest : public testing::Test {
   void CheckDefaultDatatypesInSetExcept(syncer::ModelTypeSet types,
                                         syncer::ModelTypeSet exception_types) {
     std::vector<syncer::ModelType> defaults = DefaultDatatypes();
-    std::vector<syncer::ModelType>::iterator iter;
-    for (iter = defaults.begin(); iter != defaults.end(); ++iter) {
-      if (exception_types.Has(*iter))
-        EXPECT_FALSE(types.Has(*iter))
-            << *iter << " found in dataypes map, shouldn't be there.";
-      else
-        EXPECT_TRUE(types.Has(*iter)) << *iter << " not found in datatypes map";
+    for (syncer::ModelType type : defaults) {
+      if (exception_types.Has(type)) {
+        EXPECT_FALSE(types.Has(type))
+            << type << " found in dataypes map, shouldn't be there.";
+      } else {
+        EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
+      }
     }
   }
 

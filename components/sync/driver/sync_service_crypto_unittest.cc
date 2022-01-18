@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
@@ -162,8 +163,7 @@ class TestTrustedVaultServer {
     }
 
     const std::vector<std::vector<uint8_t>>& latest_keys = it->second;
-    if (std::find(latest_keys.begin(), latest_keys.end(),
-                  key_known_by_client) == latest_keys.end()) {
+    if (!base::Contains(latest_keys, key_known_by_client)) {
       // |key_known_by_client| is invalid or too old: cannot be used to follow
       // key rotation.
       return {};

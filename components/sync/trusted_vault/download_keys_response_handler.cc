@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
@@ -70,18 +71,14 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
 }
 
 // |sorted_keys| must be non-empty and sorted by version. Returns new keys, a
-// key is new if it has higher version than
-// |last_known_trusted_vault_key_and_version|.
+// key is new if it has higher version than |last_known_version|.
 std::vector<ExtractedSharedKey> GetNewKeys(
     const std::vector<ExtractedSharedKey>& sorted_keys,
-    const TrustedVaultKeyAndVersion& last_known_trusted_vault_key_and_version) {
+    int last_known_version) {
   DCHECK(!sorted_keys.empty());
-  auto new_keys_start_it = std::find_if(
-      sorted_keys.begin(), sorted_keys.end(),
-      [&last_known_trusted_vault_key_and_version](
-          const ExtractedSharedKey& key) {
-        return key.version > last_known_trusted_vault_key_and_version.version;
-      });
+  auto new_keys_start_it = base::ranges::upper_bound(
+      sorted_keys, last_known_version, /*comp=*/{},
+      [](const ExtractedSharedKey& key) { return key.version; });
 
   return std::vector<ExtractedSharedKey>(new_keys_start_it, sorted_keys.end());
 }
@@ -204,7 +201,7 @@ DownloadKeysResponseHandler::ProcessResponse(
   }
 
   std::vector<ExtractedSharedKey> new_keys =
-      GetNewKeys(extracted_keys, last_trusted_vault_key_and_version_);
+      GetNewKeys(extracted_keys, last_trusted_vault_key_and_version_.version);
   if (new_keys.empty()) {
     return ProcessedResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kNoNewKeys);

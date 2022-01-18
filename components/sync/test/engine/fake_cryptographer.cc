@@ -5,6 +5,7 @@
 #include "components/sync/test/engine/fake_cryptographer.h"
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 
@@ -70,8 +71,7 @@ bool FakeCryptographer::EncryptString(const std::string& decrypted,
 
 bool FakeCryptographer::DecryptToString(const sync_pb::EncryptedData& encrypted,
                                         std::string* decrypted) const {
-  auto key_iter = std::find(known_key_names_.begin(), known_key_names_.end(),
-                            encrypted.key_name());
+  auto key_iter = base::ranges::find(known_key_names_, encrypted.key_name());
   if (key_iter == known_key_names_.end()) {
     return false;
   }
