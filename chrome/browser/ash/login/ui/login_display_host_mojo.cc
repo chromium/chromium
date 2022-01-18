@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
@@ -160,6 +161,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
 }
 
 LoginDisplayHostMojo::~LoginDisplayHostMojo() {
+  scoped_activity_observation_.Reset();
   LoginScreenClientImpl::Get()->SetDelegate(nullptr);
   if (!dialog_)
     return;
@@ -428,6 +430,14 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_video_timeout) {
   user_selection_screen_->OnBeforeShow();
   LoadWallpaper(focused_pod_account_id_);
   HideDialog();
+
+  // If the OOBE dialog was hidden due to camera timeout and user isn't using
+  // ChromeVox let user go back to login flow with any action. Otherwise user
+  // can go back to login pressing arrow button.
+  if (saml_video_timeout && !scoped_activity_observation_.IsObserving() &&
+      !AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+    scoped_activity_observation_.Observe(ui::UserActivityDetector::Get());
+  }
 }
 
 void LoginDisplayHostMojo::SetShelfButtonsEnabled(bool enabled) {
@@ -820,6 +830,11 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
   }
 
   ErrorScreen::AllowOfflineLoginPerUser(!offline_limit_expired);
+}
+
+void LoginDisplayHostMojo::OnUserActivity(const ui::Event* event) {
+  scoped_activity_observation_.Reset();
+  ShowGaiaDialog(EmptyAccountId());
 }
 
 }  // namespace ash
