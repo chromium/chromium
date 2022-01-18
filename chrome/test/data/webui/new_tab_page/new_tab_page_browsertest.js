@@ -7,6 +7,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/build_config.h"');
+GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
@@ -320,9 +321,17 @@ var NewTabPageModulesChromeCartModuleTest =
   }
 };
 
-TEST_F('NewTabPageModulesChromeCartModuleTest', 'All', function() {
-  mocha.run();
-});
+// https://crbug.com/1287294: Flaky on Linux, Win, ChromeOS and Lacros.
+GEN('#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)');
+GEN('#define MAYBE_V1ModuleTest_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_V1Moduletest_All All');
+GEN('#endif');
+TEST_F(
+    'NewTabPageModulesChromeCartModuleTest', 'MAYBE_V1ModuleTest_All',
+    function() {
+      mocha.run();
+    });
 
 var NewTabPageModulesChromeCartV2ModuleTest =
     class extends NewTabPageBrowserTest {
