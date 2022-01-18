@@ -8644,7 +8644,7 @@ experimental domain Storage
     properties
       string issuerOrigin
       number count
-  
+
   # Enum of interest group access types.
   type InterestGroupAccessType extends string
     enum
@@ -8653,7 +8653,7 @@ experimental domain Storage
       update
       bid
       win
-  
+
   # Ad advertising element inside an interest group.
   type InterestGroupAd extends object
     properties
@@ -8817,7 +8817,7 @@ experimental domain Storage
     parameters
       # Origin to update.
       string origin
-  
+
   # One of the interest groups was accessed by the associated page.
   event interestGroupAccessed
     parameters
