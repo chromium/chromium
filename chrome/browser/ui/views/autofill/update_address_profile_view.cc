@@ -22,14 +22,13 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill {
 
 namespace {
 
-constexpr int kColumnSetId = 0;
 constexpr int kIconSize = 16;
 constexpr int kValuesLabelWidth = 190;
 
@@ -105,32 +104,25 @@ std::unique_ptr<views::View> CreateValuesView(
 
 // Add a row in `layout` that contains a label and a view displays all the
 // values in `values`. Labels are added only if `show_row_label` is true.
-void AddValuesRow(views::GridLayout* layout,
+void AddValuesRow(views::TableLayoutView* layout_view,
                   const std::vector<ProfileValueDifference>& diff,
                   bool show_row_label,
                   views::Button::PressedCallback edit_button_callback) {
   bool are_new_values = !!edit_button_callback;
-  layout->StartRow(/*vertical_resize=*/views::GridLayout::kFixedSize,
-                   kColumnSetId);
+  layout_view->AddRows(1, /*vertical_resize=*/views::GridLayout::kFixedSize);
 
   if (show_row_label) {
-    std::unique_ptr<views::Label> label(new views::Label(
+    auto label = std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(
             are_new_values
                 ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_NEW_VALUES_SECTION_LABEL
                 : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OLD_VALUES_SECTION_LABEL),
-        views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-    layout->AddView(std::move(label), /*col_span=*/1, /*row_span=*/1,
-                    /*h_align=*/views::GridLayout::LEADING,
-                    /*v_align=*/views::GridLayout::LEADING);
+        views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+    layout_view->AddChildView(std::move(label));
   }
   ui::ColorId icon_color = are_new_values ? ui::kColorButtonBackgroundProminent
                                           : ui::kColorIconSecondary;
-  layout->AddView(CreateValuesView(diff, are_new_values, icon_color),
-                  /*col_span=*/1,
-                  /*row_span=*/1,
-                  /*h_align=*/views::GridLayout::FILL,
-                  /*v_align=*/views::GridLayout::FILL);
+  layout_view->AddChildView(CreateValuesView(diff, are_new_values, icon_color));
   if (are_new_values) {
     std::unique_ptr<views::ImageButton> edit_button =
         views::CreateVectorImageButtonWithNativeTheme(
@@ -141,9 +133,7 @@ void AddValuesRow(views::GridLayout* layout,
         IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
     edit_button->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
-    layout->AddView(std::move(edit_button), /*col_span=*/1, /*row_span=*/1,
-                    /*h_align=*/views::GridLayout::LEADING,
-                    /*v_align=*/views::GridLayout::LEADING);
+    layout_view->AddChildView(std::move(edit_button));
   }
 }
 
@@ -176,7 +166,9 @@ UpdateAddressProfileView::UpdateAddressProfileView(
   // would have been a save prompt.
   DCHECK(controller_->GetOriginalProfile());
 
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+  auto* layout_provider = views::LayoutProvider::Get();
+
+  set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   SetAcceptCallback(base::BindOnce(
@@ -201,12 +193,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCollapseMargins(true)
-      .SetDefault(
-          views::kMarginsKey,
-          gfx::Insets(
-              /*vertical=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_CONTROL_LIST_VERTICAL),
-              /*horizontal=*/0));
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets(
+                      /*vertical=*/layout_provider->GetDistanceMetric(
+                          DISTANCE_CONTROL_LIST_VERTICAL),
+                      /*horizontal=*/0));
 
   std::vector<ProfileValueDifference> profile_diff = GetProfileDifferenceForUi(
       controller_->GetProfileToSave(), *controller_->GetOriginalProfile(),
@@ -223,42 +214,41 @@ UpdateAddressProfileView::UpdateAddressProfileView(
         gfx::HorizontalAlignment::ALIGN_LEFT);
   }
 
-  views::View* main_content_view =
-      AddChildView(std::make_unique<views::View>());
+  auto* main_content_view =
+      AddChildView(std::make_unique<views::TableLayoutView>());
 
   bool has_non_empty_original_values = HasNonEmptySecondValues(profile_diff);
 
-  // Build the GridLayout column set.
-  views::GridLayout* layout = main_content_view->SetLayoutManager(
-      std::make_unique<views::GridLayout>());
-  views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
-  const int column_divider = ChromeLayoutProvider::Get()->GetDistanceMetric(
+  // Build the TableLayoutView columns.
+  const int column_divider = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
   if (has_non_empty_original_values) {
     // Label column exists only if there is a section for original values.
-    column_set->AddColumn(
-        /*h_align=*/views::GridLayout::LEADING,
-        /*v_align=*/views::GridLayout::LEADING,
-        /*resize_percent=*/views::GridLayout::kFixedSize,
-        /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
-        /*fixed_width=*/0, /*min_width=*/0);
-    column_set->AddPaddingColumn(views::GridLayout::kFixedSize, column_divider);
+    main_content_view
+        ->AddColumn(
+            /*h_align=*/views::LayoutAlignment::kStart,
+            /*v_align=*/views::LayoutAlignment::kStart,
+            /*horizontal_resize=*/views::TableLayout::kFixedSize,
+            /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+            /*fixed_width=*/0, /*min_width=*/0)
+        .AddPaddingColumn(views::TableLayout::kFixedSize, column_divider);
   }
-  column_set->AddColumn(
-      /*h_align=*/views::GridLayout::FILL,
-      /*v_align=*/views::GridLayout::FILL,
-      /*resize_percent=*/1.0,
-      /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
-      /*fixed_width=*/0, /*min_width=*/0);
-  column_set->AddColumn(
-      /*h_align=*/views::GridLayout::LEADING,
-      /*v_align=*/views::GridLayout::LEADING,
-      /*resize_percent=*/views::GridLayout::kFixedSize,
-      /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
-      /*fixed_width=*/0, /*min_width=*/0);
+  main_content_view
+      ->AddColumn(
+          /*h_align=*/views::LayoutAlignment::kStretch,
+          /*v_align=*/views::LayoutAlignment::kStretch,
+          /*horizontal_resize=*/1.0,
+          /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+          /*fixed_width=*/0, /*min_width=*/0)
+      .AddColumn(
+          /*h_align=*/views::LayoutAlignment::kStart,
+          /*v_align=*/views::LayoutAlignment::kStart,
+          /*horizontal_resize=*/views::TableLayout::kFixedSize,
+          /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+          /*fixed_width=*/0, /*min_width=*/0);
 
   AddValuesRow(
-      layout, profile_diff,
+      main_content_view, profile_diff,
       /*show_row_label=*/has_non_empty_original_values,
       /*edit_button_callback=*/
       base::BindRepeating(
@@ -266,10 +256,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
           base::Unretained(controller_)));
 
   if (has_non_empty_original_values) {
-    layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                          ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE));
-    AddValuesRow(layout, profile_diff, /*show_row_label=*/true,
+    main_content_view->AddPaddingRow(
+        views::TableLayout::kFixedSize,
+        layout_provider->GetDistanceMetric(
+            DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE));
+    AddValuesRow(main_content_view, profile_diff, /*show_row_label=*/true,
                  /*edit_button_callback=*/{});
   }
 }
