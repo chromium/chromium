@@ -33,6 +33,8 @@
 
 <button onClick="changeState({view: 'files'})">Per-File Analysis</button>
 <button onClick="changeState({view: 'edges'})">Per-Edge Analysis</button>
+<label for="limit">Display limit: </label>
+<input type="number" id="limit" name="limit" onchange="changeState({limit: event.target.value})">
 
 <hr>
 
@@ -167,6 +169,8 @@ function updateView() {
     document.getElementById('edgesview').style = 'display: block';
     buildEdgesTable();
   }
+
+  document.getElementById('limit').value = s.get('limit')
 }
 
 function intersect(arr1, arr2) {
@@ -206,7 +210,7 @@ function buildFilesTable() {
 
   fileNums.sort(sortFuncs[state.get('sort')]);
 
-  const limit = Math.min(1000, fileNums.length);
+  const limit = Math.min(parseInt(state.get('limit')), fileNums.length);
   fileNums = fileNums.slice(0, limit);
 
   function buildRow(i, rank) {
@@ -290,7 +294,7 @@ function buildEdgesTable() {
 
   edgeSizes.sort((x, y) => y[2] - x[2]);
 
-  const limit = Math.min(1000, edgeSizes.length);
+  const limit = Math.min(parseInt(state.get('limit')), edgeSizes.length);
   const edgeNums = [...Array(limit).keys()];
 
   const tbody = document.querySelector('table#edges tbody');
@@ -311,6 +315,8 @@ function getState() {
     params.set('includer', '');
   if (!params.has('included'))
     params.set('included', '');
+  if (!params.has('limit'))
+    params.set('limit', '1000');
 
   return params;
 }
