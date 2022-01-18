@@ -56,7 +56,7 @@ Pattern::RepeatMode CanvasPattern::ParseRepetitionType(
 CanvasPattern::CanvasPattern(scoped_refptr<Image> image,
                              Pattern::RepeatMode repeat,
                              bool origin_clean)
-    : pattern_(Pattern::CreateImagePattern(std::move(image), repeat)),
+    : pattern_(Pattern::CreateImagePattern(image, repeat)),
       origin_clean_(origin_clean) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(
