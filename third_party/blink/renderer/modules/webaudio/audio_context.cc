@@ -96,7 +96,7 @@ AudioContext* AudioContext::Create(Document& document,
 
   if (document.IsDetached()) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
+        DOMExceptionCode::kInvalidStateError,
         "Cannot create AudioContext on a detached document.");
     return nullptr;
   }
