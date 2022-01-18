@@ -405,15 +405,22 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   // GetSubtexts();
   void UpdateLayoutSize(views::BoxLayout* layout_manager, int64_t num_subtexts);
 
+  // Returns true if the mouse is within the bounds of this item. This is not
+  // affected by whether or not the item is overlaid by another popup.
+  bool IsMouseInsideItemBounds() const { return IsMouseHovered(); }
+
+  // We want a mouse click to accept a suggestion only if the user has made an
+  // explicit choice. Therefore, we shall ignore mouse clicks unless the mouse
+  // has been moved into the item's screen bounds. For example, if the item is
+  // hovered by the mouse at the time it's first shown, we want to ignore clicks
+  // until the mouse has left and re-entered the bounds of the item
+  // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
+  bool mouse_observed_outside_item_bounds_ = false;
+
   const int frontend_id_;
 
   // All the labels inside this view.
   std::vector<views::Label*> inner_labels_;
-
-  // The Autofill popup may be hovered by the mouse after its creation. In this
-  // case, we want to ignore clicks on the hovered menu item until the user made
-  // an explicit choice (crbug.com/1240472, crbug.com/1241585).
-  bool mouse_observed_outside_of_item_ = false;
 };
 
 int AutofillPopupItemView::GetFrontendId() const {
@@ -619,14 +626,14 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void AutofillPopupItemView::OnPaint(gfx::Canvas* canvas) {
   AutofillPopupRowView::OnPaint(canvas);
-  mouse_observed_outside_of_item_ |= !IsMouseHovered();
+  mouse_observed_outside_item_bounds_ |= !IsMouseInsideItemBounds();
 }
 
 void AutofillPopupItemView::OnMouseEntered(const ui::MouseEvent& event) {
-  // OnMouseEntered() also fires if the had been hovering over the item and
-  // moved only a little bit. In that case, clicks shall still be ignored and we
-  // don't want to show a preview (crbug.com/1240472, crbug.com/1241585).
-  if (!mouse_observed_outside_of_item_)
+  // OnMouseEntered() does not imply that the mouse had been outside of the
+  // item's bounds before: OnMouseEntered() also fires if the mouse moves just a
+  // little bit on the item. We don't want to show a preview in such a case.
+  if (!mouse_observed_outside_item_bounds_)
     return;
 
   base::WeakPtr<AutofillPopupController> controller =
@@ -636,7 +643,11 @@ void AutofillPopupItemView::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 void AutofillPopupItemView::OnMouseExited(const ui::MouseEvent& event) {
-  mouse_observed_outside_of_item_ = true;
+  // OnMouseExited() does not imply that the mouse has left the item's screen
+  // bounds: OnMouseExited() also fires (on Windows, at least) even when another
+  // popup overlays this item (crbug.com/1287364).
+  mouse_observed_outside_item_bounds_ |= !IsMouseInsideItemBounds();
+
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
   if (controller)
@@ -644,10 +655,9 @@ void AutofillPopupItemView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
-  // Ignore mouse clicks in case the popup appeared directly under the mouse
-  // cursor and we have no indication that the user intentionally selected the
-  // current item (crbug.com/1240472, crbug.com/1241585).
-  if (!mouse_observed_outside_of_item_)
+  // Ignore mouse clicks unless the user made the explicit choice to selected
+  // the current item.
+  if (!mouse_observed_outside_item_bounds_)
     return;
 
   // Ignore clicks immediately after the popup was shown. This is to prevent
