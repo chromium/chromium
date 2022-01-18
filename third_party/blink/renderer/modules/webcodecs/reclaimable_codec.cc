@@ -8,7 +8,9 @@
 #include "base/location.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -31,7 +33,9 @@ ReclaimableCodec::ReclaimableCodec(ExecutionContext* context)
   if (base::FeatureList::IsEnabled(kOnlyReclaimBackgroundWebCodecs)) {
     // Do this last, it will immediately re-enter via OnLifecycleStateChanged().
     observer_handle_ = context->GetScheduler()->AddLifecycleObserver(
-        FrameOrWorkerScheduler::ObserverType::kWorkerScheduler, this);
+        FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
+        WTF::BindRepeating(&ReclaimableCodec::OnLifecycleStateChanged,
+                           WrapWeakPersistent(this)));
   } else {
     // Pretend we're always in the background to _always_ reclaim.
     is_backgrounded_ = true;

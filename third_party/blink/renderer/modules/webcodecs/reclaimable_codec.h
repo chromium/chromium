@@ -25,9 +25,7 @@ class DOMException;
 extern const MODULES_EXPORT base::Feature kReclaimInactiveWebCodecs;
 extern const MODULES_EXPORT base::Feature kOnlyReclaimBackgroundWebCodecs;
 
-class MODULES_EXPORT ReclaimableCodec
-    : public GarbageCollectedMixin,
-      public FrameOrWorkerScheduler::Observer {
+class MODULES_EXPORT ReclaimableCodec : public GarbageCollectedMixin {
  public:
   explicit ReclaimableCodec(ExecutionContext*);
 
@@ -56,7 +54,7 @@ class MODULES_EXPORT ReclaimableCodec
 
   // Notified when throttling state is changed. May be called consecutively
   // with the same value.
-  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState) override;
+  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState);
 
  protected:
   // Pushes back the time at which |this| can be reclaimed due to inactivity.
