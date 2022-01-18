@@ -209,17 +209,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
 }
 
-// Flaky/failing on Linux/CrOS/Mac builds: crbug.com/1284536
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation \
-  DISABLED_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation
-#else
-#define MAYBE_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation \
-  NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation
-#endif
 IN_PROC_BROWSER_TEST_F(
     DevToolsProtocolTest,
-    MAYBE_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {
+    NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {
   GURL url("invalid.scheme:for-sure");
   ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
 
@@ -228,6 +220,7 @@ IN_PROC_BROWSER_TEST_F(
           url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_TYPED, false));
   tab_added_waiter.Wait();
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
   content::NavigationController& navigation_controller =
       web_contents->GetController();
   content::NavigationEntry* pending_entry =
