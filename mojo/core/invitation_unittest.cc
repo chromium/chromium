@@ -696,7 +696,8 @@ DEFINE_TEST_CLIENT(ProcessErrorsClient) {
   EXPECT_EQ(kDisconnectMessage, ReadMessage(pipe));
 }
 
-TEST_F(InvitationTest, Reinvitation) {
+// Temporary removed support for reinvitation for non-isolated connections.
+TEST_F(InvitationTest, DISABLED_Reinvitation) {
   // The gist of this test is that a process should be able to accept an
   // invitation, lose its connection to the process network, and then accept a
   // new invitation to re-establish communication.
