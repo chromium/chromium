@@ -14,6 +14,9 @@ namespace ash {
 
 namespace {
 
+constexpr const char kFirstObserverName[] = "o1";
+constexpr const char kSecondObserverName[] = "o2";
+
 class TestObserver : public ThrottleService::ServiceObserver {
  public:
   TestObserver() = default;
@@ -79,8 +82,9 @@ class ThrottleServiceTest : public testing::Test {
  public:
   ThrottleServiceTest() : service_(&profile_) {
     std::vector<std::unique_ptr<ThrottleObserver>> observers;
-    observers.push_back(std::make_unique<ThrottleObserver>("o1"));
-    observers.push_back(std::make_unique<ThrottleObserver>("o2"));
+    observers.push_back(std::make_unique<ThrottleObserver>(kFirstObserverName));
+    observers.push_back(
+        std::make_unique<ThrottleObserver>(kSecondObserverName));
     service_.SetObserversForTesting(std::move(observers));
   }
 
@@ -215,6 +219,16 @@ TEST_F(ThrottleServiceTest, TestObservers) {
   service()->observers_for_testing()[1]->SetActive(true);
   EXPECT_FALSE(service()->should_throttle());
   EXPECT_EQ(0, test_observer.GetUpdateCountAndReset());
+}
+
+// Tests that getting an observer by its name works.
+TEST_F(ThrottleServiceTest, TestGetObserverByName) {
+  auto* first_observer = service()->GetObserverByName(kFirstObserverName);
+  auto* second_observer = service()->GetObserverByName(kSecondObserverName);
+  EXPECT_NE(nullptr, first_observer);
+  EXPECT_NE(nullptr, second_observer);
+  EXPECT_NE(first_observer, second_observer);
+  EXPECT_EQ(nullptr, service()->GetObserverByName("NonExistentObserverName"));
 }
 
 }  // namespace ash
