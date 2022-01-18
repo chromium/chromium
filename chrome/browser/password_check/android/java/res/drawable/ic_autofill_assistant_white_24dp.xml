@@ -11,14 +11,14 @@
     android:viewportHeight="192">
   <path
       android:pathData="M172,60m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0"
-      android:fillColor="@color/default_text_color_inverse" />
+      android:fillColor="@macro/default_text_color_on_accent1" />
   <path
       android:pathData="M136,88m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"
-      android:fillColor="@color/default_text_color_inverse" />
+      android:fillColor="@macro/default_text_color_on_accent1" />
   <path
       android:pathData="M136,148m-28,0a28,28 0,1 1,56 0a28,28 0,1 1,-56 0"
-      android:fillColor="@color/default_text_color_inverse" />
+      android:fillColor="@macro/default_text_color_on_accent1" />
   <path
       android:pathData="M56,64m-48,0a48,48 0,1 1,96 0a48,48 0,1 1,-96 0"
-      android:fillColor="@color/default_text_color_inverse" />
+      android:fillColor="@macro/default_text_color_on_accent1" />
 </vector>
