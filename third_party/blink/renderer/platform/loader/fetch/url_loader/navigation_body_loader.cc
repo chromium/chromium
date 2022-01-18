@@ -134,7 +134,7 @@ void NavigationBodyLoader::StartLoadingBody(
 
   base::Time response_head_response_time = response_head_->response_time;
   resource_load_info_notifier_wrapper_->NotifyResourceResponseReceived(
-      std::move(response_head_), PreviewsTypes::PREVIEWS_OFF);
+      std::move(response_head_));
 
   if (code_cache_host) {
     if (code_cache_data_) {

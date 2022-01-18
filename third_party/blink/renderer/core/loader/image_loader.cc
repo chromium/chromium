@@ -472,7 +472,6 @@ void ImageLoader::DoUpdateFromElement(
     ResourceRequest resource_request(url);
     if (update_behavior == kUpdateForcedReload) {
       resource_request.SetCacheMode(mojom::FetchCacheMode::kBypassCache);
-      resource_request.SetPreviewsState(PreviewsTypes::kPreviewsNoTransform);
     }
 
     resource_request.SetReferrerPolicy(referrer_policy);

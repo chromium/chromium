@@ -1326,8 +1326,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       last_committed_site_info_(site_instance_->GetBrowserContext()),
       routing_id_(routing_id),
       beforeunload_timeout_delay_(RenderViewHostImpl::kUnloadTimeout),
-      last_navigation_previews_state_(
-          blink::PreviewsTypes::PREVIEWS_UNSPECIFIED),
       frame_(std::move(frame_remote)),
       waiting_for_init_(renderer_initiated_creation_of_main_frame),
       frame_token_(frame_token),
@@ -8183,10 +8181,6 @@ void RenderFrameHostImpl::CommitNavigation(
       DCHECK(!subresource_overrides);
       DCHECK(!prefetch_loader_factory);
     }
-
-    // If a network request was made, update the Previews state.
-    if (IsURLHandledByNetworkStack(common_params->url))
-      last_navigation_previews_state_ = common_params->previews_state;
 
     blink::mojom::PolicyContainerPtr policy_container =
         navigation_request->CreatePolicyContainerForBlink();

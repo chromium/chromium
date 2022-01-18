@@ -71,7 +71,7 @@ void WorkerMainScriptLoader::Start(
       response_head->ssl_info.has_value(), request_id_);
   resource_response_ = response.ToResourceResponse();
   resource_load_info_notifier_wrapper_->NotifyResourceResponseReceived(
-      std::move(response_head), PreviewsTypes::kPreviewsUnspecified);
+      std::move(response_head));
 
   ResourceRequest resource_request(initial_request_);
   resource_load_observer_->DidReceiveResponse(

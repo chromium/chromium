@@ -126,13 +126,6 @@ bool BackgroundLoaderContents::CheckMediaAccessPermission(
   return false;  // No permissions granted.
 }
 
-void BackgroundLoaderContents::AdjustPreviewsStateForNavigation(
-    content::WebContents* web_contents,
-    blink::PreviewsState* previews_state) {
-  if (*previews_state == 0)
-    *previews_state = blink::PreviewsTypes::PREVIEWS_OFF;
-}
-
 bool BackgroundLoaderContents::ShouldAllowLazyLoad() {
   return false;
 }

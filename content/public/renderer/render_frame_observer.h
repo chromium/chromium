@@ -19,7 +19,6 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -237,14 +236,11 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
   // |request_id| uniquely identifies the request within this render frame.
-  // |previews_state| is the PreviewsState if the request is a sub-resource. For
-  // Document resources, |previews_state| should be reported as PREVIEWS_OFF.
   virtual void DidStartResponse(
       const GURL& response_url,
       int request_id,
       const network::mojom::URLResponseHead& response_head,
-      network::mojom::RequestDestination request_destination,
-      blink::PreviewsState previews_state) {}
+      network::mojom::RequestDestination request_destination) {}
   virtual void DidCompleteResponse(
       int request_id,
       const network::URLLoaderCompletionStatus& status) {}

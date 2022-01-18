@@ -59,7 +59,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -258,13 +257,6 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
         contents()->GetPrimaryFrameTree().root()->navigation_request();
     CHECK(navigation_request);
     return navigation_request->common_params().url;
-  }
-
-  blink::PreviewsState GetLastNavigationPreviewsState() {
-    NavigationRequest* navigation_request =
-        contents()->GetPrimaryFrameTree().root()->navigation_request();
-    CHECK(navigation_request);
-    return navigation_request->common_params().previews_state;
   }
 
   TestRenderFrameHost* GetNavigatingRenderFrameHost() {

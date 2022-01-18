@@ -88,7 +88,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -1557,113 +1556,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // 3) Check the first pending navigation has been canceled.
   navigation.WaitForNavigationFinished();  // Resume navigation.
   EXPECT_FALSE(navigation.was_successful());
-}
-
-namespace {
-
-// Checks whether the given urls are requested, and that GetPreviewsState()
-// returns the appropriate value when the Previews are set.
-class PreviewsStateContentBrowserClient : public ContentBrowserClient {
- public:
-  explicit PreviewsStateContentBrowserClient(const GURL& main_frame_url)
-      : main_frame_url_(main_frame_url),
-        main_frame_url_seen_(false),
-        previews_state_(blink::PreviewsTypes::PREVIEWS_OFF),
-        determine_allowed_previews_called_(false),
-        determine_committed_previews_called_(false) {}
-
-  PreviewsStateContentBrowserClient(const PreviewsStateContentBrowserClient&) =
-      delete;
-  PreviewsStateContentBrowserClient& operator=(
-      const PreviewsStateContentBrowserClient&) = delete;
-
-  ~PreviewsStateContentBrowserClient() override {}
-
-  blink::PreviewsState DetermineAllowedPreviews(
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle,
-      const GURL& current_navigation_url) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    EXPECT_FALSE(determine_allowed_previews_called_);
-    determine_allowed_previews_called_ = true;
-    main_frame_url_seen_ = true;
-    EXPECT_EQ(main_frame_url_, current_navigation_url);
-    return previews_state_;
-  }
-
-  blink::PreviewsState DetermineCommittedPreviews(
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle,
-      const net::HttpResponseHeaders* response_headers) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    EXPECT_EQ(previews_state_, initial_state);
-    determine_committed_previews_called_ = true;
-    return initial_state;
-  }
-
-  void SetClient() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    content::SetBrowserClientForTesting(this);
-  }
-
-  void Reset(blink::PreviewsState previews_state) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    main_frame_url_seen_ = false;
-    previews_state_ = previews_state;
-    determine_allowed_previews_called_ = false;
-  }
-
-  void CheckResourcesRequested() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    EXPECT_TRUE(determine_allowed_previews_called_);
-    EXPECT_TRUE(determine_committed_previews_called_);
-    EXPECT_TRUE(main_frame_url_seen_);
-  }
-
- private:
-  const GURL main_frame_url_;
-
-  bool main_frame_url_seen_;
-  blink::PreviewsState previews_state_;
-  bool determine_allowed_previews_called_;
-  bool determine_committed_previews_called_;
-};
-
-}  // namespace
-
-class PreviewsStateBrowserTest : public ContentBrowserTest {
- public:
-  ~PreviewsStateBrowserTest() override {}
-
- protected:
-  void SetUpOnMainThread() override {
-    ContentBrowserTest::SetUpOnMainThread();
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    client_ = std::make_unique<PreviewsStateContentBrowserClient>(
-        embedded_test_server()->GetURL("/title1.html"));
-
-    client_->SetClient();
-  }
-
-  void Reset(blink::PreviewsState previews_state) {
-    client_->Reset(previews_state);
-  }
-
-  void CheckResourcesRequested() { client_->CheckResourcesRequested(); }
-
- private:
-  std::unique_ptr<PreviewsStateContentBrowserClient> client_;
-};
-
-// Test that navigating calls GetPreviewsState returning PREVIEWS_OFF.
-IN_PROC_BROWSER_TEST_F(PreviewsStateBrowserTest, ShouldEnablePreviewsOff) {
-  // Navigate with No Previews.
-  NavigateToURLBlockUntilNavigationsComplete(
-      shell(), embedded_test_server()->GetURL("/title1.html"), 1);
-  CheckResourcesRequested();
 }
 
 // Ensure the renderer process doesn't send too many IPC to the browser process

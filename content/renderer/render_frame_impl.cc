@@ -311,10 +311,6 @@ constexpr base::TimeDelta kDelaySecondsForContentStateSyncHidden =
     base::Seconds(5);
 constexpr base::TimeDelta kDelaySecondsForContentStateSync = base::Seconds(1);
 
-const blink::PreviewsState kDisabledPreviewsBits =
-    blink::PreviewsTypes::PREVIEWS_OFF |
-    blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM;
-
 typedef std::map<int, RenderFrameImpl*> RoutingIDFrameMap;
 static base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit
     g_routing_id_frame_map = LAZY_INSTANCE_INITIALIZER;
@@ -462,14 +458,6 @@ void FillNavigationParamsRequest(
     }
   }
 
-  if (common_params.previews_state & kDisabledPreviewsBits) {
-    // Sanity check disabled vs. enabled bits here before passing on.
-    DCHECK(!(common_params.previews_state & ~kDisabledPreviewsBits))
-        << common_params.previews_state;
-  }
-  navigation_params->previews_state =
-      static_cast<blink::PreviewsState>(common_params.previews_state);
-
   // Set the request initiator origin, which is supplied by the browser
   // process. It is present in cases such as navigating a frame in a different
   // process, which is routed through RenderFrameProxy and the origin is
@@ -584,7 +572,6 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       std::move(referrer), url_request_extra_data->transition_type(),
       navigation_type, download_policy,
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem, GURL(),
-      static_cast<blink::PreviewsState>(info->url_request.GetPreviewsState()),
       base::TimeTicks::Now(), info->url_request.HttpMethod().Latin1(),
       blink::GetRequestBodyForWebURLRequest(info->url_request),
       std::move(source_location), false /* started_from_context_menu */,
@@ -2497,12 +2484,6 @@ void RenderFrameImpl::AddMessageToConsole(
   AddMessageToConsoleImpl(level, message, false /* discard_duplicates */);
 }
 
-blink::PreviewsState RenderFrameImpl::GetPreviewsState() {
-  WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
-  return document_loader ? document_loader->GetPreviewsState()
-                         : blink::PreviewsTypes::PREVIEWS_UNSPECIFIED;
-}
-
 bool RenderFrameImpl::IsPasting() {
   return GetLocalRootWebFrameWidget()->IsPasting();
 }
@@ -2532,14 +2513,13 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     int64_t request_id,
     const GURL& response_url,
     network::mojom::URLResponseHeadPtr response_head,
-    network::mojom::RequestDestination request_destination,
-    int32_t previews_state) {
+    network::mojom::RequestDestination request_destination) {
   if (!blink::IsRequestDestinationFrame(request_destination)) {
     GetFrameHost()->SubresourceResponseStarted(response_url,
                                                response_head->cert_status);
   }
   DidStartResponse(response_url, request_id, std::move(response_head),
-                   request_destination, previews_state);
+                   request_destination);
 }
 
 void RenderFrameImpl::NotifyResourceTransferSizeUpdated(
@@ -4388,11 +4368,10 @@ void RenderFrameImpl::DidStartResponse(
     const GURL& response_url,
     int request_id,
     network::mojom::URLResponseHeadPtr response_head,
-    network::mojom::RequestDestination request_destination,
-    blink::PreviewsState previews_state) {
+    network::mojom::RequestDestination request_destination) {
   for (auto& observer : observers_) {
     observer.DidStartResponse(response_url, request_id, *response_head,
-                              request_destination, previews_state);
+                              request_destination);
   }
 }
 

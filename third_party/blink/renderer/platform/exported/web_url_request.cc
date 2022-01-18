@@ -355,14 +355,6 @@ void WebURLRequest::SetFetchIntegrity(const WebString& integrity) {
   return resource_request_->SetFetchIntegrity(integrity);
 }
 
-PreviewsState WebURLRequest::GetPreviewsState() const {
-  return resource_request_->GetPreviewsState();
-}
-
-void WebURLRequest::SetPreviewsState(PreviewsState previews_state) {
-  return resource_request_->SetPreviewsState(previews_state);
-}
-
 const scoped_refptr<WebURLRequestExtraData>&
 WebURLRequest::GetURLRequestExtraData() const {
   return resource_request_->GetURLRequestExtraData();

@@ -12,7 +12,6 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -94,14 +93,11 @@ class CONTENT_EXPORT NavigationURLLoader {
   virtual void Start() = 0;
 
   // Called in response to OnRequestRedirected to continue processing the
-  // request. `new_previews_state` will be updated for newly created URLLoaders,
-  // but the existing default URLLoader will not see `new_previews_state` unless
-  // the URLLoader happens to be reset.
+  // request.
   virtual void FollowRedirect(
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      blink::PreviewsState new_previews_state) = 0;
+      const net::HttpRequestHeaders& modified_cors_exempt_headers) = 0;
 
   // Sets an overall request timeout for this navigation, which will cause the
   // navigation to fail if it expires before the navigation commits. This is

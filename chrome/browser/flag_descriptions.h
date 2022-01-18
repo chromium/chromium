@@ -688,9 +688,6 @@ extern const char
 extern const char kEnableRestrictedWebApisName[];
 extern const char kEnableRestrictedWebApisDescription[];
 
-extern const char kEnableSubresourceRedirectName[];
-extern const char kEnableSubresourceRedirectDescription[];
-
 extern const char kEnableUseZoomForDsfName[];
 extern const char kEnableUseZoomForDsfDescription[];
 extern const char kEnableUseZoomForDsfChoiceDefault[];

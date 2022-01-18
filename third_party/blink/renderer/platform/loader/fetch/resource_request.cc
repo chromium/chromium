@@ -102,7 +102,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       initial_priority_(ResourceLoadPriority::kUnresolved),
       priority_(ResourceLoadPriority::kUnresolved),
       intra_priority_value_(0),
-      previews_state_(PreviewsTypes::kPreviewsUnspecified),
       request_context_(mojom::blink::RequestContextType::UNSPECIFIED),
       destination_(network::mojom::RequestDestination::kEmpty),
       mode_(network::mojom::RequestMode::kNoCors),

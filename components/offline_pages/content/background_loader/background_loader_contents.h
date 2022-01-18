@@ -88,9 +88,6 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
-  void AdjustPreviewsStateForNavigation(
-      content::WebContents* web_contents,
-      blink::PreviewsState* previews_state) override;
   bool ShouldAllowLazyLoad() override;
 
  private:

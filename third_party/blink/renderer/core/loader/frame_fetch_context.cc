@@ -288,12 +288,6 @@ SubresourceFilter* FrameFetchContext::GetSubresourceFilter() const {
   return document_loader_->GetSubresourceFilter();
 }
 
-PreviewsState FrameFetchContext::previews_state() const {
-  if (GetResourceFetcherProperties().IsDetached())
-    return PreviewsTypes::kPreviewsUnspecified;
-  return document_loader_->GetPreviewsState();
-}
-
 LocalFrame* FrameFetchContext::GetFrame() const {
   return document_->GetFrame();
 }
@@ -376,13 +370,6 @@ void FrameFetchContext::PrepareRequest(
 
   if (document_loader_->ForceFetchCacheMode())
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
-
-  if (request.GetPreviewsState() == PreviewsTypes::kPreviewsUnspecified) {
-    PreviewsState request_previews_state = document_loader_->GetPreviewsState();
-    if (request_previews_state == PreviewsTypes::kPreviewsUnspecified)
-      request_previews_state = PreviewsTypes::kPreviewsOff;
-    request.SetPreviewsState(request_previews_state);
-  }
 
   GetLocalFrameClient()->DispatchWillSendRequest(request);
   FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler();

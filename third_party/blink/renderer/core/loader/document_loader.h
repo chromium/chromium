@@ -244,8 +244,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   DocumentLoadTiming& GetTiming() { return document_load_timing_; }
 
-  PreviewsState GetPreviewsState() const { return previews_state_; }
-
   struct InitialScrollState {
     DISALLOW_NEW();
     InitialScrollState()
@@ -505,7 +503,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   AtomicString referrer_;
   scoped_refptr<EncodedFormData> http_body_;
   AtomicString http_content_type_;
-  PreviewsState previews_state_;
   absl::optional<WebOriginPolicy> origin_policy_;
   const scoped_refptr<const SecurityOrigin> requestor_origin_;
   const KURL unreachable_url_;

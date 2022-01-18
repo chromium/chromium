@@ -820,7 +820,6 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
     const GURL& dest_url,
     blink::mojom::ReferrerPtr dest_referrer,
     blink::mojom::NavigationType navigation_type,
-    blink::PreviewsState previews_state,
     base::TimeTicks navigation_start,
     base::TimeTicks input_start) {
   blink::NavigationDownloadPolicy download_policy;
@@ -838,11 +837,10 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       // navigation that may use replacement create their CommonNavigationParams
       // via NavigationRequest, for example, instead of via NavigationEntry.
       false /* should_replace_entry */,
-      is_for_main_frame ? GetBaseURLForDataURL() : GURL(), previews_state,
-      navigation_start, frame_entry.method(),
-      post_body ? post_body : post_data_, network::mojom::SourceLocation::New(),
-      has_started_from_context_menu(), has_user_gesture(),
-      false /* has_text_fragment_token */,
+      is_for_main_frame ? GetBaseURLForDataURL() : GURL(), navigation_start,
+      frame_entry.method(), post_body ? post_body : post_data_,
+      network::mojom::SourceLocation::New(), has_started_from_context_menu(),
+      has_user_gesture(), false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */, input_start,
       network::mojom::RequestDestination::kEmpty);

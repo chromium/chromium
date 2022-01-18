@@ -22,7 +22,6 @@
 #include "content/public/browser/serial_chooser.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-forward.h"
@@ -646,11 +645,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // used by the browser to assist in controlling the behavior of sliding the
   // top controls as a result of page gesture scrolling while in tablet mode.
   virtual void SetTopControlsGestureScrollInProgress(bool in_progress) {}
-
-  // Give WebContentsDelegates the opportunity to adjust the previews state.
-  virtual void AdjustPreviewsStateForNavigation(
-      WebContents* web_contents,
-      blink::PreviewsState* previews_state) {}
 
   // Requests to print an out-of-process subframe for the specified WebContents.
   // |rect| is the rectangular area where its content resides in its parent

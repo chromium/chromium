@@ -122,8 +122,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
         int64_t request_id,
         const GURL& final_url,
         network::mojom::URLResponseHeadPtr head,
-        network::mojom::RequestDestination request_destination,
-        int32_t previews_state) override {}
+        network::mojom::RequestDestination request_destination) override {}
     void NotifyResourceTransferSizeUpdated(
         int64_t request_id,
         int32_t transfer_size_diff) override {}

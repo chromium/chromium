@@ -29,7 +29,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "net/base/isolation_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/origin.h"
@@ -207,7 +206,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       const GURL& dest_url,
       blink::mojom::ReferrerPtr dest_referrer,
       blink::mojom::NavigationType navigation_type,
-      blink::PreviewsState previews_state,
       base::TimeTicks navigation_start,
       base::TimeTicks input_start);
   blink::mojom::CommitNavigationParamsPtr ConstructCommitNavigationParams(

@@ -52,7 +52,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)

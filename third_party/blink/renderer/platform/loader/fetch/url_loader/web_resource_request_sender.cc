@@ -270,8 +270,6 @@ int WebResourceRequestSender::SendAsync(
           request_id, request->url, request->method, request->referrer,
           request_info_->request_destination, request->priority);
 
-  request_info_->previews_state = request->previews_state;
-
   auto client = std::make_unique<MojoURLLoaderClient>(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),
       request->url, back_forward_cache_loader_helper);
@@ -455,8 +453,7 @@ void WebResourceRequestSender::OnReceivedResponse(
     return;
 
   request_info_->resource_load_info_notifier_wrapper
-      ->NotifyResourceResponseReceived(std::move(response_head),
-                                       request_info_->previews_state);
+      ->NotifyResourceResponseReceived(std::move(response_head));
 }
 
 void WebResourceRequestSender::OnReceivedCachedMetadata(

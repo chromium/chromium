@@ -266,7 +266,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
         request_method, &delegate);
     loader->Start();
     delegate.WaitForRequestRedirected();
-    loader->FollowRedirect({}, {}, {}, blink::PreviewsTypes::PREVIEWS_OFF);
+    loader->FollowRedirect({}, {}, {});
 
     EXPECT_EQ(expected_redirect_method, delegate.redirect_info().new_method);
 
@@ -306,7 +306,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
         true /*is_main_frame*/, upgrade_if_insecure);
     loader->Start();
     delegate.WaitForRequestRedirected();
-    loader->FollowRedirect({}, {}, {}, blink::PreviewsTypes::PREVIEWS_OFF);
+    loader->FollowRedirect({}, {}, {});
+
     if (expect_request_fail) {
       delegate.WaitForRequestFailed();
     } else {
@@ -474,8 +475,7 @@ TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
   net::HttpRequestHeaders redirect_headers;
   redirect_headers.SetHeader("Header2", "");
   redirect_headers.SetHeader("Header3", "Value3");
-  loader->FollowRedirect({}, redirect_headers, {},
-                         blink::PreviewsTypes::PREVIEWS_OFF);
+  loader->FollowRedirect({}, redirect_headers, {});
   delegate.WaitForResponseStarted();
 
   // Redirected request should also have modified headers.

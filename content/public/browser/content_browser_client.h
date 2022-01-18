@@ -58,7 +58,6 @@
 #include "services/network/public/mojom/websocket.mojom-forward.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -1864,26 +1863,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns true if the network service should be sandboxed. false otherwise.
   // This is called on the UI thread.
   virtual bool ShouldSandboxNetworkService();
-
-  // Asks the embedder for the PreviewsState which says which previews should
-  // be enabled for the given navigation. The PreviewsState is a bitmask of
-  // potentially several Previews optimizations. |initial_state| is used to
-  // keep sub-frame navigation state consistent with main frame state.
-  // |current_navigation_url| is the URL that is currently being navigated to,
-  // and can differ from GetURL() in |navigation_handle| on redirects.
-  virtual blink::PreviewsState DetermineAllowedPreviews(
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle,
-      const GURL& current_navigation_url);
-
-  // Asks the embedder for the preview state that should be committed to the
-  // renderer. |initial_state| was pre-determined by |DetermineAllowedPreviews|.
-  // |navigation_handle| is the corresponding navigation object.
-  // |response_headers| are the response headers related to this navigation.
-  virtual blink::PreviewsState DetermineCommittedPreviews(
-      blink::PreviewsState initial_state,
-      content::NavigationHandle* navigation_handle,
-      const net::HttpResponseHeaders* response_headers);
 
   // Browser-side API to log blink UseCounters for events that don't occur in
   // the renderer.

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "net/base/ip_endpoint.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -85,8 +86,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceRedirectReceived(
 }
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
-    network::mojom::URLResponseHeadPtr response_head,
-    PreviewsState previews_state) {
+    network::mojom::URLResponseHeadPtr response_head) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (response_head->network_accessed) {
     if (resource_load_info_->request_destination ==
@@ -114,8 +114,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
     if (weak_wrapper_resource_load_info_notifier_) {
       weak_wrapper_resource_load_info_notifier_->NotifyResourceResponseReceived(
           resource_load_info_->request_id, resource_load_info_->final_url,
-          std::move(response_head), resource_load_info_->request_destination,
-          previews_state);
+          std::move(response_head), resource_load_info_->request_destination);
     }
     return;
   }
@@ -131,8 +130,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
           &mojom::ResourceLoadInfoNotifier::NotifyResourceResponseReceived,
           weak_wrapper_resource_load_info_notifier_,
           resource_load_info_->request_id, resource_load_info_->final_url,
-          std::move(response_head), resource_load_info_->request_destination,
-          previews_state));
+          std::move(response_head), resource_load_info_->request_destination));
 }
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceTransferSizeUpdated(

@@ -114,15 +114,6 @@ FetchParameters CSSImageValue::PrepareFetch(
     params.SetLazyImageDeferred();
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect) &&
-      params.Url().ProtocolIsInHTTPFamily() &&
-      GetNetworkStateNotifier().SaveDataEnabled()) {
-    auto& subresource_request = params.MutableResourceRequest();
-    subresource_request.SetPreviewsState(
-        subresource_request.GetPreviewsState() |
-        PreviewsTypes::kSubresourceRedirectOn);
-  }
-
   if (origin_clean_ != OriginClean::kTrue)
     params.SetFromOriginDirtyStyleSheet(true);
 

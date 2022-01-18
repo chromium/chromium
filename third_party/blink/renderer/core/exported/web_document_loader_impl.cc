@@ -159,10 +159,6 @@ bool WebDocumentLoaderImpl::HasBeenLoadedAsWebArchive() const {
   return archive_;
 }
 
-PreviewsState WebDocumentLoaderImpl::GetPreviewsState() const {
-  return DocumentLoader::GetPreviewsState();
-}
-
 WebArchiveInfo WebDocumentLoaderImpl::GetArchiveInfo() const {
   if (archive_ &&
       archive_->LoadResult() == mojom::blink::MHTMLLoadResult::kSuccess) {

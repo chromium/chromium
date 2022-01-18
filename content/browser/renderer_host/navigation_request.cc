@@ -1219,8 +1219,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           is_same_document ? blink::mojom::NavigationType::SAME_DOCUMENT
                            : blink::mojom::NavigationType::DIFFERENT_DOCUMENT,
           blink::NavigationDownloadPolicy(), should_replace_current_entry,
-          GURL() /* base_url_for_data_url*/,
-          blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(),
+          GURL() /* base_url_for_data_url*/, base::TimeTicks::Now(),
           method /* method */, nullptr /* post_data */,
           network::mojom::SourceLocation::New(),
           false /* started_from_context_menu */, has_transient_activation,
@@ -2088,16 +2087,6 @@ void NavigationRequest::BeginNavigationImpl() {
     return;
   }
 
-  // If the navigation is served from the back-forward cache or is activating a
-  // prerendered page, we already know its preview type from the first time we
-  // navigated into the page, so we should only set |previews_state| when the
-  // navigation is not served from one of these.
-  if (!IsPageActivation()) {
-    common_params_->previews_state =
-        GetContentClient()->browser()->DetermineAllowedPreviews(
-            common_params_->previews_state, this, common_params_->url);
-  }
-
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.BeginNavigationImpl.",
                     IsInMainFrame() ? "MainFrame" : "Subframe"}),
@@ -2654,13 +2643,6 @@ void NavigationRequest::OnRequestRedirected(
     RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
         site_instance->GetBrowserContext());
   }
-
-  // Re-evaluate the PreviewsState, but do not update the URLLoader. The
-  // URLLoader PreviewsState is considered immutable after the URLLoader is
-  // created.
-  common_params_->previews_state =
-      GetContentClient()->browser()->DetermineAllowedPreviews(
-          common_params_->previews_state, this, common_params_->url);
 
   // Check what the process of the SiteInstance is. It will be passed to the
   // NavigationHandle, and informed to expect a navigation to the redirected
@@ -3331,11 +3313,6 @@ void NavigationRequest::OnResponseStarted(
   // This must be set before DetermineCommittedPreviews is called.
   proxy_server_ = response_head_->proxy_server;
 
-  // Update the previews state of the request.
-  common_params_->previews_state =
-      GetContentClient()->browser()->DetermineCommittedPreviews(
-          common_params_->previews_state, this, response_head_->headers.get());
-
   // Store the URLLoaderClient endpoints until checks have been processed.
   url_loader_client_endpoints_ = std::move(url_loader_client_endpoints);
 
@@ -3564,7 +3541,6 @@ void NavigationRequest::OnRequestFailedInternal(
   // anymore from now while the error page is being loaded.
   loader_.reset();
 
-  common_params_->previews_state = blink::PreviewsTypes::PREVIEWS_OFF;
   ssl_info_ = status.ssl_info;
 
   devtools_instrumentation::OnNavigationRequestFailed(*this, status);
@@ -4089,9 +4065,9 @@ void NavigationRequest::OnRedirectChecksComplete(
 
   net::HttpRequestHeaders cors_exempt_headers;
   std::swap(cors_exempt_headers, cors_exempt_request_headers_);
-  loader_->FollowRedirect(
-      std::move(removed_headers), std::move(modified_headers),
-      std::move(cors_exempt_headers), common_params_->previews_state);
+  loader_->FollowRedirect(std::move(removed_headers),
+                          std::move(modified_headers),
+                          std::move(cors_exempt_headers));
 }
 
 void NavigationRequest::OnFailureChecksComplete(

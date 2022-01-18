@@ -18,7 +18,6 @@
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/platform/media/resource_fetch_context.h"
 #include "third_party/blink/public/platform/media/url_index.h"
@@ -87,18 +86,6 @@ void ResourceMultiBufferDataProvider::Start() {
       WebString::FromUTF8(net::HttpRequestHeaders::kRange),
       WebString::FromUTF8(
           net::HttpByteRange::RightUnbounded(byte_pos()).GetHeaderValue()));
-
-  if (url_data_->length() == kPositionNotSpecified &&
-      url_data_->CachedSize() == 0 && url_data_->BytesReadFromCache() == 0 &&
-      WebNetworkStateNotifier::SaveDataEnabled() &&
-      (url_data_->url().SchemeIs(url::kHttpScheme) ||
-       url_data_->url().SchemeIs(url::kHttpsScheme))) {
-    // This lets the data reduction proxy know that we don't have any previously
-    // cached data for this resource. We can only send it if this is the first
-    // request for this resource.
-    request.SetPreviewsState(request.GetPreviewsState() |
-                             PreviewsTypes::kSrcVideoRedirectOn);
-  }
 
   // We would like to send an if-match header with the request to
   // tell the remote server that we really can't handle files other

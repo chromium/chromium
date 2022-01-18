@@ -21,7 +21,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "url/gurl.h"
 
 const int kNonInstantRendererPID = 0;

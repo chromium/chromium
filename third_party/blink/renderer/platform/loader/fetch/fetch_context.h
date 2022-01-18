@@ -177,10 +177,6 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return false;
   }
 
-  virtual PreviewsState previews_state() const {
-    return PreviewsTypes::kPreviewsUnspecified;
-  }
-
   // Returns a receiver corresponding to a request with |request_id|.
   // Null if the request has not been intercepted by a service worker.
   virtual mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>

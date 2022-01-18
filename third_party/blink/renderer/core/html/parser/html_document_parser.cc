@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/html/parser/html_resource_preloader.h"
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
 #include "third_party/blink/renderer/core/html/parser/pump_session.h"
-#include "third_party/blink/renderer/core/html/parser/subresource_redirect_origins_preloader.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -1831,10 +1830,6 @@ void HTMLDocumentParser::FetchQueuedPreloads() {
     base::UmaHistogramTimes(base::StrCat({"Blink.FetchQueuedPreloadsTime",
                                           GetPreloadHistogramSuffix()}),
                             timer.Elapsed());
-  }
-  if (auto* subresource_redirect_origins_preloader =
-          SubresourceRedirectOriginsPreloader::From(*GetDocument())) {
-    subresource_redirect_origins_preloader->PreloadOriginsNow();
   }
 }
 

@@ -2420,27 +2420,6 @@ const FeatureEntry::FeatureVariation kCheckOfflineCapabilityVariations[] = {
      base::size(kCheckOfflineCapabilityEnforce), nullptr},
 };
 
-const FeatureEntry::FeatureParam kSubresourceRedirectPublicImageHints[] = {
-    {"enable_public_image_hints_based_compression", "true"},
-    {"enable_subresource_server_redirect", "true"},
-    {"enable_login_robots_based_compression", "false"},
-};
-
-const FeatureEntry::FeatureParam
-    kSubresourceRedirectLoginRobotsBasedCompression[] = {
-        {"enable_login_robots_based_compression", "true"},
-        {"enable_subresource_server_redirect", "true"},
-        {"enable_public_image_hints_based_compression", "false"},
-};
-
-const FeatureEntry::FeatureVariation kSubresourceRedirectVariations[] = {
-    {"Public image hints based compression",
-     kSubresourceRedirectPublicImageHints,
-     base::size(kSubresourceRedirectPublicImageHints), nullptr},
-    {"robots.txt allowed image compression in non logged-in pages",
-     kSubresourceRedirectLoginRobotsBasedCompression,
-     base::size(kSubresourceRedirectLoginRobotsBasedCompression), nullptr}};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kCategoricalSearch_Unranked[] = {
     {"ranking", "none"}};
@@ -3653,12 +3632,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-use-zoom-for-dsf", flag_descriptions::kEnableUseZoomForDsfName,
      flag_descriptions::kEnableUseZoomForDsfDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableUseZoomForDSFChoices)},
-    {"enable-subresource-redirect",
-     flag_descriptions::kEnableSubresourceRedirectName,
-     flag_descriptions::kEnableSubresourceRedirectDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kSubresourceRedirect,
-                                    kSubresourceRedirectVariations,
-                                    "SubresourceRedirect")},
     {"enable-login-detection", flag_descriptions::kEnableLoginDetectionName,
      flag_descriptions::kEnableLoginDetectionDescription, kOsAll,
      FEATURE_VALUE_TYPE(login_detection::kLoginDetection)},

@@ -156,7 +156,6 @@ source_set("headers") {
     "loader/mime_sniffing_throttle.h",
     "loader/mime_sniffing_url_loader.h",
     "loader/network_utils.h",
-    "loader/previews_state.h",
     "loader/record_load_histograms.h",
     "loader/referrer_utils.h",
     "loader/resource_type_util.h",

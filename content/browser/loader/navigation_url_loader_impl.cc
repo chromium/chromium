@@ -285,7 +285,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->upgrade_if_insecure = request_info.upgrade_if_insecure;
   new_request->throttling_profile_id = request_info.devtools_frame_token;
   new_request->transition_type = request_info.common_params->transition;
-  new_request->previews_state = request_info.common_params->previews_state;
   new_request->devtools_request_id =
       request_info.devtools_navigation_token.ToString();
   new_request->obey_origin_policy = request_info.obey_origin_policy;
@@ -1376,8 +1375,7 @@ void NavigationURLLoaderImpl::Start() {
 void NavigationURLLoaderImpl::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    blink::PreviewsState new_previews_state) {
+    const net::HttpRequestHeaders& modified_cors_exempt_headers) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!redirect_info_.new_url.is_empty());
 
@@ -1411,7 +1409,6 @@ void NavigationURLLoaderImpl::FollowRedirect(
 
   resource_request_->referrer = GURL(redirect_info_.new_referrer);
   resource_request_->referrer_policy = redirect_info_.new_referrer_policy;
-  resource_request_->previews_state = new_previews_state;
   resource_request_->navigation_redirect_chain.push_back(
       redirect_info_.new_url);
   url_chain_.push_back(redirect_info_.new_url);

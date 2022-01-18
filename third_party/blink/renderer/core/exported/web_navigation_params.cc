@@ -34,7 +34,6 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(
   result->http_body = info.url_request.HttpBody();
   result->http_content_type =
       info.url_request.HttpHeaderField(http_names::kContentType);
-  result->previews_state = info.url_request.GetPreviewsState();
   result->requestor_origin = info.url_request.RequestorOrigin();
   result->frame_load_type = info.frame_load_type;
   result->is_client_redirect = info.is_client_redirect;
