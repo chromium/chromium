@@ -86,19 +86,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ClickToCallPhoneNumberPrecompileTime" units="ms"
-    expires_after="M87">
-  <obsolete>
-    Removed in M87.
-  </obsolete>
-  <owner>knollr@chromium.org</owner>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <summary>
-    Duration of the phone number regex precompilation task. This is recorded
-    once after startup. Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.ClickToCallPhoneNumberValid" units="BooleanValid"
     expires_after="M98">
   <owner>knollr@chromium.org</owner>
@@ -154,51 +141,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.DeviceInfoAvailable" enum="BooleanAvailable"
-    expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>knollr@chromium.org</owner>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <summary>
-    Whether a device identified by its guid is available in the local
-    DeviceInfoTracker. Logged before sending a message to that guid.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.DeviceLastUpdatedAge" units="hours"
-    expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="SharingMessage" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The number of hours since the target device timestamp was last updated.
-    Logged when a message is sent to the device. Not logged for sending ack
-    messages. All platforms.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.DeviceLastUpdatedAgeWithResult" units="hours"
-    expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="SharingSendMessageResult" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The number of hours since the target device timestamp was last updated.
-    Logged when a message is sent to the device and the result is known. Not
-    logged for sending ack messages. All platforms.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.DeviceRegistrationResult"
     enum="SharingDeviceRegistrationResult" expires_after="M97">
   <owner>knollr@chromium.org</owner>
@@ -248,21 +190,6 @@ chromium-metrics-reviews@google.com.
     Counts of events in the long screenshot capture process. Events are recorded
     for events such as opening/confirming the dialog, or on corner cases such as
     memory pressure while the dialog is open.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.MajorVersionComparison"
-    enum="SharingMajorVersionComparison" expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="SharingMessage" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The comparison of the major version of Chrome on this (the sender) device
-    and the receiver device. Logged when a message is sent. All platforms.
   </summary>
 </histogram>
 
@@ -365,16 +292,6 @@ chromium-metrics-reviews@google.com.
     The size of the text in a Remote Copy message received from FCM. Desktop
     only.
   </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyResizeImageTime" units="ms"
-    expires_after="M90">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>The time to resize an image for Remote Copy. Desktop only.</summary>
 </histogram>
 
 <histogram name="Sharing.RemoteCopyWriteImageDetectionTime" units="ms"
@@ -529,22 +446,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SharedClipboardRetries" units="retries"
-    expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="SharingSendMessageResult" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The retry count for sending a shared clipboard message. The zero value is
-    for the first attempt to send the message, which is not a retry. Logged when
-    the result of sending the message is known.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SharedClipboardSelectedDeviceIndex" units="index"
     expires_after="M88">
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -612,21 +513,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the origin of the share that opened the sharing hub. Recorded when
     the sharing hub is opened.
-  </summary>
-</histogram>
-
-<histogram
-    name="Sharing.SharingHubAndroid.SharedHighlights.TimeToGetLinkToText"
-    units="ms" expires_after="2021-07-11">
-  <obsolete>
-    Removed in M94.
-  </obsolete>
-  <owner>gayane@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Records time it takes to fulfill a link-to-text request. Recorded even if
-    request fails. Corresponds to how long is Sharing Hub delayed because of
-    link-to-text.
   </summary>
 </histogram>
 
