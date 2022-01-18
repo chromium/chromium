@@ -47,6 +47,27 @@ source_set("main") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "remote_webauthn_native_messaging_host_unittest.cc" ]
+
+  deps = [
+    ":webauthn",
+    "//base",
+    "//base/test:test_support",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//remoting/base",
+    "//remoting/host:test_support",
+    "//remoting/host/mojom",
+    "//remoting/host/native_messaging:native_messaging",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 executable("remote_webauthn") {
   sources = [ "remote_webauthn_entry_point.cc" ]
 

@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
+#include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
@@ -22,7 +23,15 @@ namespace remoting {
 
 RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(task_runner) {}
+    : RemoteWebAuthnNativeMessagingHost(
+          std::make_unique<ChromotingHostServicesClient>(),
+          task_runner) {}
+
+RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
+    std::unique_ptr<ChromotingHostServicesProvider> host_service_api_client,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : task_runner_(task_runner),
+      host_service_api_client_(std::move(host_service_api_client)) {}
 
 RemoteWebAuthnNativeMessagingHost::~RemoteWebAuthnNativeMessagingHost() {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -237,7 +246,7 @@ bool RemoteWebAuthnNativeMessagingHost::EnsureIpcConnection() {
     return true;
   }
 
-  auto* api = host_service_api_client_.GetSessionServices();
+  auto* api = host_service_api_client_->GetSessionServices();
   if (!api) {
     return false;
   }

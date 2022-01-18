@@ -724,6 +724,7 @@ source_set("unit_tests") {
     "//remoting/host/remote_open_url:unit_tests",
     "//remoting/host/security_key:unit_tests",
     "//remoting/host/setup:common",
+    "//remoting/host/webauthn:unit_tests",
     "//remoting/proto",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol:test_support",
