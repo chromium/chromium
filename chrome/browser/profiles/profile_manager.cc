@@ -713,6 +713,7 @@ Profile* ProfileManager::GetActiveUserProfile() {
   return profile;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 // static
 Profile* ProfileManager::CreateInitialProfile() {
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
@@ -724,6 +725,7 @@ Profile* ProfileManager::CreateInitialProfile() {
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return profile;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 
 void ProfileManager::AddObserver(ProfileManagerObserver* observer) {
   observers_.AddObserver(observer);

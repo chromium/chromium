@@ -357,13 +357,13 @@ void AddFirstRunNewTabs(StartupBrowserCreator* browser_creator,
 }
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Initializes the primary profile, possibly doing some user prompting to pick
+// Initializes the initial profile, possibly doing some user prompting to pick
 // a fallback profile. Returns either
 // - kBrowserWindow mode with the newly created profile,
 // - kProfilePicker mode indicating that the profile picker should be shown;
 //   the profile is a guest profile in this case, or
 // - kError mode with a nullptr profile if startup should not continue.
-StartupProfileInfo CreatePrimaryProfile(
+StartupProfileInfo CreateInitialProfile(
     const content::MainFunctionParams& parameters,
     const base::FilePath& cur_dir,
     const base::CommandLine& parsed_command_line) {
@@ -429,7 +429,7 @@ StartupProfileInfo CreatePrimaryProfile(
     // TODO(lwchkg): What diagnostics do you want to include in the feedback
     // report when an error occurs?
     ShowProfileErrorDialog(error_type, IDS_COULDNT_STARTUP_PROFILE_ERROR,
-                           "Error creating primary profile.");
+                           "Error creating initial profile.");
     return profile_info;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
@@ -1479,7 +1479,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   PreProfileInit();
 
 #if BUILDFLAG(ENABLE_NACL)
-  // NaClBrowserDelegateImpl is accessed inside CreatePrimaryProfile().
+  // NaClBrowserDelegateImpl is accessed inside CreateInitialProfile().
   // So make sure to create it before that.
   nacl::NaClBrowser::SetDelegate(std::make_unique<NaClBrowserDelegateImpl>(
       browser_process_->profile_manager()));
@@ -1487,7 +1487,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
-  StartupProfileInfo profile_info = CreatePrimaryProfile(
+  StartupProfileInfo profile_info = CreateInitialProfile(
       parameters_, /*cur_dir=*/base::FilePath(), parsed_command_line());
 
   profile_ = profile_info.profile;
