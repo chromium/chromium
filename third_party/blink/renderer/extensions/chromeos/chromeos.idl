@@ -5,4 +5,6 @@
 interface ChromeOS {
   [RuntimeEnabled=BlinkExtensionChromeOSWindowManagement]
   readonly attribute CrosWindowManagement windowManagement;
+  [RuntimeEnabled=BlinkExtensionChromeOSHID]
+  readonly attribute CrosHID hid;
 };

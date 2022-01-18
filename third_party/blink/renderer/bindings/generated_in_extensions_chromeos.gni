@@ -11,4 +11,6 @@ generated_namespace_sources_in_extensions_chromeos = [
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window_management.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_window.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_hid.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_hid.cc",
 ]

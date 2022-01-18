@@ -310,6 +310,10 @@
       name: "BlinkExtensionChromeOS",
     },
     {
+      name: "BlinkExtensionChromeOSHID",
+      depends_on: ["BlinkExtensionChromeOS"],
+    },
+    {
       name: "BlinkExtensionChromeOSWindowManagement",
       depends_on: ["BlinkExtensionChromeOS"],
     },
