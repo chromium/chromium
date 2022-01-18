@@ -197,34 +197,12 @@ crbug.com/1176933 [ Linux ] virtual/gpu/fast/canvas/canvas-formattedtext-2.html 
 # These tests were disabled to allow enabling WebAssembly Reference Types.
 crbug.com/v8/7581 external/wpt/wasm/jsapi/global/type.tentative.any.html [ Failure Pass ]
 crbug.com/v8/7581 external/wpt/wasm/jsapi/global/type.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/7581 external/wpt/wasm/jsapi/table/constructor-reftypes.tentative.any.html [ Failure Pass ]
-crbug.com/v8/7581 external/wpt/wasm/jsapi/table/constructor-reftypes.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/7581 external/wpt/wasm/jsapi/table/set-reftypes.tentative.any.html [ Failure Pass ]
-crbug.com/v8/7581 external/wpt/wasm/jsapi/table/set-reftypes.tentative.any.worker.html [ Failure Pass ]
 
 # These tests block fixes done in V8. The tests run on the V8 bots as well.
 crbug.com/v8/12227 external/wpt/wasm/jsapi/exception/toString.tentative.any.html [ Failure Pass ]
 crbug.com/v8/12227 external/wpt/wasm/jsapi/exception/toString.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/type.tentative.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/type.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/types.tentative.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/types.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/prototypes.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/prototypes.any.worker.html [ Failure Pass ]
 crbug.com/v8/12227 external/wpt/wasm/jsapi/table/type.tentative.any.html [ Failure Pass ]
 crbug.com/v8/12227 external/wpt/wasm/jsapi/table/type.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow-reftypes.tentative.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow-reftypes.tentative.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/get-set.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/get-set.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/constructor.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/constructor.any.worker.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow.any.html [ Failure Pass ]
-crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow.any.worker.html [ Failure Pass ]
 
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
@@ -4007,7 +3985,6 @@ crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.h
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Failure Skip Timeout ]
-crbug.com/626703 external/wpt/wasm/jsapi/functions/incumbent.html [ Crash ]
 crbug.com/626703 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
@@ -4682,8 +4659,6 @@ crbug.com/1161994 http/tests/inspector-protocol/emulation/emulation-set-disabled
 
 crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success-and-failure.html [ Timeout ]
 crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success.html [ Timeout ]
-
-crbug.com/877286 external/wpt/wasm/serialization/module/no-transferring.html [ Failure ]
 
 crbug.com/831509 external/wpt/service-workers/service-worker/skip-waiting-installed.https.html [ Failure Pass ]
 
@@ -5912,10 +5887,6 @@ crbug.com/1084256 [ Linux ] http/tests/misc/insert-iframe-into-xml-document-befo
 crbug.com/1084256 [ Mac ] http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html [ Failure Pass ]
 crbug.com/1084276 [ Mac ] http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html [ Crash Failure Pass ]
 
-# Disabled to prepare fixing the tests in V8
-crbug.com/v8/10556 external/wpt/wasm/jsapi/instance/constructor-caching.any.html [ Failure Pass ]
-crbug.com/v8/10556 external/wpt/wasm/jsapi/instance/constructor-caching.any.worker.html [ Failure Pass ]
-
 # Temporarily disabled to land the new wasm exception handling JS API
 crbug.com/v8/11992 external/wpt/wasm/jsapi/exception/* [ Skip ]
 crbug.com/v8/11992 external/wpt/wasm/jsapi/tag/* [ Skip ]
@@ -5992,10 +5963,6 @@ crbug.com/1097005 http/tests/devtools/console/console-search.js [ Crash Failure 
 
 crbug.com/1093445 http/tests/loading/pdf-commit-load-callbacks.html [ Failure Pass ]
 crbug.com/1093497 http/tests/history/client-redirect-after-push-state.html [ Failure Pass ]
-
-# Tests blocking WPT importer
-crbug.com/1098844 external/wpt/wasm/jsapi/functions/entry.html [ Crash Pass Timeout ]
-crbug.com/1098844 external/wpt/wasm/jsapi/functions/entry-different-function-realm.html [ Crash Pass Timeout ]
 
 #Sheriff 2020-06-25
 crbug.com/1010170 media/video-played-reset.html [ Failure Pass ]
