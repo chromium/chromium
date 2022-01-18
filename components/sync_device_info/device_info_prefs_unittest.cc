@@ -56,8 +56,8 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
 
   // Manipulate the preference directly to add a corrupt entry to the list,
   // which is a string instead of a dictionary.
-  ListPrefUpdateDeprecated cache_guids_update(
-      &pref_service_, kDeviceInfoRecentGUIDsWithTimestamps);
+  ListPrefUpdate cache_guids_update(&pref_service_,
+                                    kDeviceInfoRecentGUIDsWithTimestamps);
   cache_guids_update->Insert(cache_guids_update->GetList().begin(),
                              base::Value("corrupt_string_entry"));
 

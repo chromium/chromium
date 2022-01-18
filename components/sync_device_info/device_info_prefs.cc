@@ -74,8 +74,8 @@ bool DeviceInfoPrefs::IsRecentLocalCacheGuid(
 }
 
 void DeviceInfoPrefs::AddLocalCacheGuid(const std::string& cache_guid) {
-  ListPrefUpdateDeprecated update_cache_guids(
-      pref_service_, kDeviceInfoRecentGUIDsWithTimestamps);
+  ListPrefUpdate update_cache_guids(pref_service_,
+                                    kDeviceInfoRecentGUIDsWithTimestamps);
 
   for (auto it = update_cache_guids->GetList().begin();
        it != update_cache_guids->GetList().end(); it++) {
@@ -102,8 +102,8 @@ void DeviceInfoPrefs::AddLocalCacheGuid(const std::string& cache_guid) {
 }
 
 void DeviceInfoPrefs::GarbageCollectExpiredCacheGuids() {
-  ListPrefUpdateDeprecated update_cache_guids(
-      pref_service_, kDeviceInfoRecentGUIDsWithTimestamps);
+  ListPrefUpdate update_cache_guids(pref_service_,
+                                    kDeviceInfoRecentGUIDsWithTimestamps);
   update_cache_guids->EraseListValueIf([this](const auto& dict) {
     // Avoid crashes if the preference contains corrupt entries that are not
     // dictionaries, and meanwhile clean up these corrupt entries.
