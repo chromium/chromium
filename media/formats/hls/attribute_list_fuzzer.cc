@@ -27,20 +27,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   AttributeMap map(attributes);
   AttributeListIterator iter(SourceString::CreateForTesting(str));
 
-  while (true) {
-    auto result = map.Fill(&iter);
-
-    if (result.has_error()) {
-      auto code = std::move(result).error().code();
-      CHECK(code == ParseStatusCode::kReachedEOF ||
-            code == ParseStatusCode::kMalformedAttributeList ||
-            code == ParseStatusCode::kAttributeListHasDuplicateNames);
-
-      if (code != ParseStatusCode::kAttributeListHasDuplicateNames) {
-        break;
-      }
-    }
-  }
-
+  auto error = map.FillUntilError(&iter);
+  CHECK(error == ParseStatusCode::kReachedEOF ||
+        error == ParseStatusCode::kMalformedAttributeList ||
+        error == ParseStatusCode::kAttributeListHasDuplicateNames);
   return 0;
 }
