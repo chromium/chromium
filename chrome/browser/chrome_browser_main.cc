@@ -923,7 +923,12 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
         prefs::kBrowserSuppressDefaultBrowserPrompt,
         master_prefs_->suppress_default_browser_prompt_for_version);
   }
-
+#if defined(OS_MAC)
+  if (!master_prefs_->confirm_to_quit) {
+    local_state->SetBoolean(prefs::kBrowserSuppressDefaultBrowserPrompt,
+                            master_prefs_->confirm_to_quit);
+  }
+#endif  // defined(OS_MAC)
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   return content::RESULT_CODE_NORMAL_EXIT;
 }

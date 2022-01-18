@@ -276,6 +276,11 @@ void SetupInitialPrefsFromInstallPrefs(
   install_prefs.GetString(
       installer::initial_preferences::kDistroSuppressDefaultBrowserPromptPref,
       &out_prefs->suppress_default_browser_prompt_for_version);
+
+#if defined(OS_MAC)
+  if (install_prefs.GetBool(prefs::kConfirmToQuitEnabled, &value) && value)
+    out_prefs->confirm_to_quit = true;
+#endif  // defined(OS_MAC)
 }
 
 // -- Platform-specific functions --

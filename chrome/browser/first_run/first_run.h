@@ -67,6 +67,9 @@ struct MasterPrefs {
   std::vector<GURL> bookmarks;
   std::string import_bookmarks_path;
   std::string suppress_default_browser_prompt_for_version;
+#if defined(OS_MAC)
+  bool confirm_to_quit;
+#endif
 };
 
 void RegisterProfilePrefs(
