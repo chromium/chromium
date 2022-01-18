@@ -1,0 +1,26 @@
+<style include="os-feedback-shared">
+textarea {
+  height: 168px;
+  width: 520px;
+}
+</style>
+<!--TODO(xiangdongkong): use localized strings -->
+<div id="container">
+  <div id="header">
+    <h1 id="title">Send feedback</h1>
+  </div>
+  <div id="content">
+    <div id="descriptionPane">
+      <p id="descriptionTitle">Description</p>
+      <textarea id="descriptionText" aria-labelledby="descriptionTitle"
+          aria-required="true">
+      </textarea>
+      <p id="descriptionEmptyError" aria-hidden="true" hidden>
+        Description is required
+      </p>
+    </div>
+  </div>
+  <div id="navButtons">
+    <cr-button id="btnContinue" class="action-button">Continue</cr-button>
+  </div>
+</div>

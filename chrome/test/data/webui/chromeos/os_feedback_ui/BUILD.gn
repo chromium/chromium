@@ -14,6 +14,7 @@ js_type_check("closure_compile") {
   deps = [
     ":confirmation_page_test",
     ":os_feedback_unified_test",
+    ":search_page_test",
   ]
 }
 
@@ -25,5 +26,16 @@ js_library("confirmation_page_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("search_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/os_feedback_ui/resources:search_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("os_feedback_unified_test") {
+  deps = []
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
