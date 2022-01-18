@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   // Open two a.com tabs (with cross site http iframes). IsolateExtensions mode
   // should have no effect so far, since there are no frames straddling the
   // extension/web boundary.
-  AddTabAtIndex(1, start_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, start_url, ui::PAGE_TRANSITION_TYPED));
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_TRUE(NavigateIframeToURL(tab2, "test", origin_keyed_url));

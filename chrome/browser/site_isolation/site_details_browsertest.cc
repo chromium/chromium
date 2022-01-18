@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
   // Open a second tab (different BrowsingInstance) with 4 sites (a through d).
   GURL abcd_url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c(d())))");
-  AddTabAtIndex(1, abcd_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, abcd_url, ui::PAGE_TRANSITION_TYPED));
 
   details = new TestMemoryDetails();
   details->StartFetchAndWait();
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
                         ElementsAre(Bucket(12, 1), Bucket(68, 1))));
 
   // Open a third tab (different BrowsingInstance) with the same 4 sites.
-  AddTabAtIndex(2, abcd_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(2, abcd_url, ui::PAGE_TRANSITION_TYPED));
 
   details = new TestMemoryDetails();
   details->StartFetchAndWait();
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_IsolateExtensions) {
   WebContents* tab1 = browser()->tab_strip_model()->GetWebContentsAt(0);
   GURL tab2_url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(d,e)");
-  AddTabAtIndex(1, tab2_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, tab2_url, ui::PAGE_TRANSITION_TYPED));
   WebContents* tab2 = browser()->tab_strip_model()->GetWebContentsAt(1);
 
   details = new TestMemoryDetails();
@@ -733,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
   // Open a tab, which will be in a different BrowsingInstance.
   GURL abcd_url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c(d())))");
-  AddTabAtIndex(1, abcd_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, abcd_url, ui::PAGE_TRANSITION_TYPED));
 
   details = new TestMemoryDetails();
   details->StartFetchAndWait();
