@@ -146,9 +146,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Returns |true| if |AccountManager| has been fully initialized.
   bool IsInitialized() const;
 
-  // Gets (async) a list of account keys known to |AccountManager|. Note that
-  // |callback| will be immediately called in the same thread if
-  // |AccountManager| has been fully initialized and hence it may not be safe to
+  // Gets (async) a list of account keys known to `AccountManager`. Note that
+  // `callback` will be immediately called in the same thread if
+  // `AccountManager` has been fully initialized and hence it may not be safe to
   // call this method directly in some class's constructor, with a callback on
   // the same class, since it may result in a method call on a partially
   // constructed object.
@@ -292,10 +292,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // class is initialized.
   void RunOnInitialization(base::OnceClosure closure);
 
-  // Does the actual work of getting a list of accounts. Assumes that
-  // |AccountManager| initialization (|init_state_|) is complete.
-  void GetAccountsInternal(AccountListCallback callback);
-
   // Does the actual work of fetching the email for |account_key|. Assumes that
   // |AccountManager| initialization (|init_state_|) is complete.
   void GetAccountEmailInternal(
@@ -333,8 +329,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Gets a serialized representation of accounts.
   std::string GetSerializedAccounts();
 
-  // Gets the publicly viewable information stored in |accounts_|.
-  std::vector<::account_manager::Account> GetAccounts();
+  // Gets the publicly viewable information stored in `accounts_`.
+  std::vector<::account_manager::Account> GetAccountsView();
 
   // Notifies |Observer|s about a token update for |account|.
   void NotifyTokenObservers(const ::account_manager::Account& account);

@@ -472,19 +472,19 @@ void AccountManager::RunOnInitialization(base::OnceClosure closure) {
 }
 
 void AccountManager::GetAccounts(AccountListCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::GetAccountsInternal,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure =
+        base::BindOnce(&AccountManager::GetAccounts, weak_factory_.GetWeakPtr(),
+                       std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::GetAccountsInternal(AccountListCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
-  std::move(callback).Run(GetAccounts());
+  std::move(callback).Run(GetAccountsView());
 }
 
 void AccountManager::GetAccountEmail(
@@ -704,7 +704,9 @@ std::string AccountManager::GetSerializedAccounts() {
   return accounts_proto.SerializeAsString();
 }
 
-std::vector<::account_manager::Account> AccountManager::GetAccounts() {
+std::vector<::account_manager::Account> AccountManager::GetAccountsView() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::vector<::account_manager::Account> accounts;
   accounts.reserve(accounts_.size());
 
