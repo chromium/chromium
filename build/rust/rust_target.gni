@@ -226,5 +226,16 @@ template("rust_target") {
 
 set_defaults("rust_target") {
   executable_configs = default_executable_configs
+
+  # lld currently eats a section which Rust executables need to
+  # determine their command line arguments. These lines work around this
+  # by retaining all sections.
+  # TODO(crbug/1281664) - remove these lines when this is fixed.
+  executable_configs -= [ "//build/config/compiler:default_optimization" ]
+  executable_configs += [
+    "//build/config/compiler:no_optimize",
+    "//build/rust:keep_sections",
+  ]
+
   library_configs = default_compiler_configs
 }
