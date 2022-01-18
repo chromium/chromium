@@ -531,28 +531,6 @@ TEST_P(ThreadGroupTestAllExecutionModes, COMMTAWorkerEnvironment) {
   task_ran.Wait();
 }
 
-TEST_P(ThreadGroupTestAllExecutionModes, COMSTAWorkerEnvironment) {
-  StartThreadGroup(ThreadGroup::WorkerEnvironment::COM_STA);
-  auto task_runner = test::CreatePooledTaskRunnerWithExecutionMode(
-      execution_mode(), &mock_pooled_task_runner_delegate_);
-
-  TestWaitableEvent task_ran;
-  task_runner->PostTask(
-      FROM_HERE, BindOnce(
-                     [](TestWaitableEvent* task_ran) {
-  // COM STA is ignored when defined(COM_INIT_CHECK_HOOK_ENABLED). See comment
-  // in ThreadGroup::GetScopedWindowsThreadEnvironment().
-#if defined(COM_INIT_CHECK_HOOK_ENABLED)
-                       win::AssertComApartmentType(win::ComApartmentType::NONE);
-#else
-                       win::AssertComApartmentType(win::ComApartmentType::STA);
-#endif
-                       task_ran->Signal();
-                     },
-                     Unretained(&task_ran)));
-  task_ran.Wait();
-}
-
 TEST_P(ThreadGroupTestAllExecutionModes, NoWorkerEnvironment) {
   StartThreadGroup(ThreadGroup::WorkerEnvironment::NONE);
   auto task_runner = test::CreatePooledTaskRunnerWithExecutionMode(

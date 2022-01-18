@@ -50,8 +50,6 @@ class BASE_EXPORT ThreadGroup {
 #if BUILDFLAG(IS_WIN)
     // Initialize a COM MTA on the worker.
     COM_MTA,
-    // Initialize a COM STA on the worker.
-    COM_STA,
 #endif  // BUILDFLAG(IS_WIN)
   };
 

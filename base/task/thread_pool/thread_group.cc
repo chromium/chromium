@@ -315,15 +315,6 @@ ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
       }
       break;
     }
-    case WorkerEnvironment::COM_STA: {
-      // When defined(COM_INIT_CHECK_HOOK_ENABLED), ignore
-      // WorkerEnvironment::COM_STA to find incorrect uses of
-      // COM that should be running in a COM STA Task Runner.
-#if !defined(COM_INIT_CHECK_HOOK_ENABLED)
-      scoped_environment = std::make_unique<win::ScopedCOMInitializer>();
-#endif
-      break;
-    }
     default:
       break;
   }

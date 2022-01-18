@@ -203,10 +203,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
     case InitParams::CommonThreadPoolEnvironment::COM_MTA:
       worker_environment = ThreadGroup::WorkerEnvironment::COM_MTA;
       break;
-    case InitParams::CommonThreadPoolEnvironment::
-        DEPRECATED_COM_STA_IN_FOREGROUND_GROUP:
-      worker_environment = ThreadGroup::WorkerEnvironment::COM_STA;
-      break;
 #endif
   }
 
@@ -245,15 +241,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
       static_cast<ThreadGroupImpl*>(background_thread_group_.get())
           ->Start(max_best_effort_tasks, max_best_effort_tasks,
                   suggested_reclaim_time, service_thread_task_runner,
-                  worker_thread_observer,
-#if BUILDFLAG(IS_WIN)
-                  // COM STA is a backward-compatibility feature for the
-                  // foreground thread group only.
-                  worker_environment == ThreadGroup::WorkerEnvironment::COM_STA
-                      ? ThreadGroup::WorkerEnvironment::NONE
-                      :
-#endif
-                      worker_environment,
+                  worker_thread_observer, worker_environment,
                   g_synchronous_thread_start_for_testing);
     }
   }

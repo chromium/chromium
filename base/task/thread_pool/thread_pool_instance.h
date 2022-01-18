@@ -55,12 +55,6 @@ class BASE_EXPORT ThreadPoolInstance {
 #if BUILDFLAG(IS_WIN)
       // Place the pool's workers in a COM MTA.
       COM_MTA,
-      // Place the pool's *foreground* workers in a COM STA. This exists to
-      // mimic the behavior of SequencedWorkerPool and BrowserThreadImpl that
-      // ThreadPool has replaced. Tasks that need a COM STA should use
-      // CreateCOMSTATaskRunner() instead of Create(Sequenced)TaskRunner() +
-      // this init param.
-      DEPRECATED_COM_STA_IN_FOREGROUND_GROUP,
 #endif  // BUILDFLAG(IS_WIN)
     };
 
