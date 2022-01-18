@@ -95,10 +95,20 @@ class SigninHelperChromeOSTest
         factory->GetAccountManagerMojoService(profile->GetPath().value());
     account_manager_->SetUrlLoaderFactoryForTests(shared_url_loader_factory());
     account_manager_->AddObserver(this);
+
+    // Setup the main account:
+    account_manager::AccountKey kPrimaryAccountKey{
+        "primary_account_gaia", account_manager::AccountType::kGaia};
+    account_manager()->UpsertAccount(kPrimaryAccountKey, "primary@gmai.com",
+                                     "access_token");
+    base::RunLoop().RunUntilIdle();
+    on_token_upserted_call_count_ = 0;
+    on_token_upserted_account_ = absl::nullopt;
   }
 
   void TearDownOnMainThread() override {
     account_manager_->RemoveObserver(this);
+    on_token_upserted_call_count_ = 0;
     on_token_upserted_account_ = absl::nullopt;
   }
 
@@ -216,6 +226,9 @@ class SigninHelperChromeOSTestWithArcAccountRestrictions
     account_apps_availability_ =
         ash::AccountAppsAvailabilityFactory::GetForProfile(
             browser()->profile());
+    // In-session account addition happens when `AccountAppsAvailability` is
+    // already initialized.
+    EXPECT_TRUE(account_apps_availability()->IsInitialized());
     account_apps_availability()->AddObserver(this);
   }
 
@@ -237,6 +250,23 @@ class SigninHelperChromeOSTestWithArcAccountRestrictions
         close_dialog_closure, shared_url_loader_factory(),
         std::move(arc_helper), kFakeGaiaId, kFakeEmail, kFakeAuthCode,
         kFakeDeviceId);
+  }
+
+  bool IsAccountAvailableInArc(account_manager::Account account) {
+    bool result = false;
+    base::RunLoop run_loop;
+    account_apps_availability()->GetAccountsAvailableInArc(
+        base::BindLambdaForTesting(
+            [&result, &account, &run_loop](
+                const base::flat_set<account_manager::Account>& accounts) {
+              for (const auto& a : accounts) {
+                if (a.raw_email == account.raw_email)
+                  result = true;
+              }
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return result;
   }
 
   ash::AccountAppsAvailability* account_apps_availability() {
@@ -283,11 +313,14 @@ class SigninHelperChromeOSTestWithArcAccountRestrictions
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Account is available in ARC after account addition if `is_available_in_arc`
+// is set to `true`.
 IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
                        AccountIsAvailableInArcAfterAddition) {
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
       std::make_unique<SigninHelper::ArcHelper>(
-          /*is_available_in_arc=*/true, account_apps_availability());
+          /*is_available_in_arc=*/true, /*is_account_addition=*/true,
+          account_apps_availability());
   base::RunLoop close_dialog_closure_run_loop;
   auto* helper = CreateSigninHelper(
       std::move(arc_helper), close_dialog_closure_run_loop.QuitClosure());
@@ -304,17 +337,25 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
   EXPECT_EQ(account.value().raw_email, kFakeEmail);
   // 1 account should be available in ARC.
   EXPECT_EQ(on_account_unavailable_in_arc_call_count(), 0);
-  EXPECT_EQ(on_account_available_in_arc_call_count(), 1);
+  // Note: after we receive one `OnAccountAvailableInArc` call - we may get
+  // another call after the refresh token is updated for account.
+  EXPECT_GT(on_account_available_in_arc_call_count(), 0);
   auto arc_account = on_account_available_in_arc_account();
   ASSERT_TRUE(arc_account.has_value());
   EXPECT_EQ(arc_account.value().raw_email, kFakeEmail);
+  // `AccountAppsAvailability::GetAccountsAvailableInArc` should return account
+  // list containing this account.
+  EXPECT_TRUE(IsAccountAvailableInArc(account.value()));
 }
 
+// Account is not available in ARC after account addition if
+// `is_available_in_arc` is set to `false`.
 IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
                        AccountIsNotAvailableInArcAfterAddition) {
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
       std::make_unique<SigninHelper::ArcHelper>(
-          /*is_available_in_arc=*/false, account_apps_availability());
+          /*is_available_in_arc=*/false, /*is_account_addition=*/true,
+          account_apps_availability());
   base::RunLoop close_dialog_closure_run_loop;
   auto* helper = CreateSigninHelper(
       std::move(arc_helper),
@@ -332,12 +373,54 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
   auto account = on_token_upserted_account();
   ASSERT_TRUE(account.has_value());
   EXPECT_EQ(account.value().raw_email, kFakeEmail);
-  // 1 account should be added as "not available in ARC".
+
+  // The account didn't exist (and therefore wasn't available in ARC) before, so
+  // no `OnAccountUnavailableInArc` calls are expected.
   EXPECT_EQ(on_account_available_in_arc_call_count(), 0);
-  EXPECT_EQ(on_account_unavailable_in_arc_call_count(), 1);
-  auto arc_account = on_account_unavailable_in_arc_account();
-  ASSERT_TRUE(arc_account.has_value());
-  EXPECT_EQ(arc_account.value().raw_email, kFakeEmail);
+  EXPECT_EQ(on_account_unavailable_in_arc_call_count(), 0);
+  // `AccountAppsAvailability::GetAccountsAvailableInArc` should return account
+  // list not containing this account.
+  EXPECT_FALSE(IsAccountAvailableInArc(account.value()));
 }
+
+IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
+                       ArcAvailabilityIsNotSetAfterReauthentication) {
+  account_manager::AccountKey kAccountKey{kFakeGaiaId,
+                                          account_manager::AccountType::kGaia};
+  account_manager()->UpsertAccount(kAccountKey, kFakeEmail, "access_token");
+  base::RunLoop().RunUntilIdle();
+  // 1 account should be added.
+  const int initial_upserted_calls = 1;
+  EXPECT_EQ(on_token_upserted_call_count(), initial_upserted_calls);
+
+  // Go through a reauthentication flow.
+  std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
+      std::make_unique<SigninHelper::ArcHelper>(
+          /*is_available_in_arc=*/true, /*is_account_addition=*/false,
+          account_apps_availability());
+  base::RunLoop close_dialog_closure_run_loop;
+  auto* helper = CreateSigninHelper(
+      std::move(arc_helper),
+      base::BindLambdaForTesting([&close_dialog_closure_run_loop]() {
+        close_dialog_closure_run_loop.Quit();
+      }));
+  // Auth token fetch succeeds.
+  helper->OnClientOAuthSuccess(GetFakeOAuthResult());
+  // Make sure the close_dialog_closure was called.
+  close_dialog_closure_run_loop.Run();
+  // Wait until SigninHelper finishes and deletes itself.
+  base::RunLoop().RunUntilIdle();
+  // 1 account should be updated.
+  EXPECT_EQ(on_token_upserted_call_count(), initial_upserted_calls + 1);
+  auto account = on_token_upserted_account();
+  ASSERT_TRUE(account.has_value());
+  EXPECT_EQ(account.value().raw_email, kFakeEmail);
+  // 0 accounts should be added as "available in ARC".
+  EXPECT_EQ(on_account_available_in_arc_call_count(), 0);
+  EXPECT_EQ(on_account_unavailable_in_arc_call_count(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
+                       AccountAvailabilityDoesntChangeAfterReauthentication) {}
 
 }  // namespace chromeos

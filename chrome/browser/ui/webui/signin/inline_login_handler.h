@@ -48,6 +48,8 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
   // Parameters passed to `CompleteLogin` method.
   struct CompleteLoginParams {
     CompleteLoginParams();
+    CompleteLoginParams(const CompleteLoginParams&);
+    CompleteLoginParams& operator=(const CompleteLoginParams&);
     ~CompleteLoginParams();
 
     std::string email;

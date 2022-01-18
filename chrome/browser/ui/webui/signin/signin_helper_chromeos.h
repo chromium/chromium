@@ -31,7 +31,9 @@ class SigninHelper : public GaiaAuthConsumer {
   // after account addition depending on the flags passed in the constructor.
   class ArcHelper {
    public:
+    // If `is_account_addition` is `false` - the account is reauthenticated.
     ArcHelper(bool is_available_in_arc,
+              bool is_account_addition,
               ash::AccountAppsAvailability* account_apps_availability);
     ArcHelper(const ArcHelper&) = delete;
     ArcHelper& operator=(const ArcHelper&) = delete;
@@ -43,6 +45,7 @@ class SigninHelper : public GaiaAuthConsumer {
 
    private:
     bool is_available_in_arc_ = false;
+    bool is_account_addition_ = false;
     // A non-owning pointer to AccountAppsAvailability which is a KeyedService
     // and should outlive this class.
     ash::AccountAppsAvailability* account_apps_availability_ = nullptr;

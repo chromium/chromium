@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -37,6 +38,13 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
   void HandleDialogClose(const base::ListValue* args) override;
 
  private:
+  // A callback for `GetAccounts` invoked from `CompleteLogin`.
+  void OnGetAccountsToCompleteLogin(
+      const CompleteLoginParams& params,
+      const std::vector<::account_manager::Account>& accounts);
+  // Creates a `SigninHelper` instance to complete login of the new account.
+  void CreateSigninHelper(const CompleteLoginParams& params,
+                          std::unique_ptr<SigninHelper::ArcHelper> arc_helper);
   void ShowIncognitoAndCloseDialog(const base::ListValue* args);
   void GetAccountsInSession(const base::ListValue* args);
   void OnGetAccounts(const std::string& callback_id,

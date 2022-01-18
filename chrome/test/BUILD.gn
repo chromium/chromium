@@ -2221,6 +2221,7 @@ if (!is_android && !is_fuchsia) {
       deps += [
         "//chrome/browser/web_applications/app_service",
         "//chromeos/ui/frame",
+        "//components/account_manager_core:test_support",
       ]
       sources += [
         "../browser/download/notification/download_notification_browsertest.cc",
@@ -3586,6 +3587,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/webui/settings/chromeos/account_manager_handler_browsertest.cc",
         "../browser/ui/webui/settings/chromeos/device_power_handler_browsertest.cc",
         "../browser/ui/webui/signin/inline_login_dialog_chromeos_browsertest.cc",
+        "../browser/ui/webui/signin/inline_login_handler_chromeos_browsertest.cc",
         "../browser/ui/webui/signin/signin_helper_chromeos_browsertest.cc",
         "../browser/ui/window_sizer/window_sizer_chromeos_uitest.cc",
         "../browser/web_applications/app_service/link_capturing_migration_manager_browsertest.cc",

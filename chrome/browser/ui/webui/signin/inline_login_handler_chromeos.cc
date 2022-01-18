@@ -229,12 +229,43 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
   CHECK(!params.gaia_id.empty());
   CHECK(!params.email.empty());
 
-  // TODO(sinhak): Do not depend on Profile unnecessarily.
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
+        ->GetAccounts(base::BindOnce(
+            &InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin,
+            weak_factory_.GetWeakPtr(), params));
+    return;
+  }
+
+  CreateSigninHelper(params, /*arc_helper=*/nullptr);
+}
+
+void InlineLoginHandlerChromeOS::HandleDialogClose(
+    const base::ListValue* args) {
+  close_dialog_closure_.Run();
+}
+
+void InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin(
+    const CompleteLoginParams& params,
+    const std::vector<::account_manager::Account>& accounts) {
+  bool is_new_account = !base::Contains(
+      accounts, params.gaia_id,
+      [](const account_manager::Account& account) { return account.key.id(); });
+  // TODO(crbug.com/1260909): Set `is_available_in_arc` to the value chosen by
+  // the user.
+  std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
+      std::make_unique<SigninHelper::ArcHelper>(
+          /*is_available_in_arc=*/true, /*is_account_addition=*/is_new_account,
+          ash::AccountAppsAvailabilityFactory::GetForProfile(
+              Profile::FromWebUI(web_ui())));
+  CreateSigninHelper(params, std::move(arc_helper));
+}
+
+void InlineLoginHandlerChromeOS::CreateSigninHelper(
+    const CompleteLoginParams& params,
+    std::unique_ptr<SigninHelper::ArcHelper> arc_helper) {
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  // TODO(sinhak): Do not depend on Profile unnecessarily. When multiprofile on
-  // Chrome OS is released, get rid of |AccountManagerFactory| and get
-  // AccountManager directly from |g_browser_process|.
   auto* account_manager = g_browser_process->platform_part()
                               ->GetAccountManagerFactory()
                               ->GetAccountManager(profile->GetPath().value());
@@ -249,15 +280,6 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
   std::string primary_account_email =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
-
-  std::unique_ptr<SigninHelper::ArcHelper> arc_helper;
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-    // TODO(crbug.com/1260909): Set `is_available_in_arc` to the value chosen by
-    // the user.
-    arc_helper = std::make_unique<SigninHelper::ArcHelper>(
-        /*is_available_in_arc=*/true,
-        ash::AccountAppsAvailabilityFactory::GetForProfile(profile));
-  }
 
   // Child user added a secondary account.
   if (profile->IsChild() &&
@@ -280,11 +302,6 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
       params.email, params.auth_code,
       GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
                          params.gaia_id));
-}
-
-void InlineLoginHandlerChromeOS::HandleDialogClose(
-    const base::ListValue* args) {
-  close_dialog_closure_.Run();
 }
 
 void InlineLoginHandlerChromeOS::ShowIncognitoAndCloseDialog(

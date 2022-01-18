@@ -15,16 +15,20 @@ namespace chromeos {
 
 SigninHelper::ArcHelper::ArcHelper(
     bool is_available_in_arc,
+    bool is_account_addition,
     ash::AccountAppsAvailability* account_apps_availability)
     : is_available_in_arc_(is_available_in_arc),
+      is_account_addition_(is_account_addition),
       account_apps_availability_(account_apps_availability) {}
 
 SigninHelper::ArcHelper::~ArcHelper() = default;
 
 void SigninHelper::ArcHelper::OnAccountAdded(
     const account_manager::Account& account) {
-  // TODO(crbug.com/1260909): Call SetIsAccountAvailableInArc only for account
-  // addition.
+  // Don't change ARC availability after reauthentication.
+  if (!is_account_addition_)
+    return;
+
   account_apps_availability_->SetIsAccountAvailableInArc(account,
                                                          is_available_in_arc_);
 }

@@ -44,6 +44,13 @@ InlineLoginHandler::~InlineLoginHandler() = default;
 
 InlineLoginHandler::CompleteLoginParams::CompleteLoginParams() = default;
 
+InlineLoginHandler::CompleteLoginParams::CompleteLoginParams(
+    const InlineLoginHandler::CompleteLoginParams&) = default;
+
+InlineLoginHandler::CompleteLoginParams&
+InlineLoginHandler::CompleteLoginParams::operator=(
+    const InlineLoginHandler::CompleteLoginParams&) = default;
+
 InlineLoginHandler::CompleteLoginParams::~CompleteLoginParams() = default;
 
 void InlineLoginHandler::RegisterMessages() {
