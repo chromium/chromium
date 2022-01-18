@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "ui/ozone/platform/wayland/common/wayland.h"
 
 struct wl_proxy;
@@ -41,8 +40,7 @@ template <typename T>
 class GlobalObjectRegistrar {
  public:
   GlobalObjectRegistrar() {
-    GlobalObjectFactory Instantiate = T::Instantiate;
-    ALLOW_UNUSED_LOCAL(Instantiate);
+    [[maybe_unused]] GlobalObjectFactory Instantiate = T::Instantiate;
   }
 };
 

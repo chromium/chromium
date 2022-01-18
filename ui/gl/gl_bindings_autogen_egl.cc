@@ -114,8 +114,8 @@ void DriverEGL::InitializeStaticBindings() {
 
 void DriverEGL::InitializeClientExtensionBindings() {
   std::string client_extensions(GetClientExtensions());
-  gfx::ExtensionSet extensions(gfx::MakeExtensionSet(client_extensions));
-  ALLOW_UNUSED_LOCAL(extensions);
+  [[maybe_unused]] gfx::ExtensionSet extensions(
+      gfx::MakeExtensionSet(client_extensions));
 
   ext.b_EGL_ANGLE_feature_control =
       gfx::HasExtension(extensions, "EGL_ANGLE_feature_control");
@@ -180,8 +180,8 @@ void DriverEGL::InitializeClientExtensionBindings() {
 
 void DriverEGL::InitializeExtensionBindings() {
   std::string platform_extensions(GetPlatformExtensions());
-  gfx::ExtensionSet extensions(gfx::MakeExtensionSet(platform_extensions));
-  ALLOW_UNUSED_LOCAL(extensions);
+  [[maybe_unused]] gfx::ExtensionSet extensions(
+      gfx::MakeExtensionSet(platform_extensions));
 
   ext.b_EGL_ANDROID_blob_cache =
       gfx::HasExtension(extensions, "EGL_ANDROID_blob_cache");

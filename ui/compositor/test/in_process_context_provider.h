@@ -108,7 +108,7 @@ class InProcessContextProvider
   std::unique_ptr<gpu::raster::RasterInterface> raster_context_;
   std::unique_ptr<viz::ContextCacheController> cache_controller_;
 
-  const bool support_locking_ ALLOW_UNUSED_TYPE;
+  [[maybe_unused]] const bool support_locking_;
   bool bind_tried_ = false;
   gpu::ContextResult bind_result_;
 

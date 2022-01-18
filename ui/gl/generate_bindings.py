@@ -3358,16 +3358,16 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     file.write("""\
 void DriverEGL::InitializeClientExtensionBindings() {
   std::string client_extensions(GetClientExtensions());
-  gfx::ExtensionSet extensions(gfx::MakeExtensionSet(client_extensions));
-  ALLOW_UNUSED_LOCAL(extensions);
+  [[maybe_unused]] gfx::ExtensionSet extensions(
+      gfx::MakeExtensionSet(client_extensions));
 
 """)
   else:
     file.write("""\
 void Driver%s::InitializeExtensionBindings() {
   std::string platform_extensions(GetPlatformExtensions());
-  gfx::ExtensionSet extensions(gfx::MakeExtensionSet(platform_extensions));
-  ALLOW_UNUSED_LOCAL(extensions);
+  [[maybe_unused]] gfx::ExtensionSet extensions(
+      gfx::MakeExtensionSet(platform_extensions));
 
 """ % (set_name.upper(),))
 
@@ -3394,8 +3394,8 @@ void Driver%s::InitializeExtensionBindings() {
 
 void DriverEGL::InitializeExtensionBindings() {
   std::string platform_extensions(GetPlatformExtensions());
-  gfx::ExtensionSet extensions(gfx::MakeExtensionSet(platform_extensions));
-  ALLOW_UNUSED_LOCAL(extensions);
+  [[maybe_unused]] gfx::ExtensionSet extensions(
+      gfx::MakeExtensionSet(platform_extensions));
 
 """)
 
