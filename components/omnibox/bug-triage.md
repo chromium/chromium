@@ -175,10 +175,10 @@ The subcomponents of omnibox bugs include:
 | --- | --- |
 | UI>Browser>Omnibox>AiS | Answers in Suggest. |
 | UI>Browser>Omnibox>DocumentSuggest | Documents provided by Google Drive |
+| UI>Browser>Omnibox>NTPRealbox | Suggestions displayed in the searchbox on the New Tab Page. |
 | UI>Browser>Omnibox>SecurityIndicators | Secure/insecure icons; triaged by another team. |
 | UI>Browser>Omnibox>TabToSearch | Custom search engines, omnibox extensions, etc. (including adding, triggering, ranking, etc. for them). |
 | UI>Browser>Omnibox>ZeroSuggest | Suggestions displayed on omnibox focus (both contextual and non-contextual). |
-| UI>Browser>Omnibox>NTPRealbox | Suggestions displayed in the searchbox on the New Tab Page. |
 
 If the bug is extremely low priority, set the **NextAction field** to
 **01/07/2021** and mention that we will "reassess" the bug next year.  This
