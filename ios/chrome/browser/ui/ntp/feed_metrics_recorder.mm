@@ -49,10 +49,6 @@ enum class FeedLoadStreamStatus {
 };
 
 namespace {
-// Histogram name for the infinite feed trigger.
-const char kDiscoverFeedInfiniteFeedTriggered[] =
-    "ContentSuggestions.Feed.LoadStreamStatus.LoadMore";
-
 // User action names for the device orientation having changed.
 const char kDiscoverFeedHistogramDeviceOrientationChangedToPortrait[] =
     "ContentSuggestions.Feed.DeviceOrientationChanged.Portrait";
@@ -114,10 +110,6 @@ const char kDiscoverFeedUserActionManageActivityTapped[] =
     "ContentSuggestions.Feed.HeaderAction.ManageActivity";
 const char kDiscoverFeedUserActionManageInterestsTapped[] =
     "ContentSuggestions.Feed.HeaderAction.ManageInterests";
-
-// User action name for infinite feed triggering.
-const char kDiscoverFeedUserActionInfiniteFeedTriggered[] =
-    "ContentSuggestions.Feed.InfiniteFeedTriggered";
 
 // User action name for engaging with feed.
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
@@ -221,13 +213,6 @@ const int kMinutesBetweenSessions = 5;
     [self recordEngagementTypeHistogram:FeedEngagementType::kFeedScrolled];
     self.scrolledReported = YES;
   }
-}
-
-- (void)recordInfiniteFeedTriggered {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedInfiniteFeedTriggered,
-                            FeedLoadStreamStatus::kLoadedFromNetwork);
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionInfiniteFeedTriggered));
 }
 
 - (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation {

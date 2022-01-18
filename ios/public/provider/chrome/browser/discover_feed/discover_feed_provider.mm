@@ -40,5 +40,3 @@ void DiscoverFeedProvider::UpdateFeedForAccountChange() {}
 
 void DiscoverFeedProvider::AddObserver(Observer* observer) {}
 void DiscoverFeedProvider::RemoveObserver(Observer* observer) {}
-void DiscoverFeedProvider::LoadMoreFeedArticles() {}
-void DiscoverFeedProvider::FeedWasShown() {}

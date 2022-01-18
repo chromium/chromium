@@ -27,10 +27,6 @@ enum class BrokenNTPHierarchyRelationship {
 // Record metrics for when the user has scrolled |scrollDistance| in the Feed.
 - (void)recordFeedScrolled:(int)scrollDistance;
 
-// Record metrics for when the user has reached the bottom of their current
-// feed.
-- (void)recordInfiniteFeedTriggered;
-
 // Record metrics for when the user changes the device orientation with the feed
 // visible.
 - (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation;
