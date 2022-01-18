@@ -29,7 +29,7 @@ std::unique_ptr<App> App::Clone() const {
 
   app->last_launch_time = last_launch_time;
   app->install_time = install_time;
-
+  app->permissions = ClonePermissions(permissions);
   app->install_reason = install_reason;
   app->install_source = install_source;
 
@@ -190,6 +190,13 @@ std::unique_ptr<App> ConvertMojomAppToApp(
 
   app->last_launch_time = mojom_app->last_launch_time;
   app->install_time = mojom_app->install_time;
+
+  for (const auto& mojom_permission : mojom_app->permissions) {
+    auto permission = ConvertMojomPermissionToPermission(mojom_permission);
+    if (permission) {
+      app->permissions.push_back(std::move(permission));
+    }
+  }
 
   app->install_reason =
       ConvertMojomInstallReasonToInstallReason(mojom_app->install_reason);

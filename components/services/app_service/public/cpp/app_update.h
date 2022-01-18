@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -124,6 +125,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool InstallTimeChanged() const;
 
   std::vector<apps::mojom::PermissionPtr> Permissions() const;
+  apps::Permissions GetPermissions() const;
   bool PermissionsChanged() const;
 
   apps::mojom::InstallReason InstallReason() const;

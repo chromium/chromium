@@ -4,8 +4,8 @@
 
 #include "components/services/app_service/public/cpp/app_update.h"
 
-#include "base/time/time.h"
-#include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -15,6 +15,36 @@ const AppType app_type = AppType::kArc;
 const char app_id[] = "abcdefgh";
 const char test_name_0[] = "Inigo Montoya";
 const char test_name_1[] = "Dread Pirate Roberts";
+
+PermissionPtr MakePermission(PermissionType permission_type,
+                             TriState tri_state,
+                             bool is_managed) {
+  return std::make_unique<Permission>(
+      permission_type, std::make_unique<PermissionValue>(tri_state),
+      is_managed);
+}
+
+PermissionPtr MakePermission(PermissionType permission_type,
+                             bool bool_value,
+                             bool is_managed) {
+  return std::make_unique<Permission>(
+      permission_type, std::make_unique<PermissionValue>(bool_value),
+      is_managed);
+}
+
+bool IsEqual(const Permissions& source, const Permissions& target) {
+  if (source.size() != target.size()) {
+    return false;
+  }
+
+  for (int i = 0; i < static_cast<int>(source.size()); i++) {
+    if (*source[i] != *target[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 class AppUpdateTest : public testing::Test {
@@ -40,6 +70,8 @@ class AppUpdateTest : public testing::Test {
   base::Time expect_last_launch_time_;
 
   base::Time expect_install_time_;
+
+  Permissions expect_permissions_;
 
   InstallReason expect_install_reason_;
 
@@ -76,6 +108,8 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_install_time_, u.GetInstallTime());
 
+    EXPECT_TRUE(IsEqual(expect_permissions_, u.GetPermissions()));
+
     EXPECT_EQ(expect_install_reason_, u.GetInstallReason());
 
     EXPECT_EQ(expect_install_source_, u.GetInstallSource());
@@ -102,6 +136,7 @@ class AppUpdateTest : public testing::Test {
     expect_icon_key_ = absl::nullopt;
     expect_last_launch_time_ = base::Time();
     expect_install_time_ = base::Time();
+    expect_permissions_.clear();
     expect_install_reason_ = InstallReason::kUnknown;
     expect_install_source_ = InstallSource::kUnknown;
     expect_policy_id_ = "";
@@ -313,6 +348,41 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_install_time_, state->install_time);
+      CheckExpects(u);
+    }
+
+    // Permission tests.
+
+    if (state) {
+      auto p0 = MakePermission(PermissionType::kLocation, TriState::kAllow,
+                               /*is_managed=*/true);
+      auto p1 = MakePermission(PermissionType::kNotifications, TriState::kBlock,
+                               /*is_managed=*/false);
+      state->permissions.push_back(p0->Clone());
+      state->permissions.push_back(p1->Clone());
+      expect_permissions_.push_back(p0->Clone());
+      expect_permissions_.push_back(p1->Clone());
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      expect_permissions_.clear();
+      auto p0 = MakePermission(PermissionType::kNotifications,
+                               /*bool_value=*/true,
+                               /*is_managed=*/false);
+      auto p1 = MakePermission(PermissionType::kLocation,
+                               /*bool_value=*/false,
+                               /*is_managed=*/true);
+      delta->permissions.push_back(p0->Clone());
+      delta->permissions.push_back(p1->Clone());
+      expect_permissions_.push_back(p0->Clone());
+      expect_permissions_.push_back(p1->Clone());
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_TRUE(IsEqual(expect_permissions_, state->permissions));
       CheckExpects(u);
     }
 

@@ -1,0 +1,147 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/services/app_service/public/cpp/permission.h"
+
+namespace apps {
+
+PermissionValue::PermissionValue(bool bool_value) : bool_value(bool_value) {}
+
+PermissionValue::PermissionValue(TriState tristate_value)
+    : tristate_value(tristate_value) {}
+
+PermissionValue::~PermissionValue() = default;
+
+bool PermissionValue::operator==(const PermissionValue& other) const {
+  if (tristate_value.has_value() && other.tristate_value.has_value()) {
+    return tristate_value.value() == other.tristate_value.value();
+  }
+
+  if (bool_value.has_value() && other.bool_value.has_value()) {
+    return bool_value.value() == other.bool_value.value();
+  }
+
+  return false;
+}
+
+std::unique_ptr<PermissionValue> PermissionValue::Clone() const {
+  if (tristate_value.has_value()) {
+    return std::make_unique<PermissionValue>(tristate_value.value());
+  }
+
+  if (bool_value.has_value()) {
+    return std::make_unique<PermissionValue>(bool_value.value());
+  }
+
+  return nullptr;
+}
+
+bool PermissionValue::IsPermissionEnabled() {
+  if (tristate_value.has_value()) {
+    return tristate_value.value() == TriState::kAllow;
+  } else if (bool_value.has_value()) {
+    return bool_value.value();
+  }
+  return false;
+}
+
+Permission::Permission(PermissionType permission_type,
+                       PermissionValuePtr value,
+                       bool is_managed)
+    : permission_type(permission_type),
+      value(std::move(value)),
+      is_managed(is_managed) {}
+
+Permission::~Permission() = default;
+
+bool Permission::operator==(const Permission& other) const {
+  return permission_type == other.permission_type &&
+         ((!value && !other.value) || (*value == *other.value)) &&
+         is_managed == other.is_managed;
+}
+
+bool Permission::operator!=(const Permission& other) const {
+  return !(*this == other);
+}
+
+PermissionPtr Permission::Clone() const {
+  if (!value) {
+    return nullptr;
+  }
+
+  return std::make_unique<Permission>(permission_type, value->Clone(),
+                                      is_managed);
+}
+
+Permissions ClonePermissions(const Permissions& source_permissions) {
+  Permissions permissions;
+  for (const auto& permission : source_permissions) {
+    permissions.push_back(permission->Clone());
+  }
+  return permissions;
+}
+
+PermissionType ConvertMojomPermissionTypeToPermissionType(
+    apps::mojom::PermissionType mojom_permission_type) {
+  switch (mojom_permission_type) {
+    case apps::mojom::PermissionType::kUnknown:
+      return PermissionType::kUnknown;
+    case apps::mojom::PermissionType::kCamera:
+      return PermissionType::kCamera;
+    case apps::mojom::PermissionType::kLocation:
+      return PermissionType::kLocation;
+    case apps::mojom::PermissionType::kMicrophone:
+      return PermissionType::kMicrophone;
+    case apps::mojom::PermissionType::kNotifications:
+      return PermissionType::kNotifications;
+    case apps::mojom::PermissionType::kContacts:
+      return PermissionType::kContacts;
+    case apps::mojom::PermissionType::kStorage:
+      return PermissionType::kStorage;
+    case apps::mojom::PermissionType::kPrinting:
+      return PermissionType::kPrinting;
+  }
+}
+
+TriState ConvertMojomTriStateToTriState(apps::mojom::TriState mojom_tri_state) {
+  switch (mojom_tri_state) {
+    case apps::mojom::TriState::kAllow:
+      return TriState::kAllow;
+    case apps::mojom::TriState::kBlock:
+      return TriState::kBlock;
+    case apps::mojom::TriState::kAsk:
+      return TriState::kAsk;
+  }
+}
+
+PermissionValuePtr ConvertMojomPermissionValueToPermissionValue(
+    const apps::mojom::PermissionValuePtr& mojom_permission_value) {
+  if (!mojom_permission_value) {
+    return nullptr;
+  }
+
+  if (mojom_permission_value->is_tristate_value()) {
+    return std::make_unique<PermissionValue>(ConvertMojomTriStateToTriState(
+        mojom_permission_value->get_tristate_value()));
+  } else if (mojom_permission_value->is_bool_value()) {
+    return std::make_unique<PermissionValue>(
+        mojom_permission_value->get_bool_value());
+  }
+  return nullptr;
+}
+
+PermissionPtr ConvertMojomPermissionToPermission(
+    const apps::mojom::PermissionPtr& mojom_permission) {
+  if (!mojom_permission) {
+    return nullptr;
+  }
+
+  return std::make_unique<Permission>(
+      ConvertMojomPermissionTypeToPermissionType(
+          mojom_permission->permission_type),
+      ConvertMojomPermissionValueToPermissionValue(mojom_permission->value),
+      mojom_permission->is_managed);
+}
+
+}  // namespace apps

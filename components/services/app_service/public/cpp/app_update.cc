@@ -100,7 +100,7 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
     DCHECK(state->permissions.empty() ||
            (delta->permissions.size() == state->permissions.size()));
     state->permissions.clear();
-    ClonePermissions(delta->permissions, &state->permissions);
+    ::ClonePermissions(delta->permissions, &state->permissions);
   }
   if (delta->install_reason != apps::mojom::InstallReason::kUnknown) {
     state->install_reason = delta->install_reason;
@@ -194,6 +194,14 @@ void AppUpdate::Merge(App* state, const App* delta) {
 
   SET_OPTIONAL_VALUE(last_launch_time);
   SET_OPTIONAL_VALUE(install_time);
+
+  if (!delta->permissions.empty()) {
+    DCHECK(state->permissions.empty() ||
+           (delta->permissions.size() == state->permissions.size()));
+    state->permissions.clear();
+    state->permissions = ClonePermissions(delta->permissions);
+  }
+
   SET_ENUM_VALUE(install_reason, InstallReason::kUnknown);
   SET_ENUM_VALUE(install_source, InstallSource::kUnknown);
   SET_OPTIONAL_VALUE(policy_id);
@@ -467,9 +475,21 @@ std::vector<apps::mojom::PermissionPtr> AppUpdate::Permissions() const {
   std::vector<apps::mojom::PermissionPtr> permissions;
 
   if (mojom_delta_ && !mojom_delta_->permissions.empty()) {
-    ClonePermissions(mojom_delta_->permissions, &permissions);
+    ::ClonePermissions(mojom_delta_->permissions, &permissions);
   } else if (mojom_state_ && !mojom_state_->permissions.empty()) {
-    ClonePermissions(mojom_state_->permissions, &permissions);
+    ::ClonePermissions(mojom_state_->permissions, &permissions);
+  }
+
+  return permissions;
+}
+
+apps::Permissions AppUpdate::GetPermissions() const {
+  apps::Permissions permissions;
+
+  if (delta_ && !delta_->permissions.empty()) {
+    permissions = ClonePermissions(delta_->permissions);
+  } else if (state_ && !state_->permissions.empty()) {
+    permissions = ClonePermissions(state_->permissions);
   }
 
   return permissions;
