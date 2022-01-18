@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 
 namespace remoting {
 
@@ -51,7 +50,7 @@ class It2MeConfirmationDialogFactory {
 
  private:
   // This field is only used on ChromeOS.
-  ALLOW_UNUSED_TYPE It2MeConfirmationDialog::DialogStyle dialog_style_ =
+  [[maybe_unused]] It2MeConfirmationDialog::DialogStyle dialog_style_ =
       It2MeConfirmationDialog::DialogStyle::kConsumer;
 };
 
