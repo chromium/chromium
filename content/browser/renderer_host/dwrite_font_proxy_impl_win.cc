@@ -137,6 +137,8 @@ void DWriteFontProxyImpl::FindFamily(const std::u16string& family_name,
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnFindFamily");
   UINT32 family_index = UINT32_MAX;
   if (collection_) {
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+        "DirectWrite.Fonts.Content.FindFamilyTime");
     BOOL exists = FALSE;
     UINT32 index = UINT32_MAX;
     HRESULT hr = collection_->FindFamilyName(base::as_wcstr(family_name),
@@ -152,6 +154,8 @@ void DWriteFontProxyImpl::FindFamily(const std::u16string& family_name,
 void DWriteFontProxyImpl::GetFamilyCount(GetFamilyCountCallback callback) {
   InitializeDirectWrite();
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnGetFamilyCount");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "DirectWrite.Fonts.Content.GetFamilyCountTime");
   std::move(callback).Run(collection_ ? collection_->GetFontFamilyCount() : 0);
 }
 
@@ -164,6 +168,8 @@ void DWriteFontProxyImpl::GetFamilyNames(UINT32 family_index,
   if (!collection_)
     return;
 
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "DirectWrite.Fonts.Content.GetFamilyNamesTime");
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::DoGetFamilyNames");
 
   mswr::ComPtr<IDWriteFontFamily> family;
@@ -226,6 +232,8 @@ void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
   if (!collection_)
     return;
 
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "DirectWrite.Fonts.Content.GetFontFilesTime");
   mswr::ComPtr<IDWriteFontFamily> family;
   HRESULT hr = collection_->GetFontFamily(family_index, &family);
   if (FAILED(hr)) {
@@ -312,6 +320,8 @@ void DWriteFontProxyImpl::MapCharacters(
     }
   }
 
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "DirectWrite.Fonts.Content.MapCharactersTime");
   mswr::ComPtr<IDWriteFont> mapped_font;
 
   mswr::ComPtr<IDWriteNumberSubstitution> number_substitution;
@@ -521,6 +531,8 @@ void DWriteFontProxyImpl::FallbackFamilyAndStyleForCodepoint(
   if (!codepoint || !collection_ || !factory_)
     return;
 
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "DirectWrite.Fonts.Content.FallbackFamilyAndStyleForCodepointTime");
   sk_sp<SkFontMgr> font_mgr(
       SkFontMgr_New_DirectWrite(factory_.Get(), collection_.Get()));
 
@@ -552,6 +564,7 @@ void DWriteFontProxyImpl::FallbackFamilyAndStyleForCodepoint(
 void DWriteFontProxyImpl::InitializeDirectWrite() {
   if (direct_write_initialized_)
     return;
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("DirectWrite.Fonts.Content.InitializeTime");
   direct_write_initialized_ = true;
 
   TRACE_EVENT0("dwrite,fonts", "DWriteFontProxyImpl::InitializeDirectWrite");
