@@ -139,7 +139,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
   void AddNewTestTabAt(int index, const char* test_page_file) {
     int tabs_count_before = tabs_count();
     GURL url = GetUrlOfFile(test_page_file);
-    AddTabAtIndex(index, url, ui::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(index, url, ui::PAGE_TRANSITION_TYPED));
     EXPECT_EQ(++tabs_count_before, tabs_count());
   }
 
