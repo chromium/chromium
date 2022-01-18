@@ -45,6 +45,7 @@
 #include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/resource_scheduler/resource_scheduler.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
+#include "services/network/test/client_security_state_builder.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/mock_devtools_observer.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -3432,33 +3433,6 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessDoesNotShareCache) {
   // Second preflight request.
   EXPECT_EQ(GetRequest().method, "OPTIONS");
 }
-
-class ClientSecurityStateBuilder {
- public:
-  ClientSecurityStateBuilder() = default;
-  ~ClientSecurityStateBuilder() = default;
-
-  ClientSecurityStateBuilder& WithPrivateNetworkRequestPolicy(
-      mojom::PrivateNetworkRequestPolicy policy) {
-    state_.private_network_request_policy = policy;
-    return *this;
-  }
-
-  ClientSecurityStateBuilder& WithIPAddressSpace(mojom::IPAddressSpace space) {
-    state_.ip_address_space = space;
-    return *this;
-  }
-
-  ClientSecurityStateBuilder& WithIsSecureContext(bool is_secure_context) {
-    state_.is_web_secure_context = is_secure_context;
-    return *this;
-  }
-
-  mojom::ClientSecurityStatePtr Build() const { return state_.Clone(); }
-
- private:
-  mojom::ClientSecurityState state_;
-};
 
 class RequestTrustedParamsBuilder {
  public:

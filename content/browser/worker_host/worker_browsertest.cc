@@ -86,6 +86,7 @@ bool SupportsSharedWorker() {
 // 0 => Base
 // 1 => kPlzDedicatedWorker enabled
 // 2 => kCOEPForSharedWorker enabled
+// 3 => kPrivateNetworkAccessForWorkers enabled
 class WorkerTest : public ContentBrowserTest,
                    public testing::WithParamInterface<int> {
  public:
@@ -106,6 +107,7 @@ class WorkerTest : public ContentBrowserTest,
             {
                 network::features::kCrossOriginEmbedderPolicyCredentialless,
                 blink::features::kPlzDedicatedWorker,
+                features::kPrivateNetworkAccessForWorkers,
             },
             {
                 blink::features::kCOEPForSharedWorker,
@@ -116,10 +118,21 @@ class WorkerTest : public ContentBrowserTest,
             {
                 network::features::kCrossOriginEmbedderPolicyCredentialless,
                 blink::features::kCOEPForSharedWorker,
+                features::kPrivateNetworkAccessForWorkers,
             },
             {
                 blink::features::kPlzDedicatedWorker,
             });
+        break;
+      case 3:  // PrivateNetworkAccessForWorkers
+        feature_list_.InitWithFeatures(
+            {
+                network::features::kCrossOriginEmbedderPolicyCredentialless,
+                blink::features::kPlzDedicatedWorker,
+                blink::features::kCOEPForSharedWorker,
+                features::kPrivateNetworkAccessForWorkers,
+            },
+            {});
         break;
       default:
         NOTREACHED();
@@ -325,7 +338,7 @@ class WorkerTest : public ContentBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 3));
+INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 4));
 
 IN_PROC_BROWSER_TEST_P(WorkerTest, SingleWorker) {
   RunTest(GetTestURL("single_worker.html", std::string()));
@@ -345,7 +358,7 @@ class WorkerTestWithAllowFileAccessFromFiles : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerTestWithAllowFileAccessFromFiles,
-                         testing::Range(0, 3));
+                         testing::Range(0, 4));
 
 IN_PROC_BROWSER_TEST_P(WorkerTestWithAllowFileAccessFromFiles,
                        SingleWorkerFromFile) {
@@ -926,7 +939,7 @@ class WorkerFromAnonymousIframeNikBrowserTest : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerFromAnonymousIframeNikBrowserTest,
-                         testing::Range(0, 3));
+                         testing::Range(0, 4));
 
 IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
                        SharedWorkerRequestIsDoneWithPartitionedNetworkState) {

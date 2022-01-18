@@ -68,13 +68,13 @@ class SharedWorkerServiceImpl;
 class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                                         public SiteInstanceImpl::Observer {
  public:
-  SharedWorkerHost(SharedWorkerServiceImpl* service,
-                   const SharedWorkerInstance& instance,
-                   scoped_refptr<SiteInstanceImpl> site_instance,
-                   std::vector<network::mojom::ContentSecurityPolicyPtr>
-                       content_security_policies,
-                   const network::CrossOriginEmbedderPolicy&
-                       creator_cross_origin_embedder_policy);
+  SharedWorkerHost(
+      SharedWorkerServiceImpl* service,
+      const SharedWorkerInstance& instance,
+      scoped_refptr<SiteInstanceImpl> site_instance,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>
+          content_security_policies,
+      network::mojom::ClientSecurityStatePtr creator_client_security_state);
 
   SharedWorkerHost(const SharedWorkerHost&) = delete;
   SharedWorkerHost& operator=(const SharedWorkerHost&) = delete;
@@ -159,7 +159,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
-    return worker_cross_origin_embedder_policy_.value();
+    return worker_client_security_state_->cross_origin_embedder_policy;
+  }
+
+  const network::mojom::ClientSecurityStatePtr& client_security_state() const {
+    return worker_client_security_state_;
   }
 
   const std::vector<network::mojom::ContentSecurityPolicyPtr>&
@@ -306,15 +310,16 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   const base::UnguessableToken reporting_source_;
 
-  // The frame/worker's Cross-Origin-Embedder-Policy (COEP) that directly starts
-  // this worker.
-  const network::CrossOriginEmbedderPolicy
-      creator_cross_origin_embedder_policy_;
+  // The client security state of the creator execution context.
+  // Never nullptr. Copied at construction time.
+  // This is copied into `worker_client_security_state_` for workers loaded
+  // from URLs with local schemes, in which case the worker should inherit from
+  // its creator.
+  const network::mojom::ClientSecurityStatePtr creator_client_security_state_;
 
-  // The SharedWorker's Cross-Origin-Embedder-Policy (COEP). This is set when
-  // the script's response head is loaded.
-  absl::optional<network::CrossOriginEmbedderPolicy>
-      worker_cross_origin_embedder_policy_;
+  // The worker's own client security state, applied to subresource fetches.
+  // This is nullptr until it is computed in `DidStartScriptLoad()`.
+  network::mojom::ClientSecurityStatePtr worker_client_security_state_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
