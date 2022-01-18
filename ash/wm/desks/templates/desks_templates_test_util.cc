@@ -5,13 +5,17 @@
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
 
 #include "ash/shell.h"
+#include "ash/style/close_button.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace ash {
 
@@ -139,6 +143,21 @@ views::Button* GetSaveDeskAsTemplateButton() {
 views::Button* GetTemplateItemButton(int index) {
   auto* item = GetItemViewFromTemplatesGrid(index);
   return item ? static_cast<views::Button*>(item) : nullptr;
+}
+
+views::Button* GetTemplateItemDeleteButton(int index) {
+  auto* item = GetItemViewFromTemplatesGrid(index);
+  return item ? static_cast<views::Button*>(const_cast<CloseButton*>(
+                    DesksTemplatesItemViewTestApi(item).delete_button()))
+              : nullptr;
+}
+
+views::Button* GetDesksTemplatesDialogAcceptButton() {
+  const views::Widget* dialog_widget =
+      DesksTemplatesDialogController::Get()->dialog_widget();
+  if (!dialog_widget)
+    return nullptr;
+  return dialog_widget->widget_delegate()->AsDialogDelegate()->GetOkButton();
 }
 
 void WaitForDesksTemplatesUI() {
