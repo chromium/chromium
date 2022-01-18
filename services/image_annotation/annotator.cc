@@ -464,9 +464,8 @@ Annotator::Annotator(
 Annotator::~Annotator() {
   // Report any clients still connected at service shutdown.
   for (const auto& request_info_kv : request_infos_) {
-    for (const auto& unused : request_info_kv.second) {
+    for ([[maybe_unused]] const auto& unused : request_info_kv.second) {
       ReportClientResult(ClientResult::kShutdown);
-      ANALYZER_ALLOW_UNUSED(unused);
     }
   }
 }
