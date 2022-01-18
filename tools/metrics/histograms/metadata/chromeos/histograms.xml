@@ -169,20 +169,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Apps.IntentPickerAction"
-    enum="ArcIntentHandlerAction" expires_after="2022-05-21">
-  <obsolete>
-    Replaced by ChromeOS.Intents.IntentPickerAction in M98.
-  </obsolete>
-  <owner>elijahtaylor@google.com</owner>
-  <owner>dominickn@chromium.org</owner>
-  <owner>shihuis@google.com</owner>
-  <summary>
-    Records the response when the intent picker is shown to the user on Chrome
-    OS to allow them to open a URL in an app.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
     enum="ArcIntentHandlerDestinationPlatform" expires_after="2022-05-21">
   <owner>elijahtaylor@google.com</owner>
@@ -791,26 +777,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.FamilyUser.LogSegment" enum="FamilyUserLogSegment"
-    expires_after="2021-07-23">
-  <obsolete>
-    Replaced with ChromeOS.FamilyUser.LogSegment2 in M90
-  </obsolete>
-  <owner>tobyhuang@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Categorizes the current user for the Family Experiences team's metrics.
-    Other is for all other users that do not fall into any of the below
-    categories. A Supervised User has a supervised primary account and no
-    secondary accounts. A Supervised Student has a supervised primary account
-    and one or more EDU secondary accounts, which is the only available option
-    for a secondary account in that scenario. A Student at Home has a K-12 EDU
-    primary account on an unmanaged ChromeOS device, regardless of the secondary
-    account.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.FamilyUser.LogSegment2" enum="FamilyUserLogSegment"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
@@ -863,22 +829,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the duration of time (ms) a given {FeatureName} feature was used.
   </summary>
   <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
-</histogram>
-
-<histogram name="ChromeOS.GAIA.AuthenticatorContentWindowNull" enum="Boolean"
-    expires_after="M85">
-  <obsolete>
-    Removed 2020-10.
-  </obsolete>
-  <owner>wjmaclean@chromium.org</owner>
-  <summary>
-    Whether the GAIA Authenticator unexpectedly encountered a null contentWindow
-    value while handling WebView's onContentLoad event. This metric is only
-    enabled for AuthMode = DEFAULT, which indicates ChromeOS online login. This
-    is the only mode where the issue has been observed. Other modes not captured
-    here are OFFLINE (offline ChromeOS login) and DESKTOP (for online GAIA login
-    on desktop Chrome).
-  </summary>
 </histogram>
 
 <histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
@@ -1317,20 +1267,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.PlatformVerification.Result"
-    enum="ChromeOSPlatformVerificationResult" expires_after="2021-12-21">
-  <obsolete>
-    Replaced with pattern histogram ChromeOS.PlatformVerification.Result2.
-    (2021-06 // M93).
-  </obsolete>
-  <owner>apronin@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    The result of a platform verification attempt for content protection on
-    Chrome OS.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.PlatformVerification.Result2"
     enum="ChromeOSPlatformVerificationResult2" expires_after="2022-07-03">
   <owner>erikchen@chromium.org</owner>
@@ -1448,37 +1384,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     system is detected as anomalous (i.e. presents any of the tracked
     anomalies.)
   </summary>
-</histogram>
-
-<histogram name="ChromeOS.Sharesheet.AppCount" units="apps" expires_after="M95">
-  <obsolete>
-    Replaced with pattern histogram ChromeOS.Sharesheet.AppCount.{AppType}.
-    (2021-03)
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
-  <summary>
-    Records number of apps found for a given intent in the Sharesheet.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Sharesheet.AppCount.{AppType}" units="apps"
-    expires_after="M95">
-  <obsolete>
-    Replaced with pattern histogram ChromeOS.Sharesheet.AppCount2.{AppType}.
-    (2021-06)
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
-  <summary>
-    Records number of {AppType} apps found for a given intent in the Sharesheet
-    when the sharesheet is invoked.
-  </summary>
-  <token key="AppType">
-    <variant name="All" summary="all apps"/>
-    <variant name="Arc" summary="arc app"/>
-    <variant name="Web" summary="web app"/>
-  </token>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.AppCount2.{AppType}" units="apps"
@@ -1809,34 +1714,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jorgelo@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
   <summary>Timing and number of USB devices attached.</summary>
-</histogram>
-
-<histogram name="ChromeOS.UserAddingScreen.LoadTime" units="ms"
-    expires_after="2021-05-16">
-  <obsolete>
-    Removed in M90, superseded by ChromeOS.UserAddingScreen.LoadTimeViewsBased.
-  </obsolete>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>tellier@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    The time spent before the web UI vesion of the multiprofile account picker
-    is ready.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.UserAddingScreen.LoadTimeViewsBased" units="ms"
-    expires_after="2021-09-19">
-  <obsolete>
-    Removed in M96.
-  </obsolete>
-  <owner>tellier@google.com</owner>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    The time spent before the views-based version of the multiprofile account
-    picker is ready.
-  </summary>
 </histogram>
 
 <histogram name="ChromeOS.UserTypeByDeviceType.LogSegment"

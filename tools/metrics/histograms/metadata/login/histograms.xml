@@ -103,19 +103,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Login.MountNamespaceCreationSuccess" enum="Boolean"
-    expires_after="2021-10-10">
-  <obsolete>
-    Removed in M97.
-  </obsolete>
-  <owner>betuls@chromium.org</owner>
-  <owner>jorgelo@chromium.org</owner>
-  <owner>chromeos-security-core@google.com</owner>
-  <summary>
-    Mount Namespace creation success status. Reported every time user signs in.
-  </summary>
-</histogram>
-
 <histogram name="Login.NewUserPriorityPrefsSyncResult"
     enum="NewUserPriorityPrefsSyncResult" expires_after="M85">
   <owner>alemate@chromium.org</owner>
@@ -128,18 +115,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent waiting for priority preferences to sync after new user sign in.
     The operation will time out after 10s.
-  </summary>
-</histogram>
-
-<histogram name="Login.OfflineFailure.IsKnownUser" enum="LoginIsKnownUser"
-    expires_after="2020-10-14">
-  <obsolete>
-    Removed in M88.
-  </obsolete>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    On offline login failure, records whether it is for an existing user.
   </summary>
 </histogram>
 
@@ -178,18 +153,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the reason why a user was sent through the GAIA re-auth flow which
     caused the local password change.
-  </summary>
-</histogram>
-
-<histogram name="Login.PasswordChangeFlow" enum="LoginPasswordChangeFlow"
-    expires_after="2021-10-10">
-  <obsolete>
-    Removed in M96.
-  </obsolete>
-  <owner>xiyuan@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <summary>
-    Records the UI flow after a possible password change is detected.
   </summary>
 </histogram>
 

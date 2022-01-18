@@ -220,21 +220,6 @@ chromium-metrics-reviews@google.com.
   <summary>Cryptohome errors.</summary>
 </histogram>
 
-<histogram name="Cryptohome.EvkkEncryptionType" enum="EvkkEncryptionType"
-    expires_after="2021-08-01">
-  <obsolete>
-    Replaced with Cryptohome.WrappingKeyDerivation.Mount 2021-03-08 which
-    describes the derivation types more comprehensively.
-  </obsolete>
-  <owner>enlightened@chromium.org</owner>
-  <owner>tnagel@chromium.org</owner>
-  <summary>
-    Indicates whether Encrypted Vault Keyset Key (EVKK) is TPM wrapped. This is
-    reported when the Derive function inside scrypt auth block or TPM auth block
-    is called, which happens during cryptohome mount phase.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.FreedCacheVaultDiskSpaceInMb" units="MB"
     expires_after="2022-06-01">
   <owner>vsavu@google.com</owner>
@@ -328,20 +313,6 @@ chromium-metrics-reviews@google.com.
     <variant name="AddKeyResetSeedGeneration"
         summary="Reset seed generated during Add Key operation"/>
   </token>
-</histogram>
-
-<histogram name="Cryptohome.MigrationToGaiaId"
-    enum="CryptohomeMigrationToGaiaId" expires_after="2021-12-10">
-  <obsolete>
-    Deprecated as of 2021/12 and Milestone 98.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    This is the status of cryptohome migration to GaiaId. Every time user logs
-    in current migration status is recorded.
-  </summary>
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.ConsumedBatteryPercent" units="%"
@@ -575,37 +546,6 @@ chromium-metrics-reviews@google.com.
     The amount of time cryptohome spends performing the mounts for the user's
     encrypted home directory. Does not include any process or async dispatch
     overhead.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.TimeToPerformOOPMountCleanup" units="ms"
-    expires_after="2022-01-02">
-  <obsolete>
-    All mounts are now performed out-of-process, so this histogram is not needed
-    anymore, as there is nothing to compare this number to. Obsolete as of
-    2022-01-06.
-  </obsolete>
-  <owner>jorgelo@chromium.org</owner>
-  <owner>betuls@chromium.org</owner>
-  <summary>
-    The amount of time (ms) cryptohome spends terminating and reaping the
-    out-of-process mounter, which includes the time spent by the mounter itself
-    tearing down the user home directory.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.TimeToPerformOOPMountOperation" units="ms"
-    expires_after="2022-01-06">
-  <obsolete>
-    All mounts are now performed out-of-process, so this histogram is not needed
-    anymore, as there is nothing to compare this number to. Obsolete as of
-    2022-01-06.
-  </obsolete>
-  <owner>jorgelo@chromium.org</owner>
-  <owner>betuls@chromium.org</owner>
-  <summary>
-    The amount of time (ms) cryptohome spends running the out-of-process
-    mounter, until the user home directory is finalized.
   </summary>
 </histogram>
 
