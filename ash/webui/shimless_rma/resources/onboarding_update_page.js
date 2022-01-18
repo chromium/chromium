@@ -71,7 +71,7 @@ export class OnboardingUpdatePageElement extends
       /** @protected */
       updateNoticeMessage_: {
         type: String,
-        value: '',
+        computed: 'computeUpdateNoticeMessage_(updateAvailable_)',
       },
 
       /** @protected */
@@ -124,7 +124,8 @@ export class OnboardingUpdatePageElement extends
     this.shimlessRmaService_.observeOsUpdateProgress(
         this.osUpdateObserverReceiver_.$.bindNewPipeAndPassRemote());
 
-    this.isCompliant_ = false;
+    // We assume it's compliant until updated in onHardwareVerificationResult().
+    this.isCompliant_ = true;
     /** @protected {?HardwareVerificationStatusObserverReceiver} */
     this.hwVerificationObserverReceiver_ =
         new HardwareVerificationStatusObserverReceiver(
@@ -173,7 +174,6 @@ export class OnboardingUpdatePageElement extends
           this.updateAvailable_ ? 'currentVersionOutOfDateText' :
                                   'currentVersionUpToDateText',
           this.currentVersion_);
-      this.setUpdateNoticeMessage_();
       this.setNextButtonLabel_();
     });
   }
@@ -208,26 +208,6 @@ export class OnboardingUpdatePageElement extends
   /** @protected */
   updateCheckButtonHidden_() {
     return !this.networkAvailable || this.updateAvailable_;
-  }
-
-  /** @private */
-  setUpdateNoticeMessage_() {
-    if (!this.isCompliant_) {
-      this.updateNoticeMessage_ =
-          this.i18n('osUpdateInvalidComponentsDescriptionText');
-    } else if (this.updateAvailable_) {
-      // TODO(gavindodd): Do we need a check that the current major version is
-      // within n of the installed version to switch between this message and
-      // 'Chrome OS needs an additional update to get fully up to date.'?
-      this.updateNoticeMessage_ =
-          this.i18n('osUpdateVeryOutOfDateDescriptionText');
-    } else {
-      // Note: In current implementation this should not be reached, but it is
-      // still a perfectly valid state.
-      // If there was ever an update that did not require a reboot this would
-      // be reached.
-      this.updateNoticeMessage_ = '';
-    }
   }
 
   /** @return {!Promise<StateResult>} */
@@ -268,7 +248,6 @@ export class OnboardingUpdatePageElement extends
    */
   onHardwareVerificationResult(isCompliant, errorMessage) {
     this.isCompliant_ = isCompliant;
-    this.setUpdateNoticeMessage_();
   }
 
   /** @protected */
@@ -281,6 +260,15 @@ export class OnboardingUpdatePageElement extends
           detail: this.updateAvailable_ ? 'skipButtonLabel' : 'nextButtonLabel'
         },
         ));
+  }
+
+  /** @protected */
+  computeUpdateNoticeMessage_() {
+    // |updateAvailable_| is not expected to be false in this state but if there
+    // was ever an update that did not require a reboot this would be reached.
+    return this.updateAvailable_ ?
+        this.i18n('osUpdateOutOfDateDescriptionText') :
+        '';
   }
 }
 

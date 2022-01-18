@@ -13,10 +13,13 @@
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('osUpdateTitleText')]]</h1>
-    <div>[[updateNoticeMessage_]]</div>
+    <div hidden$="[[isCompliant_]]">
+      [[i18n('osUpdateInvalidComponentsDescriptionText')]]
+    </div>
+    <div hidden$="[[!isCompliant_]]">[[updateNoticeMessage_]]</div>
     <div id="versionInfo">
-      <iron-icon id="updateIcon" icon="[[getUpdateNoticeIcon_(updateAvailable_)]]"
-        class="small-icon">
+      <iron-icon id="updateIcon" class="small-icon"
+          icon="[[getUpdateNoticeIcon_(updateAvailable_)]]">
       </iron-icon>
       [[currentVersionText_]]
     </div>
