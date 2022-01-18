@@ -2497,7 +2497,6 @@ test("content_unittests") {
     "//gpu/ipc/host",
     "//gpu/ipc/service",
     "//ipc:test_support",
-    "//jingle:jingle_glue",
     "//media:test_support",
     "//media/capture",
     "//media/midi:midi",

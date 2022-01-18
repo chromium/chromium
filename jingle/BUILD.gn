@@ -28,48 +28,10 @@ source_set("webrtc_glue") {
   ]
 }
 
-static_library("jingle_glue") {
-  visibility = [
-    ":*",
-    "//content/test:*",
-    "//remoting/protocol",
-    "//remoting/signaling",
-  ]
-  sources = [
-    "glue/network_service_async_socket.cc",
-    "glue/network_service_async_socket.h",
-    "glue/network_service_config.cc",
-    "glue/network_service_config.h",
-    "glue/task_pump.cc",
-    "glue/task_pump.h",
-  ]
-  public_deps = [ "//services/network/public/mojom" ]
-  deps = [
-    "//base",
-    "//net",
-    "//third_party/libjingle_xmpp:rtc_task_runner",
-    "//third_party/libjingle_xmpp:rtc_xmpp",
-  ]
-
-  if (is_nacl) {
-    sources -= [
-      "glue/network_service_async_socket.cc",
-      "glue/network_service_config.cc",
-    ]
-    public_deps -= [ "//services/network/public/mojom" ]
-  }
-}
-
 test("jingle_unittests") {
   sources = [
     "glue/fake_ssl_client_socket_unittest.cc",
-    "glue/jingle_glue_mock_objects.cc",
-    "glue/jingle_glue_mock_objects.h",
     "glue/logging_unittest.cc",
-    "glue/mock_task.cc",
-    "glue/mock_task.h",
-    "glue/network_service_async_socket_unittest.cc",
-    "glue/task_pump_unittest.cc",
     "glue/thread_wrapper_unittest.cc",
     "run_all_unittests.cc",
   ]
@@ -80,7 +42,6 @@ test("jingle_unittests") {
   }
 
   deps = [
-    ":jingle_glue",
     ":webrtc_glue",
     "//base",
     "//base/test:test_support",

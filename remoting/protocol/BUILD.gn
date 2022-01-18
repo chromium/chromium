@@ -228,7 +228,6 @@ static_library("protocol") {
     "//build:chromeos_buildflags",
     "//crypto",
     "//google_apis:google_apis",
-    "//jingle:jingle_glue",
     "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",

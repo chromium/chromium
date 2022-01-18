@@ -65,7 +65,6 @@ static_library("rtc_xmllite") {
 static_library("rtc_xmpp") {
   visibility = [
     ":*",
-    "//jingle:jingle_glue",
     "//remoting/*",
   ]
   cflags = []
