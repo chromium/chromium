@@ -17,10 +17,10 @@
 #include "net/base/network_isolation_key.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/radio_utils.h"
 #include "base/power_monitor/power_monitor.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace features {
 
@@ -65,7 +65,7 @@ bool AddInitialUrlToPreconnectPrediction(const GURL& initial_url,
 }
 
 bool IsPreconnectExpensive() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Preconnecting is expensive while on battery power and cellular data and
   // the radio signal is weak.
   if ((base::PowerMonitor::IsInitialized() &&
