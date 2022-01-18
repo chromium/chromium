@@ -7280,10 +7280,6 @@ crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/local_Fi
 crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.html [ Failure ]
 crbug.com/1250534 virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemDirectoryHandle-move.https.any.worker.html [ Failure ]
 
-# Sheriff 2021-09-23
-crbug.com/1164568 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Failure ]
-crbug.com/1164568 [ Mac10.13 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Failure ]
-
 # Sheriff 2021-09-27
 # Revisit once crbug.com/1123886 is addressed.
 # Likely has the same root cause for crashes.
