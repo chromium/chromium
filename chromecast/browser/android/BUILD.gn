@@ -48,6 +48,11 @@ android_resources("cast_shell_android_resources") {
               "apk/res/drawable-xhdpi/ic_settings_cast.png",
               "apk/res/drawable-xxhdpi/ic_settings_cast.png",
               "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
+              "apk/res/drawable-hdpi/ic_notification_cast.png",
+              "apk/res/drawable-mdpi/ic_notification_cast.png",
+              "apk/res/drawable-xhdpi/ic_notification_cast.png",
+              "apk/res/drawable-xxhdpi/ic_notification_cast.png",
+              "apk/res/drawable-xxxhdpi/ic_notification_cast.png",
               "apk/res/layout/cast_web_contents_activity.xml",
             ]
 }
