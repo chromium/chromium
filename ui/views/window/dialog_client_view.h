@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/dialog_observer.h"
 
@@ -135,6 +136,11 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   InputEventActivationProtector input_protector_;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, DialogClientView, ClientView)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, DialogClientView)
 
 #endif  // UI_VIEWS_WINDOW_DIALOG_CLIENT_VIEW_H_

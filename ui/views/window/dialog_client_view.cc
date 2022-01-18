@@ -28,6 +28,7 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -255,7 +256,8 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
                                           ui::DialogButton type) {
   DialogDelegate* const delegate = GetDialogDelegate();
   if (!(delegate->GetDialogButtons() & type)) {
-    delete *member;
+    if (*member)
+      button_row_container_->RemoveChildViewT(*member);
     *member = nullptr;
     return;
   }
@@ -273,21 +275,22 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
     return;
   }
 
-  auto button = std::make_unique<MdTextButton>(
-      base::BindRepeating(&DialogClientView::ButtonPressed,
-                          base::Unretained(this), type),
-      title);
-  button->SetProminent(is_default);
-  button->SetIsDefault(is_default);
-  button->SetEnabled(delegate->IsDialogButtonEnabled(type));
-
   const int minimum_width = LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH);
-  button->SetMinSize(gfx::Size(minimum_width, 0));
 
-  button->SetGroup(kButtonGroup);
-
-  *member = button_row_container_->AddChildView(std::move(button));
+  Builder<View>(button_row_container_)
+      .AddChild(
+          Builder<MdTextButton>()
+              .CopyAddressTo(member)
+              .SetCallback(base::BindRepeating(&DialogClientView::ButtonPressed,
+                                               base::Unretained(this), type))
+              .SetText(title)
+              .SetProminent(is_default)
+              .SetIsDefault(is_default)
+              .SetEnabled(delegate->IsDialogButtonEnabled(type))
+              .SetMinSize(gfx::Size(minimum_width, 0))
+              .SetGroup(kButtonGroup))
+      .BuildChildren();
 }
 
 void DialogClientView::ButtonPressed(ui::DialogButton type,
@@ -312,7 +315,7 @@ DialogClientView::GetButtonRowViews() {
   View* first = ShouldShow(extra_view_) ? extra_view_.get() : nullptr;
   View* second = cancel_button_;
   View* third = ok_button_;
-  if (PlatformStyle::kIsOkButtonLeading)
+  if (cancel_button_ && (PlatformStyle::kIsOkButtonLeading == !!ok_button_))
     std::swap(second, third);
   return {{first, second, third}};
 }
@@ -332,12 +335,12 @@ void DialogClientView::SetupLayout() {
 
   // Visibility changes on |extra_view_| must be observed to re-Layout. However,
   // when hidden it's not included in the button row (it can't influence layout)
-  // and it can't be added to |button_row_container_| (GridLayout complains).
-  // So add it, hidden, to |this| so it can be observed.
+  // and it can't be added to |button_row_container_|. So add it, hidden, to
+  // |this| so it can be observed.
   if (extra_view_) {
     if (!views[0])
       AddChildView(extra_view_.get());
-    else
+    else if (views[0])
       button_row_container_->AddChildViewAt(extra_view_.get(), 0);
   }
 
@@ -385,9 +388,8 @@ void DialogClientView::SetupLayout() {
   // Skip views that are not a button, or are a specific subclass of Button
   // that should never be linked. Otherwise, link everything.
   auto should_link = [](views::View* view) {
-    return Button::AsButton(view) &&
-           view->GetClassName() != Checkbox::kViewClassName &&
-           view->GetClassName() != ImageButton::kViewClassName;
+    return IsViewClass<Button>(view) && !IsViewClass<Checkbox>(view) &&
+           !IsViewClass<ImageButton>(view);
   };
 
   layout->StartRowWithPadding(kFixed, kButtonRowId, kFixed,
