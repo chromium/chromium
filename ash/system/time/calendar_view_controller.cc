@@ -75,10 +75,8 @@ void CalendarViewController::RemoveObserver(Observer* observer) {
 
 void CalendarViewController::UpdateMonth(
     const base::Time current_month_first_date) {
-  if (calendar_utils::GetExplodedLocal(current_date_).month ==
-          calendar_utils::GetExplodedLocal(current_month_first_date).month &&
-      calendar_utils::GetExplodedLocal(current_date_).year ==
-          calendar_utils::GetExplodedLocal(current_month_first_date).year) {
+  if (base::TimeFormatWithPattern(current_date_, "MMM YYYY") ==
+      base::TimeFormatWithPattern(current_month_first_date, "MMM YYYY")) {
     return;
   }
 
@@ -255,11 +253,7 @@ SingleDayEventList CalendarViewController::SelectedDateEvents() {
   if (!selected_date_.has_value())
     return std::list<google_apis::calendar::CalendarEvent>();
 
-  base::Time date;
-  const bool result =
-      base::Time::FromLocalExploded(selected_date_.value(), &date);
-  DCHECK(result);
-  return FindEvents(date);
+  return FindEvents(selected_date_.value());
 }
 
 int CalendarViewController::EventsNumberOfDayInternal(
@@ -288,9 +282,8 @@ int CalendarViewController::EventsNumberOfDay(base::Time day,
   return event_number;
 }
 
-void CalendarViewController::ShowEventListView(
-    base::Time::Exploded selected_date,
-    int row_index) {
+void CalendarViewController::ShowEventListView(base::Time selected_date,
+                                               int row_index) {
   // Do nothing if selecting on the same date.
   if (is_event_list_showing_ &&
       calendar_utils::IsTheSameDay(selected_date, selected_date_)) {
@@ -328,9 +321,11 @@ bool CalendarViewController::IsSelectedDateInCurrentMonth() {
   if (!selected_date_.has_value())
     return false;
 
-  auto current = calendar_utils::GetExplodedLocal(current_date_);
-  return current.month == selected_date_->month &&
-         current.year == selected_date_->year;
+  auto current_exploded = calendar_utils::GetExplodedLocal(current_date_);
+  auto selected_exploded =
+      calendar_utils::GetExplodedLocal(selected_date_.value());
+  return current_exploded.month == selected_exploded.month &&
+         current_exploded.year == selected_exploded.year;
 }
 
 void CalendarViewController::OnCalendarEventsFetched(

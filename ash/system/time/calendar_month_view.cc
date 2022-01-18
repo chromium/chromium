@@ -4,6 +4,8 @@
 
 #include "ash/system/time/calendar_month_view.h"
 
+#include <codecvt>
+
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -45,23 +47,32 @@ constexpr int kFocusCirclePadding = 4;
 // next one.
 void MoveToNextDay(int& column,
                    base::Time& current_date,
+                   base::Time& local_current_date,
                    base::Time::Exploded& current_date_exploded) {
   // Using 30 hours to make sure the date is moved to the next day, since there
   // are daylight saving days which have more than 24 hours in a day.
   // `base::Days(1)` cannot be used, because it is 24 hours.
-  current_date = current_date.LocalMidnight() + base::Hours(30);
-  current_date.LocalExplode(&current_date_exploded);
+  //
+  // Also using the local time format to calculate the local midnight, since the
+  // LocalExplode doesn't use the manually set timezone.
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+  int hours;
+  bool result = base::StringToInt(
+      converter.to_bytes(base::TimeFormatWithPattern(current_date, "H")),
+      &hours);
+  DCHECK(result);
+  current_date += base::Hours(30 - hours);
+  local_current_date += base::Hours(30 - hours);
+  local_current_date.UTCExplode(&current_date_exploded);
   column = (column + 1) % calendar_utils::kDateInOneWeek;
   DCHECK_EQ(column, current_date_exploded.day_of_week);
 }
 
 }  // namespace
 
-// TODO(https://crbug.com/1236276): Fix the ChromeVox window position on this
-// view.
 CalendarDateCellView::CalendarDateCellView(
     CalendarViewController* calendar_view_controller,
-    base::Time::Exploded& date,
+    base::Time date,
     bool is_grayed_out_date,
     int row_index)
     : views::LabelButton(
@@ -73,7 +84,7 @@ CalendarDateCellView::CalendarDateCellView(
                         base::Unretained(calendar_view_controller),
                         date,
                         row_index)),
-          base::UTF8ToUTF16(base::NumberToString(date.day_of_month)),
+          base::TimeFormatWithPattern(date, "d"),
           CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
@@ -130,15 +141,15 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   // Sets accessible label. E.g. Calendar, week of July 16th 2021, [selected
   // date] is currently selected.
   if (is_selected_) {
-    base::Time unexploded;
-    bool result = base::Time::FromLocalExploded(date_, &unexploded);
-    DCHECK(result);
-    unexploded -= base::Days(date_.day_of_week);
+    base::Time::Exploded date_exploded =
+        calendar_utils::GetExplodedLocal(date_);
+    base::Time first_day_of_week =
+        date_ - base::Days(date_exploded.day_of_week);
 
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_CALENDAR_SELECTED_DATE_CELL_ACCESSIBLE_DESCRIPTION,
-        base::TimeFormatWithPattern(unexploded, "MMMMdyyyy"),
-        base::UTF8ToUTF16(base::NumberToString(date_.day_of_month))));
+        base::TimeFormatWithPattern(first_day_of_week, "MMMMdyyyy"),
+        base::TimeFormatWithPattern(date_, "d")));
   }
 
   if (views::View::HasFocus() || is_selected_) {
@@ -226,22 +237,18 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   if (grayed_out_)
     return;
 
-  base::Time unexploded;
-  bool result = base::Time::FromLocalExploded(date_, &unexploded);
-  DCHECK(result);
-
   const int event_number =
-      calendar_view_controller_->EventsNumberOfDay(unexploded,
+      calendar_view_controller_->EventsNumberOfDay(date_,
                                                    /*events =*/nullptr);
   const int tooltip_id = (event_number <= 1)
                              ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
                              : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
 
   SetTooltipText(l10n_util::GetStringFUTF16(
-      tooltip_id, base::TimeFormatWithPattern(unexploded, "MMMMdyyyy"),
+      tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
       base::UTF8ToUTF16(base::NumberToString(event_number))));
   SetAccessibleName(l10n_util::GetStringFUTF16(
-      tooltip_id, base::TimeFormatWithPattern(unexploded, "MMMMdyyyy"),
+      tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
       base::UTF8ToUTF16(base::NumberToString(event_number))));
 
   if (event_number == 0)
@@ -271,14 +278,31 @@ CalendarMonthView::CalendarMonthView(
   layer()->SetFillsBoundsOpaquely(false);
   calendar_utils::SetUpWeekColumns(layout);
 
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+
+  // Using the local time format to get the local `base::Time`, which is used to
+  // generate the exploded, since the LocalExplode doesn't use the manually set
+  // timezone.
+  base::Time first_day_of_month_local;
+  bool result = base::Time::FromString(
+      converter
+          .to_bytes(base::TimeFormatWithPattern(first_day_of_month,
+                                                "MMMMdyyyy HH:mm") +
+                    u" UTC")
+          .c_str(),
+      &first_day_of_month_local);
+  DCHECK(result);
   base::Time::Exploded first_day_of_month_exploded =
-      calendar_utils::GetExplodedLocal(first_day_of_month);
+      calendar_utils::GetExplodedUTC(first_day_of_month_local);
 
   // Calculates the start date.
   base::Time current_date =
       first_day_of_month - base::Days(first_day_of_month_exploded.day_of_week);
+  base::Time current_date_local =
+      first_day_of_month_local -
+      base::Days(first_day_of_month_exploded.day_of_week);
   base::Time::Exploded current_date_exploded =
-      calendar_utils::GetExplodedLocal(current_date);
+      calendar_utils::GetExplodedUTC(current_date_local);
 
   // TODO(https://crbug.com/1236276): Extract the following 3 parts (while
   // loops) into a method.
@@ -286,9 +310,10 @@ CalendarMonthView::CalendarMonthView(
   // Gray-out dates in the first row, which are from the previous month.
   while (current_date_exploded.month % 12 ==
          (first_day_of_month_exploded.month - 1) % 12) {
-    AddDateCellToLayout(current_date_exploded, column,
+    AddDateCellToLayout(current_date, column,
                         /*is_in_current_month=*/false, /*row_index=*/0);
-    MoveToNextDay(column, current_date, current_date_exploded);
+    MoveToNextDay(column, current_date, current_date_local,
+                  current_date_exploded);
   }
 
   int row_number = 0;
@@ -298,7 +323,7 @@ CalendarMonthView::CalendarMonthView(
     if (column == 0 || current_date_exploded.day_of_month == 1) {
       ++row_number;
     }
-    auto* cell = AddDateCellToLayout(current_date_exploded, column,
+    auto* cell = AddDateCellToLayout(current_date, column,
                                      /*is_in_current_month=*/true,
                                      /*row_index=*/row_number - 1);
     // Add the first non-grayed-out cell of the row to the `focused_cells_`.
@@ -307,14 +332,15 @@ CalendarMonthView::CalendarMonthView(
     }
     // If this row has today, updates today's row number and replaces today to
     // the last element in the `focused_cells_`.
-    if (calendar_utils::IsToday(current_date_exploded)) {
+    if (calendar_utils::IsToday(current_date)) {
       calendar_view_controller_->set_row_height(
           cell->GetPreferredSize().height());
       calendar_view_controller_->set_today_row(row_number);
       focused_cells_.back() = cell;
       has_today_ = true;
     }
-    MoveToNextDay(column, current_date, current_date_exploded);
+    MoveToNextDay(column, current_date, current_date_local,
+                  current_date_exploded);
   }
 
   last_row_index_ = row_number - 1;
@@ -327,25 +353,26 @@ CalendarMonthView::CalendarMonthView(
   // Adds the first several days from the next month if the last day is not the
   // end day of this week.
   const base::Time end_of_the_last_row =
-      current_date + base::Days(6 - current_date_exploded.day_of_week);
+      current_date_local + base::Days(6 - current_date_exploded.day_of_week);
   base::Time::Exploded end_of_row_exploded =
-      calendar_utils::GetExplodedLocal(end_of_the_last_row);
+      calendar_utils::GetExplodedUTC(end_of_the_last_row);
 
   // Gray-out dates in the last row, which are from the next month.
   while (current_date_exploded.day_of_month <=
          end_of_row_exploded.day_of_month) {
     // Next column is generated.
-    AddDateCellToLayout(current_date_exploded, column,
+    AddDateCellToLayout(current_date, column,
                         /*is_in_current_month=*/false,
                         /*row_index=*/row_number);
-    MoveToNextDay(column, current_date, current_date_exploded);
+    MoveToNextDay(column, current_date, current_date_local,
+                  current_date_exploded);
   }
 }
 
 CalendarMonthView::~CalendarMonthView() = default;
 
 CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
-    base::Time::Exploded current_date_exploded,
+    base::Time current_date,
     int column,
     bool is_in_current_month,
     int row_index) {
@@ -353,7 +380,7 @@ CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
   if (column == 0)
     layout_manager->AddRows(1, views::TableLayout::kFixedSize);
   return AddChildView(std::make_unique<CalendarDateCellView>(
-      calendar_view_controller_, current_date_exploded,
+      calendar_view_controller_, current_date,
       /*is_grayed_out_date=*/!is_in_current_month, /*row_index=*/row_index));
 }
 

@@ -690,18 +690,13 @@ void CalendarView::OpenEventList() {
     return;
 
   // Updates `scroll_view_`'s accessible name with the selected date.
-  absl::optional<base::Time::Exploded> selected_date =
+  absl::optional<base::Time> selected_date =
       calendar_view_controller_->selected_date();
-  DCHECK(selected_date.has_value());
-  base::Time unexploded_selected_date;
-  bool result = base::Time::FromLocalExploded(selected_date.value(),
-                                              &unexploded_selected_date);
-  DCHECK(result);
   scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_CONTENT_ACCESSIBLE_DESCRIPTION,
       base::TimeFormatWithPattern(calendar_view_controller_->current_date(),
                                   "MMMM yyyy"),
-      base::TimeFormatWithPattern(unexploded_selected_date, "MMMMdyyyy")));
+      base::TimeFormatWithPattern(selected_date.value(), "MMMMdyyyy")));
   scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                          /*send_native_event=*/true);
 
