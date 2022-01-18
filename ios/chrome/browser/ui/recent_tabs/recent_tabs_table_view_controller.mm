@@ -1363,23 +1363,27 @@ const int kRecentlyClosedTabsSectionIndex = 0;
     self.signinPromoViewMediator = nil;
     return;
   }
-  // Update the TableViewSigninPromoItem configurator. It will be used by the
-  // item to configure the cell once |self.tableView| requests a cell on
-  // cellForRowAtIndexPath.
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:ItemTypeOtherDevicesSigninPromo
-                              sectionIdentifier:SectionIdentifierOtherDevices];
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  TableViewSigninPromoItem* signInItem =
-      base::mac::ObjCCastStrict<TableViewSigninPromoItem>(item);
-  signInItem.configurator = configurator;
-  // If section is collapsed no tableView update is needed.
-  if ([self.tableViewModel sectionIsCollapsed:SectionIdentifierOtherDevices]) {
-    return;
+  if ([self.tableViewModel hasItemForItemType:ItemTypeOtherDevicesSigninPromo
+                            sectionIdentifier:SectionIdentifierOtherDevices]) {
+    // Update the TableViewSigninPromoItem configurator. It will be used by the
+    // item to configure the cell once |self.tableView| requests a cell on
+    // cellForRowAtIndexPath.
+    NSIndexPath* indexPath = [self.tableViewModel
+        indexPathForItemType:ItemTypeOtherDevicesSigninPromo
+           sectionIdentifier:SectionIdentifierOtherDevices];
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    TableViewSigninPromoItem* signInItem =
+        base::mac::ObjCCastStrict<TableViewSigninPromoItem>(item);
+    signInItem.configurator = configurator;
+    // If section is collapsed no tableView update is needed.
+    if ([self.tableViewModel
+            sectionIsCollapsed:SectionIdentifierOtherDevices]) {
+      return;
+    }
+    // After setting the new configurator to the item, reload the item's Cell.
+    [self reloadCellsForItems:@[ signInItem ]
+             withRowAnimation:UITableViewRowAnimationNone];
   }
-  // After setting the new configurator to the item, reload the item's Cell.
-  [self reloadCellsForItems:@[ signInItem ]
-           withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)signinDidFinish {
