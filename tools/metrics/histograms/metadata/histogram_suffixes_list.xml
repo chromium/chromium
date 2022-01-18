@@ -2603,10 +2603,6 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="ContentSuggestionUndoableActions" separator=".">
   <suffix name="Commit" label="Action was committed"/>
   <suffix name="Undo" label="Action was undone"/>
-  <affected-histogram
-      name="ContentSuggestions.Feed.InterestHeader.NotInterestedInSource"/>
-  <affected-histogram
-      name="ContentSuggestions.Feed.InterestHeader.NotInterestedInTopic"/>
   <affected-histogram name="NewTabPage.ContentSuggestions.DismissedUnvisited"/>
   <affected-histogram name="NewTabPage.ContentSuggestions.DismissedVisited"/>
 </histogram_suffixes>
@@ -4939,12 +4935,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="InterestHeader" label="Interest header"/>
   <suffix name="Tooltip" label="Tooltip"/>
   <suffix name="UnknownElementType" label="Unknown element type"/>
-  <affected-histogram name="ContentSuggestions.Feed.VisualElement.Clicked"/>
-  <affected-histogram
-      name="ContentSuggestions.Feed.VisualElement.Clicked.TimeSinceElementFetched"/>
-  <affected-histogram name="ContentSuggestions.Feed.VisualElement.Viewed"/>
-  <affected-histogram
-      name="ContentSuggestions.Feed.VisualElement.Viewed.TimeSinceElementFetched"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="FeedIsSynthetic" separator=".">
@@ -5026,19 +5016,12 @@ chromium-metrics-reviews@google.com.
   <suffix name="MoreButton" label="More button"/>
   <suffix name="SyntheticToken" label="Synthetic token"/>
   <suffix name="ZeroStateRefresh" label="Zero state refresh"/>
-  <affected-histogram
-      name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDuration"/>
-  <affected-histogram
-      name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDurationWithoutCompleting"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="FeedStorageType" separator="." ordering="prefix,2">
   <suffix name="ContentStorage" label="Database for content storage."/>
   <suffix name="JournalStorage" label="Database for journal storage."/>
   <affected-histogram name="ContentSuggestions.Feed.CommitMutationCount"/>
-  <affected-histogram name="ContentSuggestions.Feed.Count"/>
-  <affected-histogram name="ContentSuggestions.Feed.LoadKeysTime"/>
-  <affected-histogram name="ContentSuggestions.Feed.LoadTime"/>
   <affected-histogram name="ContentSuggestions.Feed.OperationCommitTime"/>
 </histogram_suffixes>
 
@@ -9104,7 +9087,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="SuccessWithSuggestions"
       label="Successfully fetched search suggestion data which contained
              suggestions"/>
-  <affected-histogram name="NewTabPage.SearchSuggestions.RequestLatencyV2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPageIconTypes" separator=".">
@@ -9214,9 +9196,7 @@ chromium-metrics-reviews@google.com.
     </obsolete>
   </suffix>
   <affected-histogram name="NewTabPage.MostVisited"/>
-  <affected-histogram name="NewTabPage.MostVisitedAge"/>
   <affected-histogram name="NewTabPage.SuggestionsImpression"/>
-  <affected-histogram name="NewTabPage.SuggestionsImpressionAge"/>
   <affected-histogram name="NewTabPage.TileTitle"/>
   <affected-histogram name="NewTabPage.TileTitleClicked"/>
   <affected-histogram name="NewTabPage.TileType"/>

@@ -36,22 +36,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentCapture.CaptureContentTime" units="microseconds"
-    expires_after="M87">
-  <obsolete>
-    Replaced by ContentCapture.CaptureContentTime2 since M87, the new histogram
-    records the grouping time additionally.
-  </obsolete>
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken to capture the on-screen content.
-
-    Note that this metrics is only recorded on clients on which a
-    high-resolution clock is available.
-  </summary>
-</histogram>
-
 <histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
     expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
@@ -86,17 +70,6 @@ chromium-metrics-reviews@google.com.
     Note that this metrics is only recorded on clients on which a
     high-resolution clock is available.
   </summary>
-</histogram>
-
-<histogram name="ContentCapture.SentContentCount" units="count"
-    expires_after="2021-04-04">
-  <obsolete>
-    Replaced by ContentCapture.SentContentCount2 in M89, which uses standard
-    buckets for 10k counts rather than exact linear buckets.
-  </obsolete>
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>The total number of content captures sent for a document.</summary>
 </histogram>
 
 <histogram name="ContentCapture.SentContentCount2" units="count"
@@ -278,16 +251,6 @@ chromium-metrics-reviews@google.com.
   <summary>The default notification setting at profile open.</summary>
 </histogram>
 
-<histogram name="ContentSettings.DefaultPluginsSetting" enum="ContentSetting"
-    expires_after="2021-06-19">
-  <obsolete>
-    Removed as of 09/2020. Flash / Plugins is deprecated.
-  </obsolete>
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default plugins setting at profile open.</summary>
-</histogram>
-
 <histogram name="ContentSettings.DefaultPopupsSetting" enum="ContentSetting"
     expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
@@ -332,18 +295,6 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     The default permission setting for Web Bluetooth at profile open.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.EphemeralFlashPermission"
-    enum="ContentSettings.EphemeralFlashPermission" expires_after="M89">
-  <obsolete>
-    Flash / Plugins is deprecated since M87 and removed in M89.
-  </obsolete>
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the number of times Flash permission is granted for a host.
   </summary>
 </histogram>
 
@@ -474,60 +425,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.PermissionRequested_InsecureOrigin"
-    enum="PermissionType" expires_after="M90">
-  <obsolete>
-    Removed as of July 2021. No permissions are supported for insecure origins.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    Number of times a given permission was requested by an insecure origin and
-    the user has the permission set to prompt (i.e. not blocked or allowed).
-
-    Note this is probably not the metric you want - it does not correspond to
-    the total number of times websites request a permission. Also, because
-    specific permissions have code that can automatically block or grant
-    permissions based on things like incognito, installed extensions etc., this
-    does also not correspond to the number of times users are prompted to allow
-    permissions.
-
-    For a better metric to track how often users are prompted, use
-    ContentSettings.PermissionsActions*.
-
-    See https://crbug.com/638076 for more details.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.PermissionRequested_SecureOrigin"
-    enum="PermissionType" expires_after="M90">
-  <obsolete>
-    Removed as of July 2021. No permissions are supported for insecure origins.
-    So we don't need to differentiate between Secure and Insecure origins.
-    ContentSettings.PermissionRequested histogram is enough.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    Number of times a given permission was requested by a secure origin and the
-    user has the permission set to prompt (i.e. not blocked or allowed).
-
-    Note this is probably not the metric you want - it does not correspond to
-    the total number of times websites request a permission. Also, because
-    specific permissions have code that can automatically block or grant
-    permissions based on things like incognito, installed extensions etc., this
-    does also not correspond to the number of times users are prompted to allow
-    permissions.
-
-    For a better metric to track how often users are prompted, use
-    ContentSettings.PermissionsActions*.
-
-    See https://crbug.com/638076 for more details.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.Plugins" enum="ContentSettingPluginsAction"
     expires_after="M77">
   <owner>tommycli@chromium.org</owner>
@@ -633,86 +530,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.AppLifecycle.Events"
-    enum="AppLifecycleEvent" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: count of app lifecycle events reported to the Feed library.
-    Recorded as these events occur; e.g. when Chrome is foregrounded,
-    backgrounded, or the user clears cached browsing data.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.AppLifecycle.NumRowsForDeletion"
-    units="count" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: number of rows present in a history deletion that's causing all
-    current suggestions to be deleted. Each row should correspond to a url that
-    is beign removed from history. Is not emitted when entire history is being
-    cleared.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.AutoplayEvent"
-    enum="FeedAutoplayEvent" expires_after="M95">
-  <obsolete>
-    Removed as of 05/2021. Replaced by ContentSuggestions.Feed.VideoPlayEvent.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: records events triggered during the video autoplay.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.AvailableOffline.Opened"
-    enum="Boolean" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    When an article on the NTP is opened by the user, records whether it is
-    available offline. When an article is available offline, it will have an
-    offline badge in the UI on the NTP. Opening the article occurs when the user
-    navigates from the NTP to the article itself, which can be either in the
-    current tab or a new tab. Note that this is independent of whether the
-    article is actually opened as an offline page or not.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.AvailableOffline.Shown" enum="Boolean"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Records whether an article on the NTP that is shown to the user was also
-    available offline. When an article is available offline, it will have an
-    offline badge in the UI. The initial offline status of the article is used
-    for this metric. While it is possible for the offline status to change while
-    the article is on screen, this metric will not be re-emitted. The criteria
-    for an article to be &quot;shown&quot; is for 2/3 of its vertical height to
-    be on screen for any amount of time.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.BrokenNTPHierarchy"
     enum="NTPBrokenViewHierarchyRelationship" expires_after="M99">
   <owner>adamta@google.com</owner>
@@ -774,20 +591,6 @@ chromium-metrics-reviews@google.com.
   <summary>Actions related to the feed controls.</summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Count" units="entries"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Tracks the number of entries for the Feed storage after database perform get
-    all keys request.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.DisplayStatusOnOpen"
     enum="ContentSuggestionsDisplayStatus" expires_after="2022-06-26">
   <owner>carlosk@chromium.org</owner>
@@ -801,52 +604,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.FetchPendingSpinner.Shown"
-    enum="FeedSpinnerType" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The type of spinner when the content suggestion shows the loading
-    spinner. This is tracked based on if the spinner is shown, not how long it
-    is visible.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDuration"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: How long the content suggestion loading spinner is shown when a
-    loading spinner finishes showing. This is tracked based on when the spinner
-    is enabled in the UI, not how long it is actually visible on screen.
-  </summary>
-</histogram>
-
-<histogram
-    name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDurationWithoutCompleting"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: How long the content suggestion loading spinner is shown when a
-    spinner is destroyed without completing. This is tracked based on when the
-    spinner is enabled in the UI, not how long it is actually visible on screen.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.ImageFetchStatus"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
@@ -855,58 +612,6 @@ chromium-metrics-reviews@google.com.
     Android: Status of image fetches for the feed. Recorded for each image
     fetch. Fetches happen when loading the feed or scrolling the feed. Fetched
     images are cached, so subsequent loads may not fetch again. Feed v2 only.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.InterestHeader.NotInterestedInSource"
-    units="index" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The position of an interest header on the NTP that the user has indicated
-    they aren't interested in the story's source.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.InterestHeader.NotInterestedInTopic"
-    units="index" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The position of an interest header on the NTP that the user has indicated
-    they aren't interested in the story's topic.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.InternalError"
-    enum="FeedInternalError" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>The Feed library encountered an error at any time.</summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.LoadKeysTime" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The time it takes for the Feed to load all keys from the storage.
   </summary>
 </histogram>
 
@@ -932,19 +637,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Status of loading additional Feed content onto the bottom of the stream.
     Feed v2 only.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.LoadTime" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The time it takes for the Feed to load entries from the storage.
   </summary>
 </histogram>
 
@@ -1029,19 +721,6 @@ chromium-metrics-reviews@google.com.
   <owner>feed@chromium.org</owner>
   <summary>
     The HTTP response status for a network request made by the Feed component.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Network.TokenDuration" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The amount of time it takes to get an access token for signed in users.
   </summary>
 </histogram>
 
@@ -1478,75 +1157,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.VisualElement.Clicked" units="index"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a clicked element in the stream not accounting for
-    header views. The top being 0. Position does not change after initial
-    layout. Specifically the position does not update if dismisses/removes are
-    performed. This is similar to NewTabPage.ContentSuggestions.Opened, but
-    records the specific elementType that was clicked.
-  </summary>
-</histogram>
-
-<histogram
-    name="ContentSuggestions.Feed.VisualElement.Clicked.TimeSinceElementFetched"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the content was made available on the device. This
-    could be the time for when this content was retrieved from the server or the
-    time the data was pushed to the device. Recorded when the user clicks the
-    element.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.VisualElement.Viewed" units="index"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a viewed element in the stream not accounting for
-    header views. The top being 0. Position does not change after initial
-    layout. Specifically the position does not update if dismisses/removes are
-    performed. This is similar to NewTabPage.ContentSuggestions.Shown, but
-    records the view after it has been on the screen for 500 milliseconds of
-    time instead of on predraw.
-  </summary>
-</histogram>
-
-<histogram
-    name="ContentSuggestions.Feed.VisualElement.Viewed.TimeSinceElementFetched"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the content was made available on the device. This
-    could be the time for when this content was retrieved from the server or the
-    time the data was pushed to the device. Recorded when the element has been
-    on the screen for 500 milliseconds.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowByIdResult"
     enum="WebFeedSubscriptionRequestStatus" expires_after="2022-07-01">
   <owner>harringtond@chromium.org</owner>
@@ -1718,48 +1328,6 @@ chromium-metrics-reviews@google.com.
     unfollow is attempted, once per request. Triggered by a user's request to
     unfollow a Web Feed.
   </summary>
-</histogram>
-
-<histogram
-    name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.ContentCount"
-    units="count" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    How many top level features were in an initial article fetch, typically
-    clusters. Recorded when an article fetch completes and were previously in
-    zero state.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.TokenCount"
-    units="count" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    How many tokens were in an initial article fetch, typically ways to fetch
-    more articles. Recorded when an article fetch completes and were previously
-    in zero state.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.ZeroStateShown.Reason"
-    enum="FeedZeroStateShowReason" expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>The reason the zero state (no articles) is shown to a user.</summary>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.{PlayType}Video.InitializationError"
