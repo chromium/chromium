@@ -349,25 +349,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Nearby.Share.Certificates.Manager.BluetoothMacAddressSetInPrivateCertificate"
-    enum="BooleanSet" expires_after="2021-08-19">
-  <obsolete>
-    Replaced 01/2021 with
-    Nearby.Share.Certificates.Manager.BluetoothMacAddressPresentForPrivateCertificateCreation
-  </obsolete>
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records whether or not a Bluetooth MAC address is set in the local device's
-    private certificate metadata during certificate creation. Emitted when
-    private certificates are created, which typically occurs every three days if
-    Nearby Share is enabled. This will only be emitted once if multiple
-    certificates are created at a time, for example, when all certificates are
-    created after onboarding.
-  </summary>
-</histogram>
-
-<histogram
     name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesCount"
     units="certificates" expires_after="2022-04-24">
   <owner>cclem@chromium.org</owner>
@@ -804,26 +785,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Nearby.Share.Medium.FinalPayloadStatus.{UpgradedMedium}"
-    enum="NearbyShareFinalStatus" expires_after="2021-08-19">
-  <obsolete>
-    Replaced 12/2020 with Nearby.Share.Payload.FinalStatus[...].
-  </obsolete>
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records whether a transfer succeeded, failed, or was cancelled when
-    transmitted over {UpgradedMedium}. Emitted when the payload transfer
-    finishes, independent of whether the transfer was successful.
-  </summary>
-  <token key="UpgradedMedium">
-    <variant name="NoMediumUpgrade" summary="the initial bandwidth medium"/>
-    <variant name="UnknownMediumUpgrade"
-        summary="an unknown bandwidth-upgraded medium"/>
-    <variant name="WebRtcUpgrade" summary="an upgraded WebRTC medium"/>
-  </token>
-</histogram>
-
 <histogram name="Nearby.Share.Medium.InitiateBandwidthUpgradeResult"
     enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>nohle@chromium.org</owner>
@@ -1085,104 +1046,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Nearby.Share.Transfer.CompletionStatus.NotCompletedReason{Direction}{ShareTargetType}"
-    enum="NearbyShareTransferNotCompletedReason" expires_after="2021-08-19">
-  <obsolete>
-    Replaced 12/2020 with Nearby.Share.Transfer.FinalStatus[...].
-  </obsolete>
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records the reason a Nearby Share {Direction} transfer was not completed
-    when sharing with {ShareTargetType}. Emitted when a transfer aborts before
-    fully completing.
-  </summary>
-  <token key="Direction">
-    <variant name="" summary="outgoing (send) or incoming (receive)"/>
-    <variant name=".Receive" summary="incoming (receive)"/>
-    <variant name=".Send" summary="outgoing (send)"/>
-  </token>
-  <token key="ShareTargetType">
-    <variant name="" summary="any device type"/>
-    <variant name=".Laptop" summary="a laptop"/>
-    <variant name=".Phone" summary="a phone"/>
-    <variant name=".Tablet" summary="a tablet"/>
-    <variant name=".Unknown" summary="an unknown device type">
-      <obsolete>
-        Renamed 12/2020 to UnknownDeviceType.
-      </obsolete>
-    </variant>
-    <variant name=".UnknownDeviceType" summary="an unknown device type"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Nearby.Share.Transfer.CompletionStatus{Direction}{ShareTargetType}"
-    enum="BooleanCompleted" expires_after="2021-08-19">
-  <obsolete>
-    Replaced 12/2020 with Nearby.Share.Transfer.FinalStatus[...].
-  </obsolete>
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records if a Nearby Share {Direction} transfer fully completes or not when
-    sharing with {ShareTargetType}. Emitted when a transfer completes
-    successfully, fails, or was aborted by the user, for example, by cancelling
-    the transfer. Note: This metric does not reflect success/failure. For
-    example, if a user manually cancels a transfer, that is not considered a
-    failure but it will be bucketed as &quot;Not Completed&quot;.
-  </summary>
-  <token key="Direction">
-    <variant name="" summary="outgoing (send) or incoming (receive)"/>
-    <variant name=".Receive" summary="incoming (receive)"/>
-    <variant name=".Send" summary="outgoing (send)"/>
-  </token>
-  <token key="ShareTargetType">
-    <variant name="" summary="any device type"/>
-    <variant name=".Laptop" summary="a laptop"/>
-    <variant name=".Phone" summary="a phone"/>
-    <variant name=".Tablet" summary="a tablet"/>
-    <variant name=".Unknown" summary="an unknown device type">
-      <obsolete>
-        Renamed 12/2020 to UnknownDeviceType.
-      </obsolete>
-    </variant>
-    <variant name=".UnknownDeviceType" summary="an unknown device type"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Nearby.Share.Transfer.FinalStatus.{Direction}.{ShareTargetType}.{ContactStatus}"
-    enum="NearbyShareTransferFinalStatus" expires_after="2021-08-19">
-  <obsolete>
-    Replaced 01/2021 with Nearby.Share.Transfer.FinalStatus{Variation}, which
-    slices by only one dimension.
-  </obsolete>
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records the final status of a Nearby Share {Direction} transfer with
-    {ShareTargetType} using {ContactStatus}. Emitted when a transfer completes
-    successfully, fails, or was aborted by the user, for example, by cancelling
-    the transfer.
-  </summary>
-  <token key="Direction">
-    <variant name="Receive" summary="incoming (receive)"/>
-    <variant name="Send" summary="outgoing (send)"/>
-  </token>
-  <token key="ShareTargetType">
-    <variant name="Laptop" summary="a laptop"/>
-    <variant name="Phone" summary="a phone"/>
-    <variant name="Tablet" summary="a tablet"/>
-    <variant name="UnknownDeviceType" summary="an unknown device type"/>
-  </token>
-  <token key="ContactStatus">
-    <variant name="Contact" summary="contact-based sharing"/>
-    <variant name="NonContact" summary="non-contact-based sharing"/>
-  </token>
-</histogram>
-
 <histogram name="Nearby.Share.Transfer.FinalStatus{Variation}"
     enum="NearbyShareTransferFinalStatus" expires_after="2022-02-23">
   <owner>nohle@chromium.org</owner>
@@ -1205,64 +1068,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".Tablet" summary="when sharing with a tablet"/>
     <variant name=".UnknownDeviceType"
         summary="when sharing with an unknown device type"/>
-  </token>
-</histogram>
-
-<histogram name="Nearby.Share.Transfer.NumAttachments{Type}"
-    units="attachments" expires_after="2021-08-19">
-  <obsolete>
-    Renamed 12/2020 to Nearby.Share.Payload.NumAttachments[...].
-  </obsolete>
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records the number of {Type} attachments intended to be sent in a Nearby
-    Share transfer. Emitted when the transfer concludes, successfully or not.
-  </summary>
-  <token key="Type">
-    <variant name="" summary="text or file"/>
-    <variant name=".File" summary="file"/>
-    <variant name=".Text" summary="text"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Nearby.Share.Transfer.Rate{Direction}{ShareTargetType}{UpgradedMedium}{PayloadStatus}"
-    units="KB/s" expires_after="2021-08-19">
-  <obsolete>
-    Renamed 12/2020 to Nearby.Share.Payload.TransferRate[...].
-  </obsolete>
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records the transfer rate of a Nearby Share {Direction} transfer that
-    {PayloadStatus} when sharing with {ShareTargetType} over {UpgradedMedium}.
-    Emitted when the transfer concludes.
-  </summary>
-  <token key="Direction">
-    <variant name="" summary="outgoing (send) or incoming (receive)"/>
-    <variant name=".Receive" summary="incoming (receive)"/>
-    <variant name=".Send" summary="outgoing (send)"/>
-  </token>
-  <token key="ShareTargetType">
-    <variant name="" summary="any device type"/>
-    <variant name=".Laptop" summary="a laptop"/>
-    <variant name=".Phone" summary="a phone"/>
-    <variant name=".Tablet" summary="a tablet"/>
-    <variant name=".Unknown" summary="an unknown device type"/>
-  </token>
-  <token key="UpgradedMedium">
-    <variant name="" summary="any possible bandwidth medium"/>
-    <variant name=".NoMediumUpgrade" summary="the initial bandwidth medium"/>
-    <variant name=".UnknownMediumUpgrade"
-        summary="an unknown bandwidth-upgraded medium"/>
-    <variant name=".WebRtcUpgrade" summary="an upgraded WebRTC medium"/>
-  </token>
-  <token key="PayloadStatus">
-    <variant name="" summary="succeeded, failed, or was cancelled"/>
-    <variant name=".Cancelled" summary="was cancelled"/>
-    <variant name=".Failed" summary="failed"/>
-    <variant name=".Succeeded" summary="succeeded"/>
   </token>
 </histogram>
 
@@ -1301,46 +1106,6 @@ chromium-metrics-reviews@google.com.
   <token key="ContactStatus">
     <variant name="Contact" summary="contact-based sharing"/>
     <variant name="NonContact" summary="non-contact-based sharing"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Nearby.Share.Transfer.TotalSize{Direction}{ShareTargetType}{UpgradedMedium}{PayloadStatus}"
-    units="KB" expires_after="2021-08-19">
-  <obsolete>
-    Renamed 12/2020 to Nearby.Share.Payload.TotalSize[...].
-  </obsolete>
-  <owner>nohle@chromium.org</owner>
-  <owner>nearby-share-chromeos-eng@google.com</owner>
-  <summary>
-    Records the total payload size of a Nearby Share {Direction} transfer that
-    {PayloadStatus} when sharing with {ShareTargetType} over {UpgradedMedium}.
-    Emitted when the transfer concludes.
-  </summary>
-  <token key="Direction">
-    <variant name="" summary="outgoing (send) or incoming (receive)"/>
-    <variant name=".Receive" summary="incoming (receive)"/>
-    <variant name=".Send" summary="outgoing (send)"/>
-  </token>
-  <token key="ShareTargetType">
-    <variant name="" summary="any device type"/>
-    <variant name=".Laptop" summary="a laptop"/>
-    <variant name=".Phone" summary="a phone"/>
-    <variant name=".Tablet" summary="a tablet"/>
-    <variant name=".Unknown" summary="an unknown device type"/>
-  </token>
-  <token key="UpgradedMedium">
-    <variant name="" summary="any possible bandwidth medium"/>
-    <variant name=".NoMediumUpgrade" summary="the initial bandwidth medium"/>
-    <variant name=".UnknownMediumUpgrade"
-        summary="an unknown bandwidth-upgraded medium"/>
-    <variant name=".WebRtcUpgrade" summary="an upgraded WebRTC medium"/>
-  </token>
-  <token key="PayloadStatus">
-    <variant name="" summary="succeeded, failed, or was cancelled"/>
-    <variant name=".Cancelled" summary="was cancelled"/>
-    <variant name=".Failed" summary="failed"/>
-    <variant name=".Succeeded" summary="succeeded"/>
   </token>
 </histogram>
 

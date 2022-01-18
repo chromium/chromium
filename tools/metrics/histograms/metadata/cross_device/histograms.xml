@@ -1212,23 +1212,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="EasyUnlock.StartupTimeFromSuspend" units="ms"
-    expires_after="2022-02-02">
-  <obsolete>
-    Deprecated as of 12/29/2021.
-  </obsolete>
-  <owner>hansberry@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
-  <summary>
-    The time it takes after resuming from a suspended state (ie. opening the
-    Chromebook lid) to when a remote device is connected and a request is made.
-    Note that it is possible for the remote device not to be present when
-    resuming from suspend, and the device may be connected at a later time.
-    Therefore, large values for this metric may not be too meaningful due to
-    meddling users.
-  </summary>
-</histogram>
-
 <histogram name="InstantTethering.BluetoothAdvertisementRegistrationResult"
     enum="InstantTethering_BluetoothAdvertisementResult"
     expires_after="2021-02-02">
@@ -1574,24 +1557,6 @@ chromium-metrics-reviews@google.com.
     Provides the count of the number of times users have enabled or disabled the
     user preference for Mobile data. This metric is logged each time the value
     is toggled.
-  </summary>
-</histogram>
-
-<histogram
-    name="MultiDevice.BetterTogetherSuite.DoesMultiDeviceSetupClientExist"
-    enum="BooleanSuccess" expires_after="2022-04-24">
-  <obsolete>
-    Deprecated as of 10/26/2021.
-  </obsolete>
-  <owner>julietlevesque@google.com</owner>
-  <owner>better-together-dev@google.com</owner>
-  <summary>
-    Indicates whether or not the MultiDeviceSetupClient exists when passed into
-    the MultideviceHandler constructor. We expect the client to always exist if
-    the MultiDevice suite is allowed by policy. Recorded twice after sign-in,
-    during the creation of the MultiDevice (a.k.a. Connected Devices) settings
-    page UI handler, and during the creation of the chrome:://settings page UI
-    handler. Only recorded if the MultiDevice suite is allowed by policy.
   </summary>
 </histogram>
 
@@ -2197,21 +2162,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SmartLock.EligibleDevicesCount" units="devices"
-    expires_after="2022-02-02">
-  <obsolete>
-    Deprecated as of 12/29/2021.
-  </obsolete>
-  <owner>hansberry@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
-  <summary>
-    A count of the number of eligible SmartLock devices which can be used to
-    unlock the user's Chromebook. Logged each time the list of eligible devices
-    is updated. TODO(jhawkins): Log this again once we send this data from
-    eligible phones.
-  </summary>
-</histogram>
-
 <histogram name="SmartLock.EnabledDevicesCount" units="devices"
     expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
@@ -2383,29 +2333,6 @@ chromium-metrics-reviews@google.com.
     See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
     remote status from the host.
   </summary>
-</histogram>
-
-<histogram name="SmartLock.ToggleFeature" enum="BooleanEnabled"
-    expires_after="2022-02-02">
-  <obsolete>
-    Deprecated as of 12/29/2021.
-  </obsolete>
-  <owner>hansberry@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
-  <summary>
-    The number of times the user actively enabled or disabled the SmartLock
-    feature via Settings.
-  </summary>
-</histogram>
-
-<histogram name="SmartLock.ToggleFeature.Disable.Result" enum="BooleanSuccess"
-    expires_after="2022-02-02">
-  <obsolete>
-    Deprecated as of 12/29/2021.
-  </obsolete>
-  <owner>hansberry@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
-  <summary>The result of the operation to disable SmartLock.</summary>
 </histogram>
 
 <histogram name="WifiSync.MultiDeviceFeatureState"

@@ -167,19 +167,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PhoneHub.Connectivity.Duration" units="ms"
-    expires_after="2022-10-31">
-  <obsolete>
-    Renamed to PhoneHub.Connection.Duration on 1/2021 in M89.
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The duration of time the phone is in the connected state, and becomes
-    disconnected.
-  </summary>
-</histogram>
-
 <histogram name="PhoneHub.Connectivity.Latency" units="ms"
     expires_after="2022-10-31">
   <owner>jonmann@chromium.org</owner>
@@ -188,16 +175,6 @@ chromium-metrics-reviews@google.com.
     The duration of time the phone is in the connecting state, and becomes
     connected.
   </summary>
-</histogram>
-
-<histogram name="PhoneHub.Connectivity.Success" enum="BooleanSuccess"
-    expires_after="2022-10-31">
-  <obsolete>
-    Renamed to PhoneHub.Connection.Result on 11/2020 in M89.
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>The success rate of connecting to the Phone.</summary>
 </histogram>
 
 <histogram name="PhoneHub.InterstitialScreenEvent.{Screen}"
@@ -209,11 +186,6 @@ chromium-metrics-reviews@google.com.
 
   <token key="Screen">
     <variant name="BluetoothOrWifiDisabled" summary=""/>
-    <variant name="InitialConnecting" summary="">
-      <obsolete>
-        Combined into PhoneConnecting on Nov 2020.
-      </obsolete>
-    </variant>
     <variant name="Onboarding.ExistingMultideviceUser"
         summary="NOTE(https://crbug.com/1187255): This metric is actually
                  logging new multi-device users. For continuity, we continue
@@ -242,18 +214,7 @@ chromium-metrics-reviews@google.com.
     multi-device feature state changes, and every 30 minutes. {PhoneHubFeature}
   </summary>
   <token key="PhoneHubFeature">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".CameraRoll" summary="Camera roll sub-feature."/>
-    <variant name=".NotificationBadge"
-        summary="Notification badge sub-feature.">
-      <obsolete>
-        Removed in M88, as the feature will not be included in the M89 launch.
-      </obsolete>
-    </variant>
     <variant name=".Notifications" summary="Notifications sub-feature."/>
     <variant name=".TaskContinuation" summary="Task continuation sub-feature."/>
     <variant name=".TopLevelFeature" summary="Top level Phone Hub feature."/>
@@ -321,16 +282,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PhoneHub.NotificationOptIn"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2022-10-31">
-  <obsolete>
-    Renamed to PhoneHub.NotificationOptInEvents on 1/2021 in M89.
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>Events for the given notification opt-in prompt.</summary>
-</histogram>
-
 <histogram name="PhoneHub.NotificationOptInEvents"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2022-10-31">
   <owner>jonmann@chromium.org</owner>
@@ -350,19 +301,6 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
-</histogram>
-
-<histogram name="PhoneHub.Screen.OnSettingsButtonClicked" enum="PhoneHubScreen"
-    expires_after="2022-10-31">
-  <obsolete>
-    Renamed to PhoneHub.ScreenOnSettingsButtonClicked on 1/2021 in M89.
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Logs the current screen when the settings button is clicked in the tray
-    bubble.
-  </summary>
 </histogram>
 
 <histogram name="PhoneHub.ScreenOnSettingsButtonClicked" enum="PhoneHubScreen"
