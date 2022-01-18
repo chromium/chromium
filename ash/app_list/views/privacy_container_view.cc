@@ -49,11 +49,6 @@ SearchResultBaseView* PrivacyContainerView::GetResultViewAt(size_t index) {
   return nullptr;
 }
 
-int PrivacyContainerView::ScheduleResultAnimations(int preceeding_results) {
-  NOTREACHED();
-  return -1;
-}
-
 int PrivacyContainerView::DoUpdate() {
   const bool should_show_suggested_content =
       view_delegate()->ShouldShowSuggestedContentInfo();

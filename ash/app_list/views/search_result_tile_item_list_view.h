@@ -34,7 +34,6 @@ class ASH_EXPORT SearchResultTileItemListView
 
   // Overridden from SearchResultContainerView:
   SearchResultTileItemView* GetResultViewAt(size_t index) override;
-  int ScheduleResultAnimations(int preceeding_results) override;
 
   // Overridden from views::View:
   const char* GetClassName() const override;

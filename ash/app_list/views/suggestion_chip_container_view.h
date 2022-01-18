@@ -29,7 +29,6 @@ class SuggestionChipContainerView : public SearchResultContainerView {
   SearchResultSuggestionChipView* GetResultViewAt(size_t index) override;
   int DoUpdate() override;
   const char* GetClassName() const override;
-  int ScheduleResultAnimations(int preceeding_results) override;
 
   // views::View:
   void Layout() override;

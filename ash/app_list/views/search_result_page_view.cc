@@ -255,7 +255,8 @@ void SearchResultPageView::InitializeContainers(
     search_result_list_view_ =
         AddSearchResultContainerView(std::make_unique<SearchResultListView>(
             app_list_main_view, view_delegate, dialog_controller_.get(),
-            SearchResultView::SearchResultViewType::kClassic, absl::nullopt));
+            SearchResultView::SearchResultViewType::kClassic,
+            /*animates_result_updates=*/false, absl::nullopt));
 
     search_box_view->SetResultSelectionController(
         result_selection_controller());

@@ -26,7 +26,6 @@ class ASH_EXPORT PrivacyContainerView : public SearchResultContainerView {
 
   // SearchResultContainerView:
   SearchResultBaseView* GetResultViewAt(size_t index) override;
-  int ScheduleResultAnimations(int preceeding_results) override;
 
  private:
   friend class test::PrivacyContainerViewTest;

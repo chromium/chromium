@@ -239,6 +239,16 @@ SearchResultView::SearchResultView(
 
 SearchResultView::~SearchResultView() = default;
 
+void SearchResultView::OnResultChanging(SearchResult* new_result) {
+  if (result_changed_)
+    return;
+  if (!new_result || !result()) {
+    result_changed_ = new_result;
+    return;
+  }
+  result_changed_ = new_result->id() != result()->id();
+}
+
 void SearchResultView::OnResultChanged() {
   OnMetadataChanged();
   // Update tile, separator, and details text visibility.
@@ -311,6 +321,12 @@ void SearchResultView::UpdateTitleText() {
     text_container_->SetVisible(true);
     title_label_->SetVisible(true);
   }
+}
+
+bool SearchResultView::GetAndResetResultChanged() {
+  bool result_changed = result_changed_;
+  result_changed_ = false;
+  return result_changed;
 }
 
 void SearchResultView::UpdateDetailsText() {
