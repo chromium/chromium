@@ -787,9 +787,7 @@ class PhotoshopWarmStartupDesktopStory2021(_MediaBrowsingStory):
       'Apollo.init()':
           'telemetry:reported_by_page:benchmark_begin',
       'Doc.open complete':
-          'telemetry:reported_by_page:benchmark_end',
-      'open document end':
-          'telemetry:reported_by_page:interactive'
+          'telemetry:reported_by_page:benchmark_end'
     };
   '''
 
