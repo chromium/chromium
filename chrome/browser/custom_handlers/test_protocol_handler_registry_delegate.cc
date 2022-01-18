@@ -12,6 +12,7 @@
 
 TestProtocolHandlerRegistryDelegate::TestProtocolHandlerRegistryDelegate() =
     default;
+
 TestProtocolHandlerRegistryDelegate::~TestProtocolHandlerRegistryDelegate() =
     default;
 
@@ -36,9 +37,13 @@ bool TestProtocolHandlerRegistryDelegate::IsExternalHandlerRegistered(
 void TestProtocolHandlerRegistryDelegate::RegisterWithOSAsDefaultClient(
     const std::string& protocol,
     DefaultClientCallback callback) {
-  // Respond asynchronously to mimic the real behavior.
+  // Do as-if the registration has to run on another sequence and post back
+  // the result with a task to the current thread.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE, base::BindOnce(std::move(callback), !force_os_failure_));
+
+  if (!force_os_failure_)
+    os_registered_protocols_.insert(protocol);
 }
 
 void TestProtocolHandlerRegistryDelegate::CheckDefaultClientWithOS(
@@ -51,4 +56,16 @@ void TestProtocolHandlerRegistryDelegate::CheckDefaultClientWithOS(
 
 bool TestProtocolHandlerRegistryDelegate::ShouldRemoveHandlersNotInOS() {
   return true;
+}
+
+bool TestProtocolHandlerRegistryDelegate::IsFakeRegisteredWithOS(
+    const std::string& protocol) {
+  return os_registered_protocols_.find(protocol) !=
+         os_registered_protocols_.end();
+}
+
+void TestProtocolHandlerRegistryDelegate::Reset() {
+  registered_protocols_.clear();
+  os_registered_protocols_.clear();
+  force_os_failure_ = false;
 }

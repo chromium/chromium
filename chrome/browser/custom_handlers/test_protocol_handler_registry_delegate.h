@@ -33,9 +33,19 @@ class TestProtocolHandlerRegistryDelegate
                                 DefaultClientCallback callback) override;
   bool ShouldRemoveHandlersNotInOS() override;
 
+  bool IsFakeRegistered(const std::string& protocol);
+  bool IsFakeRegisteredWithOS(const std::string& protocol);
+
+  void set_force_os_failure(bool force) { force_os_failure_ = force; }
+  bool force_os_failure() { return force_os_failure_; }
+
+  void Reset();
+
  private:
   // Holds registered protocols.
   std::set<std::string> registered_protocols_;
+  std::set<std::string> os_registered_protocols_;
+  bool force_os_failure_{false};
 };
 
 #endif  // CHROME_BROWSER_CUSTOM_HANDLERS_TEST_PROTOCOL_HANDLER_REGISTRY_DELEGATE_H_

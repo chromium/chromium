@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -18,6 +17,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -56,61 +56,6 @@ std::unique_ptr<base::DictionaryValue> GetProtocolHandlerValueWithDefault(
   value->SetBoolean("default", is_default);
   return value;
 }
-
-class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
- public:
-  FakeDelegate() : force_os_failure_(false) {}
-  ~FakeDelegate() override {}
-  void RegisterExternalHandler(const std::string& protocol) override {
-    ASSERT_TRUE(
-        registered_protocols_.find(protocol) == registered_protocols_.end());
-    registered_protocols_.insert(protocol);
-  }
-
-  void DeregisterExternalHandler(const std::string& protocol) override {
-    registered_protocols_.erase(protocol);
-  }
-
-  void RegisterWithOSAsDefaultClient(const std::string& protocol,
-                                     DefaultClientCallback callback) override {
-    // Do as-if the registration has to run on another sequence and post back
-    // the result with a task to the current thread.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), !force_os_failure_));
-
-    if (!force_os_failure_)
-      os_registered_protocols_.insert(protocol);
-  }
-
-  bool IsExternalHandlerRegistered(const std::string& protocol) override {
-    return registered_protocols_.find(protocol) != registered_protocols_.end();
-  }
-
-  void CheckDefaultClientWithOS(const std::string& protocol,
-                                DefaultClientCallback callback) override {}
-
-  bool ShouldRemoveHandlersNotInOS() override { return true; }
-
-  bool IsFakeRegisteredWithOS(const std::string& protocol) {
-    return os_registered_protocols_.find(protocol) !=
-        os_registered_protocols_.end();
-  }
-
-  void Reset() {
-    registered_protocols_.clear();
-    os_registered_protocols_.clear();
-    force_os_failure_ = false;
-  }
-
-  void set_force_os_failure(bool force) { force_os_failure_ = force; }
-
-  bool force_os_failure() { return force_os_failure_; }
-
- private:
-  std::set<std::string> registered_protocols_;
-  std::set<std::string> os_registered_protocols_;
-  bool force_os_failure_;
-};
 
 class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
  public:
@@ -173,7 +118,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   ProtocolHandlerRegistryTest()
       : test_protocol_handler_(CreateProtocolHandler("news", "news")) {}
 
-  FakeDelegate* delegate() const { return delegate_; }
+  TestProtocolHandlerRegistryDelegate* delegate() const { return delegate_; }
   ProtocolHandlerRegistry* registry() { return registry_.get(); }
   TestingProfile* profile() const { return profile_.get(); }
   const ProtocolHandler& test_protocol_handler() const {
@@ -246,7 +191,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   // Returns a new registry, initializing it if |initialize| is true.
   // Caller assumes ownership for the object
   void SetUpRegistry(bool initialize) {
-    auto delegate = std::make_unique<FakeDelegate>();
+    auto delegate = std::make_unique<TestProtocolHandlerRegistryDelegate>();
     delegate_ = delegate.get();
     registry_ = std::make_unique<ProtocolHandlerRegistry>(profile(),
                                                           std::move(delegate));
@@ -273,7 +218,8 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<FakeDelegate> delegate_;  // Registry assumes ownership of delegate_.
+  raw_ptr<TestProtocolHandlerRegistryDelegate>
+      delegate_;  // Registry assumes ownership of delegate_.
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
   ProtocolHandler test_protocol_handler_;
 };
@@ -442,6 +388,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestEnabledDisabled) {
 
 TEST_F(ProtocolHandlerRegistryTest,
     DisallowRegisteringExternallyHandledProtocols) {
+  ASSERT_TRUE(!delegate()->IsExternalHandlerRegistered("news"));
   delegate()->RegisterExternalHandler("news");
   ASSERT_FALSE(registry()->CanSchemeBeOverridden("news"));
 }
@@ -1133,23 +1080,6 @@ TEST_F(ProtocolHandlerRegistryTest, InvalidHandlers) {
       "news", GURL("filesystem:https://www.google.com/"
                    "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s")));
   ASSERT_FALSE(registry()->IsHandledProtocol("news"));
-}
-
-TEST_F(ProtocolHandlerRegistryTest, ExtensionHandler) {
-  GURL chrome_extension_handler_url(
-      "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/test.html");
-
-  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
-      "news", chrome_extension_handler_url,
-      blink::ProtocolHandlerSecurityLevel::kStrict));
-
-  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
-      "news", chrome_extension_handler_url,
-      blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins));
-
-  EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
-      "news", chrome_extension_handler_url,
-      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
 }
 
 // See
