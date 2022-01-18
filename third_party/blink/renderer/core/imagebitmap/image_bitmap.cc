@@ -96,14 +96,14 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
     parsed_options.resize_height = options->resizeHeight();
   } else if (options->hasResizeWidth() && !options->hasResizeHeight()) {
     parsed_options.resize_width = options->resizeWidth();
-    parsed_options.resize_height = ceil(
+    parsed_options.resize_height = ClampTo<unsigned>(ceil(
         static_cast<float>(options->resizeWidth()) /
-        parsed_options.crop_rect.width() * parsed_options.crop_rect.height());
+        parsed_options.crop_rect.width() * parsed_options.crop_rect.height()));
   } else {
     parsed_options.resize_height = options->resizeHeight();
-    parsed_options.resize_width = ceil(
+    parsed_options.resize_width = ClampTo<unsigned>(ceil(
         static_cast<float>(options->resizeHeight()) /
-        parsed_options.crop_rect.height() * parsed_options.crop_rect.width());
+        parsed_options.crop_rect.height() * parsed_options.crop_rect.width()));
   }
   if (static_cast<int>(parsed_options.resize_width) ==
           parsed_options.crop_rect.width() &&
