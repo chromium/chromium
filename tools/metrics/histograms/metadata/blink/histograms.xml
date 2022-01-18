@@ -173,122 +173,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.ContextType" enum="CanvasContextType"
-    expires_after="2022-01-31">
-  <obsolete>
-    Retired in M96, replaced by HTMLCanvasElement_* buckets in
-    Blink.UseCounter.Features wich records at most one count per page visit per
-    context type, as opposed to one count per context creation.
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Records the context type names used to create canvas rendering contexts.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.CreateImageBitmapSource"
     enum="CanvasCreateImageBitmapSource" expires_after="2022-06-05">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
     The source from which an ImageBitmap is created by a createImageBitmap call.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.Canvas.DrawImage.Duration"
-    units="microseconds" expires_after="2021-07-14">
-  <obsolete>
-    Retired in M93, replaced by Blink.Canvas.DrawImage.Duration2 which has a
-    wider range.
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Time spent on the main thread during a 2D canvas drawImage API call.
-
-    Note: This metric drops reports on clients with low-resolution clocks, which
-    means these reports will be biased against a portion of the population on
-    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.Canvas.DrawImage.Duration2"
-    units="microseconds" expires_after="M93">
-  <obsolete>
-    Retired in M94.
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Time spent on the main thread during a 2D canvas drawImage API call.
-
-    This differs from Blink.Canvas.DrawImage.Duration in that it uses buckets up
-    to ten seconds rather than ten milliseconds (due to a change in the
-    underlying histogramming function called).
-
-    Note: This metric drops reports on clients with low-resolution clocks, which
-    means these reports will be biased against a portion of the population on
-    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
-  </summary>
-</histogram>
-
-<histogram
-    name="Blink.Canvas.DrawImage.SqrtNumberOfPixels{BlinkCanvasDrawImageSizeType}"
-    units="sqrt(pixels)" expires_after="M93">
-  <obsolete>
-    Retired in M94.
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Stores the square root of the number of pixels drawn into a Canvas.
-    Different histograms per CanvasImageSource. {BlinkCanvasDrawImageSizeType}
-  </summary>
-  <token key="BlinkCanvasDrawImageSizeType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-    <variant name=".Canvas.CPU" summary=""/>
-    <variant name=".Canvas.GPU" summary=""/>
-    <variant name=".CssImage" summary=""/>
-    <variant name=".ImageBitmap" summary=""/>
-    <variant name=".ImageElement" summary=""/>
-    <variant name=".OffscreenCanvas.CPU" summary=""/>
-    <variant name=".OffscreenCanvas.GPU" summary=""/>
-    <variant name=".SVG" summary=""/>
-    <variant name=".Unknown" summary=""/>
-    <variant name=".Video" summary=""/>
-    <variant name=".VideoFrame" summary=""/>
-  </token>
-</histogram>
-
-<histogram base="true" name="Blink.Canvas.GetImageDataScaledDuration"
-    units="microseconds * 10/sqrt(pixels)" expires_after="M93">
-  <obsolete>
-    Retired in M94.
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Time in microseconds * 10 (10e-5 seconds) spent on the 2D canvas
-    getImageData API call, divided by the square root of the total number of
-    pixels of the image extracted from the canvas. Smaller is faster.
-
-    The idea behind this elaborated unit is that the bigger the area of a canvas
-    the longer the operation GetImageData takes, so we want a way to measure the
-    overall performance regardless of the size of the canvas.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-
-    Warning: this histogram was expired from 2021-01-31 to 2021-05-10; data may
-    be missing.
   </summary>
 </histogram>
 
@@ -313,20 +203,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the occurrence of events related to 2D canvas GPU resource
     hibernation.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Canvas.ImageSmoothingQuality"
-    enum="ImageSmoothingQuality" expires_after="2022-01-31">
-  <obsolete>
-    Removed in M92. This metric is added to do some research, and the research
-    is now completed.
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>yiyix@chromium.org</owner>
-  <summary>
-    Records the image smoothing quality used by draw image. Users can choose
-    between none, low, medium or high image quality.
   </summary>
 </histogram>
 
@@ -373,33 +249,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Canvas.PutImageDataScaledDuration"
-    units="microseconds * 10/sqrt(pixels)" expires_after="M93">
-  <obsolete>
-    Retired in M94.
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Time in microseconds * 10 (10e-5 seconds) spent on the 2D canvas
-    putImageData API call, divided by the square root of the total number of
-    pixels of the imageData painted into the canvas. Smaller is faster.
-
-    The idea behind this elaborated unit is that the bigger the area of a canvas
-    the longer the operation PutImageData takes, so we want a way to measure the
-    overall performance regardless of the size of the canvas.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-
-    Warning: this histogram was expired from 2021-01-31 to 2021-05-10; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
     units="microseconds" expires_after="2022-01-31">
   <owner>aaronhk@chromium.org</owner>
@@ -434,11 +283,6 @@ chromium-metrics-reviews@google.com.
     functions in canvas. {CanvasRequestedImageMimeTypeFunctions}
   </summary>
   <token key="CanvasRequestedImageMimeTypeFunctions">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name="_convertToBlobPromise"
         summary="Image formats passed to OffscreenCanvas.convertToBlob
                  (promise)"/>
@@ -479,38 +323,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Stores the square root of the number of pixels in a new or resized offscreen
     canvas. Emitted from CanvasRenderingContextHost::RecordCanvasSizeToUMA.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.Canvas.ToBlob.CompleteEncodingDelay"
-    units="microseconds" expires_after="2021-01-31">
-  <obsolete>
-    Removed in M89. Obsolete and unused. This has been replaced with
-    Blink.Canvas.ToBlob.TotalEncodingDelay
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    This metric measures the total time spent on completing encoding all the
-    rows of an image (jpeg or png), as part of a canvas.toBlob API call.
-    Encoding occurs during one or more idle periods on the main thread and the
-    waiting time of the next idle period is included in the measurement. If the
-    code has swtiched to force encoding path, we will not measure the delay in
-    this metric.
-
-    This metric is useful in helping us adjust the IdleTaskCompleteTimeoutDelay
-    in canvas.toBlob. When the encoding idle task is delayed for longer than
-    IdleTaskCompleteTimeoutDelay, the browser will switch to a non-idle task to
-    force encoding to happen on the main thread.
-
-    In addition, metric values from OffscreenCanvas.convertToBlob API call are
-    also gathered into this histogram, because the logic flow is exactly the
-    same as canvas.toBlob. It's worth to note that the values can come from idle
-    tasks on either main or worker thread.
-
-    Note: This metric drops reports on clients with low-resolution clocks, which
-    means these reports will be biased against a portion of the population on
-    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
   </summary>
 </histogram>
 
@@ -560,35 +372,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Blink.Canvas.ToBlob.InitiateEncodingDelay"
-    units="microseconds" expires_after="2021-01-31">
-  <obsolete>
-    Removed in M89. Obsolete and unused. This has been replaced with
-    Blink.Canvas.ToBlob.InitialEncodingDelay
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    This metric measures the time spent from initiating image encoding (jpeg or
-    png) on idle task to the actual execution time of initiation, as part of a
-    canvas.toBlob API call.
-
-    This metric is useful in helping us adjust the IdleTaskStartTimeoutDelay in
-    canvas.toBlob. When the initialization idle task is delayed for longer than
-    IdleTaskStartTimeoutDelay, the browser will switch to a non-idle task to
-    force initialization and encoding to occur on the main thread.
-
-    In addition, metric values from OffscreenCanvas.convertToBlob API call are
-    also gathered into this histogram, because the logic flow is exactly the
-    same as canvas.toBlob. It's worth to note that the values can come from idle
-    tasks on either main or worker thread.
-
-    Note: This metric drops reports on clients with low-resolution clocks, which
-    means these reports will be biased against a portion of the population on
-    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.ToBlob.ScaledDuration{BlinkCanvasToBlobType}"
     units="microseconds/sqrt(pixels)" expires_after="2022-04-04">
   <owner>fserb@chromium.org</owner>
@@ -608,11 +391,6 @@ chromium-metrics-reviews@google.com.
     {BlinkCanvasToBlobType}
   </summary>
   <token key="BlinkCanvasToBlobType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".JPEG" summary=""/>
     <variant name=".PNG" summary=""/>
     <variant name=".WEBP" summary=""/>
@@ -674,38 +452,8 @@ chromium-metrics-reviews@google.com.
     solution. {BlinkCanvasToDataURLMimeType}
   </summary>
   <token key="BlinkCanvasToDataURLMimeType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-    <variant name=".BMP" summary="">
-      <obsolete>
-        Removed in Oct 2016
-      </obsolete>
-    </variant>
-    <variant name=".GIF" summary="">
-      <obsolete>
-        Removed in Oct 2016
-      </obsolete>
-    </variant>
-    <variant name=".ICON" summary="">
-      <obsolete>
-        Removed in Oct 2016
-      </obsolete>
-    </variant>
     <variant name=".JPEG" summary=""/>
     <variant name=".PNG" summary=""/>
-    <variant name=".TIFF" summary="">
-      <obsolete>
-        Removed in Oct 2016
-      </obsolete>
-    </variant>
-    <variant name=".Unknown" summary="">
-      <obsolete>
-        Removed in Oct 2016
-      </obsolete>
-    </variant>
     <variant name=".WEBP" summary=""/>
   </token>
 </histogram>
@@ -749,29 +497,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Clipboard.Paste.Image" enum="ClipboardPastedImageUrls"
-    expires_after="2021-09-05">
-  <obsolete>
-    Retired in Sept 2021 as enough data was collected.
-  </obsolete>
-  <owner>huangdarwin@chromium.org</owner>
-  <owner>snianu@microsoft.com</owner>
-  <summary>
-    When HTML is parsed during a paste operation, image elements may have a
-    source attribute pointing to a local file url, http(s) url, cid or other url
-    type which doesn't render the image when it's pasted inside a content
-    editable region. This metric will help us determine how many paste
-    operations have an image with a src url attribute containing the url types
-    mentioned above and whether there is an RTF format in the clipboard along
-    with HTML or not. The RTF format data will help us decide whether we need to
-    support paste for images that are in RTF format types when it's available on
-    the clipboard along with HTML format so the apps can use it to insert the
-    images which then can be used by the Browser to replace the src urls of the
-    images in the HTML markup with a Blob url. This would enable the site to
-    store the images when it's pasted inside a content editable region.
-  </summary>
-</histogram>
-
 <histogram name="Blink.ColorGamut.Destination" enum="Gamut" expires_after="M85">
   <owner>brianosman@chromium.org</owner>
   <owner>mcasas@google.com</owner>
@@ -795,71 +520,6 @@ chromium-metrics-reviews@google.com.
     The L-infinity error (in 8-bit values) of the numerical approximation of
     table-based ICC profile transfer functions for all channels combined, when
     the nonlinear approximation converged.
-  </summary>
-</histogram>
-
-<histogram
-    name="Blink.Compositing.LayerPromotionCount{BlinkCompositingLayerCount}"
-    units="units" expires_after="2021-12-05">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Number of composited layers based on various reasons. Recorded when a page
-    finishes its layer updates. {BlinkCompositingLayerCount}
-  </summary>
-  <token key="BlinkCompositingLayerCount">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-    <variant name=".ActiveAnimation" summary="">
-      <obsolete>
-        Deprecated as of 2021-10.
-      </obsolete>
-    </variant>
-    <variant name=".AssumedOverlap" summary="">
-      <obsolete>
-        Deprecated as of 2021-10.
-      </obsolete>
-    </variant>
-    <variant name=".IndirectComposited" summary="">
-      <obsolete>
-        Deprecated as of 2021-10.
-      </obsolete>
-    </variant>
-    <variant name=".Overlap" summary="">
-      <obsolete>
-        Deprecated as of 2021-10.
-      </obsolete>
-    </variant>
-    <variant name=".TotalComposited" summary="">
-      <obsolete>
-        Deprecated as of 2021-10.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
-<histogram base="true" name="Blink.CompositingAssignments.UpdateTime"
-    units="microseconds" expires_after="M97">
-  <obsolete>
-    No longer recorded after M97 with the launch of CompositeAfterPaint.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
-
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Time spent updating compositing assignments in the Blink document lifecycle.
-    This is the legacy compositing approach.
-
-    Note: this histogram has stopped recording metrics on machines with
-    low-resolution clocks.
   </summary>
 </histogram>
 
@@ -1002,20 +662,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.CookieStore.MatchType" enum="CookieStoreMatchType"
-    expires_after="M87">
-  <obsolete>
-    Removed in M87.
-  </obsolete>
-  <owner>ayui@chromium.org</owner>
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    Records match type option set by the developer for Cookie Store query APIs
-    to measure the usage of the option during Origin Trial to better evaluate
-    the best shape of the API.
-  </summary>
-</histogram>
-
 <histogram name="Blink.CSSPaintValue.PaintOffThread"
     enum="BooleanCompositorCSSPaint" expires_after="2022-03-08">
   <owner>xidachen@chromium.org</owner>
@@ -1053,20 +699,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.DecodedImage.DensitySizeCorrectionDetected"
-    enum="BooleanPresent" expires_after="2021-01-03">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>noam.j.rosenthal@gmail.com</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Indicates whether a decoded image contains density correction metadata, i.e.
-    when its resolution and dimension EXIF values match.
-  </summary>
-</histogram>
-
 <histogram name="Blink.DecodedImage.JpegDensity.KiBWeighted"
     units="0.01 bits per pixel" expires_after="2022-10-01">
   <owner>jyrki@google.com</owner>
@@ -1078,16 +710,6 @@ chromium-metrics-reviews@google.com.
     or height). The reported count for a sample represents the image size
     rounded to the nearest KiB.
   </summary>
-</histogram>
-
-<histogram name="Blink.DecodedImage.Orientation" enum="DecodedImageOrientation"
-    expires_after="M81">
-  <obsolete>
-    Removed in M88.
-  </obsolete>
-  <owner>andrescj@chromium.org</owner>
-  <owner>rob.buis@samsung.org</owner>
-  <summary>Image orientation inferred during decode.</summary>
 </histogram>
 
 <histogram name="Blink.DecodedImage.WebPDensity.KiBWeighted"
@@ -1301,22 +923,6 @@ chromium-metrics-reviews@google.com.
     than one glyph, which usually indicates that an emoji sequence was not
     shaped correctly due to the emoji font not supporting it. Recorded per
     page/worker and on page unload if the page contained emoji.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Fonts.Enumeration.Duration" units="ms"
-    expires_after="2021-10-15">
-  <obsolete>
-    Removed in M89. Obsolete and unused. This has been replaced with
-    Fonts.AccessAPI.EnumerationCache.*
-  </obsolete>
-  <owner>pwnall@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <owner>storage-dev@chromium.org</owner>
-  <summary>
-    Records duration of enumerating available fonts for font name metadata.
-    Reported on Mac platforms only, when the fonts are enumerated from the
-    system APIs if there is a cache miss.
   </summary>
 </histogram>
 
@@ -1818,13 +1424,7 @@ chromium-metrics-reviews@google.com.
     emitted when all data is received. {BlinkIncrementalDecodeImageTypes}
   </summary>
   <token key="BlinkIncrementalDecodeImageTypes"
-      variants="BlinkIncrementalDecodeImageTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="BlinkIncrementalDecodeImageTypes"/>
 </histogram>
 
 <histogram
@@ -1845,13 +1445,7 @@ chromium-metrics-reviews@google.com.
     {BlinkIncrementalDecodeImageTypes}
   </summary>
   <token key="BlinkIncrementalDecodeImageTypes"
-      variants="BlinkIncrementalDecodeImageTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="BlinkIncrementalDecodeImageTypes"/>
 </histogram>
 
 <histogram name="Blink.ImageDecoders.Jpeg.Area" units="pixels"
@@ -2197,250 +1791,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.MainFrame.AnimateRatio" units="%"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing Main Frame animations and rAF callbacks.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.CompositingAssignmentsRatio"
-    units="%" expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing compositing assignments.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.CompositingCommitRatio" units="%"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for committing paint results to the compositor.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.CompositingInputsRatio" units="%"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing compositing inputs.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.CompositingRatio" units="%"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing Compositing.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.ForcedStyleAndLayoutRatio"
-    units="%" expires_after="2021-01-10">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The time between each paint results commit used in computing forced style
-    recalc and layouts for this document and ancestors as a percentage of the
-    Blink local frame lifecycle update time.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.HandleInputEventsRatio" units="%"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for processing rAF aligned input.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.HitTestDocumentUpdateRatio"
-    units="%" expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for updating the document in preparation for hit testing.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.ImplCompositorCommitRatio"
-    units="%" expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for committing the layer tree to the impl thread,
-    excluding time spend waiting for the CC thread to begin processing.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.IntersectionObservationRatio"
-    units="%" expires_after="2021-08-09">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing Intersection Observations.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.LayoutRatio" units="%"
-    expires_after="2021-03-21">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing Layout.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.PaintRatio" units="%"
-    expires_after="2021-03-21">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing Paint.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.PrePaintRatio" units="%"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing PrePaint.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.ScrollingCoordinatorRatio"
-    units="%" expires_after="M88">
-  <obsolete>
-    Merged into Blink.MainFrame.CompositingCommitRatio in
-    http://crrev.com/815947 in M88.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of the total BeginMainFrame execution time used for the
-    ScrollingCoordinator update in Blink, for each frame that we record.
-    Recorded in ScrollingCoordinator::UpdateAfterPaint.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.StyleRatio" units="%"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is used for computing Style.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.MainFrame.UpdateLayersRatio" units="%"
-    expires_after="2021-03-21">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is spent in LayerTreeHost::UpdateLayers.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.MainFrame.UpdateTime" units="microseconds"
     expires_after="2022-07-03">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
@@ -2456,21 +1806,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram will not record metrics on machines with low-resolution
     clocks.
-  </summary>
-</histogram>
-
-<histogram name="Blink.MainFrame.WaitForCommitRatio" units="%"
-    expires_after="2020-11-08">
-  <obsolete>
-    Removed M88 due to lack of use.
-  </obsolete>
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
-
-  <summary>
-    The percentage of time between a BeginMainFrame and paint results commit in
-    Blink that is spent waiting for the CC thread to begin processing.
   </summary>
 </histogram>
 
@@ -2527,22 +1862,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.MemoryCache.RevalidationPolicy.PerDocument"
-    enum="RevalidationPolicy" expires_after="2021-06-20">
-  <obsolete>
-    Removed in M89. Obsolete and unused. This has been replaced with
-    Blink.MemoryCache.RevalidationPolicy with feature
-    ScopeMemoryCachePerContext.
-  </obsolete>
-  <owner>shivanisha@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    RevalidationPolicy used for requests for each resource type. Logged only if
-    the resource is found in the memory cache and if the same document had
-    loaded this resource earlier.
-  </summary>
-</histogram>
-
 <histogram name="Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite"
     enum="RevalidationPolicy" expires_after="2021-12-26">
   <owner>shivanisha@chromium.org</owner>
@@ -2587,21 +1906,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.OffscreenCanvas.ContextType" enum="CanvasContextType"
-    expires_after="2021-10-17">
-  <obsolete>
-    Retired in M96, replaced by OffscreenCanvas_* buckets in
-    Blink.UseCounter.Features wich records at most one count per page visit per
-    context type, as opposed to one count per context creation.
-  </obsolete>
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Records the context type names used to create offscreen canvas rendering
-    contexts. Recorded in OffscreenCanvas::GetCanvasRenderingContext
-  </summary>
-</histogram>
-
 <histogram name="Blink.OffscreenCanvas.NewOffscreenCanvas" enum="Boolean"
     expires_after="2022-06-05">
   <owner>aaronhk@chromium.org</owner>
@@ -2635,35 +1939,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records when an offscreen canvas has been transferred from the main thread
     to a worker.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Paint.CachedItemPercentage" units="%"
-    expires_after="2021-07-01">
-  <obsolete>
-    Removed June 2021.
-  </obsolete>
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Percentage of cached display items among all display items. Higher value
-    means higher performance beause of less paint invalidation. Recorded when we
-    finish updating paint in the Blink document lifecycle.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Paint.CachedSubsequencePercentage" units="%"
-    expires_after="2021-07-01">
-  <obsolete>
-    Removed June 2021.
-  </obsolete>
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Percentage of cached subsequences of display items among all subsequences.
-    Higher value means higher performance beause of less subsequence
-    invalidation. Recorded when we finish updating paint in the Blink document
-    lifecycle.
   </summary>
 </histogram>
 
@@ -2712,26 +1987,6 @@ chromium-metrics-reviews@google.com.
     Note: As of M70, this histogram has stopped recording metrics on machines
     with low-resolution clocks.
   </summary>
-</histogram>
-
-<histogram name="Blink.Render.DisplayLockActivationReason"
-    enum="DisplayLockActivationReason" expires_after="2021-12-12">
-  <obsolete>
-    Removed 11/2021.
-  </obsolete>
-  <owner>vmpstr@chromium.org</owner>
-  <owner>chrishtr@chromium.org</owner>
-  <summary>This indicates the reason for display-locking activation</summary>
-</histogram>
-
-<histogram name="Blink.ResourceFetcher.StaleWhileRevalidateDuration" units="ms"
-    expires_after="2020-04-05">
-  <obsolete>
-    Removed 12/2020.
-  </obsolete>
-  <owner>dtapuska@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <summary>Duration of completed stale revalidation attempts.</summary>
 </histogram>
 
 <histogram name="Blink.ResourceLoadScheduler.TrafficBytes.KBPerFrameStatus"
@@ -2825,77 +2080,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Script.ForceDeferredScripts.Mainframe" units="count"
-    expires_after="2021-05-02">
-  <obsolete>
-    Obsoleted Feb 2021.
-  </obsolete>
-  <owner>dougarnett@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <summary>
-    Number of synchronous scripts that were deferred for a mainframe by the
-    ForceDeferScriptIntervention. This includes both inline scripts and external
-    scripts that had their execution deferred until after parsing completes.
-    Recorded when there is at least one force deferred script for the frame.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Script.ForceDeferredScripts.Mainframe.External"
-    units="count" expires_after="2021-05-02">
-  <obsolete>
-    Obsoleted Feb 2021.
-  </obsolete>
-  <owner>dougarnett@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <summary>
-    Number of external synchronous scripts that were deferred for a mainframe by
-    the ForceDeferScriptIntervention. Recorded when there is at least one force
-    deferred script for the frame (not necessarily external).
-  </summary>
-</histogram>
-
-<histogram name="Blink.Script.ForceDeferredScripts.Subframe" units="count"
-    expires_after="2021-02-28">
-  <obsolete>
-    Obsoleted Feb 2021.
-  </obsolete>
-  <owner>dougarnett@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <summary>
-    Number of synchronous scripts that were deferred for a subframe by the
-    ForceDeferScriptIntervention. This includes both inline scripts and external
-    scripts that had their execution deferred until after parsing completes.
-    Recorded when there is at least one force deferred script for the frame.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Script.ForceDeferredScripts.Subframe.External"
-    units="count" expires_after="2021-02-28">
-  <obsolete>
-    Obsoleted Feb 2021.
-  </obsolete>
-  <owner>dougarnett@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <summary>
-    Number of external synchronous scripts that were deferred for a subframe by
-    the ForceDeferScriptIntervention. Recorded when there is at least one force
-    deferred script for the frame (not necessarily external).
-  </summary>
-</histogram>
-
-<histogram name="Blink.Script.SchedulingType" enum="ScriptSchedulingType"
-    expires_after="2021-07-11">
-  <obsolete>
-    Removed in M90 because we collected enough insights.
-  </obsolete>
-  <owner>kouhei@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <summary>
-    Number of script elements for each scheduling type, recorded for each
-    successful #prepare-a-script.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.ScrollDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2022-07-03">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
@@ -2913,33 +2097,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.ScrollingCoordinator.UpdateTime"
-    units="microseconds" expires_after="M88">
-  <obsolete>
-    Merged into Blink.CompositingCommit.UpdateTime in http://crrev.com/815947 in
-    M88.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
-
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    The time it took to update scrolling coordinator data (scroll gesture
-    regions, touch event rects, and main thread scrolling reasons). These values
-    are calculated during the main-thread blink lifecycle.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 
@@ -2991,19 +2148,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the reason why using the WebOTP API on desktop failed on the sharing
     path. It records one sample per invocation of the API.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Sms.Receive.DestroyedReason"
-    enum="WebOTPServiceDestroyedReason" expires_after="2021-12-12">
-  <obsolete>
-    Deprecated 09/2021. We have learned about the pattern of the destruction.
-  </obsolete>
-  <owner>yigu@chromium.org</owner>
-  <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
-  <summary>
-    Records the reason an SMS Service is destroyed before request completion.
   </summary>
 </histogram>
 
@@ -3125,18 +2269,6 @@ chromium-metrics-reviews@google.com.
     Records whether the web contents that receives the OTP is visible or not for
     the UserConsent backend. Recorded at most once per API call when Chrome sees
     the OTP from the expected origin.
-  </summary>
-</histogram>
-
-<histogram name="Blink.SpatialNavigation.Advance" units="microseconds"
-    expires_after="M85">
-  <obsolete>
-    Expired in M85.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <summary>
-    Time it takes to find best candidate element, set focus or scroll for given
-    directional input.
   </summary>
 </histogram>
 
@@ -3345,37 +2477,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.UseCounter.FeaturePolicy.PotentialViolation"
-    enum="FeaturePolicyFeature" expires_after="2021-01-03">
-  <obsolete>
-    Remoted in M91.
-  </obsolete>
-  <owner>iclelland@chromium.org</owner>
-  <owner>feature-control@chromium.org</owner>
-  <summary>
-    Tracks potential violations of feature policies in a document. This is
-    emitted once all the conditions for violating the feature policy are met in
-    the document; regardless of whether or not the feature has been disabled in
-    the document; in other words, it still records a potential violation even if
-    there won't be a violation report generated. Note that this is recorded once
-    per document.
-  </summary>
-</histogram>
-
-<histogram name="Blink.UseCounter.FeaturePolicy.ProposalWouldChangeBehaviour"
-    enum="FeaturePolicyFeature" expires_after="2021-03-07">
-  <obsolete>
-    Removed in M88.
-  </obsolete>
-  <owner>iclelland@chromium.org</owner>
-  <owner>feature-control@chromium.org</owner>
-  <summary>
-    Counts when the result of calling IsFeatureEnabled for an Execution Context
-    would be different under the proposal in https://crbug.com/937171. Each
-    feature is counted only once per execution context.
-  </summary>
-</histogram>
-
 <histogram name="Blink.UseCounter.Features" enum="FeatureObserver"
     expires_after="never">
 <!-- expires-never: used by Chrome Platform Status dashboard -->
@@ -3429,20 +2530,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.UseCounter.PermissionsPolicy.Allow"
-    enum="FeaturePolicyFeature" expires_after="2022-05-30">
-  <obsolete>
-    Obsolete in 2021-09. Use Blink.UseCounter.PermissionsPolicy.Allow2 instead.
-  </obsolete>
-  <owner>iclelland@chromium.org</owner>
-  <owner>feature-control@chromium.org</owner>
-  <summary>
-    Counts the use of a specific permissions policy feature via the
-    &quot;allow&quot; attribute on iframes. Each policy is counted only once per
-    page load.
-  </summary>
-</histogram>
-
 <histogram name="Blink.UseCounter.PermissionsPolicy.Allow2"
     enum="FeaturePolicyFeature" expires_after="2022-05-30">
   <owner>iclelland@chromium.org</owner>
@@ -3452,20 +2539,6 @@ chromium-metrics-reviews@google.com.
     &quot;allow&quot; attribute on iframes. Each policy is counted only once per
     page load. Version 2 fixes the mismatched histogram name with data
     collected.
-  </summary>
-</histogram>
-
-<histogram name="Blink.UseCounter.PermissionsPolicy.Header"
-    enum="FeaturePolicyFeature" expires_after="2022-05-30">
-  <obsolete>
-    Obsolete in 2021-09. Use Blink.UseCounter.PermissionsPolicy.Header2 instead.
-  </obsolete>
-  <owner>iclelland@chromium.org</owner>
-  <owner>feature-control@chromium.org</owner>
-  <summary>
-    Counts the use of a specific permissions policy feature via both
-    &quot;Feature-Policy&quot; and &quot;Permissions-Policy&quot; HTTP response
-    header. Each policy is counted only once per page load.
   </summary>
 </histogram>
 
@@ -3610,13 +2683,7 @@ chromium-metrics-reviews@google.com.
     histogram. {BlinkVisibleLoadTimeSuffixes}
   </summary>
   <token key="BlinkVisibleLoadTimeSuffixes"
-      variants="BlinkVisibleLoadTimeSuffixes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="BlinkVisibleLoadTimeSuffixes"/>
 </histogram>
 
 <histogram
@@ -3631,13 +2698,7 @@ chromium-metrics-reviews@google.com.
     histogram. {BlinkVisibleLoadTimeSuffixes}
   </summary>
   <token key="BlinkVisibleLoadTimeSuffixes"
-      variants="BlinkVisibleLoadTimeSuffixes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="BlinkVisibleLoadTimeSuffixes"/>
 </histogram>
 
 <histogram base="true" name="Blink.WaitForCommit.UpdateTime"
@@ -3865,326 +2926,6 @@ chromium-metrics-reviews@google.com.
     <variant name="WebGL2"/>
     <variant name="WebGPU"/>
   </token>
-</histogram>
-
-<histogram name="BlinkGC.CollectionRate" units="%" expires_after="M84">
-  <obsolete>
-    Replaced by V8.GC.Cycle.CollectionRate.Full.Cpp since M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <summary>
-    The percentage of objects that have been collected by a Blink GC. 0 is
-    passed if there were no objects when a Blink GC started.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.GCReason" enum="GCReason" expires_after="M84">
-  <obsolete>
-    Replaced by V8.GC.Cycle.Reason.Full since M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <summary>A type of Blink GC.</summary>
-</histogram>
-
-<histogram name="BlinkGC.LowMemoryPageNavigationGC.Reduction" units="MB"
-    expires_after="M77">
-  <obsolete>
-    Dropped due to move to Oilpan library in M94.
-  </obsolete>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Amount of memory reduced with the GC triggered on page navigation while the
-    device is in a low memory state. Only implemented on low end Android devices
-    at the moment. Memory usage is approximated by summing the memory usage of
-    the following allocators: BlinkGC, PartitionAlloc, and V8 main thread
-    isolate heap.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.MainThreadMarkingThroughput" units="MB/s"
-    expires_after="M95">
-  <obsolete>
-    Dropped due to move to Oilpan library in M94.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Marking throughput considering all durations of all marking phases on the
-    main thread and marked bytes within one Blink garbage collection cycle.
-    Reported once per garbage collection cycle at the end. Only reported for
-    platforms supporting high resolution clocks and when more than 1MB of live
-    objects have been found.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.ObjectSizeAfterGC" units="KB" expires_after="M95">
-  <obsolete>
-    Replaced by V8.GC.Cycle.Objects.After.Full since M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    The size of allocated objects just after Blink GC is triggered. Reported
-    once per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.ObjectSizeBeforeGC" units="KB" expires_after="M95">
-  <obsolete>
-    Replaced by V8.GC.Cycle.Objects.Before.Full since M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    The size of allocated objects just before Blink GC is triggered. Reported
-    once per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.ObjectSizeFreedByHeapCompaction" units="KB"
-    expires_after="M81">
-  <obsolete>
-    Replaced by V8.GC.Cycle.Memory.Freed.Full since M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <summary>
-    The total size of objects freed by BlinkGC's heap compaction. This is
-    recorded once following each compaction.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForAtomicPhase" units="ms" expires_after="M95">
-  <obsolete>
-    Replaced by V8.GC.Cycle.MainThread.Full.Atomic.Cpp since M94.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Duration of overall garbage collection time when the garbage collector is
-    invoked for finishing a garbage collection. This includes finishing up any
-    already running garbage collection operation. Reported once per garbage
-    collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForAtomicPhaseMarking" units="ms"
-    expires_after="M95">
-  <obsolete>
-    Replaced by V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp since M94.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Duration of finishing marking the transitive closure of objects during the
-    final Blink garbage collection pause. Reported once per garbage collection
-    at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForCompleteSweep" units="ms" expires_after="M95">
-  <obsolete>
-    Covered by V8.GC.Event.MainThread.Full.Incremental.Sweep since M94.
-  </obsolete>
-  <owner>bikineev@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Duration of the pause that completes sweeping. Reported once per garbage
-    collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForGCCycle" units="ms" expires_after="M95">
-  <obsolete>
-    Replaced by V8.GC.Cycle.MainThread.Full.Cpp since M94.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Sum of all durations of individual phases within one Blink garbage
-    collection. Reported once per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForGlobalWeakProcessing" units="ms"
-    expires_after="M95">
-  <obsolete>
-    Replaced by V8.GC.Cycle.MainThread.Full.Atomic.Weak.Cpp since M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Duration of time taken to run global weak processing of Blink GC. Reported
-    once per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForHeapCompaction" units="ms" expires_after="M95">
-  <obsolete>
-    Replaced by V8.GC.Event.MainThread.Full.Compact.Cpp since M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Duration of wall time taken to run BlinkGC's heap compaction. Reported once
-    per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForIncrementalMarking" units="ms"
-    expires_after="2022-02-13">
-  <obsolete>
-    Covered by V8.GC.Cycle.MainThread.Full.Mark.Cpp and
-    V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp since M94.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Sum of all durations of incremental marking phases within one Blink garbage
-    collection cycle. Reported once per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForInvokingPreFinalizers" units="ms"
-    expires_after="M95">
-  <obsolete>
-    Dropped due to move to Oilpan library in M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Duration of time taken to run ThreadState::InvokePreFinalizers(). Reported
-    once per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForMarkingRoots" units="ms" expires_after="M98">
-  <obsolete>
-    Dropped due to move to Oilpan library in M94.
-  </obsolete>
-  <owner>omerkatz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Duration of marking roots within one Blink garbage collection. Reported once
-    per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForMarking{BlinkGCTimingTypes}" units="ms"
-    expires_after="M98">
-  <obsolete>
-    Covered by V8.GC.Cycle.Full.Mark.Cpp and
-    V8.GC.Cycle.MainThread.Full.Mark.Cpp since M94.
-  </obsolete>
-  <owner>omerkatz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Accumulated sum of all durations of individual phases contributing to
-    marking (main thread and background helpers) within one Blink garbage
-    collection. Reported once per garbage collection at the end.
-    {BlinkGCTimingTypes}
-  </summary>
-  <token key="BlinkGCTimingTypes">
-    <variant name=""/>
-    <variant name=".Background" summary="Includes only background helpers"/>
-    <variant name=".Foreground" summary="Includes only the main thread"/>
-  </token>
-</histogram>
-
-<histogram name="BlinkGC.TimeForNestedInV8" units="ms" expires_after="M95">
-  <obsolete>
-    Dropped due to move to Oilpan library in M94.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Duration of the time of Blink garbage collection spent nested in a V8
-    garbage collection. Reported once per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForSweepingBackground" units="ms"
-    expires_after="M95">
-  <obsolete>
-    Covered by V8.GC.Cycle.Full.Sweep.Cpp and
-    V8.GC.Cycle.MainThread.Full.Sweep.Cpp since M94.
-  </obsolete>
-  <owner>bikineev@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Sum of all durations of individual phases contributing to sweeping on
-    background helpers within one Blink garbage collection. Reported once per
-    garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForSweepingForeground" units="ms"
-    expires_after="2022-01-09">
-  <obsolete>
-    Replaced by V8.GC.Cycle.MainThread.Full.Mark.Cpp since M94.
-  </obsolete>
-  <owner>bikineev@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Sum of all durations of individual phases contributing to sweeping on the
-    main thread within one Blink garbage collection. Reported once per garbage
-    collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForSweepingSum" units="ms" expires_after="M95">
-  <obsolete>
-    Replaced by V8.GC.Cycle.Full.Mark.Cpp since M94.
-  </obsolete>
-  <owner>bikineev@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Accumulated sum of all durations of individual phases contributing to
-    sweeping (main thread and background helpers) within one Blink garbage
-    collection. Reported once per garbage collection at the end.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TimeForTotalCollectGarbage" units="ms"
-    expires_after="M84">
-  <obsolete>
-    Replaced by V8.GC.Cycle.MainThread.Full since M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <owner>hpayer@chromium.org</owner>
-  <summary>
-    Duration of total Blink garbage collection time when the garbage collector
-    is invoked for finishing a garbage collection. This includes finishing up
-    any already running garbage collection operation as well as potentially
-    performing a follow-up collection synchronously. Recorded each time after
-    invoking the Blink garbage collector.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TotalAllocatedSpace" units="KB" expires_after="M95">
-  <obsolete>
-    Dropped due to move to Oilpan library in M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    The total size of allocated space in OS when a Blink GC is triggered.
-  </summary>
-</histogram>
-
-<histogram name="BlinkGC.TotalObjectSpace" units="KB" expires_after="M95">
-  <obsolete>
-    Dropped due to move to Oilpan library in M94.
-  </obsolete>
-  <owner>haraken@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    The total size of object space in all threads when a Blink GC is triggered.
-  </summary>
 </histogram>
 
 </histograms>

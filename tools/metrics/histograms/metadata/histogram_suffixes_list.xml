@@ -1299,54 +1299,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.Audio.Bitstream"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BlinkCanvasDrawImageType" separator=".">
-  <suffix base="true" name="Canvas" label=""/>
-  <suffix base="true" name="CssImage" label=""/>
-  <suffix base="true" name="ImageBitmap" label=""/>
-  <suffix base="true" name="ImageElement" label=""/>
-  <suffix base="true" name="OffscreenCanvas" label=""/>
-  <suffix base="true" name="Others" label="">
-    <obsolete>
-      Deprecated 10/2018 with the addition of CssImage and Unknown.
-    </obsolete>
-  </suffix>
-  <suffix base="true" name="SVG" label=""/>
-  <suffix base="true" name="Unknown" label=""/>
-  <suffix base="true" name="Video" label=""/>
-  <suffix base="true" name="VideoFrame" label=""/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkCanvasDurationBySource" separator=".">
-  <suffix name="CPU" label=""/>
-  <suffix name="DisplayList" label="">
-    <obsolete>
-      Deprecated 11/2017 with removal of Display List Canvas 2D mode.
-    </obsolete>
-  </suffix>
-  <suffix name="GPU" label=""/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration.Canvas"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration.CssImage"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration.ImageBitmap"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration.ImageElement"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration.OffscreenCanvas"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration.SVG"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration.Unknown"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration.Video"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.Canvas"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.CssImage"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.ImageBitmap"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.ImageElement"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.OffscreenCanvas"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.SVG"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.Unknown"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.Video"/>
-  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.VideoFrame"/>
-  <affected-histogram name="Blink.Canvas.GetImageData"/>
-  <affected-histogram name="Blink.Canvas.PutImageData"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BlinkCanvasOffscreenCommitType" separator=".">
   <suffix name="GPUCanvasGPUCompositingMain" label=""/>
   <suffix name="GPUCanvasGPUCompositingWorker" label=""/>
@@ -1357,13 +1309,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="SoftwareCanvasSoftwareCompositingMain" label=""/>
   <suffix name="SoftwareCanvasSoftwareCompositingWorker" label=""/>
   <affected-histogram name="Blink.Canvas.OffscreenCommitTimer"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkCanvasToBlobIdleEncodAndDelayType" separator=".">
-  <suffix name="JPEG" label=""/>
-  <suffix name="PNG" label=""/>
-  <affected-histogram name="Blink.Canvas.ToBlob.CompleteEncodingDelay"/>
-  <affected-histogram name="Blink.Canvas.ToBlob.InitiateEncodingDelay"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="BlinkGCReason" separator="_">
@@ -1380,32 +1325,14 @@ chromium-metrics-reviews@google.com.
   <suffix name="ThreadTerminationGC" label="Thread termination GC"/>
   <suffix name="UnifiedHeapGC" label="Unified heap GC"/>
   <affected-histogram name="BlinkGC.AtomicPhaseMarking"/>
-  <affected-histogram name="BlinkGC.CollectionRate"/>
-  <affected-histogram name="BlinkGC.TimeForTotalCollectGarbage"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" separator=".">
   <suffix name="1msTo5ms" label="Ratio when main frame between 1ms and 5ms."/>
   <suffix name="LessThan1ms" label="Ratio when main frame shorter than 1ms."/>
   <suffix name="MoreThan5ms" label="Ratio when main frame longer than 5ms."/>
-  <affected-histogram name="Blink.MainFrame.AnimateRatio"/>
-  <affected-histogram name="Blink.MainFrame.CompositingCommitRatio"/>
-  <affected-histogram name="Blink.MainFrame.CompositingInputsRatio"/>
-  <affected-histogram name="Blink.MainFrame.CompositingRatio"/>
-  <affected-histogram name="Blink.MainFrame.ForcedStyleAndLayoutRatio"/>
-  <affected-histogram name="Blink.MainFrame.HandleInputEventsRatio"/>
-  <affected-histogram name="Blink.MainFrame.HitTestDocumentUpdateRatio"/>
-  <affected-histogram name="Blink.MainFrame.ImplCompositorCommitRatio"/>
-  <affected-histogram name="Blink.MainFrame.IntersectionObservationRatio"/>
-  <affected-histogram name="Blink.MainFrame.LayoutRatio"/>
-  <affected-histogram name="Blink.MainFrame.PaintRatio"/>
-  <affected-histogram name="Blink.MainFrame.PrePaintRatio"/>
   <affected-histogram name="Blink.MainFrame.ProxyCommitRatio"/>
-  <affected-histogram name="Blink.MainFrame.ScrollingCoordinatorRatio"/>
   <affected-histogram name="Blink.MainFrame.StyleAndLayoutRatio"/>
-  <affected-histogram name="Blink.MainFrame.StyleRatio"/>
-  <affected-histogram name="Blink.MainFrame.UpdateLayersRatio"/>
-  <affected-histogram name="Blink.MainFrame.WaitForCommitRatio"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" separator=".">
@@ -1434,7 +1361,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
   <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
   <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
@@ -1468,7 +1394,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
   <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
   <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
@@ -1502,7 +1427,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
   <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
   <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
@@ -13668,7 +13592,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="XSLStyleSheet" label=""/>
   <affected-histogram name="Blink.MemoryCache.RevalidationPolicy"/>
   <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.Dead"/>
-  <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.PerDocument"/>
   <affected-histogram
       name="Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite"/>
   <affected-histogram name="Blink.MemoryCache.RevalidationPolicy.Preload"/>
