@@ -403,9 +403,8 @@ void AppTimeController::TimeLimitsAllowlistPolicyUpdated(
     const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsAllowlistPolicy);
 
-  const base::DictionaryValue* policy =
-      &base::Value::AsDictionaryValue(*pref_registrar_->prefs()->GetDictionary(
-          prefs::kPerAppTimeLimitsAllowlistPolicy));
+  const base::Value* policy = pref_registrar_->prefs()->GetDictionary(
+      prefs::kPerAppTimeLimitsAllowlistPolicy);
 
   // Figure out a way to avoid cloning
   AppTimeLimitsAllowlistPolicyWrapper wrapper(policy);

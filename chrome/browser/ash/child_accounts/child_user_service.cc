@@ -189,9 +189,8 @@ base::TimeDelta ChildUserService::GetWebTimeLimit() const {
 }
 
 void ChildUserService ::ReportTimeLimitPolicy() const {
-  const base::DictionaryValue* time_limit_prefs =
-      &base::Value::AsDictionaryValue(
-          *profile_->GetPrefs()->GetDictionary(prefs::kUsageTimeLimit));
+  const base::Value* time_limit_prefs =
+      profile_->GetPrefs()->GetDictionary(prefs::kUsageTimeLimit);
   DCHECK(time_limit_prefs);
 
   std::set<usage_time_limit::PolicyType> enabled_policies =
