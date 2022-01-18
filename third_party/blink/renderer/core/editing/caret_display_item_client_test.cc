@@ -50,6 +50,11 @@ class CaretDisplayItemClientTest : public PaintAndRasterInvalidationTest {
     return GetCaretDisplayItemClient().local_rect_;
   }
 
+  PhysicalRect ComputeCaretRect(const PositionWithAffinity& position) const {
+    return CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(position)
+        .caret_rect;
+  }
+
   const LayoutBlock* CaretLayoutBlock() {
     return GetCaretDisplayItemClient().layout_block_;
   }
@@ -413,6 +418,102 @@ TEST_P(CaretDisplayItemClientTest, CompositingChange) {
   EXPECT_FALSE(GetCaretDisplayItemClient().IsValid());
   UpdateAllLifecyclePhasesForCaretTest();
   EXPECT_EQ(PhysicalRect(50, 50, 1, 1), CaretLocalRect());
+}
+
+// http://crbug.com/1278559
+TEST_P(CaretDisplayItemClientTest, InsertSpaceToWhiteSpacePreWrapRTL) {
+  LoadNoto();
+  SetBodyInnerHTML(
+      "<style>"
+      "  div { white-space: pre-wrap; unicode-bidi: plaintext; width: 100px; "
+      "  font: 20px NotoArabic }"
+      "</style>"
+      "<div id='editor' contentEditable='true' "
+      "dir='rtl'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>");
+
+  auto* editor = GetDocument().getElementById("editor");
+  auto* editor_block = To<LayoutBlock>(editor->GetLayoutObject());
+  auto* text_node = editor->firstChild();
+  const Position& position = Position::LastPositionInNode(*text_node);
+  const PhysicalRect& caret_from_position =
+      ComputeCaretRect(PositionWithAffinity(position));
+
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(position).Build());
+
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(GetCaretDisplayItemClient().IsValid());
+  UpdateAllLifecyclePhasesForCaretTest();
+  EXPECT_TRUE(ShouldPaintCursorCaret(*editor_block));
+  EXPECT_EQ(editor_block, CaretLayoutBlock());
+
+  const PhysicalRect& caret_from_selection = CaretLocalRect();
+  EXPECT_EQ(caret_from_position, caret_from_selection);
+
+  // Compute the width of a white-space, give the NotoNaskhArabic font's
+  // metrics.
+  auto* text_layout_object = To<LayoutText>(text_node->GetLayoutObject());
+  LayoutUnit width = text_layout_object->PhysicalLinesBoundingBox().Width();
+  GetDocument().execCommand("insertText", false, " ", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForCaretTest();
+  text_layout_object = To<LayoutText>(text_node->GetLayoutObject());
+  int space_width =
+      (text_layout_object->PhysicalLinesBoundingBox().Width() - width).ToInt();
+  EXPECT_GT(space_width, 0);
+
+  GetDocument().execCommand("insertText", false, " ", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForCaretTest();
+  const PhysicalSize& delta1 =
+      caret_from_position.DistanceAsSize(caret_from_selection.MinXMinYCorner());
+  EXPECT_EQ(PhysicalSize(2 * space_width, 0), delta1);
+
+  GetDocument().execCommand("insertText", false, " ", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForCaretTest();
+  const PhysicalSize& delta2 =
+      caret_from_position.DistanceAsSize(caret_from_selection.MinXMinYCorner());
+  EXPECT_EQ(PhysicalSize(3 * space_width, 0), delta2);
+}
+
+// http://crbug.com/1278559
+TEST_P(CaretDisplayItemClientTest, InsertSpaceToWhiteSpacePreWrap) {
+  LoadAhem();
+  SetBodyInnerHTML(
+      "<style>"
+      "  div { white-space: pre-wrap; unicode-bidi: plaintext; width: 100px; "
+      "font: 10px/1 Ahem}"
+      "</style>"
+      "<div id='editor' contentEditable='true'>XXXXX</div>");
+
+  auto* editor = GetDocument().getElementById("editor");
+  auto* editor_block = To<LayoutBlock>(editor->GetLayoutObject());
+  auto* text_node = editor->firstChild();
+  const Position position = Position::LastPositionInNode(*text_node);
+  const PhysicalRect& rect = ComputeCaretRect(PositionWithAffinity(position));
+  // The 5 characters of arabic text rendered using the NotoArabic font has a
+  // width of 20px and a height of 17px
+  EXPECT_EQ(PhysicalRect(50, 0, 1, 10), rect);
+
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(position).Build());
+
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(GetCaretDisplayItemClient().IsValid());
+  UpdateAllLifecyclePhasesForCaretTest();
+  EXPECT_TRUE(ShouldPaintCursorCaret(*editor_block));
+  EXPECT_EQ(editor_block, CaretLayoutBlock());
+  EXPECT_EQ(rect, CaretLocalRect());
+
+  GetDocument().execCommand("insertText", false, " ", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForCaretTest();
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10), CaretLocalRect());
+
+  GetDocument().execCommand("insertText", false, " ", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForCaretTest();
+  EXPECT_EQ(PhysicalRect(70, 0, 1, 10), CaretLocalRect());
 }
 
 class ParameterizedComputeCaretRectTest

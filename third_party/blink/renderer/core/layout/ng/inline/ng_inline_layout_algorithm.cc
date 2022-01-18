@@ -153,6 +153,33 @@ void NGInlineLayoutAlgorithm::PrepareBoxStates(
   RebuildBoxStates(line_info, break_token, box_states_);
 }
 
+static LayoutUnit AdjustLineOffsetForHanging(NGLineInfo* line_info,
+                                             LayoutUnit& line_offset) {
+  if (IsLtr(line_info->BaseDirection()) ||
+      !line_info->ShouldHangTrailingSpaces())
+    return LayoutUnit();
+
+  // If the hang_width cause overflow, we don't want to adjust the line_offset
+  // so that it becomes negative, which causes some difficulties for the
+  // NGLayoutOverflowCalculator to apply its own adjustements in the
+  // AdjustOverflowForHanging function. Instead, we'll shift the line items so
+  // that we ignore the hanging width when the NGInlineLayoutStateStack computes
+  // their positions in ComputeInlinePositions function.
+  LayoutUnit hang_width = line_info->HangWidth();
+  if (line_offset < hang_width)
+    return -hang_width;
+
+  // At this point we have a RTL line with hanging spaces that shouldn't be
+  // ignored based on the text-align property. Hence the final line_offset value
+  // should consider the hang_width. Note that this line_offset will be used
+  // later to compute the caret position in ComputeLocalCaretRectAtTextOffset,
+  // that's why we need to adjust the offset. Once we adjust the line_offset, we
+  // can use 0 as initial position for the line items, as we do in the case of a
+  // LTR line.
+  line_offset -= hang_width;
+  return LayoutUnit();
+}
+
 void NGInlineLayoutAlgorithm::RebuildBoxStates(
     const NGLineInfo& line_info,
     const NGInlineBreakToken* break_token,
@@ -333,17 +360,14 @@ void NGInlineLayoutAlgorithm::CreateLine(
     DCHECK(IsLtr(line_info->BaseDirection()));
   }
   const LayoutUnit hang_width = line_info->HangWidth();
-  LayoutUnit inline_size;
-  if (IsLtr(line_info->BaseDirection())) {
-    inline_size = box_states_->ComputeInlinePositions(
-        line_box, LayoutUnit(), line_info->IsBlockInInline());
-  } else {
-    inline_size = box_states_->ComputeInlinePositions(
-        line_box, -hang_width, line_info->IsBlockInInline());
-    inline_size += hang_width;
-  }
+  const LayoutUnit position =
+      AdjustLineOffsetForHanging(line_info, line_offset_for_text_align);
+  LayoutUnit inline_size = box_states_->ComputeInlinePositions(
+      line_box, position, line_info->IsBlockInInline());
   if (UNLIKELY(hang_width)) {
-    inline_size -= hang_width;
+    // If we've shifted the line items the inline-size is already correct.
+    if (position == LayoutUnit())
+      inline_size -= hang_width;
     container_builder_.SetHangInlineSize(hang_width);
   }
 

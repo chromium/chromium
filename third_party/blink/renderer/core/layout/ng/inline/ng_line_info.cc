@@ -101,7 +101,8 @@ unsigned NGLineInfo::InflowEndOffset() const {
 }
 
 bool NGLineInfo::ShouldHangTrailingSpaces() const {
-  DCHECK(HasTrailingSpaces());
+  if (!HasTrailingSpaces())
+    return false;
   if (!line_style_->AutoWrap())
     return false;
   switch (text_align_) {

@@ -99,10 +99,13 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // See external/wpt/css/fonts/ahem/README for more about the 'Ahem' font.
   static void LoadAhem(LocalFrame&);
 
+  static void LoadNoto(LocalFrame&);
+
   static std::string ToSimpleLayoutTree(const LayoutObject& layout_object);
 
  protected:
   void LoadAhem();
+  void LoadNoto();
   void EnablePlatform();
 
   // Used by subclasses to provide a different tick clock. At the moment is only
