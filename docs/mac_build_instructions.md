@@ -36,6 +36,7 @@ Are you a Google employee? See
     itself much, so if you're know what you're doing, you can likely get the
     build working with an older version of macOS as long as you get a new
     version of the macOS SDK on it.
+*   An APFS-formatted volume (this is the default format for macOS volumes).
 
 ## Install `depot_tools`
 
