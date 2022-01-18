@@ -18,6 +18,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.ProductPrice;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
@@ -135,6 +136,8 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
 
         setPriceInfoChip(originalPrice, currentPrice);
         setPriceTrackingButton(priceTrackingEnabled);
+        PowerBookmarkMetrics.reportBookmarkShoppingItemRowPriceTrackingState(
+                PriceTrackingState.PRICE_TRACKING_SHOWN);
     }
 
     /** Sets up the chip that displays product price information. */
@@ -188,6 +191,9 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             if (mSubscriptionChangeInProgress) return;
             mSubscriptionChangeInProgress = true;
 
+            PowerBookmarkMetrics.reportBookmarkShoppingItemRowPriceTrackingState(
+                    !mIsPriceTrackingEnabled ? PriceTrackingState.PRICE_TRACKING_ENABLED
+                                             : PriceTrackingState.PRICE_TRACKING_DISABLED);
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mSubscriptionsManager,
                     mBookmarkModel, mBookmarkId, !mIsPriceTrackingEnabled, mSnackbarManager,
                     getContext().getResources(), subscriptionCallback);

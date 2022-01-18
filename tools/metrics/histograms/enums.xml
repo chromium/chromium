@@ -70799,6 +70799,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="The user chose to reload the full page."/>
 </enum>
 
+<enum name="PriceTrackingState">
+  <int value="0" label="Price tracking shown"/>
+  <int value="1" label="Price tracking enabled"/>
+  <int value="2" label="Price tracking disabled"/>
+</enum>
+
 <enum name="PrinterProtocol">
   <int value="0" label="Unknown"/>
   <int value="1" label="Universal Serial Bus (usb)"/>

@@ -16,6 +16,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
@@ -135,6 +136,8 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
             if (fromExplicitTrackUi) {
                 mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED, true);
             }
+            PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(
+                    PriceTrackingState.PRICE_TRACKING_SHOWN);
         }
     }
 
@@ -159,6 +162,9 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
         setPriceTrackingIconForEnabledState(toggled);
         PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager, mBookmarkModel,
                 mBookmarkId, toggled, mSubscriptionsManagerCallback);
+        PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(toggled
+                        ? PriceTrackingState.PRICE_TRACKING_ENABLED
+                        : PriceTrackingState.PRICE_TRACKING_DISABLED);
     }
 
     void setPriceTrackingNotificationUiEnabled(boolean enabled) {

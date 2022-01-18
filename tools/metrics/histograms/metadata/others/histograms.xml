@@ -12012,6 +12012,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PowerBookmarks.BookmarkManager.PriceTrackingEnabled"
+    enum="PriceTrackingState" expires_after="2023-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Tracks the interactions with the price-tracking toggle present when viewing
+    previously saved products.
+  </summary>
+</histogram>
+
+<histogram name="PowerBookmarks.BookmarkSaveFlow.PriceTrackingEnabled"
+    enum="PriceTrackingState" expires_after="2023-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Tracks the interactions with the price-tracking toggle present when
+    initially saving products.
+  </summary>
+</histogram>
+
 <histogram name="PrefetchedSignedExchangeCache.BodySize" units="bytes"
     expires_after="2022-04-24">
   <owner>horo@chromium.org</owner>

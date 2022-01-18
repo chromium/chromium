@@ -183,6 +183,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUIState.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUndoController.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java",
   "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkShoppingItemRow.java",
   "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkTagChipList.java",
   "java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkUtils.java",
