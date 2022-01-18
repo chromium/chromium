@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/sequence_token.h"
 #include "base/strings/strcat.h"
@@ -234,11 +235,13 @@ void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
 
   // Record the burn-in iteration number for categories we are seeing for the
   // first time in this search.
+  base::flat_set<Category> updated_categories;
+  for (const auto& result : results_[provider->ResultType()])
+    updated_categories.insert(result->category());
   for (auto& category : categories_) {
-    if (category.category == ResultTypeToCategory(provider->ResultType()) &&
-        category.burnin_iteration == -1) {
+    const auto it = updated_categories.find(category.category);
+    if (it != updated_categories.end() && category.burnin_iteration == -1)
       category.burnin_iteration = burnin_iteration_counter_;
-    }
   }
 
   // Record-keeping for the burn-in iteration number of individual results.

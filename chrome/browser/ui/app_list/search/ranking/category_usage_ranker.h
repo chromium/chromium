@@ -16,8 +16,7 @@ class MrfuCache;
 
 // A ranker that groups results into categories.
 //
-// TODO(crbug.com/1199206): This is temporarily unused while being incorporated
-// into the FtrlCategoryRanker.
+// TODO(crbug.com/1199206): This class is unused and can be removed.
 class CategoryUsageRanker : public Ranker {
  public:
   explicit CategoryUsageRanker(Profile* profile);

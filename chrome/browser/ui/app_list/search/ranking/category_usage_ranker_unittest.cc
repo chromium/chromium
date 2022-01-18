@@ -70,41 +70,4 @@ TEST_F(CategoryUsageRankerTest, DefaultScoresForEmptyRanker) {
   EXPECT_EQ(categories.size(), static_cast<size_t>(Category::kMaxValue));
 }
 
-TEST_F(CategoryUsageRankerTest, TrainIncreasesScore) {
-  CategoryUsageRanker ranker(profile_.get());
-  Wait();
-
-  // Train on web results.
-  {
-    LaunchData launch;
-    launch.launched_from = ash::AppListLaunchedFrom::kLaunchedFromSearchBox;
-    launch.result_type = ResultType::kOmnibox;
-    for (int i = 0; i < 10; ++i)
-      ranker.Train(launch);
-  }
-
-  // Train on apps.
-  {
-    LaunchData launch;
-    launch.launched_from = ash::AppListLaunchedFrom::kLaunchedFromSearchBox;
-    launch.result_type = ResultType::kInstalledApp;
-    for (int i = 0; i < 10; ++i) {
-      ranker.Train(launch);
-    }
-  }
-
-  // The apps category should rank higher than the web category, but both should
-  // be ranked highly.
-  CategoriesList categories = CreateAllCategories();
-  ResultsMap results;
-  ranker.Start(u"", results, categories);
-
-  std::sort(categories.begin(), categories.end(),
-            [](const auto& a, const auto& b) { return a.score > b.score; });
-  ASSERT_GT(categories.size(), 2u);
-  EXPECT_EQ(categories[0].category, Category::kApps);
-  EXPECT_EQ(categories[1].category, Category::kWeb);
-  EXPECT_GT(categories[1].score, 0.1);
-}
-
 }  // namespace app_list

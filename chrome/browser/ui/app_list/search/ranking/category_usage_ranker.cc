@@ -105,27 +105,8 @@ void CategoryUsageRanker::Start(const std::u16string& query,
 
 void CategoryUsageRanker::UpdateCategoryRanks(const ResultsMap& results,
                                               CategoriesList& categories,
-                                              ProviderType provider) {
-  // TODO(crbug.com/1199206): This adds some debug information to the result
-  // details. Remove once we have explicit categories in the UI.
-  const auto it = results.find(provider);
-  DCHECK(it != results.end());
-  for (const auto& result : it->second) {
-    const auto category = ResultTypeToCategory(result->result_type());
-    const auto details = RemoveDebugPrefix(result->details());
-    result->SetDetails(base::StrCat({CategoryDebugString(category), details}));
-  }
-}
+                                              ProviderType provider) {}
 
-void CategoryUsageRanker::Train(const LaunchData& launch) {
-  if (launch.launched_from !=
-      ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
-    return;
-  }
-
-  // TODO(crbug.com/1199206): Update launch data to include the category
-  // directly, then delete ResultTypeToCategory.
-  ranker_->Use(CategoryToString(ResultTypeToCategory(launch.result_type)));
-}
+void CategoryUsageRanker::Train(const LaunchData& launch) {}
 
 }  // namespace app_list
