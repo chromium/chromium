@@ -1511,6 +1511,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.FTP.StartResult" enum="FTPStartResult" expires_after="M79">
+  <obsolete>
+    Removed from code 2020-08.
+  </obsolete>
   <owner>tervay@google.com</owner>
   <owner>asanka@chromium.org</owner>
   <summary>
@@ -1531,8 +1534,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.HttpAuthCount" enum="HttpAuthCount"
     expires_after="2022-06-19">
-  <owner>asanka@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Per-authentication-scheme counts of authentication attempts and rejections.
   </summary>
@@ -1540,8 +1543,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.HttpAuthNtlmV2Usage" enum="HttpAuthNtlmV2Usage"
     expires_after="M79">
-  <owner>asanka@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Whether NTLMv2 was enabled for an authentication handshake. For a given data
     set the number of samples here is expected to be equivalent to the
@@ -1560,8 +1563,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.HttpAuthTarget" enum="HttpAuthTarget"
     expires_after="2022-04-17">
-  <owner>asanka@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Per-authentication-scheme counts of authentication targets, such as secure
     servers or proxies.
