@@ -65,8 +65,8 @@ static GURL GetDomain2ForTesting() {
   return GURL("http://bar.com/");
 }
 
-gpu::GpuFeatureInfo ALLOW_UNUSED_TYPE
-GetGpuFeatureInfoWithOneDisabled(gpu::GpuFeatureType disabled_feature) {
+[[maybe_unused]] gpu::GpuFeatureInfo GetGpuFeatureInfoWithOneDisabled(
+    gpu::GpuFeatureType disabled_feature) {
   gpu::GpuFeatureInfo gpu_feature_info;
   for (auto& status : gpu_feature_info.status_values)
     status = gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled;

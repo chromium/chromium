@@ -128,7 +128,8 @@ class VizProcessTransportFactory : public ui::ContextFactory,
 
   // Controls the compositing mode based on what mode the display compositors
   // are using.
-  const raw_ptr<viz::CompositingModeReporterImpl> compositing_mode_reporter_;
+  [[maybe_unused]] const raw_ptr<viz::CompositingModeReporterImpl>
+      compositing_mode_reporter_;
 
   // ContextProvider used on worker threads for rasterization.
   scoped_refptr<viz::RasterContextProvider> worker_context_provider_;

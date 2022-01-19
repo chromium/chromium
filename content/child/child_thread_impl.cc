@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/profiler.h"
@@ -756,8 +755,7 @@ ChildThreadImpl::~ChildThreadImpl() {
     auto leaked_remote =
         std::make_unique<mojo::SharedRemote<mojom::ChildProcessHost>>(
             std::move(child_process_host_));
-    auto* leaked_remote_ptr = leaked_remote.release();
-    ALLOW_UNUSED_LOCAL(leaked_remote_ptr);
+    [[maybe_unused]] auto* leaked_remote_ptr = leaked_remote.release();
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_remote_ptr);
   }
 

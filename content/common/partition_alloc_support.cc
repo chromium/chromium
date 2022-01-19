@@ -216,10 +216,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   CHECK(base::FeatureList::GetInstance());
 
   bool enable_brp = false;
-  bool split_main_partition = false;
-  ALLOW_UNUSED_LOCAL(split_main_partition);
-  bool use_dedicated_aligned_partition = false;
-  ALLOW_UNUSED_LOCAL(use_dedicated_aligned_partition);
+  [[maybe_unused]] bool split_main_partition = false;
+  [[maybe_unused]] bool use_dedicated_aligned_partition = false;
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   bool process_affected_by_brp_flag = false;

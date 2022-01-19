@@ -20,7 +20,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/debug/debugger.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
@@ -721,8 +720,8 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 
 #if !BUILDFLAG(IS_WIN)
 
-  base::GlobalDescriptors* g_fds = base::GlobalDescriptors::GetInstance();
-  ALLOW_UNUSED_LOCAL(g_fds);
+  [[maybe_unused]] base::GlobalDescriptors* g_fds =
+      base::GlobalDescriptors::GetInstance();
 
 // On Android, the ipc_fd is passed through the Java service.
 #if !BUILDFLAG(IS_ANDROID)

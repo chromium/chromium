@@ -103,9 +103,7 @@ bool IsWorkerContextLost(viz::RasterContextProvider* context_provider) {
 class HostDisplayClient : public viz::HostDisplayClient {
  public:
   explicit HostDisplayClient(ui::Compositor* compositor)
-      : viz::HostDisplayClient(compositor->widget()), compositor_(compositor) {
-    ANALYZER_ALLOW_UNUSED(compositor_);
-  }
+      : viz::HostDisplayClient(compositor->widget()), compositor_(compositor) {}
   ~HostDisplayClient() override = default;
   HostDisplayClient(const HostDisplayClient&) = delete;
   HostDisplayClient& operator=(const HostDisplayClient&) = delete;
@@ -120,7 +118,7 @@ class HostDisplayClient : public viz::HostDisplayClient {
 #endif
 
  private:
-  const raw_ptr<ui::Compositor> compositor_;
+  [[maybe_unused]] const raw_ptr<ui::Compositor> compositor_;
 };
 
 }  // namespace
@@ -271,7 +269,6 @@ ui::ContextFactory* VizProcessTransportFactory::GetContextFactory() {
 void VizProcessTransportFactory::DisableGpuCompositing(
     ui::Compositor* guilty_compositor) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ALLOW_UNUSED_LOCAL(compositing_mode_reporter_);
   // A fatal error has occurred and we can't fall back to software compositing
   // on CrOS. These can be unrecoverable hardware errors, or bugs that should
   // not happen. Crash the browser process to reset everything.

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -393,11 +392,11 @@ void PluginPrivateDataDeletionHelper::DecrementTaskCount(
     storage::FileSystemQuotaUtil* quota_util = backend->GetQuotaUtil();
     // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
     // file system will be partitioned and use the appropriate StorageKey.
-    base::File::Error result = quota_util->DeleteStorageKeyDataOnFileTaskRunner(
-        filesystem_context_.get(), nullptr,
-        blink::StorageKey(url::Origin::Create(origin)),
-        storage::kFileSystemTypePluginPrivate);
-    ALLOW_UNUSED_LOCAL(result);
+    [[maybe_unused]] base::File::Error result =
+        quota_util->DeleteStorageKeyDataOnFileTaskRunner(
+            filesystem_context_.get(), nullptr,
+            blink::StorageKey(url::Origin::Create(origin)),
+            storage::kFileSystemTypePluginPrivate);
     DLOG_IF(ERROR, result != base::File::FILE_OK)
         << "Unable to delete the plugin data for " << origin;
   }

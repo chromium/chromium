@@ -409,7 +409,7 @@ bool SwiftShaderAllowed() {
 }
 
 // Determines if Vulkan is available for the GPU process.
-bool ALLOW_UNUSED_TYPE VulkanAllowed() {
+[[maybe_unused]] bool VulkanAllowed() {
 #if BUILDFLAG(ENABLE_VULKAN)
   // Vulkan will be enabled if certain flags are present.
   // --enable-features=Vulkan will cause Vulkan to be used for compositing and
@@ -426,7 +426,7 @@ bool ALLOW_UNUSED_TYPE VulkanAllowed() {
 }
 
 // Determines if Metal is available for the GPU process.
-bool ALLOW_UNUSED_TYPE MetalAllowed() {
+[[maybe_unused]] bool MetalAllowed() {
 #if BUILDFLAG(IS_MAC)
   return base::FeatureList::IsEnabled(features::kMetal);
 #else

@@ -143,8 +143,8 @@ class KeySystemSupportImplTest : public testing::Test {
     return is_supported;
   }
 
-  gpu::GpuFeatureInfo ALLOW_UNUSED_TYPE
-  GetGpuFeatureInfoWithOneDisabled(gpu::GpuFeatureType disabled_feature) {
+  [[maybe_unused]] gpu::GpuFeatureInfo GetGpuFeatureInfoWithOneDisabled(
+      gpu::GpuFeatureType disabled_feature) {
     gpu::GpuFeatureInfo gpu_feature_info;
     for (auto& status : gpu_feature_info.status_values)
       status = gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled;
