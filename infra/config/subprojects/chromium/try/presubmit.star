@@ -41,10 +41,11 @@ def presubmit_builder(*, name, tryjob, **kwargs):
     against generated files being out of date, so they MUST run quickly so that
     the submit after a CQ dry run doesn't take long.
     """
-    tryjob_args = {a: getattr(tryjob, a) for a in dir(tryjob)}
-    tryjob_args["disable_reuse"] = True
-    tryjob_args["add_default_excludes"] = False
-    tryjob = try_.job(**tryjob_args)
+    if tryjob:
+        tryjob_args = {a: getattr(tryjob, a) for a in dir(tryjob)}
+        tryjob_args["disable_reuse"] = True
+        tryjob_args["add_default_excludes"] = False
+        tryjob = try_.job(**tryjob_args)
     return try_.builder(name = name, tryjob = tryjob, **kwargs)
 
 # Errors that this builder would catch would go unnoticed until a project is set
@@ -102,6 +103,22 @@ presubmit_builder(
     tryjob = try_.job(
         location_regexp = [r".+/[+]/tools/clang/scripts/update.py"],
     ),
+)
+
+presubmit_builder(
+    name = "builder-config-verifier",
+    description_html = "checks that builder configs in properties files match the recipe-side configs",
+    executable = "recipe:chromium/builder_config_verifier",
+    properties = {
+        "properties_file_globs": [
+            "infra/config/generated/builders/*/*/properties.textpb",
+        ],
+    },
+    # TODO(crbug.com/1288604) Add to the CQ once the recipe is ready
+    tryjob = None,
+    # tryjob = try_.job(
+    #     location_regexp = [r".+/[+]infra/config/generated/builders"],
+    # ),
 )
 
 presubmit_builder(
