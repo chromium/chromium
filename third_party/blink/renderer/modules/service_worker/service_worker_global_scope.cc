@@ -775,8 +775,7 @@ int ServiceWorkerGlobalScope::GetOutstandingThrottledLimit() const {
 }
 
 bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
-  // TODO(crbug.com/1131404): Return Agent::IsCrossOriginIsolated().
-  return false;
+  return Agent::IsCrossOriginIsolated();
 }
 
 bool ServiceWorkerGlobalScope::DirectSocketCapability() const {

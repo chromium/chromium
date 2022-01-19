@@ -3272,12 +3272,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
   EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_url),
             running_info.script_url);
 
-  // Non-PlzServiceWorker:
-  // Process allocation is broken during a fresh installation. We currently do
-  // not have the headers, and end up with a non isolated service worker script.
-  //
-  // TODO(crbug.com/996511): Remove non-PlzSerivceWorker case once the flag
-  // sticks.
   bool is_in_process =
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
