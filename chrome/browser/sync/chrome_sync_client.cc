@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
@@ -166,20 +165,6 @@ const base::FilePath::CharType kLoopbackServerBackendFilename[] =
     FILE_PATH_LITERAL("profile.pb");
 #endif  // BUILDFLAG(IS_WIN)
 
-syncer::ModelTypeSet GetDisabledTypesFromCommandLine() {
-  std::string disabled_types_str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kDisableSyncTypes);
-
-  syncer::ModelTypeSet disabled_types =
-      syncer::ModelTypeSetFromDebugString(disabled_types_str);
-  if (disabled_types.Has(syncer::DEVICE_INFO)) {
-    DLOG(WARNING) << "DEVICE_INFO cannot be disabled via a command-line switch";
-    disabled_types.Remove(syncer::DEVICE_INFO);
-  }
-  return disabled_types;
-}
-
 base::WeakPtr<syncer::SyncableService> GetWeakPtrOrNull(
     syncer::SyncableService* service) {
   return service ? service->AsWeakPtr() : nullptr;
@@ -328,10 +313,8 @@ sync_sessions::SessionSyncService* ChromeSyncClient::GetSessionSyncService() {
 
 syncer::DataTypeController::TypeVector
 ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
-  syncer::ModelTypeSet disabled_types = GetDisabledTypesFromCommandLine();
-
   syncer::DataTypeController::TypeVector controllers =
-      component_factory_->CreateCommonDataTypeControllers(disabled_types,
+      component_factory_->CreateCommonDataTypeControllers(/*disabled_types=*/{},
                                                           sync_service);
 
   const base::RepeatingClosure dump_stack = GetDumpStackClosure();
@@ -339,38 +322,34 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   syncer::RepeatingModelTypeStoreFactory model_type_store_factory =
       GetModelTypeStoreService()->GetStoreFactory();
 
-  if (!disabled_types.Has(syncer::SECURITY_EVENTS)) {
-    syncer::ModelTypeControllerDelegate* delegate =
-        SecurityEventRecorderFactory::GetForProfile(profile_)
-            ->GetControllerDelegate()
-            .get();
-    // Forward both full-sync and transport-only modes to the same delegate,
-    // since behavior for SECURITY_EVENTS does not differ.
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-        syncer::SECURITY_EVENTS,
-        /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            delegate),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            delegate)));
-  }
+  syncer::ModelTypeControllerDelegate* security_events_delegate =
+      SecurityEventRecorderFactory::GetForProfile(profile_)
+          ->GetControllerDelegate()
+          .get();
+  // Forward both full-sync and transport-only modes to the same delegate,
+  // since behavior for SECURITY_EVENTS does not differ.
+  controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+      syncer::SECURITY_EVENTS,
+      /*delegate_for_full_sync_mode=*/
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          security_events_delegate),
+      /*delegate_for_transport_mode=*/
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          security_events_delegate)));
 
-  if (!disabled_types.Has(syncer::SHARING_MESSAGE)) {
-    // Forward both full-sync and transport-only modes to the same delegate,
-    // since behavior for SHARING_MESSAGE does not differ. They both do not
-    // store data on persistent storage.
-    syncer::ModelTypeControllerDelegate* delegate =
-        GetControllerDelegateForModelType(syncer::SHARING_MESSAGE).get();
-    controllers.push_back(std::make_unique<SharingMessageModelTypeController>(
-        sync_service,
-        /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            delegate),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            delegate)));
-  }
+  // Forward both full-sync and transport-only modes to the same delegate,
+  // since behavior for SHARING_MESSAGE does not differ. They both do not
+  // store data on persistent storage.
+  syncer::ModelTypeControllerDelegate* sharing_message_delegate =
+      GetControllerDelegateForModelType(syncer::SHARING_MESSAGE).get();
+  controllers.push_back(std::make_unique<SharingMessageModelTypeController>(
+      sync_service,
+      /*delegate_for_full_sync_mode=*/
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          sharing_message_delegate),
+      /*delegate_for_transport_mode=*/
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          sharing_message_delegate)));
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   controllers.push_back(std::make_unique<SupervisedUserSyncModelTypeController>(
@@ -380,61 +359,40 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // App sync is enabled by default.  Register unless explicitly
-  // disabled.
-  if (!disabled_types.Has(syncer::APPS)) {
-    controllers.push_back(CreateAppsModelTypeController(sync_service));
-  }
+  // App sync is enabled by default.
+  controllers.push_back(CreateAppsModelTypeController(sync_service));
 
-  // Extension sync is enabled by default.  Register unless explicitly
-  // disabled.
-  if (!disabled_types.Has(syncer::EXTENSIONS)) {
-    controllers.push_back(std::make_unique<ExtensionModelTypeController>(
-        syncer::EXTENSIONS, model_type_store_factory,
-        GetSyncableServiceForType(syncer::EXTENSIONS), dump_stack, profile_));
-  }
+  // Extension sync is enabled by default.
+  controllers.push_back(std::make_unique<ExtensionModelTypeController>(
+      syncer::EXTENSIONS, model_type_store_factory,
+      GetSyncableServiceForType(syncer::EXTENSIONS), dump_stack, profile_));
 
-  // Extension setting sync is enabled by default.  Register unless explicitly
-  // disabled.
-  if (!disabled_types.Has(syncer::EXTENSION_SETTINGS)) {
-    controllers.push_back(std::make_unique<ExtensionSettingModelTypeController>(
-        syncer::EXTENSION_SETTINGS, model_type_store_factory,
-        extensions::settings_sync_util::GetSyncableServiceProvider(
-            profile_, syncer::EXTENSION_SETTINGS),
-        dump_stack, profile_));
-  }
+  // Extension setting sync is enabled by default.
+  controllers.push_back(std::make_unique<ExtensionSettingModelTypeController>(
+      syncer::EXTENSION_SETTINGS, model_type_store_factory,
+      extensions::settings_sync_util::GetSyncableServiceProvider(
+          profile_, syncer::EXTENSION_SETTINGS),
+      dump_stack, profile_));
 
-  // App setting sync is enabled by default.  Register unless explicitly
-  // disabled.
-  if (!disabled_types.Has(syncer::APP_SETTINGS)) {
-    controllers.push_back(CreateAppSettingsModelTypeController(sync_service));
-  }
+  // App setting sync is enabled by default.
+  controllers.push_back(CreateAppSettingsModelTypeController(sync_service));
 
   if (web_app::WebAppProvider::GetForWebApps(profile_)) {
-    bool enable_web_apps_sync = !disabled_types.Has(syncer::WEB_APPS);
-
-    if (enable_web_apps_sync) {
-      controllers.push_back(CreateWebAppsModelTypeController(sync_service));
-    }
+    controllers.push_back(CreateWebAppsModelTypeController(sync_service));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Theme sync is enabled by default.  Register unless explicitly disabled.
-  if (!disabled_types.Has(syncer::THEMES)) {
-    controllers.push_back(std::make_unique<ExtensionModelTypeController>(
-        syncer::THEMES, model_type_store_factory,
-        GetSyncableServiceForType(syncer::THEMES), dump_stack, profile_));
-  }
+  // Theme sync is enabled by default.
+  controllers.push_back(std::make_unique<ExtensionModelTypeController>(
+      syncer::THEMES, model_type_store_factory,
+      GetSyncableServiceForType(syncer::THEMES), dump_stack, profile_));
 
-  // Search Engine sync is enabled by default.  Register unless explicitly
-  // disabled. The service can be null in tests.
-  if (!disabled_types.Has(syncer::SEARCH_ENGINES)) {
-    controllers.push_back(
-        std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
-            syncer::SEARCH_ENGINES, model_type_store_factory,
-            GetSyncableServiceForType(syncer::SEARCH_ENGINES), dump_stack));
-  }
+  // Search Engine sync is enabled by default.
+  controllers.push_back(
+      std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
+          syncer::SEARCH_ENGINES, model_type_store_factory,
+          GetSyncableServiceForType(syncer::SEARCH_ENGINES), dump_stack));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -464,8 +422,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 // custom dictionary on platforms that typically don't provide one.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // Dictionary sync is enabled by default.
-  if (!disabled_types.Has(syncer::DICTIONARY) &&
-      GetPrefService()->GetBoolean(spellcheck::prefs::kSpellCheckEnable)) {
+  if (GetPrefService()->GetBoolean(spellcheck::prefs::kSpellCheckEnable)) {
     controllers.push_back(
         std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
             syncer::DICTIONARY, model_type_store_factory,
@@ -482,76 +439,72 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         sync_service, profile_));
   }
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    if (!disabled_types.Has(syncer::OS_PREFERENCES)) {
-      controllers.push_back(
-          std::make_unique<OsSyncableServiceModelTypeController>(
-              syncer::OS_PREFERENCES, model_type_store_factory,
-              GetSyncableServiceForType(syncer::OS_PREFERENCES), dump_stack,
-              profile_->GetPrefs(), sync_service));
-    }
-    if (!disabled_types.Has(syncer::OS_PRIORITY_PREFERENCES)) {
-      controllers.push_back(
-          std::make_unique<OsSyncableServiceModelTypeController>(
-              syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
-              GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
-              dump_stack, profile_->GetPrefs(), sync_service));
-    }
-    if (!disabled_types.Has(syncer::PRINTERS)) {
-      // Use the same delegate in full-sync and transport-only modes.
-      syncer::ModelTypeControllerDelegate* delegate =
-          GetControllerDelegateForModelType(syncer::PRINTERS).get();
-      controllers.push_back(std::make_unique<OsSyncModelTypeController>(
-          syncer::PRINTERS,
-          /*delegate_for_full_sync_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-          /*delegate_for_transport_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-          profile_->GetPrefs(), sync_service));
-    }
-    if (!disabled_types.Has(syncer::WIFI_CONFIGURATIONS) &&
-        base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
+    controllers.push_back(
+        std::make_unique<OsSyncableServiceModelTypeController>(
+            syncer::OS_PREFERENCES, model_type_store_factory,
+            GetSyncableServiceForType(syncer::OS_PREFERENCES), dump_stack,
+            profile_->GetPrefs(), sync_service));
+    controllers.push_back(
+        std::make_unique<OsSyncableServiceModelTypeController>(
+            syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
+            GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
+            dump_stack, profile_->GetPrefs(), sync_service));
+    // Use the same delegate in full-sync and transport-only modes.
+    syncer::ModelTypeControllerDelegate* printers_delegate =
+        GetControllerDelegateForModelType(syncer::PRINTERS).get();
+    controllers.push_back(std::make_unique<OsSyncModelTypeController>(
+        syncer::PRINTERS,
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<ForwardingModelTypeControllerDelegate>(
+            printers_delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<ForwardingModelTypeControllerDelegate>(
+            printers_delegate),
+        profile_->GetPrefs(), sync_service));
+    if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
         WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
       // Use the same delegate in full-sync and transport-only modes.
-      syncer::ModelTypeControllerDelegate* delegate =
+      syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
           GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
       controllers.push_back(std::make_unique<OsSyncModelTypeController>(
           syncer::WIFI_CONFIGURATIONS,
           /*delegate_for_full_sync_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
+          std::make_unique<ForwardingModelTypeControllerDelegate>(
+              wifi_configurations_delegate),
           /*delegate_for_transport_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
+          std::make_unique<ForwardingModelTypeControllerDelegate>(
+              wifi_configurations_delegate),
           profile_->GetPrefs(), sync_service));
     }
-    if (!disabled_types.Has(syncer::WORKSPACE_DESK)) {
       // Use the same delegate in full-sync and transport-only modes.
-      syncer::ModelTypeControllerDelegate* delegate =
+      syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
           GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
       controllers.push_back(std::make_unique<OsSyncModelTypeController>(
           syncer::WORKSPACE_DESK,
           /*delegate_for_full_sync_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
+          std::make_unique<ForwardingModelTypeControllerDelegate>(
+              workspace_desk_delegate),
           /*delegate_for_transport_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
+          std::make_unique<ForwardingModelTypeControllerDelegate>(
+              workspace_desk_delegate),
           profile_->GetPrefs(), sync_service));
-    }
   } else {
     // SyncSettingsCategorization is disabled.
-    if (!disabled_types.Has(syncer::WIFI_CONFIGURATIONS) &&
-        base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
+    if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
         WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
-      syncer::ModelTypeControllerDelegate* delegate =
+      syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
           GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
       controllers.push_back(std::make_unique<syncer::ModelTypeController>(
           syncer::WIFI_CONFIGURATIONS,
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate)));
+          std::make_unique<ForwardingModelTypeControllerDelegate>(
+              wifi_configurations_delegate)));
     }
-    if (!disabled_types.Has(syncer::WORKSPACE_DESK)) {
-      syncer::ModelTypeControllerDelegate* delegate =
-          GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
-      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-          syncer::WORKSPACE_DESK,
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate)));
-    }
+    syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
+        GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::WORKSPACE_DESK,
+        std::make_unique<ForwardingModelTypeControllerDelegate>(
+            workspace_desk_delegate)));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

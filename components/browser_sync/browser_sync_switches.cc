@@ -8,13 +8,6 @@
 
 namespace switches {
 
-// Disables syncing one or more sync data types that are on by default.
-// See sync/base/model_type.h for possible types. Types
-// should be comma separated, and follow the naming convention for string
-// representation of model types, e.g.:
-// --disable-synctypes='Typed URLs, Bookmarks, Autofill Profiles'
-const char kDisableSyncTypes[] = "disable-sync-types";
-
 // Enabled the local sync backend implemented by the LoopbackServer.
 const char kEnableLocalSyncBackend[] = "enable-local-sync-backend";
 

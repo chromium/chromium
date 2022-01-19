@@ -81,101 +81,77 @@ class SyncServiceFactoryTest : public testing::Test {
 #endif
 
   // Returns the collection of default datatypes.
-  std::vector<syncer::ModelType> DefaultDatatypes() {
+  syncer::ModelTypeSet DefaultDatatypes() {
     static_assert(38 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
-    std::vector<syncer::ModelType> datatypes;
+    syncer::ModelTypeSet datatypes;
 
     // These preprocessor conditions and their order should be in sync with
     // preprocessor conditions in ChromeSyncClient::CreateDataTypeControllers:
 
     // ChromeSyncClient types.
-    datatypes.push_back(syncer::READING_LIST);
-    datatypes.push_back(syncer::SECURITY_EVENTS);
+    datatypes.Put(syncer::READING_LIST);
+    datatypes.Put(syncer::SECURITY_EVENTS);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    datatypes.push_back(syncer::SUPERVISED_USER_SETTINGS);
+    datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    datatypes.push_back(syncer::APPS);
-    datatypes.push_back(syncer::EXTENSIONS);
-    datatypes.push_back(syncer::EXTENSION_SETTINGS);
-    datatypes.push_back(syncer::APP_SETTINGS);
-    datatypes.push_back(syncer::WEB_APPS);
+    datatypes.Put(syncer::APPS);
+    datatypes.Put(syncer::EXTENSIONS);
+    datatypes.Put(syncer::EXTENSION_SETTINGS);
+    datatypes.Put(syncer::APP_SETTINGS);
+    datatypes.Put(syncer::WEB_APPS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
-    datatypes.push_back(syncer::THEMES);
-    datatypes.push_back(syncer::SEARCH_ENGINES);
+    datatypes.Put(syncer::THEMES);
+    datatypes.Put(syncer::SEARCH_ENGINES);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-    datatypes.push_back(syncer::DICTIONARY);
+    datatypes.Put(syncer::DICTIONARY);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    datatypes.push_back(syncer::APP_LIST);
+    datatypes.Put(syncer::APP_LIST);
     if (arc::IsArcAllowedForProfile(profile())) {
-      datatypes.push_back(syncer::ARC_PACKAGE);
+      datatypes.Put(syncer::ARC_PACKAGE);
     }
     if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-      datatypes.push_back(syncer::OS_PREFERENCES);
-      datatypes.push_back(syncer::OS_PRIORITY_PREFERENCES);
+      datatypes.Put(syncer::OS_PREFERENCES);
+      datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
     }
-    datatypes.push_back(syncer::PRINTERS);
+    datatypes.Put(syncer::PRINTERS);
     if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations)) {
-      datatypes.push_back(syncer::WIFI_CONFIGURATIONS);
+      datatypes.Put(syncer::WIFI_CONFIGURATIONS);
     }
-    datatypes.push_back(syncer::WORKSPACE_DESK);
+    datatypes.Put(syncer::WORKSPACE_DESK);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Common types. This excludes PASSWORDS because the password store factory
     // is null for testing and hence no controller gets instantiated.
-    datatypes.push_back(syncer::AUTOFILL);
-    datatypes.push_back(syncer::AUTOFILL_PROFILE);
-    datatypes.push_back(syncer::AUTOFILL_WALLET_DATA);
-    datatypes.push_back(syncer::AUTOFILL_WALLET_METADATA);
-    datatypes.push_back(syncer::AUTOFILL_WALLET_OFFER);
-    datatypes.push_back(syncer::BOOKMARKS);
-    datatypes.push_back(syncer::DEVICE_INFO);
-    datatypes.push_back(syncer::HISTORY_DELETE_DIRECTIVES);
-    datatypes.push_back(syncer::PREFERENCES);
-    datatypes.push_back(syncer::PRIORITY_PREFERENCES);
-    datatypes.push_back(syncer::SESSIONS);
-    datatypes.push_back(syncer::PROXY_TABS);
-    datatypes.push_back(syncer::TYPED_URLS);
-    datatypes.push_back(syncer::USER_EVENTS);
-    datatypes.push_back(syncer::USER_CONSENTS);
-    datatypes.push_back(syncer::SEND_TAB_TO_SELF);
-    datatypes.push_back(syncer::SHARING_MESSAGE);
+    datatypes.Put(syncer::AUTOFILL);
+    datatypes.Put(syncer::AUTOFILL_PROFILE);
+    datatypes.Put(syncer::AUTOFILL_WALLET_DATA);
+    datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
+    datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
+    datatypes.Put(syncer::BOOKMARKS);
+    datatypes.Put(syncer::DEVICE_INFO);
+    datatypes.Put(syncer::HISTORY_DELETE_DIRECTIVES);
+    datatypes.Put(syncer::PREFERENCES);
+    datatypes.Put(syncer::PRIORITY_PREFERENCES);
+    datatypes.Put(syncer::SESSIONS);
+    datatypes.Put(syncer::PROXY_TABS);
+    datatypes.Put(syncer::TYPED_URLS);
+    datatypes.Put(syncer::USER_EVENTS);
+    datatypes.Put(syncer::USER_CONSENTS);
+    datatypes.Put(syncer::SEND_TAB_TO_SELF);
+    datatypes.Put(syncer::SHARING_MESSAGE);
     return datatypes;
-  }
-
-  // Returns the number of default datatypes.
-  size_t DefaultDatatypesCount() { return DefaultDatatypes().size(); }
-
-  // Asserts that all the default datatypes are in |types|, except
-  // for |exception_types|, which are asserted to not be in |types|.
-  void CheckDefaultDatatypesInSetExcept(syncer::ModelTypeSet types,
-                                        syncer::ModelTypeSet exception_types) {
-    std::vector<syncer::ModelType> defaults = DefaultDatatypes();
-    for (syncer::ModelType type : defaults) {
-      if (exception_types.Has(type)) {
-        EXPECT_FALSE(types.Has(type))
-            << type << " found in dataypes map, shouldn't be there.";
-      } else {
-        EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
-      }
-    }
-  }
-
-  void SetDisabledTypes(syncer::ModelTypeSet disabled_types) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kDisableSyncTypes,
-        syncer::ModelTypeSetToDebugString(disabled_types));
   }
 
   Profile* profile() { return profile_.get(); }
@@ -205,40 +181,11 @@ TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForProfile(profile());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
-  EXPECT_EQ(DefaultDatatypesCount(), types.Size());
-  CheckDefaultDatatypesInSetExcept(types, syncer::ModelTypeSet());
-
-  sync_service->Shutdown();
-  RunUntilIdle();
-}
-
-// Verify that a SyncServiceImpl with a disabled datatype can be created and
-// properly initialized.
-TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDisableOne) {
-  syncer::ModelTypeSet disabled_types(syncer::AUTOFILL);
-  SetDisabledTypes(disabled_types);
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile());
-  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
-  EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
-  CheckDefaultDatatypesInSetExcept(types, disabled_types);
-
-  sync_service->Shutdown();
-  RunUntilIdle();
-}
-
-// Verify that a SyncServiceImpl with multiple disabled datatypes can be created
-// and properly initialized.
-TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDisableMultiple) {
-  syncer::ModelTypeSet disabled_types(syncer::AUTOFILL_PROFILE,
-                                      syncer::BOOKMARKS);
-  SetDisabledTypes(disabled_types);
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile());
-  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
-  EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
-  CheckDefaultDatatypesInSetExcept(types, disabled_types);
-
+  const syncer::ModelTypeSet default_types = DefaultDatatypes();
+  EXPECT_EQ(default_types.Size(), types.Size());
+  for (syncer::ModelType type : default_types) {
+    EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
+  }
   sync_service->Shutdown();
   RunUntilIdle();
 }

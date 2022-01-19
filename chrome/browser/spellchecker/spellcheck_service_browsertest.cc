@@ -35,7 +35,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/browser_sync/browser_sync_switches.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -44,6 +43,7 @@
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -107,7 +107,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
     // GetEnableSpellcheckState() after InitSpellcheck(), which will wait
     // forever if the service already existed). So disable sync of the custom
     // dictionary for these tests.
-    command_line->AppendSwitchASCII(switches::kDisableSyncTypes, "Dictionary");
+    command_line->AppendSwitch(switches::kDisableSync);
     SpellcheckService::OverrideBinderForTesting(base::BindRepeating(
         &SpellcheckServiceBrowserTest::Bind, base::Unretained(this)));
   }

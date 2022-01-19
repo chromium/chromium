@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
@@ -65,24 +64,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-syncer::ModelTypeSet GetDisabledTypesFromCommandLine() {
-  std::string disabled_types_str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kDisableSyncTypes);
-
-  syncer::ModelTypeSet disabled_types =
-      syncer::ModelTypeSetFromDebugString(disabled_types_str);
-  if (disabled_types.Has(syncer::DEVICE_INFO)) {
-    DLOG(WARNING) << "DEVICE_INFO cannot be disabled via a command-line switch";
-    disabled_types.Remove(syncer::DEVICE_INFO);
-  }
-  return disabled_types;
-}
-
-}  // namespace
 
 IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {
@@ -179,7 +160,7 @@ IOSChromeSyncClient::CreateDataTypeControllers(
     syncer::SyncService* sync_service) {
   // The iOS port does not have any platform-specific datatypes.
   return component_factory_->CreateCommonDataTypeControllers(
-      GetDisabledTypesFromCommandLine(), sync_service);
+      /*disabled_types=*/{}, sync_service);
 }
 
 BookmarkUndoService* IOSChromeSyncClient::GetBookmarkUndoService() {

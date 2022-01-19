@@ -39,6 +39,7 @@ namespace browser_sync {
 
 class BrowserSyncClient;
 
+// TODO(crbug.com/1201272): Rename to SyncApiComponentFactoryImpl.
 class ProfileSyncComponentsFactoryImpl
     : public syncer::SyncApiComponentFactory {
  public:
@@ -64,7 +65,7 @@ class ProfileSyncComponentsFactoryImpl
 
   // Creates and returns enabled datatypes and their controllers.
   // |disabled_types| allows callers to prevent certain types from being
-  // created (e.g. to honor command-line flags).
+  // created.
   syncer::DataTypeController::TypeVector CreateCommonDataTypeControllers(
       syncer::ModelTypeSet disabled_types,
       syncer::SyncService* sync_service);
