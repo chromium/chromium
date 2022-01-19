@@ -129,7 +129,8 @@ class InterfaceBundle final : private mojom::RemoteInterfaces {
   bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (local_interfaces_.HasInterface(*receiver.interface_name())) {
-      local_interfaces_.Bind(*receiver.interface_name(), receiver.PassPipe());
+      std::string interface_name = *receiver.interface_name();
+      local_interfaces_.Bind(interface_name, receiver.PassPipe());
       return true;
     }
     return false;
