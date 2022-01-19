@@ -61,7 +61,8 @@ class MockHttpAuthHandlerFactory : public HttpAuthHandlerFactory {
 
 TEST(HttpAuthHandlerFactoryTest, RegistryFactory) {
   SSLInfo null_ssl_info;
-  HttpAuthHandlerRegistryFactory registry_factory;
+  HttpAuthHandlerRegistryFactory registry_factory(
+      /*http_auth_preferences=*/nullptr);
   url::SchemeHostPort scheme_host_port(GURL("https://www.google.com"));
   const int kBasicReturnCode = -1;
   MockHttpAuthHandlerFactory* mock_factory_basic =

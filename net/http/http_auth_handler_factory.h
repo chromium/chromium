@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_mechanism.h"
+#include "net/http/http_auth_scheme.h"
 #include "net/http/url_security_manager.h"
 #include "net/net_buildflags.h"
 
@@ -59,7 +61,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
   }
 
   // Retrieves the associated URL security manager.
-  const HttpAuthPreferences* http_auth_preferences() {
+  const HttpAuthPreferences* http_auth_preferences() const {
     return http_auth_preferences_;
   }
 
@@ -168,7 +170,8 @@ class NET_EXPORT HttpAuthHandlerFactory {
 class NET_EXPORT HttpAuthHandlerRegistryFactory
     : public HttpAuthHandlerFactory {
  public:
-  HttpAuthHandlerRegistryFactory();
+  explicit HttpAuthHandlerRegistryFactory(
+      const HttpAuthPreferences* http_auth_preferences);
 
   HttpAuthHandlerRegistryFactory(const HttpAuthHandlerRegistryFactory&) =
       delete;
@@ -205,14 +208,10 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
   // That object tracks preference, and hence policy, updates relevant to HTTP
   // authentication, and provides the current values of the preferences.
   //
-  // |auth_schemes| is a list of authentication schemes to support. Unknown
-  // schemes are ignored.
-  //
   // |negotiate_auth_system_factory| is used to override the default auth system
   // used by the Negotiate authentication handler.
   static std::unique_ptr<HttpAuthHandlerRegistryFactory> Create(
-      const HttpAuthPreferences* prefs,
-      const std::vector<std::string>& auth_schemes
+      const HttpAuthPreferences* prefs
 #if BUILDFLAG(USE_EXTERNAL_GSSAPI)
       ,
       const std::string& gssapi_library_name = ""
@@ -242,11 +241,26 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
                         const NetLogWithSource& net_log,
                         HostResolver* host_resolver,
                         std::unique_ptr<HttpAuthHandler>* handler) override;
+  const std::set<std::string>& GetAllowedAuthSchemes() const;
 
  private:
+  // Retrieve the factory for the specified |scheme|. If no factory exists
+  // for the |scheme|, nullptr is returned. The returned factory must not be
+  // deleted by the caller, and it is guaranteed to be valid until either
+  // a new factory is registered for the same scheme, or until this
+  // registry factory is destroyed.
+  HttpAuthHandlerFactory* GetRegisteredSchemeFactory(
+      const std::string& scheme) const;
+
   using FactoryMap =
       std::map<std::string, std::unique_ptr<HttpAuthHandlerFactory>>;
-
+  std::set<std::string> default_auth_schemes_ {
+    kBasicAuthScheme, kDigestAuthScheme,
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
+        kNegotiateAuthScheme,
+#endif
+        kNtlmAuthScheme
+  };
   FactoryMap factory_map_;
 };
 

@@ -205,31 +205,7 @@ TEST_F(NetworkServiceTest, AuthDefaultParams) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-TEST_F(NetworkServiceTest, AuthSchemesDigestAndNtlmOnly) {
-  mojom::HttpAuthStaticParamsPtr auth_params =
-      mojom::HttpAuthStaticParams::New();
-  auth_params->supported_schemes.push_back("digest");
-  auth_params->supported_schemes.push_back("ntlm");
-  service()->SetUpHttpAuth(std::move(auth_params));
-
-  mojo::Remote<mojom::NetworkContext> network_context_remote;
-  NetworkContext network_context(
-      service(), network_context_remote.BindNewPipeAndPassReceiver(),
-      CreateContextParams());
-  net::HttpAuthHandlerRegistryFactory* auth_handler_factory =
-      reinterpret_cast<net::HttpAuthHandlerRegistryFactory*>(
-          network_context.url_request_context()->http_auth_handler_factory());
-  ASSERT_TRUE(auth_handler_factory);
-
-  EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
-  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
-  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
-  EXPECT_FALSE(
-      auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
-}
-
-TEST_F(NetworkServiceTest, AuthSchemesNone) {
-  // An empty list means to support no schemes.
+TEST_F(NetworkServiceTest, AuthSchemesDynamicallyChanging) {
   service()->SetUpHttpAuth(mojom::HttpAuthStaticParams::New());
 
   mojo::Remote<mojom::NetworkContext> network_context_remote;
@@ -241,6 +217,78 @@ TEST_F(NetworkServiceTest, AuthSchemesNone) {
           network_context.url_request_context()->http_auth_handler_factory());
   ASSERT_TRUE(auth_handler_factory);
 
+  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
+  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
+  EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
+#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+  EXPECT_TRUE(
+      auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+#else
+  EXPECT_FALSE(
+      auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+#endif
+  {
+    mojom::HttpAuthDynamicParamsPtr auth_params =
+        mojom::HttpAuthDynamicParams::New();
+    auth_params->allowed_schemes = std::vector<std::string>{};
+    service()->ConfigureHttpAuthPrefs(std::move(auth_params));
+
+    EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
+    EXPECT_FALSE(
+        auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
+    EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
+    EXPECT_FALSE(
+        auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+  }
+  {
+    mojom::HttpAuthDynamicParamsPtr auth_params =
+        mojom::HttpAuthDynamicParams::New();
+    auth_params->allowed_schemes =
+        std::vector<std::string>{net::kDigestAuthScheme, net::kNtlmAuthScheme};
+    service()->ConfigureHttpAuthPrefs(std::move(auth_params));
+
+    EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
+    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
+    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
+    EXPECT_FALSE(
+        auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+  }
+  {
+    mojom::HttpAuthDynamicParamsPtr auth_params =
+        mojom::HttpAuthDynamicParams::New();
+    service()->ConfigureHttpAuthPrefs(std::move(auth_params));
+
+    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
+    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
+    EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
+#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+    EXPECT_TRUE(
+        auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+#else
+    EXPECT_FALSE(
+        auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
+#endif
+  }
+}
+
+TEST_F(NetworkServiceTest, AuthSchemesNone) {
+  service()->SetUpHttpAuth(mojom::HttpAuthStaticParams::New());
+
+  mojo::Remote<mojom::NetworkContext> network_context_remote;
+  NetworkContext network_context(
+      service(), network_context_remote.BindNewPipeAndPassReceiver(),
+      CreateContextParams());
+  net::HttpAuthHandlerRegistryFactory* auth_handler_factory =
+      reinterpret_cast<net::HttpAuthHandlerRegistryFactory*>(
+          network_context.url_request_context()->http_auth_handler_factory());
+  ASSERT_TRUE(auth_handler_factory);
+
+  // An empty list means to support no schemes.
+  mojom::HttpAuthDynamicParamsPtr auth_params =
+      mojom::HttpAuthDynamicParams::New();
+  auth_params->allowed_schemes = std::vector<std::string>{};
+  service()->ConfigureHttpAuthPrefs(std::move(auth_params));
+
   EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
   EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
   EXPECT_FALSE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
@@ -249,11 +297,16 @@ TEST_F(NetworkServiceTest, AuthSchemesNone) {
 #if BUILDFLAG(USE_EXTERNAL_GSSAPI)
 TEST_F(NetworkServiceTest, AuthGssapiLibraryName) {
   const std::string kGssapiLibraryName = "Jim";
-  mojom::HttpAuthStaticParamsPtr auth_params =
+  mojom::HttpAuthStaticParamsPtr static_auth_params =
       mojom::HttpAuthStaticParams::New();
-  auth_params->supported_schemes.push_back("negotiate");
-  auth_params->gssapi_library_name = kGssapiLibraryName;
-  service()->SetUpHttpAuth(std::move(auth_params));
+  static_auth_params->gssapi_library_name = kGssapiLibraryName;
+  service()->SetUpHttpAuth(std::move(static_auth_params));
+
+  mojom::HttpAuthDynamicParamsPtr dynamic_auth_params =
+      mojom::HttpAuthDynamicParams::New();
+  dynamic_auth_params->allowed_schemes =
+      std::vector<std::string>{net::kNegotiateAuthScheme};
+  service()->ConfigureHttpAuthPrefs(std::move(dynamic_auth_params));
 
   mojo::Remote<mojom::NetworkContext> network_context_remote;
   NetworkContext network_context(

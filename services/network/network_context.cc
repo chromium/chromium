@@ -62,11 +62,13 @@
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_auth_preferences.h"
+#include "net/http/http_auth_scheme.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -2086,6 +2088,13 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
   http_auth_merged_preferences_.set_allow_gssapi_library_load(
       http_auth_dynamic_network_service_params->allow_gssapi_library_load);
 #endif
+  if (http_auth_dynamic_network_service_params->allowed_schemes.has_value()) {
+    http_auth_merged_preferences_.set_allowed_schemes(std::set<std::string>(
+        http_auth_dynamic_network_service_params->allowed_schemes->begin(),
+        http_auth_dynamic_network_service_params->allowed_schemes->end()));
+  } else {
+    http_auth_merged_preferences_.set_allowed_schemes(absl::nullopt);
+  }
 }
 
 URLRequestContextOwner NetworkContext::MakeURLRequestContext(

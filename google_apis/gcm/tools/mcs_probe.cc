@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -351,9 +352,10 @@ void MCSProbe::InitializeNetworkState() {
   builder.set_net_log(net_log_);
   builder.set_host_resolver(
       net::HostResolver::CreateStandaloneResolver(net_log_));
-  builder.SetHttpAuthHandlerFactory(net::HttpAuthHandlerRegistryFactory::Create(
-      &http_auth_preferences_,
-      std::vector<std::string>{net::kBasicAuthScheme}));
+  http_auth_preferences_.set_allowed_schemes(
+      std::set<std::string>{net::kBasicAuthScheme});
+  builder.SetHttpAuthHandlerFactory(
+      net::HttpAuthHandlerRegistryFactory::Create(&http_auth_preferences_));
   builder.set_proxy_resolution_service(
       net::ConfiguredProxyResolutionService::CreateDirect());
 

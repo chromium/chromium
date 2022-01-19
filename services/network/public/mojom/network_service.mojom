@@ -43,10 +43,10 @@ import "services/network/public/mojom/ct_log_info.mojom";
 
 // Values for configuring HTTP authentication that can only be set once.
 struct HttpAuthStaticParams {
-  // List of supported auth schemes. Unrecognized schemes are ignored.
+  // List of allowed auth schemes. Unrecognized schemes are ignored.
   // The default value of this field (an empty list) does not match default
   // behavior of NetworkService when no HttpAuthStaticParams is specified.
-  array<string> supported_schemes;
+  array<string> allowed_schemes;
 
   // File name the GSSAPI library to load. Only supported on platforms where an
   // external GSSAPI library is necessary for Kerberos/SPNEGO support. See the
@@ -57,6 +57,9 @@ struct HttpAuthStaticParams {
 
 // Values for configurating HTTP authentication that can be changed as needed.
 struct HttpAuthDynamicParams {
+  // List of allowed auth schemes. Unrecognized schemes are ignored.
+  array<string>? allowed_schemes;
+
   // Comma / semi-colon delimited allowlist of server origins which the network
   // service may send the default credentials for NTLM or Negotiate
   // authentication.

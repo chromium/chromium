@@ -784,10 +784,9 @@ NetworkService::CreateHttpAuthHandlerFactory(NetworkContext* network_context) {
   }
 
   return net::HttpAuthHandlerRegistryFactory::Create(
-      network_context->GetHttpAuthPreferences(),
-      http_auth_static_network_service_params_->supported_schemes
+      network_context->GetHttpAuthPreferences()
 #if BUILDFLAG(USE_EXTERNAL_GSSAPI)
-      ,
+          ,
       http_auth_static_network_service_params_->gssapi_library_name
 #endif
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_KERBEROS)

@@ -109,11 +109,6 @@ network::mojom::HttpAuthStaticParamsPtr CreateHttpAuthStaticParams(
   network::mojom::HttpAuthStaticParamsPtr auth_static_params =
       network::mojom::HttpAuthStaticParams::New();
 
-  // TODO(https://crbug/549273): Allow this to change after startup.
-  auth_static_params->supported_schemes =
-      base::SplitString(local_state->GetString(prefs::kAuthSchemes), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   auth_static_params->gssapi_library_name =
       local_state->GetString(prefs::kGSSAPILibraryName);
@@ -128,6 +123,9 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
   network::mojom::HttpAuthDynamicParamsPtr auth_dynamic_params =
       network::mojom::HttpAuthDynamicParams::New();
 
+  auth_dynamic_params->allowed_schemes =
+      base::SplitString(local_state->GetString(prefs::kAuthSchemes), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   auth_dynamic_params->server_allowlist =
       local_state->GetString(prefs::kAuthServerAllowlist);
   auth_dynamic_params->delegate_allowlist =
@@ -360,6 +358,7 @@ SystemNetworkContextManager::SystemNetworkContextManager(
   PrefChangeRegistrar::NamedChangeCallback auth_pref_callback =
       base::BindRepeating(&OnAuthPrefsChanged, base::Unretained(local_state_));
 
+  pref_change_registrar_.Add(prefs::kAuthSchemes, auth_pref_callback);
   pref_change_registrar_.Add(prefs::kAuthServerAllowlist, auth_pref_callback);
   pref_change_registrar_.Add(prefs::kAuthNegotiateDelegateAllowlist,
                              auth_pref_callback);

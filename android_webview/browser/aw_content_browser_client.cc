@@ -258,10 +258,8 @@ AwContentBrowserClient::~AwContentBrowserClient() {}
 
 void AwContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
-  network::mojom::HttpAuthStaticParamsPtr auth_static_params =
-      network::mojom::HttpAuthStaticParams::New();
-  auth_static_params->supported_schemes = AwBrowserContext::GetAuthSchemes();
-  content::GetNetworkService()->SetUpHttpAuth(std::move(auth_static_params));
+  content::GetNetworkService()->SetUpHttpAuth(
+      network::mojom::HttpAuthStaticParams::New());
 }
 
 void AwContentBrowserClient::ConfigureNetworkContextParams(
