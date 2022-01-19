@@ -120,17 +120,6 @@ ui::mojom::DragOperation BookmarkMenuController::GetDropOperation(
   return menu_delegate_->GetDropOperation(item, event, position);
 }
 
-ui::mojom::DragOperation BookmarkMenuController::OnPerformDrop(
-    MenuItemView* menu,
-    DropPosition position,
-    const ui::DropTargetEvent& event) {
-  ui::mojom::DragOperation result =
-      menu_delegate_->OnPerformDrop(menu, position, event);
-  if (for_drop_)
-    delete this;
-  return result;
-}
-
 views::View::DropCallback BookmarkMenuController::GetDropCallback(
     views::MenuItemView* menu,
     DropPosition position,
