@@ -800,10 +800,14 @@ void NodeController::BroadcastEvent(ports::ScopedEvent event) {
   DCHECK(channel_message && !channel_message->has_handles());
 
   scoped_refptr<NodeChannel> broker = GetBrokerChannel();
-  if (broker)
+  if (broker) {
     broker->Broadcast(std::move(channel_message));
-  else
+  } else if (broker_name_ == ports::kInvalidNodeName) {
+    // Do an additional check if broker_name_ is not set. It's possible that we
+    // don't have a broker channel even though we're not the broker ourselves,
+    // e.g. if this code path is called from the channel error path..
     OnBroadcast(name_, std::move(channel_message));
+  }
 }
 
 void NodeController::PortStatusChanged(const ports::PortRef& port) {

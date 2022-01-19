@@ -694,6 +694,66 @@ TEST_F(PortsTest, LostConnectionToNodeWithSecondaryProxy) {
   EXPECT_TRUE(node1.node().CanShutdownCleanly());
 }
 
+TEST_F(PortsTest, LostConnectionToNodeAfterSendingObserveProxy) {
+  // Tests that a proxy gets cleaned up after a node disconnect if the
+  // previous port already received the ObserveProxy event.
+
+  TestNode node0(0);
+  AddNode(&node0);
+
+  TestNode node1(1);
+  AddNode(&node1);
+
+  TestNode node2(2);
+  AddNode(&node2);
+
+  // Create A-B spanning nodes 0 and 1 and C-D spanning 1 and 2.
+  PortRef A, B, C, D;
+  CreatePortPair(&node0, &A, &node1, &B);
+  CreatePortPair(&node1, &C, &node2, &D);
+
+  // Create E-F and send F over A to node 1.
+  PortRef E, F;
+  EXPECT_EQ(OK, node0.node().CreatePortPair(&E, &F));
+  EXPECT_EQ(OK, node0.SendStringMessageWithPort(A, ".", F));
+
+  WaitForIdle();
+
+  ScopedMessage message;
+  ASSERT_TRUE(node1.ReadMessage(B, &message));
+  ASSERT_EQ(1u, message->num_ports());
+
+  EXPECT_EQ(OK, node1.node().GetPort(message->ports()[0], &F));
+
+  // Send F over C to node 2 and then simulate node 2 loss from node 1 after
+  // node 0 received the ObserveProxy event. Node 1 needs to clean up the
+  // closed proxy while the node 0 to node 2 connection is still intact.
+  node0.BlockOnEvent(Event::Type::kObserveProxy);
+
+  EXPECT_EQ(OK, node1.SendStringMessageWithPort(C, ".", F));
+  WaitForIdle();
+
+  // Simulate node 1 and 2 disconnecting.
+  EXPECT_EQ(OK, node1.node().LostConnectionToNode(node2.name()));
+
+  // Let node2 continue processing events and wait for everyone to go idle.
+  node0.Unblock();
+  WaitForIdle();
+
+  // Port F should be gone.
+  EXPECT_EQ(ERROR_PORT_UNKNOWN, node1.node().GetPort(F.name(), &F));
+
+  EXPECT_EQ(OK, node0.node().ClosePort(A));
+  EXPECT_EQ(OK, node1.node().ClosePort(B));
+  EXPECT_EQ(OK, node1.node().ClosePort(C));
+  EXPECT_EQ(OK, node0.node().ClosePort(E));
+
+  WaitForIdle();
+
+  EXPECT_TRUE(node0.node().CanShutdownCleanly());
+  EXPECT_TRUE(node1.node().CanShutdownCleanly());
+}
+
 TEST_F(PortsTest, LostConnectionToNodeWithLocalProxy) {
   // Tests that a proxy gets cleaned up when its direct peer lives on a lost
   // node and it's predecessor lives on the same node.
