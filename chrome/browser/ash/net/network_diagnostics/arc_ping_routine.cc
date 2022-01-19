@@ -125,7 +125,7 @@ void ArcPingRoutine::FetchManagedProperties(
 void ArcPingRoutine::PingGateways() {
   arc::mojom::NetInstance* net_instance = GetNetInstance();
   if (net_instance) {
-    for (uint16_t i = 0; i < gateways_.size(); i++) {
+    for (size_t i = 0; i < gateways_.size(); i++) {
       net_instance->PingTest(
           gateways_transport_names_[i], gateways_[i],
           base::BindOnce(&ArcPingRoutine::OnRequestComplete,
