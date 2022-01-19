@@ -11,9 +11,12 @@
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -60,14 +63,17 @@ void FullscreenNotificationBubble::ShowForWindowState(
     WindowState* window_state) {
   // Early out if a WindowState is already tracked. The bubble should already be
   // visible in this case.
-  if (window_state_) {
+  if (window_state_observation_.IsObserving()) {
     // `window_state` arg should match the tracked `window_state_`.
-    DCHECK_EQ(window_state_, window_state);
+    DCHECK(window_state_observation_.IsObservingSource(window_state));
+    DCHECK(window_observation_.IsObservingSource(window_state->window()));
     return;
   }
+  window_state_observation_.Observe(window_state);
 
-  window_state_ = window_state;
-  window_state_->AddObserver(this);
+  // Observe the window to properly handle window destruction.
+  DCHECK(!window_observation_.IsObserving());
+  window_observation_.Observe(window_state->window());
 
   Show();
 }
@@ -84,15 +90,17 @@ void FullscreenNotificationBubble::Show() {
 }
 
 void FullscreenNotificationBubble::Hide() {
-  if (window_state_) {
-    window_state_->RemoveObserver(this);
-    window_state_ = nullptr;
-  }
+  window_observation_.Reset();
+  window_state_observation_.Reset();
 
   if (!widget_->IsVisible())
     return;
 
   widget_->Hide();
+}
+
+void FullscreenNotificationBubble::OnWindowDestroying(aura::Window* window) {
+  Hide();
 }
 
 void FullscreenNotificationBubble::OnPreWindowStateTypeChange(

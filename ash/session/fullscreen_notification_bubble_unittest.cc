@@ -86,5 +86,21 @@ TEST_F(FullscreenNotificationBubbleTest, HideBubbleOnExitFullscreen) {
   EXPECT_FALSE(widget->IsVisible());
 }
 
+TEST_F(FullscreenNotificationBubbleTest, HandleWindowDestruction) {
+  views::Widget* widget = bubble_->widget_for_test();
+  EXPECT_FALSE(widget->IsVisible());
+
+  bubble_->ShowForWindowState(window_state_);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Destroy the window before the timer is elapsed.
+  window_.reset();
+  EXPECT_FALSE(widget->IsVisible());
+
+  task_environment()->FastForwardBy(
+      base::Seconds(kExpectedAutoHideDelayInSeconds));
+  EXPECT_FALSE(widget->IsVisible());
+}
+
 }  // namespace
 }  // namespace ash
