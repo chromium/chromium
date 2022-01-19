@@ -22,7 +22,7 @@ import './android_apps_subpage.js';
 import './app_notifications_page/app_notifications_subpage.js';
 import './app_management_page/app_management_page.js';
 import './app_management_page/app_detail_view.js';
-import './app_management_page/uninstall_button.js';
+import '//resources/cr_components/app_management/uninstall_button.js';
 import '../../controls/settings_dropdown_menu.js';
 
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from '//resources/cr_components/app_management/constants.js';

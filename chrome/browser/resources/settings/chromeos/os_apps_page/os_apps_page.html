@@ -103,7 +103,10 @@
     <settings-subpage
         page-title="[[app_.title]]"
         title-icon="[[iconUrlFromId_(app_)]]">
-      <app-management-uninstall-button slot="subpage-title-extra">
+      <app-management-uninstall-button slot="subpage-title-extra"
+          app="[[app_]]"
+          uninstall-label="$i18n{appManagementUninstallLabel}"
+          policy-label="$i18n{appManagementAppInstalledByPolicyLabel}">
       </app-management-uninstall-button>
       <app-management-app-detail-view>
       </app-management-app-detail-view>

@@ -19,6 +19,7 @@ web_component_files = [
   "shared_style.ts",
   "shared_vars.ts",
   "toggle_row.ts",
+  "uninstall_button.ts",
 ]
 
 non_web_component_files = [

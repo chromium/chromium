@@ -65,7 +65,7 @@ import './os_apps_page/app_management_page/supported_links_overlapping_apps_dial
 import './os_apps_page/app_management_page/supported_links_dialog.js';
 import './os_apps_page/app_management_page/supported_links_item.js';
 import '//resources/cr_components/app_management/toggle_row.js';
-import './os_apps_page/app_management_page/uninstall_button.js';
+import '//resources/cr_components/app_management/uninstall_button.js';
 import './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 import './os_apps_page/os_apps_page.js';
 import './os_bluetooth_page/os_bluetooth_devices_subpage.js';

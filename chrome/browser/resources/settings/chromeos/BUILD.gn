@@ -504,7 +504,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js",
     "chromeos/os_apps_page/app_management_page/supported_links_dialog.js",
     "chromeos/os_apps_page/app_management_page/supported_links_item.js",
-    "chromeos/os_apps_page/app_management_page/uninstall_button.js",
     "chromeos/os_apps_page/os_apps_page.js",
     "chromeos/os_files_page/os_files_page.js",
     "chromeos/os_files_page/smb_shares_page.js",

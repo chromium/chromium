@@ -32,7 +32,6 @@ js_type_check("closure_compile_module") {
     ":supported_links_dialog",
     ":supported_links_item",
     ":supported_links_overlapping_apps_dialog",
-    ":uninstall_button",
     ":util",
   ]
 }
@@ -243,17 +242,6 @@ js_library("supported_links_item") {
   ]
 }
 
-js_library("uninstall_button") {
-  deps = [
-    ":store_client",
-    ":util",
-    "../..:metrics_recorder.m",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
 js_library("util") {
   deps = [
     "../..:os_route.m",
@@ -278,6 +266,5 @@ html_to_js("web_components") {
     "supported_links_overlapping_apps_dialog.js",
     "supported_links_dialog.js",
     "supported_links_item.js",
-    "uninstall_button.js",
   ]
 }

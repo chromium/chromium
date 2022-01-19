@@ -430,7 +430,6 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/supported_links_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/supported_links_item.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/toggle_row.html",
-                                 "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/uninstall_button.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/util.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_notifications_page/app_notifications_subpage.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/os_apps_page.html",
