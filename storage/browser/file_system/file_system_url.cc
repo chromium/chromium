@@ -12,6 +12,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -112,10 +113,11 @@ GURL FileSystemURL::ToGURL() const {
   if (!is_valid_)
     return GURL();
 
-  std::string url =
-      GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_).spec();
-  if (url.empty())
+  GURL url = GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
+  if (!url.is_valid())
     return GURL();
+
+  std::string url_string = url.spec();
 
   // Exactly match with DOMFileSystemBase::createFileSystemURL()'s encoding
   // behavior, where the path is escaped by KURL::encodeWithURLEscapeSequences
@@ -124,10 +126,10 @@ GURL FileSystemURL::ToGURL() const {
       virtual_path_.NormalizePathSeparatorsTo('/').AsUTF8Unsafe(),
       false /* use_plus */);
   base::ReplaceSubstringsAfterOffset(&escaped, 0, "%2F", "/");
-  url.append(escaped);
+  url_string.append(escaped);
 
   // Build nested GURL.
-  return GURL(url);
+  return GURL(url_string);
 }
 
 std::string FileSystemURL::DebugString() const {
