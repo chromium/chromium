@@ -20,7 +20,6 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COPY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
-import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_UP;
@@ -44,7 +43,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sInputTypeMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sRangeInfoMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
-import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextOrContentDescriptionMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EVENTS_DROPPED_HISTOGRAM;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
@@ -60,7 +58,6 @@ import static org.chromium.content.browser.accessibility.WebContentsAccessibilit
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.PERCENTAGE_DROPPED_HISTOGRAM;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.graphics.Rect;
@@ -104,33 +101,20 @@ import java.util.concurrent.ExecutionException;
  * implements the interface.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")
 public class WebContentsAccessibilityTest {
     // Test output error messages
-    private static final String COMBOBOX_ERROR = "expanded combobox announcement was incorrect.";
     private static final String DISABLED_COMBOBOX_ERROR =
             "disabled combobox child elements should not be clickable";
-    private static final String LONG_CLICK_ERROR =
-            "node should not have the ACTION_LONG_CLICK action as an available action";
-    private static final String ACTION_SET_ERROR =
-            "node should have the ACTION_SET_TEXT action as an available action";
     private static final String THRESHOLD_ERROR =
             "Too many TYPE_WINDOW_CONTENT_CHANGED events received in an atomic update.";
     private static final String THRESHOLD_LOW_EVENT_COUNT_ERROR =
             "Expected more TYPE_WINDOW_CONTENT_CHANGED events"
             + "in an atomic update, is throttling still necessary?";
-    private static final String ARIA_INVALID_ERROR =
-            "Error message for aria-invalid node has not been set correctly.";
-    private static final String CONTENTEDITABLE_ERROR =
-            "contenteditable node is not being identified and/or received incorrect class name";
     private static final String SPELLING_ERROR =
             "node should have a Spannable with spelling correction for given text.";
     private static final String INPUT_RANGE_VALUE_MISMATCH =
             "Value for <input type='range'> is incorrect, did you honor 'step' value?";
-    private static final String INPUT_RANGE_VALUETEXT_MISMATCH =
-            "Value for <input type='range'> text is incorrect, did you honor aria-valuetext?";
     private static final String INPUT_RANGE_EVENT_ERROR =
             "TYPE_VIEW_SCROLLED event not received before timeout.";
     private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
@@ -262,7 +246,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testAccessibilityNodeInfo_inputTypeRange() throws Throwable {
         // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
         setupTestWithHTML("<input type='range' min='0' max='40'>");
@@ -316,7 +299,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testAccessibilityNodeInfo_inputTypeRange_withStepValue() throws Throwable {
         // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
         setupTestWithHTML("<input type='range' min='0' max='144' step='12'>");
@@ -372,7 +354,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testAccessibilityNodeInfo_inputTypeRange_withRequiredMin() throws Throwable {
         // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
         setupTestWithHTML("<input type='range' min='0' max='1000' step='1'>");
@@ -419,39 +400,6 @@ public class WebContentsAccessibilityTest {
             // Reset polling value for next test
             mTestData.setReceivedEvent(false);
         }
-    }
-
-    /**
-     * Test <input type="range"> nodes are properly populated when aria-valuetext is set.
-     */
-    @Test
-    @SmallTest
-    public void testAccessibilityNodeInfo_inputTypeRange_withAriaValueText() {
-        // Build a simple web page with input nodes that have aria-valuetext.
-        setupTestWithHTML(
-                "<input id='in1' type='range' value='1' min='0' max='2' aria-valuetext='medium'>"
-                + "<label for='in2'>This is a test label"
-                + "  <input id='in2' type='range' value='0' min='0' max='2' aria-valuetext='small'>"
-                + "</label>");
-
-        int vvIdInput1 = waitForNodeMatching(sViewIdResourceNameMatcher, "in1");
-        int vvIdInput2 = waitForNodeMatching(sViewIdResourceNameMatcher, "in2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvIdInput1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvIdInput2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
-
-        mActivityTestRule.sendEndOfTestSignal();
-
-        // Check the text of each element, and that RangeInfo has not been set.
-        mNodeInfo1 = createAccessibilityNodeInfo(vvIdInput1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvIdInput2);
-        Assert.assertEquals(
-                INPUT_RANGE_VALUETEXT_MISMATCH, "medium", mNodeInfo1.getText().toString());
-        Assert.assertEquals(INPUT_RANGE_VALUETEXT_MISMATCH, "small, This is a test label",
-                mNodeInfo2.getText().toString());
-        Assert.assertNull(INPUT_RANGE_VALUETEXT_MISMATCH, mNodeInfo1.getRangeInfo());
-        Assert.assertNull(INPUT_RANGE_VALUETEXT_MISMATCH, mNodeInfo2.getRangeInfo());
     }
 
     /**
@@ -524,90 +472,6 @@ public class WebContentsAccessibilityTest {
         // Verify number of events processed
         int eventCount = mTestData.getTypeWindowContentChangedCount();
         Assert.assertTrue(lowThresholdError(eventCount), eventCount > UNSUPPRESSED_EXPECTED_COUNT);
-    }
-
-    /**
-     * Ensure we send an announcement on combobox expansion.
-     */
-    @Test
-    @SmallTest
-    public void testEventText_Combobox() throws Throwable {
-        // Build a simple web page with a combobox, and focus the input field.
-        setupTestFromFile("content/test/data/android/input/input_combobox.html");
-
-        // Find a node in the accessibility tree of the correct class.
-        int comboBoxVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(comboBoxVirtualViewId);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        focusNode(comboBoxVirtualViewId);
-
-        // Run JS code to expand the combobox
-        executeJS("expandCombobox()");
-
-        // Signal end of test
-        mActivityTestRule.sendEndOfTestSignal();
-
-        // We should have received a TYPE_ANNOUNCEMENT event, check announcement text.
-        Assert.assertEquals(COMBOBOX_ERROR, "expanded, 3 autocomplete options available.",
-                mTestData.getAnnouncementText());
-    }
-
-    /**
-     * Ensure we send an announcement on combobox expansion that opens a dialog.
-     */
-    @Test
-    @SmallTest
-    public void testEventText_Combobox_dialog() throws Throwable {
-        // Build a simple web page with a combobox, and focus the input field.
-        setupTestFromFile("content/test/data/android/input/input_combobox_dialog.html");
-
-        // Find a node in the accessibility tree of the correct class.
-        int comboBoxVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(comboBoxVirtualViewId);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        focusNode(comboBoxVirtualViewId);
-
-        // Run JS code to expand the combobox
-        executeJS("expandCombobox()");
-
-        // Signal end of test
-        mActivityTestRule.sendEndOfTestSignal();
-
-        // We should have received a TYPE_ANNOUNCEMENT event, check announcement text.
-        Assert.assertEquals(
-                COMBOBOX_ERROR, "expanded, dialog opened.", mTestData.getAnnouncementText());
-    }
-
-    /**
-     * Ensure we send an announcement on combobox expansion with aria-1.0 spec.
-     */
-    @Test
-    @SmallTest
-    public void testEventText_Combobox_ariaOne() throws Throwable {
-        // Build a simple web page with a combobox, and focus the input field.
-        setupTestFromFile("content/test/data/android/input/input_combobox_aria1.0.html");
-
-        // Find a node in the accessibility tree of the correct class.
-        int comboBoxVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(comboBoxVirtualViewId);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        focusNode(comboBoxVirtualViewId);
-
-        // Run JS code to expand the combobox
-        executeJS("expandCombobox()");
-
-        // Signal end of test
-        mActivityTestRule.sendEndOfTestSignal();
-
-        // We should have received a TYPE_ANNOUNCEMENT event, check announcement text.
-        Assert.assertEquals(COMBOBOX_ERROR, "expanded, 3 autocomplete options available.",
-                mTestData.getAnnouncementText());
     }
 
     /**
@@ -979,95 +843,6 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Test |AccessibilityNodeInfo| object for contenteditable node.
-     */
-    @Test
-    @SmallTest
-    public void testNodeInfo_className_contenteditable() {
-        setupTestWithHTML("<div contenteditable>Edit This</div>");
-
-        int textNodeVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertTrue(CONTENTEDITABLE_ERROR, mNodeInfo.isEditable());
-        Assert.assertEquals(CONTENTEDITABLE_ERROR, "Edit This", mNodeInfo.getText().toString());
-    }
-
-    /**
-     * Test |AccessibilityNodeInfo| object for node with aria-invalid="true".
-     */
-    @Test
-    @SmallTest
-    public void testNodeInfo_errorMessage_true() {
-        setupTestWithHTML("<input type='text' aria-invalid='true' value='123456789'>");
-
-        int textNodeVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertTrue(ARIA_INVALID_ERROR, mNodeInfo.isContentInvalid());
-        Assert.assertEquals(ARIA_INVALID_ERROR, "Invalid entry", mNodeInfo.getError());
-    }
-
-    /**
-     * Test |AccessibilityNodeInfo| object for node with aria-invalid="spelling".
-     */
-    @Test
-    @SmallTest
-    public void testNodeInfo_errorMessage_spelling() {
-        setupTestWithHTML("<input type='text' aria-invalid='spelling' value='123456789'>");
-
-        int textNodeVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertTrue(ARIA_INVALID_ERROR, mNodeInfo.isContentInvalid());
-        // Spelling and Grammar errors via aria-invalid label on the whole text field are reported
-        // as general errors.
-        Assert.assertEquals(ARIA_INVALID_ERROR, "Invalid entry", mNodeInfo.getError());
-    }
-
-    /**
-     * Test |AccessibilityNodeInfo| object for node with aria-invalid="grammar".
-     */
-    @Test
-    @SmallTest
-    public void testNodeInfo_errorMessage_grammar() {
-        setupTestWithHTML("<input type='text' aria-invalid='grammar' value='123456789'>");
-
-        int textNodeVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertTrue(ARIA_INVALID_ERROR, mNodeInfo.isContentInvalid());
-        // Spelling and Grammar errors via aria-invalid label on the whole text field are reported
-        // as general errors.
-        Assert.assertEquals(ARIA_INVALID_ERROR, "Invalid entry", mNodeInfo.getError());
-    }
-
-    /**
-     * Test |AccessibilityNodeInfo| object for node with no aria-invalid.
-     */
-    @Test
-    @SmallTest
-    public void testNodeInfo_errorMessage_none() {
-        setupTestWithHTML("<input type='text'>");
-
-        int textNodeVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertFalse(ARIA_INVALID_ERROR, mNodeInfo.isContentInvalid());
-        Assert.assertNull(ARIA_INVALID_ERROR, mNodeInfo.getError());
-    }
-
-    /**
      * Test |AccessibilityNodeInfo| object for node with spelling error, and ensure the
      * spelling error is encoded as a Spannable.
      **/
@@ -1104,8 +879,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
     public void testNodeInfo_extraDataAdded_characterLocations() {
         setupTestWithHTML("<h1>Simple test page</h1><section><p>Text</p></section>");
 
@@ -1190,8 +963,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
     public void testNodeInfo_extraDataAdded_imageData() {
         // Setup test page with example image (20px red square).
         setupTestWithHTML("<img id='id1' src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEU"
@@ -1265,50 +1036,11 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Test |AccessibilityNodeInfo| object actions to ensure we are not adding ACTION_LONG_CLICK
-     * to nodes due to verbose utterances issue.
-     */
-    @Test
-    @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    public void testNodeInfo_noLongClickAction() {
-        // Build a simple web page with a node.
-        setupTestWithHTML("<p>Example paragraph</p>");
-
-        int textViewId = waitForNodeMatching(sTextOrContentDescriptionMatcher, "Example paragraph");
-        mNodeInfo = createAccessibilityNodeInfo(textViewId);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        // Confirm the ACTION_LONG_CLICK action has not been added to the node.
-        Assert.assertFalse(LONG_CLICK_ERROR, mNodeInfo.getActionList().contains(ACTION_LONG_CLICK));
-    }
-
-    /**
-     * Test |AccessibilityNodeInfo| object actions for text node.
-     */
-    @Test
-    @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    public void testNodeInfo_Actions_SetText() {
-        // Load a web page with a text field.
-        setupTestWithHTML("<input type='text'>");
-
-        int textNodeVirtualViewId =
-                waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        // Confirm the ACTION_SET_TEXT action has been added to the node.
-        Assert.assertTrue(ACTION_SET_ERROR, mNodeInfo.getActionList().contains(ACTION_SET_TEXT));
-    }
-
-    /**
      * Test |AccessibilityNodeInfo| object actions for node is specifically user scrollable,
      * and not just programmatically scrollable.
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testNodeInfo_Actions_OverflowHidden() throws Throwable {
         // Build a simple web page with a div and overflow:hidden
         setupTestWithHTML("<div title='1234' style='overflow:hidden; width: 200px; height:50px'>\n"
@@ -1354,7 +1086,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testNodeInfo_Actions_OverflowScroll() throws Throwable {
         // Build a simple web page with a div and overflow:scroll
         setupTestWithHTML("<div title='1234' style='overflow:scroll; width: 200px; height:50px'>\n"
@@ -1403,7 +1134,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testNodeInfoCache_AccessibilityFocusAndActions() throws Throwable {
         // Build a simple web page with two paragraphs that can be focused.
         setupTestWithHTML("<div>\n"
@@ -1866,7 +1596,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testPerformAction_paste() throws Throwable {
         // Build a simple web page with an input field.
         setupTestWithHTML("<input type='text'>");
@@ -2191,7 +1920,6 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
     }
 
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     private void assertActionsContainNoScrolls(AccessibilityNodeInfoCompat nodeInfo) {
         Assert.assertFalse(nodeInfo.getActionList().contains(ACTION_SCROLL_FORWARD));
         Assert.assertFalse(nodeInfo.getActionList().contains(ACTION_SCROLL_BACKWARD));

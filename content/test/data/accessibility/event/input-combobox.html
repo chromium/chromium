@@ -2,7 +2,8 @@
 <html>
   <head>
     <script>
-      function expandCombobox() {
+      function go() {
+        document.getElementById('test-input').focus();
         document.getElementById('test-combobox').setAttribute('aria-expanded', 'true');
         document.getElementById('test-listbox').removeAttribute('hidden');
         document.getElementById('test-input').setAttribute('aria-controls', 'test-listbox');

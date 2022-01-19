@@ -4250,6 +4250,113 @@ def CheckAccessibilityRelnotesField(input_api, output_api):
 
   return [output_api.PresubmitNotifyResult(message)]
 
+
+_ACCESSIBILITY_EVENTS_TEST_PATH = (
+    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]event[\\/].*\.html",
+)
+
+_ACCESSIBILITY_TREE_TEST_PATH = (
+    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]accname[\\/].*\.html",
+    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]aria[\\/].*\.html",
+    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]css[\\/].*\.html",
+    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]html[\\/].*\.html",
+)
+
+_ACCESSIBILITY_ANDROID_EVENTS_TEST_PATH = (
+    r"^.*[\\/]WebContentsAccessibilityEventsTest\.java",
+)
+
+_ACCESSIBILITY_ANDROID_TREE_TEST_PATH = (
+    r"^.*[\\/]WebContentsAccessibilityEventsTest\.java",
+)
+
+def CheckAccessibilityEventsTestsAreIncludedForAndroid(input_api, output_api):
+  """Checks that commits that include a newly added, renamed/moved, or deleted
+  test in the DumpAccessibilityEventsTest suite also includes a corresponding
+  change to the Android test."""
+  def FilePathFilter(affected_file):
+    paths = _ACCESSIBILITY_EVENTS_TEST_PATH
+    return input_api.FilterSourceFile(affected_file, files_to_check=paths)
+
+  def AndroidFilePathFilter(affected_file):
+    paths = _ACCESSIBILITY_ANDROID_EVENTS_TEST_PATH
+    return input_api.FilterSourceFile(affected_file, files_to_check=paths)
+
+  # Only consider changes in the events test data path with html type.
+  if not any(input_api.AffectedFiles(include_deletes=True,
+                                     file_filter=FilePathFilter)):
+    return []
+
+  # If the commit contains any change to the Android test file, ignore.
+  if any(input_api.AffectedFiles(include_deletes=True,
+                                 file_filter=AndroidFilePathFilter)):
+    return []
+
+  # Only consider changes that are adding/renaming or deleting a file
+  message = []
+  for f in input_api.AffectedFiles(include_deletes=True,
+                                   file_filter=FilePathFilter):
+    if f.Action()=='A' or f.Action()=='D':
+      message = ("It appears that you are adding, renaming or deleting"
+                 "\na dump_accessibility_events* test, but have not included"
+                 "\na corresponding change for Android."
+                 "\nPlease include (or remove) the test from:"
+                 "\n    content/public/android/javatests/src/org/chromium/"
+                 "content/browser/accessibility/"
+                 "WebContentsAccessibilityEventsTest.java"
+                 "\nIf this message is confusing or annoying, please contact"
+                 "\nmembers of ui/accessibility/OWNERS.")
+
+  # If no message was set, return empty.
+  if not len(message):
+    return []
+
+  return [output_api.PresubmitPromptWarning(message)]
+
+def CheckAccessibilityTreeTestsAreIncludedForAndroid(input_api, output_api):
+  """Checks that commits that include a newly added, renamed/moved, or deleted
+  test in the DumpAccessibilityTreeTest suite also includes a corresponding
+  change to the Android test."""
+  def FilePathFilter(affected_file):
+    paths = _ACCESSIBILITY_TREE_TEST_PATH
+    return input_api.FilterSourceFile(affected_file, files_to_check=paths)
+
+  def AndroidFilePathFilter(affected_file):
+    paths = _ACCESSIBILITY_ANDROID_TREE_TEST_PATH
+    return input_api.FilterSourceFile(affected_file, files_to_check=paths)
+
+  # Only consider changes in the various tree test data paths with html type.
+  if not any(input_api.AffectedFiles(include_deletes=True,
+                                     file_filter=FilePathFilter)):
+    return []
+
+  # If the commit contains any change to the Android test file, ignore.
+  if any(input_api.AffectedFiles(include_deletes=True,
+                                 file_filter=AndroidFilePathFilter)):
+    return []
+
+  # Only consider changes that are adding/renaming or deleting a file
+  message = []
+  for f in input_api.AffectedFiles(include_deletes=True,
+                                   file_filter=FilePathFilter):
+    if f.Action()=='A' or f.Action()=='D':
+      message = ("It appears that you are adding, renaming or deleting"
+                 "\na dump_accessibility_tree* test, but have not included"
+                 "\na corresponding change for Android."
+                 "\nPlease include (or remove) the test from:"
+                 "\n    content/public/android/javatests/src/org/chromium/"
+                 "content/browser/accessibility/"
+                 "WebContentsAccessibilityTreeTest.java"
+                 "\nIf this message is confusing or annoying, please contact"
+                 "\nmembers of ui/accessibility/OWNERS.")
+
+  # If no message was set, return empty.
+  if not len(message):
+    return []
+
+  return [output_api.PresubmitPromptWarning(message)]
+
+
 # string pattern, sequence of strings to show when pattern matches,
 # error flag. True if match is a presubmit error, otherwise it's a warning.
 _NON_INCLUSIVE_TERMS = (

@@ -1803,6 +1803,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_inputTextRange() {
+        performHtmlTest("input-text-range.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_inputTextReadOnly() {
         performHtmlTest("input-text-read-only.html");
     }
