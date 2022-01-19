@@ -598,6 +598,14 @@ crbug.com/1162836 external/wpt/css/css-text/white-space/trailing-ideographic-spa
 crbug.com/1162836 external/wpt/css/css-text/white-space/trailing-ideographic-space-020.html [ Failure ]
 crbug.com/1162836 external/wpt/css/css-text/white-space/trailing-ideographic-space-023.html [ Failure ]
 crbug.com/1162836 external/wpt/css/css-text/hyphens/hyphens-auto-004.html [ Failure ]
+crbug.com/782638 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-001.html [ Failure ]
+crbug.com/782638 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-003.html [ Failure ]
+crbug.com/782638 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-004.html [ Failure ]
+crbug.com/782638 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-005.html [ Failure ]
+crbug.com/782638 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-rtl-001.html [ Failure ]
+crbug.com/782638 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-rtl-003.html [ Failure ]
+crbug.com/782638 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-rtl-004.html [ Failure ]
+crbug.com/782638 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-rtl-005.html [ Failure ]
 
 ### external/wpt/css/css-text/word-break/
 crbug.com/591099 external/wpt/css/css-text/word-break/word-break-break-all-004.html [ Failure ]

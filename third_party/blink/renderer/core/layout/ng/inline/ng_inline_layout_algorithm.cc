@@ -155,8 +155,7 @@ void NGInlineLayoutAlgorithm::PrepareBoxStates(
 
 static LayoutUnit AdjustLineOffsetForHanging(NGLineInfo* line_info,
                                              LayoutUnit& line_offset) {
-  if (IsLtr(line_info->BaseDirection()) ||
-      !line_info->ShouldHangTrailingSpaces())
+  if (IsLtr(line_info->BaseDirection()))
     return LayoutUnit();
 
   // If the hang_width cause overflow, we don't want to adjust the line_offset
@@ -166,8 +165,14 @@ static LayoutUnit AdjustLineOffsetForHanging(NGLineInfo* line_info,
   // that we ignore the hanging width when the NGInlineLayoutStateStack computes
   // their positions in ComputeInlinePositions function.
   LayoutUnit hang_width = line_info->HangWidth();
-  if (line_offset < hang_width)
+  if (line_offset < hang_width) {
+    // If we haven't considered the hang_width in ApplyTextAlign, we might end
+    // up with a negative line_offset, so shift the offset to ignore hanging
+    // spaces.
+    if (!line_info->ShouldHangTrailingSpaces())
+      line_offset += hang_width;
     return -hang_width;
+  }
 
   // At this point we have a RTL line with hanging spaces that shouldn't be
   // ignored based on the text-align property. Hence the final line_offset value
