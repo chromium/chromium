@@ -58,6 +58,7 @@
         is-default-sso-provider="[[isDefaultSsoProvider_]]"
         is-closable="[[isClosable_]]"
         video-enabled="{{videoEnabled_}}"
+        auth-domain="{{authDomain_}}"
         auth-flow="{{authFlow}}"
         navigation-enabled="{{navigationEnabled_}}"
         navigation-hidden="[[navigationButtonsHidden_]]"
@@ -75,6 +76,15 @@
         on-removeuserbyemail="onRemoveUserByEmailMessage_"
         on-changesigninprovider="onSamlPageChangeAccount_">
     </gaia-dialog>
+    <!-- TODO(dkuzmin): This alert is added here, because ChromeVox keep
+                        pronouncing it several times when role="alert" is added
+                        inside gaia-dialog. This problem should be resolved in
+                        https://crbug.com/1288829 -->
+    <div id="samlVideoAlert" role="alert" hidden="[[!videoEnabled_]]"
+        aria-label$="[[getSamlVideoAlertMessage_(locale,
+            videoEnabled_,
+            authDomain_)]]">
+    </div>
     <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
         for-step="pin" on-cancel="onPinDialogCanceled_"
         on-completed="onPinDialogCompleted_">

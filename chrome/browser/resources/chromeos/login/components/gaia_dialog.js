@@ -85,9 +85,10 @@ class GaiaDialog extends GaiaDialogBase {
        * Used to display SAML notice.
        * @private
        */
-      authDomain_: {
+      authDomain: {
         type: String,
         value: '',
+        notify: true,
       },
 
       /**
@@ -279,7 +280,7 @@ class GaiaDialog extends GaiaDialogBase {
         this.authFlow = e.newValue;
       },
       'authDomainChange': (e) => {
-        this.authDomain_ = e.newValue;
+        this.authDomain = e.newValue;
       },
       'dialogShown': (e) => {
         this.navigationEnabled = false;

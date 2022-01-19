@@ -181,6 +181,14 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       },
 
       /**
+       * Bound to gaia-dialog::authDomain.
+       * @private
+       */
+      authDomain_: {
+        type: String,
+      },
+
+      /**
        * Bound to gaia-dialog::authFlow.
        * @private
        */
@@ -1281,6 +1289,21 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   clickPrimaryButtonForTesting() {
     this.$['signin-frame-dialog'].clickPrimaryButtonForTesting();
+  }
+
+  /**
+   * Copmose alert message when third-party IdP uses camera for authentication.
+   * @param {string} locale  i18n locale data
+   * @param {boolean} videoEnabled
+   * @param {string} authDomain
+   * @return {string}
+   * @private
+   */
+  getSamlVideoAlertMessage_(locale, videoEnabled, authDomain) {
+    if (videoEnabled && authDomain) {
+      return this.i18n('samlNoticeWithVideo', authDomain);
+    }
+    return '';
   }
 }
 
