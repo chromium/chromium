@@ -352,6 +352,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.ContextSnapshotDecompress" units="microseconds"
     expires_after="2022-05-22">
+  <obsolete>
+    Removed 01/2022.
+  </obsolete>
   <owner>sky@chromium.org</owner>
   <owner>yukishiino@chromium.org</owner>
   <summary>
@@ -1167,6 +1170,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.SnapshotDecompress" units="microseconds"
     expires_after="2022-05-22">
+  <obsolete>
+    Removed 01/2022.
+  </obsolete>
   <owner>sky@chromium.org</owner>
   <owner>yukishiino@chromium.org</owner>
   <summary>
