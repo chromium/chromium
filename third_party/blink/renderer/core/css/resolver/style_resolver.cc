@@ -845,6 +845,20 @@ static void IncrementResolvedStyleCounters(const StyleRequest& style_request,
   }
 }
 
+// This is the core of computing style for a given element, ie., first compute
+// base style and then apply animation style. (Not all elements needing style
+// recalc ever hit ResolveStyle(); e.g., the “independent inherited properties
+// optimization” can cause it to be skipped.)
+//
+// Generally, when an element is marked for style recalc, we do not reuse any
+// style from previous computations, but re-compute from scratch every time.
+// However: If possible, we compute base style only once and cache it, and then
+// just apply animation style on top of the cached base style. This is because
+// it's a common situation that elements have an unchanging base and then some
+// independent animation properties that change every frame and don't affect
+// any other properties or elements. (The exceptions can be found in
+// CanReuseBaseComputedStyle().) This is known as the “base computed style
+// optimization”.
 scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
@@ -859,11 +873,18 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
+  // The StyleResolverState is where we actually end up accumulating the
+  // computed style. It's just a convenient way of not having to send
+  // a lot of input/output variables around between the different functions.
   StyleResolverState state(GetDocument(), *element, style_recalc_context,
                            style_request);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
+  // Compute the base style, or reuse an existing cached base style if
+  // applicable (ie., only animation has changed). This is the bulk of the
+  // style computation itself, also also where the caching for the base
+  // computed style optimization happens.
   ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade);
 
   if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties())
@@ -1038,6 +1059,24 @@ void StyleResolver::ApplyMathMLCustomStyleProperties(
   }
 }
 
+// This is the core of computing base style for a given element, ie., the style
+// that does not depend on animations.
+//
+// The typical flow (barring special rules for pseudo-elements and similar) is:
+//
+//   1. Initialize the style object, by cloning the initial style.
+//      (InitStyleAndApplyInheritance() -> ApplyInheritance() ->
+//      CreateComputedStyle()).
+//   2. Copy any inherited properties from the parent element.
+//      (InitStyleAndApplyInheritance() -> ApplyInheritance() ->
+//      ComputedStyleBase::InheritFrom()).
+//   3. Collect all CSS rules that apply to this element
+//      (MatchAllRules(), into ElementRuleCollector).
+//   4. Apply all the found rules in the correct order
+//      (CascadeAndApplyMatchedProperties(), using StyleCascade).
+//
+// The base style is cached if possible (see ResolveStyle() on the “base
+// computed style optimization”).
 void StyleResolver::ApplyBaseStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
@@ -1053,6 +1092,8 @@ void StyleResolver::ApplyBaseStyle(
   if (ShouldComputeBaseComputedStyle(animation_base_computed_style)) {
     InitStyleAndApplyInheritance(*element, style_request, state);
 
+    // For some very special elements (e.g. <video>): Ensure internal UA style
+    // rules that are relevant for the element exist in the stylesheet.
     GetDocument().GetStyleEngine().EnsureUAStyleForElement(*element);
 
     if (!style_request.IsPseudoStyleRequest() && IsForcedColorsModeEnabled()) {

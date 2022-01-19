@@ -2961,6 +2961,10 @@ const ComputedStyle* Element::ParentComputedStyle() const {
   return nullptr;
 }
 
+// Recalculate the style for this element, and if that element notes
+// that children must also be recalculated, call ourself recursively
+// on any children (via RecalcDescendantStyles()), and/or update
+// pseudo-elements.
 void Element::RecalcStyle(const StyleRecalcChange change,
                           const StyleRecalcContext& style_recalc_context) {
   DCHECK(InActiveDocument());
@@ -3149,6 +3153,27 @@ static bool LayoutViewCanHaveChildren(Element& element) {
   return false;
 }
 
+// This function performs two important tasks:
+//
+//  1. It computes the correct style for the element itself.
+//  2. It figures out to what degree we need to propagate changes
+//     to child elements (and returns that).
+//
+// #1 can happen in one out of two ways. The normal way is that ask the
+// style resolver to compute the style from scratch (modulo some caching).
+// The other one is an optimization for “independent inherited properties”;
+// if this recalc is because the parent has changed only properties marked
+// as “independent” (i.e., they do not affect other properties; “visibility”
+// is an example of such a property), we can reuse our existing style and just
+// re-propagate those properties.
+//
+// #2 happens by diffing the old and new styles. In the extreme example,
+// if the two are identical, we don't need to invalidate child elements
+// at all. But if they are different, they will usually be different to
+// differing degrees; e.g. as noted above, if only independent properties
+// changed, we can inform children of that for less work down the tree.
+// Our own diff gets combined with the input StyleRecalcChange to produce a
+// child recalc policy that's roughly the strictest of the two.
 StyleRecalcChange Element::RecalcOwnStyle(
     const StyleRecalcChange change,
     const StyleRecalcContext& style_recalc_context) {
@@ -3177,6 +3202,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
   if (!new_style && (parent_style || (GetDocument().documentElement() == this &&
                                       LayoutViewCanHaveChildren(*this)))) {
+    // This is the normal flow through the function; calculates
+    // the element's style more or less from scratch (typically
+    // ending up calling StyleResolver::ResolveStyle()).
     new_style = StyleForLayoutObject(style_recalc_context);
   }
   if (new_style && !ShouldStoreComputedStyle(*new_style))
