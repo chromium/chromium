@@ -296,7 +296,7 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
         // Verify that |SaveMetadata| in |ProjectorMetadataController| is called
         // with the expected path.
         const std::string expected_screencast_name =
-            "Screencast 2021-01-02 20.02.10";
+            "Recording 2021-01-02 20.02.10";
         const base::FilePath expected_path =
             screencast_container_path.Append("root")
                 .Append("projector_data")

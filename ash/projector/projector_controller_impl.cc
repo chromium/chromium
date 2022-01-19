@@ -29,7 +29,7 @@ namespace {
 
 // String format of the screencast name.
 constexpr char kScreencastPathFmtStr[] =
-    "Screencast %d-%02d-%02d %02d.%02d.%02d";
+    "Recording %d-%02d-%02d %02d.%02d.%02d";
 
 // Create directory. Returns true if saving succeeded, or false otherwise.
 bool CreateDirectory(const base::FilePath& path) {
