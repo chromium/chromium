@@ -42,6 +42,9 @@ ci.builder(
         short_name = "aud",
     ),
     ssd = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -52,7 +55,9 @@ ci.builder(
         short_name = "vid",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_jobs = goma.jobs.J50,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -66,6 +71,9 @@ ci.builder(
     os = os.LINUX_BIONIC,
     # TODO(crbug.com/1173333): Make it tree-closing.
     tree_closing = False,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -78,6 +86,9 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     os = os.LINUX_BIONIC,
     tree_closing = False,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(

@@ -498,10 +498,10 @@
     },
 
     'chromium.linux': {
-      'Cast Audio Linux': 'cast_audio_release_bot',
-      'Cast Linux': 'cast_release_bot',
-      'Cast Linux Debug': 'cast_debug_bot',
-      'Cast Linux ARM64': 'cast_arm64_release_bot',
+      'Cast Audio Linux': 'cast_audio_release_bot_reclient',
+      'Cast Linux': 'cast_release_bot_reclient',
+      'Cast Linux Debug': 'cast_debug_bot_reclient',
+      'Cast Linux ARM64': 'cast_arm64_release_bot_reclient',
       'Deterministic Fuchsia (dbg)': 'debug_bot_fuchsia',
       'Deterministic Linux (dbg)': {
         'local': 'debug_bot_local_build',
@@ -1743,8 +1743,8 @@
 
     # Cast Linux takes very long in linking, possibly due to being on GCE
     # (crbug/794423).
-    'cast_release_bot': [
-      'cast', 'release_bot', 'minimal_symbols',
+    'cast_release_bot_reclient': [
+      'cast', 'release_bot_reclient', 'minimal_symbols',
     ],
 
     'cast_release_trybot': [
@@ -1755,16 +1755,24 @@
       'cast', 'debug_bot',
     ],
 
+    'cast_debug_bot_reclient': [
+      'cast', 'debug_bot_reclient',
+    ],
+
     'cast_arm64_release_bot': [
       'cast', 'release_bot', 'arm64', 'minimal_symbols',
+    ],
+
+    'cast_arm64_release_bot_reclient': [
+      'cast', 'release_bot_reclient', 'arm64', 'minimal_symbols',
     ],
 
     'cast_binary_size': [
       'cast', 'minimal_symbols', 'release_bot',
     ],
 
-    'cast_audio_release_bot': [
-      'cast', 'cast_audio', 'release_bot', 'minimal_symbols',
+    'cast_audio_release_bot_reclient': [
+      'cast', 'cast_audio', 'release_bot_reclient', 'minimal_symbols',
     ],
 
     'cast_audio_release_trybot': [
