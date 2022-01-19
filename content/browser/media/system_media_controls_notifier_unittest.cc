@@ -28,6 +28,7 @@ using PlaybackStatus =
     system_media_controls::SystemMediaControls::PlaybackStatus;
 using testing::_;
 using testing::Expectation;
+using testing::WithArg;
 
 class SystemMediaControlsNotifierTest : public testing::Test {
  public:
@@ -145,6 +146,23 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesImage) {
   EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_));
 
   SimulateImageChanged();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesID) {
+  // When a request ID is set, the system media controls should receive that ID.
+  auto request_id = base::UnguessableToken::Create();
+  EXPECT_CALL(mock_system_media_controls(), SetID(_))
+      .WillOnce(WithArg<0>([request_id](const std::string* value) {
+        ASSERT_NE(nullptr, value);
+        EXPECT_EQ(request_id.ToString(), *value);
+      }));
+  notifier().MediaSessionChanged(request_id);
+  testing::Mock::VerifyAndClearExpectations(&mock_system_media_controls());
+
+  // When the request ID is cleared, the system media controls should receive
+  // null.
+  EXPECT_CALL(mock_system_media_controls(), SetID(nullptr));
+  notifier().MediaSessionChanged(absl::nullopt);
 }
 
 #if BUILDFLAG(IS_WIN)

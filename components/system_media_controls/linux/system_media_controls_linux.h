@@ -62,6 +62,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetIsPlayPauseEnabled(bool value) override;
   void SetIsStopEnabled(bool value) override {}
   void SetPlaybackStatus(PlaybackStatus value) override;
+  void SetID(const std::string* value) override;
   void SetTitle(const std::u16string& value) override;
   void SetArtist(const std::u16string& value) override;
   void SetAlbum(const std::u16string& value) override;
@@ -108,6 +109,8 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   // signal if necessary.
   void SetMetadataPropertyInternal(const std::string& property_name,
                                    DbusVariant&& new_value);
+
+  void ClearTrackId();
 
   void ClearPosition();
 

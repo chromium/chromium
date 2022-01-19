@@ -52,7 +52,7 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const absl::optional<base::UnguessableToken>& request_id) override {}
+      const absl::optional<base::UnguessableToken>& request_id) override;
   void MediaSessionPositionChanged(
       const absl::optional<media_session::MediaPosition>& position) override;
 

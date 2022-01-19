@@ -42,6 +42,11 @@ constexpr int kNumMethodsToExport = 11;
 
 constexpr base::TimeDelta kUpdatePositionInterval = base::Milliseconds(100);
 
+const char kMprisAPINoTrackPath[] = "/org/mpris/MediaPlayer2/TrackList/NoTrack";
+
+const char kMprisAPICurrentTrackPathFormatString[] =
+    "/org/chromium/MediaPlayer2/TrackList/Track%s";
+
 }  // namespace
 
 const char kMprisAPIServiceNameFormatString[] =
@@ -123,6 +128,19 @@ void SystemMediaControlsLinux::SetPlaybackStatus(PlaybackStatus value) {
     StopPositionUpdateTimer();
 }
 
+void SystemMediaControlsLinux::SetID(const std::string* value) {
+  if (!value) {
+    ClearTrackId();
+    return;
+  }
+
+  const std::string track_id =
+      base::StringPrintf(kMprisAPICurrentTrackPathFormatString, value->c_str());
+  SetMetadataPropertyInternal(
+      "mpris:trackid",
+      MakeDbusVariant(DbusObjectPath(dbus::ObjectPath(track_id))));
+}
+
 void SystemMediaControlsLinux::SetTitle(const std::u16string& value) {
   SetMetadataPropertyInternal(
       "xesam:title", MakeDbusVariant(DbusString(base::UTF16ToUTF8(value))));
@@ -152,6 +170,7 @@ void SystemMediaControlsLinux::ClearMetadata() {
   SetTitle(std::u16string());
   SetArtist(std::u16string());
   SetAlbum(std::u16string());
+  ClearTrackId();
   ClearPosition();
 }
 
@@ -360,6 +379,12 @@ void SystemMediaControlsLinux::SetMetadataPropertyInternal(
   DCHECK(dictionary);
   if (dictionary->Put(property_name, std::move(new_value)))
     properties_->PropertyUpdated(kMprisAPIPlayerInterfaceName, "Metadata");
+}
+
+void SystemMediaControlsLinux::ClearTrackId() {
+  SetMetadataPropertyInternal(
+      "mpris:trackid",
+      MakeDbusVariant(DbusObjectPath(dbus::ObjectPath(kMprisAPINoTrackPath))));
 }
 
 void SystemMediaControlsLinux::ClearPosition() {

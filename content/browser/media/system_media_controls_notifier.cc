@@ -147,6 +147,16 @@ void SystemMediaControlsNotifier::MediaSessionActionsChanged(
   system_media_controls_->SetIsSeekToEnabled(seek_available);
 }
 
+void SystemMediaControlsNotifier::MediaSessionChanged(
+    const absl::optional<base::UnguessableToken>& request_id) {
+  if (!request_id.has_value()) {
+    system_media_controls_->SetID(nullptr);
+    return;
+  }
+  auto string_id = request_id->ToString();
+  system_media_controls_->SetID(&string_id);
+}
+
 void SystemMediaControlsNotifier::MediaControllerImageChanged(
     media_session::mojom::MediaSessionImageType type,
     const SkBitmap& bitmap) {
