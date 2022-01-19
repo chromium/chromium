@@ -218,11 +218,11 @@ int ProcessedStudy::GetExperimentIndexByName(const std::string& name) const {
   return -1;
 }
 
-const char* ProcessedStudy::GetDefaultExperimentName() const {
+const base::StringPiece ProcessedStudy::GetDefaultExperimentName() const {
   if (study_->default_experiment_name().empty())
     return kGenericDefaultExperimentName;
 
-  return study_->default_experiment_name().c_str();
+  return study_->default_experiment_name();
 }
 
 }  // namespace variations

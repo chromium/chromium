@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
 
   // Gets the default experiment name for the study, or a generic one if none is
   // specified.
-  const char* GetDefaultExperimentName() const;
+  const base::StringPiece GetDefaultExperimentName() const;
 
  private:
   // Corresponding Study object. Weak reference.
