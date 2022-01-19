@@ -29,8 +29,6 @@ QuickPairMetricsLogger::QuickPairMetricsLogger(
       retroactive_pairing_detector);
   pairer_broker_observation_.Observe(pairer_broker);
   ui_broker_observation_.Observe(ui_broker);
-
-  QP_LOG(ERROR) << feature_usage_metrics_logger_->IsAccessible().value();
 }
 
 QuickPairMetricsLogger::~QuickPairMetricsLogger() = default;
