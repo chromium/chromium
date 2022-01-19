@@ -39,6 +39,7 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content_public",
   "+content/public/browser",
   "+content/public/common",
+  "+extensions/buildflags/buildflags.h",
   "+extensions/common/constants.h",
   "+net",
   "+services/network/public/cpp",

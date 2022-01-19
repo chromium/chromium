@@ -25,7 +25,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
@@ -33,6 +33,11 @@
 
 #include "ui/gfx/paint_vector_icon.h"
 
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// GN doesn't understand conditional includes, so we need nogncheck here.
+#include "extensions/common/constants.h"  // nogncheck
 #endif
 
 namespace {
@@ -367,12 +372,20 @@ void OmniboxView::UpdateTextStyle(
 
   const std::u16string url_scheme =
       display_text.substr(scheme.begin, scheme.len);
+
+  const bool is_extension_url =
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      url_scheme == base::UTF8ToUTF16(extensions::kExtensionScheme);
+#else
+      false;
+#endif
+
   // Extension IDs are not human-readable, so deemphasize everything to draw
   // attention to the human-readable name in the location icon text.
   // Data URLs are rarely human-readable and can be used for spoofing, so draw
   // attention to the scheme to emphasize "this is just a bunch of data".
   // For normal URLs, the host is the best proxy for "identity".
-  if (url_scheme == base::UTF8ToUTF16(extensions::kExtensionScheme))
+  if (is_extension_url)
     deemphasize = EVERYTHING;
   else if (url_scheme == url::kDataScheme16)
     deemphasize = ALL_BUT_SCHEME;

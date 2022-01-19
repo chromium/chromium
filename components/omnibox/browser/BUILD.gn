@@ -272,7 +272,7 @@ static_library("browser") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/net",
-    "//extensions/common:common_constants",
+    "//extensions/buildflags",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -293,6 +293,7 @@ static_library("browser") {
   }
 
   if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
     sources += [
       "omnibox_input_watcher.cc",
       "omnibox_input_watcher.h",
