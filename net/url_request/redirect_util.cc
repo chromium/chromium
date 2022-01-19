@@ -108,6 +108,7 @@ scoped_refptr<HttpResponseHeaders> RedirectUtil::SynthesizeRedirectHeaders(
   std::string header_string = base::StringPrintf(
       "HTTP/1.1 %i Internal Redirect\n"
       "Location: %s\n"
+      "Cross-Origin-Resource-Policy: Cross-Origin\n"
       "Non-Authoritative-Reason: %s",
       response_code, redirect_destination.spec().c_str(),
       redirect_reason.c_str());

@@ -9943,6 +9943,11 @@ TEST_F(HTTPSRequestTest, HSTSCrossOriginAddHeaders) {
   EXPECT_TRUE(headers->EnumerateHeader(nullptr, "Access-Control-Allow-Origin",
                                        &received_cors_header));
   EXPECT_EQ(kOriginHeaderValue, received_cors_header);
+
+  std::string received_corp_header;
+  EXPECT_TRUE(headers->EnumerateHeader(nullptr, "Cross-Origin-Resource-Policy",
+                                       &received_corp_header));
+  EXPECT_EQ("Cross-Origin", received_corp_header);
 }
 
 namespace {
