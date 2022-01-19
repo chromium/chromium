@@ -31,15 +31,9 @@ source_set("webrtc_glue") {
 test("jingle_unittests") {
   sources = [
     "glue/fake_ssl_client_socket_unittest.cc",
-    "glue/logging_unittest.cc",
     "glue/thread_wrapper_unittest.cc",
     "run_all_unittests.cc",
   ]
-
-  if (is_android) {
-    # LibjingleLogTest don't pass on Android (crbug.com/843104).
-    sources -= [ "glue/logging_unittest.cc" ]
-  }
 
   deps = [
     ":webrtc_glue",

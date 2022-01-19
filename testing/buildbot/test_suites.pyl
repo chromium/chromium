@@ -1698,11 +1698,7 @@
         ],
       },
       'ipc_tests': {},
-      'jingle_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter',
-        ],
-      },
+      'jingle_unittests': {},
       'latency_unittests': {},
       'media_unittests': {},
       'midi_unittests': {},

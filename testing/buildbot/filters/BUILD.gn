@@ -188,7 +188,6 @@ source_set("fuchsia_filters") {
     "//testing/buildbot/filters/fuchsia.debug.snapshot_unittests.filter",
     "//testing/buildbot/filters/fuchsia.debug.views_unittests.filter",
     "//testing/buildbot/filters/fuchsia.headless_browsertests.filter",
-    "//testing/buildbot/filters/fuchsia.jingle_unittests.filter",
     "//testing/buildbot/filters/fuchsia.net_perftests.filter",
     "//testing/buildbot/filters/fuchsia.services_unittests.filter",
     "//testing/buildbot/filters/fuchsia.storage_unittests.filter",

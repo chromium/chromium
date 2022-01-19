@@ -15,17 +15,17 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// The following include come before including logging.h. It ensures that
-// libjingle style logging is used.
+// The following #include come before including logging.h. It ensures that
+// WebRTC-style logging is used.
 #define LOGGING_INSIDE_WEBRTC
 
 #include "build/build_config.h"
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
 
 #if BUILDFLAG(IS_WIN)
-static const wchar_t* const log_file_name = L"libjingle_logging.log";
+static const wchar_t* const log_file_name = L"webrtc_logging.log";
 #else
-static const char* const log_file_name = "libjingle_logging.log";
+static const char* const log_file_name = "webrtc_logging.log";
 #endif
 
 static const int kDefaultVerbosity = 0;
@@ -76,7 +76,15 @@ static bool Initialize(int verbosity_level) {
   return true;
 }
 
-TEST(LibjingleLogTest, DefaultConfiguration) {
+// LibjingleLogTest fail on Android (crbug.com/843104) and Fuchsia
+// (crbug.com/1241660).
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#define MAYBE_WebRtcTextLogTest DISABLED_WebRtcTextLogTest
+#else
+#define MAYBE_WebRtcTextLogTest WebRtcTextLogTest
+#endif
+
+TEST(MAYBE_WebRtcTextLogTest, DefaultConfiguration) {
   ASSERT_TRUE(Initialize(kDefaultVerbosity));
 
   // In the default configuration only warnings and errors should be logged.
@@ -95,13 +103,11 @@ TEST(LibjingleLogTest, DefaultConfiguration) {
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_ERROR)));
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_WARNING)));
   EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_INFO)));
-  EXPECT_FALSE(ContainsString(contents_of_file,
-                              AsString(rtc::LS_VERBOSE)));
-  EXPECT_FALSE(ContainsString(contents_of_file,
-                              AsString(rtc::LS_SENSITIVE)));
+  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_VERBOSE)));
+  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_SENSITIVE)));
 }
 
-TEST(LibjingleLogTest, InfoConfiguration) {
+TEST(MAYBE_WebRtcTextLogTest, InfoConfiguration) {
   ASSERT_TRUE(Initialize(0));  // 0 == Chrome's 'info' level.
 
   // In this configuration everything lower or equal to LS_INFO should be
@@ -119,13 +125,10 @@ TEST(LibjingleLogTest, InfoConfiguration) {
 
   // Make sure string contains the expected values.
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_ERROR)));
-  EXPECT_TRUE(ContainsString(contents_of_file,
-                             AsString(rtc::LS_WARNING)));
+  EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_WARNING)));
   EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_INFO)));
-  EXPECT_FALSE(ContainsString(contents_of_file,
-                              AsString(rtc::LS_VERBOSE)));
-  EXPECT_FALSE(ContainsString(contents_of_file,
-                              AsString(rtc::LS_SENSITIVE)));
+  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_VERBOSE)));
+  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_SENSITIVE)));
 
   // Also check that the log is proper.
   EXPECT_TRUE(ContainsString(contents_of_file, "logging_unittest.cc"));
@@ -133,7 +136,7 @@ TEST(LibjingleLogTest, InfoConfiguration) {
   EXPECT_FALSE(ContainsString(contents_of_file, "logging.cc"));
 }
 
-TEST(LibjingleLogTest, LogEverythingConfiguration) {
+TEST(MAYBE_WebRtcTextLogTest, LogEverythingConfiguration) {
   ASSERT_TRUE(Initialize(2));  // verbosity at level 2 allows LS_SENSITIVE.
 
   // In this configuration everything should be logged.
@@ -141,8 +144,8 @@ TEST(LibjingleLogTest, LogEverythingConfiguration) {
   RTC_LOG_V(rtc::LS_WARNING) << AsString(rtc::LS_WARNING);
   RTC_LOG(LS_INFO) << AsString(rtc::LS_INFO);
   static const int kFakeError = 1;
-  RTC_LOG_E(LS_INFO, EN, kFakeError) << "RTC_LOG_E(" << AsString(rtc::LS_INFO)
-                                     << ")";
+  RTC_LOG_E(LS_INFO, EN, kFakeError)
+      << "RTC_LOG_E(" << AsString(rtc::LS_INFO) << ")";
   RTC_LOG_V(rtc::LS_VERBOSE) << AsString(rtc::LS_VERBOSE);
   RTC_LOG_V(rtc::LS_SENSITIVE) << AsString(rtc::LS_SENSITIVE);
 
@@ -153,13 +156,10 @@ TEST(LibjingleLogTest, LogEverythingConfiguration) {
 
   // Make sure string contains the expected values.
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_ERROR)));
-  EXPECT_TRUE(ContainsString(contents_of_file,
-                             AsString(rtc::LS_WARNING)));
+  EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_WARNING)));
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_INFO)));
   // RTC_LOG_E
   EXPECT_TRUE(ContainsString(contents_of_file, strerror(kFakeError)));
-  EXPECT_TRUE(ContainsString(contents_of_file,
-                             AsString(rtc::LS_VERBOSE)));
-  EXPECT_TRUE(ContainsString(contents_of_file,
-                             AsString(rtc::LS_SENSITIVE)));
+  EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_VERBOSE)));
+  EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_SENSITIVE)));
 }
