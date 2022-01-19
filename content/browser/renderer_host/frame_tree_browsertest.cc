@@ -1677,7 +1677,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   // Navigate the iframe. It should still have the same nonce.
   NavigateIframeInFencedFrame(
       fenced_frame->child_at(0),
-      https_server()->GetURL("b.test", "/fenced_frames/nested.html"));
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
   const net::IsolationInfo& nested_iframe_new_isolation_info =
       fenced_frame->child_at(0)
           ->current_frame_host()
