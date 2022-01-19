@@ -107,7 +107,7 @@ std::string GetAudioProcesingPropertiesLogString(
 // AEC is active. This is currently the default on at least MacOS but is not
 // allowed for ChromeOS setups.
 constexpr bool IsIndependentSystemNsAllowed() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
   return true;
@@ -116,7 +116,7 @@ constexpr bool IsIndependentSystemNsAllowed() {
 
 int GetCaptureBufferSize(bool need_webrtc_processing,
                          const media::AudioParameters input_device_params) {
-#if defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
   // TODO(henrika): Re-evaluate whether to use same logic as other platforms.
   // https://crbug.com/638081
   return 2 * input_device_params.sample_rate() / 100;

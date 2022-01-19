@@ -119,7 +119,7 @@ bool MediaStreamAudioProcessor::WouldModifyAudio(
     return true;
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   if (properties.goog_auto_gain_control) {
     return true;
   }
