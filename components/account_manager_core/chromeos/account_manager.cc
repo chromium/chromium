@@ -540,28 +540,6 @@ void AccountManager::RemoveAccountInternal(
   MaybeRevokeTokenOnServer(account_key, old_token);
 }
 
-void AccountManager::RemoveAccount(const std::string& email) {
-  DCHECK_NE(init_state_, InitializationState::kNotStarted);
-
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::RemoveAccountByEmailInternal,
-                     weak_factory_.GetWeakPtr(), email);
-  RunOnInitialization(std::move(closure));
-}
-
-void AccountManager::RemoveAccountByEmailInternal(const std::string& email) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
-  for (const std::pair<::account_manager::AccountKey, AccountInfo> account :
-       accounts_) {
-    if (gaia::AreEmailsSame(account.second.raw_email, email)) {
-      RemoveAccountInternal(account.first /* account_key */);
-      return;
-    }
-  }
-}
-
 void AccountManager::UpsertAccount(
     const ::account_manager::AccountKey& account_key,
     const std::string& raw_email,

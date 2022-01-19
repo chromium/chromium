@@ -552,23 +552,6 @@ TEST_F(AccountManagerTest, RemovedAccountsAreImmediatelyUnavailable) {
   EXPECT_TRUE(GetAccountsBlocking().empty());
 }
 
-TEST_F(AccountManagerTest, AccountsCanBeRemovedByRawEmail) {
-  account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
-
-  account_manager()->RemoveAccount(kRawUserEmail);
-  EXPECT_TRUE(GetAccountsBlocking().empty());
-}
-
-TEST_F(AccountManagerTest, AccountsCanBeRemovedByCanonicalEmail) {
-  const std::string raw_email = "abc.123.456@gmail.com";
-  const std::string canonical_email = "abc123456@gmail.com";
-
-  account_manager()->UpsertAccount(kGaiaAccountKey, raw_email, kGaiaToken);
-
-  account_manager()->RemoveAccount(canonical_email);
-  EXPECT_TRUE(GetAccountsBlocking().empty());
-}
-
 TEST_F(AccountManagerTest, AccountRemovalIsPersistedToDisk) {
   account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
   account_manager()->RemoveAccount(kGaiaAccountKey);
