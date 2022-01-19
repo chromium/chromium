@@ -76,6 +76,6 @@ export function PersonalizationThemeTest() {
     const radioButton =
         personalizationThemeElement.shadowRoot!.getElementById('darkMode');
     assertTrue(!!radioButton);
-    assertEquals(radioButton!.getAttribute('aria-pressed'), 'true');
+    assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
   });
 }

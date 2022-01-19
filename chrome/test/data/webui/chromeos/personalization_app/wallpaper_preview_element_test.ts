@@ -62,7 +62,7 @@ export function WallpaperPreviewTest() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperPreviewElement);
 
-        assertEquals('none', placeholder!.style.display);
+        assertEquals('none', placeholder.style.display);
 
         // Sent a request to update user wallpaper. Loading placeholder should
         // come back.
@@ -74,7 +74,7 @@ export function WallpaperPreviewTest() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperPreviewElement);
 
-        assertEquals('', placeholder!.style.display);
+        assertEquals('', placeholder.style.display);
       });
 
   test('shows wallpaper image when loaded', async () => {
@@ -111,7 +111,7 @@ export function WallpaperPreviewTest() {
 
     // Dom-if will set display: none if the element is hidden. Make sure it is
     // not hidden.
-    assertNotEquals('none', placeholder!.style.display);
+    assertNotEquals('none', placeholder.style.display);
     assertEquals(
         null, wallpaperPreviewElement.shadowRoot!.querySelector('img'));
   });

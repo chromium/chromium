@@ -68,7 +68,7 @@ export function WallpaperSelectedTest() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
 
-        assertEquals('none', placeholder!.style.display);
+        assertEquals('none', placeholder.style.display);
 
         // Sent a request to update user wallpaper. Loading placeholder should
         // come back.
@@ -80,7 +80,7 @@ export function WallpaperSelectedTest() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
 
-        assertEquals('', placeholder!.style.display);
+        assertEquals('', placeholder.style.display);
       });
 
   test('shows wallpaper image and attribution when loaded', async () => {
@@ -89,7 +89,7 @@ export function WallpaperSelectedTest() {
 
     wallpaperSelectedElement = initElement(WallpaperSelected);
     await waitAfterNextRender(wallpaperSelectedElement);
-                                                                                                                             
+
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
     assertEquals(
         `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
@@ -195,7 +195,7 @@ export function WallpaperSelectedTest() {
 
     // Dom-if will set display: none if the element is hidden. Make sure it is
     // not hidden.
-    assertNotEquals('none', placeholder!.style.display);
+    assertNotEquals('none', placeholder.style.display);
     assertEquals(
         null, wallpaperSelectedElement.shadowRoot!.querySelector('img'));
   });

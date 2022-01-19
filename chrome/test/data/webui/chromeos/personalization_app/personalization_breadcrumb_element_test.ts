@@ -72,14 +72,15 @@ export function PersonalizationBreadcrumbTest() {
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('wallpaperLabel')]);
   });
 
   test('shows collection name when collection is selected', async () => {
     const collection = wallpaperProvider.collections![0];
+    assertTrue(!!collection);
     breadcrumbElement = initElement(
         PersonalizationBreadcrumb,
-        {'path': Paths.CollectionImages, 'collectionId': collection!.id});
+        {'path': Paths.CollectionImages, 'collectionId': collection.id});
 
     personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
@@ -91,8 +92,8 @@ export function PersonalizationBreadcrumbTest() {
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!,
-        [breadcrumbElement.i18n('wallpaperLabel'), collection!.name]);
+        breadcrumbContainer,
+        [breadcrumbElement.i18n('wallpaperLabel'), collection.name]);
   });
 
   test('show album name when Google Photos subpage is loaded', async () => {
@@ -116,7 +117,7 @@ export function PersonalizationBreadcrumbTest() {
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(breadcrumbContainer!, [
+    assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
       breadcrumbElement.i18n('googlePhotosLabel'), googlePhotosAlbum.title
     ]);
@@ -133,7 +134,7 @@ export function PersonalizationBreadcrumbTest() {
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(breadcrumbContainer!, [
+    assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
       breadcrumbElement.i18n('googlePhotosLabel')
     ]);
@@ -152,7 +153,7 @@ export function PersonalizationBreadcrumbTest() {
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(breadcrumbContainer!, [
+    assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
       breadcrumbElement.i18n('myImagesLabel')
     ]);

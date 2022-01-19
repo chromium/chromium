@@ -9,7 +9,7 @@ import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manag
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -44,8 +44,9 @@ suite(suiteName, function() {
 
   test(assert(TestNames.Visibility), function() {
     function assertViewVisible(id: string, expectIsVisible: boolean) {
-      const assertFunc = expectIsVisible ? assertTrue : assertFalse;
-      assertFunc(isChildVisible(viewManager, `#${id}`, true));
+      assertEquals(
+          expectIsVisible,
+          isChildVisible(viewManager, `#${id}`, /*checkLightDom=*/ true));
     }
 
     assertViewVisible('viewOne', false);

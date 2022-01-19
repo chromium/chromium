@@ -108,8 +108,8 @@ export function LocalImagesTest() {
 
         // Both items are sent. No images are rendered yet because they are not
         // done loading thumbnails.
-        assertEquals(2, ironList!.items!.length);
-        assertEquals(0, ironList!.shadowRoot!.querySelectorAll('img').length);
+        assertEquals(2, ironList.items!.length);
+        assertEquals(0, ironList.shadowRoot!.querySelectorAll('img').length);
 
         // Set loading finished for first thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -117,7 +117,7 @@ export function LocalImagesTest() {
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
-        assertEquals(2, ironList!.items!.length);
+        assertEquals(2, ironList.items!.length);
         let imgTags = localImagesElement.shadowRoot!.querySelectorAll('img');
         assertEquals(1, imgTags.length);
         assertEquals('data://localimage0data', imgTags![0]!.src);
