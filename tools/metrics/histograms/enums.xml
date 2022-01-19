@@ -4144,6 +4144,8 @@ Unknown properties are collapsed to zero. -->
   <int value="34" label="Start local hotspot (WifiManager)"/>
   <int value="35" label="Add Passpoint configuration (WifiManager)"/>
   <int value="36" label="IPsec IKE2 Android VPN connection (VpnManager)"/>
+  <int value="37" label="Android VPN IPv6 provisioning"/>
+  <int value="38" label="Android VPN IPv4 provisioning"/>
 </enum>
 
 <enum name="ArcNoWindowReason">
