@@ -104,7 +104,7 @@ export class Intent {
    */
   static create(url: URL, mode: Mode): Intent {
     const params = url.searchParams;
-    const getBool = (key) => params.get(key) === '1';
+    const getBool = (key: string) => params.get(key) === '1';
     const param = params.get('intentId');
     if (param === null) {
       throw new ParseError(url);
