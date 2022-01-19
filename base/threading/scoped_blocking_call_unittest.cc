@@ -196,12 +196,17 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
     internal::SetBlockingObserverForCurrentThread(&main_thread_observer);
   }
 
-  void TearDown() override {
+  void StopMonitoring() {
     // Reclaim worker threads before CancelMonitoringForTesting() to avoid a
     // data race (crbug.com/1071166#c16).
     task_environment_.reset();
     internal::IOJankMonitoringWindow::CancelMonitoringForTesting();
     internal::ClearBlockingObserverForCurrentThread();
+  }
+
+  void TearDown() override {
+    if (task_environment_)
+      StopMonitoring();
   }
 
  protected:
@@ -938,7 +943,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
   task_environment_->RunUntilIdle();
 
   // Force a report immediately.
-  internal::IOJankMonitoringWindow::CancelMonitoringForTesting();
+  StopMonitoring();
 
   // Test covered 2 monitoring windows.
   ASSERT_EQ(reports_.size(), 2U);
