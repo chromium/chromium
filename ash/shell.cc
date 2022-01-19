@@ -111,6 +111,7 @@
 #include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/caps_lock_notification_controller.h"
+#include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
@@ -895,6 +896,8 @@ Shell::~Shell() {
   // before it.
   detachable_base_handler_.reset();
 
+  firmware_update_notification_controller_.reset();
+
   pcie_peripheral_notification_controller_.reset();
 
   usb_peripheral_notification_controller_.reset();
@@ -982,6 +985,10 @@ void Shell::Init(
           shell_delegate_->GetMediaSessionService());
 
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
+
+  firmware_update_notification_controller_ =
+      std::make_unique<FirmwareUpdateNotificationController>(
+          message_center::MessageCenter::Get());
 
   pcie_peripheral_notification_controller_ =
       std::make_unique<PciePeripheralNotificationController>(

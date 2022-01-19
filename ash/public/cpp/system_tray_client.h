@@ -130,6 +130,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows the MultiDevice setup flow dialog.
   virtual void ShowMultiDeviceSetup() = 0;
 
+  // Shows the Firmware update app.
+  virtual void ShowFirmwareUpdate() = 0;
+
   // Attempts to restart the system for update.
   virtual void RequestRestartForUpdate() = 0;
 

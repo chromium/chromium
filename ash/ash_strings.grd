@@ -4586,6 +4586,17 @@ New install
       <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_OFF_SUBLABEL" desc="The sub label text shown under the tray menu button when Shelf Party mode is off.">
         Off
       </message>
+
+      <!-- Firmware UI notifications -->
+      <message name="IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_AVAILABLE_TITLE" desc="Notification title to indicate to users that firmware updates are available.">
+        Firmware updates available
+      </message>
+      <message name="IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_AVAILABLE_BODY" desc="Notification body text to indicate to users that firmware updates are available.">
+        Firmware updates are available for your device. Click to review and update.
+      </message>
+      <message name="IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_BUTTON_TEXT" desc="Notification button text, if the user clicks on the button it will redirect them to the Firmware Update app.">
+        Update
+      </message>
     </messages>
   </release>
 </grit>

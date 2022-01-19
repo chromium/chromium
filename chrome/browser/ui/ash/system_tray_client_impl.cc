@@ -575,6 +575,10 @@ void SystemTrayClientImpl::ShowMultiDeviceSetup() {
   chromeos::multidevice_setup::MultiDeviceSetupDialog::Show();
 }
 
+void SystemTrayClientImpl::ShowFirmwareUpdate() {
+  chrome::ShowFirmwareUpdatesApp(ProfileManager::GetActiveUserProfile());
+}
+
 void SystemTrayClientImpl::RequestRestartForUpdate() {
   browser_shutdown::NotifyAndTerminate(/*fast_path=*/true);
 }

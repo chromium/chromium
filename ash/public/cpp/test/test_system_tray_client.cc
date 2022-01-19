@@ -96,6 +96,10 @@ void TestSystemTrayClient::ShowMultiDeviceSetup() {
   show_multi_device_setup_count_++;
 }
 
+void TestSystemTrayClient::ShowFirmwareUpdate() {
+  show_firmware_update_count_++;
+}
+
 void TestSystemTrayClient::RequestRestartForUpdate() {}
 
 void TestSystemTrayClient::SetLocaleAndExit(
