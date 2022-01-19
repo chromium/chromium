@@ -49,6 +49,7 @@ android_resources("java_resources") {
     "java/res/drawable/logo_avatar_anonymous.xml",
     "java/res/values/dimens.xml",
   ]
+  deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
 }
 
 android_library("javatests") {

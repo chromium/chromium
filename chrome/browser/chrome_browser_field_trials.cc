@@ -180,6 +180,21 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
         fre_mobile_identity_consistency_field_trial::GetFREFieldTrialGroup();
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kFREMobileIdentityConsistencyTrial, group);
+
+    if (fre_mobile_identity_consistency_field_trial::IsFREFieldTrialEnabled()) {
+      // MobileIdentityConsistencyFREVariationsSynthetic field trial.
+      // This trial experiments with different title and subtitle variation in
+      // the FRE UI. This is a follow up experiment to
+      // MobileIdentityConsistencyFRESynthetic and thus is only used for the
+      // enabled population of MobileIdentityConsistencyFRESynthetic.
+      static constexpr char kFREMobileIdentityConsistencyVariationsTrial[] =
+          "FREMobileIdentityConsistencyVariationsSynthetic";
+      const std::string variation_group =
+          fre_mobile_identity_consistency_field_trial::
+              GetFREVariationsFieldTrialGroup();
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+          kFREMobileIdentityConsistencyVariationsTrial, variation_group);
+    }
   }
 #endif  // defined(OS_ANDROID)
 }

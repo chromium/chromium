@@ -382,6 +382,9 @@ public final class ChromePreferenceKeys {
      */
     public static final String FIRST_RUN_FIELD_TRIAL_GROUP = "Chrome.FirstRun.FieldTrialEnabled";
 
+    public static final String FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP =
+            "Chrome.FirstRun.VariationFieldTrialGroup";
+
     /**
      * The Feed articles visibility. This value is used as a pre-native cache and should be kept
      * consistent with {@link Pref.ARTICLES_LIST_VISIBLE}.
@@ -1073,6 +1076,7 @@ public final class ChromePreferenceKeys {
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 FEED_ARTICLES_LIST_VISIBLE,
                 FIRST_RUN_FIELD_TRIAL_GROUP,
+                FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP,
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FLAGS_CACHED.pattern(),
                 FLAGS_CRASH_STREAK_BEFORE_CACHE,

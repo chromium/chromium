@@ -16,4 +16,17 @@ std::string GetFREFieldTrialGroup() {
   return base::android::ConvertJavaStringToUTF8(env, group);
 }
 
+bool IsFREFieldTrialEnabled() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_FREMobileIdentityConsistencyFieldTrial_isEnabled(env);
+}
+
+std::string GetFREVariationsFieldTrialGroup() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> group =
+      Java_FREMobileIdentityConsistencyFieldTrial_getFirstRunVariationsTrialGroup(
+          env);
+  return base::android::ConvertJavaStringToUTF8(env, group);
+}
+
 }  // namespace fre_mobile_identity_consistency_field_trial

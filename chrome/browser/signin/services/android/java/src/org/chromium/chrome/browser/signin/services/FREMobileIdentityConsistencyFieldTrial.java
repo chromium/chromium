@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import android.util.Pair;
+
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
@@ -16,6 +19,8 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Random;
 
 /**
@@ -36,6 +41,64 @@ public class FREMobileIdentityConsistencyFieldTrial {
     @VisibleForTesting
     public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog";
 
+    /**
+     * The group variation values should be consecutive starting from zero. WELCOME_TO_CHROME acts
+     * as the control group of the experiment.
+     * If a new group needs to be added then another control group must also be added.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            VariationsGroup.DEFAULT,
+            VariationsGroup.WELCOME_TO_CHROME,
+            VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME,
+            VariationsGroup.WELCOME_TO_CHROME_STRONGEST_SECURITY,
+            VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES,
+            VariationsGroup.MOST_OUT_OF_CHROME,
+            VariationsGroup.MAKE_CHROME_YOUR_OWN,
+            VariationsGroup.MAX_VALUE,
+    })
+    private @interface VariationsGroup {
+        /**
+         * Default group of the experiment which is the group WELCOME_TO_CHROME.
+         *
+         * Title: 'Welcome to Chrome'
+         * Subtitle: None
+         */
+        int DEFAULT = -1;
+        /**
+         * Title: 'Welcome to Chrome'
+         * Subtitle: None
+         */
+        int WELCOME_TO_CHROME = 0;
+        /**
+         * Title: 'Welcome to Chrome'
+         * Subtitle: 'Sign in to get the most out of Chrome'
+         */
+        int WELCOME_TO_CHROME_MOST_OUT_OF_CHROME = 1;
+        /**
+         * Title: 'Welcome to Chrome'
+         * Subtitle: 'Sign in for additional features and Chrome's strongest security'
+         */
+        int WELCOME_TO_CHROME_STRONGEST_SECURITY = 2;
+        /**
+         * Title: 'Welcome to Chrome'
+         * Subtitle: 'Sign in to browse easier across devices'
+         */
+        int WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES = 3;
+        /**
+         * Title: 'Sign in to get the most out of Chrome'
+         * Subtitle: None
+         */
+        int MOST_OUT_OF_CHROME = 4;
+        /**
+         * Title: 'Sign in to make Chrome your own'
+         * Subtitle: None
+         */
+        int MAKE_CHROME_YOUR_OWN = 5;
+        int MAX_VALUE = 6;
+    }
+
+    @CalledByNative
     @AnyThread
     public static boolean isEnabled() {
         // Switch used for tests. Disabled by default otherwise.
@@ -63,6 +126,58 @@ public class FREMobileIdentityConsistencyFieldTrial {
         synchronized (LOCK) {
             return SharedPreferencesManager.getInstance().readString(
                     ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, DEFAULT_GROUP);
+        }
+    }
+
+    @CalledByNative
+    @AnyThread
+    public static String getFirstRunVariationsTrialGroup() {
+        @VariationsGroup
+        final int group = getFirstRunVariationsTrialGroupInternal();
+        switch (group) {
+            case VariationsGroup.WELCOME_TO_CHROME:
+                return "Control";
+            case VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME:
+                return "WelcomeToChrome_MostOutOfChrome";
+            case VariationsGroup.WELCOME_TO_CHROME_STRONGEST_SECURITY:
+                return "WelcomeToChrome_StrongestSecurity";
+            case VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES:
+                return "WelcomeToChrome_EasierAcrossDevices";
+            case VariationsGroup.MOST_OUT_OF_CHROME:
+                return "MostOutOfChrome";
+            case VariationsGroup.MAKE_CHROME_YOUR_OWN:
+                return "MakeChromeYourOwn";
+            default:
+                return "Default";
+        }
+    }
+
+    /**
+     * Returns different titles and subtitles depending upon the group variation.
+     *
+     * The first integer holds the string resource value for the title and the second integer
+     * for the subtitle. The second integer may be 0, in which case there is no subtitle.
+     */
+    @MainThread
+    public static Pair<Integer, Integer> getVariationTitleAndSubtitle() {
+        @VariationsGroup
+        final int group = getFirstRunVariationsTrialGroupInternal();
+        switch (group) {
+            case VariationsGroup.WELCOME_TO_CHROME:
+                return new Pair(R.string.fre_welcome, 0);
+            case VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME:
+                return new Pair(R.string.fre_welcome, R.string.signin_fre_subtitle_variation_1);
+            case VariationsGroup.WELCOME_TO_CHROME_STRONGEST_SECURITY:
+                return new Pair(R.string.fre_welcome, R.string.signin_fre_subtitle_variation_2);
+            case VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES:
+                return new Pair(R.string.fre_welcome, R.string.signin_fre_subtitle_variation_3);
+            case VariationsGroup.MOST_OUT_OF_CHROME:
+                return new Pair(R.string.signin_fre_title_variation_1, 0);
+            case VariationsGroup.MAKE_CHROME_YOUR_OWN:
+                return new Pair(R.string.signin_fre_title_variation_2, 0);
+            default:
+                // By default VariationsGroup.WELCOME_TO_CHROME UI is shown in the fre.
+                return new Pair(R.string.fre_welcome, 0);
         }
     }
 
@@ -115,10 +230,11 @@ public class FREMobileIdentityConsistencyFieldTrial {
         }
         assert enabledPercent + disabledPercent + oldFreWithUmaDialogPercent <= 100;
 
-        int randomBucket = new Random().nextInt(100);
+        final int randomBucket = new Random().nextInt(100);
         String group = DEFAULT_GROUP;
         if (randomBucket < enabledPercent) {
             group = ENABLED_GROUP;
+            createFirstRunVariationsTrial();
         } else if (randomBucket < enabledPercent + disabledPercent) {
             group = DISABLED_GROUP;
         } else if (randomBucket < enabledPercent + disabledPercent + oldFreWithUmaDialogPercent) {
@@ -128,6 +244,41 @@ public class FREMobileIdentityConsistencyFieldTrial {
         synchronized (LOCK) {
             SharedPreferencesManager.getInstance().writeString(
                     ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, group);
+        }
+    }
+
+    /**
+     * Creates variations of the FRE signin welcome screen with different title/subtitle
+     * combinations.
+     *
+     * The group information is registered as a synthetic field trial in native code inside
+     * ChromeBrowserFieldTrials::RegisterSyntheticTrials().
+     */
+    @MainThread
+    private static void createFirstRunVariationsTrial() {
+        // TODO(https://crbug.com/1276961): This percentage will be changed when the experiment
+        //  starts.
+        final int variationsPercentage = 0;
+        // For A/B testing all experiment groups should have the same percentages.
+        assert variationsPercentage * VariationsGroup.MAX_VALUE <= 100;
+
+        final int randomBucket = new Random().nextInt(100);
+        int group = VariationsGroup.DEFAULT;
+        if (randomBucket < variationsPercentage * VariationsGroup.MAX_VALUE) {
+            group = randomBucket / variationsPercentage;
+        }
+        synchronized (LOCK) {
+            SharedPreferencesManager.getInstance().writeInt(
+                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, group);
+        }
+    }
+
+    @AnyThread
+    private static int getFirstRunVariationsTrialGroupInternal() {
+        synchronized (LOCK) {
+            return SharedPreferencesManager.getInstance().readInt(
+                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP,
+                    VariationsGroup.DEFAULT);
         }
     }
 
