@@ -863,12 +863,12 @@ class AutofillInteractiveTestWithHistogramTester
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
-// Test is flaky on Linux TSAN, see http://crbug.com/1045709.
-#if defined(THREAD_SANITIZER)
+// Test is flaky on Linux TSAN and Mac, see http://crbug.com/1045709.
+#if defined(THREAD_SANITIZER) || defined(OS_MAC)
 #define MAYBE_BasicFormFill DISABLED_BasicFormFill
 #else
 #define MAYBE_BasicFormFill BasicFormFill
-#endif  // THREAD_SANITIZER
+#endif  // defined(THREAD_SANITIZER) || defined(OS_MAC)
 // Test that basic form fill is working.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestWithHistogramTester,
                        MAYBE_BasicFormFill) {
