@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/bind.h"
@@ -67,36 +68,48 @@ namespace {
 using test::DemoModeSetupResult;
 using test::SetupDummyOfflinePolicyDir;
 
-const test::UIPath kDemoConfirmationDialog = {"connect",
+constexpr char kArcTosId[] = "arc-tos";
+constexpr char kConsolidatedConsentId[] = "consolidated-consent";
+constexpr char kDemoSetupId[] = "demo-setup";
+constexpr char kDemoPrefsId[] = "demo-preferences";
+constexpr char kNetworkId[] = "network-selection";
+constexpr char kWelcomeId[] = "connect";
+
+const test::UIPath kDemoConfirmationDialog = {kWelcomeId,
                                               "demoModeConfirmationDialog"};
+const test::UIPath kDemoConfirmationOkButton = {kWelcomeId, "okButton"};
+const test::UIPath kDemoConfirmationCancelButton = {kWelcomeId, "cancelButton"};
 
-const test::UIPath kDemoPreferencesScreen = {"demo-preferences"};
-const test::UIPath kDemoPreferencesCountry = {"demo-preferences",
-                                              "countrySelect"};
-const test::UIPath kDemoPreferencesCountrySelect = {"demo-preferences",
+const test::UIPath kDemoPreferencesScreen = {kDemoPrefsId};
+const test::UIPath kDemoPreferencesCountry = {kDemoPrefsId, "countrySelect"};
+const test::UIPath kDemoPreferencesCountrySelect = {kDemoPrefsId,
                                                     "countrySelect", "select"};
-const test::UIPath kDemoPreferencesNext = {"demo-preferences", "nextButton"};
+const test::UIPath kDemoPreferencesNext = {kDemoPrefsId, "nextButton"};
 
-const test::UIPath kNetworkScreen = {"network-selection"};
-const test::UIPath kNetworkNextButton = {"network-selection", "nextButton"};
-const test::UIPath kNetworkBackButton = {"network-selection", "backButton"};
+const test::UIPath kNetworkScreen = {kNetworkId};
+const test::UIPath kNetworkNextButton = {kNetworkId, "nextButton"};
+const test::UIPath kNetworkBackButton = {kNetworkId, "backButton"};
 
-const test::UIPath kDemoSetupProgressDialog = {"demo-setup",
+const test::UIPath kDemoSetupProgressDialog = {kDemoSetupId,
                                                "demoSetupProgressDialog"};
-const test::UIPath kDemoSetupErrorDialog = {"demo-setup",
+const test::UIPath kDemoSetupErrorDialog = {kDemoSetupId,
                                             "demoSetupErrorDialog"};
-const test::UIPath kDemoSetupErrorDialogRetry = {"demo-setup", "retryButton"};
-const test::UIPath kDemoSetupErrorDialogPowerwash = {"demo-setup",
+const test::UIPath kDemoSetupErrorDialogRetry = {kDemoSetupId, "retryButton"};
+const test::UIPath kDemoSetupErrorDialogPowerwash = {kDemoSetupId,
                                                      "powerwashButton"};
-const test::UIPath kDemoSetupErrorDialogBack = {"demo-setup", "back"};
-const test::UIPath kDemoSetupErrorDialogMessage = {"demo-setup",
+const test::UIPath kDemoSetupErrorDialogBack = {kDemoSetupId, "back"};
+const test::UIPath kDemoSetupErrorDialogMessage = {kDemoSetupId,
                                                    "errorMessage"};
 
-const test::UIPath kArcTosDialog = {"arc-tos", "arcTosDialog"};
-const test::UIPath kArcTosAcceptButton = {"arc-tos", "arcTosAcceptButton"};
-const test::UIPath kArcTosDemoAppsNotice = {"arc-tos", "arcTosMetricsDemoApps"};
-const test::UIPath kArcTosBackButton = {"arc-tos", "arcTosBackButton"};
-const test::UIPath kArcTosNextButton = {"arc-tos", "arcTosNextButton"};
+const test::UIPath kArcTosDialog = {kArcTosId, "arcTosDialog"};
+const test::UIPath kArcTosAcceptButton = {kArcTosId, "arcTosAcceptButton"};
+const test::UIPath kArcTosDemoAppsNotice = {kArcTosId, "arcTosMetricsDemoApps"};
+const test::UIPath kArcTosBackButton = {kArcTosId, "arcTosBackButton"};
+const test::UIPath kArcTosNextButton = {kArcTosId, "arcTosNextButton"};
+
+const test::UIPath kCCLoadedDialog = {kConsolidatedConsentId, "loadedDialog"};
+const test::UIPath kCCArcTosLink = {kConsolidatedConsentId, "arcTosLink"};
+const test::UIPath kCCBackButton = {kConsolidatedConsentId, "backButton"};
 
 constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
 constexpr char kDefaultNetworkName[] = "eth1";
@@ -123,19 +136,19 @@ class DemoSetupTestBase : public OobeBaseTest {
   }
 
   void IsConfirmationDialogShown() {
-    test::OobeJS().ExpectAttributeEQ("open", kDemoConfirmationDialog, true);
+    test::OobeJS().ExpectDialogOpen(kDemoConfirmationDialog);
   }
 
   void IsConfirmationDialogHidden() {
-    test::OobeJS().ExpectAttributeEQ("open", kDemoConfirmationDialog, false);
+    test::OobeJS().ExpectDialogClosed(kDemoConfirmationDialog);
   }
 
   void ClickOkOnConfirmationDialog() {
-    test::OobeJS().TapOnPath({"connect", "okButton"});
+    test::OobeJS().TapOnPath(kDemoConfirmationOkButton);
   }
 
   void ClickCancelOnConfirmationDialog() {
-    test::OobeJS().TapOnPath({"connect", "cancelButton"});
+    test::OobeJS().TapOnPath(kDemoConfirmationCancelButton);
   }
 
   void TriggerDemoModeOnWelcomeScreen() {
@@ -336,6 +349,14 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     test::OobeJS().CreateVisibilityWaiter(true, kArcTosDialog)->Wait();
   }
 
+  void WaitForConsolidatedConsentScreen() {
+    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kCCLoadedDialog)->Wait();
+
+    // Make sure that ARC ToS link is visible.
+    test::OobeJS().ExpectVisiblePath(kCCArcTosLink);
+  }
+
   void AcceptArcTos() {
     test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
     test::OobeJS().ClickOnPath(kArcTosNextButton);
@@ -344,29 +365,42 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 
   void AcceptTermsAndExpectDemoSetupProgress() {
-    test::WaitForEulaScreen();
-    test::TapEulaAccept();
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+      WaitForConsolidatedConsentScreen();
 
-    WaitForArcTosScreen();
+      OobeScreenWaiter setup_progress_waiter(DemoSetupScreenView::kScreenId);
+      test::TapConsolidatedConsentAccept();
+      setup_progress_waiter.Wait();
+    } else {
+      test::WaitForEulaScreen();
+      test::TapEulaAccept();
 
-    test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
+      WaitForArcTosScreen();
 
-    // As setup screen shows only progress indicator and disappears afterwards
-    // we need to set up waiter before the action that triggers the screen.
-    OobeScreenWaiter setup_progress_waiter(DemoSetupScreenView::kScreenId);
-    AcceptArcTos();
-    setup_progress_waiter.Wait();
+      test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
+
+      // As setup screen shows only progress indicator and disappears afterwards
+      // we need to set up waiter before the action that triggers the screen.
+      OobeScreenWaiter setup_progress_waiter(DemoSetupScreenView::kScreenId);
+      AcceptArcTos();
+      setup_progress_waiter.Wait();
+    }
   }
 
   void AcceptTermsAndExpectDemoSetupFailure() {
-    test::WaitForEulaScreen();
-    test::TapEulaAccept();
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+      WaitForConsolidatedConsentScreen();
+      test::TapConsolidatedConsentAccept();
+    } else {
+      test::WaitForEulaScreen();
+      test::TapEulaAccept();
 
-    WaitForArcTosScreen();
+      WaitForArcTosScreen();
 
-    test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
+      test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
 
-    AcceptArcTos();
+      AcceptArcTos();
+    }
     // As we expect the error message to stay on the screen, it is safe to
     // wait for it in the usual manner.
     OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
@@ -701,16 +735,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   UseOfflineModeOnNetworkScreen();
 
-  test::WaitForEulaScreen();
-  test::TapEulaAccept();
-
-  WaitForArcTosScreen();
-
-  test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
-
-  OobeScreenWaiter setup_progress_waiter(DemoSetupScreenView::kScreenId);
-  AcceptArcTos();
-  setup_progress_waiter.Wait();
+  AcceptTermsAndExpectDemoSetupProgress();
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 
@@ -741,16 +766,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   UseOfflineModeOnNetworkScreen();
 
-  test::WaitForEulaScreen();
-  test::TapEulaAccept();
-
-  WaitForArcTosScreen();
-
-  test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
-
-  AcceptArcTos();
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kDemoSetupErrorDialog)->Wait();
+  AcceptTermsAndExpectDemoSetupFailure();
 
   ExpectErrorMessage(IDS_DEMO_SETUP_OFFLINE_POLICY_ERROR,
                      IDS_DEMO_SETUP_RECOVERY_OFFLINE_FATAL);
@@ -780,14 +796,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   UseOfflineModeOnNetworkScreen();
 
-  test::WaitForEulaScreen();
-  test::TapEulaAccept();
+  AcceptTermsAndExpectDemoSetupFailure();
 
-  WaitForArcTosScreen();
-  AcceptArcTos();
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kDemoSetupErrorDialog)->Wait();
   ExpectErrorMessage(IDS_DEMO_SETUP_LOCK_ERROR,
                      IDS_DEMO_SETUP_RECOVERY_POWERWASH);
 
@@ -843,7 +853,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   ClickNetworkListElement(kDefaultNetworkName);
   SimulateNetworkConnected();
 
-  test::WaitForEulaScreen();
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    test::WaitForConsolidatedConsentScreen();
+  } else {
+    test::WaitForEulaScreen();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -859,7 +873,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   ClickNetworkListElement(kDefaultNetworkName);
 
-  test::WaitForEulaScreen();
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    test::WaitForConsolidatedConsentScreen();
+  } else {
+    test::WaitForEulaScreen();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
@@ -875,24 +893,28 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
 #if defined(ADDRESS_SANITIZER)
-#define MAYBE_BackOnArcTermsScreen DISABLED_BackOnArcTermsScreen
+#define MAYBE_BackOnTermsScreen DISABLED_BackOnTermsScreen
 #else
-#define MAYBE_BackOnArcTermsScreen BackOnArcTermsScreen
+#define MAYBE_BackOnTermsScreen BackOnTermsScreen
 #endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnArcTermsScreen) {
-  // User cannot go to ARC ToS screen without accepting eula - simulate that.
-  StartupUtils::MarkEulaAccepted();
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnTermsScreen) {
   SimulateNetworkConnected();
 
   TriggerDemoModeOnWelcomeScreen();
 
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  UseOnlineModeOnNetworkScreen();
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  test::OobeJS().ClickOnPath(kArcTosBackButton);
-
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    UseOnlineModeOnNetworkScreen();
+    test::WaitForConsolidatedConsentScreen();
+    test::OobeJS().ClickOnPath(kCCBackButton);
+  } else {
+    // User cannot go to ARC ToS screen without accepting eula - simulate that.
+    StartupUtils::MarkEulaAccepted();
+    UseOnlineModeOnNetworkScreen();
+    OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
+    test::OobeJS().ClickOnPath(kArcTosBackButton);
+  }
   test::WaitForNetworkSelectionScreen();
 }
 

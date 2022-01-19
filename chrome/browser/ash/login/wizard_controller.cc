@@ -1351,7 +1351,7 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
       // method.
       DCHECK(demo_setup_controller_);
       PerformPostEulaActions();
-      ShowArcTermsOfServiceScreen();
+      ShowConsolidatedConsentScreen();
       break;
     case EulaScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR:
       DCHECK(!demo_setup_controller_);
