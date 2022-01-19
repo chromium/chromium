@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -119,7 +118,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
     // If |configure_timer_| is started, stops the timer, runs
     // ConfigureDisplays(), and returns true; returns false otherwise.
-    bool TriggerConfigureTimeout() WARN_UNUSED_RESULT;
+    [[nodiscard]] bool TriggerConfigureTimeout();
 
     // Gets the current delay of the |configure_timer_| if it's running, or zero
     // time delta otherwise.

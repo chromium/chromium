@@ -6,7 +6,6 @@
 #define UI_EVENTS_EVENT_DISPATCHER_H_
 
 #include "base/auto_reset.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -47,27 +46,27 @@ class EVENTS_EXPORT EventDispatcherDelegate {
   // Dispatches |event| to |target|. This calls |PreDispatchEvent()| before
   // dispatching the event, and |PostDispatchEvent()| after the event has been
   // dispatched.
-  EventDispatchDetails DispatchEvent(EventTarget* target, Event* event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] EventDispatchDetails DispatchEvent(EventTarget* target,
+                                                   Event* event);
 
  protected:
   // This is called once a target has been determined for an event, right before
   // the event is dispatched to the target. This function may modify |event| to
   // prepare it for dispatch (e.g. update event flags, location etc.).
-  virtual EventDispatchDetails PreDispatchEvent(
+  [[nodiscard]] virtual EventDispatchDetails PreDispatchEvent(
       EventTarget* target,
-      Event* event) WARN_UNUSED_RESULT;
+      Event* event);
 
   // This is called right after the event dispatch is completed.
   // |target| is NULL if the target was deleted during dispatch.
-  virtual EventDispatchDetails PostDispatchEvent(
+  [[nodiscard]] virtual EventDispatchDetails PostDispatchEvent(
       EventTarget* target,
-      const Event& event) WARN_UNUSED_RESULT;
+      const Event& event);
 
  private:
   // Dispatches the event to the target.
-  EventDispatchDetails DispatchEventToTarget(EventTarget* target,
-                                             Event* event) WARN_UNUSED_RESULT;
+  [[nodiscard]] EventDispatchDetails DispatchEventToTarget(EventTarget* target,
+                                                           Event* event);
 
   raw_ptr<EventDispatcher> dispatcher_;
 };

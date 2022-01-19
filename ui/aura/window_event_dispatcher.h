@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -93,10 +92,10 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // If the |target| is NULL, we will dispatch the event to the root-window.
   // |event_flags| will be set on the dispatched exit event.
   // TODO(beng): needed only for WTH::OnCursorVisibilityChanged().
-  ui::EventDispatchDetails DispatchMouseExitAtPoint(
+  [[nodiscard]] ui::EventDispatchDetails DispatchMouseExitAtPoint(
       Window* target,
       const gfx::Point& point,
-      int event_flags = ui::EF_NONE) WARN_UNUSED_RESULT;
+      int event_flags = ui::EF_NONE);
 
   // Gesture Recognition -------------------------------------------------------
 
@@ -196,13 +195,13 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // |mouse_moved_handler_|.
   // The event's location will be converted from |target|coordinate system to
   // |mouse_moved_handler_| coordinate system.
-  ui::EventDispatchDetails DispatchMouseEnterOrExit(Window* target,
-                                                    const ui::MouseEvent& event,
-                                                    ui::EventType type)
-      WARN_UNUSED_RESULT;
-  ui::EventDispatchDetails ProcessGestures(
+  [[nodiscard]] ui::EventDispatchDetails DispatchMouseEnterOrExit(
       Window* target,
-      ui::GestureRecognizer::Gestures gestures) WARN_UNUSED_RESULT;
+      const ui::MouseEvent& event,
+      ui::EventType type);
+  [[nodiscard]] ui::EventDispatchDetails ProcessGestures(
+      Window* target,
+      ui::GestureRecognizer::Gestures gestures);
 
   // Called when a window becomes invisible, either by being removed
   // from root window hierarchy, via SetVisible(false) or being destroyed.
@@ -265,7 +264,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // ReleaseMouseMoves()/ReleaseTouchMoves() is called.  NOTE: because these
   // methods dispatch events from WindowTreeHost the coordinates are in terms of
   // the root.
-  ui::EventDispatchDetails DispatchHeldEvents() WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails DispatchHeldEvents();
 
   // Posts a task to send synthesized mouse move event if there is no a pending
   // task.
@@ -273,7 +272,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
 
   // Creates and dispatches synthesized mouse move event using the current mouse
   // location.
-  ui::EventDispatchDetails SynthesizeMouseMoveEvent() WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails SynthesizeMouseMoveEvent();
 
   // Calls SynthesizeMouseMove() if |window| is currently visible and contains
   // the mouse cursor.

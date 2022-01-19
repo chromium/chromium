@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -73,8 +72,8 @@ class VIEWS_EXPORT Combobox : public View,
   // Gets/Sets the selected index.
   int GetSelectedIndex() const { return selected_index_; }
   void SetSelectedIndex(int index);
-  base::CallbackListSubscription AddSelectedIndexChangedCallback(
-      views::PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddSelectedIndexChangedCallback(
+      views::PropertyChangedCallback callback);
 
   // Looks for the first occurrence of |value| in |model()|. If found, selects
   // the found index and returns true. Otherwise simply noops and returns false.

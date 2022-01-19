@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ime/ash/ime_input_context_handler_interface.h"
@@ -92,10 +91,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
                                          uint32_t cursor_position) const;
 
   // Process a key returned from the input method.
-  virtual ui::EventDispatchDetails ProcessKeyEventPostIME(
+  [[nodiscard]] virtual ui::EventDispatchDetails ProcessKeyEventPostIME(
       ui::KeyEvent* event,
       bool handled,
-      bool stopped_propagation) WARN_UNUSED_RESULT;
+      bool stopped_propagation);
 
   // Resets context and abandon all pending results and key events.
   // If |reset_engine| is true, a reset signal will be sent to the IME.
@@ -132,12 +131,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // A VKEY_PROCESSKEY may be dispatched to the EventTargets.
   // It returns the result of whether the event has been stopped propagation
   // when dispatching post IME.
-  ui::EventDispatchDetails ProcessFilteredKeyPressEvent(ui::KeyEvent* event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails ProcessFilteredKeyPressEvent(
+      ui::KeyEvent* event);
 
   // Processes a key event that was not filtered by the input method.
-  ui::EventDispatchDetails ProcessUnfilteredKeyPressEvent(ui::KeyEvent* event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails ProcessUnfilteredKeyPressEvent(
+      ui::KeyEvent* event);
 
   // Processes any pending input method operations that issued while handling
   // the key event. Does not do anything if there were no pending operations.

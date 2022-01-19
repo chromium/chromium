@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 
@@ -60,9 +59,9 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) MetaDataProvider {
   virtual class ClassMetaData* GetClassMetaData() = 0;
 
  protected:
-  base::CallbackListSubscription AddPropertyChangedCallback(
+  [[nodiscard]] base::CallbackListSubscription AddPropertyChangedCallback(
       PropertyKey property,
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+      PropertyChangedCallback callback);
   void TriggerChangedCallback(PropertyKey property);
 
  private:

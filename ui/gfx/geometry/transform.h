@@ -8,7 +8,6 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "skia/ext/skia_matrix_44.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
@@ -193,7 +192,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Inverts the transform which is passed in. Returns true if successful, or
   // sets |transform| to the identify matrix on failure.
-  bool GetInverse(Transform* transform) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool GetInverse(Transform* transform) const;
 
   // Transposes this transform in place.
   void Transpose();

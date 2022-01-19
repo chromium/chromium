@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -247,8 +246,8 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Adds a callback subscription associated with the above selected property.
   // The callback will be invoked whenever the selected property changes.
-  base::CallbackListSubscription AddSelectedChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddSelectedChangedCallback(
+      PropertyChangedCallback callback);
 
   // Sets whether the submenu area of an ACTIONABLE_SUBMENU is selected.
   void SetSelectionOfActionableSubmenu(

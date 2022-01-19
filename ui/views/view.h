@@ -17,7 +17,6 @@
 #include "base/as_const.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -589,8 +588,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Adds a callback associated with the above Visible property. The callback
   // will be invoked whenever the Visible property changes.
-  base::CallbackListSubscription AddVisibleChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddVisibleChangedCallback(
+      PropertyChangedCallback callback);
 
   // Returns true if this view is drawn on screen.
   virtual bool IsDrawn() const;
@@ -607,8 +606,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Adds a callback associated with the above |Enabled| property. The callback
   // will be invoked whenever the property changes.
-  base::CallbackListSubscription AddEnabledChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddEnabledChangedCallback(
+      PropertyChangedCallback callback);
 
   // Returns the child views ordered in reverse z-order. That is, views later in
   // the returned vector have a higher z-order (are painted later) than those
@@ -797,8 +796,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Adds a callback associated with the above |ID| property. The callback will
   // be invoked whenever the property changes.
-  base::CallbackListSubscription AddIDChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddIDChangedCallback(
+      PropertyChangedCallback callback);
 
   // A group id is used to tag views which are part of the same logical group.
   // Focus can be moved between views with the same group using the arrow keys.
@@ -810,8 +809,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Adds a callback associated with the above |Group| property. The callback
   // will be invoked whenever the property changes.
-  base::CallbackListSubscription AddGroupChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddGroupChangedCallback(
+      PropertyChangedCallback callback);
 
   // If this returns true, the views from the same group can each be focused
   // when moving focus with the Tab/Shift-Tab key.  If this returns false,
@@ -949,8 +948,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Adds a callback associated with the above FlipCanvasOnPaintForRTLUI
   // property. The callback will be invoked whenever the
   // FlipCanvasOnPaintForRTLUI property changes.
-  base::CallbackListSubscription AddFlipCanvasOnPaintForRTLUIChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription
+  AddFlipCanvasOnPaintForRTLUIChangedCallback(PropertyChangedCallback callback);
 
   // When set, this view will ignore base::l18n::IsRTL() and instead be drawn
   // according to |is_mirrored|.

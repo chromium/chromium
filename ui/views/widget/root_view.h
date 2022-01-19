@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/events/event_processor.h"
@@ -168,11 +167,11 @@ class VIEWS_EXPORT RootView : public View,
   // |view| is the view receiving |event|. This function sends the event to all
   // the Views up the hierarchy that has |notify_enter_exit_on_child_| flag
   // turned on, but does not contain |sibling|.
-  ui::EventDispatchDetails NotifyEnterExitOfDescendant(
+  [[nodiscard]] ui::EventDispatchDetails NotifyEnterExitOfDescendant(
       const ui::MouseEvent& event,
       ui::EventType type,
       View* view,
-      View* sibling) WARN_UNUSED_RESULT;
+      View* sibling);
 
   // Send synthesized gesture end events to `gesture_handler` before replacement
   // if `gesture_handler` is in progress of gesture handling.

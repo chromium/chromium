@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -262,7 +261,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // be individually capturable, and its layer won't be tagged with a valid
   // |viz::SubtreeCaptureId|.
   // See https://crbug.com/1143930 for more details.
-  ScopedWindowCaptureRequest MakeWindowCapturable() WARN_UNUSED_RESULT;
+  [[nodiscard]] ScopedWindowCaptureRequest MakeWindowCapturable();
   const viz::SubtreeCaptureId& subtree_capture_id() const {
     return subtree_capture_id_;
   }

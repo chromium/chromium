@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -96,8 +95,8 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   // input type is not TEXT_INPUT_TYPE_NONE.
   void OnInputMethodChanged() const;
 
-  virtual ui::EventDispatchDetails DispatchKeyEventPostIME(
-      ui::KeyEvent* event) const WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual ui::EventDispatchDetails DispatchKeyEventPostIME(
+      ui::KeyEvent* event) const;
 
   // Convenience method to notify all observers of TextInputClient changes.
   void NotifyTextInputStateChanged(const TextInputClient* client);

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
@@ -76,8 +75,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   void ConfirmCompositionText();
   bool HasInputMethodResult();
   bool NeedInsertChar(const std::u16string& result_text) const;
-  ui::EventDispatchDetails SendFakeProcessKeyEvent(ui::KeyEvent* event) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails SendFakeProcessKeyEvent(
+      ui::KeyEvent* event) const;
   void UpdateContextFocusState();
   void ResetContext();
   bool IgnoringNonKeyInput() const;

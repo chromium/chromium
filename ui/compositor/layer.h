@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -613,7 +612,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // animations handled by old cc layer before the switch, |this| could be
   // released by an animation observer. Returns false when it happens and
   // callers should take cautions as well. Otherwise returns true.
-  bool SwitchToLayer(scoped_refptr<cc::Layer> new_layer) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SwitchToLayer(scoped_refptr<cc::Layer> new_layer);
 
   void SetCompositorForAnimatorsInTree(Compositor* compositor);
   void ResetCompositorForAnimatorsInTree(Compositor* compositor);

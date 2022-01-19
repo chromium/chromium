@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
@@ -35,19 +34,19 @@ GFX_EXPORT size_t SubsamplingFactorForBufferFormat(BufferFormat format,
 GFX_EXPORT size_t RowSizeForBufferFormat(size_t width,
                                          BufferFormat format,
                                          size_t plane);
-GFX_EXPORT bool RowSizeForBufferFormatChecked(size_t width,
-                                              BufferFormat format,
-                                              size_t plane,
-                                              size_t* size_in_bytes)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] GFX_EXPORT bool RowSizeForBufferFormatChecked(
+    size_t width,
+    BufferFormat format,
+    size_t plane,
+    size_t* size_in_bytes);
 
 // Returns the number of bytes used to store all the planes of a given |format|.
 GFX_EXPORT size_t BufferSizeForBufferFormat(const Size& size,
                                             BufferFormat format);
-GFX_EXPORT bool BufferSizeForBufferFormatChecked(const Size& size,
-                                                 BufferFormat format,
-                                                 size_t* size_in_bytes)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] GFX_EXPORT bool BufferSizeForBufferFormatChecked(
+    const Size& size,
+    BufferFormat format,
+    size_t* size_in_bytes);
 
 GFX_EXPORT size_t BufferOffsetForBufferFormat(const Size& size,
                                            BufferFormat format,

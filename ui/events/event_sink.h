@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_EVENT_SINK_H_
 #define UI_EVENTS_EVENT_SINK_H_
 
-#include "base/compiler_specific.h"
 #include "ui/events/event_dispatcher.h"
 
 namespace ui {
@@ -18,8 +17,8 @@ class EVENTS_EXPORT EventSink {
   virtual ~EventSink() {}
 
   // Receives events from EventSource.
-  virtual EventDispatchDetails OnEventFromSource(Event* event)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual EventDispatchDetails OnEventFromSource(
+      Event* event) = 0;
 };
 
 }  // namespace ui

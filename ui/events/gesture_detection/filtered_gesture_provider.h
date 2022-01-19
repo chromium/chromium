@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/gesture_detection/gesture_provider.h"
@@ -45,7 +44,7 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
     // Whether |event| occurred beyond the touch slop region.
     bool moved_beyond_slop_region;
   };
-  TouchHandlingResult OnTouchEvent(const MotionEvent& event) WARN_UNUSED_RESULT;
+  [[nodiscard]] TouchHandlingResult OnTouchEvent(const MotionEvent& event);
 
   // To be called upon asynchronous and synchronous ack of an event that was
   // forwarded after a successful call to |OnTouchEvent()|.

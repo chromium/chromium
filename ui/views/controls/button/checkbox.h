@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -39,8 +38,8 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   virtual void SetChecked(bool checked);
   bool GetChecked() const;
 
-  base::CallbackListSubscription AddCheckedChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddCheckedChangedCallback(
+      PropertyChangedCallback callback);
 
   void SetMultiLine(bool multi_line);
   bool GetMultiLine() const;

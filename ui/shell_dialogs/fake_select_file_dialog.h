@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -90,8 +89,8 @@ class FakeSelectFileDialog : public SelectFileDialog {
 
   // Calls the |FileSelected()| method on listener(). |filter_text| selects
   // which file extension filter to report.
-  bool CallFileSelected(const base::FilePath& file_path,
-                        base::StringPiece filter_text) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CallFileSelected(const base::FilePath& file_path,
+                                      base::StringPiece filter_text);
 
   base::WeakPtr<FakeSelectFileDialog> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

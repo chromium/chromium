@@ -59,8 +59,8 @@ class MetadataTestBaseClass : public ui::metadata::MetaDataProvider,
     TriggerChangedCallback(&int_property_);
   }
   int GetIntProperty() const { return int_property_; }
-  base::CallbackListSubscription AddIntPropertyChangedCallback(
-      ui::metadata::PropertyChangedCallback callback) WARN_UNUSED_RESULT {
+  [[nodiscard]] base::CallbackListSubscription AddIntPropertyChangedCallback(
+      ui::metadata::PropertyChangedCallback callback) {
     return AddPropertyChangedCallback(&int_property_, std::move(callback));
   }
 
@@ -88,8 +88,8 @@ class MetadataTestClass : public MetadataTestBaseClass {
     TriggerChangedCallback(&float_property_);
   }
   float GetFloatProperty() const { return float_property_; }
-  base::CallbackListSubscription AddFloatPropertyChangedCallback(
-      ui::metadata::PropertyChangedCallback callback) WARN_UNUSED_RESULT {
+  [[nodiscard]] base::CallbackListSubscription AddFloatPropertyChangedCallback(
+      ui::metadata::PropertyChangedCallback callback) {
     return AddPropertyChangedCallback(&float_property_, std::move(callback));
   }
 

@@ -5,8 +5,6 @@
 #ifndef UI_EVENTS_EVENT_REWRITER_CONTINUATION_H_
 #define UI_EVENTS_EVENT_REWRITER_CONTINUATION_H_
 
-#include "base/compiler_specific.h"
-
 namespace ui {
 
 struct EventDispatchDetails;
@@ -21,15 +19,14 @@ class EventRewriterContinuation {
   virtual ~EventRewriterContinuation() = default;
 
   // Send an event to the sink, via any later rewriters.
-  virtual EventDispatchDetails SendEvent(const Event* event)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual EventDispatchDetails SendEvent(const Event* event) = 0;
 
   // Send an event directly to the sink, bypassing any later rewriters.
-  virtual EventDispatchDetails SendEventFinally(const Event* event)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual EventDispatchDetails SendEventFinally(
+      const Event* event) = 0;
 
   // Discard an event, bypassing any later rewriters.
-  virtual EventDispatchDetails DiscardEvent() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual EventDispatchDetails DiscardEvent() = 0;
 };
 
 }  // namespace ui

@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -156,8 +155,8 @@ class VIEWS_EXPORT ViewBuilderCore {
   ViewBuilderCore& operator=(ViewBuilderCore&&);
   virtual ~ViewBuilderCore();
 
-  std::unique_ptr<View> Build() && WARN_UNUSED_RESULT;
-  virtual std::unique_ptr<ViewBuilderCore> Release() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] std::unique_ptr<View> Build() &&;
+  [[nodiscard]] virtual std::unique_ptr<ViewBuilderCore> Release() = 0;
 
  protected:
   // Vector of child view builders. If the optional index is included it will be
