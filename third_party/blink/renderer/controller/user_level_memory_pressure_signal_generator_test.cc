@@ -92,7 +92,7 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
 constexpr double kMemoryThresholdBytes = 1024 * 1024 * 1024;
 
 // Flaky on Android, see crbug/1054788.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_GeneratesWhenOverThreshold DISABLED_GeneratesWhenOverThreshold
 #else
 #define MAYBE_GeneratesWhenOverThreshold GeneratesWhenOverThreshold
@@ -138,7 +138,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 }
 
 // Flaky on Android, see crbug/1058178.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_GenerationPauses DISABLED_GenerationPauses
 #else
 #define MAYBE_GenerationPauses GenerationPauses

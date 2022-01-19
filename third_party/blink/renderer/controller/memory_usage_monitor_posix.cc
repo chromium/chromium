@@ -7,8 +7,10 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 #include <utility>
 
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 
 namespace blink {
@@ -94,7 +96,7 @@ bool MemoryUsageMonitorPosix::CalculateProcessMemoryFootprint(
 }
 
 void MemoryUsageMonitorPosix::GetProcessMemoryUsage(MemoryUsage& usage) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ResetFileDescriptors();
 #endif
   if (!statm_fd_.is_valid() || !status_fd_.is_valid())
@@ -110,7 +112,7 @@ void MemoryUsageMonitorPosix::GetProcessMemoryUsage(MemoryUsage& usage) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MemoryUsageMonitorPosix::ResetFileDescriptors() {
   if (file_descriptors_reset_)
     return;
@@ -134,7 +136,7 @@ void MemoryUsageMonitorPosix::SetProcFiles(base::File statm_file,
   status_fd_.reset(status_file.TakePlatformFile());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 void MemoryUsageMonitorPosix::Bind(
     mojo::PendingReceiver<mojom::blink::MemoryUsageMonitorLinux> receiver) {
