@@ -173,14 +173,14 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
     scoped_refptr<media::VideoFrame> video_frame) {
   switch (video_frame->format()) {
     case media::PIXEL_FORMAT_I420:
-      return new rtc::RefCountedObject<I420FrameAdapter>(
-          std::move(video_frame));
+      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new rtc::RefCountedObject<I420FrameAdapter>(std::move(video_frame)));
     case media::PIXEL_FORMAT_I420A:
-      return new rtc::RefCountedObject<I420AFrameAdapter>(
-          std::move(video_frame));
+      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new rtc::RefCountedObject<I420AFrameAdapter>(std::move(video_frame)));
     case media::PIXEL_FORMAT_NV12:
-      return new rtc::RefCountedObject<NV12FrameAdapter>(
-          std::move(video_frame));
+      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new rtc::RefCountedObject<NV12FrameAdapter>(std::move(video_frame)));
     default:
       NOTREACHED();
       return nullptr;

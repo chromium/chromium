@@ -80,7 +80,8 @@ void WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete(
   if (pc_->signaling_state() != webrtc::PeerConnectionInterface::kClosed) {
     if (surface_receivers_only_) {
       for (const auto& receiver : pc_->GetReceivers()) {
-        transceivers.push_back(new blink::SurfaceReceiverStateOnly(receiver));
+        transceivers.emplace_back(
+            new blink::SurfaceReceiverStateOnly(receiver));
       }
     } else {
       transceivers = pc_->GetTransceivers();

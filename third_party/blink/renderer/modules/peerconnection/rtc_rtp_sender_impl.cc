@@ -384,7 +384,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
       RTCStatsReportCallbackInternal callback,
       const Vector<webrtc::NonStandardGroupId>& exposed_group_ids) {
     native_peer_connection_->GetStats(
-        webrtc_sender_.get(),
+        rtc::scoped_refptr<webrtc::RtpSenderInterface>(webrtc_sender_.get()),
         CreateRTCStatsCollectorCallback(
             main_task_runner_, ConvertToBaseOnceCallback(std::move(callback)),
             exposed_group_ids));

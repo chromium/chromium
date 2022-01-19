@@ -870,9 +870,9 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
   const base::TimeDelta timestamp = frame->timestamp();
   webrtc::VideoFrame rtc_frame =
       webrtc::VideoFrame::Builder()
-          .set_video_frame_buffer(
+          .set_video_frame_buffer(rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
               new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-                  std::move(frame)))
+                  std::move(frame))))
           .set_timestamp_rtp(static_cast<uint32_t>(timestamp.InMicroseconds()))
           .set_timestamp_us(0)
           .set_rotation(webrtc::kVideoRotation_0)

@@ -36,9 +36,9 @@ webrtc::VideoFrame WebrtcVideoFrameAdapter::CreateVideoFrame(
         rect.left(), rect.top(), rect.width(), rect.height()});
   }
 
-  rtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter =
+  rtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter(
       new rtc::RefCountedObject<WebrtcVideoFrameAdapter>(
-          std::move(desktop_frame), std::move(frame_stats));
+          std::move(desktop_frame), std::move(frame_stats)));
 
   // In the empty case, it is important to set the video-frame's update
   // rectangle explicitly to empty, otherwise an unset value would be

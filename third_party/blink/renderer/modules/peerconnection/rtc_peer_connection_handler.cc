@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_checker.h"
@@ -1745,8 +1746,9 @@ RTCPeerConnectionHandler::AddTransceiverWithTrack(
   RunSynchronousRepeatingClosureOnSignalingThread(
       base::BindRepeating(
           &RTCPeerConnectionHandler::AddTransceiverWithTrackOnSignalingThread,
-          base::Unretained(this), base::RetainedRef(track_ref->webrtc_track()),
-          std::cref(init), base::Unretained(&transceiver_state_surfacer),
+          base::Unretained(this),
+          base::RetainedRef(track_ref->webrtc_track().get()), std::cref(init),
+          base::Unretained(&transceiver_state_surfacer),
           base::Unretained(&error_or_transceiver)),
       "AddTransceiverWithTrackOnSignalingThread");
   if (!error_or_transceiver.ok()) {
@@ -1771,13 +1773,14 @@ RTCPeerConnectionHandler::AddTransceiverWithTrack(
 }
 
 void RTCPeerConnectionHandler::AddTransceiverWithTrackOnSignalingThread(
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track,
+    webrtc::MediaStreamTrackInterface* webrtc_track,
     webrtc::RtpTransceiverInit init,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer,
     webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
         error_or_transceiver) {
-  *error_or_transceiver =
-      native_peer_connection_->AddTransceiver(webrtc_track, init);
+  *error_or_transceiver = native_peer_connection_->AddTransceiver(
+      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(webrtc_track),
+      init);
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
   if (error_or_transceiver->ok())
     transceivers.push_back(error_or_transceiver->value());
@@ -1868,11 +1871,12 @@ RTCPeerConnectionHandler::AddTrack(
   webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>>
       error_or_sender;
   RunSynchronousRepeatingClosureOnSignalingThread(
-      base::BindRepeating(
-          &RTCPeerConnectionHandler::AddTrackOnSignalingThread,
-          base::Unretained(this), base::RetainedRef(track_ref->webrtc_track()),
-          std::move(stream_ids), base::Unretained(&transceiver_state_surfacer),
-          base::Unretained(&error_or_sender)),
+      base::BindRepeating(&RTCPeerConnectionHandler::AddTrackOnSignalingThread,
+                          base::Unretained(this),
+                          base::RetainedRef(track_ref->webrtc_track().get()),
+                          std::move(stream_ids),
+                          base::Unretained(&transceiver_state_surfacer),
+                          base::Unretained(&error_or_sender)),
       "AddTrackOnSignalingThread");
   DCHECK(transceiver_state_surfacer.is_initialized());
   if (!error_or_sender.ok()) {
@@ -1928,17 +1932,19 @@ RTCPeerConnectionHandler::AddTrack(
 }
 
 void RTCPeerConnectionHandler::AddTrackOnSignalingThread(
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
+    webrtc::MediaStreamTrackInterface* track,
     std::vector<std::string> stream_ids,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer,
     webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>>*
         error_or_sender) {
-  *error_or_sender = native_peer_connection_->AddTrack(track, stream_ids);
+  *error_or_sender = native_peer_connection_->AddTrack(
+      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(track), stream_ids);
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
   if (error_or_sender->ok()) {
     auto sender = error_or_sender->value();
     if (configuration_.sdp_semantics == webrtc::SdpSemantics::kPlanB) {
-      transceivers = {new blink::SurfaceSenderStateOnly(sender)};
+      transceivers = {rtc::scoped_refptr<webrtc::RtpTransceiverInterface>(
+          new blink::SurfaceSenderStateOnly(sender))};
     } else {
       DCHECK_EQ(configuration_.sdp_semantics,
                 webrtc::SdpSemantics::kUnifiedPlan);
@@ -2065,7 +2071,7 @@ RTCPeerConnectionHandler::RemoveTrackUnifiedPlan(
 }
 
 void RTCPeerConnectionHandler::RemoveTrackUnifiedPlanOnSignalingThread(
-    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
+    webrtc::RtpSenderInterface* sender,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer,
     CancellableBooleanOperationResult* result) {
   bool is_successful = native_peer_connection_->RemoveTrack(sender);

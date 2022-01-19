@@ -394,7 +394,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                                       const FirstSessionDescription& remote);
 
   void AddTransceiverWithTrackOnSignalingThread(
-      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track,
+      webrtc::MediaStreamTrackInterface* webrtc_track,
       webrtc::RtpTransceiverInit init,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
@@ -406,7 +406,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
           error_or_transceiver);
   void AddTrackOnSignalingThread(
-      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
+      webrtc::MediaStreamTrackInterface* track,
       std::vector<std::string> stream_ids,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>>*
@@ -415,7 +415,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
   RemoveTrackUnifiedPlan(blink::RTCRtpSenderPlatform* web_sender);
   void RemoveTrackUnifiedPlanOnSignalingThread(
-      rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
+      webrtc::RtpSenderInterface* sender,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       CancellableBooleanOperationResult* result);
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOfferInternal(

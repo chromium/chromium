@@ -120,7 +120,8 @@ TEST_F(RTCRtpReceiverImplTest, CreateReceiver) {
   receiver_ = CreateReceiver(webrtc_track);
   EXPECT_FALSE(!receiver_->Track());
   EXPECT_EQ(receiver_->Track()->Id().Utf8(), webrtc_track->id());
-  EXPECT_EQ(receiver_->state().track_ref()->webrtc_track(), webrtc_track);
+  EXPECT_EQ(receiver_->state().track_ref()->webrtc_track().get(),
+            webrtc_track.get());
   EXPECT_FALSE(receiver_->GetEncodedAudioStreamTransformer());
   EXPECT_FALSE(receiver_->GetEncodedVideoStreamTransformer());
 }
@@ -130,17 +131,20 @@ TEST_F(RTCRtpReceiverImplTest, ShallowCopy) {
       blink::MockWebRtcAudioTrack::Create("webrtc_track");
   receiver_ = CreateReceiver(webrtc_track);
   auto copy = std::make_unique<RTCRtpReceiverImpl>(*receiver_);
-  EXPECT_EQ(receiver_->state().track_ref()->webrtc_track(), webrtc_track);
+  EXPECT_EQ(receiver_->state().track_ref()->webrtc_track().get(),
+            webrtc_track.get());
   const auto& webrtc_receiver = receiver_->state().webrtc_receiver();
   auto web_track_unique_id = receiver_->Track()->UniqueId();
   // Copy is identical to original.
   EXPECT_EQ(copy->state().webrtc_receiver(), webrtc_receiver);
-  EXPECT_EQ(copy->state().track_ref()->webrtc_track(), webrtc_track);
+  EXPECT_EQ(copy->state().track_ref()->webrtc_track().get(),
+            webrtc_track.get());
   EXPECT_EQ(copy->Track()->UniqueId(), web_track_unique_id);
   // Copy keeps the internal state alive.
   receiver_.reset();
   EXPECT_EQ(copy->state().webrtc_receiver(), webrtc_receiver);
-  EXPECT_EQ(copy->state().track_ref()->webrtc_track(), webrtc_track);
+  EXPECT_EQ(copy->state().track_ref()->webrtc_track().get(),
+            webrtc_track.get());
   EXPECT_EQ(copy->Track()->UniqueId(), web_track_unique_id);
 }
 

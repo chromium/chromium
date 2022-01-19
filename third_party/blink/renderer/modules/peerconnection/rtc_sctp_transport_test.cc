@@ -56,8 +56,8 @@ TEST_F(RTCSctpTransportTest, CreateFromMocks) {
   V8TestingScope scope;
 
   ExecutionContext* context = scope.GetExecutionContext();
-  rtc::scoped_refptr<webrtc::SctpTransportInterface> mock_native_transport =
-      new rtc::RefCountedObject<NiceMock<MockSctpTransport>>();
+  rtc::scoped_refptr<webrtc::SctpTransportInterface> mock_native_transport(
+      new rtc::RefCountedObject<NiceMock<MockSctpTransport>>());
   RTCSctpTransport* transport = MakeGarbageCollected<RTCSctpTransport>(
       context, mock_native_transport, main_thread_, worker_thread_);
   WeakPersistent<RTCSctpTransport> garbage_collection_observer = transport;

@@ -407,9 +407,11 @@ WebRtcVideoFrameAdapter::ScaledBuffer::CropAndScale(int offset_x,
                                                     int crop_height,
                                                     int scaled_width,
                                                     int scaled_height) {
-  return new rtc::RefCountedObject<ScaledBuffer>(
-      parent_, size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
-                                  scaled_width, scaled_height));
+  return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+      new rtc::RefCountedObject<ScaledBuffer>(
+          parent_,
+          size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
+                             scaled_width, scaled_height)));
 }
 
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
@@ -488,9 +490,11 @@ WebRtcVideoFrameAdapter::CropAndScale(int offset_x,
                                       int crop_height,
                                       int scaled_width,
                                       int scaled_height) {
-  return new rtc::RefCountedObject<ScaledBuffer>(
-      this, full_size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
-                                    scaled_width, scaled_height));
+  return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+      new rtc::RefCountedObject<ScaledBuffer>(
+          this,
+          full_size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
+                                  scaled_width, scaled_height)));
 }
 
 rtc::scoped_refptr<webrtc::VideoFrameBuffer>

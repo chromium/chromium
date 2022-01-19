@@ -53,13 +53,13 @@ bool MockWebRtcAudioSource::remote() const {
 MockMediaStream::MockMediaStream(const std::string& id) : id_(id) {}
 
 bool MockMediaStream::AddTrack(AudioTrackInterface* track) {
-  audio_track_vector_.push_back(track);
+  audio_track_vector_.emplace_back(track);
   NotifyObservers();
   return true;
 }
 
 bool MockMediaStream::AddTrack(VideoTrackInterface* track) {
-  video_track_vector_.push_back(track);
+  video_track_vector_.emplace_back(track);
   NotifyObservers();
   return true;
 }

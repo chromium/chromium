@@ -65,7 +65,7 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
   // TODO(hbos): Allow these methods to be called on any thread and make them
   // const. https://crbug.com/756436
   MediaStreamComponent* track();
-  webrtc::MediaStreamTrackInterface* webrtc_track();
+  rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track();
   bool IsEqual(MediaStreamComponent* component);
 
   // For testing.

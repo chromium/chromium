@@ -44,9 +44,9 @@ TEST(WebrtcVideoFrameAdapter, CreateVideoFrameWrapsDesktopFrame) {
 TEST(WebrtcVideoFrameAdapter, AdapterHasCorrectSize) {
   auto desktop_frame = MakeDesktopFrame(100, 200);
   auto frame_stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
-  rtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter =
+  rtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter(
       new rtc::RefCountedObject<WebrtcVideoFrameAdapter>(
-          std::move(desktop_frame), std::move(frame_stats));
+          std::move(desktop_frame), std::move(frame_stats)));
 
   EXPECT_EQ(100, adapter->width());
   EXPECT_EQ(200, adapter->height());
