@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
 
@@ -97,7 +98,7 @@ void RemoveFlagsSwitches(base::CommandLine::SwitchMap* switch_list);
 // Reset all flags to the default state by clearing all flags.
 void ResetAllFlags(flags_ui::FlagsStorage* flags_storage);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Show flags of the other browser (Lacros/Ash).
 void CrosUrlFlagsRedirect();
 #endif
