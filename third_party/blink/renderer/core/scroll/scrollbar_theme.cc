@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #endif
 
@@ -117,7 +117,7 @@ void ScrollbarTheme::PaintScrollCorner(
 
   DrawingRecorder recorder(context, display_item_client,
                            DisplayItem::kScrollCorner, corner_rect);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 #else
   Platform::Current()->ThemeEngine()->Paint(
@@ -130,7 +130,7 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
                                     const Scrollbar& scrollbar,
                                     const gfx::Rect& rect) {
 // Android paints tickmarks in the browser at FindResultBar.java.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (scrollbar.Orientation() != kVerticalScrollbar)
     return;
 

@@ -30,7 +30,7 @@ WebDocument WebDisallowTransitionScopeTest::TopWebDocument() const {
   return web_view_helper_.LocalMainFrame()->GetDocument();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/1067036): the death test fails on Android.
 TEST_F(WebDisallowTransitionScopeTest, TestDisallowTransition) {
   // Make the death test thread-safe. For more info, see:

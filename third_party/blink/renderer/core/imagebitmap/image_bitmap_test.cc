@@ -315,7 +315,7 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
 // This test is failing on asan-clang-phone because memory allocation is
 // declined. See <http://crbug.com/782286>.
 // See <http://crbug.com/1090252>, test is flaky in fuchsia.
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_CreateImageBitmapFromTooBigImageDataDoesNotCrash \
   DISABLED_CreateImageBitmapFromTooBigImageDataDoesNotCrash
 #else

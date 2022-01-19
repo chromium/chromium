@@ -733,7 +733,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Sets the inert bit on an out-of-process iframe, causing it to ignore
   // input.
   void SetIsInertForSubFrame(bool inert) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void GetStringAtPoint(const gfx::Point& point_in_local_root,
                         GetStringAtPointCallback callback) override;
 #endif
@@ -778,7 +778,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ScrollFocusedEditableNodeIntoRect(
       const gfx::Rect& rect_in_dips) override;
   void MoveCaret(const gfx::Point& point_in_dips) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
                          bool should_show_handle,
                          bool should_show_context_menu,

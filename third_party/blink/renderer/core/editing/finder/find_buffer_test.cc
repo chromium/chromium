@@ -662,20 +662,20 @@ TEST_F(FindBufferTest, SelectMultipleTest) {
   SetBodyContent("<select multiple><option>find me</option></select>");
   {
     FindBuffer buffer(WholeDocumentRange());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(0u, buffer.FindMatches("find", 0).CountForTesting());
 #else
     EXPECT_EQ(1u, buffer.FindMatches("find", 0).CountForTesting());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
   SetBodyContent("<select size=2><option>find me</option></select>");
   {
     FindBuffer buffer(WholeDocumentRange());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(0u, buffer.FindMatches("find", 0).CountForTesting());
 #else
     EXPECT_EQ(1u, buffer.FindMatches("find", 0).CountForTesting());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
   SetBodyContent("<select size=1><option>find me</option></select>");
   {

@@ -153,11 +153,11 @@ bool CSSNumericLiteralValue::IsComputationallyIndependent() const {
 }
 
 static String FormatNumber(double number, const char* suffix) {
-#if defined(OS_WIN) && _MSC_VER < 1900
+#if BUILDFLAG(IS_WIN) && _MSC_VER < 1900
   unsigned oldFormat = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
   String result = String::Format("%.6g%s", number, suffix);
-#if defined(OS_WIN) && _MSC_VER < 1900
+#if BUILDFLAG(IS_WIN) && _MSC_VER < 1900
   _set_output_format(oldFormat);
 #endif
   return result;

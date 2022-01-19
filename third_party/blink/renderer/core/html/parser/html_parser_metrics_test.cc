@@ -119,7 +119,7 @@ TEST_F(HTMLBackgroundParserMetricsTest, ReportSingleChunk) {
   EXPECT_GT(parsing_time_total_buckets[0].min, 0);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222653
 #define MAYBE_HistogramReportsTwoChunks DISABLED_HistogramReportsTwoChunks
 #else
@@ -205,7 +205,7 @@ TEST_F(HTMLBackgroundParserMetricsTest, MAYBE_HistogramReportsTwoChunks) {
   EXPECT_GT(yield_time_average_buckets[0].min, 0);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222653
 #define MAYBE_ReportSingleChunk DISABLED_ReportSingleChunk
 #else

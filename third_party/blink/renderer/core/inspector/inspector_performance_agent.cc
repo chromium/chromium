@@ -41,7 +41,7 @@ static constexpr const char* kInstanceCounterNames[] = {
 
 std::unique_ptr<base::ProcessMetrics> GetCurrentProcessMetrics() {
   base::ProcessHandle handle = base::Process::Current().Handle();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Port provider can be null if querying the current process.
   return base::ProcessMetrics::CreateProcessMetrics(handle, nullptr);
 #else

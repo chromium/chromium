@@ -265,7 +265,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_family_names.h"
 #include "third_party/blink/renderer/core/layout/layout_font_accessor_win.h"
 #endif
@@ -386,7 +386,7 @@ class ChromePrintContext : public PrintContext {
         current_height += page_size_in_pixels.width() + 1;
       }
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       // Account for the disabling of scaling in spoolPage. In the context of
       // SpoolAllPagesWithBoundariesForTesting the scale HAS NOT been
       // pre-applied.
@@ -414,7 +414,7 @@ class ChromePrintContext : public PrintContext {
     float scale = printed_page_width_ / page_rect.width();
 
     AffineTransform transform;
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     transform.Scale(scale);
 #endif
     transform.Translate(static_cast<float>(-page_rect.x()),
@@ -672,7 +672,7 @@ bool WebLocalFrameImpl::LastActivationWasRestricted() const {
   return GetFrame()->LastActivationWasRestricted();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 WebFontFamilyNames WebLocalFrameImpl::GetWebFontFamilyNames() const {
   FontFamilyNames font_family_names;
   GetFontsUsedByFrame(*GetFrame(), font_family_names);
@@ -1370,7 +1370,7 @@ WebString WebLocalFrameImpl::SelectionAsText() const {
 
   String text = GetFrame()->Selection().SelectedText(
       TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ReplaceNewlinesWithWindowsStyleNewlines(text);
 #endif
   ReplaceNBSPWithSpace(text);
@@ -2650,7 +2650,7 @@ void WebLocalFrameImpl::ShowContextMenu(
   params.selection_rect =
       LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(data.selection_rect);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The Samsung Email app relies on the context menu being shown after the
   // javascript onselectionchanged is triggered.
   // See crbug.com/729488

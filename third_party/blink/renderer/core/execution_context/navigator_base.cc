@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 #include <sys/utsname.h>
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -40,11 +40,11 @@ String NavigatorBase::platform() const {
   // matching the frozen string per https://github.com/WICG/ua-client-hints.
   // See content::frozen_user_agent_strings.
   if (RuntimeEnabledFeatures::UserAgentReductionEnabled(execution_context)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return "Linux armv81";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     return "MacIntel";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     return "Win32";
 #else
     return "Linux x86_64";

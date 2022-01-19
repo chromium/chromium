@@ -114,7 +114,7 @@ class WebPluginContainerTest : public PageTestBase {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const WebInputEvent::Modifiers kEditingModifier = WebInputEvent::kMetaKey;
 #else
 const WebInputEvent::Modifiers kEditingModifier = WebInputEvent::kControlKey;

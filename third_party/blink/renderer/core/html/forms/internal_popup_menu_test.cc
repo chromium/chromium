@@ -20,7 +20,7 @@ namespace blink {
 // InternalPopupMenuTest is not used on Android, and its Platform implementation
 // does not provide the resources (as in GetDataResource) needed by
 // InternalPopupMenu::WriteDocument.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST(InternalPopupMenuTest, ShowSelectDisplayNone) {
   auto dummy_page_holder_ =
@@ -48,6 +48,6 @@ TEST(InternalPopupMenuTest, ShowSelectDisplayNone) {
   menu->Show(PopupMenu::kOther);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

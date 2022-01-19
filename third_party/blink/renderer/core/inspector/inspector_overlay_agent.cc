@@ -1239,11 +1239,11 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
             V8AtomicString(isolate, "InspectorOverlayHost"), overlay_host_obj)
       .ToChecked();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EvaluateInOverlay("setPlatform", "windows");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   EvaluateInOverlay("setPlatform", "mac");
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   EvaluateInOverlay("setPlatform", "linux");
 #else
   EvaluateInOverlay("setPlatform", "other");

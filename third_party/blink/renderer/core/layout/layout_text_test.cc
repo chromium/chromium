@@ -221,7 +221,7 @@ TEST_F(LayoutTextTest, ContainsOnlyWhitespaceOrNbsp) {
             GetBasicText()->ContainsOnlyWhitespaceOrNbsp());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(LayoutTextTest, PrewarmFamily) {
   base::test::ScopedFeatureList features(kAsyncFontAccess);
   test::ScopedTestFontPrewarmer prewarmer;

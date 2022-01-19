@@ -65,7 +65,7 @@ TEST_F(LayoutTableCellDeathTest, CanSetColumnToMaxColumnIndex) {
 }
 
 // Death tests don't work properly on Android.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 TEST_F(LayoutTableCellDeathTest, CrashIfColumnOverflowOnSetting) {
   ASSERT_DEATH(cell_->SetAbsoluteColumnIndex(kMaxColumnIndex + 1), "");

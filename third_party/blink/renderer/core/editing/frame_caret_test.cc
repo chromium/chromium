@@ -35,7 +35,7 @@ class FrameCaretTest : public EditingTestBase {
   ScopedWebTestMode web_test_mode_{false};
 };
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222649
 #define MAYBE_BlinkAfterTyping DISABLED_BlinkAfterTyping
 #else

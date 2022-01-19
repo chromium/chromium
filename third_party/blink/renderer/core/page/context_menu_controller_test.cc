@@ -644,7 +644,7 @@ TEST_P(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
   EXPECT_EQ(context_menu_data.selected_text, "Sample Input Text");
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Mac has no way to open a context menu based on a keyboard event.
 TEST_P(ContextMenuControllerTest,
        ValidateNonLocatedContextMenuOnLargeImageElement) {

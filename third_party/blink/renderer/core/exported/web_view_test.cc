@@ -898,7 +898,7 @@ void WebViewTest::TestAutoResize(
   EXPECT_EQ(expected_height, client.GetTestData().Height());
 
 // Android disables main frame scrollbars.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(expected_horizontal_state,
             client.GetTestData().GetHorizontalScrollbarState());
   EXPECT_EQ(expected_vertical_state,
@@ -3171,7 +3171,7 @@ TEST_F(WebViewTest, FinishComposingTextDoesNotDismissHandles) {
   EXPECT_TRUE(frame->GetFrame()->Selection().IsHandleVisible());
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST_F(WebViewTest, TouchDoesntSelectEmptyTextarea) {
   RegisterMockedHttpURLLoad("longpress_textarea.html");
 

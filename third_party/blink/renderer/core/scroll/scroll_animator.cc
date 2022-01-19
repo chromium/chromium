@@ -34,6 +34,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -107,7 +108,7 @@ ScrollResult ScrollAnimator::UserScroll(
   // scroll, the callback is invoked immediately without being stored.
   DCHECK(HasRunningAnimation() || on_finish_.is_null());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   have_scrolled_since_page_load_ = true;
 #endif
 
@@ -392,7 +393,7 @@ void ScrollAnimator::CancelAnimation() {
   ScrollAnimatorCompositorCoordinator::CancelAnimation();
   if (on_finish_)
     std::move(on_finish_).Run();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   have_scrolled_since_page_load_ = false;
 #endif
 }

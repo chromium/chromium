@@ -130,7 +130,7 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
 
   void Trace(Visitor*) const override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool HaveScrolledSincePageLoad() { return have_scrolled_since_page_load_; }
 #endif
 
@@ -166,7 +166,7 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // if it is still useful.
   // TODO(crbug.com/1122682): This is necessary for fade-in/out animations
   // on Mac scrollbars. Remove this when MacScrollbarAnimatorImpl is removed.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool have_scrolled_since_page_load_;
 #endif
 };

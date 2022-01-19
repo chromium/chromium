@@ -74,7 +74,7 @@ class KeyboardTest : public testing::Test {
   // OSModifier is the platform's standard modifier key: control on most
   // platforms, but meta (command) on Mac.
   const char* InterpretOSModifierKeyPress(char key_code) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     WebInputEvent::Modifiers os_modifier = WebInputEvent::kMetaKey;
 #else
     WebInputEvent::Modifiers os_modifier = WebInputEvent::kControlKey;
@@ -116,37 +116,37 @@ TEST_F(KeyboardTest, TestCtrlReturn) {
 }
 
 TEST_F(KeyboardTest, TestOSModifierZ) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_STREQ("Undo", InterpretOSModifierKeyPress('Z'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierY) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_STREQ("Redo", InterpretOSModifierKeyPress('Y'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierA) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_STREQ("SelectAll", InterpretOSModifierKeyPress('A'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierX) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_STREQ("Cut", InterpretOSModifierKeyPress('X'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierC) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_STREQ("Copy", InterpretOSModifierKeyPress('C'));
 #endif
 }
 
 TEST_F(KeyboardTest, TestOSModifierV) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_STREQ("Paste", InterpretOSModifierKeyPress('V'));
 #endif
 }

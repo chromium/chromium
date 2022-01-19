@@ -1076,7 +1076,7 @@ void InspectorPageAgent::DidRunJavaScriptDialog() {
 void InspectorPageAgent::DidResizeMainFrame() {
   if (!inspected_frames_->Root()->IsMainFrame())
     return;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   PageLayoutInvalidated(true);
 #endif
   GetFrontend()->frameResized();

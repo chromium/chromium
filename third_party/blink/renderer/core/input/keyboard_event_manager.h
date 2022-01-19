@@ -28,7 +28,7 @@ class CORE_EXPORT KeyboardEventManager final
  public:
   static const int kAccessKeyModifiers =
 // TODO(crbug.com/618397): Add a settings to control this behavior.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       WebInputEvent::kControlKey | WebInputEvent::kAltKey;
 #else
       WebInputEvent::kAltKey;

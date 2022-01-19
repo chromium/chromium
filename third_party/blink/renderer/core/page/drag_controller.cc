@@ -95,7 +95,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -1054,7 +1054,7 @@ static gfx::Point DragLocationForSelectionDrag(const LocalFrame& frame) {
 }
 
 static const gfx::Size MaxDragImageSize(float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Match Safari's drag image size.
   static const gfx::Size kMaxDragImageSize(400, 400);
 #else
@@ -1368,7 +1368,7 @@ DragOperation DragController::GetDragOperation(DragData* drag_data) {
 bool DragController::IsCopyKeyDown(DragData* drag_data) {
   int modifiers = drag_data->GetModifiers();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return modifiers & WebInputEvent::kAltKey;
 #else
   return modifiers & WebInputEvent::kControlKey;

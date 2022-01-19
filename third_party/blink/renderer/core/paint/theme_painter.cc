@@ -51,7 +51,7 @@ namespace blink {
 namespace {
 
 bool IsMultipleFieldsTemporalInput(const AtomicString& type) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return type == input_type_names::kDate ||
          type == input_type_names::kDatetimeLocal ||
          type == input_type_names::kMonth || type == input_type_names::kTime ||

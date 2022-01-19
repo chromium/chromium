@@ -643,7 +643,7 @@ class CORE_EXPORT LocalFrame final
   void ClosePageForTesting();
   void SetInitialFocus(bool reverse);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void GetCharacterIndexAtPoint(const gfx::Point& point);
 #endif
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
@@ -714,7 +714,7 @@ class CORE_EXPORT LocalFrame final
   // to FrameFirstPaint.
   void OnFirstPaint(bool text_painted, bool image_painted);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void ResetTextInputHostForTesting();
   void RebindTextInputHostForTesting();
 #endif

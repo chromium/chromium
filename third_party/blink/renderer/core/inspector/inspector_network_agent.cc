@@ -114,7 +114,7 @@ using protocol::Response;
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr int kDefaultTotalBufferSize = 10 * 1000 * 1000;    // 10 MB
 constexpr int kDefaultResourceBufferSize = 5 * 1000 * 1000;  // 5 MB
 #else

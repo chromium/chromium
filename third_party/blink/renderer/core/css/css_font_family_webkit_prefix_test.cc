@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
@@ -49,7 +49,7 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
     m_standard_font = GetGenericGenericFontFamilySettings().Standard();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // An extra step is required to ensure that the system font is configured.
     // TODO(crbug.com/969622): Remove this.
     blink::WebFontRendering::SetMenuFontMetrics(
@@ -129,7 +129,7 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
   // Counter should be triggered on macOS, even if -apple-system is placed
   // before or -system-ui is place after.
   LoadPageWithFontFamilyValue("-apple-system, BlinkMacSystemFont, system-ui");
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(GetDocument().IsUseCounted(WebFeature::kBlinkMacSystemFont));
 #else
   ASSERT_FALSE(GetDocument().IsUseCounted(WebFeature::kBlinkMacSystemFont));

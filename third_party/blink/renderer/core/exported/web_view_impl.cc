@@ -178,17 +178,17 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/common/features.h"
 #endif
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/platform/web_font_render_style.h"
 #include "ui/gfx/font_render_params.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
@@ -369,7 +369,7 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
 }
 
 WebMediaPlayer::SurfaceLayerMode GetVideoSurfaceLayerMode() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!::features::UseSurfaceLayerForVideo())
     return blink::WebMediaPlayer::SurfaceLayerMode::kNever;
 #endif
@@ -396,12 +396,12 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
   return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;
 }
 
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 SkFontHinting RendererPreferencesToSkiaHinting(
     const blink::RendererPreferences& prefs) {
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!prefs.should_antialias_text) {
     // When anti-aliasing is off, GTK maps all non-zero hinting settings to
     // 'Normal' hinting so we do the same. Otherwise, folks who have 'Slight'
@@ -434,7 +434,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
       return SkFontHinting::kNormal;
   }
 }
-#endif  // OS_MAC
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -933,7 +933,7 @@ void WebViewImpl::ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) {
   StartPageScaleAnimation(scroll, false, scale, kFindInPageAnimationDuration);
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Mac has no way to open a context menu based on a keyboard event.
 WebInputEventResult WebViewImpl::SendContextMenuEvent() {
   // The contextMenuController() holds onto the last context menu that was
@@ -1612,7 +1612,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.dont_send_key_events_to_javascript);
   settings->SetWebAppScope(WebString::FromASCII(prefs.web_app_scope.spec()));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   settings->SetAllowCustomScrollbarInMainFrame(false);
   settings->SetAccessibilityFontScaleFactor(prefs.font_scale_factor);
   settings->SetDeviceScaleAdjustment(prefs.device_scale_adjustment);
@@ -1659,7 +1659,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.scroll_top_left_interop_enabled);
   RuntimeEnabledFeatures::SetAcceleratedSmallCanvasesEnabled(
       !prefs.disable_accelerated_small_canvases);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   settings->SetForceDarkModeEnabled(prefs.force_dark_mode_enabled);
 
   settings->SetAccessibilityAlwaysShowFocus(prefs.always_show_focus);
@@ -1794,12 +1794,12 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetTouchDragEndContextMenu(prefs.touch_dragend_context_menu);
   settings->SetWebXRImmersiveArAllowed(prefs.webxr_immersive_ar_allowed);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   web_view_impl->SetMaximumLegibleScale(
       prefs.default_maximum_page_scale_factor);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RuntimeEnabledFeatures::SetMiddleClickAutoscrollEnabled(true);
 #endif
 
@@ -3136,11 +3136,11 @@ void WebViewImpl::UpdateBaseBackgroundColor() {
 }
 
 void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
       gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
           renderer_preferences_.subpixel_rendering));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Cache the system font metrics in blink.
   WebFontRendering::SetMenuFontMetrics(
       WebString::FromUTF16(renderer_preferences_.menu_font_family_name),
@@ -3170,15 +3170,16 @@ void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
       renderer_preferences_.use_subpixel_positioning);
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(OS_ANDROID)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !BUILDFLAG(IS_ANDROID)
   if (!renderer_preferences_.system_font_family_name.empty()) {
     WebFontRenderStyle::SetSystemFontFamily(blink::WebString::FromUTF8(
         renderer_preferences_.system_font_family_name));
   }
-#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
-        // !defined(OS_ANDROID)
-#endif  // defined(OS_WIN)
-#endif  // !defined(OS_MAC)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
+        // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_MAC)
 }
 
 void WebViewImpl::ActivatePrerenderedPage(

@@ -146,7 +146,7 @@ TextDecorationInfo::TextDecorationInfo(
     if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kSpellingError) ||
         EnumHasFlags(decoration.Lines(), TextDecorationLine::kGrammarError)) {
       // Spelling and grammar error thickness doesn't depend on the font size.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       applied_decorations_thickness_.push_back(2.f);
 #else
       applied_decorations_thickness_.push_back(1.f);
@@ -216,7 +216,7 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
 
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
   if (IsSpellingOrGrammarError()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     return ETextDecorationStyle::kDotted;
 #else
     return ETextDecorationStyle::kWavy;

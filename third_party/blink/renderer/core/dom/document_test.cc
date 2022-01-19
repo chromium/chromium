@@ -888,7 +888,7 @@ TEST_F(DocumentTest, CanExecuteScriptsWithSandboxAndIsolatedWorld) {
 }
 
 // Android does not support non-overlay top-level scrollbars.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DocumentTest, ElementFromPointOnScrollbar) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   // This test requires that scrollbars take up space.
@@ -915,7 +915,7 @@ TEST_F(DocumentTest, ElementFromPointOnScrollbar) {
   // A hit test above the horizontal scrollbar should hit the body element.
   EXPECT_EQ(GetDocument().ElementFromPoint(1, 580), GetDocument().body());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DocumentTest, ElementFromPointWithPageZoom) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);

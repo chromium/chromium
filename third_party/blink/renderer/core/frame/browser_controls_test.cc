@@ -205,7 +205,7 @@ class BrowserControlsSimTest : public SimTest {
 // Disable these tests on Mac OSX until further investigation.
 // Local build on Mac is OK but the bot fails. This is not an issue as
 // Browser Controls are currently only used on Android.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE(test) DISABLED_##test
 #else
 #define MAYBE(test) test

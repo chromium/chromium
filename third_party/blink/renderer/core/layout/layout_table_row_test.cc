@@ -56,7 +56,7 @@ TEST_F(LayoutTableRowDeathTest, CanSetRowToMaxRowIndex) {
 }
 
 // Death tests don't work properly on Android.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 TEST_F(LayoutTableRowDeathTest, CrashIfRowOverflowOnSetting) {
   ASSERT_DEATH(row_->SetRowIndex(kMaxRowIndex + 1), "");

@@ -1470,7 +1470,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarWhenStyleOwnerChange) {
 // a huge fadeout delay.
 // Disable on Android since VirtualTime not work for Android.
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ScrollbarsTestWithVirtualTimer,
        DISABLED_TestNonCompositedOverlayScrollbarsFade) {
 #else
@@ -1580,7 +1580,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Make sure native scrollbar can change by Emulator.
 // Disable on Android since Android always enable OverlayScrollbar.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ScrollbarAppearanceTest,
        DISABLED_NativeScrollbarChangeToMobileByEmulator) {
 #else
@@ -1673,7 +1673,7 @@ TEST_P(ScrollbarAppearanceTest, NativeScrollbarChangeToMobileByEmulator) {
   EXPECT_FALSE(div_scrollable->VerticalScrollbar()->GetTheme().IsMockTheme());
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Ensure that the minimum length for a scrollbar thumb comes from the
 // WebThemeEngine. Note, Mac scrollbars differ from all other platforms so this
 // test doesn't apply there. https://crbug.com/682209.
@@ -2764,7 +2764,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarHypotheticalThickness) {
 // press on scrollbar button should keep scrolling after content loaded.
 // Disable on Android since VirtualTime not work for Android.
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ScrollbarsTestWithVirtualTimer,
        DISABLED_PressScrollbarButtonOnInfiniteScrolling) {
 #else
@@ -2935,7 +2935,7 @@ INSTANTIATE_TEST_SUITE_P(NonOverlay,
                          ScrollbarColorSchemeTest,
                          testing::Values(false));
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 // Not able to paint non-overlay scrollbars through ThemeEngine on Android or
 // Mac.
 #define MAYBE_ThemeEnginePaint DISABLED_ThemeEnginePaint

@@ -2299,7 +2299,7 @@ TEST_P(AnimationAnimationTestCompositing,
             CompositorAnimations::kTimelineSourceHasInvalidCompositingState);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222646
 #define MAYBE_ContentVisibleDisplayLockTest \
   DISABLED_ContentVisibleDisplayLockTest

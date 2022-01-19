@@ -521,7 +521,7 @@ void DataTransfer::WriteSelection(const FrameSelection& selection) {
   }
 
   String str = selection.SelectedTextForClipboard();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ReplaceNewlinesWithWindowsStyleNewlines(str);
 #endif
   ReplaceNBSPWithSpace(str);

@@ -37,6 +37,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom-blink.h"
@@ -206,7 +207,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/substring_util.h"
 #include "third_party/blink/renderer/platform/fonts/mac/attributed_string_type_converter.h"
@@ -2668,7 +2669,7 @@ void LocalFrame::SetInitialFocus(bool reverse) {
               : mojom::blink::FocusType::kForward);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
   HitTestLocation location(View()->ViewportToFrame(gfx::Point(point)));
   HitTestResult result = GetEventHandler().HitTestResultAtLocation(
@@ -3045,7 +3046,7 @@ bool LocalFrame::ShouldThrottleDownload() {
   return false;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void LocalFrame::ResetTextInputHostForTesting() {
   mojo_handler_->ResetTextInputHostForTesting();
 }

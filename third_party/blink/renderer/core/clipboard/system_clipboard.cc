@@ -119,7 +119,7 @@ void SystemClipboard::WritePlainText(const String& plain_text,
   // TODO(https://crbug.com/106449): add support for smart replace, which is
   // currently under-specified.
   String text = plain_text;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ReplaceNewlinesWithWindowsStyleNewlines(text);
 #endif
   if (clipboard_.is_bound())
@@ -212,7 +212,7 @@ void SystemClipboard::WriteImageWithTag(Image* image,
   }
 
   if (url.IsValid() && !url.IsEmpty()) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // See http://crbug.com/838808: Not writing text/plain on Mac for
     // consistency between platforms, and to help fix errors in applications
     // which prefer text/plain content over image content for compatibility with
@@ -287,7 +287,7 @@ void SystemClipboard::CommitWrite() {
 }
 
 void SystemClipboard::CopyToFindPboard(const String& text) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (clipboard_.is_bound())
     clipboard_->WriteStringToFindPboard(text);
 #endif

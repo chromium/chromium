@@ -231,7 +231,7 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
   if (SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(origin))
     return true;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   // On desktop, enable transfer for the reverse Origin Trial, or if the

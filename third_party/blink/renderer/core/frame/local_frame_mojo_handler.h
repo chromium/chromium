@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
 #endif
 
@@ -64,7 +64,7 @@ class LocalFrameMojoHandler
   mojom::blink::BackForwardCacheControllerHost&
   BackForwardCacheControllerHostRemote();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   mojom::blink::TextInputHost& TextInputHost();
   void ResetTextInputHostForTesting();
   void RebindTextInputHostForTesting();
@@ -161,7 +161,7 @@ class LocalFrameMojoHandler
       bool wants_result,
       int32_t world_id,
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) final;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void GetCharacterIndexAtPoint(const gfx::Point& point) final;
   void GetFirstRectForRange(const gfx::Range& range) final;
   void GetStringForRange(const gfx::Range& range,
@@ -184,7 +184,7 @@ class LocalFrameMojoHandler
       mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver)
       final;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ExtractSmartClipData(const gfx::Rect& rect,
                             ExtractSmartClipDataCallback callback) final;
 #endif
@@ -237,7 +237,7 @@ class LocalFrameMojoHandler
   HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost>
       back_forward_cache_controller_host_remote_{nullptr};
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   HeapMojoRemote<mojom::blink::TextInputHost> text_input_host_{nullptr};
 #endif
 

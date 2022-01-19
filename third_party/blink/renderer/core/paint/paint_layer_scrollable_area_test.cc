@@ -360,7 +360,7 @@ TEST_P(PaintLayerScrollableAreaTest, SelectElementPromotionTest) {
   element->setAttribute("class", "composited");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsComposited(element->GetLayoutObject()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // <select> implementation is different and not scrollable on Android.
   EXPECT_FALSE(UsesCompositedScrolling(element->GetLayoutObject()));
 #else

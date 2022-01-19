@@ -828,7 +828,7 @@ void PaintFocusRing(GraphicsContext& context,
                     const ComputedStyle& style,
                     const FloatRoundedRect::Radii& corner_radii) {
   Color inner_color = style.VisitedDependentColor(GetCSSPropertyOutlineColor());
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (style.DarkColorScheme())
     inner_color = Color::kWhite;
 #endif

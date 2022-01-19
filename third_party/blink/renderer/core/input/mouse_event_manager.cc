@@ -130,7 +130,7 @@ void SetMouseEventAttributes(MouseEventInit* initializer,
 }
 
 // TODO(crbug.com/653490): Read these values from the OS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const int kDragThresholdX = 3;
 const int kDragThresholdY = 3;
 constexpr base::TimeDelta kTextDragDelay = base::Seconds(0.15);
@@ -348,7 +348,7 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
   // We only prevent click event when the click may cause contextmenu to popup.
   // However, we always send auxclick.
   bool context_menu_event = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // FIXME: The Mac port achieves the same behavior by checking whether the
   // context menu is currently open in WebPage::mouseEvent(). Consider merging
   // the implementations.
@@ -826,7 +826,7 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
 
   // We disable the drag and drop actions on pen input on windows.
   bool should_handle_drag = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   should_handle_drag = !is_pen;
 #endif
 

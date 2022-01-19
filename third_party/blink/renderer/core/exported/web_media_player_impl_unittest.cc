@@ -382,7 +382,7 @@ class WebMediaPlayerImplTest
     auto factory_selector = std::make_unique<media::RendererFactorySelector>();
     renderer_factory_selector_ = factory_selector.get();
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(nullptr);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     factory_selector->AddBaseFactory(
         media::RendererType::kDefault,
         std::make_unique<media::DefaultRendererFactory>(
@@ -1754,7 +1754,7 @@ ACTION(ReportHaveEnough) {
                                media::BUFFERING_CHANGE_REASON_UNKNOWN);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   InitializeWebMediaPlayerImpl();
   // To avoid PreloadMetadataLazyLoad.
@@ -1799,7 +1799,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   Load(kEncryptedVideoOnlyTestFile);
   run_loop.Run();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {
   InitializeWebMediaPlayerImpl();
@@ -2329,7 +2329,7 @@ class WebMediaPlayerImplBackgroundBehaviorTest
   }
 
   bool IsAndroid() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return true;
 #else
     return false;

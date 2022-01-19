@@ -177,7 +177,7 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
   AddProperty("ampmLabels", locale_->TimeAMPMLabels(), data);
   AddProperty("isLocaleRTL", locale_->IsRTL(), data);
   AddProperty("isRTL", parameters_->is_anchor_element_rtl, data);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif
   AddProperty("mode", parameters_->type.GetString(), data);

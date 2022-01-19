@@ -199,7 +199,7 @@ TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
       InputEvent::InputType::kFormatItalic)
       ->Apply();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ("|a<select multiple><option></option></select>b",
             GetSelectionTextFromBody());
 #else

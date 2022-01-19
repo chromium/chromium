@@ -133,7 +133,7 @@ void ScrollableArea::ClearScrollableArea() {
 }
 
 MacScrollbarAnimator* ScrollableArea::GetMacScrollbarAnimator() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!mac_scrollbar_animator_) {
     mac_scrollbar_animator_ =
         MacScrollbarAnimator::Create(const_cast<ScrollableArea*>(this));

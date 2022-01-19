@@ -558,7 +558,7 @@ static inline void SetLogicalWidthForTextRun(
   bool kerning_is_enabled =
       font.GetFontDescription().GetTypesettingFeatures() & kKerning;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // FIXME: Having any font feature settings enabled can lead to selection gaps
   // on Chromium-mac. https://bugs.webkit.org/show_bug.cgi?id=113418
   bool can_use_cached_word_measurements =

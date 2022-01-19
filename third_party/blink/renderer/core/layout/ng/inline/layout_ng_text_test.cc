@@ -39,7 +39,7 @@ class LayoutNGTextTest : public NGLayoutTest {
       if (const auto* shape_result = item.TextShapeResult()) {
         stream << ", ShapeResult=" << shape_result->StartIndex() << "+"
                << shape_result->NumCharacters();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         if (shape_result->NumCharacters() != shape_result->NumGlyphs())
           stream << " #glyphs=" << shape_result->NumGlyphs();
 #else

@@ -132,7 +132,7 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
   EXPECT_EQ(gfx::PointF(150.27, 150.25), point);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
   const cc::LayerTreeHost* layer_tree_host =
       WebView().MainFrameViewWidget()->LayerTreeHostForTesting();
@@ -145,7 +145,7 @@ TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
   EXPECT_TRUE(
       layer_tree_host->pending_commit_state()->force_send_metadata_request);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // A test that forces a RemoteMainFrame to be created.
 class WebFrameWidgetImplRemoteFrameSimTest : public SimTest {

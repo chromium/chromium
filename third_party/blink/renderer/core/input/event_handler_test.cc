@@ -1164,7 +1164,7 @@ TEST_F(EventHandlerTooltipTest, mouseLeaveClearsTooltip) {
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FocusSetFromTabUpdatesTooltip \
   DISABLED_FocusSetFromTabUpdatesTooltip
 #else
@@ -1202,7 +1202,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FocusSetFromAccessKeyUpdatesTooltip \
   DISABLED_FocusSetFromAccessKeyUpdatesTooltip
 #else
@@ -1231,7 +1231,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromAccessKeyUpdatesTooltip) {
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FocusSetFromMouseDoesntUpdateTooltip \
   DISABLED_FocusSetFromMouseDoesntUpdateTooltip
 #else
@@ -1265,7 +1265,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromMouseDoesntUpdateTooltip) {
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FocusSetFromScriptDoesntUpdateTooltip \
   DISABLED_FocusSetFromScriptDoesntUpdateTooltip
 #else
@@ -1291,7 +1291,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromScriptDoesntUpdateTooltip) {
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FocusSetScriptInitiatedFromKeypressUpdatesTooltip \
   DISABLED_FocusSetScriptInitiatedFromKeypressUpdatesTooltip
 #else
@@ -1359,7 +1359,7 @@ TEST_F(EventHandlerTooltipTest,
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FocusSetFromScriptClearsKeyboardTriggeredTooltip \
   DISABLED_FocusSetFromScriptClearsKeyboardTriggeredTooltip
 #else
@@ -1684,7 +1684,7 @@ TEST_F(EventHandlerSimTest, RightClickNoGestures) {
 }
 
 // https://crbug.com/976557 tracks the fix for re-enabling this test on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_GestureTapWithScrollSnaps DISABLED_GestureTapWithScrollSnaps
 #else
 #define MAYBE_GestureTapWithScrollSnaps GestureTapWithScrollSnaps

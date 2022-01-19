@@ -244,7 +244,7 @@ TEST_F(ImageDocumentTest, ImageSrcChangedBeforeFinish) {
   blink::test::RunPendingTasks();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE(test) DISABLED_##test
 #else
 #define MAYBE(test) test

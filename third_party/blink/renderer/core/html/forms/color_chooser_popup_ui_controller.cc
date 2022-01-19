@@ -111,13 +111,13 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", false, data);
   AddProperty("isEyeDropperEnabled", ::features::IsEyeDropperEnabled(), data);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif
   // We don't create PagePopups on Android, so these strings are excluded
   // from blink_strings.grd on Android to save binary size.  We have to
   // exclude them here as well to avoid an Android build break.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   AddLocalizedProperty("axColorWellLabel", IDS_AX_COLOR_WELL, data);
   AddLocalizedProperty("axColorWellRoleDescription",
                        IDS_AX_COLOR_WELL_ROLEDESCRIPTION, data);
@@ -176,7 +176,7 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", true, data);
   AddProperty("isEyeDropperEnabled", ::features::IsEyeDropperEnabled(), data);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif
   PagePopupClient::AddString("};\n", data);

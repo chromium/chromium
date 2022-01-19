@@ -242,7 +242,7 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
 
   FontFamily* curr_family = nullptr;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool has_seen_system_ui = false;
 #endif
 
@@ -266,7 +266,7 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     // TODO(crbug.com/1065468): Get rid of GenericFamilyType.
     bool is_generic = generic_family != FontDescription::kNoFamily ||
                       IsA<CSSIdentifierValue>(*family);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // TODO(https://crbug.com/554590): Remove this counter when it's no longer
     // necessary.
     if (!has_seen_system_ui) {

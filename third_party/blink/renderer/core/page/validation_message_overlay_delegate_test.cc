@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
@@ -25,7 +25,7 @@ namespace blink {
 
 class ValidationMessageOverlayDelegateTest : public PaintTestConfigurations,
                                              public RenderingTest {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
  public:
   void SetUp() override {
     RenderingTest::SetUp();
