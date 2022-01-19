@@ -314,7 +314,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   // Execute and wait for specified string
   for (const auto& function_name : scenario_.execute) {
-    DLOG(INFO) << "executing: " << function_name;
+    VLOG(1) << "executing: " << function_name;
     base::Value result =
         ExecuteScriptAndGetValue(web_contents->GetMainFrame(), function_name);
     const std::string& str = result.is_string() ? result.GetString() : "";
