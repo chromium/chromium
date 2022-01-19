@@ -225,7 +225,7 @@ Some of the most important examples:
 
 *   WebView doesn't render any UI elements outside of the content viewport. The
     embedding app is responsible for any UI that may be needed to implement
-    WebView callbacks. 
+    WebView callbacks.
 
 *   Callback APIs exist to trigger permission prompts (though apps may not
     implement them), but there's no current API to render infobars, control how
