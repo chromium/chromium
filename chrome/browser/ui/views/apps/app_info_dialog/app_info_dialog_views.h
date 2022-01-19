@@ -30,11 +30,12 @@ class ScrollView;
 // |extension| in the member variables in this class and all AppInfoPanel
 // classes.
 class AppInfoDialog : public views::View,
-                      public extensions::ExtensionRegistryObserver {
+                      public extensions::ExtensionRegistryObserver,
+                      public base::SupportsWeakPtr<AppInfoDialog> {
  public:
   METADATA_HEADER(AppInfoDialog);
 
-  static base::OnceCallback<void(AppInfoDialog*)>& InstanceCallbackForTesting();
+  static base::WeakPtr<AppInfoDialog>& GetLastDialogForTesting();
 
   AppInfoDialog(Profile* profile, const extensions::Extension* app);
   AppInfoDialog(const AppInfoDialog&) = delete;

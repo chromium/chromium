@@ -114,10 +114,9 @@ void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
   }
 }
 
-base::OnceCallback<void(AppInfoDialog*)>&
-AppInfoDialog::InstanceCallbackForTesting() {
-  static base::NoDestructor<base::OnceCallback<void(AppInfoDialog*)>> callback;
-  return *callback;
+base::WeakPtr<AppInfoDialog>& AppInfoDialog::GetLastDialogForTesting() {
+  static base::NoDestructor<base::WeakPtr<AppInfoDialog>> last_dialog;
+  return *last_dialog;
 }
 
 AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
@@ -184,8 +183,7 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
   // destroyed.
   StartObservingExtensionRegistry();
 
-  if (InstanceCallbackForTesting())
-    std::move(InstanceCallbackForTesting()).Run(this);
+  GetLastDialogForTesting() = AsWeakPtr();
 }
 
 AppInfoDialog::~AppInfoDialog() {

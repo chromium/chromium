@@ -56,17 +56,18 @@ IN_PROC_BROWSER_TEST_F(AppInfoDialogBrowserTest, InvokeUi_default) {
 
 IN_PROC_BROWSER_TEST_F(AppInfoDialogBrowserTest,
                        CreateShortcutsAfterExtensionUnloaded) {
-  // Open app info dialog and grab handle.
-  AppInfoDialog* dialog = nullptr;
-  AppInfoDialog::InstanceCallbackForTesting() = base::BindLambdaForTesting(
-      [&dialog](AppInfoDialog* new_dialog) { dialog = new_dialog; });
   ShowUi("");
-  ASSERT_TRUE(dialog);
+  ASSERT_TRUE(AppInfoDialog::GetLastDialogForTesting());
 
   // Unload all extensions.
   extension_environment_->GetExtensionService()
-      ->ProfileMarkedForPermanentDeletionForTesting();
+      ->ProfileMarkedForPermanentDeletionForTest();
+
+  // Dialog widgets and their root views are closed asynchronously so the dialog
+  // is still alive.
+  ASSERT_TRUE(AppInfoDialog::GetLastDialogForTesting());
 
   // Dialog is now closing.
-  ASSERT_TRUE(dialog->GetWidget()->IsClosed());
+  ASSERT_TRUE(
+      AppInfoDialog::GetLastDialogForTesting()->GetWidget()->IsClosed());
 }

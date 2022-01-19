@@ -470,7 +470,7 @@ class ExtensionService : public ExtensionServiceInterface,
 
   void UninstallMigratedExtensionsForTest() { UninstallMigratedExtensions(); }
 
-  void ProfileMarkedForPermanentDeletionForTesting() {
+  void ProfileMarkedForPermanentDeletionForTest() {
     OnProfileMarkedForPermanentDeletion(profile_);
   }
 #endif
