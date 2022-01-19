@@ -179,8 +179,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
                      const std::string& raw_email,
                      const std::string& token);
 
-  // Updates the token for the account corresponding to the given |account_key|.
-  // The account must be known to Account Manager. See |UpsertAccount| for
+  // Updates the token for the account corresponding to the given `account_key`.
+  // The account must be known to Account Manager. See `UpsertAccount` for
   // information about adding an account.
   // Note: This API is idempotent.
   void UpdateToken(const ::account_manager::AccountKey& account_key,
@@ -286,10 +286,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // been initialized, otherwise saves the |closure| for running later, when the
   // class is initialized.
   void RunOnInitialization(base::OnceClosure closure);
-
-  // Assumes that |AccountManager| initialization (|init_state_|) is complete.
-  void UpdateTokenInternal(const ::account_manager::AccountKey& account_key,
-                           const std::string& token);
 
   // Assumes that |AccountManager| initialization (|init_state_|) is complete.
   void UpdateEmailInternal(const ::account_manager::AccountKey& account_key,

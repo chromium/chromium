@@ -555,6 +555,7 @@ void AccountManager::UpsertAccount(
 void AccountManager::UpdateToken(
     const ::account_manager::AccountKey& account_key,
     const std::string& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
   if (account_key.account_type() ==
@@ -562,18 +563,15 @@ void AccountManager::UpdateToken(
     DCHECK_EQ(token, kActiveDirectoryDummyToken);
   }
 
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::UpdateTokenInternal,
-                     weak_factory_.GetWeakPtr(), account_key, token);
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure =
+        base::BindOnce(&AccountManager::UpdateToken, weak_factory_.GetWeakPtr(),
+                       account_key, token);
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::UpdateTokenInternal(
-    const ::account_manager::AccountKey& account_key,
-    const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   auto it = accounts_.find(account_key);
   DCHECK(it != accounts_.end())
       << "UpdateToken cannot be used for adding accounts";
