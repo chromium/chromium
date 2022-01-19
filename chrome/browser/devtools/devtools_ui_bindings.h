@@ -210,7 +210,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   void ReadyToCommitNavigation(content::NavigationHandle* navigation_handle);
   void DocumentOnLoadCompletedInPrimaryMainFrame();
-  void DidNavigateMainFrame();
+  void PrimaryPageChanged();
   void FrontendLoaded();
 
   void JsonReceived(DispatchCallback callback,

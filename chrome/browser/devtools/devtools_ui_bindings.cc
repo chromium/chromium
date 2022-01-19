@@ -552,8 +552,7 @@ class DevToolsUIBindings::FrontendWebContentsObserver
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   DevToolsUIBindings* devtools_bindings_;
 };
@@ -631,11 +630,9 @@ void DevToolsUIBindings::FrontendWebContentsObserver::
   devtools_bindings_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
-void DevToolsUIBindings::FrontendWebContentsObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted())
-    devtools_bindings_->DidNavigateMainFrame();
+void DevToolsUIBindings::FrontendWebContentsObserver::PrimaryPageChanged(
+    content::Page&) {
+  devtools_bindings_->PrimaryPageChanged();
 }
 
 // DevToolsUIBindings ---------------------------------------------------------
@@ -1717,7 +1714,7 @@ void DevToolsUIBindings::DocumentOnLoadCompletedInPrimaryMainFrame() {
   FrontendLoaded();
 }
 
-void DevToolsUIBindings::DidNavigateMainFrame() {
+void DevToolsUIBindings::PrimaryPageChanged() {
   frontend_loaded_ = false;
 }
 
