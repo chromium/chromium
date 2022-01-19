@@ -2705,6 +2705,9 @@ Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche nati
 Se questo criterio viene impostato su Vero o se non viene impostato, <ph name="PRODUCT_NAME" /> potrà utilizzare notifiche native.
 
 Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non utilizzerà notifiche native. Il Centro messaggi di <ph name="PRODUCT_NAME" /> verrà utilizzato come riserva.</translation>
+<translation id="412394201461298128">Se il criterio viene impostato su Vero, la tastiera sullo schermo rimane attivata. Se viene impostato su Falso, la tastiera sullo schermo rimane disattivata, a meno che non venga attivata da altri fattori. Il criterio <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> è un esempio di questi fattori.
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, la tastiera sullo schermo è disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="412697421478384751">Consenti agli utenti di impostare PIN non sicuri per la schermata di blocco</translation>
 <translation id="4138655880188755661">Limite di tempo</translation>
 <translation id="4147818922357566987">Attiva solo le varianti relative alle correzioni critiche</translation>
@@ -5194,6 +5197,18 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="7041170641363384736">Consente di impostare una programmazione personalizzata per il riavvio dei dispositivi. Attualmente il criterio viene applicato soltanto ai dispositivi per cui è stato attivato l'avvio automatico dell'app nella sessione Kiosk. Se viene impostato su Vero, il dispositivo verrà riavviato in base alla programmazione. Il criterio deve essere rimosso per annullare ulteriori riavvii programmati.</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7047495632846973438">Specifica se i criteri relativi alle autorizzazioni dell'acquisizione del display vengono controllati o saltati.</translation>
+<translation id="7054461992790881782">Consente di controllare la tastiera sullo schermo, fungendo da criterio aggiuntivo rispetto al criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Se il criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> viene impostato su Vero o se l'impostazione di Chrome OS Attiva tastiera sullo schermo è attivata, questo criterio non ha alcun effetto.
+
+      Se il criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> viene impostato su Falso o se non è configurato e l'impostazione di Chrome OS Attiva tastiera sullo schermo è disattivata, questo criterio ha l'effetto che segue:
+      Se il criterio non viene configurato, la tastiera sullo schermo viene visualizzata quando il dispositivo è in modalità tablet.
+      Se questo criterio viene impostato su Vero, la tastiera sullo schermo viene sempre visualizzata.
+      Se viene impostato su Falso, la tastiera sullo schermo non viene mai visualizzata.
+
+      Il layout della tastiera sullo schermo potrebbe cambiare diventando compatto, in base al metodo di immissione.
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo.</translation>
 <translation id="7060497964524144376">Se il criterio viene impostato su Attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
 
       Se il criterio non viene configurato, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.

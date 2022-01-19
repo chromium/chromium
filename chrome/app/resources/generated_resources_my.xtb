@@ -2325,7 +2325,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ကို <ph name="DEVICE_NAME" /> က သင်နှင့် မျှဝေနေသည်။}other{<ph name="ATTACHMENTS" /> ကို <ph name="DEVICE_NAME" /> က သင်နှင့် မျှဝေနေသည်။}}</translation>
 <translation id="3364986687961713424">သင်၏ စီမံခန့်ခွဲသူထံမှ- <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl သို့မဟုတ် Alt သုံးရန်</translation>
-<translation id="3367057768351048705">ဝဘ်ဆိုက်များသည် ၎င်းတို့ပေါ်ရှိ သင်၏ကြည့်ရှုခြင်းများကို မြင်ရရန်အတွက်သာ သင့်ကွတ်ကီးများကို သုံးနိုင်သည်</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3369067987974711168">ဤပို့တ်အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ ပိုပြပါ</translation>
 <translation id="3369624026883419694">အိမ်ရှင်ကို ဖြေရှင်းနေ...</translation>
@@ -2965,8 +2964,6 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ကို ဖွင့်ထားရန်</translation>
 <translation id="3981058120448670012">အနီးရှိစက်များက <ph name="DEVICE_NAME" /> အဖြစ် <ph name="REMAINING_TIME" /> ကြာ မြင်နိုင်သည်...</translation>
 <translation id="3981760180856053153">ဝင်ခဲ့သည့် သိမ်းဆည်းမှု ပုံစံ မမှန်ပါ။</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />တစ်ခုခုမှားသွားပြီး <ph name="DEVICE_OS" /> ကို မထည့်သွင်းနိုင်ပါ။<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />နောက်ထပ်အကူအညီလိုလျှင် ဤသို့ဝင်ကြည့်ပါ- g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">ရိုးရှင်းသည့်အဆင့်အနည်းငယ် ပြုလုပ်ရုံဖြင့် သင်၏ဘရောင်ဇာကို စနစ်ထည့်သွင်းပါ</translation>
 <translation id="3983400541576569538">အက်ပ်အချို့မှ ဒေတာများ ပျောက်သွားနိုင်သည်</translation>
 <translation id="3983586614702900908">အမည်မသိ ပစ္စည်းရောင်းသူထံမှ စက်ပစ္စည်းများ</translation>
@@ -3886,9 +3883,6 @@
 <translation id="4992984395680162305">ဤစက်များကို QR ကုဒ် စကင်ဖတ်ခြင်းဖြင့် ချိတ်ဆက်ထားသည်။</translation>
 <translation id="4994474651455208930">လုပ်ထုံးလုပ်နည်းများအား မူရင်းစီမံသူများအဖြစ် ဆိုက်များကို တောင်းဆိုခွင့်ပြုပါ</translation>
 <translation id="4994754230098574403">စနစ်ထည့်သွင်းနေပါသည်</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> က စက်၏ပိုင်ဆိုင်မှုကို ရယူနိုင်ရန်အတွက် စာရင်းမသွင်းမီ TPM ကို ရှင်းရန်လိုအပ်သည်။<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />TPM စက်ကိုလည်း အပြီးပိတ်ထားနိုင်သည်။ ဆော့ဖ်ဝဲအသွင်ဝှက်ခြင်းဖြင့် သင်၏ဒေတာကို လုံခြုံစွာသိမ်းထားနိုင်သေးသည်။ သို့သော်လည်း ကွန်ပျူတာဆိုင်ရာ စက်ပစ္စည်းအခြေပြု အသိအမှတ်ပြုလက်မှတ်များကဲ့သို့ လုံခြုံရေးဝန်ဆောင်မှုအချို့ကို ပိတ်လိုက်ပါမည်။<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ပြန်လည်စတင်ခြင်းနှင့် စနစ် BIOS/UEFI ဆက်တင်များ ထည့်ခြင်းဖြင့် သင်၏ TPM ဆက်တင်များကို ပြောင်းနိုင်သည်။ စက်မော်ဒယ်အပေါ်အခြေခံပြီး အဆင့်များကွဲပြားသည်။ နောက်ထပ်အချက်အလက်များအတွက် ပြန်လည်မစတင်မီ သီးခြားစက်တစ်လုံးပေါ်တွင် <ph name="DEVICE_OS" /> မှတ်တမ်းကို ဖွင့်ပါ- [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM မရှိပါ}=1{<ph name="VM_TYPE" /> VM 1 ခု တွေ့သည်-<ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> VM {NUM_VMS} ခု တွေ့သည်- <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">အင်တာနက် ချိတ်ဆက်မှု မရှိပါ။</translation>
 <translation id="4998430619171209993">ဖွင့်ထားသည်</translation>
@@ -4006,7 +4000,6 @@
 <translation id="5127620150973591153">လုံခြုံသော ချိတ်ဆက်မှု ID−<ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">စင့် ပိတ်ထား၏</translation>
 <translation id="5127881134400491887">ကွန်ရက် ချိတ်ဆက်မှုများကို စီမံကွပ်ကဲရန်</translation>
-<translation id="5128774403617662387">မစတင်မီ သင့်ဒေတာကို အရန်သိမ်းထားကြောင်း သေချာပါစေ။ <ph name="DEVICE_OS" /> ထည့်သွင်းခြင်းသည် သင့်ဟတ်ဒရိုက်ဗ်ကို အစားထိုးပါမည်။ g.co/TBD တွင် ပိုမိုလေ့လာပါ။</translation>
 <translation id="512903556749061217">တွဲဆက်ထားသော</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">ပရိုဖိုင်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ (သို့) အကူအညီအတွက် ဝန်ဆောင်မှုပေးသူကို ဆက်သွယ်ပါ။</translation>
@@ -4523,7 +4516,6 @@
 <translation id="5659593005791499971">အီးမေးလ်</translation>
 <translation id="5659833766619490117">ဤစာမျက်နှာကို ဘာသာပြန်၍ မရပါ</translation>
 <translation id="5662513737565158057">Linux အက်ပ်များ အလုပ်လုပ်ပုံကို ပြောင်းရန်။</translation>
-<translation id="5667490069342183561">မည်သည့်ဒေတာဆုံးရှုံးမှုအတွက်မျှ Google တွင် တာဝန်မရှိပါ။ ထို့ပြင် အသိအမှတ်မပြုထားသော မော်ဒယ်များတွင် <ph name="DEVICE_OS" /> အလုပ် လုပ်နိုင်မည်မဟုတ်ပါ။ g.co/TBD တွင် ပိုမိုလေ့လာပါ။</translation>
 <translation id="5667546120811588575">Google Play ကို စနစ်ထည့်သွင်းနေသည်...</translation>
 <translation id="5668351004957198136">မအောင်မြင်ပါ</translation>
 <translation id="56702779821643359">သင့်အနီးရှိလူများအား ဖိုင်များကို မျှဝေပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -5332,9 +5324,6 @@
 <translation id="6528179044667508675">မနှောင့်ယှက်ရ</translation>
 <translation id="652948702951888897">Chrome မှတ်တမ်း</translation>
 <translation id="6530186581263215931">ဤဆက်တင်များကို သင်၏စီမံခန့်ခွဲသူက ချမှတ်ထားခြင်းဖြစ်သည်</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />အကောင်းဆုံးအတွေ့အကြုံကို ပေးနိုင်ရန်အတွက် ပေးရမည့် အပ်ဒိတ်များကို ဆုံးဖြတ်နိုင်ရန် <ph name="DEVICE_OS" /> သည် စက်များအကြောင်း ကွန်ပျူတာဆိုင်ရာ စက်ပစ္စည်းဒေတာကို စုစည်းပြီး Google နှင့်မျှဝေသည်။ <ph name="DEVICE_OS" /> ၏အတွေ့အကြုံနှင့် ဝန်ဆောင်မှုကို ပံ့ပိုးခြင်းနှင့် တိုးတက်စေခြင်းကဲ့သို့ ထပ်ဆောင်း ရည်ရွယ်ချက်များအတွက် ဤဒေတာကို Google အားသုံးခွင့်ပြုနိုင်သည်။<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ဤစက်တွင် လက်မှတ်ထိုးဝင်ပြီး chrome://system ရှိ CLOUDREADY_HARDWARE_INFO ကဏ္ဍသို့ဝင်ကာ အပ်ဒိတ်စစ်ထုတ်ခြင်းအတွက် Google သို့ပို့ထားသော ဒေတာကို ကြည့်နိုင်သကဲ့သို့ သင် Google နှင့်မျှဝေရန် ရွေးချယ်သော ဒေတာများဆိုင်ရာ အခြားဖြစ်ရပ်များကိုလည်း ဝင်ကြည့်နိုင်သည်။<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> က Google နှင့်မျှဝေသော ဒေတာအသေးစိတ်နှင့် ၎င်းတို့အသုံးပြုပုံကို g.co/xxxxx တွင် ဝင်ကြည့်နိုင်သည်<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">အန္တရာယ်ရှိသည့်ဖိုင်ကို သိမ်းရန်</translation>
 <translation id="6532101170117367231">Google Drive သို့ သိမ်းရန်</translation>
 <translation id="6532106788206463496">ပြင်ဆင်မှုများကို သိမ်းရန်</translation>
@@ -6023,15 +6012,6 @@
 <translation id="7258192266780953209">ပြောင်းလဲမှုများ</translation>
 <translation id="7258225044283673131">ဤအပလီကေးရှင်းက တုံ့ပြန်မှုမရှိပါ။ အက်ပ်ကိုပိတ်ရန် "မဖြစ်မနေပိတ်ရန်" ကို ရွေးပါ။</translation>
 <translation id="7262004276116528033">ဤ လက်မှတ်ထိုး ဝင်ရေး ဝန်ဆောင်မှုကို <ph name="SAML_DOMAIN" />မှ စီမံပေးပါသည်</translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />ဤပြဿနာရှာဖွေဖြေရှင်းခြင်း အဆင့်များကို စမ်းကြည့်ပါ-
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />HDD၊ SSD (သို့) eMMC ကဲ့သို့ ကောင်းမွန်သော စက်အတွင်းသိမ်းဆည်းရန်နေရာများရှိကြောင်း သေချာပါစေ
-    <ph name="LIST_ITEM" />သင့်စက်အတွင်းသိမ်းဆည်းရန်နေရာသည် 16GB ထက် ပို၊ မပိုစစ်ဆေးပါ
-    <ph name="LIST_ITEM" />ကိုင်တွယ်ကြည့်နိုင်ပါက စက်အတွင်းသိမ်းဆည်းရန်နေရာသို့ ချိတ်ဆက်မှုကို စစ်ဆေးပါ
-    <ph name="LIST_ITEM" />အသိအမှတ်ပြုထားသောမော်ဒယ်ကို အသုံးပြုနေကြောင်း သေချာစေပြီး ထည့်သွင်းပုံမှတ်စုများကို စစ်ဆေးပါ
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />နောက်ထပ်အကူအညီလိုလျှင် ဤသို့ဝင်ကြည့်ပါ- g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">ပကတိအသွင်စက်ကို ထည့်သွင်း၍မရပါ။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
 <translation id="7267875682732693301">လက်ဗွေ၏ အစိတ်အပိုင်းအမျိုးမျိုးကို ထည့်ရန်အတွက် သင့်လက်ချောင်းကို အကြိမ်ကြိမ်ပြန်ကြွပါ</translation>
 <translation id="7268127947535186412">ဤဆက်တင်ကို စက်ပစ္စည်း၏ပိုင်ရှင်က စီမံခန့်ခွဲသည်။</translation>

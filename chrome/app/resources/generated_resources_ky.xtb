@@ -2327,7 +2327,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> сиз менен <ph name="ATTACHMENTS" /> бөлүшүүдө}other{<ph name="DEVICE_NAME" /> сиз менен <ph name="ATTACHMENTS" /> бөлүшүүдө}}</translation>
 <translation id="3364986687961713424">Администраторуңуздан билдирүү: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Же Ctrl, же Alt колдонулсун</translation>
-<translation id="3367057768351048705">Сайттар cookie файлдары аркылуу гана сайтында көрүлгөн барактарды көрө алышат</translation>
 <translation id="3368922792935385530">Туташты</translation>
 <translation id="3369067987974711168">Бул оюкчага тиешелүү башка аракеттерди көрүү</translation>
 <translation id="3369624026883419694">Хост чечилүүдө…</translation>
@@ -2968,8 +2967,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> иштетүү</translation>
 <translation id="3981058120448670012">Жакын жердеги түзмөктөргө <ph name="DEVICE_NAME" /> катары <ph name="REMAINING_TIME" /> көрүнүп турат...</translation>
 <translation id="3981760180856053153">Жараксыз сактоо түрү киргизилди.</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />Бир жерден ката кетип, <ph name="DEVICE_OS" /> орнотулган жок.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Жардам алуу үчүн g.co/xxxxx бөлүмүнө өтүңүз<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">Бир нече жөнөкөй кадамдарды аткарып, серепчиңизди жөндөп алыңыз</translation>
 <translation id="3983400541576569538">Айрым колдонмолордогу дайындар жоголуп кетиши мүмкүн</translation>
 <translation id="3983586614702900908">белгисиз жөнөтүүчүнүн түзмөктөрү</translation>
@@ -3889,9 +3886,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4992984395680162305">Бул түзмөктөр QR кодун скандоо аркылуу туташтырылды.</translation>
 <translation id="4994474651455208930">Сайттарга протоколдорду демейки шартта сурап туруп орнотууга уруксат берүү</translation>
 <translation id="4994754230098574403">Орнотулууда</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Катталуудан мурун <ph name="DEVICE_OS" /> түзмөктү ээлей ала тургандай кылып TPM түзмөгүн тазалашыңыз керек.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ошондой эле, TPM түзмөгүн толугу менен өчүрө аласыз. Дайын-даректериңиз программалык шифрлөө менен коопсуз сакталат, бирок аппараттык камсыздоо колдоого алган тастыктамалар сыяктуу айрым коопсуздук функциялары өчөт.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />TPM параметрлериңизди өзгөртүү үчүн түзмөктү өчүрүп-күйгүзүп, тутумдун BIOS/UEFI параметрлерине кириңиз. Кадамдар түзмөктүн үлгүсүнө жараша айырмаланат. Кеңири маалымат алуу үчүн өчүрүп-күйгүзүүдөн мурун <ph name="DEVICE_OS" /> документтерин өзүнчө түзмөктө ачыңыз: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> виртуалдык машиналары табылган жок}=1{1 <ph name="VM_TYPE" /> виртуалдык машинасы табылды: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> виртуалдык машинасы табылды: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Интернет жок.</translation>
 <translation id="4998430619171209993">Күйүк</translation>
@@ -4009,7 +4003,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5127620150973591153">Коопсуз байланыш идентификатору: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Шайкештештирүү өчүк</translation>
 <translation id="5127881134400491887">Тармак туташууларын башкаруу</translation>
-<translation id="5128774403617662387">Баштоодон мурун дайын-даректериңиздин камдык көчүрмөсүн сактап койгонуңузду текшериңиз. <ph name="DEVICE_OS" /> тутумун орнотсоңуз, катуу дискиңиз кайрадан жазылат. Кеңири маалымат: g.co/TBD.</translation>
 <translation id="512903556749061217">тиркелген</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Профиль жүктөлүп алынган жок. Кийинчерээк кайталаңыз же жардам алуу үчүн байланыш операторуна кайрылыңыз.</translation>
@@ -4525,7 +4518,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5659593005791499971">Электрондук почта</translation>
 <translation id="5659833766619490117">Бул барак которулбай койду</translation>
 <translation id="5662513737565158057">Linux колдонмолору кантип иштерин өзгөртүңүз.</translation>
-<translation id="5667490069342183561">Google дайын-даректердин жоголушуна жоопкерчилик тартпайт, ошондой эле <ph name="DEVICE_OS" /> тастыкталбаган түзмөктөрдө иштебеши мүмкүн. Кеңири маалымат: g.co/TBD.</translation>
 <translation id="5667546120811588575">Google Play жөндөлүүдө…</translation>
 <translation id="5668351004957198136">Ийгиликсиз</translation>
 <translation id="56702779821643359">Файлдарды айланаңыздагы адамдар менен бөлүшүңүз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
@@ -5337,9 +5329,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6528179044667508675">Тынчымды алба</translation>
 <translation id="652948702951888897">Chrome таржымалы</translation>
 <translation id="6530186581263215931">Бул жөндөөлөрдү администраторуңуз күчүнө киргизген</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />Мыкты иштеши үчүн <ph name="DEVICE_OS" /> аппараттык камсыздоодогу түзмөктөр тууралуу маалыматты чогултуп, аны Google менен бөлүшүп, кандай жаңыртуулар керек экенин аныктап турат. Кааласаңыз, Google'га мындай маалыматты <ph name="DEVICE_OS" /> тутумунун иштешин жана кызматты жакшыртуу жана колдоо көрсөтүү сыяктуу кошумча максаттар үчүн колдонууга уруксат берсеңиз болот.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Жаңыртууларды чыпкалоо максатында Google'га жөнөтүлгөн маалыматты көрүү, ошондой эле Google менен маалымат бөлүшкүңүз келген башка учурларда бул түзмөктөн кирип, chrome://system сайтындагы CLOUDREADY_HARDWARE_INFO бөлүмүнө баш багыңыз.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> Google менен кайсы маалыматты бөлүшө турганын жана ал кандайча колдонула турганын билүү үчүн төмөнкү жерге өтүңүз: g.co/xxxxx<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">Бул коркунучтуу файл сакталсын</translation>
 <translation id="6532101170117367231">Google Drive'да сактоо</translation>
 <translation id="6532106788206463496">Өзгөрүүлөрдү сактоо</translation>
@@ -6028,15 +6017,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7258192266780953209">Трансформациялар</translation>
 <translation id="7258225044283673131">Колдонмо жооп бербей жатат. Аны жабуу үчүн "Мажбурлап токтотуу" баскычын басыңыз.</translation>
 <translation id="7262004276116528033">Кирүү кызматы <ph name="SAML_DOMAIN" /> доменинде жайгашкан</translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Төмөнкү бузулууларды аныктап оңдоо кадамдарын аткарып көрүңүз:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Түзмөгүңүздө HDD, SSD же eMMC сыяктуу ички сактагыч (иштей турган) бар экенин текшериңиз
-    <ph name="LIST_ITEM" />Ички сактагыч түзмөктүн өлчөмү 16 Гб жогору болушу керек
-    <ph name="LIST_ITEM" />Физикалык жактан жеткиликтүү болсо, ички сактагычка туташууну текшериңиз
-    <ph name="LIST_ITEM" />Тастыктамасы бар үлгүнү колдонуп жатканыңызды текшерип, орнотуу боюнча эскертмелерди карап чыгыңыз
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Көбүрөөк жардам алуу үчүн төмөнкү баракка өтүңүз: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">Виртуалдык машина орнотулган жок. Кайталап көрүңүз же администраторго кайрылыңыз. Ката коду: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Манжаңызды толугу менен скандоо үчүн акырындык менен жылдырыңыз</translation>
 <translation id="7268127947535186412">Бул жөндөөнү түзмөктүн ээси башкарууда.</translation>

@@ -2327,7 +2327,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> உங்களுடன் <ph name="ATTACHMENTS" /> ஐப் பகிர்கிறது.}other{<ph name="DEVICE_NAME" /> உங்களுடன் <ph name="ATTACHMENTS" /> ஐப் பகிர்கிறது.}}</translation>
 <translation id="3364986687961713424">உங்கள் நிர்வாகியிடமிருந்து: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">கன்ட்ரோல் அல்லது ஆல்ட் விசையைப் பயன்படுத்தவும்</translation>
-<translation id="3367057768351048705">நீங்கள் பார்க்கும் தளத்தில் உங்கள் உலாவல் செயல்பாட்டை அறிந்துகொள்வதற்காக மட்டுமே உங்கள் குக்கீகளை அந்தத் தளத்தால் பயன்படுத்த முடியும்</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369067987974711168">இந்தப் போர்ட்டிற்கான கூடுதல் செயல்களைக் காட்டு</translation>
 <translation id="3369624026883419694">ஹோஸ்ட்டைக் கண்டறிகிறது...</translation>
@@ -2968,8 +2967,6 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ஐ இயக்கு</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" />க்கு <ph name="DEVICE_NAME" /> என்ற பெயரில் அருகிலுள்ள சாதனங்களுக்குக் காட்டப்படும்...</translation>
 <translation id="3981760180856053153">செல்லாத சேமிப்பு வகை உள்ளிடப்பட்டது.</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />ஏதோ தவறாகிவிட்டதால் <ph name="DEVICE_OS" /> ஐ நிறுவ முடியவில்லை.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />மேலும் உதவிக்கு, பின்வரும் தளத்தைப் பார்க்கவும்: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">உங்கள் உலாவியை ஒரு சில எளிய படிகளில் அமைக்கலாம்</translation>
 <translation id="3983400541576569538">சில ஆப்ஸின் தரவு அழிக்கப்படலாம்</translation>
 <translation id="3983586614702900908">அறியப்படாத விற்பனையாளரிடமிருந்து சாதனங்கள்</translation>
@@ -3889,9 +3886,6 @@
 <translation id="4992984395680162305">QR குறியீட்டை ஸ்கேன் செய்ததன் மூலம் இந்தச் சாதனங்கள் இணைக்கப்பட்டன.</translation>
 <translation id="4994474651455208930">நெறிமுறைகளுக்கு இயல்புநிலை ஹேண்ட்லர்களாக இருக்கும்படி கேட்க தளங்களை அனுமதி</translation>
 <translation id="4994754230098574403">அமைக்கிறது</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />சாதனத்தின் உரிமையை <ph name="DEVICE_OS" /> எடுத்துக்கொள்ள வசதியாக, பதிவுசெய்வதற்கு முன்பு TPMமை நீங்கள் அழிக்க வேண்டும்.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />TPM சாதனத்தை முழுவதுமாகவும் முடக்கலாம். மென்பொருள் என்க்ரிப்ஷன் மூலம் உங்கள் தரவு பாதுகாப்பாகச் சேமிக்கப்படும். ஆனால், வன்பொருள்-காப்புப் பிரதியெடுக்கப்பட்ட சான்றிதழ்கள் போன்ற சில பாதுகாப்பு அம்சங்கள் முடக்கப்படும்.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />சிஸ்டத்தை மறுதொடக்கம் செய்தும் BIOS/UEFI அமைப்புகளுக்குச் சென்றும் TPM அமைப்புகளை மாற்றலாம். சாதனத்தின் மாடலைப் பொறுத்து படிகள் வேறுபடக்கூடும். மேலும் தகவலுக்கு, மறுதொடக்கம் செய்வதற்கு முன்பு <ph name="DEVICE_OS" /> ஆவணத்தை வேறொரு சாதனத்தில் திறக்கவும்: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VMகள் எதுவும் இல்லை}=1{ஒரு <ph name="VM_TYPE" /> VM உள்ளது: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VMகள் உள்ளன: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">இணைய இணைப்பு இல்லை.</translation>
 <translation id="4998430619171209993">ஆன் செய்யப்பட்டுள்ளது</translation>
@@ -4009,7 +4003,6 @@
 <translation id="5127620150973591153">பாதுகாப்பான இணைப்பு ஐடி: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">ஒத்திசைவு முடக்கத்தில்</translation>
 <translation id="5127881134400491887">நெட்வொர்க் இணைப்புகளை நிர்வகி</translation>
-<translation id="5128774403617662387">தொடங்கும் முன், தரவு காப்புப் பிரதி எடுக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும். <ph name="DEVICE_OS" /> ஐ நிறுவினால் உங்கள் ஹார்டு டிரைவில் உள்ளவை மாற்றியமைக்கப்படும். g.co/TBD தளத்தில் மேலும் அறிக.</translation>
 <translation id="512903556749061217">இணைக்கப்பட்டது</translation>
 <translation id="5130080518784460891">ஈடென்</translation>
 <translation id="5130675701626084557">சுயவிவரத்தைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும் அல்லது உதவிக்கு மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
@@ -4526,7 +4519,6 @@
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
 <translation id="5659833766619490117">இந்தப் பக்கத்தை மொழிபெயர்க்க முடியவில்லை</translation>
 <translation id="5662513737565158057">Linux ஆப்ஸ் வேலை செய்யும் விதத்தை மாற்றுங்கள்.</translation>
-<translation id="5667490069342183561">தரவு இழப்பிற்கு Google பொறுப்பாகாது. சான்றளிக்கப்படாத மாடல்களில் <ph name="DEVICE_OS" /> வேலை செய்யாமல் போகலாம். g.co/TBD தளத்தில் மேலும் அறிக.</translation>
 <translation id="5667546120811588575">Google Playஐ அமைக்கிறது...</translation>
 <translation id="5668351004957198136">சரிபார்க்க முடியவில்லை</translation>
 <translation id="56702779821643359">உங்களுக்கு அருகிலுள்ளவர்களுடன் ஃபைல்களைப் பகிருங்கள். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
@@ -5338,9 +5330,6 @@
 <translation id="6528179044667508675">தொந்தரவு செய்யாதே</translation>
 <translation id="652948702951888897">Chrome வரலாறு</translation>
 <translation id="6530186581263215931">இந்த அமைப்புகள் உங்கள் நிர்வாகியால் அமலாக்கப்படுகின்றன</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />சிறந்த அனுபவத்தை வழங்கும் வகையில் சாதனங்கள் குறித்த வன்பொருள் தரவை <ph name="DEVICE_OS" /> சேகரித்து, அவற்றை Googleளுடன் பகிரும். இதன்மூலம், தேவையான புதுப்பிப்புகள் உங்களுக்குக் கிடைக்கும். நீங்கள் விரும்பினால், <ph name="DEVICE_OS" /> உபயோகம் மற்றும் சேவை தொடர்பான உதவி, மேம்பாடுகள் போன்ற கூடுதல் நோக்கங்களுக்காக இந்தத் தரவை Google பயன்படுத்த நீங்கள் அனுமதிக்கலாம்.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />புதுப்பிப்புகளை வடிகட்டுவதற்காகவும், Googleளுடன் தரவைப் பகிர நீங்கள் அனுமதித்த வேறு எந்தக் காரணங்கள் தொடர்பாகவும் Googleளுக்கு அனுப்பப்பட்ட தரவை அறிந்துகொள்ள, இந்தச் சாதனத்தில் உள்நுழைந்து chrome://system என்பதில் உள்ள CLOUDREADY_HARDWARE_INFO பிரிவுக்குச் செல்லவும்.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Googleளுடன் <ph name="DEVICE_OS" /> பகிரக்கூடிய தரவையும் அது எப்படிப் பயன்படுத்தப்படுகிறது என்பதையும் பற்றிய கூடுதல் விவரங்களுக்கு g.co/xxxxx தளத்திற்குச் செல்லவும்<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">ஆபத்தான ஃபைலை வைத்திரு</translation>
 <translation id="6532101170117367231">Google Driveவில் சேமி</translation>
 <translation id="6532106788206463496">மாற்றங்களைச் சேமி</translation>
@@ -6029,15 +6018,6 @@
 <translation id="7258192266780953209">மாற்றங்கள்</translation>
 <translation id="7258225044283673131">ஆப்ஸ் செயல்படவில்லை. ஆப்ஸை மூட "உடனே மூடு" என்பதைத் தேர்ந்தெடுங்கள்.</translation>
 <translation id="7262004276116528033">உள்நுழைவுச் சாதனத்தை <ph name="SAML_DOMAIN" /> ஹோஸ்ட் செய்கிறது</translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />பின்வரும் பிழையறிந்து திருத்தும் படிகளை முயலவும்:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />HDD, SSD, eMMC போன்ற இயங்கும் நிலையில் உள்ள அகச் சேமிப்பகம் இருப்பதை உறுதிசெய்துகொள்ளவும்
-    <ph name="LIST_ITEM" />அகச் சேமிப்பகச் சாதனம் 16 ஜி.பை.க்கும் அதிகமாக உள்ளதா எனச் சரிபார்க்கவும்
-    <ph name="LIST_ITEM" />அகச் சேமிப்பகம் சரியாக இணைக்கப்பட்டுள்ளதா எனப் பார்க்கவும்
-    <ph name="LIST_ITEM" />சான்றளிக்கப்பட்ட மாடலைப் பயன்படுத்துகிறீர்கள் என்பதை உறுதிசெய்வதோடு நிறுவல் குறிப்புகளையும் பார்க்கவும்
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />மேலும் உதவிக்கு, பின்வரும் தளத்தைப் பார்க்கவும்: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">விர்ச்சுவல் மெஷினை நிறுவ முடியவில்லை. மீண்டும் முயலவும் அல்லது உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும். பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">கைரேகையின் வெவ்வேறு பகுதிகளைச் சேர்க்க, விரலை எடுத்து எடுத்து வைக்கவும்</translation>
 <translation id="7268127947535186412">இந்த அமைப்பைச் சாதனத்தின் உரிமையாளர் நிர்வகிக்கிறார்.</translation>

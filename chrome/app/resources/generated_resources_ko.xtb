@@ -2327,7 +2327,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}}</translation>
 <translation id="3364986687961713424">관리자의 메시지: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl 또는 Alt 키 중에 하나만 사용하세요</translation>
-<translation id="3367057768351048705">사이트는 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369067987974711168">이 포트에 관한 작업 더보기</translation>
 <translation id="3369624026883419694">호스트 알아내는 중...</translation>
@@ -2968,8 +2967,6 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> 사용</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> 동안 주변 기기에 <ph name="DEVICE_NAME" />(으)로 표시됩니다.</translation>
 <translation id="3981760180856053153">잘못된 저장 유형을 입력했습니다.</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />문제가 발생하여 <ph name="DEVICE_OS" />을 설치할 수 없습니다.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />도움이 필요한 경우 g.co/xxxxx 페이지를 참고하세요<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">몇 단계 만에 간단하게 브라우저를 설정하세요.</translation>
 <translation id="3983400541576569538">일부 앱 데이터가 사라질 수 있습니다.</translation>
 <translation id="3983586614702900908">알 수 없는 공급업체의 기기</translation>
@@ -3886,9 +3883,6 @@
 <translation id="4992984395680162305">기기가 QR 코드 스캔을 통해 연결되었습니다.</translation>
 <translation id="4994474651455208930">사이트에서 프로토콜 기본 핸들러로 사용할지 여부를 묻도록 허용</translation>
 <translation id="4994754230098574403">설정 중입니다.</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />등록하기 전에 <ph name="DEVICE_OS" />에서 기기 소유권을 가질 수 있도록 TPM을 삭제해야 합니다.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />TPM 기기를 완전히 끌 수도 있습니다. 데이터는 소프트웨어 암호화를 통해 계속 안전하게 저장되지만 하드웨어 지원 인증서와 같은 특정 보안 기능은 중지됩니다.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />재부팅하고 시스템 BIOS/UEFI 설정을 입력하여 TPM 설정을 변경할 수 있습니다. 기기 모델에 따라 설정을 변경하는 단계가 다를 수 있습니다. 자세한 내용은 재부팅하기 전에 별도의 기기에서 <ph name="DEVICE_OS" /> 문서를 여세요. [URL 링크]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM 없음}=1{<ph name="VM_TYPE" /> VM 1개 발견됨: <ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> VM {NUM_VMS}개 발견됨: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">인터넷에 연결되지 않았습니다.</translation>
 <translation id="4998430619171209993">사용</translation>
@@ -4006,7 +4000,6 @@
 <translation id="5127620150973591153">보안 연결 ID: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">동기화 사용 안함</translation>
 <translation id="5127881134400491887">네트워크 연결 관리</translation>
-<translation id="5128774403617662387">시작하기 전에 데이터 백업이 있는지 확인하세요. <ph name="DEVICE_OS" />을 설치하면 하드 드라이브가 덮어쓰기됩니다. g.co/TBD에서 자세히 알아보세요.</translation>
 <translation id="512903556749061217">첨부됨</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">프로필을 다운로드할 수 없습니다. 나중에 다시 시도하거나 이동통신사에 문의하세요.</translation>
@@ -4522,7 +4515,6 @@
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5659833766619490117">페이지를 번역할 수 없음</translation>
 <translation id="5662513737565158057">Linux 앱의 작동방식을 변경합니다.</translation>
-<translation id="5667490069342183561">Google에서는 데이터 손실에 대해 책임지지 않으며 <ph name="DEVICE_OS" />은 인증되지 않은 모델에서는 작동하지 않을 수 있습니다. g.co/TBD에서 자세히 알아보세요.</translation>
 <translation id="5667546120811588575">Google Play 설정 중...</translation>
 <translation id="5668351004957198136">실패</translation>
 <translation id="56702779821643359">주변의 사람들과 파일을 공유하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -5334,9 +5326,6 @@
 <translation id="6528179044667508675">방해 금지 모드</translation>
 <translation id="652948702951888897">Chrome 방문 기록</translation>
 <translation id="6530186581263215931">이 설정은 관리자가 시행합니다.</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />최상의 사용자 경험을 제공하기 위해 <ph name="DEVICE_OS" />에서는 어떤 업데이트가 전송되어야 하는지 결정하고자 기기의 하드웨어 데이터를 수집하여 Google과 공유합니다. <ph name="DEVICE_OS" /> 사용자 경험과 서비스 지원 개선이라는 추가적인 목적을 위해 사용자가 Google에서 이 데이터를 사용하도록 허용할 수도 있습니다.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />이 기기에 로그인한 후 chrome://system의 CLOUDREADY_HARDWARE_INFO 섹션으로 이동하면 업데이트 필터링을 사용하여 Google에 전송되는 데이터를 확인할 수 있으며, Google과 데이터를 공유하도록 선택한 다른 항목도 살펴볼 수 있습니다.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />에서 Google과 공유할 수 있는 데이터와 데이터가 사용되는 방식에 관해 자세히 알아보려면 g.co/xxxxx 페이지로 이동하세요.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">위험한 파일 보관</translation>
 <translation id="6532101170117367231">Google Drive에 저장</translation>
 <translation id="6532106788206463496">변경사항 저장</translation>
@@ -6025,15 +6014,6 @@
 <translation id="7258192266780953209">Transformations(변환)</translation>
 <translation id="7258225044283673131">애플리케이션이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
 <translation id="7262004276116528033">이 로그인 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅됩니다.</translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />다음 문제 해결 단계를 시도해 보세요.
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />기기에 HDD, SSD 또는 eMMC와 같은 내부 저장소가 설치되어 있고 정상 작동하는지 확인하세요.
-    <ph name="LIST_ITEM" />내부 저장소가 16GB 이상인지 확인하세요.
-    <ph name="LIST_ITEM" />내부 저장소 연결을 물리적으로 확인할 수 있으면 점검하세요.
-    <ph name="LIST_ITEM" />인증된 모델을 사용하고 있는지 확인하고 설치 노트를 확인하세요.
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />도움이 필요한 경우 g.co/xxxxx 페이지를 참고하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">가상 머신을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="7267875682732693301">손가락을 뗀 후 다시 터치하여 지문의 다른 부분을 추가하세요.</translation>
 <translation id="7268127947535186412">기기 소유자가 관리하는 설정입니다.</translation>

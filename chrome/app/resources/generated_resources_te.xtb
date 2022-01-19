@@ -2326,7 +2326,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> మీతో <ph name="ATTACHMENTS" />ని షేర్ చేస్తోంది.}other{<ph name="DEVICE_NAME" /> మీతో <ph name="ATTACHMENTS" />ని షేర్ చేస్తోంది.}}</translation>
 <translation id="3364986687961713424">మీ నిర్వాహకుడి నుండి: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl లేదా Altను ఉపయోగించండి</translation>
-<translation id="3367057768351048705">సైట్‌లు, వాటి స్వంత సైట్‌లో మాత్రమే మీ బ్రౌజింగ్ యాక్టివిటీని చూడడానికి మీ కుక్కీలను ఉపయోగించగలవు</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369067987974711168">ఈ పోర్ట్ కోసం మరిన్ని చర్యలను చూపించు</translation>
 <translation id="3369624026883419694">హోస్ట్‌ను పరిష్కరిస్తోంది...</translation>
@@ -2967,8 +2966,6 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" />ను ప్రారంభించు</translation>
 <translation id="3981058120448670012">సమీపంలోని పరికరాలకు <ph name="REMAINING_TIME" /> పాటు <ph name="DEVICE_NAME" />గా కనిపిస్తుంది...</translation>
 <translation id="3981760180856053153">చెల్లని సేవ్ రకం ఎంటర్ చేయబడింది.</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />ఏదో తప్పు జరిగినందున <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />మరింత సహాయం కోసం, ఈ సైట్‌ను సందర్శించండి: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">సులువైన కొద్ది దశలతో మీ బ్రౌజర్‌ని సెటప్ చేయండి</translation>
 <translation id="3983400541576569538">కొన్ని యాప్‌ల డేటాని కోల్పోవచ్చు</translation>
 <translation id="3983586614702900908">తెలియని విక్రేత అందించిన పరికరాలు</translation>
@@ -3888,9 +3885,6 @@
 <translation id="4992984395680162305">QR కోడ్‌ను స్కాన్ చేయడం ద్వారా ఈ పరికరాలు లింక్ చేయబడ్డాయి.</translation>
 <translation id="4994474651455208930">ప్రోటోకాల్స్‌కు డిఫాల్ట్ హ్యాండ్లర్‌లుగా కావడం కోసం అడగటానికి సైట్‌లను అనుమతించండి</translation>
 <translation id="4994754230098574403">సెటప్ చేస్తోంది</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />ఎన్‌రోల్ చేసే ముందు, మీరు TPMను క్లియర్ చేయాల్సి ఉంటుంది, తద్వారా <ph name="DEVICE_OS" /> పరికర యాజమాన్య హక్కును తీసుకోవచ్చు.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />మీరు TPM పరికరాన్ని మొత్తానికి కూడా ఆఫ్ చేయవచ్చు. మీ డేటా, సాఫ్ట్‌వేర్ ఎన్‌క్రిప్షన్ ద్వారా భద్రంగా స్టోర్ చేయబడుతుంది, కానీ హార్డ్‌వేర్ సపోర్ట్‌ను కలిగి ఉన్న సర్టిఫికెట్‌ల వంటి కొన్ని సెక్యూరిటీ ఫీచర్‌లు డిజేబుల్ చేయబడతాయి.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />సిస్టమ్ BIOS/UEFI సెట్టింగ్‌లను రీబూట్ చేయడం, ఇంకా ఎంటర్ చేయడం ద్వారా మీరు మీ TPM సెట్టింగ్‌లను మార్చవచ్చు. పరికర మోడల్‌ను బట్టి దశలు మారుతూ ఉంటాయి. మరింత సమాచారం కోసం, మీరు రీబూట్ చేసే ముందు <ph name="DEVICE_OS" /> డాక్యుమెంటేషన్‌ను వేరొక పరికరంలో తెరవండి: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> వర్చువల్ మెషీన్‌లు ఏవీ కనుగొనబడలేదు}=1{1 <ph name="VM_TYPE" /> వర్చువల్ మెషీన్‌ కనుగొనబడింది: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> వర్చువల్ మెషీన్‌లు కనుగొనబడ్డాయి: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ఇంటర్నెట్ కనెక్షన్ లేదు.</translation>
 <translation id="4998430619171209993">ఆన్‌లో ఉంది</translation>
@@ -4008,7 +4002,6 @@
 <translation id="5127620150973591153">సురక్షిత కనెక్షన్ ID: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">సింక్‌ ఆఫ్‌లో ఉంది</translation>
 <translation id="5127881134400491887">నెట్‌వర్క్ కనెక్షన్‌లను నిర్వహించండి</translation>
-<translation id="5128774403617662387">ప్రారంభించడానికి ముందు, మీరు మీ డేటాను బ్యాకప్ చేశారని నిర్ధారించుకోండి. <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేయడం వలన మీ హార్డ్ డ్రైవ్ ఓవర్‌రైట్ అవుతుంది. g.co/TBD‌లో మరింత తెలుసుకోండి.</translation>
 <translation id="512903556749061217">జోడించబడింది</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి లేదా సహాయం కోసం క్యారియర్‌ను కాంటాక్ట్ చేయండి.</translation>
@@ -4524,7 +4517,6 @@
 <translation id="5659593005791499971">ఈమెయిల్‌</translation>
 <translation id="5659833766619490117">ఈ పేజీని అనువదించడం సాధ్యపడలేదు</translation>
 <translation id="5662513737565158057">Linux యాప్‌లు పనిచేసే తీరును మార్చండి.</translation>
-<translation id="5667490069342183561">ఏదైనా డేటా కోల్పోతే దానికి Google ఎటువంటి బాధ్యత వహించదు, అలాగే <ph name="DEVICE_OS" /> సర్టిఫై చేయబడని మోడల్‌లలో పని చేయకపోవచ్చు. g.co/TBD‌లో మరింత తెలుసుకోండి.</translation>
 <translation id="5667546120811588575">Google Play సెటప్ చేస్తోంది...</translation>
 <translation id="5668351004957198136">విఫలమైంది</translation>
 <translation id="56702779821643359">మీ చుట్టూ ఉన్న వ్యక్తులతో ఫైళ్లను షేర్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -5336,9 +5328,6 @@
 <translation id="6528179044667508675">అంతరాయం వద్దు</translation>
 <translation id="652948702951888897">Chrome చరిత్ర</translation>
 <translation id="6530186581263215931">ఈ సెట్టింగ్‌లు మీ నిర్వాహకుడి ద్వారా అమలు చేయబడ్డాయి</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />అత్యుత్తమ అనుభవం అందించడానికి, పరికరాలకు సంబంధించిన హార్డ్‌వేర్ డేటాను <ph name="DEVICE_OS" /> సేకరిస్తుంది, అలాగే ఏ అప్‌డేట్‌లను డెలివరీ చేయాలో నిర్ణయించడం కోసం Googleకు దీనిని షేర్ చేస్తుంది. ఆప్షనల్‌గా, <ph name="DEVICE_OS" /> అనుభవం, సర్వీస్‌కు సపోర్ట్, మెరుగుదలల వంటి అదనపు ప్రయోజనాల కోసం ఈ డేటాను Google వినియోగించేందుకు మీరు అనుమతించవచ్చు.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />అప్‌డేట్‌లను ఫిల్టర్ చేయడానికి Googleకు పంపిన డేటాను, అలాగే మీరు Googleతో డేటాను షేర్ చేయడానికి ఎంచుకున్న ఏ ఇతర సందర్భాలను అయినా చూడటానికి ఈ పరికరంలో లాగిన్ చేసి, chrome://systemలోని CLOUDREADY_HARDWARE_INFO విభాగాన్ని సందర్శించండి.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> Googleతో షేర్ చేసే డేటా గురించి, అలాగే ఆ డేటా ఎలా ఉపయోగించబడుతుంది అనే దానికి సంబంధించిన మరిన్ని వివరాల కోసం, g.co/xxxxxను సందర్శించండి<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">అపాయకరమైన ఫైల్‌ను అలాగే ఉంచు</translation>
 <translation id="6532101170117367231">Google డిస్క్‌‌కు సేవ్ చేయండి</translation>
 <translation id="6532106788206463496">మార్పులను సేవ్ చేయి</translation>
@@ -6027,15 +6016,6 @@
 <translation id="7258192266780953209">పరివర్తనాలు</translation>
 <translation id="7258225044283673131">అప్లికేషన్ స్పందించడం లేదు. యాప్‌ను మూసివేయడానికి "బలవంతంగా మూసివేయి" ఎంచుకోండి.</translation>
 <translation id="7262004276116528033">ఈ సైన్-ఇన్ సేవను <ph name="SAML_DOMAIN" /> హోస్ట్ చేస్తోంది</translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />ఈ పరిష్కార ప్రక్రియ దశలను ట్రై చేసి చూడండి:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />మీ పరికరం HDD, SSD లేదా eMMC వంటి యాక్టివ్‌గా ఉన్న అంతర్గత స్టోరేజ్‌ను కలిగి ఉందని నిర్ధారించుకోండి
-    <ph name="LIST_ITEM" />మీ అంతర్గత స్టోరేజ్ పరికరం 16GB కంటే ఎక్కువ స్టోరేజ్‌ను కలిగి ఉందో లేదో చెక్ చేయండి
-    <ph name="LIST_ITEM" />భౌతికంగా యాక్సెస్ చేయడానికి వీలుంటే, అంతర్గత స్టోరేజ్ కనెక్షన్‌ను చెక్ చేయండి
-    <ph name="LIST_ITEM" />మీరు సర్టిఫైడ్ మోడల్‌ను ఉపయోగిస్తున్నారని నిర్ధారించుకుని, ఇన్‌స్టాలేషన్‌కు సంబంధించిన గమనికలను చెక్ చేయండి
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />మరింత సహాయం కోసం, ఈ సైట్‌ను సందర్శించండి: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">వర్చువల్ మెషిన్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి లేదా మీ నిర్వాహకుడిని సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">మీ వేలిముద్ర కోసం వివిధ భాగాలను జోడించడానికి మీ వేలిని పైకి ఎత్తుతూ ఉండండి</translation>
 <translation id="7268127947535186412">ఈ సెట్టింగ్‌ను పరికరం యజమాని నిర్వహిస్తున్నారు.</translation>

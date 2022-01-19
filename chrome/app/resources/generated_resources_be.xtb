@@ -2314,7 +2314,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}one{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}few{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}many{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}other{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}}</translation>
 <translation id="3364986687961713424">Паведамленне ад адміністратара: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Выкарыстоўвайце або Ctrl, або Alt</translation>
-<translation id="3367057768351048705">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры толькі на сваіх старонках</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369067987974711168">Паказаць іншыя дзеянні для гэтага порта</translation>
 <translation id="3369624026883419694">Вызначэнне хоста...</translation>
@@ -2955,8 +2954,6 @@
 <translation id="3979748722126423326">Уключыць прыладу <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Прылады паблізу будуць бачыць назву "<ph name="DEVICE_NAME" />" на працягу <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Уведзены няправільны тып захавання.</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />Нешта пайшло не так. Не ўдалося ўсталяваць <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на сайце g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">Наладзьце браўзер, выканаўшы некалькі простых крокаў</translation>
 <translation id="3983400541576569538">Даныя некаторых праграм могуць быць страчаны</translation>
 <translation id="3983586614702900908">прылады ад невядомага пастаўшчыка</translation>
@@ -3873,9 +3870,6 @@
 <translation id="4992984395680162305">Гэтыя прылады былі спалучаны шляхам сканіравання QR-кода</translation>
 <translation id="4994474651455208930">Дазволіць сайтам запытваць права быць стандартнымі апрацоўшчыкамі пратаколаў</translation>
 <translation id="4994754230098574403">Ідзе наладжванне</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Перад рэгістрацыяй неабходна ачысціць TPM, каб аперацыйная сістэма <ph name="DEVICE_OS" /> змагла атрымаць права ўласнасці на прыладу.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Таксама можна зусім выключыць TPM на прыладзе. Вашы даныя і далей будуць захоўвацца ў бяспецы дзякуючы выкарыстанню шыфравання праграмнага забеспячэння, але пэўныя функцыі бяспекі (напрыклад, забяспечаныя апаратнымі сродкамі сертыфікаты) будуць адключаны.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Змяніць налады TPM можна, выканаўшы перазагрузку і ўвайшоўшы ў налады BIOS/UEFI. Этапы могуць адрознівацца ў залежнасці ад мадэлі прылады. Каб атрымаць дадатковую інфармацыю, перад перазагрузкай адкрыйце дакументацыю <ph name="DEVICE_OS" /> на асобнай прыладзе: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Віртуальныя машыны <ph name="VM_TYPE" /> не знойдзены}=1{Знойдзена 1 віртуальная машына <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Знойдзена {NUM_VMS} віртуальная машына <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Знойдзена {NUM_VMS} віртуальныя машыны <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}many{Знойдзена {NUM_VMS} віртуальных машын <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Знойдзена {NUM_VMS} віртуальнай машыны <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Няма падключэння да інтэрнэту.</translation>
 <translation id="4998430619171209993">Уключана</translation>
@@ -3993,7 +3987,6 @@
 <translation id="5127620150973591153">Абаронены ідэнтыфікатар падключэння: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Сінхранізацыя выключана</translation>
 <translation id="5127881134400491887">Кіраваць падключэннямі да сеткі</translation>
-<translation id="5128774403617662387">Перад запускам упэўніцеся, што вашы даныя маюць рэзервовую копію. Пры ўсталяванні <ph name="DEVICE_OS" /> даныя на цвёрдым дыску будуць перазапісаны. Даведайцеся больш на старонцы g.co/TBD.</translation>
 <translation id="512903556749061217">далучана</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Не ўдалося спампаваць профіль. Паўтарыце спробу пазней або звярніцеся па дапамогу да аператара.</translation>
@@ -4509,7 +4502,6 @@
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
 <translation id="5659833766619490117">Не ўдалося перакласці старонку</translation>
 <translation id="5662513737565158057">Змяненне параметраў для праграм Linux.</translation>
-<translation id="5667490069342183561">Кампанія Google не нясе адказнасці за магчымую страту даных і не гарантуе, што <ph name="DEVICE_OS" /> будзе працаваць на несертыфікаваных мадэлях прылад. Даведайцеся больш на старонцы g.co/TBD.</translation>
 <translation id="5667546120811588575">Наладжваецца Google Play...</translation>
 <translation id="5668351004957198136">Збой</translation>
 <translation id="56702779821643359">Абагульвайце файлы з карыстальнікамі паблізу. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -5321,9 +5313,6 @@
 <translation id="6528179044667508675">Не турбаваць</translation>
 <translation id="652948702951888897">Гісторыя праглядаў Chrome</translation>
 <translation id="6530186581263215931">Гэтыя налады прымусова ўключаны адміністратарам</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />Для зручнасці карыстальнікаў <ph name="DEVICE_OS" /> збірае даныя аб апаратным забеспячэнні прылад і абагульвае іх з Google, што дазваляе выяўляць, якія абнаўленні неабходна ўсталяваць. Вы таксама можаце дазволіць Google выкарыстоўваць гэтыя даныя і ў іншых мэтах, напрыклад, каб удасканальваць работу <ph name="DEVICE_OS" /> і аказваць карыстальнікам падтрымку.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Каб паглядзець, якія звесткі адпраўляюцца ў Google для фільтрацыі абнаўленняў і для якіх яшчэ мэт можна перадаваць нам даныя, увайдзіце ва ўліковы запіс на гэтай прыладзе і азнаёмцеся з раздзелам CLOUDREADY_HARDWARE_INFO на старонцы chrome://system.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Падрабязную інфармацыю пра даныя, якія <ph name="DEVICE_OS" /> можа абагульваць з Google, і іх выкарыстанне чытайце на старонцы g.co/xxxxx<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">Захаваць небяспечны файл</translation>
 <translation id="6532101170117367231">Захаваць на Google Дыск</translation>
 <translation id="6532106788206463496">Захаваць змены</translation>
@@ -6012,15 +6001,6 @@
 <translation id="7258192266780953209">Пераўтварэнні</translation>
 <translation id="7258225044283673131">Праграма не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
 <translation id="7262004276116528033">Гэты сэрвіс уваходу размешчаны на дамене <ph name="SAML_DOMAIN" /></translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Паспрабуйце знайсці і выправіць непаладку наступным чынам:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />упэўніцеся, што прылада мае ўнутранае сховішча (напрыклад, HDD, SSD, або eMMC) і яно працуе;
-    <ph name="LIST_ITEM" />упэўніцеся, што аб'ём унутранага сховішча прылады не меншы за 16 ГБ;
-    <ph name="LIST_ITEM" />праверце падключэнне да ўнутранага сховішча, калі гэта магчыма зрабіць фізічна;
-    <ph name="LIST_ITEM" />упэўніцеся, што выкарыстоўваеце сертыфікаваную мадэль прылады, і азнаёмцеся з нататкамі па ўсталяванні.
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на сайце: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">Не ўдалося ўсталяваць віртуальную машыну. Паўтарыце спробу або звярніцеся да адміністратара. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Дакраніцеся некалькі разоў, каб быў зняты ўвесь адбітак пальца</translation>
 <translation id="7268127947535186412">Гэта налада кіруецца ўладальнікам прылады.</translation>

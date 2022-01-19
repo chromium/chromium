@@ -2330,7 +2330,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}one{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}few{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}many{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}other{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3364986687961713424">Від вашого адміністратора: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Використовуйте Ctrl або Alt</translation>
-<translation id="3367057768351048705">Сайти можуть використовувати файли cookie лише для перегляду ваших дій у веб-переглядачі на самих цих сайтах</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369067987974711168">Показати більше дій для цього порту</translation>
 <translation id="3369624026883419694">-...</translation>
@@ -2971,8 +2970,6 @@
 <translation id="3979748722126423326">Увімкнути <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Пристрої поблизу бачитимуть назву "<ph name="DEVICE_NAME" />" упродовж <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Введено недійсний тип збереження.</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />Сталася помилка. Не вдалося встановити <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">Налаштуйте веб-переглядач, виконавши прості дії</translation>
 <translation id="3983400541576569538">Дані з деяких додатків може бути втрачено</translation>
 <translation id="3983586614702900908">пристрої від невідомого постачальника</translation>
@@ -3892,9 +3889,6 @@
 <translation id="4992984395680162305">Ці пристрої підключено за допомогою QR-коду.</translation>
 <translation id="4994474651455208930">Дозволити сайтам запитувати встановлення обробників протоколів за умовчанням.</translation>
 <translation id="4994754230098574403">Налаштування</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Перед реєстрацією потрібно очистити TPM, щоб ОС <ph name="DEVICE_OS" /> змогла керувати пристроєм.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ви також можете повністю вимкнути пристрій із модулем TPM. Ваші дані залишатимуться захищеними завдяки шифруванню програмного забезпечення, але певні функції безпеки (наприклад, сертифікати апаратного забезпечення) буде вимкнено.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ви можете змінити параметри TPM. Для цього перезапустіть систему й увійдіть у налаштування BIOS/UEFI. Ці кроки можуть відрізнятися залежно від моделі пристрою. Щоб дізнатися більше, відкрийте документацію ОС <ph name="DEVICE_OS" /> на окремому пристрої, перш ніж перезапустити систему: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Віртуальну машину <ph name="VM_TYPE" /> не знайдено}=1{Знайдено 1 віртуальну машину <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Знайдено {NUM_VMS} віртуальну машину <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Знайдено {NUM_VMS} віртуальні машини <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}many{Знайдено {NUM_VMS} віртуальних машин <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Знайдено {NUM_VMS} віртуальної машини <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Немає з’єднання з Інтернетом.</translation>
 <translation id="4998430619171209993">Увімкнено</translation>
@@ -4012,7 +4006,6 @@
 <translation id="5127620150973591153">Ідентифікатор безпечного з'єднання: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Синхронізацію вимкнено</translation>
 <translation id="5127881134400491887">Керувати мережевими з’єднаннями</translation>
-<translation id="5128774403617662387">Перш ніж почати, переконайтеся, що ви створили резервну копію даних. Під час встановлення ОС <ph name="DEVICE_OS" /> буде перезаписано всі дані жорсткого диска. Докладніше: g.co/TBD.</translation>
 <translation id="512903556749061217">підключено</translation>
 <translation id="5130080518784460891">Етен</translation>
 <translation id="5130675701626084557">Не вдалося завантажити профіль. Повторіть спробу пізніше або зв'яжіться з оператором.</translation>
@@ -4528,7 +4521,6 @@
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5659833766619490117">Цю сторінку неможливо перекласти</translation>
 <translation id="5662513737565158057">Налаштуйте роботу додатків Linux.</translation>
-<translation id="5667490069342183561">Компанія Google не несе відповідальності за втрату даних і не гарантує, що ОС <ph name="DEVICE_OS" /> працюватиме на несертифікованих моделях. Докладніше: g.co/TBD.</translation>
 <translation id="5667546120811588575">Налаштування Google Play…</translation>
 <translation id="5668351004957198136">Перевірку не пройдено</translation>
 <translation id="56702779821643359">Діліться файлами з людьми поруч. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -5340,9 +5332,6 @@
 <translation id="6528179044667508675">Не турбувати</translation>
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6530186581263215931">Ці налаштування застосовує адміністратор</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />Щоб забезпечити найвищу якість роботи, <ph name="DEVICE_OS" /> збирає дані про пристрій і надає їх компанії Google, яка потім надає оновлення. Також ви можете дозволити компанії Google застосовувати ці дані в інших цілях, наприклад, щоб покращити використання й обслуговування пристрою "<ph name="DEVICE_OS" />".<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Щоб побачити, які дані ви надсилаєте для оновлення пристрою, а також якщо виникнуть інші запитання, пов’язані з наданням доступу до своїх даних компанії Google, перейдіть у розділ CLOUDREADY_HARDWARE_INFO в chrome://system.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Щоб дізнатися більше про те, які дані <ph name="DEVICE_OS" /> може надавати компанії Google і як вони використовуються, перейдіть у розділ g.co/xxxxx<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">Завантажити небезпечний файл</translation>
 <translation id="6532101170117367231">Зберегти на Google Диску</translation>
 <translation id="6532106788206463496">Зберегти зміни</translation>
@@ -6031,15 +6020,6 @@
 <translation id="7258192266780953209">Перетворення</translation>
 <translation id="7258225044283673131">Додаток не відповідає. Щоб закрити його, виберіть опцію "Примусово закрити".</translation>
 <translation id="7262004276116528033">Ця служба входу в обліковий запис зареєстрована в домені <ph name="SAML_DOMAIN" /></translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Для вирішення проблеми виконайте подані нижче дії.
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Переконайтеся, що на пристрої є робоча внутрішня пам’ять, наприклад HDD-диск, SSD-диск або eMMC
-    <ph name="LIST_ITEM" />Переконайтеся, що внутрішня пам’ять пристрою більша ніж 16 ГБ
-    <ph name="LIST_ITEM" />Перевірте підключення до внутрішньої пам’яті, якщо це фізично можливо
-    <ph name="LIST_ITEM" />Переконайтеся, що ви використовуєте сертифіковану модель, і перегляньте примітки щодо встановлення
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">Не вдалося встановити віртуальну машину. Повторіть спробу або зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Піднімайте й знов опускайте палець, щоб повністю відсканувати відбиток</translation>
 <translation id="7268127947535186412">Цим налаштуванням керує власник пристрою.</translation>

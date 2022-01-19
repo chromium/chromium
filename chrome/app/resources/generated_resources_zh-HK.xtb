@@ -2326,7 +2326,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」現在與您分享 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」現在與您分享 <ph name="ATTACHMENTS" />。}}</translation>
 <translation id="3364986687961713424">來自管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">使用 Ctrl 或 Alt 鍵</translation>
-<translation id="3367057768351048705">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369067987974711168">顯示呢個連接埠嘅更多操作</translation>
 <translation id="3369624026883419694">正在解析主機…</translation>
@@ -2967,8 +2966,6 @@
 <translation id="3979748722126423326">啟用 <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">以「<ph name="DEVICE_NAME" />」向附近的裝置顯示 <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">輸入的儲存類型無效。</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />發生問題，系統無法安裝 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
-    如需詳細說明，請瀏覽：<ph name="BEGIN_PARAGRAPH2" />g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">只需幾個簡單步驟，便可以完成瀏覽器設定</translation>
 <translation id="3983400541576569538">部分應用程式的資料可能會遺失</translation>
 <translation id="3983586614702900908">來自未知供應商的裝置</translation>
@@ -3888,10 +3885,6 @@
 <translation id="4992984395680162305">這些是透過掃瞄 QR 碼所連結的裝置</translation>
 <translation id="4994474651455208930">允許網站要求成為通訊協定的預設處理常式</translation>
 <translation id="4994754230098574403">正在設定</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />在註冊裝置前，您需要清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您亦可完全關閉 TPM 裝置。系統仍會透過軟件加密功能安全儲存您的資料，但會停用硬件支援憑證等特定安全性功能。<ph name="END_PARAGRAPH2" />
-    
-<ph name="BEGIN_PARAGRAPH3" />如要變更 TPM 設定，請重新啟動並進入系統的 BIOS/UEFI 設定。操作步驟根據裝置型號而有所不同。如需更多資料，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 文件：[URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{找不到 <ph name="VM_TYPE" /> 虛擬機器}=1{已找到 <ph name="VM_TYPE" /> 個 <ph name="VM_NAME_LIST" /> 虛擬機器：}other{已找到 {NUM_VMS} 個 <ph name="VM_TYPE" /> 虛擬機器：<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">沒有互聯網連線。</translation>
 <translation id="4998430619171209993">開啟</translation>
@@ -4009,7 +4002,6 @@
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">同步處理已停用</translation>
 <translation id="5127881134400491887">管理網絡連線</translation>
-<translation id="5128774403617662387">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。詳情請參閱：g.co/TBD。</translation>
 <translation id="512903556749061217">已附加</translation>
 <translation id="5130080518784460891">倚天</translation>
 <translation id="5130675701626084557">無法下載設定檔。請稍候再試，或向流動網絡供應商尋求協助。</translation>
@@ -4525,7 +4517,6 @@
 <translation id="5659593005791499971">電郵</translation>
 <translation id="5659833766619490117">無法翻譯此網頁的內容</translation>
 <translation id="5662513737565158057">變更 Linux 應用程式的運作方式。</translation>
-<translation id="5667490069342183561">Google 對任何資料遺失概不負責，而且 <ph name="DEVICE_OS" /> 可能不適用於未通過認證的型號。詳情請參閱：g.co/TBD。</translation>
 <translation id="5667546120811588575">正在設定 Google Play…</translation>
 <translation id="5668351004957198136">未通過</translation>
 <translation id="56702779821643359">與附近的人分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5337,9 +5328,6 @@
 <translation id="6528179044667508675">請勿騷擾</translation>
 <translation id="652948702951888897">Chrome 記錄</translation>
 <translation id="6530186581263215931">這些設定由管理員執行</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />為提供最佳體驗，<ph name="DEVICE_OS" /> 會收集有關裝置的硬件資料並與 Google 分享，以判斷要提供哪些更新內容。您可選擇是否允許 Google 將這些資料用於其他用途，例如支援和改善 <ph name="DEVICE_OS" /> 體驗和服務。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您可在此裝置上登入並前往 chrome://system 中的 CLOUDREADY_HARDWARE_INFO 部分，以查看傳送至 Google 進行更新篩選的資料，以及其他您選擇與 Google 分享資料的情況。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能與 Google 分享的資料，以及這些資料的用途，請前往 g.co/xxxxx<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">保留不安全的檔案</translation>
 <translation id="6532101170117367231">儲存至 Google 雲端硬碟</translation>
 <translation id="6532106788206463496">儲存變更</translation>
@@ -6028,15 +6016,6 @@
 <translation id="7258192266780953209">變形</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7262004276116528033">此登入服務是由 <ph name="SAML_DOMAIN" /> 代管</translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />請嘗試執行以下解決疑難步驟：
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />確保裝置含有可用的內部儲存空間，例如 HDD、SSD 或 eMMC
-    <ph name="LIST_ITEM" />確認裝置內部儲存空間大於 16 GB
-    <ph name="LIST_ITEM" />檢查內部儲存空間的連接狀態 (如果支援實體存取方式)
-    <ph name="LIST_ITEM" />務必使用通過認證的型號，並查看安裝注意事項
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">無法安裝虛擬機器。請再試一次，或聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">覆按壓指紋感應器，以建立完整的指紋檔案</translation>
 <translation id="7268127947535186412">此設定由裝置擁有者管理。</translation>

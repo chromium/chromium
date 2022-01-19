@@ -2319,7 +2319,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ಸಾಧನವು ನಿಮ್ಮೊಂದಿಗೆ <ph name="ATTACHMENTS" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.}one{<ph name="DEVICE_NAME" /> ಸಾಧನವು ನಿಮ್ಮೊಂದಿಗೆ <ph name="ATTACHMENTS" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.}other{<ph name="DEVICE_NAME" /> ಸಾಧನವು ನಿಮ್ಮೊಂದಿಗೆ <ph name="ATTACHMENTS" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.}}</translation>
 <translation id="3364986687961713424">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl ಅಥವಾ Alt ಬಳಸಿ</translation>
-<translation id="3367057768351048705">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ತಮ್ಮದೇ ಸೈಟ್‌ನಲ್ಲಿ ನೋಡಲು ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಕುಕೀಗಳನ್ನು ಮಾತ್ರ ಬಳಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369067987974711168">ಈ ಪೋರ್ಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಇನ್ನಷ್ಟು ಕ್ರಮಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3369624026883419694">ಹಾಸ್ಟ್ ಅನ್ನು ನಿವಾರಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -2961,8 +2960,6 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> ಅವಧಿಗಾಗಿ ಸಮೀಪದಲ್ಲಿರುವ ಸಾಧನಗಳಿಗೆ <ph name="DEVICE_NAME" /> ಆಗಿ ಗೋಚರಿಸುತ್ತದೆ...</translation>
 <translation id="3981760180856053153">ಅಮಾನ್ಯವಾದ ಉಳಿಸು ಪ್ರಕಾರವನ್ನು ನಮೂದಿಸಲಾಗಿದೆ.</translation>
-<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />ಏನೋ ತಪ್ಪಾಗಿದೆ ಹಾಗೂ <ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.<ph name="END_PARAGRAPH1" />
-    ಹೆಚ್ಚಿನ ಸಹಾಯಕ್ಕಾಗಿ <ph name="BEGIN_PARAGRAPH2" />g.co/xxxxx<ph name="END_PARAGRAPH2" /> ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="3982375475032951137">ಕೆಲವೇ ಸರಳ ಹಂತಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="3983400541576569538">ಕೆಲವು ಆ್ಯಪ್‌ಗಳ ಡೇಟಾ ನಷ್ಟವಾಗಬಹುದು</translation>
 <translation id="3983586614702900908">ಅಪರಿಚಿತ ಮಾರಾಟಗಾರರಿಂದ ಸಾಧನಗಳು</translation>
@@ -3882,9 +3879,6 @@
 <translation id="4992984395680162305">ಈ ಸಾಧನಗಳನ್ನು QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡುವ ಮೂಲಕ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4994474651455208930">ಪ್ರೊಟೋಕಾಲ್‌ಗಳಿಗಾಗಿ ಡಿಫಾಲ್ಟ್ ಹ್ಯಾಂಡ್ಲರ್‌‌ಗಳಾಗಲು ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="4994754230098574403">ಹೊಂದಿಸಲಾಗುತ್ತಿದೆ</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />ನೋಂದಾಯಿಸುವ ಮೊದಲು ನೀವು TPM ಅನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು, ಆದ್ದರಿಂದ ಸಾಧನದ ಮಾಲೀಕತ್ವವನ್ನು <ph name="DEVICE_OS" /> ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ನೀವು TPM ಸಾಧನವನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಆಫ್ ಮಾಡಬಹುದು. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಇನ್ನೂ ಸಾಫ್ಟ್‌ವೇರ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನ ಮೂಲಕ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ, ಆದರೆ ಹಾರ್ಡ್‌ವೇರ್ ಬೆಂಬಲಿತ ಪ್ರಮಾಣಪತ್ರಗಳಂತಹ ಕೆಲವು ಭದ್ರತಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ರೀಬೂಟ್ ಮಾಡುವ ಮೂಲಕ ಮತ್ತು ಸಿಸ್ಟಂ BIOS/UEFI ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಮೂದಿಸುವ ಮೂಲಕ ನಿಮ್ಮ TPM ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೀವು ಬದಲಾಯಿಸಬಹುದು. ಸಾಧನದ ಮಾದರಿಯನ್ನು ಆಧರಿಸಿ ಹಂತಗಳು ಬದಲಾಗುತ್ತವೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ, ನೀವು ರೀಬೂಟ್ ಮಾಡುವ ಮೊದಲು <ph name="DEVICE_OS" /> ಡಾಕ್ಯುಮೆಂಟೇಶನ್ ಅನ್ನು ಪ್ರತ್ಯೇಕ ಸಾಧನದಲ್ಲಿ ತೆರೆಯಿರಿ: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ಯಾವುದೇ <ph name="VM_TYPE" /> VM ಗಳು ಕಂಡುಬಂದಿಲ್ಲ}=1{1 <ph name="VM_TYPE" /> VM ಕಂಡುಬಂದಿದೆ: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VM ಗಳು ಕಂಡುಬಂದಿವೆ: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM ಗಳು ಕಂಡುಬಂದಿವೆ: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲ.</translation>
 <translation id="4998430619171209993">ಆನ್‌</translation>
@@ -4002,7 +3996,6 @@
 <translation id="5127620150973591153">ಭದ್ರತಾ ಸಂಪರ್ಕ ಐಡಿ: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">ಸಿಂಕ್‌ ಆಫ್‌ ಆಗಿದೆ</translation>
 <translation id="5127881134400491887">ನೆಟ್‌ವರ್ಕ್‌ ಸಂಪರ್ಕಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="5128774403617662387">ಪ್ರಾರಂಭಿಸುವ ಮೊದಲು, ನಿಮ್ಮ ಡೇಟಾದ ಬ್ಯಾಕಪ್ ನಿಮ್ಮ ಬಳಿ ಇದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. <ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಹಾರ್ಡ್ ಡ್ರೈವ್‌ನಲ್ಲಿ ಓವರ್‌ವ್ರೈಟ್ ಮಾಡುತ್ತದೆ. g.co/TBD ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="512903556749061217">ಲಗತ್ತಿಸಲಾಗಿದೆ</translation>
 <translation id="5130080518784460891">ಈಟೆನ್</translation>
 <translation id="5130675701626084557">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಸಹಾಯಕ್ಕಾಗಿ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -4519,7 +4512,6 @@
 <translation id="5659593005791499971">ಇಮೇಲ್</translation>
 <translation id="5659833766619490117">ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5662513737565158057">Linux ಆ್ಯಪ್‌ಗಳು ಹೇಗೆ ಕಾರ್ಯನಿರ್ವಹಿಸಬೇಕು ಎಂಬುದನ್ನು ಬದಲಾಯಿಸಿ.</translation>
-<translation id="5667490069342183561">ಯಾವುದೇ ಡೇಟಾ ನಷ್ಟಕ್ಕೆ Google ಜವಾಬ್ದಾರನಾಗಿರುವುದಿಲ್ಲ ಮತ್ತು ಪ್ರಮಾಣೀಕರಿಸದ ಮಾದರಿಗಳಲ್ಲಿ <ph name="DEVICE_OS" /> ಕೆಲಸ ಮಾಡದಿರಬಹುದು. g.co/TBD ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="5667546120811588575">Google Play ಅನ್ನು ಹೊಂದಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5668351004957198136">ವಿಫಲ</translation>
 <translation id="56702779821643359">ನಿಮ್ಮ ಸುತ್ತಲಿನ ಜನರ ಜೊತೆಗೆ ಫೈಲ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -5331,9 +5323,6 @@
 <translation id="6528179044667508675">ಅಡಚಣೆ ಮಾಡಬೇಡಿ</translation>
 <translation id="652948702951888897">Chrome ಇತಿಹಾಸ</translation>
 <translation id="6530186581263215931">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಜಾರಿಗೊಳಿಸಿದ್ದಾರೆ</translation>
-<translation id="653031671361866334"><ph name="BEGIN_PARAGRAPH1" />ಅತ್ಯುತ್ತಮ ಅನುಭವವನ್ನು ಒದಗಿಸಲು, <ph name="DEVICE_OS" /> ಸಾಧನಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಹಾರ್ಡ್‌ವೇರ್‌ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ ಮತ್ತು ಯಾವೆಲ್ಲ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಒದಗಿಸಬೇಕು ಎಂಬುದನ್ನು ನಿರ್ಧರಿಸಲು ಆ ಡೇಟಾವನ್ನು Google ಜೊತೆ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಐಚ್ಛಿಕವಾಗಿ, <ph name="DEVICE_OS" /> ನ ಅನುಭವ ಮತ್ತು ಸೇವೆಯನ್ನು ಸುಧಾರಿಸುವ ಮತ್ತು ಬೆಂಬಲಿಸುವಂತಹ ಹೆಚ್ಚುವರಿ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಈ ಡೇಟಾವನ್ನು ಬಳಸಲು ನೀವು Google ಗೆ ಅನುಮತಿಸಬಹುದು.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ಅಪ್‌ಡೇಟ್ ಫಿಲ್ಟರ್ ಮಾಡುವಿಕೆಗಾಗಿ Google ಗೆ ಕಳುಹಿಸಲಾಗಿರುವ ಡೇಟಾವನ್ನು ನೋಡಲು, ಅಷ್ಟೇ ಅಲ್ಲದೇ ನೀವು Google ಜೊತೆ ಡೇಟಾ ಹಂಚಿಕೊಳ್ಳುವ ಆಯ್ಕೆಯನ್ನು ಮಾಡಿದ ಯಾವುದೇ ಇತರ ಸನ್ನಿವೇಶಗಳನ್ನು ನೋಡಲು ನೀವು ಈ ಸಾಧನದಲ್ಲಿ ಲಾಗ್‌ ಇನ್‌ ಮಾಡಿ, CLOUDREADY_HARDWARE_INFO ವಿಭಾಗಕ್ಕೆ ಭೇಟಿ ನೀಡಬಹುದು.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> Google ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಬಹುದಾದ ಡೇಟಾದ ಕುರಿತು ಮತ್ತು ಅದನ್ನು ಹೇಗೆ ಬಳಸಲಾಗುತ್ತದೆ ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ಮಾಹಿತಿಗಾಗಿ g.co/xxxxx ಗೆ ಭೇಟಿ ನೀಡಿ<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6531282281159901044">ಅಪಾಯಕಾರಿ ಫೈಲ್ ಇರಿಸು</translation>
 <translation id="6532101170117367231">Google ಡ್ರೈವ್‌ನಲ್ಲಿ ಉಳಿಸಿ</translation>
 <translation id="6532106788206463496">ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ</translation>
@@ -6023,15 +6012,6 @@
 <translation id="7258192266780953209">ಪರಿವರ್ತನೆಗಳು</translation>
 <translation id="7258225044283673131">ಅಪ್ಲಿಕೇಶನ್ ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ. ಆ್ಯಪ್ ಅನ್ನು ಮುಚ್ಚಲು "ಬಲವಂತವಾಗಿ ಮುಚ್ಚಿ" ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="7262004276116528033">ಈ ಸೈನ್ ಇನ್ ಸೇವೆಯನ್ನು <ph name="SAML_DOMAIN" /> ಮೂಲಕ ಹೋಸ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />ಈ ಕೆಳಗಿನ ಸಮಸ್ಯೆ ನಿವಾರಣೆ ಹಂತಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />ನಿಮ್ಮ ಸಾಧನವು HDD, SSD, ಅಥವಾ eMMC ನಂತಹ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ಆಂತರಿಕ ಸಂಗ್ರಹಣೆ ಹೊಂದಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ
-    <ph name="LIST_ITEM" />ನಿಮ್ಮ ಆಂತರಿಕ ಸಂಗ್ರಹಣೆ ಸಾಧನವು 16GB ಗಿಂತ ಹೆಚ್ಚಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ
-    <ph name="LIST_ITEM" />ದೈಹಿಕವಾಗಿ ಪ್ರವೇಶಿಸಬಹುದಾದರೆ, ಆಂತರಿಕ ಸಂಗ್ರಹಣೆಗೆ ಇರುವ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ
-    <ph name="LIST_ITEM" />ನೀವು ಪ್ರಮಾಣೀಕೃತ ಮಾದರಿಯನ್ನು ಬಳಸುತ್ತಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಟಿಪ್ಪಣಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ಹೆಚ್ಚಿನ ಸಹಾಯಕ್ಕಾಗಿ ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡಿ: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">ವರ್ಚುವಲ್ ಯಂತ್ರವನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ನ ವಿವಿಧ ಭಾಗಗಳನ್ನು ಸೇರಿಸಲು ನಿಮ್ಮ ಬೆರಳನ್ನು ಎತ್ತುತ್ತಲಿರಿ</translation>
 <translation id="7268127947535186412">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಸಾಧನದ ಮಾಲೀಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.</translation>

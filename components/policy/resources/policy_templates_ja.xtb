@@ -834,6 +834,7 @@
 <translation id="199764499252435679"><ph name="PRODUCT_NAME" /> でのコンポーネントの更新を有効にする</translation>
 <translation id="1998504583649140526">プライベート ネットワーク リクエスト設定</translation>
 <translation id="1999000620918508488">ログイン画面でシステム情報を表示または非表示にする。</translation>
+<translation id="2000937390924915996">ログイン中に自動ディスク クリーンアップを実行しない</translation>
 <translation id="2001420846508294174">このポリシーでは、<ph name="PRODUCT_NAME" /> のデフォルト プリンタを選択するルールを設定して、デフォルトのルールをオーバーライドできます。プリンタの選択は、ユーザーが初めて印刷しようとしたときに行われます。このとき、<ph name="PRODUCT_NAME" /> では指定された属性に一致するプリンタが検索されます。完全に一致するものがない場合、<ph name="PRODUCT_NAME" /> では検索順で最初に見つかったプリンタが選択されるように設定できます。
 
       このポリシーを未設定のままにするか、設定した属性に一致するプリンタがない場合、組み込みの PDF プリンタがデフォルトになります。PDF プリンタがなければ、<ph name="PRODUCT_NAME" /> ではデフォルトのプリンタはなしになります。
@@ -912,6 +913,7 @@
 <translation id="2070744136203607632">DNS 傍受チェックを行わない</translation>
 <translation id="2073552873076775140"><ph name="PRODUCT_NAME" /> へのログインを許可する</translation>
 <translation id="2075732129949889165">Crostini Ansible playbook</translation>
+<translation id="2076158466157390917">ログイン中の自動クリーンアップを管理する</translation>
 <translation id="2077129598763517140">ハードウェア アクセラレーションが使用可能な場合は使用する</translation>
 <translation id="2077273864382355561">画面がオフになるまでの時間（バッテリー電源での実行時）</translation>
 <translation id="2082205219176343977">デバイスでの使用を許可する Chrome の最小バージョンを設定する。</translation>
@@ -1774,6 +1776,7 @@
       URL パターンは、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> と競合しないようにする必要があります。URL が両方のポリシーの URL パターンと一致する場合、どちらのポリシーも優先されません。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
+<translation id="305106159605171619">ユーザー エージェントの削減を無効にして、フィールド トライアルやオリジン トライアルによる有効化を許可しない。</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3064530882228745118">Kerberos 認証時に CNAME 検索を使用する</translation>
 <translation id="3066446511111537292">このデバイスの関連ユーザーに ADB サイドローディングの使用を許可します</translation>
@@ -3529,6 +3532,9 @@
           true に設定されている場合や未設定の場合、このユーザーは監視対象ユーザーを作成し管理できます。</translation>
 <translation id="5369937289900051171">カラー印刷のみ</translation>
 <translation id="5370279767682621504">デフォルト以外のポートで HTTP/0.9 サポートを有効にする</translation>
+<translation id="5370765433640162225">このポリシーを True に設定した場合、ログイン中に自動クリーンアップが実行され、十分なディスク空き容量が確保されます。
+      クリーンアップは厳密に必要な場合にのみ実行されますが、ログイン時間に影響があります。
+      このポリシーを False に設定した場合（デフォルト）、ログイン時間に影響はありません。</translation>
 <translation id="5371152055157582429">ユーザーは新しいタブページの背景をカスタマイズできる</translation>
 <translation id="5377606826822211923">信頼できない提供元の Android アプリの使用をユーザー単位で管理する</translation>
 <translation id="537786648513450280">信頼できない提供元の Android アプリの使用をデバイス単位で管理する</translation>
@@ -4176,6 +4182,7 @@
 <translation id="6132506775968708399">サードパーティ Cookie をブロックする</translation>
 <translation id="6133088669883929098">すべてのサイトにキー生成の使用を許可する</translation>
 <translation id="6135398260575578389">セーフ ブラウジングを強化モードで有効にする。このモードではセキュリティが強化されますが、より多くの閲覧情報を Google に提供する必要があります。</translation>
+<translation id="6135552820180449830">Crosh（バージョン 99 以降でサポート）</translation>
 <translation id="6138636318340561140">URL のセーフ ブラウジング ステータスをリアルタイムでチェックする</translation>
 <translation id="6141402445226505817">常に IP のみに基づいてタイムゾーンを検出する</translation>
 <translation id="6142501278956229253">ラスタライズした PDF の印刷に使用する DPI</translation>
@@ -5582,6 +5589,7 @@
 
       注: <ph name="FLASH_PLUGIN_NAME" /> を実行できるウェブサイトを管理するには、<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />、<ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> のポリシーをご覧ください。</translation>
 <translation id="780629758750905699">デバイスへのファミリー リンク アカウントの追加を許可する</translation>
+<translation id="7807120658089613760">カメラ、ブラウザ設定、OS 設定、スキャン、ウェブストア、キャンバス、使い方・ヒント、Crosh の機能を無効に設定する</translation>
 <translation id="7807139251387225825">同期から除外するデータタイプのリスト</translation>
 <translation id="781268256210530471">プラグイン設定</translation>
 <translation id="7814528532170362496">このポリシーでは、安全でない URL を検出するリアルタイムの URL チェックを管理します。
@@ -6361,6 +6369,7 @@
 <translation id="8705895771006864851">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> に組み込みの翻訳ツールバーを表示し、右クリックのコンテキスト メニューに翻訳オプションを表示して、ユーザーが必要な場面で翻訳機能を使用できるようにします。このポリシーを False に設定した場合、組み込みの翻訳機能はすべて使用できなくなります。
 
       このポリシーを設定した場合、ユーザーはこの機能を変更できません。このポリシーを未設定のままにした場合、ユーザーは設定を変更できます。</translation>
+<translation id="8707790573162457301">ログイン中に自動ディスク クリーンアップを実行する</translation>
 <translation id="8713535263782304771">セーフ ブラウジングを無効にする</translation>
 <translation id="8715885991031124968">異なる生成元のサブフレームからトリガーされた JavaScript ダイアログを許可します</translation>
 <translation id="8720547069538712402">ユーザーにスペルチェックの有効と無効の切り替えを許可する</translation>
