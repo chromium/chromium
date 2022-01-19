@@ -51,7 +51,7 @@ constexpr int kPrepareEndOfView = 30;
 // The percentage of a normal row height, which (percentage * row_height) will
 // be used as the `CalendarView` height when the `CalendarEventListView` is
 // expanded.
-constexpr float kExpandedCalendarViewHeightScale = 1.3;
+constexpr float kExpandedCalendarViewHeightScale = 1.2;
 
 // After the user is finished navigating to a different month, this is how long
 // we wait before fetchiung more events.
@@ -411,7 +411,8 @@ int CalendarView::PositionOfToday() const {
 int CalendarView::PositionOfSelectedDate() const {
   DCHECK(calendar_view_controller_->selected_date().has_value());
   const int row_height = calendar_view_controller_->selected_date_row_index() *
-                         calendar_view_controller_->row_height();
+                             calendar_view_controller_->row_height() +
+                         calendar_utils::kDateVerticalPadding;
   // The selected date should be either in the current month or the next month.
   if (calendar_view_controller_->IsSelectedDateInCurrentMonth())
     return PositionOfCurrentMonth() + row_height;
@@ -950,7 +951,8 @@ void CalendarView::ScrollOneRowWithAnimation(bool is_scrolling_up) {
     const int row_height = calendar_view_controller_->GetExpandedRowIndex() *
                            calendar_view_controller_->row_height();
     scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                   PositionOfCurrentMonth() + row_height);
+                                   PositionOfCurrentMonth() + row_height +
+                                       calendar_utils::kDateVerticalPadding);
     scroll_view_->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     return;
@@ -962,8 +964,9 @@ void CalendarView::ScrollOneRowWithAnimation(bool is_scrolling_up) {
                               current_month_->last_row_index()) {
     ScrollDownOneMonth();
     calendar_view_controller_->set_expanded_row_index(0);
-    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                   PositionOfCurrentMonth());
+    scroll_view_->ScrollToPosition(
+        scroll_view_->vertical_scroll_bar(),
+        PositionOfCurrentMonth() + calendar_utils::kDateVerticalPadding);
     scroll_view_->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     return;
@@ -975,7 +978,8 @@ void CalendarView::ScrollOneRowWithAnimation(bool is_scrolling_up) {
   const int row_height = calendar_view_controller_->GetExpandedRowIndex() *
                          calendar_view_controller_->row_height();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfCurrentMonth() + row_height);
+                                 PositionOfCurrentMonth() + row_height +
+                                     calendar_utils::kDateVerticalPadding);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   return;
