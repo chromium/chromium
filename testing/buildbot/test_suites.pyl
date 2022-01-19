@@ -1270,8 +1270,6 @@
         'swarming': {
           'shards': 12,
         },
-        # Experimental until tests are rebaselined.
-        # 'experiment_percentage': 100,
       },
     },
 
@@ -6145,6 +6143,7 @@
       'mojo_python_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
       'vulkan_swiftshader_isolated_scripts',
+      'chromium_web_tests_high_dpi_isolated_scripts',
     ],
 
     'chromium_mac_gtests': [
