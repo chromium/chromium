@@ -229,7 +229,6 @@ crbug.com/1093466 virtual/portals/wpt_internal/portals/* [ Pass ]
 crbug.com/1123606 wpt_internal/fenced_frame/* [ Skip ]
 crbug.com/1123606 http/tests/fenced_frame/* [ Skip ]
 crbug.com/1123606 virtual/fenced-frame-shadow-dom/* [ Pass ]
-crbug.com/1123606 virtual/fenced-frame-mparch/* [ Pass ]
 
 # These tests require the experimental prerender feature.
 # See https://crbug.com/1126305.

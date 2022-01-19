@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -40,7 +42,6 @@ HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
       frame_delegate_(FencedFrameDelegate::Create(this)) {
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
-  DocumentFencedFrames::From(document).RegisterFencedFrame(this);
   if (!features::IsFencedFramesMPArchBased())
     StartResizeObserver();
 }
@@ -98,7 +99,14 @@ void HTMLFencedFrameElement::DidNotifySubtreeInsertionsToDocument() {
   if (!SubframeLoadingDisabler::CanLoadFrame(*this))
     return;
 
+  // The frame limit only needs to be checked on initial creation before
+  // attempting to insert it into the DOM. This behavior matches how iframes
+  // handles frame limits.
+  if (!IsCurrentlyWithinFrameLimit())
+    return;
+
   frame_delegate_->DidGetInserted();
+  DocumentFencedFrames::From(GetDocument()).RegisterFencedFrame(this);
   Navigate();
 }
 

@@ -181,6 +181,9 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
  protected:
   bool is_swapping_frames() const { return is_swapping_frames_; }
 
+  // Checks that the number of frames on the page are within the current limit.
+  bool IsCurrentlyWithinFrameLimit() const;
+
  private:
   // Intentionally private to prevent redundant checks when the type is
   // already HTMLFrameOwnerElement.

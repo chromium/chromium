@@ -105,16 +105,6 @@ void HTMLPortalElement::PortalContentsWillBeDestroyed(PortalContents* portal) {
   portal_ = nullptr;
 }
 
-bool HTMLPortalElement::IsCurrentlyWithinFrameLimit() const {
-  auto* frame = GetDocument().GetFrame();
-  if (!frame)
-    return false;
-  auto* page = frame->GetPage();
-  if (!page)
-    return false;
-  return page->SubframeCount() < Page::MaxNumberOfFrames();
-}
-
 String HTMLPortalElement::PreActivateChecksCommon() {
   if (!portal_)
     return "The HTMLPortalElement is not associated with a portal context.";

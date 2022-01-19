@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -619,8 +620,21 @@ void CheckFrameCountConsistency(int expected_frame_count, Frame* frame) {
         DocumentPortals::From(*local_frame->GetDocument()).GetPortals().size());
   }
 
-  for (; frame; frame = frame->Tree().TraverseNext())
+  for (; frame; frame = frame->Tree().TraverseNext()) {
     ++actual_frame_count;
+
+    // Check the ``DocumentFencedFrames`` on every local frame beneath
+    // the ``frame`` to get an accurate count (i.e. if an iframe embeds
+    // a fenced frame and creates a new ``DocumentFencedFrames`` object).
+    if (features::IsFencedFramesMPArchBased()) {
+      if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+        actual_frame_count += static_cast<int>(
+            DocumentFencedFrames::From(*local_frame->GetDocument())
+                .GetFencedFrames()
+                .size());
+      }
+    }
+  }
 
   DCHECK_EQ(expected_frame_count, actual_frame_count);
 }
