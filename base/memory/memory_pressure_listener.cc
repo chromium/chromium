@@ -4,6 +4,8 @@
 
 #include "base/memory/memory_pressure_listener.h"
 
+#include <atomic>
+
 #include "base/observer_list_threadsafe.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
@@ -67,7 +69,7 @@ MemoryPressureObserver* GetMemoryPressureObserver() {
   return observer;
 }
 
-subtle::Atomic32 g_notifications_suppressed = 0;
+std::atomic<bool> g_notifications_suppressed;
 
 }  // namespace
 
@@ -136,12 +138,12 @@ void MemoryPressureListener::NotifyMemoryPressure(
 
 // static
 bool MemoryPressureListener::AreNotificationsSuppressed() {
-  return subtle::Acquire_Load(&g_notifications_suppressed) == 1;
+  return g_notifications_suppressed.load(std::memory_order_acquire);
 }
 
 // static
 void MemoryPressureListener::SetNotificationsSuppressed(bool suppress) {
-  subtle::Release_Store(&g_notifications_suppressed, suppress ? 1 : 0);
+  g_notifications_suppressed.store(suppress, std::memory_order_release);
 }
 
 // static
