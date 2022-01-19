@@ -710,8 +710,12 @@ void HintsManager::OnHintsForActiveTabsFetched(
     const base::flat_set<GURL>& urls_fetched,
     absl::optional<std::unique_ptr<proto::GetHintsResponse>>
         get_hints_response) {
-  if (!get_hints_response)
+  if (!get_hints_response) {
+    if (switches::IsDebugLogsEnabled()) {
+      DVLOG(0) << "OptimizationGuide: OnHintsForActiveTabsFetched failed";
+    }
     return;
+  }
 
   hint_cache_->UpdateFetchedHints(
       std::move(*get_hints_response),
@@ -735,6 +739,10 @@ void HintsManager::OnPageNavigationHintsFetched(
   }
 
   if (!get_hints_response.has_value() || !get_hints_response.value()) {
+    if (switches::IsDebugLogsEnabled()) {
+      DVLOG(0) << "OptimizationGuide: OnPageNavigationHintsFetched failed";
+    }
+
     if (navigation_url) {
       PrepareToInvokeRegisteredCallbacks(*navigation_url);
     }
@@ -748,6 +756,10 @@ void HintsManager::OnPageNavigationHintsFetched(
       base::BindOnce(&HintsManager::OnFetchedPageNavigationHintsStored,
                      weak_ptr_factory_.GetWeakPtr(), navigation_data_weak_ptr,
                      navigation_url, page_navigation_hosts_requested));
+
+  if (switches::IsDebugLogsEnabled()) {
+    DVLOG(0) << "OptimizationGuide: OnPageNavigationHintsFetched complete";
+  }
 }
 
 void HintsManager::OnFetchedActiveTabsHintsStored() {
@@ -1058,6 +1070,10 @@ void HintsManager::OnBatchUpdateHintsFetched(
   CleanUpBatchUpdateHintsFetcher(request_id);
 
   if (!get_hints_response.has_value() || !get_hints_response.value()) {
+    if (switches::IsDebugLogsEnabled()) {
+      DVLOG(0) << "OptimizationGuide: OnBatchUpdateHintsFetched for "
+               << proto::RequestContext_Name(request_context) << " failed";
+    }
     OnBatchUpdateHintsStored(urls_with_pending_callback, optimization_types,
                              callback);
     return;
