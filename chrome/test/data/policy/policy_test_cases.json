@@ -7308,6 +7308,37 @@
       }
     ]
   },
+  "NTPMiddleSlotAnnouncementVisible": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NTPMiddleSlotAnnouncementVisible": true
+        },
+        "prefs": {
+          "ntp.promo_visible": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "NTPMiddleSlotAnnouncementVisible": false
+        },
+        "prefs": {
+          "ntp.promo_visible": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
   "WebRtcUdpPortRange": {
     "os": [
       "win",

@@ -647,6 +647,7 @@ extern const char kNtpDisabledModules[];
 extern const char kNtpModulesOrder[];
 extern const char kNtpModulesVisible[];
 extern const char kNtpPromoBlocklist[];
+extern const char kNtpPromoVisible[];
 extern const char kNtpSearchSuggestionsBlocklist[];
 extern const char kNtpSearchSuggestionsImpressions[];
 extern const char kNtpSearchSuggestionsOptOut[];

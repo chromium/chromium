@@ -1922,6 +1922,8 @@ const char kNtpModulesOrder[] = "NewTabPage.ModulesOrder";
 const char kNtpModulesVisible[] = "NewTabPage.ModulesVisible";
 // List of promos that the user has dismissed while on the NTP.
 const char kNtpPromoBlocklist[] = "ntp.promo_blocklist";
+// Whether the promo is visible.
+const char kNtpPromoVisible[] = "ntp.promo_visible";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Which page should be visible on the new tab page v4

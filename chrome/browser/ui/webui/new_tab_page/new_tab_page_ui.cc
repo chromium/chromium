@@ -109,7 +109,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
   source->AddBoolean(
       "middleSlotPromoEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo));
+      base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
+          profile->GetPrefs()->GetBoolean(prefs::kNtpPromoVisible));
   source->AddBoolean(
       "modulesDragAndDropEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop));
@@ -438,6 +439,7 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kPrevNavigationTimePrefName, base::Time());
   registry->RegisterBooleanPref(ntp_prefs::kNtpUseMostVisitedTiles, false);
   registry->RegisterBooleanPref(ntp_prefs::kNtpShortcutsVisible, true);
+  registry->RegisterBooleanPref(prefs::kNtpPromoVisible, true);
 }
 
 // static

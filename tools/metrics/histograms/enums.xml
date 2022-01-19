@@ -28305,6 +28305,7 @@ Called by update_document_policy_enum.py.-->
   <int value="938" label="DeviceKeylockerForStorageEncryptionEnabled"/>
   <int value="939" label="ReportCRDSessions"/>
   <int value="940" label="DeviceRunAutomaticCleanupOnLogin"/>
+  <int value="941" label="NTPMiddleSlotAnnouncementVisible"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

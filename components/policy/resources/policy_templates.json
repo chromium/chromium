@@ -17403,6 +17403,39 @@
       ''',
     },
     {
+      'name': 'NTPMiddleSlotAnnouncementVisible',
+      'owners': ['danpeng@google.com', 'tiborg@chromium.org', 'chrome-desktop-ntp@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:99-', 'chrome_os:99-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'New Tab Page will show the middle slot announcement if it is available',
+        },
+        {
+          'value': False,
+          'caption': 'New Tab Page will not show the middle slot announcement even if it is available',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 941,
+      'caption': '''Show the middle slot announcement on the New Tab Page''',
+      'tags': [],
+      'desc':
+      '''This policy controls the visibility of the middle slot announcement on the New Tab Page.
+
+      If the policy is set to Enabled, the New Tab Page will show the middle slot announcement if it is available.
+
+      If the policy is set to Disabled, the New Tab Page will not show the middle slot announcement even if it is available.
+      ''',
+    },
+    {
       'name': 'WebRtcUdpPortRange',
       'owners': ['guidou@chromium.org'],
       'type': 'string',
@@ -30307,6 +30340,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 940,
+  'highest_id_currently_used': 941,
   'highest_atomic_group_id_currently_used': 41
 }
