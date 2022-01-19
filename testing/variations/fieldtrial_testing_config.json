@@ -4148,22 +4148,6 @@
             ]
         }
     ],
-    "HTTPSVideoCompression": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SubresourceRedirectSrcVideo"
-                    ]
-                }
-            ]
-        }
-    ],
     "HashedLoggingForHindsight": [
         {
             "platforms": [
@@ -7614,28 +7598,6 @@
                     },
                     "enable_features": [
                         "SubframeShutdownDelay"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SubresourceRedirect": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable_login_robots_based_compression": "true",
-                        "enable_public_image_hints_based_compression": "false",
-                        "enable_subresource_server_redirect": "true",
-                        "robots_rules_receive_timeout": "2000"
-                    },
-                    "enable_features": [
-                        "SubresourceRedirect"
                     ]
                 }
             ]
