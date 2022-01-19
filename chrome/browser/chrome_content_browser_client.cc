@@ -2763,15 +2763,32 @@ std::string ChromeContentBrowserClient::GetWebBluetoothBlocklist() {
 }
 
 bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
-    content::BrowserContext* browser_context,
+    content::RenderFrameHost* render_frame_host,
+    InterestGroupApiOperation operation,
     const url::Origin& top_frame_origin,
-    const GURL& api_url) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
+    const url::Origin& api_origin) {
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   PrivacySandboxSettings* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
+  DCHECK(privacy_sandbox_settings);
 
-  return privacy_sandbox_settings &&
-         privacy_sandbox_settings->IsFledgeAllowed(top_frame_origin, api_url);
+  // Join operations are subject to an additional check.
+  bool join_blocked =
+      operation == InterestGroupApiOperation::kJoin
+          ? !privacy_sandbox_settings->IsFledgeJoiningAllowed(top_frame_origin)
+          : false;
+
+  bool allowed =
+      privacy_sandbox_settings->IsFledgeAllowed(top_frame_origin, api_origin) &&
+      !join_blocked;
+
+  if (operation == InterestGroupApiOperation::kJoin) {
+    content_settings::PageSpecificContentSettings::InterestGroupJoined(
+        render_frame_host, api_origin, !allowed);
+  }
+
+  return allowed;
 }
 
 bool ChromeContentBrowserClient::IsConversionMeasurementOperationAllowed(

@@ -233,7 +233,7 @@ bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
 
 bool PrivacySandboxSettings::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
-    const GURL& auction_party) {
+    const url::Origin& auction_party) {
   // If the sandbox is disabled, then FLEDGE is never allowed.
   if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
     return false;
@@ -241,7 +241,7 @@ bool PrivacySandboxSettings::IsFledgeAllowed(
   // Third party cookies must also be available for this context. An empty site
   // for cookies is provided so the context is always treated as a third party.
   return cookie_settings_->IsFullCookieAccessAllowed(
-      auction_party, net::SiteForCookies(), top_frame_origin);
+      auction_party.GetURL(), net::SiteForCookies(), top_frame_origin);
 }
 
 std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(

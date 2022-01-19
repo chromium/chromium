@@ -220,8 +220,9 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   }
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host()->GetBrowserContext(), main_frame_origin_,
-          group.owner.GetURL())) {
+          render_frame_host(),
+          ContentBrowserClient::InterestGroupApiOperation::kJoin,
+          main_frame_origin_, group.owner)) {
     return;
   }
 
@@ -250,8 +251,9 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
   }
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host()->GetBrowserContext(), main_frame_origin_,
-          origin().GetURL())) {
+          render_frame_host(),
+          ContentBrowserClient::InterestGroupApiOperation::kLeave,
+          main_frame_origin_, origin())) {
     return;
   }
 
@@ -274,8 +276,9 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
   }
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host()->GetBrowserContext(), main_frame_origin_,
-          origin().GetURL())) {
+          render_frame_host(),
+          ContentBrowserClient::InterestGroupApiOperation::kUpdate,
+          main_frame_origin_, origin())) {
     return;
   }
   GetInterestGroupManager().UpdateInterestGroupsOfOwner(
@@ -297,10 +300,11 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
   }
 
   const url::Origin& frame_origin = origin();
-  BrowserContext* browser_context = render_frame_host()->GetBrowserContext();
+  auto* rfh = render_frame_host();
   // If the interest group API is not allowed for this seller do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          browser_context, frame_origin, config->seller.GetURL())) {
+          rfh, ContentBrowserClient::InterestGroupApiOperation::kSell,
+          frame_origin, config->seller)) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -311,9 +315,10 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                            ->interest_group_buyers->get_buyers();
   std::copy_if(
       buyers.begin(), buyers.end(), std::back_inserter(filtered_buyers),
-      [browser_context, &frame_origin](const url::Origin& buyer) {
+      [rfh, &frame_origin](const url::Origin& buyer) {
         return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-            browser_context, frame_origin, buyer.GetURL());
+            rfh, ContentBrowserClient::InterestGroupApiOperation::kBuy,
+            frame_origin, buyer);
       });
 
   // If there are no buyers (either due to filtering, or in the original auction

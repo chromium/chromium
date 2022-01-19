@@ -104,7 +104,7 @@ class PrivacySandboxSettings : public KeyedService {
   // Determine whether |auction_party| can register an interest group, or sell /
   // buy in an auction, on |top_frame_origin|.
   bool IsFledgeAllowed(const url::Origin& top_frame_origin,
-                       const GURL& auction_party);
+                       const url::Origin& auction_party);
 
   // Filter |auction_parties| down to those that may participate as a buyer for
   // auctions run on |top_frame_origin|. Logically equivalent to calling

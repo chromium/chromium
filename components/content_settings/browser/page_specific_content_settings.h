@@ -262,6 +262,12 @@ class PageSpecificContentSettings
                                    const blink::StorageKey& storage_key,
                                    bool blocked_by_policy);
 
+  // Called when |api_origin| attempts to join an interest group via the
+  // Interest Group API.
+  static void InterestGroupJoined(content::RenderFrameHost* rfh,
+                                  const url::Origin api_origin,
+                                  bool blocked_by_policy);
+
   static content::WebContentsObserver* GetWebContentsObserverForTest(
       content::WebContents* web_contents);
 

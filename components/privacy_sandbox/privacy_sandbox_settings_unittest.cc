@@ -97,7 +97,7 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -134,7 +134,7 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -172,7 +172,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -211,7 +211,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -260,7 +260,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{GURL("https://another-embedded.com")},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -292,7 +292,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   // Exceptions which specify a top frame origin should not match against other
   // top frame origins, or an empty origin.
@@ -322,7 +322,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -357,7 +357,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{GURL("https://another-embedded.com")},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -378,7 +378,7 @@ TEST_F(PrivacySandboxSettingsTest, IsFledgeAllowed) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -396,7 +396,7 @@ TEST_F(PrivacySandboxSettingsTest, IsFledgeAllowed) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -419,7 +419,7 @@ TEST_F(PrivacySandboxSettingsTest, IsFledgeAllowed) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),
@@ -438,7 +438,7 @@ TEST_F(PrivacySandboxSettingsTest, IsFledgeAllowed) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
-      GURL("https://embedded.com")));
+      url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_EQ(std::vector<GURL>{},
             privacy_sandbox_settings()->FilterFledgeAllowedParties(
                 url::Origin::Create(GURL("https://test.com")),

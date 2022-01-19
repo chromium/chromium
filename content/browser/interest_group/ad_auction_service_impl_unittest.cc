@@ -80,21 +80,21 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
       const AllowInterestGroupContentBrowserClient&) = delete;
 
   // ContentBrowserClient overrides:
-  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+  bool IsInterestGroupAPIAllowed(content::RenderFrameHost* render_frame_host,
+                                 InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
-                                 const GURL& owner_url) override {
-    const url::Origin owner_origin = url::Origin::Create(owner_url);
+                                 const url::Origin& api_origin) override {
     // Can join A interest groups on A top frames, B interest groups on B top
     // frames, C interest groups on C top frames, and C interest groups on A top
     // frames.
     return (top_frame_origin.host() == "a.test" &&
-            owner_origin.host() == "a.test") ||
+            api_origin.host() == "a.test") ||
            (top_frame_origin.host() == "b.test" &&
-            owner_origin.host() == "b.test") ||
+            api_origin.host() == "b.test") ||
            (top_frame_origin.host() == "c.test" &&
-            owner_origin.host() == "c.test") ||
+            api_origin.host() == "c.test") ||
            (top_frame_origin.host() == "a.test" &&
-            owner_origin.host() == "c.test");
+            api_origin.host() == "c.test");
   }
 };
 

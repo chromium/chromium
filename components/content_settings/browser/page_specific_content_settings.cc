@@ -420,6 +420,14 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
 }
 
 // static
+void PageSpecificContentSettings::InterestGroupJoined(
+    content::RenderFrameHost* rfh,
+    const url::Origin api_origin,
+    bool blocked_by_policy) {
+  // TODO(crbug.com/1286276): Not implemented yet.
+}
+
+// static
 content::WebContentsObserver*
 PageSpecificContentSettings::GetWebContentsObserverForTest(
     content::WebContents* web_contents) {

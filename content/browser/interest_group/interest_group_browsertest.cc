@@ -115,11 +115,13 @@ class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
   }
 
   // ContentBrowserClient overrides:
-  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
-                                 const url::Origin& top_frame_origin,
-                                 const GURL& api_url) override {
+  bool IsInterestGroupAPIAllowed(
+      content::RenderFrameHost* render_frame_host,
+      ContentBrowserClient::InterestGroupApiOperation operation,
+      const url::Origin& top_frame_origin,
+      const url::Origin& api_origin) override {
     return allow_list_.contains(top_frame_origin) &&
-           allow_list_.contains(url::Origin::Create(api_url));
+           allow_list_.contains(api_origin);
   }
 
  private:

@@ -793,13 +793,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   // "1812:e, 00001800-0000-1000-8000-00805f9b34fb:w, ignored:1, alsoignored."
   virtual std::string GetWebBluetoothBlocklist();
 
-  // Returns whether the interest group API is allowed anywhere in
-  // |browser_context|. Returns false if the interest group API is not allowed
-  // by default on any origin.
+  // The possible operations performable by parties related to the Interest
+  // Group API.
+  enum class InterestGroupApiOperation { kJoin, kLeave, kUpdate, kSell, kBuy };
+
+  // Returns whether |api_origin| on |top_frame_origin| can perform
+  // |operation| within the interest group API.
   virtual bool IsInterestGroupAPIAllowed(
-      content::BrowserContext* browser_context,
+      content::RenderFrameHost* render_frame_host,
+      InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,
-      const GURL& api_url);
+      const url::Origin& api_origin);
 
   enum class ConversionMeasurementOperation {
     kImpression,
