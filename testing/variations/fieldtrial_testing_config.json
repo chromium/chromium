@@ -1637,6 +1637,21 @@
             ]
         }
     ],
+    "BlinkCompositorUseDisplayThreadPriority": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BlinkCompositorUseDisplayThreadPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserJankinessProfiling": [
         {
             "platforms": [
