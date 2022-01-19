@@ -34,10 +34,17 @@
     `
   };
 
+  const failsScheduleWithBadRecurringArg = {
+    name: 'Scheduling an async task with a bad recurring flag should fail',
+    code: `
+      console.scheduleAsyncTask("foo", 42);
+    `
+  };
+
   const failsScheduleWithTooManyArgs = {
     name: 'Scheduling an async task with too many arguments should fail',
     code: `
-      console.scheduleAsyncTask("foo", 42);
+      console.scheduleAsyncTask("foo", false, 42);
     `
   };
 
@@ -127,6 +134,7 @@
 
   const checks = [
     failsScheduleWithNotEnoughArgs,
+    failsScheduleWithBadRecurringArg,
     failsScheduleWithTooManyArgs,
     failsStartWithBadTaskId,
     failsStartWithWrongTaskId,
