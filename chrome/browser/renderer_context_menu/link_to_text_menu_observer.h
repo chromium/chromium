@@ -93,6 +93,16 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   GURL raw_url_;
   raw_ptr<content::RenderFrameHost> render_frame_host_;
 
+  std::unordered_map<content::GlobalRenderFrameHostId,
+                     std::vector<std::string>,
+                     content::GlobalRenderFrameHostIdHasher>
+      frames_selectors_;
+
+  std::vector<content::GlobalRenderFrameHostId> render_frame_host_ids_;
+  std::vector<mojo::Remote<blink::mojom::TextFragmentReceiver>>
+      text_fragment_remotes_;
+  size_t get_frames_existing_selectors_counter_;
+
   // True when the context menu was opened with text selected.
   bool link_needs_generation_ = false;
 

@@ -52,6 +52,22 @@ GetGenerationCompleteCallbackForTesting() {
   return callback.get();
 }
 
+std::vector<std::string> GetAggregatedSelectors(
+    std::unordered_map<content::GlobalRenderFrameHostId,
+                       std::vector<std::string>,
+                       content::GlobalRenderFrameHostIdHasher> frames_selectors,
+    std::vector<content::GlobalRenderFrameHostId> render_frame_host_ids) {
+  std::vector<std::string> aggregated_selectors;
+  for (content::GlobalRenderFrameHostId render_frame_host_id :
+       render_frame_host_ids) {
+    std::vector<std::string>& frame_selectors =
+        frames_selectors.at(render_frame_host_id);
+    aggregated_selectors.insert(aggregated_selectors.end(),
+                                frame_selectors.begin(), frame_selectors.end());
+  }
+  return aggregated_selectors;
+}
+
 }  // namespace
 
 // static
@@ -257,13 +273,60 @@ void LinkToTextMenuObserver::CompleteWithError(LinkGenerationError error) {
 }
 
 void LinkToTextMenuObserver::ReshareLink() {
-  GetRemote()->GetExistingSelectors(
-      base::BindOnce(&LinkToTextMenuObserver::OnGetExistingSelectorsComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // Get the list of RenderFrameHosts from the current page.
+  proxy_->GetWebContents()->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(
+          [](std::vector<content::GlobalRenderFrameHostId>*
+                 render_frame_host_ids,
+             std::vector<mojo::Remote<blink::mojom::TextFragmentReceiver>>*
+                 text_fragment_remotes,
+             content::RenderFrameHost* rfh) {
+            render_frame_host_ids->push_back(rfh->GetGlobalId());
+            mojo::Remote<blink::mojom::TextFragmentReceiver> remote;
+            text_fragment_remotes->push_back(std::move(remote));
+          },
+          &render_frame_host_ids_, &text_fragment_remotes_));
+
+  get_frames_existing_selectors_counter_ = render_frame_host_ids_.size();
+
+  for (size_t i = 0; i < render_frame_host_ids_.size(); i++) {
+    content::GlobalRenderFrameHostId render_frame_host_id(
+        render_frame_host_ids_.at(i));
+    content::RenderFrameHost* render_frame_host(
+        content::RenderFrameHost::FromID(render_frame_host_id));
+    render_frame_host->GetRemoteInterfaces()->GetInterface(
+        text_fragment_remotes_.at(i).BindNewPipeAndPassReceiver());
+
+    text_fragment_remotes_.at(i)->GetExistingSelectors(base::BindOnce(
+        [](const base::WeakPtr<LinkToTextMenuObserver>&
+               link_to_text_menu_observer_ptr,
+           const content::GlobalRenderFrameHostId global_render_frame_host_id,
+           const std::vector<std::string>& selectors) {
+          if (link_to_text_menu_observer_ptr == nullptr)
+            return;
+
+          link_to_text_menu_observer_ptr->frames_selectors_.insert(
+              {global_render_frame_host_id, selectors});
+
+          link_to_text_menu_observer_ptr
+              ->get_frames_existing_selectors_counter_--;
+
+          if (link_to_text_menu_observer_ptr
+                  ->get_frames_existing_selectors_counter_ == 0) {
+            std::vector<std::string> aggregated_selectors =
+                GetAggregatedSelectors(
+                    link_to_text_menu_observer_ptr->frames_selectors_,
+                    link_to_text_menu_observer_ptr->render_frame_host_ids_);
+            link_to_text_menu_observer_ptr->OnGetExistingSelectorsComplete(
+                aggregated_selectors);
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr(), render_frame_host_id));
+  }
 }
 
 void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
-    const std::vector<std::string>& selectors) {
+    const std::vector<std::string>& aggregated_selectors) {
   std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
       !render_frame_host_->GetBrowserContext()->IsOffTheRecord()
           ? std::make_unique<ui::DataTransferEndpoint>(
@@ -275,7 +338,8 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
 
   GURL url_to_share =
       shared_highlighting::RemoveFragmentSelectorDirectives(url_);
-  url_to_share = shared_highlighting::AppendSelectors(url_to_share, selectors);
+  url_to_share =
+      shared_highlighting::AppendSelectors(url_to_share, aggregated_selectors);
 
   scw.WriteText(base::UTF8ToUTF16(url_to_share.spec()));
 
