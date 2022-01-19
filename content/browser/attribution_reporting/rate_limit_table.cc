@@ -283,49 +283,45 @@ bool RateLimitTable::ClearDataForOriginsInRange(
   if (filter.is_null())
     return ClearAllDataInRange(db, delete_begin, delete_end);
 
-  std::vector<int64_t> rate_limit_ids_to_delete;
-  {
-    static constexpr char kScanCandidateData[] =
-        "SELECT rate_limit_id,impression_origin,conversion_origin "
-        "FROM rate_limits "
-        DCHECK_SQL_INDEXED_BY("rate_limit_attribution_type_conversion_time_idx")
-        "WHERE attribution_type = ? AND conversion_time BETWEEN ? AND ?";
-    sql::Statement statement(
-        db->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
-
-    // Issue deletes for different attribution_types so this can be easily
-    // optimized by the rate_limit_attribution_type_conversion_time_idx.
-    for (AttributionType attribution_type : kAttributionTypes) {
-      statement.Reset(/*clear_bound_vars=*/true);
-      statement.BindInt(0, SerializeAttributionType(attribution_type));
-      statement.BindTime(1, delete_begin);
-      statement.BindTime(2, delete_end);
-
-      while (statement.Step()) {
-        int64_t rate_limit_id = statement.ColumnInt64(0);
-        if (filter.Run(DeserializeOrigin(statement.ColumnString(1))) ||
-            filter.Run(DeserializeOrigin(statement.ColumnString(2)))) {
-          rate_limit_ids_to_delete.push_back(rate_limit_id);
-        }
-      }
-
-      if (!statement.Succeeded())
-        return false;
-    }
-  }
+  static constexpr char kDeleteSql[] =
+      "DELETE FROM rate_limits WHERE rate_limit_id=?";
+  sql::Statement delete_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
 
   sql::Transaction transaction(db);
   if (!transaction.Begin())
     return false;
 
-  static constexpr char kDeleteRateLimitSql[] =
-      "DELETE FROM rate_limits WHERE rate_limit_id = ?";
-  sql::Statement statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
-  for (int64_t rate_limit_id : rate_limit_ids_to_delete) {
-    statement.Reset(/*clear_bound_vars=*/true);
-    statement.BindInt64(0, rate_limit_id);
-    if (!statement.Run())
+  static constexpr char kSelectSql[] =
+      "SELECT rate_limit_id,impression_origin,conversion_origin "
+      "FROM rate_limits "
+      DCHECK_SQL_INDEXED_BY("rate_limit_attribution_type_conversion_time_idx")
+      "WHERE attribution_type=? AND conversion_time BETWEEN ? AND ?";
+  sql::Statement select_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  select_statement.BindTime(1, delete_begin);
+  select_statement.BindTime(2, delete_end);
+
+  // Issue SELECTs for different attribution_types so this can be easily
+  // optimized by the rate_limit_attribution_type_conversion_time_idx.
+  for (AttributionType attribution_type : kAttributionTypes) {
+    select_statement.Reset(/*clear_bound_vars=*/false);
+    select_statement.BindInt(0, SerializeAttributionType(attribution_type));
+
+    while (select_statement.Step()) {
+      int64_t rate_limit_id = select_statement.ColumnInt64(0);
+      if (filter.Run(DeserializeOrigin(select_statement.ColumnString(1))) ||
+          filter.Run(DeserializeOrigin(select_statement.ColumnString(2)))) {
+        // See https://www.sqlite.org/isolation.html for why it's OK for this
+        // DELETE to be interleaved in the surrounding SELECT.
+        delete_statement.Reset(/*clear_bound_vars=*/false);
+        delete_statement.BindInt64(0, rate_limit_id);
+        if (!delete_statement.Run())
+          return false;
+      }
+    }
+
+    if (!select_statement.Succeeded())
       return false;
   }
 
