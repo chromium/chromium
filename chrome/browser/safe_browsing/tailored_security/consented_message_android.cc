@@ -70,14 +70,14 @@ void TailoredSecurityConsentedModalAndroid::DisplayMessage(
     description = l10n_util::GetStringUTF16(
         IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION);
     icon_resource_id =
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_GPP_MAYBE_GREY);
+        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD);
+    message_->DisableIconTint();
   }
   message_->SetTitle(title);
   message_->SetDescription(description);
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
       IDS_TAILORED_SECURITY_CONSENTED_MESSAGE_OK_BUTTON));
   message_->SetIconResourceId(icon_resource_id);
-  message_->DisableIconTint();
   message_->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
   message_->SetSecondaryActionCallback(base::BindOnce(
