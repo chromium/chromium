@@ -20,9 +20,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace crashpad {
 
@@ -39,7 +39,7 @@ namespace {
 #endif
 
 // DISABLE_CFI_ICALL -- Disable Control Flow Integrity indirect call checks.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows also needs __declspec(guard(nocf)).
 #define DISABLE_CFI_ICALL NO_SANITIZE("cfi-icall") __declspec(guard(nocf))
 #else
@@ -65,7 +65,7 @@ struct FunctorTraits<R (*)(Args..., ...) noexcept> {
   }
 };
 
-#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 template <typename R, typename... Args>
 struct FunctorTraits<R(__stdcall*)(Args...) noexcept> {
   template <typename... RunArgs>
@@ -74,7 +74,7 @@ struct FunctorTraits<R(__stdcall*)(Args...) noexcept> {
     return function(std::forward<RunArgs>(args)...);
   }
 };
-#endif  // OS_WIN && ARCH_CPU_X86
+#endif  // BUILDFLAG(IS_WIN) && ARCH_CPU_X86
 
 #if __cplusplus >= 201703L
 // These specializations match functions which are not explicitly declared
@@ -97,7 +97,7 @@ struct FunctorTraits<R (*)(Args..., ...)> {
   }
 };
 
-#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 template <typename R, typename... Args>
 struct FunctorTraits<R(__stdcall*)(Args...)> {
   template <typename... RunArgs>
@@ -106,7 +106,7 @@ struct FunctorTraits<R(__stdcall*)(Args...)> {
     return function(std::forward<RunArgs>(args)...);
   }
 };
-#endif  // OS_WIN && ARCH_CPU_X86
+#endif  // BUILDFLAG(IS_WIN) && ARCH_CPU_X86
 
 #endif  // __cplusplus >= 201703L
 
@@ -146,14 +146,14 @@ class NoCfiIcall {
   explicit NoCfiIcall(PointerType function)
       : function_(reinterpret_cast<Functor>(function)) {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   //! \see NoCfiIcall
   template <typename = std::enable_if_t<
                 !std::is_same<typename std::remove_cv<Functor>::type,
                               FARPROC>::value>>
   explicit NoCfiIcall(FARPROC function)
       : function_(reinterpret_cast<Functor>(function)) {}
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   ~NoCfiIcall() = default;
 

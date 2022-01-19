@@ -27,6 +27,7 @@
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "util/file/file_io.h"
 #include "util/net/http_body.h"
 #include "util/net/url.h"
@@ -127,13 +128,13 @@ class SSLStream : public Stream {
         return false;
       }
     } else {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       if (SSL_CTX_load_verify_locations(
               ctx_.get(), nullptr, "/etc/ssl/certs") <= 0) {
         LOG(ERROR) << "SSL_CTX_load_verify_locations";
         return false;
       }
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
       if (SSL_CTX_load_verify_locations(
               ctx_.get(), "/config/ssl/cert.pem", nullptr) <= 0) {
         LOG(ERROR) << "SSL_CTX_load_verify_locations";

@@ -40,9 +40,9 @@
 #include "util/net/url.h"
 #include "util/stdlib/map_insert.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "handler/mac/file_limit_annotation.h"
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace crashpad {
 
@@ -51,7 +51,7 @@ namespace {
 // The number of seconds to wait between checking for pending reports.
 const int kRetryWorkIntervalSeconds = 15 * 60;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // The number of times to attempt to upload a pending report, repeated on
 // failure. Attempts will happen once per launch, once per call to
 // ReportPending(), and, if Options.watch_pending_reports is true, once every
@@ -152,9 +152,9 @@ void CrashReportUploadThread::ProcessPendingReports() {
 
 void CrashReportUploadThread::ProcessPendingReport(
     const CrashReportDatabase::Report& report) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   RecordFileLimitAnnotation();
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
   Settings* const settings = database_->GetSettings();
 
@@ -172,7 +172,7 @@ void CrashReportUploadThread::ProcessPendingReport(
   if (ShouldRateLimitUpload(report))
     return;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (ShouldRateLimitRetry(report))
     return;
 #endif
@@ -217,7 +217,7 @@ void CrashReportUploadThread::ProcessPendingReport(
           report.uuid, Metrics::CrashSkippedReason::kPrepareForUploadFailed);
       break;
     case UploadResult::kRetry:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       if (upload_report->upload_attempts > kRetryAttempts) {
         upload_report.reset();
         database_->SkipReportUpload(report.uuid,
@@ -377,7 +377,7 @@ bool CrashReportUploadThread::ShouldRateLimitUpload(
   return false;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 bool CrashReportUploadThread::ShouldRateLimitRetry(
     const CrashReportDatabase::Report& report) {
   if (retry_uuid_time_map_.find(report.uuid) != retry_uuid_time_map_.end()) {

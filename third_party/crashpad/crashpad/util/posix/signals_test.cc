@@ -33,7 +33,7 @@
 #include "test/scoped_temp_dir.h"
 #include "util/posix/scoped_mmap.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/auxv.h>
 #include <sys/prctl.h>
 
@@ -57,7 +57,8 @@
 #define PR_MTE_TCF_ASYNC (1UL << 2)
 #endif
 #endif  // defined(ARCH_CPU_ARM64)
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 namespace crashpad {
 namespace test {
@@ -89,15 +90,16 @@ std::vector<TestableSignal> TestableSignals() {
 #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL)
   signals.push_back({SIGPIPE, 0});
   signals.push_back({SIGSEGV, 0});
-#if (defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || \
+     BUILDFLAG(IS_CHROMEOS)) &&                      \
     defined(ARCH_CPU_ARM64)
   if (getauxval(AT_HWCAP2) & HWCAP2_MTE) {
     signals.push_back({SIGSEGV, SEGV_MTEAERR});
   }
 #endif
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   signals.push_back({SIGSYS, 0});
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM64)
   signals.push_back({SIGTRAP, 0});
 #endif  // defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM64)
@@ -207,7 +209,8 @@ void CauseSignal(int sig, int code) {
           *i = 0;
           break;
         }
-#if (defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || \
+     BUILDFLAG(IS_CHROMEOS)) &&                      \
     defined(ARCH_CPU_ARM64)
         case SEGV_MTEAERR: {
           ScopedMmap mapping;
@@ -229,13 +232,13 @@ void CauseSignal(int sig, int code) {
           mapping.addr_as<char*>()[1ULL << 56] = 0;
           break;
         }
-#endif  // (defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)) &&
-        // defined(ARCH_CPU_ARM64)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_ARM64)
       }
       break;
     }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     case SIGSYS: {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -247,7 +250,7 @@ void CauseSignal(int sig, int code) {
       }
       break;
     }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM64)
     case SIGTRAP: {
@@ -520,7 +523,7 @@ TEST(Signals, Raise_HandlerReraisesToDefault) {
       continue;
     }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     if (sig == SIGBUS
 #if defined(ARCH_CPU_ARM64)
         || sig == SIGILL || sig == SIGSEGV
@@ -533,7 +536,7 @@ TEST(Signals, Raise_HandlerReraisesToDefault) {
       // test must be skipped.
       continue;
     }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
     SignalsTest test(SignalsTest::TestType::kHandlerReraisesToDefault,
                      SignalsTest::SignalSource::kRaise,
@@ -552,7 +555,7 @@ TEST(Signals, Raise_HandlerReraisesToPrevious) {
       continue;
     }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     if (sig == SIGBUS
 #if defined(ARCH_CPU_ARM64)
         || sig == SIGILL || sig == SIGSEGV
@@ -565,7 +568,7 @@ TEST(Signals, Raise_HandlerReraisesToPrevious) {
       // test must be skipped.
       continue;
     }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
     SignalsTest test(SignalsTest::TestType::kHandlerReraisesToPrevious,
                      SignalsTest::SignalSource::kRaise,

@@ -31,9 +31,9 @@
 #include "util/mach/mach_message.h"
 #include "util/misc/implicit_cast.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "test/mac/mach_multiprocess.h"
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace crashpad {
 namespace test {
@@ -962,7 +962,7 @@ TEST(ExcServerVariants, MachMessageServerRequestIDs) {
             expect_request_ids);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 class TestExcServerVariants : public MachMultiprocess,
                               public UniversalMachExcServer::Interface {
@@ -1203,10 +1203,10 @@ TEST(ExcServerVariants, ThreadStates) {
   }
 }
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST(ExcServerVariants, ExcServerSuccessfulReturnValue) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS 9 ≅ OS X 10.11.
   const kern_return_t prefer_not_set_thread_state = KERN_SUCCESS;
 #else

@@ -30,14 +30,15 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "test/mac/mach_multiprocess.h"
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "test/linux/fake_ptrace_connection.h"
 #include "util/linux/direct_ptrace_connection.h"
-#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 namespace crashpad {
 namespace test {
@@ -47,7 +48,7 @@ namespace {
 // port which requires root or a code signing entitlement. To account for this
 // we implement an adaptor class that wraps MachMultiprocess on macOS, because
 // it shares the child's task port, and makes it behave like MultiprocessExec.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 class MultiprocessAdaptor : public MachMultiprocess {
  public:
   void SetChildTestMainFunction(const std::string& function_name) {
@@ -102,7 +103,7 @@ class MultiprocessAdaptor : public MultiprocessExec {
 
   void MultiprocessParent() override { Parent(); }
 };
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 void DoChildReadTestSetup(size_t* region_size,
                           std::unique_ptr<char[]>* region) {
@@ -156,14 +157,15 @@ class ReadTest : public MultiprocessAdaptor {
   }
 
   void DoTest(ProcessType process, size_t region_size, VMAddress address) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     FakePtraceConnection connection;
     ASSERT_TRUE(connection.Initialize(process));
     ProcessMemoryLinux memory(&connection);
 #else
     ProcessMemoryNative memory;
     ASSERT_TRUE(memory.Initialize(process));
-#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     std::unique_ptr<char[]> result(new char[region_size]);
 
@@ -343,14 +345,15 @@ class ReadCStringTest : public MultiprocessAdaptor {
               VMAddress local_empty_address,
               VMAddress local_short_address,
               VMAddress long_string_address) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     FakePtraceConnection connection;
     ASSERT_TRUE(connection.Initialize(process));
     ProcessMemoryLinux memory(&connection);
 #else
     ProcessMemoryNative memory;
     ASSERT_TRUE(memory.Initialize(process));
-#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     Compare(memory, const_empty_address, kConstCharEmpty);
     Compare(memory, const_short_address, kConstCharShort);
@@ -421,14 +424,15 @@ class ReadUnmappedTest : public MultiprocessAdaptor {
   }
 
   void DoTest(ProcessType process, VMAddress address) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     DirectPtraceConnection connection;
     ASSERT_TRUE(connection.Initialize(process));
     ProcessMemoryLinux memory(&connection);
 #else
     ProcessMemoryNative memory;
     ASSERT_TRUE(memory.Initialize(process));
-#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     VMAddress page_addr1 = address;
     VMAddress page_addr2 = page_addr1 + base::GetPageSize();
@@ -554,14 +558,15 @@ class ReadCStringUnmappedTest : public MultiprocessAdaptor {
 
   void DoTest(ProcessType process,
               const std::vector<StringDataInChildProcess>& strings) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     DirectPtraceConnection connection;
     ASSERT_TRUE(connection.Initialize(process));
     ProcessMemoryLinux memory(&connection);
 #else
     ProcessMemoryNative memory;
     ASSERT_TRUE(memory.Initialize(process));
-#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     std::string result;
     result.reserve(kChildProcessStringLength + 1);

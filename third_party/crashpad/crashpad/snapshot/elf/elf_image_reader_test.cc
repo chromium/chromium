@@ -30,12 +30,12 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/process.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 #include "test/linux/fake_ptrace_connection.h"
 #include "util/linux/auxiliary_vector.h"
@@ -45,7 +45,7 @@
 
 #error Port.
 
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 extern "C" {
 __attribute__((visibility("default"))) void ElfImageReaderTestExportedSymbol() {
@@ -56,8 +56,7 @@ namespace crashpad {
 namespace test {
 namespace {
 
-
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 void LocateExecutable(const ProcessType& process,
                       ProcessMemory* memory,
@@ -84,7 +83,7 @@ void LocateExecutable(const ProcessType& process,
   *elf_address = base;
 }
 
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 void LocateExecutable(PtraceConnection* connection,
                       ProcessMemory* memory,
@@ -104,7 +103,7 @@ void LocateExecutable(PtraceConnection* connection,
   *elf_address = possible_mappings->Next()->range.Base();
 }
 
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 void ExpectSymbol(ElfImageReader* reader,
                   const std::string& symbol_name,
@@ -128,12 +127,12 @@ void ReadThisExecutableInTarget(ProcessType process,
 #endif  // ARCH_CPU_64_BITS
 
   VMAddress elf_address;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(process));
   ProcessMemoryLinux memory(&connection);
   LocateExecutable(&connection, &memory, &elf_address);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   ProcessMemoryFuchsia memory;
   ASSERT_TRUE(memory.Initialize(process));
   LocateExecutable(process, &memory, &elf_address);
@@ -192,7 +191,7 @@ void ReadLibcInTarget(ProcessType process,
   constexpr bool am_64_bit = false;
 #endif  // ARCH_CPU_64_BITS
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(process));
   ProcessMemoryLinux memory(&connection);
@@ -301,7 +300,7 @@ TEST(ElfImageReader, OneModuleChild) {
   test.Run();
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 // crashpad_snapshot_test_both_dt_hash_styles is specially built and forced to
 // include both .hash and .gnu.hash sections. Linux, Android, and Fuchsia have
@@ -356,7 +355,7 @@ TEST(ElfImageReader, DtHashAndDtGnuHashMatch) {
   EXPECT_EQ(from_dt_hash, from_dt_gnu_hash);
 }
 
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 }  // namespace test

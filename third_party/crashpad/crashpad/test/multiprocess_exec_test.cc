@@ -114,7 +114,7 @@ TEST(MultiprocessExec, MultiprocessExecSimpleChildReturnsNonZero) {
   exec.Run();
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 CRASHPAD_CHILD_TEST_MAIN(BuiltinTrapChild) {
   __builtin_trap();
@@ -143,7 +143,7 @@ TEST(MultiprocessExec, BuiltinTrapTermination) {
   test.Run();
 }
 
-#endif  // !OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace test

@@ -19,6 +19,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "build/build_config.h"
 #include "client/crash_report_database.h"
 #include "util/misc/uuid.h"
 #include "util/stdlib/thread_safe_vector.h"
@@ -186,7 +187,7 @@ class CrashReportUploadThread : public WorkerThread::Delegate,
   //! upload attempts to be retried.
   bool ShouldRateLimitUpload(const CrashReportDatabase::Report& report);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   //! \brief Rate-limit report retries.
   //!
   //! \param[in] report The crash report to process.
@@ -206,7 +207,7 @@ class CrashReportUploadThread : public WorkerThread::Delegate,
   const std::string url_;
   WorkerThread thread_;
   ThreadSafeVector<UUID> known_pending_report_uuids_;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // This is not thread-safe, and only used by the worker thread.
   std::map<UUID, time_t> retry_uuid_time_map_;
 #endif

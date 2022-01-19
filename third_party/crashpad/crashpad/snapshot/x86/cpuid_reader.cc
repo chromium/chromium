@@ -16,12 +16,13 @@
 
 #include <stddef.h>
 
+#include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <immintrin.h>
 #include <intrin.h>
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(ARCH_CPU_X86_FAMILY)
 
@@ -101,7 +102,7 @@ bool CpuidReader::SupportsDAZ() const {
   using Fxsave = CPUContextX86_64::Fxsave;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   __declspec(align(16)) Fxsave fxsave = {};
 #else
   Fxsave fxsave __attribute__((aligned(16))) = {};
@@ -111,7 +112,7 @@ bool CpuidReader::SupportsDAZ() const {
   static_assert(offsetof(decltype(fxsave), mxcsr_mask) == 28,
                 "mxcsr_mask offset");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   _fxsave(&fxsave);
 #else
   asm("fxsave %0" : "=m"(fxsave));
@@ -122,13 +123,13 @@ bool CpuidReader::SupportsDAZ() const {
 }
 
 void CpuidReader::Cpuid(uint32_t cpuinfo[4], uint32_t leaf) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   __cpuid(reinterpret_cast<int*>(cpuinfo), leaf);
 #else
   asm("cpuid"
       : "=a"(cpuinfo[0]), "=b"(cpuinfo[1]), "=c"(cpuinfo[2]), "=d"(cpuinfo[3])
       : "a"(leaf), "b"(0), "c"(0), "d"(0));
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace internal

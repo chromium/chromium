@@ -600,7 +600,7 @@ base::FilePath CrashReportDatabaseGeneric::ReportPath(const UUID& uuid,
   DCHECK_NE(state, kUninitialized);
   DCHECK_NE(state, kSearchable);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::wstring uuid_string = uuid.ToWString();
 #else
   const std::string uuid_string = uuid.ToString();

@@ -19,15 +19,15 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define METRICS_OS_NAME "Mac"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #define METRICS_OS_NAME "Win"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #define METRICS_OS_NAME "Android"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define METRICS_OS_NAME "Linux"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #define METRICS_OS_NAME "Fuchsia"
 #endif
 
@@ -115,7 +115,7 @@ void Metrics::HandlerCrashed(uint32_t exception_code) {
       "Crashpad.HandlerCrash.ExceptionCode." METRICS_OS_NAME, exception_code);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // static
 void Metrics::MissingIntermediateDumpKey(
     const internal::IntermediateDumpKey& key) {

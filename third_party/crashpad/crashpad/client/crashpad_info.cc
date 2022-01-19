@@ -16,10 +16,11 @@
 
 #include <type_traits>
 
+#include "build/build_config.h"
 #include "util/misc/address_sanitizer.h"
 #include "util/misc/from_pointer_cast.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <mach-o/loader.h>
 #endif
 
@@ -52,10 +53,10 @@ static_assert(std::is_standard_layout<CrashpadInfo>::value,
 // because it’s POD, no code should need to run to initialize this under
 // release-mode optimization.
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 __attribute__((
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // Put the structure in a well-known section name where it can be easily
     // found without having to consult the symbol table.
     section(SEG_DATA ",crashpad_info"),
@@ -77,16 +78,16 @@ __attribute__((
     // The “used” attribute prevents the structure from being dead-stripped.
     used))
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 // Put the struct in a section name CPADinfo where it can be found without the
 // symbol table.
 #pragma section("CPADinfo", read, write)
 __declspec(allocate("CPADinfo"))
 
-#else  // !defined(OS_POSIX) && !defined(OS_WIN)
+#else  // !BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_WIN)
 #error Port
-#endif  // !defined(OS_POSIX) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_WIN)
 
 CrashpadInfo g_crashpad_info;
 
@@ -94,8 +95,8 @@ extern "C" int* CRASHPAD_NOTE_REFERENCE;
 
 // static
 CrashpadInfo* CrashpadInfo::GetCrashpadInfo() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
   // This otherwise-unused reference is used so that any module that
   // references GetCrashpadInfo() will also include the note in the
   // .note.crashpad.info section. That note in turn contains the address of

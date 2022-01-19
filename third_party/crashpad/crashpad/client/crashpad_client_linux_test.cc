@@ -23,6 +23,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
 #include "client/crash_report_database.h"
@@ -50,7 +51,7 @@
 #include "util/posix/signals.h"
 #include "util/thread/thread.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/set_abort_message.h>
 #include "dlfcn_internal.h"
 
@@ -140,7 +141,7 @@ constexpr char kTestAnnotationValue[] = "value_of_annotation";
 constexpr char kTestAttachmentName[] = "test_attachment";
 constexpr char kTestAttachmentContent[] = "attachment_content";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr char kTestAbortMessage[] = "test abort message";
 #endif
 
@@ -179,7 +180,7 @@ void ValidateDump(const StartHandlerForSelfTestOptions& options,
   ProcessSnapshotMinidump minidump_snapshot;
   ASSERT_TRUE(minidump_snapshot.Initialize(report->Reader()));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This part of the test requires Q. The API level on Q devices will be 28
   // until the API is finalized, so we can't check API level yet. For now, test
   // for the presence of a libc symbol which was introduced in Q.
@@ -363,7 +364,7 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
     return EXIT_FAILURE;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (android_set_abort_message) {
     android_set_abort_message(kTestAbortMessage);
   }

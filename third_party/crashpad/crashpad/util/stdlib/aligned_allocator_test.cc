@@ -20,7 +20,7 @@
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <crtdbg.h>
 #endif
 
@@ -91,7 +91,7 @@ TEST(AlignedAllocator, AlignedVector) {
 }
 
 void BadAlignmentTest() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Suppress the assertion MessageBox() normally displayed by the CRT in debug
   // mode. In release mode, _CrtSetReportMode() is #defined to ((int)0), so
   // |previous| would appear unused, thus the [[maybe_unused]].
@@ -103,7 +103,7 @@ void BadAlignmentTest() {
   AlignedVector<int, 7> bad_aligned_vector;
   bad_aligned_vector.push_back(0);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   _CrtSetReportMode(_CRT_ASSERT, previous);
 #endif
 }

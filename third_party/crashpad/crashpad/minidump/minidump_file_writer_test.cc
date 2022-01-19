@@ -418,12 +418,13 @@ TEST(MinidumpFileWriter, InitializeFromSnapshot_Exception) {
   // but the test should complete without failure.
   constexpr uint32_t kSnapshotTime = 0xfd469ab8;
   constexpr timeval kSnapshotTimeval = {
-#ifdef OS_WIN
-      static_cast<long>(kSnapshotTime),
+#if BUILDFLAG(IS_WIN)
+    static_cast<long>(kSnapshotTime),
 #else
-      static_cast<time_t>(kSnapshotTime),
+    static_cast<time_t>(kSnapshotTime),
 #endif
-      0};
+    0
+  };
 
   TestProcessSnapshot process_snapshot;
   process_snapshot.SetSnapshotTime(kSnapshotTimeval);

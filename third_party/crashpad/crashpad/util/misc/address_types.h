@@ -21,13 +21,13 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <mach/mach_types.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "util/win/address_types.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "util/linux/address_types.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
 #else
 #error "Unhandled OS type"
@@ -45,22 +45,22 @@ using VMAddress = uint64_t;
 //!     VMAddress), potentially across bitness.
 using VMSize = uint64_t;
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 
 using VMAddress = mach_vm_address_t;
 using VMSize = mach_vm_size_t;
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 using VMAddress = WinVMAddress;
 using VMSize = WinVMSize;
 
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 using VMAddress = LinuxVMAddress;
 using VMSize = LinuxVMSize;
 
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 
 using VMAddress = zx_vaddr_t;
 using VMSize = size_t;

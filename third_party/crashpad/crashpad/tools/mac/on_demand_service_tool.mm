@@ -34,6 +34,7 @@ namespace crashpad {
 namespace {
 
 void Usage(const std::string& me) {
+  // clang-format off
   fprintf(stderr,
 "Usage: %s -L -l LABEL [OPTION]... COMMAND [ARG]...\n"
 "       %s -U -l LABEL\n"
@@ -48,6 +49,7 @@ void Usage(const std::string& me) {
 "      --version               output version information and exit\n",
           me.c_str(),
           me.c_str());
+  // clang-format on
   ToolSupport::UsageTail(me);
 }
 

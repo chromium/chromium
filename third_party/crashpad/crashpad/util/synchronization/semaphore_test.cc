@@ -17,11 +17,12 @@
 #include <sys/types.h>
 
 #include "base/cxx17_backports.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <pthread.h>
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace crashpad {
 namespace test {
@@ -60,50 +61,50 @@ TEST(Semaphore, TimedWaitInfinite_1) {
 }
 
 struct ThreadMainInfo {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   pthread_t pthread;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   HANDLE thread;
 #endif
   Semaphore* semaphore;
   size_t iterations;
 };
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 void*
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 DWORD WINAPI
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 ThreadMain(void* argument) {
   ThreadMainInfo* info = reinterpret_cast<ThreadMainInfo*>(argument);
   for (size_t iteration = 0; iteration < info->iterations; ++iteration) {
     info->semaphore->Wait();
   }
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   return nullptr;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return 0;
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 void StartThread(ThreadMainInfo* info) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   int rv = pthread_create(&info->pthread, nullptr, ThreadMain, info);
   ASSERT_EQ(rv, 0) << "pthread_create";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   info->thread = CreateThread(nullptr, 0, ThreadMain, info, 0, nullptr);
   ASSERT_NE(info->thread, nullptr) << "CreateThread";
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 void JoinThread(ThreadMainInfo* info) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   int rv = pthread_join(info->pthread, nullptr);
   EXPECT_EQ(rv, 0) << "pthread_join";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   DWORD result = WaitForSingleObject(info->thread, INFINITE);
   EXPECT_EQ(result, WAIT_OBJECT_0) << "WaitForSingleObject";
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 TEST(Semaphore, Threaded) {

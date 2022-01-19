@@ -14,9 +14,11 @@
 
 #include "test/process_type.h"
 
-#if defined(OS_FUCHSIA)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/process.h>
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <unistd.h>
 #endif
 
@@ -24,13 +26,13 @@ namespace crashpad {
 namespace test {
 
 ProcessType GetSelfProcess() {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   return zx::process::self();
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return getpid();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return GetCurrentProcess();
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return mach_task_self();
 #endif
 }

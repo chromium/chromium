@@ -125,7 +125,7 @@ class Settings {
   // and closes the file on destruction. Note that on Fuchsia, this handle DOES
   // NOT offer correct operation, only an attempt to DCHECK if racy behavior is
   // detected.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   struct ScopedLockedFileHandle {
    public:
     ScopedLockedFileHandle();
@@ -155,10 +155,10 @@ class Settings {
     FileHandle handle_;
     base::FilePath lockfile_path_;
   };
-#else  // OS_FUCHSIA
+#else  // BUILDFLAG(IS_FUCHSIA)
   using ScopedLockedFileHandle =
       base::ScopedGeneric<FileHandle, internal::ScopedLockedFileHandleTraits>;
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
   static ScopedLockedFileHandle MakeScopedLockedFileHandle(
       FileHandle file,
       FileLocking locking,

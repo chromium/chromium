@@ -28,12 +28,12 @@
 #include "util/file/file_io.h"
 #include "util/misc/capture_context.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_mach_port.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "util/win/scoped_handle.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <signal.h>
 #include <ucontext.h>
 #endif
@@ -125,7 +125,8 @@ class CrashpadClient {
                     bool asynchronous_start,
                     const std::vector<base::FilePath>& attachments = {});
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS) || DOXYGEN
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    DOXYGEN
   //! \brief Retrieve the socket and process ID for the handler.
   //!
   //! `StartHandler()` must have successfully been called before calling this
@@ -170,9 +171,10 @@ class CrashpadClient {
   //!
   //! \return `true` on success. Otherwise `false` with a message logged.
   static bool InitializeSignalStackForThread();
-#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS || DOXYGEN
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || DOXYGEN
 
-#if defined(OS_ANDROID) || DOXYGEN
+#if BUILDFLAG(IS_ANDROID) || DOXYGEN
   //! \brief Installs a signal handler to execute `/system/bin/app_process` and
   //!     load a Java class in response to a crash.
   //!
@@ -339,9 +341,10 @@ class CrashpadClient {
       const std::map<std::string, std::string>& annotations,
       const std::vector<std::string>& arguments,
       int socket);
-#endif  // OS_ANDROID || DOXYGEN
+#endif  // BUILDFLAG(IS_ANDROID) || DOXYGEN
 
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS) || DOXYGEN
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
+    DOXYGEN
   //! \brief Installs a signal handler to launch a handler process in reponse to
   //!     a crash.
   //!
@@ -454,9 +457,10 @@ class CrashpadClient {
   //!
   //! \param[in] unhandled_signals The set of unhandled signals
   void SetUnhandledSignals(const std::set<int>& unhandled_signals);
-#endif  // OS_LINUX || OS_ANDROID || OS_CHROMEOS || DOXYGEN
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS) || DOXYGEN
 
-#if defined(OS_IOS) || DOXYGEN
+#if BUILDFLAG(IS_IOS) || DOXYGEN
   //! \brief Configures the process to direct its crashes to the iOS in-process
   //! Crashpad handler.
   //!
@@ -556,7 +560,7 @@ class CrashpadClient {
       const base::FilePath path);
 #endif
 
-#if defined(OS_APPLE) || DOXYGEN
+#if BUILDFLAG(IS_APPLE) || DOXYGEN
   //! \brief Sets the process’ crash handler to a Mach service registered with
   //!     the bootstrap server.
   //!
@@ -606,7 +610,7 @@ class CrashpadClient {
   base::mac::ScopedMachSendRight GetHandlerMachPort() const;
 #endif
 
-#if defined(OS_WIN) || DOXYGEN
+#if BUILDFLAG(IS_WIN) || DOXYGEN
   //! \brief Sets the IPC pipe of a presumably-running Crashpad handler process
   //!     which was started with StartHandler() or by other compatible means
   //!     and does an IPC message exchange to register this process with the
@@ -706,7 +710,7 @@ class CrashpadClient {
   };
 #endif
 
-#if defined(OS_APPLE) || DOXYGEN
+#if BUILDFLAG(IS_APPLE) || DOXYGEN
   //! \brief Configures the process to direct its crashes to the default handler
   //!     for the operating system.
   //!
@@ -740,14 +744,14 @@ class CrashpadClient {
 #endif
 
  private:
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   base::mac::ScopedMachSendRight exception_port_;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   std::wstring ipc_pipe_;
   ScopedKernelHANDLE handler_start_thread_;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   std::set<int> unhandled_signals_;
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 };
 
 }  // namespace crashpad

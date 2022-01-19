@@ -68,7 +68,7 @@ bool CrashReportDatabase::NewReport::Initialize(
     return false;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::wstring uuid_string = uuid_.ToWString();
 #else
   const std::string uuid_string = uuid_.ToString();
@@ -103,7 +103,7 @@ FileWriter* CrashReportDatabase::NewReport::AddAttachment(
           report_attachments_dir, FilePermissions::kOwnerOnly, true)) {
     return nullptr;
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::wstring name_string = base::UTF8ToWide(name);
 #else
   const std::string name_string = name;
@@ -137,7 +137,7 @@ void CrashReportDatabase::UploadReport::InitializeAttachments() {
       continue;
     }
     attachment_readers_.emplace_back(std::move(file_reader));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     const std::string name_string = base::WideToUTF8(filename.value());
 #else
     const std::string name_string = filename.value();
@@ -177,7 +177,7 @@ CrashReportDatabase::OperationStatus CrashReportDatabase::RecordUploadComplete(
 }
 
 base::FilePath CrashReportDatabase::AttachmentsPath(const UUID& uuid) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::wstring uuid_string = uuid.ToWString();
 #else
   const std::string uuid_string = uuid.ToString();

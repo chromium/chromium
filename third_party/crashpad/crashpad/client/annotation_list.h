@@ -19,7 +19,7 @@
 #include "client/annotation.h"
 
 namespace crashpad {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 namespace internal {
 class InProcessIntermediateDumpHandler;
 }  // namespace internal
@@ -87,7 +87,7 @@ class AnnotationList {
   Iterator end();
 
  protected:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   friend class internal::InProcessIntermediateDumpHandler;
 #endif
 

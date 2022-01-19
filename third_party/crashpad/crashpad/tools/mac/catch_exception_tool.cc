@@ -181,6 +181,7 @@ class ExceptionServer final : public UniversalMachExcServer::Interface {
 };
 
 void Usage(const std::string& me) {
+  // clang-format off
   fprintf(stderr,
 "Usage: %s -m SERVICE [OPTION]...\n"
 "Catch Mach exceptions and display information about them.\n"
@@ -192,6 +193,7 @@ void Usage(const std::string& me) {
 "      --help                  display this help and exit\n"
 "      --version               output version information and exit\n",
           me.c_str());
+  // clang-format on
   ToolSupport::UsageTail(me);
 }
 

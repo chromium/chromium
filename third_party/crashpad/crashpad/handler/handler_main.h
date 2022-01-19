@@ -35,7 +35,7 @@ int HandlerMain(int argc,
                 char* argv[],
                 const UserStreamDataSources* user_stream_sources);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 //! \brief The `main()` entry point for Android libraries.
 //!
 //! This symbol is the entry point for crashpad when it is dynamically loaded

@@ -23,11 +23,12 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "build/build_config.h"
 #include "util/misc/time.h"
 
 namespace crashpad {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 Semaphore::Semaphore(int value) : cv_(), mutex_(), value_(value) {}
 
@@ -63,7 +64,7 @@ void Semaphore::Signal() {
   cv_.notify_one();
 }
 
-#elif !defined(OS_APPLE)
+#elif !BUILDFLAG(IS_APPLE)
 
 Semaphore::Semaphore(int value) {
   PCHECK(sem_init(&semaphore_, 0, value) == 0) << "sem_init";
@@ -104,6 +105,6 @@ void Semaphore::Signal() {
   PCHECK(sem_post(&semaphore_) == 0) << "sem_post";
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace crashpad

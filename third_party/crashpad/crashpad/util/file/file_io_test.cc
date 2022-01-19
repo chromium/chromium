@@ -22,6 +22,7 @@
 #include "base/atomicops.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -474,7 +475,7 @@ TEST(FileIO, LoggingOpenFileForReadAndWrite) {
   TestOpenFileForWrite(LoggingOpenFileForReadAndWrite);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST(FileIO, LoggingOpenMemoryFileForReadAndWrite) {
   ScopedFileHandle handle(
       LoggingOpenMemoryFileForReadAndWrite(base::FilePath("memfile")));
@@ -489,7 +490,7 @@ TEST(FileIO, LoggingOpenMemoryFileForReadAndWrite) {
   ASSERT_TRUE(LoggingReadFileExactly(handle.get(), buffer, sizeof(buffer)));
   EXPECT_EQ(memcmp(buffer, kTestData, sizeof(buffer)), 0);
 }
-#endif  // OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 enum class ReadOrWrite : bool {
   kRead,
@@ -545,7 +546,7 @@ TEST(FileIO, FileShareMode_Write_Write) {
 // Fuchsia does not currently support any sort of file locking. See
 // https://crashpad.chromium.org/bug/196 and
 // https://crashpad.chromium.org/bug/217.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 
 TEST(FileIO, MultipleSharedLocks) {
   ScopedTempDir temp_dir;
@@ -720,7 +721,7 @@ TEST(FileIO, ExclusiveVsExclusivesNonBlocking) {
   EXPECT_TRUE(LoggingUnlockFile(handle2.get()));
 }
 
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST(FileIO, FileSizeByHandle) {
   EXPECT_EQ(LoggingFileSizeByHandle(kInvalidFileHandle), -1);
@@ -742,9 +743,9 @@ TEST(FileIO, FileSizeByHandle) {
 
 FileHandle FileHandleForFILE(FILE* file) {
   int fd = fileno(file);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   return fd;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return reinterpret_cast<HANDLE>(_get_osfhandle(fd));
 #else
 #error Port

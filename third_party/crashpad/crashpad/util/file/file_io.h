@@ -21,9 +21,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/scoped_file.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "util/win/scoped_handle.h"
 #endif
@@ -34,7 +34,7 @@ class FilePath;
 
 namespace crashpad {
 
-#if defined(OS_POSIX) || DOXYGEN
+#if BUILDFLAG(IS_POSIX) || DOXYGEN
 
 //! \brief Platform-specific alias for a low-level file handle.
 using FileHandle = int;
@@ -51,7 +51,7 @@ using FileOperationResult = ssize_t;
 //! \brief A value that can never be a valid FileHandle.
 const FileHandle kInvalidFileHandle = -1;
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 using FileHandle = HANDLE;
 using FileOffset = LONGLONG;
@@ -132,7 +132,7 @@ enum class StdioStream {
 
 namespace internal {
 
-#if defined(OS_POSIX) || DOXYGEN
+#if BUILDFLAG(IS_POSIX) || DOXYGEN
 
 //! \brief The name of the native read function used by ReadFile().
 //!
@@ -148,7 +148,7 @@ constexpr char kNativeReadFunctionName[] = "read";
 //! \sa kNativeReadFunctionName
 constexpr char kNativeWriteFunctionName[] = "write";
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 constexpr char kNativeReadFunctionName[] = "ReadFile";
 constexpr char kNativeWriteFunctionName[] = "WriteFile";
@@ -422,7 +422,7 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
                                    FileWriteMode mode,
                                    FilePermissions permissions);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 //! \brief Opens an in-memory file for input and output.
 //!
 //! This function first attempts to open the file with `memfd_create()`. If
@@ -444,7 +444,7 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
 //! \sa LoggingOpenFileForWrite
 //! \sa LoggingOpenFileForReadAndWrite
 FileHandle LoggingOpenMemoryFileForReadAndWrite(const base::FilePath& name);
-#endif  // OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 //! \brief Wraps OpenFileForReadAndWrite(), logging an error if the operation
 //!     fails.
@@ -461,7 +461,7 @@ FileHandle LoggingOpenFileForReadAndWrite(const base::FilePath& path,
 // Fuchsia does not currently support any sort of file locking. See
 // https://crashpad.chromium.org/bug/196 and
 // https://crashpad.chromium.org/bug/217.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 
 //! \brief Locks the given \a file using `flock()` on POSIX or `LockFileEx()` on
 //!     Windows.
@@ -500,7 +500,7 @@ FileLockingResult LoggingLockFile(FileHandle file,
 //! \return `true` on success, or `false` and a message will be logged.
 bool LoggingUnlockFile(FileHandle file);
 
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 //! \brief Wraps `lseek()` or `SetFilePointerEx()`. Logs an error if the
 //!     operation fails.

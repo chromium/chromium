@@ -32,7 +32,7 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "test/linux/fake_ptrace_connection.h"
 #endif
 
@@ -94,7 +94,7 @@ void ExpectAnnotations(ProcessType process,
                        bool is_64_bit,
                        VMAddress simple_map_address,
                        VMAddress annotation_list_address) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(process));
   ProcessMemoryLinux memory(&connection);

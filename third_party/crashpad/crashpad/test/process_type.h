@@ -17,28 +17,28 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/process.h>
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sys/types.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 #endif
 
 namespace crashpad {
 namespace test {
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 using ProcessType = zx::unowned_process;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    DOXYGEN
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID) || DOXYGEN
 //! \brief Alias for platform-specific type to represent a process.
 using ProcessType = pid_t;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 using ProcessType = HANDLE;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 using ProcessType = task_t;
 #else
 #error Port.

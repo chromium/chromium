@@ -23,6 +23,7 @@
 #include "base/format_macros.h"
 #include "base/scoped_generic.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -231,7 +232,7 @@ TEST(UUID, FromString) {
   uuid.InitializeFromString("5762C15D-50b5-4171-a2e9-7429C9EC6CAB");
   EXPECT_EQ(uuid.ToString(), "5762c15d-50b5-4171-a2e9-7429c9ec6cab");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Test accepting a StringPiece16 via L"" literals on Windows.
   EXPECT_TRUE(
       uuid.InitializeFromString(L"F32E5BDC-2681-4C73-A4E6-444FFD44B444"));
@@ -240,10 +241,10 @@ TEST(UUID, FromString) {
   EXPECT_TRUE(
       uuid.InitializeFromString(L"5762C15D-50b5-4171-a2e9-5555C5EC5CAB"));
   EXPECT_EQ(uuid.ToString(), "5762c15d-50b5-4171-a2e9-5555c5ec5cab");
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST(UUID, FromSystem) {
   ::GUID system_uuid;
@@ -268,7 +269,7 @@ TEST(UUID, FromSystem) {
   EXPECT_EQ(uuid.ToWString(), reinterpret_cast<wchar_t*>(system_string));
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace test

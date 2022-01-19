@@ -30,7 +30,7 @@ constexpr uint64_t kNanosecondsPerSecond = 1E9;
 
 namespace crashpad {
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 
 uint64_t ClockMonotonicNanoseconds() {
   timespec now;

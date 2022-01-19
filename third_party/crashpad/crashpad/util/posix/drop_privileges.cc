@@ -25,7 +25,7 @@ void DropPrivileges() {
   gid_t gid = getgid();
   uid_t uid = getuid();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Based on the POSIX.1-2008 2013 edition documentation for setreuid() and
   // setregid(), setreuid() and setregid() alone should be sufficient to drop
   // privileges. The standard specifies that the saved ID should be set to the
@@ -73,7 +73,7 @@ void DropPrivileges() {
       CHECK_EQ(setegid(egid), -1);
     }
   }
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   PCHECK(setresgid(gid, gid, gid) == 0) << "setresgid";
   PCHECK(setresuid(uid, uid, uid) == 0) << "setresuid";
 

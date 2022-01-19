@@ -30,7 +30,7 @@
 #include "util/synchronization/semaphore.h"
 #include "util/thread/thread.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
 #endif
 

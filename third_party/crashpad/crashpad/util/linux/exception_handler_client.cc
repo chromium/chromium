@@ -30,7 +30,7 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/posix/signals.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
 #endif
 

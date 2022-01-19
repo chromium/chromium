@@ -29,33 +29,34 @@
 #include "util/process/process_id.h"
 #include "util/stdlib/string_number_conversion.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 
 #include "util/posix/drop_privileges.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 
 #include "base/mac/scoped_mach_port.h"
 #include "snapshot/mac/process_snapshot_mac.h"
 #include "util/mach/scoped_task_suspend.h"
 #include "util/mach/task_for_pid.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #include "snapshot/win/process_snapshot_win.h"
 #include "util/win/scoped_process_suspend.h"
 #include "util/win/xp_compat.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "snapshot/linux/process_snapshot_linux.h"
 #include "util/linux/direct_ptrace_connection.h"
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace crashpad {
 namespace {
 
 void Usage(const base::FilePath& me) {
+  // clang-format off
   fprintf(stderr,
 "Usage: %" PRFilePath " [OPTION]... PID\n"
 "Generate a minidump file containing a snapshot of a running process.\n"
@@ -65,6 +66,7 @@ void Usage(const base::FilePath& me) {
 "      --help         display this help and exit\n"
 "      --version      output version information and exit\n",
           me.value().c_str());
+  // clang-format on
   ToolSupport::UsageTail(me);
 }
 
@@ -137,7 +139,7 @@ int GenerateDumpMain(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   task_t task = TaskForPID(options.pid);
   if (task == TASK_NULL) {
     return EXIT_FAILURE;
@@ -155,14 +157,14 @@ int GenerateDumpMain(int argc, char* argv[]) {
     }
     LOG(WARNING) << "operating on myself";
   }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ScopedKernelHANDLE process(
       OpenProcess(kXPProcessAllAccess, false, options.pid));
   if (!process.is_valid()) {
     PLOG(ERROR) << "could not open process " << options.pid;
     return EXIT_FAILURE;
   }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
   if (options.dump_path.empty()) {
     options.dump_path = base::StringPrintf("minidump.%" PRI_PROCESS_ID,
@@ -170,24 +172,24 @@ int GenerateDumpMain(int argc, char* argv[]) {
   }
 
   {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     std::unique_ptr<ScopedTaskSuspend> suspend;
     if (options.suspend) {
       suspend.reset(new ScopedTaskSuspend(task));
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     std::unique_ptr<ScopedProcessSuspend> suspend;
     if (options.suspend) {
       suspend.reset(new ScopedProcessSuspend(process.get()));
     }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     ProcessSnapshotMac process_snapshot;
     if (!process_snapshot.Initialize(task)) {
       return EXIT_FAILURE;
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     ProcessSnapshotWin process_snapshot;
     if (!process_snapshot.Initialize(process.get(),
                                      options.suspend
@@ -197,7 +199,7 @@ int GenerateDumpMain(int argc, char* argv[]) {
                                      0)) {
       return EXIT_FAILURE;
     }
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     // TODO(jperaza): https://crashpad.chromium.org/bug/30.
     DirectPtraceConnection task;
     if (!task.Initialize(options.pid)) {
@@ -207,7 +209,7 @@ int GenerateDumpMain(int argc, char* argv[]) {
     if (!process_snapshot.Initialize(&task)) {
       return EXIT_FAILURE;
     }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
     FileWriter file_writer;
     base::FilePath dump_path(
@@ -236,12 +238,12 @@ int GenerateDumpMain(int argc, char* argv[]) {
 }  // namespace
 }  // namespace crashpad
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 int main(int argc, char* argv[]) {
   return crashpad::GenerateDumpMain(argc, argv);
 }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 int wmain(int argc, wchar_t* argv[]) {
   return crashpad::ToolSupport::Wmain(argc, argv, crashpad::GenerateDumpMain);
 }
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)

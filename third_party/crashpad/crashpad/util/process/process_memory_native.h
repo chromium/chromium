@@ -14,26 +14,26 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "util/process/process_memory_fuchsia.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "util/process/process_memory_linux.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "util/process/process_memory_win.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "util/process/process_memory_mac.h"
 #endif
 
 namespace crashpad {
 
-#if defined(OS_FUCHSIA) || DOXYGEN
+#if BUILDFLAG(IS_FUCHSIA) || DOXYGEN
 //! \brief Alias for platform-specific native implementation of ProcessMemory.
 using ProcessMemoryNative = ProcessMemoryFuchsia;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 using ProcessMemoryNative = ProcessMemoryLinux;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 using ProcessMemoryNative = ProcessMemoryWin;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 using ProcessMemoryNative = ProcessMemoryMac;
 #else
 #error Port.

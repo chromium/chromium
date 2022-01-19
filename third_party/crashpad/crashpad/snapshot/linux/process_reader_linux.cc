@@ -29,7 +29,7 @@
 #include "util/linux/auxiliary_vector.h"
 #include "util/linux/proc_stat_reader.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
 #endif
 
@@ -282,7 +282,7 @@ const std::vector<ProcessReaderLinux::Module>& ProcessReaderLinux::Modules() {
 }
 
 void ProcessReaderLinux::InitializeAbortMessage() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const MemoryMap::Mapping* mapping =
       memory_map_.FindMappingWithName("[anon:abort message]");
   if (!mapping) {
@@ -297,7 +297,7 @@ void ProcessReaderLinux::InitializeAbortMessage() {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // These structure definitions and the magic numbers below were copied from
 // bionic/libc/bionic/android_set_abort_message.cpp
@@ -346,7 +346,7 @@ void ProcessReaderLinux::ReadAbortMessage(const MemoryMap::Mapping* mapping) {
   }
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const std::string& ProcessReaderLinux::AbortMessage() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
@@ -486,7 +486,7 @@ void ProcessReaderLinux::InitializeModules() {
         continue;
       }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // Beginning at API 21, Bionic provides android_dlopen_ext() which allows
       // passing a file descriptor with an existing relro segment to the loader.
       // This means that the mapping attributes of dyn_mapping may be unrelated

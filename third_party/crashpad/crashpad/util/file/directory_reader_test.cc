@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/filesystem.h"
 #include "test/scoped_temp_dir.h"
@@ -42,7 +43,7 @@ TEST(DirectoryReader, BadPaths) {
       reader.Open(temp_dir.path().Append(FILE_PATH_LITERAL("doesntexist"))));
 }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 
 TEST(DirectoryReader, BadPaths_SymbolicLinks) {
   if (!CanCreateSymbolicLinks()) {
@@ -63,7 +64,7 @@ TEST(DirectoryReader, BadPaths_SymbolicLinks) {
   EXPECT_FALSE(reader.Open(link));
 }
 
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST(DirectoryReader, EmptyDirectory) {
   ScopedTempDir temp_dir;
@@ -103,7 +104,7 @@ void TestFilesAndDirectories(bool symbolic_links) {
   ASSERT_TRUE(
       CreateFile(temp_dir.path().Append(directory).Append(nested_file)));
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 
   if (symbolic_links) {
     base::FilePath link(FILE_PATH_LITERAL("link"));
@@ -118,7 +119,7 @@ void TestFilesAndDirectories(bool symbolic_links) {
     EXPECT_TRUE(expected_files.insert(dangling).second);
   }
 
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   std::set<base::FilePath> files;
   DirectoryReader reader;
@@ -138,7 +139,7 @@ TEST(DirectoryReader, FilesAndDirectories) {
   TestFilesAndDirectories(false);
 }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 
 TEST(DirectoryReader, FilesAndDirectories_SymbolicLinks) {
   if (!CanCreateSymbolicLinks()) {
@@ -148,7 +149,7 @@ TEST(DirectoryReader, FilesAndDirectories_SymbolicLinks) {
   TestFilesAndDirectories(true);
 }
 
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 }  // namespace test

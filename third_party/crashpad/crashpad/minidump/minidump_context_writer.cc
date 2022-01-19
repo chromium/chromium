@@ -21,6 +21,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "util/file/file_writer.h"
 #include "util/stdlib/aligned_allocator.h"
@@ -35,7 +36,7 @@ static_assert(sizeof(MinidumpContextAMD64) == 1232,
               "MinidumpContextAMD64 size");
 
 // These structures can also be checked against definitions in the Windows SDK.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #if defined(ARCH_CPU_X86_FAMILY)
 static_assert(sizeof(MinidumpContextX86) == sizeof(WOW64_CONTEXT),
               "WOW64_CONTEXT size");
@@ -45,7 +46,7 @@ static_assert(sizeof(MinidumpContextX86) == sizeof(CONTEXT), "CONTEXT size");
 static_assert(sizeof(MinidumpContextAMD64) == sizeof(CONTEXT), "CONTEXT size");
 #endif
 #endif  // ARCH_CPU_X86_FAMILY
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 

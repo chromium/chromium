@@ -737,7 +737,7 @@ TEST_F(CrashReportDatabaseTest, OrphanedAttachments) {
 
   ASSERT_TRUE(LoggingRemoveFile(report.file_path));
 
-#if !defined(OS_APPLE) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
   // CrashReportDatabaseMac stores metadata in xattrs and does not have .meta
   // files.
   // CrashReportDatabaseWin stores metadata in a global metadata file and not
@@ -749,7 +749,7 @@ TEST_F(CrashReportDatabaseTest, OrphanedAttachments) {
   ASSERT_EQ(db()->LookUpCrashReport(uuid, &report),
             CrashReportDatabase::kReportNotFound);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::wstring uuid_string = uuid.ToWString();
 #else
   const std::string uuid_string = uuid.ToString();
@@ -763,7 +763,7 @@ TEST_F(CrashReportDatabaseTest, OrphanedAttachments) {
   EXPECT_TRUE(FileExists(file_path1));
   EXPECT_TRUE(FileExists(file_path1));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, reports removed from metadata are counted, even if the file
   // is not on the disk.
   EXPECT_EQ(db()->CleanDatabase(0), 1);
@@ -778,7 +778,7 @@ TEST_F(CrashReportDatabaseTest, OrphanedAttachments) {
 
 // This test uses knowledge of the database format to break it, so it only
 // applies to the unfified database implementation.
-#if !defined(OS_APPLE) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
 TEST_F(CrashReportDatabaseTest, CleanBrokenDatabase) {
   // Remove report files if metadata goes missing.
   CrashReportDatabase::Report report;
@@ -843,7 +843,7 @@ TEST_F(CrashReportDatabaseTest, CleanBrokenDatabase) {
   EXPECT_FALSE(PathExists(report.file_path));
   EXPECT_FALSE(PathExists(metadata3));
 }
-#endif  // !OS_APPLE && !OS_WIN
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
 
 TEST_F(CrashReportDatabaseTest, TotalSize_MainReportOnly) {
   std::unique_ptr<CrashReportDatabase::NewReport> new_report;

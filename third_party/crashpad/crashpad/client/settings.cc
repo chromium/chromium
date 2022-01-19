@@ -20,12 +20,13 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "build/build_config.h"
 #include "util/file/filesystem.h"
 #include "util/numeric/in_range_cast.h"
 
 namespace crashpad {
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 Settings::ScopedLockedFileHandle::ScopedLockedFileHandle()
     : handle_(kInvalidFileHandle), lockfile_path_() {
@@ -68,7 +69,7 @@ void Settings::ScopedLockedFileHandle::Destroy() {
   }
 }
 
-#else // OS_FUCHSIA
+#else  // BUILDFLAG(IS_FUCHSIA)
 
 namespace internal {
 
@@ -82,7 +83,7 @@ void ScopedLockedFileHandleTraits::Free(FileHandle handle) {
 
 }  // namespace internal
 
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 struct Settings::Data {
   static constexpr uint32_t kSettingsMagic = 'CPds';
@@ -193,7 +194,7 @@ Settings::ScopedLockedFileHandle Settings::MakeScopedLockedFileHandle(
     FileLocking locking,
     const base::FilePath& file_path) {
   ScopedFileHandle scoped(file);
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   base::FilePath lockfile_path(file_path.value() + ".__lock__");
   if (scoped.is_valid()) {
     ScopedFileHandle lockfile_scoped(

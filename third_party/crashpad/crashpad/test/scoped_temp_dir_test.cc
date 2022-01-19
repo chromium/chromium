@@ -23,26 +23,26 @@
 #include "test/errors.h"
 #include "test/file.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <direct.h>
 #include <io.h>
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace crashpad {
 namespace test {
 namespace {
 
 void CreateFile(const base::FilePath& path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   int fd = HANDLE_EINTR(creat(path.value().c_str(), 0644));
   ASSERT_GE(fd, 0) << ErrnoMessage("creat") << " " << path.value();
 
   // gcc refuses to compile ASSERT_EQ(IGNORE_EINTR(close(fd)), 0).
   int close_rv = IGNORE_EINTR(close(fd));
   ASSERT_EQ(close_rv, 0) << ErrnoMessage("close") << " " << path.value();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   int fd = _wcreat(path.value().c_str(), _S_IREAD | _S_IWRITE);
   ASSERT_GE(fd, 0) << ErrnoMessage("_wcreat") << " " << path.value();
   ASSERT_EQ(_close(fd), 0) << ErrnoMessage("_close") << " " << path.value();
@@ -53,10 +53,10 @@ void CreateFile(const base::FilePath& path) {
 }
 
 void CreateDirectory(const base::FilePath& path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   ASSERT_EQ(mkdir(path.value().c_str(), 0755), 0) << ErrnoMessage("mkdir")
                                                   << " " << path.value();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ASSERT_EQ(_wmkdir(path.value().c_str()), 0) << ErrnoMessage("_wmkdir") << " "
                                               << path.value();
 #else

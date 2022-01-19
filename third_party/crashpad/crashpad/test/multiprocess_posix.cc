@@ -33,7 +33,7 @@
 #include "util/misc/scoped_forbid_return.h"
 #include "util/posix/signals.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "test/mac/exception_swallower.h"
 #endif
 
@@ -73,7 +73,7 @@ void Multiprocess::Run() {
 
   ASSERT_NO_FATAL_FAILURE(PreFork());
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // If the child is expected to crash, set up an exception swallower to swallow
   // the exception instead of allowing it to be seen by the system’s crash
   // reporter.
@@ -81,7 +81,7 @@ void Multiprocess::Run() {
   if (reason_ == kTerminationSignal && Signals::IsCrashSignal(code_)) {
     exception_swallower.reset(new ExceptionSwallower());
   }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
   pid_t pid = fork();
   ASSERT_GE(pid, 0) << ErrnoMessage("fork");
@@ -139,15 +139,15 @@ void Multiprocess::Run() {
       ADD_FAILURE() << message;
     }
   } else {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     if (exception_swallower.get()) {
       ExceptionSwallower::SwallowExceptions();
     }
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     if (reason_ == kTerminationSignal && Signals::IsCrashSignal(code_)) {
       Signals::InstallDefaultHandler(code_);
     }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
     RunChild();
   }

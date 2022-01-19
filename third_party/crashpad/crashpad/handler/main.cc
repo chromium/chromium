@@ -17,17 +17,17 @@
 #include "build/build_config.h"
 #include "tools/tool_support.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 int main(int argc, char* argv[]) {
   return crashpad::HandlerMain(argc, argv, nullptr);
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -50,4 +50,4 @@ int wmain(int argc, wchar_t* argv[]) {
   return crashpad::ToolSupport::Wmain(argc, argv, HandlerMainAdaptor);
 }
 
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)

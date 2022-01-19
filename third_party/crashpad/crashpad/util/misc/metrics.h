@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "util/file/file_io.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "util/ios/ios_intermediate_dump_format.h"
 #endif
 
@@ -207,7 +207,7 @@ class Metrics {
   //! This is currently only reported on Windows.
   static void HandlerCrashed(uint32_t exception_code);
 
-#if defined(OS_IOS) || DOXYGEN
+#if BUILDFLAG(IS_IOS) || DOXYGEN
   //! \brief Records a missing key from an intermediate dump.
   static void MissingIntermediateDumpKey(
       const internal::IntermediateDumpKey& key);

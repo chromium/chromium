@@ -35,38 +35,23 @@ constexpr struct {
   const char* full_name;
   const char* short_name;
 } kSignalTestData[] = {
-    {SIGABRT, "SIGABRT", "ABRT"},
-    {SIGALRM, "SIGALRM", "ALRM"},
-    {SIGBUS, "SIGBUS", "BUS"},
-    {SIGCHLD, "SIGCHLD", "CHLD"},
-    {SIGCONT, "SIGCONT", "CONT"},
-    {SIGFPE, "SIGFPE", "FPE"},
-    {SIGHUP, "SIGHUP", "HUP"},
-    {SIGILL, "SIGILL", "ILL"},
-    {SIGINT, "SIGINT", "INT"},
-    {SIGIO, "SIGIO", "IO"},
-    {SIGKILL, "SIGKILL", "KILL"},
-    {SIGPIPE, "SIGPIPE", "PIPE"},
-    {SIGPROF, "SIGPROF", "PROF"},
-    {SIGQUIT, "SIGQUIT", "QUIT"},
-    {SIGSEGV, "SIGSEGV", "SEGV"},
-    {SIGSTOP, "SIGSTOP", "STOP"},
-    {SIGSYS, "SIGSYS", "SYS"},
-    {SIGTERM, "SIGTERM", "TERM"},
-    {SIGTRAP, "SIGTRAP", "TRAP"},
-    {SIGTSTP, "SIGTSTP", "TSTP"},
-    {SIGTTIN, "SIGTTIN", "TTIN"},
-    {SIGTTOU, "SIGTTOU", "TTOU"},
-    {SIGURG, "SIGURG", "URG"},
-    {SIGUSR1, "SIGUSR1", "USR1"},
-    {SIGUSR2, "SIGUSR2", "USR2"},
-    {SIGVTALRM, "SIGVTALRM", "VTALRM"},
-    {SIGWINCH, "SIGWINCH", "WINCH"},
-    {SIGXCPU, "SIGXCPU", "XCPU"},
-#if defined(OS_APPLE)
-    {SIGEMT, "SIGEMT", "EMT"},
-    {SIGINFO, "SIGINFO", "INFO"},
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+    {SIGABRT, "SIGABRT", "ABRT"},    {SIGALRM, "SIGALRM", "ALRM"},
+    {SIGBUS, "SIGBUS", "BUS"},       {SIGCHLD, "SIGCHLD", "CHLD"},
+    {SIGCONT, "SIGCONT", "CONT"},    {SIGFPE, "SIGFPE", "FPE"},
+    {SIGHUP, "SIGHUP", "HUP"},       {SIGILL, "SIGILL", "ILL"},
+    {SIGINT, "SIGINT", "INT"},       {SIGIO, "SIGIO", "IO"},
+    {SIGKILL, "SIGKILL", "KILL"},    {SIGPIPE, "SIGPIPE", "PIPE"},
+    {SIGPROF, "SIGPROF", "PROF"},    {SIGQUIT, "SIGQUIT", "QUIT"},
+    {SIGSEGV, "SIGSEGV", "SEGV"},    {SIGSTOP, "SIGSTOP", "STOP"},
+    {SIGSYS, "SIGSYS", "SYS"},       {SIGTERM, "SIGTERM", "TERM"},
+    {SIGTRAP, "SIGTRAP", "TRAP"},    {SIGTSTP, "SIGTSTP", "TSTP"},
+    {SIGTTIN, "SIGTTIN", "TTIN"},    {SIGTTOU, "SIGTTOU", "TTOU"},
+    {SIGURG, "SIGURG", "URG"},       {SIGUSR1, "SIGUSR1", "USR1"},
+    {SIGUSR2, "SIGUSR2", "USR2"},    {SIGVTALRM, "SIGVTALRM", "VTALRM"},
+    {SIGWINCH, "SIGWINCH", "WINCH"}, {SIGXCPU, "SIGXCPU", "XCPU"},
+#if BUILDFLAG(IS_APPLE)
+    {SIGEMT, "SIGEMT", "EMT"},       {SIGINFO, "SIGINFO", "INFO"},
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {SIGPWR, "SIGPWR", "PWR"},
 #if !defined(ARCH_CPU_MIPS_FAMILY)
     {SIGSTKFLT, "SIGSTKFLT", "STKFLT"},
@@ -123,7 +108,7 @@ TEST(SymbolicConstantsPOSIX, SignalToString) {
                        kSignalTestData[index].short_name);
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // NSIG is 64 to account for real-time signals.
   constexpr int kSignalCount = 32;
 #else

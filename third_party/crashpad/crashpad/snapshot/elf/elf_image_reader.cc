@@ -733,13 +733,13 @@ bool ElfImageReader::GetAddressFromDynamicArray(uint64_t tag,
   if (!dynamic_array_->GetValue(tag, log, address)) {
     return false;
   }
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   // The GNU loader updates the dynamic array according to the load bias.
   // The Android and Fuchsia loaders only update the debug address.
   if (tag != DT_DEBUG) {
     *address += GetLoadBias();
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   return true;
 }
 
