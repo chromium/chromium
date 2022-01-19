@@ -7611,3 +7611,7 @@ crbug.com/1227911 [ Mac10.14 ] virtual/not-site-per-process/external/wpt/html/br
 crbug.com/1227911 [ Win Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Linux Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
+
+# Flaky test on mac.
+crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipboard/async-custom-formats-write-read.tentative.https.html [ Failure Pass ]
+crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipboard/async-custom-format-write-read.tentative.https.html [ Failure Pass ]
