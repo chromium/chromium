@@ -5567,8 +5567,7 @@
                         "OmniboxPreserveLongerShortcutsText",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
-                        "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "SearchSuggestChips"
+                        "OmniboxUIExperimentMaxAutocompleteMatches"
                     ],
                     "disable_features": [
                         "OmniboxShortBookmarkSuggestionsByTotalInputLength"
