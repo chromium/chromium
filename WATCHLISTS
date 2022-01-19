@@ -2859,7 +2859,7 @@
                            'ramyagopalan+watch@google.com',
 			   'jorgelo+watch@chromium.org'],
     'translate': ['translate-reviews@chromium.org'],
-    'turtledove': ['taymon@google.com'],
+    'turtledove': [],
     'ui_compositor': ['cc-bugs@chromium.org'],
     'ui_display_win': ['robliao+watch@chromium.org'],
     'ui_resources': ['oshima+watch@chromium.org'],
