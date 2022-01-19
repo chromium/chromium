@@ -26,7 +26,9 @@ generate_grd("build_grd") {
     "app_icon_48.png",
     "app_icon_192.png",
     "app_icon_256.png",
+    "feedback_types.js",
     "index.html",
+    "mojo_interface_provider.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":preprocess_generated" ]
@@ -40,13 +42,9 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":confirmation_page",
+    ":feedback_types",
+    ":mojo_interface_provider",
     ":search_page",
-  ]
-}
-
-js_library("search_page") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -55,8 +53,20 @@ js_library("confirmation_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
+js_library("feedback_types") {
+}
 
 js_library("help_resources_icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("search_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

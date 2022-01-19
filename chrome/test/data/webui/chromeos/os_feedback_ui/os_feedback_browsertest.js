@@ -41,6 +41,7 @@ this.OSFeedbackBrowserTest = class extends PolymerTest {
 // although technically is not necessary.
 const debug_suites_list = [
   'confirmationPageTest',
+  'fakeMojoProviderTest',
   'searchPageTest',
 ];
 
