@@ -17,16 +17,9 @@
 
 namespace em = enterprise_management;
 
+using ::testing::Eq;
 using ::testing::Mock;
 using ::testing::StrictMock;
-
-namespace {
-
-MATCHER_P(InvalidationsEqual, expected_invalidation, "") {
-  return arg.Equals(expected_invalidation);
-}
-
-}  // namespace
 
 namespace policy {
 
@@ -140,9 +133,8 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
   void VerifyInvalidationEnabled(const invalidation::Topic& topic) {
     EXPECT_TRUE(invalidator_.invalidations_enabled());
 
-    EXPECT_CALL(
-        invalidator_,
-        DoRemoteCommandsFetch(InvalidationsEqual(CreateInvalidation(topic))))
+    EXPECT_CALL(invalidator_,
+                DoRemoteCommandsFetch(Eq(CreateInvalidation(topic))))
         .Times(1);
     const invalidation::Invalidation invalidation = FireInvalidation(topic);
 
@@ -187,8 +179,8 @@ TEST_F(RemoteCommandsInvalidatorTest, FiredInvalidation) {
 
   // Fire the invalidation, it should be acknowledged and trigger a remote
   // commands fetch.
-  EXPECT_CALL(invalidator_, DoRemoteCommandsFetch(InvalidationsEqual(
-                                CreateInvalidation(kTestingTopic1))))
+  EXPECT_CALL(invalidator_,
+              DoRemoteCommandsFetch(Eq(CreateInvalidation(kTestingTopic1))))
       .Times(1);
   const invalidation::Invalidation invalidation2 =
       FireInvalidation(kTestingTopic1);

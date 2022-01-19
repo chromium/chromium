@@ -49,20 +49,9 @@ bool SingleTopicInvalidationSet::IsEmpty() const {
   return invalidations_.empty();
 }
 
-namespace {
-
-struct InvalidationComparator {
-  bool operator()(const Invalidation& inv1, const Invalidation& inv2) {
-    return inv1.Equals(inv2);
-  }
-};
-
-}  // namespace
-
 bool SingleTopicInvalidationSet::operator==(
     const SingleTopicInvalidationSet& other) const {
-  return std::equal(invalidations_.begin(), invalidations_.end(),
-                    other.invalidations_.begin(), InvalidationComparator());
+  return invalidations_ == other.invalidations_;
 }
 
 SingleTopicInvalidationSet::const_iterator SingleTopicInvalidationSet::begin()

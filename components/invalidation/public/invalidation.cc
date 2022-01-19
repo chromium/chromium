@@ -115,7 +115,7 @@ void Invalidation::Drop() {
   }
 }
 
-bool Invalidation::Equals(const Invalidation& other) const {
+bool Invalidation::operator==(const Invalidation& other) const {
   return topic_ == other.topic_ &&
          is_unknown_version_ == other.is_unknown_version_ &&
          version_ == other.version_ && payload_ == other.payload_;

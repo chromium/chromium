@@ -4,6 +4,7 @@
 
 #include "components/invalidation/impl/topic_invalidation_map_test_util.h"
 
+#include <base/containers/contains.h>
 #include <algorithm>
 
 namespace invalidation {
@@ -35,14 +36,6 @@ TopicInvalidationMapEqMatcher::TopicInvalidationMapEqMatcher(
     const TopicInvalidationMap& expected)
     : expected_(expected) {}
 
-struct InvalidationEqPredicate {
-  explicit InvalidationEqPredicate(const Invalidation& inv1) : inv1_(inv1) {}
-
-  bool operator()(const Invalidation& inv2) { return inv1_.Equals(inv2); }
-
-  const Invalidation& inv1_;
-};
-
 bool TopicInvalidationMapEqMatcher::MatchAndExplain(
     const TopicInvalidationMap& actual,
     MatchResultListener* listener) const {
@@ -56,18 +49,13 @@ bool TopicInvalidationMapEqMatcher::MatchAndExplain(
   std::vector<Invalidation> actual_only;
 
   for (const auto& expected_invalidation : expected_invalidations) {
-    if (std::find_if(actual_invalidations.begin(), actual_invalidations.end(),
-                     InvalidationEqPredicate(expected_invalidation)) ==
-        actual_invalidations.end()) {
+    if (!base::Contains(actual_invalidations, expected_invalidation)) {
       expected_only.push_back(expected_invalidation);
     }
   }
 
   for (const auto& actual_invalidation : actual_invalidations) {
-    if (std::find_if(expected_invalidations.begin(),
-                     expected_invalidations.end(),
-                     InvalidationEqPredicate(actual_invalidation)) ==
-        expected_invalidations.end()) {
+    if (!base::Contains(expected_invalidations, actual_invalidation)) {
       actual_only.push_back(actual_invalidation);
     }
   }
