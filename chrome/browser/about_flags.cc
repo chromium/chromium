@@ -7195,6 +7195,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUpdateHistoryEntryPointsInIncognitoDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kUpdateHistoryEntryPointsInIncognito)},
 
+    {"throttle-foreground-timers",
+     flag_descriptions::kThrottleForegroundTimersName,
+     flag_descriptions::kThrottleForegroundTimersDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kThrottleForegroundTimers)},
+
     {"enable-throttle-display-none-and-visibility-hidden-cross-origin-iframes",
      flag_descriptions::
          kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName,

@@ -3884,7 +3884,7 @@ class FrameSchedulerImplThrottleForegroundTimersEnabledTest
     : public FrameSchedulerImplTest {
  public:
   FrameSchedulerImplThrottleForegroundTimersEnabledTest()
-      : FrameSchedulerImplTest({kThrottleForegroundTimers}, {}) {}
+      : FrameSchedulerImplTest({features::kThrottleForegroundTimers}, {}) {}
 };
 
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,

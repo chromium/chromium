@@ -5386,6 +5386,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "throttle-foreground-timers",
+    "owners": [ "fdoray", "scheduler-dev" ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "tint-composited-content",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & development on ChromeOS, which has no way to

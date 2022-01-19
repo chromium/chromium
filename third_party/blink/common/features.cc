@@ -347,6 +347,10 @@ const base::Feature kIntensiveWakeUpThrottling{
 const char kIntensiveWakeUpThrottling_GracePeriodSeconds_Name[] =
     "grace_period_seconds";
 
+// Throttles Javascript timer wake ups on foreground pages.
+const base::Feature kThrottleForegroundTimers{
+    "ThrottleForegroundTimers", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 // Run-time feature for the |rtc_use_h264| encoder/decoder.
 const base::Feature kWebRtcH264WithOpenH264FFmpeg{

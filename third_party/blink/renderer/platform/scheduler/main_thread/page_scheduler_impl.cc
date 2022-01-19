@@ -192,7 +192,7 @@ PageSchedulerImpl::PageSchedulerImpl(
       delay_for_background_and_network_idle_tab_freezing_(
           GetDelayForBackgroundAndNetworkIdleTabFreezing()),
       throttle_foreground_timers_(
-          base::FeatureList::IsEnabled(kThrottleForegroundTimers)),
+          base::FeatureList::IsEnabled(features::kThrottleForegroundTimers)),
       foreground_timers_throttled_wake_up_interval_(
           GetForegroundTimersThrottledWakeUpInterval()) {
   page_lifecycle_state_tracker_ = std::make_unique<PageLifecycleStateTracker>(

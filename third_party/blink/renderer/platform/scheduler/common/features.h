@@ -155,9 +155,8 @@ const base::Feature kMbiCompositorTaskRunnerPerAgentSchedulingGroup{
     "MbiCompositorTaskRunnerPerAgentSchedulingGroup",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, Javascript timers are throttled to 1 wake up per
-// GetForegroundTimersThrottledWakeUpInterval() on foreground pages.
-PLATFORM_EXPORT extern const base::Feature kThrottleForegroundTimers;
+// Interval between Javascript timer wake ups when the "ThrottleForegroundTimers"
+// feature is enabled.
 PLATFORM_EXPORT base::TimeDelta GetForegroundTimersThrottledWakeUpInterval();
 
 // Deprioritizes JS timer tasks during a particular phase of page loading.

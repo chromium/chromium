@@ -1390,6 +1390,9 @@ extern const char kTopChromeTouchUiDescription[];
 extern const char kThreadedScrollingName[];
 extern const char kThreadedScrollingDescription[];
 
+extern const char kThrottleForegroundTimersName[];
+extern const char kThrottleForegroundTimersDescription[];
+
 extern const char
     kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName[];
 extern const char

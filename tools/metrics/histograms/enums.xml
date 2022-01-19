@@ -54749,6 +54749,7 @@ from previous Chrome versions.
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>
+  <int value="802930463" label="ThrottleForegroundTimers:disabled"/>
   <int value="803282885" label="PreferHtmlOverPlugins:disabled"/>
   <int value="803877391" label="NotificationsRefresh:enabled"/>
   <int value="803982925" label="CellularForbidAttachApn:disabled"/>
@@ -54792,6 +54793,7 @@ from previous Chrome versions.
   <int value="840057845" label="HardwareMediaKeyHandling:enabled"/>
   <int value="840222947"
       label="AutofillEnableOfferNotificationForPromoCodes:enabled"/>
+  <int value="841098208" label="ThrottleForegroundTimers:enabled"/>
   <int value="841276069" label="ChromeHomeDoodle:disabled"/>
   <int value="841343322" label="disable-new-korean-ime"/>
   <int value="841779535" label="password-export:enabled"/>

@@ -2413,6 +2413,12 @@ const char kThreadedScrollingDescription[] =
     "this can dramatically hurt scrolling performance of most websites and is "
     "intended for testing purposes only.";
 
+const char kThrottleForegroundTimersName[] =
+    "Throttle Foreground Timers to 30 Hz";
+const char kThrottleForegroundTimersDescription[] =
+    "On foreground pages, run DOM timers with a non-zero delay on a periodic "
+    "30 Hz tick, instead of as soon as their delay has passed.";
+
 const char kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName[] =
     "Throttle non-visible cross-origin iframes";
 const char
