@@ -9,6 +9,7 @@
   </declare-styleable>
   <declare-styleable name="PrivacyReviewExplanationItem">
         <attr name="iconImage" format="integer" />
+        <attr name="iconTint" format="color" />
         <attr name="summaryText" format="reference|string" />
   </declare-styleable>
 </resources>

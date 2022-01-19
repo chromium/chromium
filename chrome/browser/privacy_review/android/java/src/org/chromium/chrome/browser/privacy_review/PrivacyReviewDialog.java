@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
@@ -28,9 +29,12 @@ public class PrivacyReviewDialog {
     private ButtonCompat mNextButton;
     private ButtonCompat mBackButton;
     private ButtonCompat mFinishButton;
+    private BottomSheetController mBottomSheetController;
 
-    public PrivacyReviewDialog(Context context, ViewGroup container) {
+    public PrivacyReviewDialog(
+            Context context, ViewGroup container, BottomSheetController controller) {
         mContainer = container;
+        mBottomSheetController = controller;
         mLayoutInflater = LayoutInflater.from(context);
         mDialogView = mLayoutInflater.inflate(R.layout.privacy_review_dialog, null);
 
@@ -77,7 +81,7 @@ public class PrivacyReviewDialog {
         mLayoutInflater.inflate(R.layout.privacy_review_steps, content);
 
         mViewPager = (ViewPager2) mDialogView.findViewById(R.id.review_viewpager);
-        mPagerAdapter = new PrivacyReviewPagerAdapter();
+        mPagerAdapter = new PrivacyReviewPagerAdapter(mBottomSheetController);
         mViewPager.setAdapter(mPagerAdapter);
 
         mNextButton = (ButtonCompat) mDialogView.findViewById(R.id.next_button);

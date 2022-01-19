@@ -416,6 +416,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                             LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof PrivacySettings) {
+            ((PrivacySettings) fragment).setBottomSheetController(mBottomSheetController);
             ((PrivacySettings) fragment).setDialogContainer(findViewById(R.id.dialog_container));
         }
     }
