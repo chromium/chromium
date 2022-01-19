@@ -45,6 +45,7 @@ const char kWorkerSrc[] = "worker-src";
 const char kSelfSource[] = "'self'";
 const char kNoneSource[] = "'none'";
 const char kWasmEvalSource[] = "'wasm-eval'";
+const char kWasmUnsafeEvalSource[] = "'wasm-unsafe-eval'";
 
 const char kDirectiveSeparator = ';';
 
@@ -242,7 +243,8 @@ std::string GetSecureDirectiveValues(
 
     // We might need to relax this allowlist over time.
     if (source_lower == kSelfSource || source_lower == kNoneSource ||
-        source_lower == kWasmEvalSource || source_lower == "blob:" ||
+        source_lower == kWasmEvalSource ||
+        source_lower == kWasmUnsafeEvalSource || source_lower == "blob:" ||
         source_lower == "filesystem:" ||
         isNonWildcardTLD(source_lower, "https://", true) ||
         isNonWildcardTLD(source_lower, "chrome://", false) ||
@@ -710,7 +712,8 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
             return true;
           }
 
-          if (source_lower == kWasmEvalSource &&
+          if ((source_lower == kWasmEvalSource ||
+               source_lower == kWasmUnsafeEvalSource) &&
               base::FeatureList::IsEnabled(
                   extensions_features::kAllowWasmInMV3)) {
             return true;
