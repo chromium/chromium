@@ -166,6 +166,10 @@ TEST_F(ShortcutTest, CreateAndResolveShortcut) {
 }
 
 TEST_F(ShortcutTest, ResolveShortcutWithArgs) {
+  // TODO(crbug.com/1264563): Disabled on Win7 bots for being flaky.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
