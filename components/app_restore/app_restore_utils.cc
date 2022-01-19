@@ -194,6 +194,13 @@ std::string GetAppIdFromAppName(const std::string& app_name) {
   return app_name.substr(prefix.length());
 }
 
+const std::string GetLacrosWindowId(aura::Window* window) {
+  const std::string* lacros_window_id =
+      window->GetProperty(app_restore::kLacrosWindowId);
+  DCHECK(lacros_window_id);
+  return *lacros_window_id;
+}
+
 void OnLacrosWindowAdded(aura::Window* const window,
                          uint32_t browser_session_id,
                          uint32_t restored_browser_session_id) {
