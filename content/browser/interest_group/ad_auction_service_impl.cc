@@ -141,29 +141,30 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
     return false;
   }
 
-  const auto& shareable_config = config.shareable_auction_ad_config;
+  const auto& non_shared_params = config.auction_ad_config_non_shared_params;
   // This isn't marked as optional in the Mojo struct, so Mojo should make sure
   // it is non-null.
-  DCHECK(shareable_config);
+  DCHECK(non_shared_params);
 
-  if (!shareable_config->interest_group_buyers ||
-      shareable_config->interest_group_buyers->is_all_buyers()) {
+  if (!non_shared_params->interest_group_buyers ||
+      non_shared_params->interest_group_buyers->is_all_buyers()) {
     return false;
   }
-  DCHECK(shareable_config->interest_group_buyers->is_buyers());
+  DCHECK(non_shared_params->interest_group_buyers->is_buyers());
 
   // All interest group owners must be HTTPS.
   for (const url::Origin& buyer :
-       shareable_config->interest_group_buyers->get_buyers()) {
+       non_shared_params->interest_group_buyers->get_buyers()) {
     if (buyer.scheme() != url::kHttpsScheme)
       return false;
   }
 
   // All buyer signals must be for listed buyers.
-  if (shareable_config->per_buyer_signals) {
-    for (const auto& it : shareable_config->per_buyer_signals.value()) {
-      if (!base::Contains(shareable_config->interest_group_buyers->get_buyers(),
-                          it.first)) {
+  if (non_shared_params->per_buyer_signals) {
+    for (const auto& it : non_shared_params->per_buyer_signals.value()) {
+      if (!base::Contains(
+              non_shared_params->interest_group_buyers->get_buyers(),
+              it.first)) {
         return false;
       }
     }
@@ -306,8 +307,8 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
 
   // Filter out buyers for whom the interest group API is not allowed.
   std::vector<url::Origin> filtered_buyers;
-  const auto& buyers =
-      config->shareable_auction_ad_config->interest_group_buyers->get_buyers();
+  const auto& buyers = config->auction_ad_config_non_shared_params
+                           ->interest_group_buyers->get_buyers();
   std::copy_if(
       buyers.begin(), buyers.end(), std::back_inserter(filtered_buyers),
       [browser_context, &frame_origin](const url::Origin& buyer) {

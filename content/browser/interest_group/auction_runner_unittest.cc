@@ -473,7 +473,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   void ScoreAd(const std::string& ad_metadata_json,
                double bid,
-               blink::mojom::ShareableAuctionAdConfigPtr shareable_config,
+               blink::mojom::AuctionAdConfigNonSharedParamsPtr
+                   auction_ad_config_non_shared_params,
                const url::Origin& browser_signal_interest_group_owner,
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,
@@ -500,7 +501,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     send_pending_signals_requests_called_ = true;
   }
 
-  void ReportResult(blink::mojom::ShareableAuctionAdConfigPtr shareable_config,
+  void ReportResult(blink::mojom::AuctionAdConfigNonSharedParamsPtr
+                        auction_ad_config_non_shared_params,
                     const url::Origin& browser_signal_interest_group_owner,
                     const GURL& browser_signal_render_url,
                     double browser_signal_bid,
@@ -859,22 +861,22 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->seller = url::Origin::Create(seller_decision_logic_url);
     auction_config->decision_logic_url = seller_decision_logic_url;
     auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
-    auction_config->shareable_auction_ad_config =
-        blink::mojom::ShareableAuctionAdConfig::New();
+    auction_config->auction_ad_config_non_shared_params =
+        blink::mojom::AuctionAdConfigNonSharedParams::New();
     // This is ignored by AuctionRunner, in favor of its `filtered_buyers`
     // parameter.
-    auction_config->shareable_auction_ad_config->interest_group_buyers =
+    auction_config->auction_ad_config_non_shared_params->interest_group_buyers =
         blink::mojom::InterestGroupBuyers::NewAllBuyers(
             blink::mojom::AllBuyers::New());
-    auction_config->shareable_auction_ad_config->auction_signals =
+    auction_config->auction_ad_config_non_shared_params->auction_signals =
         auction_signals_json;
-    auction_config->shareable_auction_ad_config->seller_signals =
+    auction_config->auction_ad_config_non_shared_params->seller_signals =
         R"({"isSellerSignals": true})";
 
     base::flat_map<url::Origin, std::string> per_buyer_signals;
     per_buyer_signals[kBidder1] = R"({"signalsFor": ")" + kBidder1Name + "\"}";
     per_buyer_signals[kBidder2] = R"({"signalsFor": ")" + kBidder2Name + "\"}";
-    auction_config->shareable_auction_ad_config->per_buyer_signals =
+    auction_config->auction_ad_config_non_shared_params->per_buyer_signals =
         std::move(per_buyer_signals);
 
     interest_group_manager_ = std::make_unique<InterestGroupManager>(

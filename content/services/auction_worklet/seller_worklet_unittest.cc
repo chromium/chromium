@@ -115,7 +115,8 @@ class SellerWorkletTest : public testing::Test {
     bid_ = 1;
     decision_logic_url_ = GURL("https://url.test/");
     trusted_scoring_signals_url_.reset();
-    shareable_config_ = blink::mojom::ShareableAuctionAdConfig::New();
+    auction_ad_config_non_shared_params_ =
+        blink::mojom::AuctionAdConfigNonSharedParams::New();
 
     top_window_origin_ = url::Origin::Create(GURL("https://window.test/"));
     browser_signal_interest_group_owner_ =
@@ -183,7 +184,7 @@ class SellerWorkletTest : public testing::Test {
                                 const std::vector<std::string>& expected_errors,
                                 base::OnceClosure done_closure) {
     seller_worklet->ScoreAd(
-        ad_metadata_, bid_, shareable_config_.Clone(),
+        ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         base::BindOnce(
@@ -200,7 +201,7 @@ class SellerWorkletTest : public testing::Test {
   void RunScoreAdOnWorkletExpectingCallbackNeverInvoked(
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ScoreAd(
-        ad_metadata_, bid_, shareable_config_.Clone(),
+        ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         base::BindOnce(
@@ -273,8 +274,9 @@ class SellerWorkletTest : public testing::Test {
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     seller_worklet->ReportResult(
-        shareable_config_.Clone(), browser_signal_interest_group_owner_,
-        browser_signal_render_url_, bid_, browser_signal_desireability_,
+        auction_ad_config_non_shared_params_.Clone(),
+        browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
+        browser_signal_desireability_,
         base::BindOnce(
             [](const absl::optional<std::string>& expected_signals_for_winner,
                const absl::optional<GURL>& expected_report_url,
@@ -383,7 +385,8 @@ class SellerWorkletTest : public testing::Test {
   double bid_;
   GURL decision_logic_url_;
   absl::optional<GURL> trusted_scoring_signals_url_;
-  blink::mojom::ShareableAuctionAdConfigPtr shareable_config_;
+  blink::mojom::AuctionAdConfigNonSharedParamsPtr
+      auction_ad_config_non_shared_params_;
   url::Origin top_window_origin_;
   url::Origin browser_signal_interest_group_owner_;
   GURL browser_signal_render_url_;
@@ -1151,17 +1154,20 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
 
   // Everything filled in.
   decision_logic_url_ = GURL("https://example.com/auction.js");
-  shareable_config_->interest_group_buyers =
+  auction_ad_config_non_shared_params_->interest_group_buyers =
       blink::mojom::InterestGroupBuyers::NewAllBuyers(
           blink::mojom::AllBuyers::New());
-  shareable_config_->auction_signals = R"({"is_auction_signals": true})";
-  shareable_config_->seller_signals = R"({"is_seller_signals": true})";
+  auction_ad_config_non_shared_params_->auction_signals =
+      R"({"is_auction_signals": true})";
+  auction_ad_config_non_shared_params_->seller_signals =
+      R"({"is_seller_signals": true})";
   base::flat_map<url::Origin, std::string> per_buyer_signals;
   per_buyer_signals[url::Origin::Create(GURL("https://a.com"))] =
       R"({"signals_a": "A"})";
   per_buyer_signals[url::Origin::Create(GURL("https://b.com"))] =
       R"({"signals_b": "B"})";
-  shareable_config_->per_buyer_signals = std::move(per_buyer_signals);
+  auction_ad_config_non_shared_params_->per_buyer_signals =
+      std::move(per_buyer_signals);
 
   const char kExpectedJson[] =
       R"({"seller":"https://example.com",)"
@@ -1180,9 +1186,10 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   std::vector<url::Origin> buyers;
   buyers.push_back(url::Origin::Create(GURL("https://buyer1.com")));
   buyers.push_back(url::Origin::Create(GURL("https://another-buyer.com")));
-  shareable_config_ = blink::mojom::ShareableAuctionAdConfig::New();
+  auction_ad_config_non_shared_params_ =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
   decision_logic_url_ = GURL("https://example.com/auction.js");
-  shareable_config_->interest_group_buyers =
+  auction_ad_config_non_shared_params_->interest_group_buyers =
       blink::mojom::InterestGroupBuyers::NewBuyers(std::move(buyers));
   const char kExpectedJson2[] =
       R"({"seller":"https://example.com",)"
@@ -1226,7 +1233,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
       seller_worklet->ScoreAd(
-          ad_metadata_, bid_, shareable_config_.Clone(),
+          ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
           base::BindLambdaForTesting(
@@ -1242,8 +1249,9 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
       seller_worklet->ReportResult(
-          shareable_config_.Clone(), browser_signal_interest_group_owner_,
-          browser_signal_render_url_, bid_, browser_signal_desireability_,
+          auction_ad_config_non_shared_params_.Clone(),
+          browser_signal_interest_group_owner_, browser_signal_render_url_,
+          bid_, browser_signal_desireability_,
           base::BindLambdaForTesting(
               [&run_loop](const absl::optional<std::string>& signals_for_winner,
                           const absl::optional<GURL>& report_url,
@@ -1265,7 +1273,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ScoreAd(
-      ad_metadata_, bid_, shareable_config_.Clone(),
+      ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       base::BindOnce([](double score, const std::vector<std::string>& errors) {
@@ -1287,8 +1295,9 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ReportResult(
-      shareable_config_.Clone(), browser_signal_interest_group_owner_,
-      browser_signal_render_url_, bid_, browser_signal_desireability_,
+      auction_ad_config_non_shared_params_.Clone(),
+      browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
+      browser_signal_desireability_,
       base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
                         const absl::optional<GURL>& report_url,
                         const std::vector<std::string>& errors) {

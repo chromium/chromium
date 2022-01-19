@@ -55,12 +55,12 @@ namespace {
 //                      'https://www.another-buyer.com': {...},
 //                       ...}
 // }
-bool AppendAuctionConfig(
-    AuctionV8Helper* const v8_helper,
-    v8::Local<v8::Context> context,
-    const GURL& decision_logic_url,
-    const blink::mojom::ShareableAuctionAdConfig& shareable_auction_config,
-    std::vector<v8::Local<v8::Value>>* args) {
+bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
+                         v8::Local<v8::Context> context,
+                         const GURL& decision_logic_url,
+                         const blink::mojom::AuctionAdConfigNonSharedParams&
+                             auction_ad_config_non_shared_params,
+                         std::vector<v8::Local<v8::Value>>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
@@ -70,14 +70,16 @@ bool AppendAuctionConfig(
     return false;
   }
 
-  if (shareable_auction_config.interest_group_buyers) {
-    if (shareable_auction_config.interest_group_buyers->is_all_buyers()) {
+  if (auction_ad_config_non_shared_params.interest_group_buyers) {
+    if (auction_ad_config_non_shared_params.interest_group_buyers
+            ->is_all_buyers()) {
       if (!auction_config_dict.Set("interestGroupBuyers", std::string("*")))
         return false;
     } else {
       std::vector<v8::Local<v8::Value>> interest_group_buyers;
       for (const url::Origin& buyer :
-           shareable_auction_config.interest_group_buyers->get_buyers()) {
+           auction_ad_config_non_shared_params.interest_group_buyers
+               ->get_buyers()) {
         v8::Local<v8::String> v8_buyer;
         if (!v8_helper->CreateUtf8String(buyer.Serialize()).ToLocal(&v8_buyer))
           return false;
@@ -87,25 +89,26 @@ bool AppendAuctionConfig(
     }
   }
 
-  if (shareable_auction_config.auction_signals.has_value() &&
+  if (auction_ad_config_non_shared_params.auction_signals.has_value() &&
       !v8_helper->InsertJsonValue(
           context, "auctionSignals",
-          shareable_auction_config.auction_signals.value(),
+          auction_ad_config_non_shared_params.auction_signals.value(),
           auction_config_value)) {
     return false;
   }
 
-  if (shareable_auction_config.seller_signals.has_value() &&
+  if (auction_ad_config_non_shared_params.seller_signals.has_value() &&
       !v8_helper->InsertJsonValue(
           context, "sellerSignals",
-          shareable_auction_config.seller_signals.value(),
+          auction_ad_config_non_shared_params.seller_signals.value(),
           auction_config_value)) {
     return false;
   }
 
-  if (shareable_auction_config.per_buyer_signals.has_value()) {
+  if (auction_ad_config_non_shared_params.per_buyer_signals.has_value()) {
     v8::Local<v8::Object> per_buyer_value = v8::Object::New(isolate);
-    for (const auto& kv : shareable_auction_config.per_buyer_signals.value()) {
+    for (const auto& kv :
+         auction_ad_config_non_shared_params.per_buyer_signals.value()) {
       if (!v8_helper->InsertJsonValue(context, kv.first.Serialize(), kv.second,
                                       per_buyer_value)) {
         return false;
@@ -169,7 +172,8 @@ int SellerWorklet::context_group_id_for_testing() const {
 void SellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    blink::mojom::ShareableAuctionAdConfigPtr shareable_auction_config,
+    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+        auction_ad_config_non_shared_params,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
@@ -182,7 +186,8 @@ void SellerWorklet::ScoreAd(
   auto score_ad_task = score_ad_tasks_.begin();
   score_ad_task->ad_metadata_json = ad_metadata_json;
   score_ad_task->bid = bid;
-  score_ad_task->shareable_auction_config = std::move(shareable_auction_config);
+  score_ad_task->auction_ad_config_non_shared_params =
+      std::move(auction_ad_config_non_shared_params);
   score_ad_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
   score_ad_task->browser_signal_render_url = browser_signal_render_url;
@@ -214,7 +219,8 @@ void SellerWorklet::SendPendingSignalsRequests() {
 }
 
 void SellerWorklet::ReportResult(
-    blink::mojom::ShareableAuctionAdConfigPtr shareable_auction_config,
+    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+        auction_ad_config_non_shared_params,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
@@ -227,7 +233,7 @@ void SellerWorklet::ReportResult(
       FROM_HERE,
       base::BindOnce(&SellerWorklet::V8State::ReportResult,
                      base::Unretained(v8_state_.get()),
-                     std::move(shareable_auction_config),
+                     std::move(auction_ad_config_non_shared_params),
                      browser_signal_interest_group_owner,
                      browser_signal_render_url, browser_signal_bid,
                      browser_signal_desirability, std::move(callback)));
@@ -271,7 +277,8 @@ void SellerWorklet::V8State::SetWorkletScript(
 void SellerWorklet::V8State::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    blink::mojom::ShareableAuctionAdConfigPtr shareable_auction_config,
+    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+        auction_ad_config_non_shared_params,
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
@@ -297,7 +304,7 @@ void SellerWorklet::V8State::ScoreAd(
   args.push_back(gin::ConvertToV8(isolate, bid));
 
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
-                           *shareable_auction_config, &args)) {
+                           *auction_ad_config_non_shared_params, &args)) {
     PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
                                     std::vector<std::string>() /* errors */);
     return;
@@ -374,7 +381,8 @@ void SellerWorklet::V8State::ScoreAd(
 }
 
 void SellerWorklet::V8State::ReportResult(
-    blink::mojom::ShareableAuctionAdConfigPtr shareable_auction_config,
+    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+        auction_ad_config_non_shared_params,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
@@ -395,7 +403,7 @@ void SellerWorklet::V8State::ReportResult(
 
   std::vector<v8::Local<v8::Value>> args;
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
-                           *shareable_auction_config, &args)) {
+                           *auction_ad_config_non_shared_params, &args)) {
     PostReportResultCallbackToUserThread(
         std::move(callback), absl::nullopt /* signals_for_winner */,
         absl::nullopt /* report_url */,
@@ -574,7 +582,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
       base::BindOnce(
           &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
           task->ad_metadata_json, task->bid,
-          std::move(task->shareable_auction_config),
+          std::move(task->auction_ad_config_non_shared_params),
           std::move(task->trusted_scoring_signals_result),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url),

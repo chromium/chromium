@@ -252,7 +252,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   void ScoreAd(const std::string& ad_metadata_json,
                double bid,
-               blink::mojom::ShareableAuctionAdConfigPtr shareable_config,
+               blink::mojom::AuctionAdConfigNonSharedParamsPtr
+                   auction_ad_config_non_shared_params,
                const url::Origin& browser_signal_interest_group_owner,
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,
@@ -269,7 +270,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     }
   }
 
-  void ReportResult(blink::mojom::ShareableAuctionAdConfigPtr shareable_config,
+  void ReportResult(blink::mojom::AuctionAdConfigNonSharedParamsPtr
+                        auction_ad_config_non_shared_params,
                     const url::Origin& browser_signal_interest_group_owner,
                     const GURL& browser_signal_render_url,
                     double browser_signal_bid,

@@ -548,7 +548,7 @@ bool CopyInterestGroupBuyersFromIdlToMojo(
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasInterestGroupBuyers())
     return true;
-  output.shareable_auction_ad_config->interest_group_buyers =
+  output.auction_ad_config_non_shared_params->interest_group_buyers =
       mojom::blink::InterestGroupBuyers::New();
   switch (input.interestGroupBuyers()->GetContentType()) {
     case V8UnionUSVStringOrUSVStringSequence::ContentType::kUSVString: {
@@ -561,8 +561,8 @@ bool CopyInterestGroupBuyersFromIdlToMojo(
             "strings."));
         return false;
       }
-      output.shareable_auction_ad_config->interest_group_buyers->set_all_buyers(
-          mojom::blink::AllBuyers::New());
+      output.auction_ad_config_non_shared_params->interest_group_buyers
+          ->set_all_buyers(mojom::blink::AllBuyers::New());
       break;
     }
     case V8UnionUSVStringOrUSVStringSequence::ContentType::kUSVStringSequence: {
@@ -578,8 +578,8 @@ bool CopyInterestGroupBuyersFromIdlToMojo(
         }
         buyers.push_back(buyer);
       }
-      output.shareable_auction_ad_config->interest_group_buyers->set_buyers(
-          std::move(buyers));
+      output.auction_ad_config_non_shared_params->interest_group_buyers
+          ->set_buyers(std::move(buyers));
       break;
     }
   }
@@ -594,7 +594,7 @@ bool CopyAuctionSignalsFromIdlToMojo(const ScriptState& script_state,
   if (!input.hasAuctionSignals())
     return true;
   if (!Jsonify(script_state, input.auctionSignals().V8Value(),
-               output.shareable_auction_ad_config->auction_signals)) {
+               output.auction_ad_config_non_shared_params->auction_signals)) {
     exception_state.ThrowTypeError(
         ErrorInvalidAuctionConfigJson(input, "auctionSignals"));
     return false;
@@ -609,7 +609,7 @@ bool CopySellerSignalsFromIdlToMojo(const ScriptState& script_state,
   if (!input.hasSellerSignals())
     return true;
   if (!Jsonify(script_state, input.sellerSignals().V8Value(),
-               output.shareable_auction_ad_config->seller_signals)) {
+               output.auction_ad_config_non_shared_params->seller_signals)) {
     exception_state.ThrowTypeError(
         ErrorInvalidAuctionConfigJson(input, "sellerSignals"));
     return false;
@@ -624,7 +624,7 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
                                       mojom::blink::AuctionAdConfig& output) {
   if (!input.hasPerBuyerSignals())
     return true;
-  output.shareable_auction_ad_config->per_buyer_signals.emplace();
+  output.auction_ad_config_non_shared_params->per_buyer_signals.emplace();
   for (const auto& per_buyer_signal : input.perBuyerSignals()) {
     scoped_refptr<const SecurityOrigin> buyer =
         ParseOrigin(per_buyer_signal.first);
@@ -641,7 +641,7 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
           ErrorInvalidAuctionConfigJson(input, "perBuyerSignals"));
       return false;
     }
-    output.shareable_auction_ad_config->per_buyer_signals->insert(
+    output.auction_ad_config_non_shared_params->per_buyer_signals->insert(
         buyer, std::move(buyer_signals_str));
   }
 
@@ -870,8 +870,8 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
   auto mojo_config = mojom::blink::AuctionAdConfig::New();
-  mojo_config->shareable_auction_ad_config =
-      mojom::blink::ShareableAuctionAdConfig::New();
+  mojo_config->auction_ad_config_non_shared_params =
+      mojom::blink::AuctionAdConfigNonSharedParams::New();
   if (!CopySellerFromIdlToMojo(exception_state, *config, *mojo_config) ||
       !CopyDecisionLogicUrlFromIdlToMojo(*context, exception_state, *config,
                                          *mojo_config) ||

@@ -34,9 +34,8 @@ interface SellerWorklet {
   //
   // `bid` The numeric value of the bid offered by the BidWorklet.
   //
-  // `shareable_auction_config` Subset of the blink.mojom.AuctionAdConfig that
-  //  excludes values that must be the same for all auctions using this
-  //  worklet.
+  // `auction_ad_config_non_shared_params` Values in an AuctionConfig that can
+  //  vary between auctions that can share a SellerWorklet.
   //
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the bid.
@@ -62,7 +61,8 @@ interface SellerWorklet {
   //  `score` is 0.
   ScoreAd(string ad_metadata_json,
           double bid,
-          blink.mojom.ShareableAuctionAdConfig shareable_auction_config,
+          blink.mojom.AuctionAdConfigNonSharedParams
+              auction_ad_config_non_shared_params,
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
@@ -87,9 +87,8 @@ interface SellerWorklet {
   // between invocations of this method and ScoreAd().
   //
   // Arguments:
-  // `shareable_auction_config` Subset of the blink.mojom.AuctionAdConfig that
-  //  excludes values that must be the same for all auctions using this
-  //  worklet.
+  // `auction_ad_config_non_shared_params` Values in an AuctionConfig that can
+  //  vary between auctions that can share a SellerWorklet.
   //
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the winning bid.
@@ -112,14 +111,16 @@ interface SellerWorklet {
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if the other values are populated, nor should it be assumed to be
   //  non-empty if the other values are null.
-  ReportResult(blink.mojom.ShareableAuctionAdConfig shareable_auction_config,
-               url.mojom.Origin browser_signal_interest_group_owner,
-               url.mojom.Url browser_signal_render_url,
-               double browser_signal_bid,
-               double browser_signal_desirability) =>
-                   (string? signals_for_winner,
-                    url.mojom.Url? report_url,
-                    array<string> error_msgs);
+  ReportResult(
+      blink.mojom.AuctionAdConfigNonSharedParams
+          auction_ad_config_non_shared_params,
+      url.mojom.Origin browser_signal_interest_group_owner,
+      url.mojom.Url browser_signal_render_url,
+      double browser_signal_bid,
+      double browser_signal_desirability) =>
+          (string? signals_for_winner,
+           url.mojom.Url? report_url,
+           array<string> error_msgs);
 
   // Establishes a debugger connection to the worklet.
   ConnectDevToolsAgent(pending_receiver<blink.mojom.DevToolsAgent> agent);

@@ -286,7 +286,7 @@ void AuctionRunner::OnBidderWorkletReceived(BidState* bid_state) {
           interest_group.name, interest_group.trusted_bidding_signals_keys,
           interest_group.user_bidding_signals, interest_group.ads,
           interest_group.ad_components),
-      auction_config_->shareable_auction_ad_config->auction_signals,
+      auction_config_->auction_ad_config_non_shared_params->auction_signals,
       PerBuyerSignals(bid_state), browser_signals_->seller,
       bid_state->bidder.bidding_browser_signals.Clone(), auction_start_time_,
       base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
@@ -383,7 +383,7 @@ void AuctionRunner::ScoreBid(BidState* state) {
 
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       state->bid_result->ad, state->bid_result->bid,
-      auction_config_->shareable_auction_ad_config.Clone(),
+      auction_config_->auction_ad_config_non_shared_params.Clone(),
       state->bidder.interest_group.owner, state->bid_result->render_url,
       state->bid_result->ad_components ? *state->bid_result->ad_components
                                        : std::vector<GURL>(),
@@ -432,7 +432,7 @@ void AuctionRunner::OnBidScored(BidState* state,
 absl::optional<std::string> AuctionRunner::PerBuyerSignals(
     const BidState* state) {
   const auto& per_buyer_signals =
-      auction_config_->shareable_auction_ad_config->per_buyer_signals;
+      auction_config_->auction_ad_config_non_shared_params->per_buyer_signals;
   if (per_buyer_signals.has_value()) {
     auto it =
         per_buyer_signals.value().find(state->bidder.interest_group.owner);
@@ -481,7 +481,7 @@ void AuctionRunner::ReportSellerResult() {
   DCHECK_GT(top_bidder_->seller_score, 0);
 
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
-      auction_config_->shareable_auction_ad_config.Clone(),
+      auction_config_->auction_ad_config_non_shared_params.Clone(),
       top_bidder_->bidder.interest_group.owner,
       top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
       top_bidder_->seller_score,
@@ -541,7 +541,7 @@ void AuctionRunner::ReportBidWin(
 
   top_bidder_->worklet_handle->GetBidderWorklet()->ReportWin(
       top_bidder_->bidder.interest_group.name,
-      auction_config_->shareable_auction_ad_config->auction_signals,
+      auction_config_->auction_ad_config_non_shared_params->auction_signals,
       PerBuyerSignals(top_bidder_), signals_for_winner_arg,
       top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
       auction_config_->seller,

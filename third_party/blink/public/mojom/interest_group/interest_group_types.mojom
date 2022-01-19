@@ -60,10 +60,11 @@ union InterestGroupBuyers {
   AllBuyers all_buyers;
 };
 
-// Subset of AuctionAdConfig that can be handled by the same loaded
-// SellerWorklet when the other parameters (seller, script and signals URLs,
-// and top window origin) are all exactly the same.
-struct ShareableAuctionAdConfig {
+// Subset of AuctionAdConfig that is not shared by all auctions that are
+// using the same SellerWorklet object (so it's "not shared" between
+// AuctionConfigs that share the same SellerWorklet). Other AuctionAdConfig
+// parameters all must be the same for two auctions to share a Sellerworklet.
+struct AuctionAdConfigNonSharedParams {
   // Owners of interest groups allowed to participate in the auction.
   blink.mojom.InterestGroupBuyers? interest_group_buyers;
 
@@ -104,5 +105,5 @@ struct AuctionAdConfig {
   url.mojom.Url? trusted_scoring_signals_url;
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
-  ShareableAuctionAdConfig shareable_auction_ad_config;
+  AuctionAdConfigNonSharedParams auction_ad_config_non_shared_params;
 };
