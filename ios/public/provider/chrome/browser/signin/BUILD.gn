@@ -36,6 +36,13 @@ source_set("signin_resources_api") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("signin_sso_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "signin_sso_api.h" ]
+  deps = []
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

@@ -36,6 +36,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api",
