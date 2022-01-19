@@ -59,27 +59,28 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
   ui::TextInputClient* text_input_client =
       host->GetInputMethod()->GetTextInputClient();
 
+  gfx::Point widget_origin =
+      display::Screen::GetScreen()->GetCursorScreenPoint();
+
   // `text_input_client` may be null. For example, in clamshell mode and without
   // any window open.
-  if (!text_input_client)
-    return;
+  if (text_input_client) {
+    gfx::Rect caret_bounds = text_input_client->GetCaretBounds();
 
-  gfx::Rect caret_bounds = text_input_client->GetCaretBounds();
-
-  // Note that the width of caret's bounds may be zero in some views (such as
-  // the search bar of Google search web page). So we cannot use
-  // gfx::Size::IsEmpty() here. In addition, the applications using IFrame may
-  // provide unreliable `caret_bounds` which are not fully contained by the
-  // display bounds.
-  const bool caret_bounds_are_valid = caret_bounds.size() != gfx::Size() &&
-                                      IsRectContainedByAnyDisplay(caret_bounds);
-  if (!caret_bounds_are_valid) {
-    caret_bounds.set_origin(
-        display::Screen::GetScreen()->GetCursorScreenPoint());
+    // Note that the width of caret's bounds may be zero in some views (such as
+    // the search bar of Google search web page). So we cannot use
+    // gfx::Size::IsEmpty() here. In addition, the applications using IFrame may
+    // provide unreliable `caret_bounds` which are not fully contained by the
+    // display bounds.
+    const bool caret_bounds_are_valid =
+        caret_bounds.size() != gfx::Size() &&
+        IsRectContainedByAnyDisplay(caret_bounds);
+    if (caret_bounds_are_valid)
+      widget_origin = caret_bounds.origin();
   }
 
   gfx::Rect widget_bounds =
-      gfx::Rect(caret_bounds.x(), caret_bounds.y(), bubble_size.width(),
+      gfx::Rect(widget_origin.x(), widget_origin.y(), bubble_size.width(),
                 bubble_size.height());
   widget_bounds.AdjustToFit(display.work_area());
 
