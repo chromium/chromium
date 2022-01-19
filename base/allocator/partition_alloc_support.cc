@@ -21,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/ignore_result.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -151,7 +152,13 @@ void RunPartitionAllocMemoryReclaimer(
     scoped_refptr<SequencedTaskRunner> task_runner) {
   TRACE_EVENT0("base", "PartitionAllocMemoryReclaimer::Reclaim()");
   auto* instance = PartitionAllocMemoryReclaimer::Instance();
-  instance->ReclaimNormal();
+
+  {
+    // Micros, since memory reclaiming should typically take at most a few ms.
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Memory.PartitionAlloc.MemoryReclaim");
+    instance->ReclaimNormal();
+  }
+
   TimeDelta delay =
       Microseconds(instance->GetRecommendedReclaimIntervalInMicroseconds());
   task_runner->PostDelayedTask(

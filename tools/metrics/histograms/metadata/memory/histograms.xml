@@ -2383,6 +2383,19 @@ chromium-metrics-reviews@google.com.
   <summary>Throughput of a ParkableString disk write.</summary>
 </histogram>
 
+<histogram name="Memory.PartitionAlloc.MemoryReclaim" units="microseconds"
+    expires_after="M102">
+  <owner>lizeb@chromium.org</owner>
+  <owner>bartekn@chromium.org</owner>
+  <summary>
+    Time it takes for PartitionAlloc's MemoryReclaimer to reclaim once.
+    Collected at each reclaim, for all process types.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
 <histogram name="Memory.PartitionAlloc.ThreadCache.BatchFillRate{ThreadType}"
     units="%" expires_after="M102">
   <owner>lizeb@chromium.org</owner>
