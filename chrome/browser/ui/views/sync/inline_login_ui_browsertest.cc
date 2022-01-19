@@ -272,8 +272,8 @@ void InlineLoginUIBrowserTest::EnableSigninAllowed(bool enable) {
 void InlineLoginUIBrowserTest::AddEmailToOneClickRejectedList(
     const std::string& email) {
   PrefService* pref_service = browser()->profile()->GetPrefs();
-  ListPrefUpdateDeprecated updater(pref_service,
-                                   prefs::kReverseAutologinRejectedEmailList);
+  ListPrefUpdate updater(pref_service,
+                         prefs::kReverseAutologinRejectedEmailList);
   if (!base::Contains(updater->GetList(), base::Value(email)))
     updater->Append(email);
 }
