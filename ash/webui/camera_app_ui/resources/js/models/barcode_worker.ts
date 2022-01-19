@@ -8,14 +8,10 @@ import * as Comlink from '../lib/comlink.js';
  * A barcode worker to detect barcode from images.
  */
 class BarcodeWorker {
-  private readonly detector_ = new BarcodeDetector({formats: ['qr_code']});
+  private readonly detector = new BarcodeDetector({formats: ['qr_code']});
 
-  async detect(bitmap: ImageBitmap): Promise<string> {
-    const codes = await this.detector_.detect(bitmap);
-
-    if (codes.length === 0) {
-      return null;
-    }
+  async detect(bitmap: ImageBitmap): Promise<string|null> {
+    const codes = await this.detector.detect(bitmap);
 
     const cx = bitmap.width / 2;
     const cy = bitmap.height / 2;
@@ -26,16 +22,16 @@ class BarcodeWorker {
       return Math.hypot(x - cx, y - cy);
     };
 
-    let bestCode = codes[0];
-    let minDistance = distanceToCenter(codes[0]);
-    for (let i = 1; i < codes.length; i++) {
-      const distance = distanceToCenter(codes[i]);
+    let minDistance = Infinity;
+    let bestCode: DetectedBarcode|null = null;
+    for (const code of codes) {
+      const distance = distanceToCenter(code);
       if (distance < minDistance) {
-        bestCode = codes[i];
+        bestCode = code;
         minDistance = distance;
       }
     }
-    return bestCode.rawValue;
+    return bestCode === null ? null : bestCode.rawValue;
   }
 }
 
