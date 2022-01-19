@@ -35,6 +35,7 @@ static_js_files = [
   "trusted/theme/theme_state.ts",
   "trusted/user/user_actions.ts",
   "trusted/user/user_controller.ts",
+  "trusted/user/user_image_observer.ts",
   "trusted/user/user_interface_provider.ts",
   "trusted/user/user_reducers.ts",
   "trusted/user/user_state.ts",

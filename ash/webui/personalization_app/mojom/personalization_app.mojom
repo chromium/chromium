@@ -137,7 +137,8 @@ interface WallpaperObserver {
 
 // Provides APIs to retrieve Wallpaper information. This API is exposed only to
 // the Personalization App (chrome://personalization). It is a mojom wrapper for
-// APIs found in |backdrop_wallpaper.proto|.
+// APIs found in |backdrop_wallpaper.proto| and |WallpaperController| APIs to
+// change the user's wallpaper in Ash.
 interface WallpaperProvider {
     // Called to force the browser window to make the native views transparent
     // so that the user can see wallpaper in fullscreen on their desktop. Safe
@@ -236,11 +237,16 @@ struct UserInfo {
 
   // The display name of the user.
   string name;
-
-  // The device avatar image of the user as a data url.
-  url.mojom.Url avatar;
 };
 
+// Receives updated user image when it is changed for the current user.
+interface UserImageObserver {
+  // Triggered by |UserManager::Observer::OnUserImageChanged|.
+  OnUserImageChanged(url.mojom.Url image);
+};
+
+// A default user image stored on the device that can be set as the user's
+// device avatar image.
 struct DefaultUserImage {
   // A user image is identified by an index.
   int32 index;
@@ -252,8 +258,13 @@ struct DefaultUserImage {
   url.mojom.Url url;
 };
 
-// Provides APIs to view information about the current user.
+// Provides APIs to view information about the current user. This API is exposed
+// only to the Personalization App (chrome://personalization), and is
+// implemented by |PersonalizationAppUserProviderImpl| in chrome.
 interface UserProvider {
+  // Binds an observer for the current user's device image.
+  SetUserImageObserver(pending_remote<UserImageObserver> observer);
+
   // Return information about the current user.
   GetUserInfo() => (UserInfo user_info);
 

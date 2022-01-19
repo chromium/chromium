@@ -44,9 +44,15 @@ export function UserPreviewTest() {
     assertEquals(
         userProvider.info.name,
         userPreviewElement!.shadowRoot!.getElementById('name')!.innerText);
+  });
+
+  test('displays user image', async () => {
+    personalizationStore.data.user.image = userProvider.image;
+    userPreviewElement = initElement(UserPreview);
+    await waitAfterNextRender(userPreviewElement!);
 
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
-    assertEquals(userProvider.info.avatar.url, avatarImage.src);
+    assertEquals(userProvider.image.url, avatarImage.src);
   });
 }

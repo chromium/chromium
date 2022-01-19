@@ -255,18 +255,11 @@ StructTraits<ash::personalization_app::mojom::UserInfoDataView,
   return user_display_info.name;
 }
 
-const GURL& StructTraits<ash::personalization_app::mojom::UserInfoDataView,
-                         ash::personalization_app::UserDisplayInfo>::
-    avatar(const ash::personalization_app::UserDisplayInfo& user) {
-  return user.avatar;
-}
-
 bool StructTraits<ash::personalization_app::mojom::UserInfoDataView,
                   ash::personalization_app::UserDisplayInfo>::
     Read(ash::personalization_app::mojom::UserInfoDataView data,
          ash::personalization_app::UserDisplayInfo* out) {
-  return data.ReadEmail(&out->email) && data.ReadName(&out->name) &&
-         data.ReadAvatar(&out->avatar);
+  return data.ReadEmail(&out->email) && data.ReadName(&out->name);
 }
 
 int StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,

@@ -13,9 +13,11 @@
   <template is="dom-if" if="[[info_]]">
     <p id="name">[[info_.name]]</p>
     <p id="email">[[info_.email]]</p>
-    <div id="imageContainer">
-      <img id="avatar" src="[[info_.avatar.url]]">
-      <slot></slot>
-    </div>
   </template>
+  <div id="imageContainer">
+    <template is="dom-if" if="[[image_]]">
+      <img id="avatar" src="[[image_.url]]">
+    </template>
+    <slot></slot>
+  </div>
 </div>

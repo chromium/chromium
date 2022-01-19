@@ -84,8 +84,6 @@ struct StructTraits<ash::personalization_app::mojom::UserInfoDataView,
       const ash::personalization_app::UserDisplayInfo& user_display_info);
   static const std::string& name(
       const ash::personalization_app::UserDisplayInfo& user_display_info);
-  static const GURL& avatar(
-      const ash::personalization_app::UserDisplayInfo& user_display_info);
   static bool Read(ash::personalization_app::mojom::UserInfoDataView data,
                    ash::personalization_app::UserDisplayInfo* out);
 };

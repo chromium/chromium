@@ -22,6 +22,10 @@ void FakePersonalizationAppUserProvider::BindInterface(
   user_receiver_.Bind(std::move(receiver));
 }
 
+void FakePersonalizationAppUserProvider::SetUserImageObserver(
+    mojo::PendingRemote<ash::personalization_app::mojom::UserImageObserver>
+        observer) {}
+
 void FakePersonalizationAppUserProvider::GetUserInfo(
     GetUserInfoCallback callback) {
   // auto user_info_ptr = ash::personalization_app::mojom::UserInfo::New();

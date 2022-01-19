@@ -12,7 +12,20 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user_info.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "url/gurl.h"
+
+namespace {
+
+GURL GetUserImageDataUrl(const user_manager::User& user) {
+  if (user.GetImage().isNull())
+    return GURL();
+  return GURL(webui::GetBitmapDataUrl(*user.GetImage().bitmap()));
+}
+
+}  // namespace
 
 PersonalizationAppUserProviderImpl::PersonalizationAppUserProviderImpl(
     content::WebUI* web_ui)
@@ -28,6 +41,21 @@ void PersonalizationAppUserProviderImpl::BindInterface(
   user_receiver_.Bind(std::move(receiver));
 }
 
+void PersonalizationAppUserProviderImpl::SetUserImageObserver(
+    mojo::PendingRemote<ash::personalization_app::mojom::UserImageObserver>
+        observer) {
+  // May already be bound if user refreshes page.
+  user_image_observer_remote_.reset();
+  user_image_observer_remote_.Bind(std::move(observer));
+  DCHECK(user_manager::UserManager::IsInitialized());
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager_observer_.IsObserving())
+    user_manager_observer_.Observe(user_manager);
+
+  // Call it manually the first time.
+  OnUserImageChanged(*ash::ProfileHelper::Get()->GetUserByProfile(profile_));
+}
+
 void PersonalizationAppUserProviderImpl::GetUserInfo(
     GetUserInfoCallback callback) {
   const user_manager::User* user =
@@ -41,4 +69,24 @@ void PersonalizationAppUserProviderImpl::GetDefaultUserImages(
   std::vector<ash::default_user_image::DefaultUserImage> images =
       ash::default_user_image::GetCurrentImageSet();
   std::move(callback).Run(std::move(images));
+}
+
+void PersonalizationAppUserProviderImpl::OnUserImageChanged(
+    const user_manager::User& user) {
+  const user_manager::User* desired_user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
+  DCHECK(desired_user);
+
+  if (user.GetAccountId() != desired_user->GetAccountId())
+    return;
+
+  int image_index = user.image_index();
+  // Image is a valid default image and has an internal chrome://theme url.
+  if (ash::default_user_image::IsInCurrentImageSet(image_index)) {
+    user_image_observer_remote_->OnUserImageChanged(
+        ash::default_user_image::GetDefaultImageUrl(image_index));
+    return;
+  }
+  // All other cases.
+  user_image_observer_remote_->OnUserImageChanged(GetUserImageDataUrl(user));
 }

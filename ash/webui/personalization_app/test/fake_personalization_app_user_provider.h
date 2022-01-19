@@ -39,6 +39,9 @@ class FakePersonalizationAppUserProvider
       override;
 
   // personalization_app::mojom::UserProvider
+  void SetUserImageObserver(
+      mojo::PendingRemote<ash::personalization_app::mojom::UserImageObserver>
+          observer) override;
   void GetUserInfo(GetUserInfoCallback callback) override;
   void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
 

@@ -9,8 +9,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -47,6 +50,33 @@ void AddAndLoginUser(const AccountId& account_id,
   user_manager->LoginUser(account_id);
   user_manager->SwitchActiveUser(account_id);
 }
+
+class TestUserImageObserver
+    : public ash::personalization_app::mojom::UserImageObserver {
+ public:
+  void OnUserImageChanged(const GURL& image) override {
+    current_user_image_ = image;
+  }
+
+  mojo::PendingRemote<ash::personalization_app::mojom::UserImageObserver>
+  pending_remote() {
+    DCHECK(!user_image_observer_receiver_.is_bound());
+    return user_image_observer_receiver_.BindNewPipeAndPassRemote();
+  }
+
+  const GURL& current_user_image() {
+    if (user_image_observer_receiver_.is_bound())
+      user_image_observer_receiver_.FlushForTesting();
+    return current_user_image_;
+  }
+
+ private:
+  mojo::Receiver<ash::personalization_app::mojom::UserImageObserver>
+      user_image_observer_receiver_{this};
+
+  GURL current_user_image_;
+};
+
 }  // namespace
 
 class PersonalizationAppUserProviderImplTest : public testing::Test {
@@ -97,6 +127,22 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     return user_manager::UserManager::Get()->GetActiveUser()->GetImage();
   }
 
+  ash::FakeChromeUserManager* GetFakeUserManager() {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
+
+  void SetUserImageObserver() {
+    user_provider_remote_->SetUserImageObserver(
+        test_user_image_observer_.pending_remote());
+  }
+
+  const GURL& current_user_image() {
+    if (user_provider_remote_.is_bound())
+      user_provider_remote_.FlushForTesting();
+    return test_user_image_observer_.current_user_image();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -104,6 +150,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
   TestingProfile* profile_;
+  TestUserImageObserver test_user_image_observer_;
   mojo::Remote<ash::personalization_app::mojom::UserProvider>
       user_provider_remote_;
   std::unique_ptr<PersonalizationAppUserProviderImpl> user_provider_;
@@ -112,11 +159,33 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
 TEST_F(PersonalizationAppUserProviderImplTest, GetsUserInfo) {
   user_provider_remote()->get()->GetUserInfo(base::BindLambdaForTesting(
-      [this](ash::personalization_app::UserDisplayInfo user_display_info) {
+      [](ash::personalization_app::UserDisplayInfo user_display_info) {
         EXPECT_EQ(kFakeTestEmail, user_display_info.email);
         EXPECT_EQ(kFakeTestName, user_display_info.name);
-        EXPECT_EQ(webui::GetBitmapDataUrl(*user_image().bitmap()),
-                  user_display_info.avatar);
       }));
   user_provider_remote()->FlushForTesting();
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserAvatarImage) {
+  // Observer has not received any images yet because it is not bound.
+  EXPECT_EQ(GURL(), current_user_image());
+
+  SetUserImageObserver();
+
+  // Observer received current user's avatar image as data url.
+  EXPECT_EQ(webui::GetBitmapDataUrl(*user_image().bitmap()),
+            current_user_image());
+
+  auto* user_image_manager = GetFakeUserManager()->GetUserImageManager(
+      GetFakeUserManager()->GetActiveUser()->GetAccountId());
+
+  // Select a default image.
+  int image_index = ash::default_user_image::GetRandomDefaultImageIndex();
+  user_image_manager->SaveUserDefaultImageIndex(image_index);
+
+  // Observer received the updated image url. Because it is a default image,
+  // receives the chrome://theme url.
+  EXPECT_EQ(base::StringPrintf("chrome://theme/IDR_LOGIN_DEFAULT_USER_%d",
+                               image_index),
+            current_user_image());
 }

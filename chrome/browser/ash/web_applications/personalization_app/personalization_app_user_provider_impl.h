@@ -7,8 +7,11 @@
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
+#include "base/scoped_observation.h"
+#include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -17,7 +20,8 @@ class WebUI;
 }  // namespace content
 
 class PersonalizationAppUserProviderImpl
-    : public ash::PersonalizationAppUserProvider {
+    : public ash::PersonalizationAppUserProvider,
+      public user_manager::UserManager::Observer {
  public:
   explicit PersonalizationAppUserProviderImpl(content::WebUI* web_ui);
 
@@ -34,13 +38,27 @@ class PersonalizationAppUserProviderImpl
           receiver) override;
 
   // personalization_app::mojom::UserProvider:
+  void SetUserImageObserver(
+      mojo::PendingRemote<ash::personalization_app::mojom::UserImageObserver>
+          observer) override;
+
   void GetUserInfo(GetUserInfoCallback callback) override;
 
   void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
 
+  // user_manager::UserManager::Observer:
+  void OnUserImageChanged(const user_manager::User& user) override;
+
  private:
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observer_{this};
+
+  mojo::Remote<ash::personalization_app::mojom::UserImageObserver>
+      user_image_observer_remote_;
 
   mojo::Receiver<ash::personalization_app::mojom::UserProvider> user_receiver_{
       this};

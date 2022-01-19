@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DefaultUserImage, UserInfo, UserProviderInterface} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {DefaultUserImage, UserImageObserverRemote, UserInfo, UserProviderInterface} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestUserProvider extends TestBrowserProxy implements
     UserProviderInterface {
-  public info: UserInfo = {
-    avatar: {url: 'data://avatar-url'},
-    name: 'test name',
-    email: 'test@email',
-  };
-
   public defaultUserImages: Array<DefaultUserImage> = [
     {
       index: 8,
@@ -21,11 +16,23 @@ export class TestUserProvider extends TestBrowserProxy implements
     },
   ];
 
+  public image: Url = {url: 'data://avatar-url'};
+
+  public info: UserInfo = {
+    name: 'test name',
+    email: 'test@email',
+  };
+
   constructor() {
     super([
+      'setUserImageObserver',
       'getDefaultUserImages',
       'getUserInfo',
     ]);
+  }
+
+  setUserImageObserver(observer: UserImageObserverRemote) {
+    this.methodCalled('setUserImageObserver', observer);
   }
 
   async getUserInfo(): Promise<{userInfo: UserInfo}> {

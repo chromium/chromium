@@ -9,6 +9,17 @@ import {PersonalizationState} from '../personalization_state.js';
 import {UserActionName} from './user_actions.js';
 import {UserState} from './user_state.js';
 
+export function imageReducer(
+    state: UserState['image'], action: Actions,
+    _: PersonalizationState): UserState['image'] {
+  switch (action.name) {
+    case UserActionName.SET_USER_IMAGE:
+      return action.image;
+    default:
+      return state;
+  }
+}
+
 export function defaultUserImagesReducer(
     state: UserState['defaultUserImages'], action: Actions,
     _: PersonalizationState): UserState['defaultUserImages'] {
@@ -34,5 +45,6 @@ export function infoReducer(
 export const userReducers:
     {[K in keyof UserState]: ReducerFunction<UserState[K]>} = {
       defaultUserImages: defaultUserImagesReducer,
+      image: imageReducer,
       info: infoReducer,
     };
