@@ -27,6 +27,7 @@ Background Services
   Payment Handler
   Periodic Background Sync
   Push Messaging
+  Reporting API
 Frames
   top
     inspected-page.html
@@ -59,6 +60,7 @@ Background Services
   Payment Handler
   Periodic Background Sync
   Push Messaging
+  Reporting API
 Frames
   top
     inspected-page.html
