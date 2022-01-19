@@ -2837,8 +2837,7 @@ TEST_F(ClientControlledShellSurfaceFullRestoreTest,
 
   // Call the WindowRestoreController, simulating the ARC task becoming ready.
   // The surface should be reparented and the WideFrameView should follow it.
-  ash::WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
-      window);
+  ash::WindowRestoreController::Get()->OnParentWindowToValidContainer(window);
   EXPECT_NE(hidden_container_parent, window->parent());
   wide_frame = shell_surface->wide_frame_for_test();
   EXPECT_TRUE(wide_frame);

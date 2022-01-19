@@ -1058,7 +1058,7 @@ TEST_F(WindowRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
 
   // Simulate having the task ready. Our `restored_window` should now be
   // parented to the desk associated with desk 3, which is desk D.
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window);
   EXPECT_EQ(Shell::GetContainer(root_window, kShellWindowId_DeskContainerD),
             restored_window->parent());
@@ -1103,7 +1103,7 @@ TEST_F(WindowRestoreControllerTest,
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
                                 kShellWindowId_UnparentedContainer),
             restored_window1->parent());
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window1);
   EXPECT_EQ(
       Shell::GetContainer(secondary_root_window, kShellWindowId_DeskContainerD),
@@ -1125,7 +1125,7 @@ TEST_F(WindowRestoreControllerTest,
   display_info_list.push_back(primary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window2);
   EXPECT_EQ(
       Shell::GetContainer(primary_root_window, kShellWindowId_DeskContainerD),

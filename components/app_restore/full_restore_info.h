@@ -64,10 +64,14 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreInfo {
     // ARC task also may not be created yet at this point.
     virtual void OnWidgetInitialized(views::Widget* widget) {}
 
-    // Called once a window which was created without an associated task is now
-    // associated with a ARC task. Will not be called for non-ARC windows, or
-    // ARC windows created with an associated task.
-    virtual void OnARCTaskReadyForUnparentedWindow(aura::Window* window) {}
+    // Called when `window` is ready to be parented to a valid desk container.
+    //
+    // For Lacros windows, called when `window` is associated with a Lacros
+    // window id.
+    //
+    // For ARC app windows, called once a window which was created without an
+    // associated task is now associated with a ARC task.
+    virtual void OnParentWindowToValidContainer(aura::Window* window) {}
 
    protected:
     ~Observer() override = default;
@@ -112,9 +116,9 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreInfo {
   // Notifies observers that |widget| has been initialized.
   void OnWidgetInitialized(views::Widget* widget);
 
-  // Notifies observers that `window`, which previously had no associated task,
-  // now has one.
-  void OnARCTaskReadyForUnparentedWindow(aura::Window* window);
+  // Notifies observers that `window` is ready to be parented to a valid desk
+  // container..
+  void OnParentWindowToValidContainer(aura::Window* window);
 
  private:
   base::ObserverList<Observer> observers_;

@@ -326,7 +326,7 @@ void WindowRestoreController::OnWidgetInitialized(views::Widget* widget) {
   MaybeRestoreOutOfBoundsWindows(window);
 }
 
-void WindowRestoreController::OnARCTaskReadyForUnparentedWindow(
+void WindowRestoreController::OnParentWindowToValidContainer(
     aura::Window* window) {
   DCHECK(window);
   DCHECK(window->GetProperty(app_restore::kParentToHiddenContainerKey));

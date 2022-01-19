@@ -215,7 +215,7 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
   // Remove the window from the hidden container.
   if ((*window_it)->GetProperty(kParentToHiddenContainerKey)) {
     full_restore::FullRestoreInfo::GetInstance()
-        ->OnARCTaskReadyForUnparentedWindow(*window_it);
+        ->OnParentWindowToValidContainer(*window_it);
   }
 
   arc_window_candidates_.erase(*window_it);

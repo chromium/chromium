@@ -95,7 +95,7 @@ class ASH_EXPORT WindowRestoreController
                             bool could_restore) override;
   void OnAppLaunched(aura::Window* window) override;
   void OnWidgetInitialized(views::Widget* widget) override;
-  void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
+  void OnParentWindowToValidContainer(aura::Window* window) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
