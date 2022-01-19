@@ -382,7 +382,7 @@
       'cc_unittests': {},
       'components_unittests': {
         'android_swarming': {
-          'shards': 4,
+          'shards': 6,
         },
       },
       'content_unittests': {
@@ -966,7 +966,7 @@
       'components_browsertests': {},
       'components_unittests': {
         'android_swarming': {
-          'shards': 4,
+          'shards': 6,
         },
       },
       'content_browsertests': {
@@ -1396,7 +1396,7 @@
     'components_capacity_tests': {
       'components_unittests': {
         'android_swarming': {
-          'shards': 4,
+          'shards': 6,
         },
       },
     },
@@ -4707,7 +4707,7 @@
       'components_browsertests': {},
       'components_unittests': {
         'android_swarming': {
-          'shards': 4,
+          'shards': 6,
         },
       },
       'content_unittests': {
