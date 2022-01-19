@@ -4932,7 +4932,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enable_14s_20220104",
+                    "name": "Enable_14s_20220118",
+                    "params": {
+                        "DefaultPresentationMessagesDurationFeatureParam": "14",
+                        "LongPresentationMessagesDurationFeatureParam": "14"
+                    },
                     "enable_features": [
                         "EnableLongMessageDuration"
                     ]
