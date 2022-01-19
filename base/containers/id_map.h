@@ -8,12 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-#include <set>
+#include <iterator>
+#include <ostream>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
