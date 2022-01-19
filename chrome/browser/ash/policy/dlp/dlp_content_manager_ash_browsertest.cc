@@ -731,6 +731,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       on_dlp_checked_at_video_end_cb;
   EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(true)).Times(1);
   EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(false)).Times(0);
+  EXPECT_FALSE(helper_->HasAnyContentCached());
   capture_mode_delegate->StopObservingRestrictedContent(
       on_dlp_checked_at_video_end_cb.Get());
   // Check that the warning is now shown.
@@ -740,6 +741,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   // Hit Enter to "Save anyway".
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
+      web_contents1, DlpRulesManager::Restriction::kScreenshot));
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
@@ -794,6 +797,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       on_dlp_checked_at_video_end_cb;
   EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(true)).Times(0);
   EXPECT_CALL(on_dlp_checked_at_video_end_cb, Run(false)).Times(1);
+  EXPECT_FALSE(helper_->HasAnyContentCached());
   capture_mode_delegate->StopObservingRestrictedContent(
       on_dlp_checked_at_video_end_cb.Get());
   // Check that the warning is now shown.
@@ -803,6 +807,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   // Hit Enter to "Cancel".
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_FALSE(helper_->HasAnyContentCached());
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(

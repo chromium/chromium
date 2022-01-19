@@ -170,8 +170,14 @@ void DlpContentManagerAsh::CheckStoppedVideoCapture(
     auto reporting_callback = base::BindOnce(
         &MaybeReportWarningProceededEvent, url,
         DlpRulesManager::Restriction::kScreenshot, reporting_manager_);
+    // base::Unretained(this) is safe here because DlpContentManagerAsh is
+    // initialized as a singleton that's always available in the system.
     warn_notifier_->ShowDlpVideoCaptureWarningDialog(
-        std::move(reporting_callback).Then(std::move(callback)),
+        base::BindOnce(&DlpContentManagerAsh::OnDlpWarnDialogReply,
+                       base::Unretained(this),
+                       running_video_capture_info_->confidential_contents,
+                       DlpRulesManager::Restriction::kScreenshot,
+                       std::move(reporting_callback).Then(std::move(callback))),
         running_video_capture_info_->confidential_contents);
   } else {
     std::move(callback).Run(/*proceed=*/true);
