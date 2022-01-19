@@ -4185,6 +4185,11 @@
       'url_unittests': {},
     },
 
+    # TODO(crbug.com/1288850): Move this into ios_common_tests when green.
+    'ios_crash_unittests': {
+      'crashpad_tests': {},
+    },
+
     'ios_crash_xcuitests': {
       'ios_crash_xcuitests_module': {},
     },
@@ -7089,6 +7094,11 @@
           'SIM_IPHONE_X_14_5',
         ],
       },
+      'ios_crash_unittests': {
+        'variants': [
+          'SIM_IPHONE_X_14_5',
+        ],
+      },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
@@ -7118,6 +7128,12 @@
 
     'ios14_sdk_simulator_tests': {
       'ios_common_tests': {
+        'variants': [
+          # Latest beta iOS version Sims
+          'SIM_IPHONE_6S_14_5',
+        ],
+      },
+      'ios_crash_unittests': {
         'variants': [
           # Latest beta iOS version Sims
           'SIM_IPHONE_6S_14_5',
@@ -7154,6 +7170,12 @@
 
     'ios15_beta_simulator_tests': {
       'ios_common_tests': {
+        'variants': [
+          'SIM_IPHONE_6S_15_0',
+          'SIM_IPHONE_6S_14_5',
+        ],
+      },
+      'ios_crash_unittests': {
         'variants': [
           'SIM_IPHONE_6S_15_0',
           'SIM_IPHONE_6S_14_5',
@@ -7202,6 +7224,12 @@
           'SIM_IPHONE_6S_14_5',
         ],
       },
+      'ios_crash_unittests': {
+        'variants': [
+          'SIM_IPHONE_6S_15_0',
+          'SIM_IPHONE_6S_14_5',
+        ],
+      },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
@@ -7240,6 +7268,12 @@
 
     'ios_asan_tests': {
       'ios_common_tests': {
+        'variants': [
+          'SIM_IPHONE_X_15_0',
+          'SIM_IPAD_AIR_2_15_0',
+        ]
+      },
+      'ios_crash_unittests': {
         'variants': [
           'SIM_IPHONE_X_15_0',
           'SIM_IPAD_AIR_2_15_0',
