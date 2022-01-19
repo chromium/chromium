@@ -81,6 +81,7 @@ constexpr char kWindowedUrl[] = "https://windowed.example/";
 constexpr char kTabbedUrl[] = "https://tabbed.example/";
 constexpr char kNoContainerUrl[] = "https://no-container.example/";
 constexpr char kDefaultCustomIconUrl[] = "https://windowed.example/icon.png";
+constexpr char kUnsecureIconUrl[] = "http://windowed.example/icon.png";
 constexpr char kDefaultCustomIconHash[] = "abcdef";
 
 base::Value GetWindowedItem() {
@@ -253,13 +254,14 @@ ExternalInstallOptions GetCustomAppNameInstallOptions(std::string name) {
   return options;
 }
 
-base::Value GetCustomAppIconItem() {
+base::Value GetCustomAppIconItem(bool secure = true) {
   base::Value item(base::Value::Type::DICTIONARY);
   item.SetKey(kUrlKey, base::Value(kWindowedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
   base::Value sub_item(base::Value::Type::DICTIONARY);
-  sub_item.SetKey(kCustomIconURLKey, base::Value(kDefaultCustomIconUrl));
+  sub_item.SetKey(kCustomIconURLKey, base::Value(secure ? kDefaultCustomIconUrl
+                                                        : kUnsecureIconUrl));
   sub_item.SetKey(kCustomIconHashKey, base::Value(kDefaultCustomIconHash));
   item.SetKey(kCustomIconKey, std::move(sub_item));
   return item;
@@ -728,6 +730,27 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppIcon) {
   expected_install_options_list.push_back(GetCustomAppIconInstallOptions());
 
   EXPECT_EQ(install_requests, expected_install_options_list);
+}
+
+// If the custom icon URL is not https, the icon should be ignored.
+TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithUnsecureCustomAppIcon) {
+  if (ShouldSkipPWASpecificTest())
+    return;
+  base::Value list(base::Value::Type::LIST);
+  list.Append(GetCustomAppIconItem(/*secure=*/false));
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+
+  policy_manager().Start();
+  base::RunLoop().RunUntilIdle();
+
+  const auto& install_requests =
+      externally_managed_app_manager().install_requests();
+
+  std::vector<ExternalInstallOptions> expected_install_options_list;
+  expected_install_options_list.push_back(GetCustomAppIconInstallOptions());
+
+  EXPECT_EQ(1u, install_requests.size());
+  EXPECT_FALSE(install_requests[0].override_icon_url);
 }
 
 TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppName) {

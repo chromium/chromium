@@ -16,11 +16,13 @@
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -32,6 +34,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -165,7 +168,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
 }
 
-// Installing a placeholder app with shortcuts should succeed.
+#if defined(OS_CHROMEOS)
+// Installing a placeholder app with a custom name should succeed.
+// This feature is ChromeOS-only.
 IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        PlaceholderInstallSucceedsWithCustomName) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -191,6 +196,49 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
   EXPECT_EQ(CUSTOM_NAME, registrar().GetAppById(app_id.value())->name());
 }
+
+// Installing a placeholder app with a custom icon should succeed.
+// This feature is ChromeOS-only.
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       PlaceholderInstallSucceedsWithCustomIcon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL final_url = embedded_test_server()->GetURL(
+      "other.origin.com", "/banners/manifest_test_page.html");
+  // Add a redirect to a different origin, so a placeholder is installed.
+  GURL app_url(
+      embedded_test_server()->GetURL("/server-redirect?" + final_url.spec()));
+  // 192 is chosen to not be part of web_app_icon_generator.h:SizesToGenerate().
+  GURL icon_url = embedded_test_server()->GetURL("/banners/192x192-green.png");
+  const SquareSizePx kIconSize = 192;
+  const SkColor kIconColor = SK_ColorGREEN;
+  const auto kGeneratedSizes = SizesToGenerate();
+  EXPECT_TRUE(kGeneratedSizes.find(kIconSize) == kGeneratedSizes.end());
+
+  ExternalInstallOptions options = CreateInstallOptions(app_url);
+  options.install_placeholder = true;
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = true;
+  options.override_icon_url = icon_url;
+  InstallApp(options);
+
+  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
+  absl::optional<AppId> app_id =
+      ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+          .LookupAppId(app_url);
+  ASSERT_TRUE(app_id.has_value());
+  EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
+  SortedSizesPx downloaded_sizes =
+      registrar().GetAppDownloadedIconSizesAny(app_id.value());
+  EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
+  EXPECT_TRUE(downloaded_sizes.find(kIconSize) != downloaded_sizes.end());
+  EXPECT_EQ(kIconColor,
+            IconManagerReadAppIconPixel(
+                WebAppProvider::GetForTest(profile())->icon_manager(),
+                app_id.value(), kIconSize, 0, 0));
+}
+
+#endif  // defined(OS_CHROMEOS)
 
 // Tests that the browser doesn't crash if it gets shutdown with a pending
 // installation.

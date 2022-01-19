@@ -121,7 +121,7 @@ class WebAppPolicyManager {
     ~CustomManifestValues();
 
     void SetName(const std::string& utf8_name);
-    void SetIcon(const std::string& icon_url);
+    void SetIcon(const GURL& icon_gurl);
 
     absl::optional<std::u16string> name;
     absl::optional<std::vector<blink::Manifest::ImageResource>> icons;

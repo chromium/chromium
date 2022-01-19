@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
@@ -344,10 +345,10 @@ void WebAppPolicyManager::ApplyPolicySettings() {
 
 ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
     const base::Value& entry) {
-  const base::Value* url = entry.FindKey(kUrlKey);
+  const base::Value* install_url = entry.FindKey(kUrlKey);
   // url is a required field and is validated by
   // SimpleSchemaValidatingPolicyHandler. It is guaranteed to exist.
-  const GURL gurl(url->GetString());
+  const GURL install_gurl(install_url->GetString());
   const base::Value* default_launch_container =
       entry.FindKey(kDefaultLaunchContainerKey);
   const base::Value* create_desktop_shortcut =
@@ -362,8 +363,8 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
          default_launch_container->GetString() ==
              kDefaultLaunchContainerTabValue);
 
-  if (!gurl.is_valid()) {
-    LOG(WARNING) << "Policy-installed web app has invalid URL " << url;
+  if (!install_gurl.is_valid()) {
+    LOG(WARNING) << "Policy-installed web app has invalid URL " << install_url;
   }
 
   DisplayMode user_display_mode;
@@ -377,7 +378,7 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   }
 
   ExternalInstallOptions install_options{
-      gurl, user_display_mode, ExternalInstallSource::kExternalPolicy};
+      install_gurl, user_display_mode, ExternalInstallSource::kExternalPolicy};
 
   install_options.add_to_applications_menu = true;
   install_options.add_to_desktop =
@@ -393,16 +394,24 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
 
   if (custom_name) {
     install_options.override_name = custom_name->GetString();
-    if (gurl.is_valid())
-      custom_manifest_values_by_url_[gurl].SetName(custom_name->GetString());
+    if (install_gurl.is_valid())
+      custom_manifest_values_by_url_[install_gurl].SetName(
+          custom_name->GetString());
   }
 
   if (custom_icon && custom_icon->is_dict()) {
     const std::string* icon_url = custom_icon->FindStringKey(kCustomIconURLKey);
     if (icon_url) {
-      install_options.override_icon_url = GURL(*icon_url);
-      if (gurl.is_valid())
-        custom_manifest_values_by_url_[gurl].SetIcon(*icon_url);
+      GURL icon_gurl = GURL(*icon_url);
+      if (icon_gurl.SchemeIs(url::kHttpsScheme)) {
+        install_options.override_icon_url = icon_gurl;
+        if (install_gurl.is_valid())
+          custom_manifest_values_by_url_[install_gurl].SetIcon(icon_gurl);
+      } else {
+        LOG(WARNING) << "Policy-installed web app " << install_url
+                     << " has non-https custom icon URL " << icon_url
+                     << ", ignoring custom icon.";
+      }
     }
   }
 
@@ -556,11 +565,10 @@ void WebAppPolicyManager::CustomManifestValues::SetName(
   name = base::UTF8ToUTF16(utf8_name);
 }
 
-void WebAppPolicyManager::CustomManifestValues::SetIcon(
-    const std::string& icon_url) {
+void WebAppPolicyManager::CustomManifestValues::SetIcon(const GURL& icon_gurl) {
   blink::Manifest::ImageResource icon;
 
-  icon.src = GURL(icon_url);
+  icon.src = GURL(icon_gurl);
   icon.sizes.emplace_back(0, 0);  // Represents size "any".
   icon.purpose.push_back(blink::mojom::ManifestImageResource::Purpose::ANY);
 

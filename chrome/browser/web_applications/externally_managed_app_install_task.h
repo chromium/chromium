@@ -82,7 +82,21 @@ class ExternallyManagedAppInstallTask {
                    ResultCallback result_callback,
                    WebAppUrlLoader::Result load_url_result);
 
-  void InstallPlaceholder(ResultCallback result_callback);
+  // result_callback could be called synchronously or asynchronously.
+  void InstallPlaceholder(content::WebContents* web_contents,
+                          ResultCallback result_callback);
+
+  void OnCustomIconFetched(ResultCallback callback,
+                           int id,
+                           int http_status_code,
+                           const GURL& image_url,
+                           const std::vector<SkBitmap>& bitmaps,
+                           const std::vector<gfx::Size>& sizes);
+
+  void FinalizePlaceholderInstall(
+      ResultCallback callback,
+      absl::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
+          bitmaps);
 
   void UninstallPlaceholderApp(content::WebContents* web_contents,
                                ResultCallback result_callback);

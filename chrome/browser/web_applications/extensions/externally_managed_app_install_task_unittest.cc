@@ -976,6 +976,37 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
   run_loop.Run();
 }
 
+#if defined(CHROMEOS)
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderCustomName) {
+  const GURL kWebAppUrl("https://foo.example");
+  const std::string kCustomName("Custom äpp näme");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
+                                 ExternalInstallSource::kExternalPolicy);
+  options.install_placeholder = true;
+  options.override_name = kCustomName;
+  auto task = GetInstallationTaskWithTestMocks(std::move(options));
+  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().SetNextLoadUrlResult(
+      kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+
+  base::RunLoop run_loop;
+  task->Install(
+      web_contents(),
+      base::BindLambdaForTesting(
+          [&](ExternallyManagedAppManager::InstallResult result) {
+            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+
+            const WebAppInstallInfo& web_app_info =
+                finalizer()->web_app_info_list().at(0);
+
+            EXPECT_EQ(base::UTF8ToUTF16(kCustomName), web_app_info.title);
+
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+#endif  // defined(CHROMEOS)
+
 TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
   const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions options = {kWebAppUrl, DisplayMode::kUndefined,
