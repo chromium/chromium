@@ -165,7 +165,7 @@
 #endif
 
 // MemorySanitizer annotations.
-#if defined(MEMORY_SANITIZER) && !defined(OS_NACL)
+#if defined(MEMORY_SANITIZER) && !BUILDFLAG(IS_NACL)
 #include <sanitizer/msan_interface.h>
 
 // Mark a memory region fully initialized.
@@ -195,7 +195,7 @@
 
 // DISABLE_CFI_ICALL -- Disable Control Flow Integrity indirect call checks.
 #if !defined(DISABLE_CFI_ICALL)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows also needs __declspec(guard(nocf)).
 #define DISABLE_CFI_ICALL NO_SANITIZE("cfi-icall") __declspec(guard(nocf))
 #else
@@ -208,11 +208,11 @@
 
 // Macro useful for writing cross-platform function pointers.
 #if !defined(CDECL)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define CDECL __cdecl
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
 #define CDECL
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // !defined(CDECL)
 
 // Macro for hinting that an expression is likely to be false.

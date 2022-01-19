@@ -97,7 +97,7 @@ constexpr int kDistroSize = 128 + 1;
 char g_linux_distro[kDistroSize] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "CrOS";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     "Android";
 #else
     "Unknown";

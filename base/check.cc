@@ -4,6 +4,8 @@
 
 #include "base/check.h"
 
+#include "build/build_config.h"
+
 // check.h is a widely included header and its size has significant impact on
 // build time. Try not to raise this limit unless absolutely necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
@@ -57,10 +59,10 @@ CheckError CheckError::PCheck(const char* file,
                               int line,
                               const char* condition) {
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CheckError check_error(
       new Win32ErrorLogMessage(file, line, LOGGING_FATAL, err_code));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   CheckError check_error(
       new ErrnoLogMessage(file, line, LOGGING_FATAL, err_code));
 #endif
@@ -76,10 +78,10 @@ CheckError CheckError::DPCheck(const char* file,
                                int line,
                                const char* condition) {
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CheckError check_error(
       new Win32ErrorLogMessage(file, line, LOGGING_DCHECK, err_code));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   CheckError check_error(
       new ErrnoLogMessage(file, line, LOGGING_DCHECK, err_code));
 #endif

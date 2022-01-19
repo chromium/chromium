@@ -125,7 +125,7 @@ TEST_F(TraceCategoryTest, Basic) {
 
 // Tries to cover the case of multiple threads creating the same category
 // simultaneously. Should never end up with distinct entries with the same name.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/738275): This is flaky on Fuchsia.
 #define MAYBE_ThreadRaces DISABLED_ThreadRaces
 #else
@@ -160,7 +160,7 @@ TEST_F(TraceCategoryTest, MAYBE_ThreadRaces) {
 TEST_F(TraceCategoryTest, GetCategoryAtCompileTime) {
   static_assert(GetBuiltinCategoryByName("nonexistent") == nullptr,
                 "nonexistent found");
-#if defined(OS_WIN) && defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
   static_assert(GetBuiltinCategoryByName("toplevel") == nullptr,
                 "toplevel found");
 #else

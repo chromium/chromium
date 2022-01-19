@@ -21,7 +21,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
 #include <unistd.h>
 #endif
@@ -50,8 +50,8 @@ NOINLINE Type HideValueFromCompiler(volatile Type value) {
 // FAILS_ is too clunky.
 void OverflowTestsSoftExpectTrue(bool overflow_detected) {
   if (!overflow_detected) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_APPLE)
     // Sadly, on Linux, Android, and OSX we don't have a good story yet. Don't
     // fail the test, but report.
     printf("Platform has overflow: %s\n",
@@ -64,7 +64,7 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
   }
 }
 
-#if defined(OS_APPLE) || defined(ADDRESS_SANITIZER) ||        \
+#if BUILDFLAG(IS_APPLE) || defined(ADDRESS_SANITIZER) ||      \
     defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
     BUILDFLAG(IS_HWASAN) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #define MAYBE_NewOverflow DISABLED_NewOverflow
@@ -97,7 +97,7 @@ TEST(SecurityTest, MAYBE_NewOverflow) {
     char* volatile p = reinterpret_cast<char*>(array_pointer.get());
     OverflowTestsSoftExpectTrue(!p);
   }
-#if defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
   // On Windows, the compiler prevents static array sizes of more than
   // 0x7fffffff (error C2148).
 #else
@@ -108,7 +108,7 @@ TEST(SecurityTest, MAYBE_NewOverflow) {
     char* volatile p = reinterpret_cast<char*>(array_pointer.get());
     OverflowTestsSoftExpectTrue(!p);
   }
-#endif  // !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
 }
 
 }  // namespace

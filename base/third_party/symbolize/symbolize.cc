@@ -52,6 +52,7 @@
 #include GLOG_BUILD_CONFIG_INCLUDE
 #endif  // GLOG_BUILD_CONFIG_INCLUDE
 
+#include "build/build_config.h"
 #include "utilities.h"
 
 #if defined(HAVE_SYMBOLIZE)
@@ -113,7 +114,7 @@ _END_GOOGLE_NAMESPACE_
 #if defined(HAVE_DLFCN_H)
 #include <dlfcn.h>
 #endif
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 #include <sys/exec_elf.h>
 #else
 #include <elf.h>
@@ -840,7 +841,7 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void *pc, char *out,
 
 _END_GOOGLE_NAMESPACE_
 
-#elif defined(OS_APPLE) && defined(HAVE_DLADDR)
+#elif BUILDFLAG(IS_APPLE) && defined(HAVE_DLADDR)
 
 #include <dlfcn.h>
 #include <string.h>

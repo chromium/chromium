@@ -72,12 +72,12 @@ enum : Instruction {
   kHlt0 = 0xd4400000,
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 constexpr Instruction kRequiredBody[] = {kBrkF000, kBrk1};
 constexpr Instruction kOptionalFooter[] = {};
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 
 constexpr Instruction kRequiredBody[] = {kBrk0, kHlt0};
 // Some clangs emit a BRK #1 for __builtin_unreachable(), but some do not, so
@@ -98,7 +98,7 @@ constexpr Instruction kOptionalFooter[] = {};
 // whichever of those functions happens to come first in the library.
 void GetTestFunctionInstructions(std::vector<Instruction>* body) {
   FilePath helper_library_path;
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   // On Android M, DIR_EXE == /system/bin when running base_unittests.
   // On Fuchsia, NativeLibrary understands the native convention that libraries
   // are not colocated with the binary.
@@ -106,7 +106,7 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
 #endif
   helper_library_path = helper_library_path.AppendASCII(
       GetNativeLibraryName("immediate_crash_test_helper"));
-#if defined(OS_ANDROID) && defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_ANDROID) && defined(COMPONENT_BUILD)
   helper_library_path = helper_library_path.ReplaceExtension(".cr.so");
 #endif
   ScopedNativeLibrary helper_library(helper_library_path);

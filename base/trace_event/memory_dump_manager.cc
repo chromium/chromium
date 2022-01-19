@@ -35,14 +35,14 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/trace_event/java_heap_dump_provider_android.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE)
 #include "base/trace_event/cfi_backtrace_android.h"
 #endif
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base {
 namespace trace_event {
@@ -133,7 +133,7 @@ void MemoryDumpManager::Initialize(
   RegisterDumpProvider(MallocDumpProvider::GetInstance(), "Malloc", nullptr);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   RegisterDumpProvider(JavaHeapDumpProvider::GetInstance(), "JavaHeap",
                        nullptr);
 #endif

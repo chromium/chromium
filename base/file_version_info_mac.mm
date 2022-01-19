@@ -58,14 +58,14 @@ std::u16string FileVersionInfoMac::product_version() {
   // CFBundleShortVersionString. On iOS, both have a policy-enfoced limit
   // of three version components, so the full version is stored in a custom
   // key (CrBundleVersion) falling back to CFBundleVersion if not present.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   std::u16string version(GetString16Value(CFSTR("CrBundleVersion")));
   if (version.length() > 0)
     return version;
   return GetString16Value(CFSTR("CFBundleVersion"));
 #else
   return GetString16Value(CFSTR("CFBundleShortVersionString"));
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 std::u16string FileVersionInfoMac::file_description() {

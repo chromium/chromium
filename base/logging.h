@@ -172,9 +172,9 @@
 namespace logging {
 
 // TODO(avi): do we want to do a unification of character types here?
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef wchar_t PathChar;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 typedef char PathChar;
 #endif
 
@@ -185,10 +185,10 @@ using LoggingDestination = uint32_t;
 // Unless destination is LOG_NONE, all logs with severity ERROR and above will
 // be written to stderr in addition to the specified destination.
 enum : uint32_t {
-  LOG_NONE                = 0,
-  LOG_TO_FILE             = 1 << 0,
+  LOG_NONE = 0,
+  LOG_TO_FILE = 1 << 0,
   LOG_TO_SYSTEM_DEBUG_LOG = 1 << 1,
-  LOG_TO_STDERR           = 1 << 2,
+  LOG_TO_STDERR = 1 << 2,
 
   LOG_TO_ALL = LOG_TO_FILE | LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR,
 
@@ -196,11 +196,11 @@ enum : uint32_t {
 // On POSIX platforms, where it may not even be possible to locate the
 // executable on disk, use stderr.
 // On Fuchsia, use the Fuchsia logging service.
-#if defined(OS_FUCHSIA) || defined(OS_NACL)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_NACL)
   LOG_DEFAULT = LOG_TO_SYSTEM_DEBUG_LOG,
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   LOG_DEFAULT = LOG_TO_FILE,
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   LOG_DEFAULT = LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR,
 #endif
 };
@@ -408,7 +408,7 @@ constexpr LogSeverity LOG_DFATAL = LOGGING_DFATAL;
 #define COMPACT_GOOGLE_LOG_DFATAL COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
 #define COMPACT_GOOGLE_LOG_DCHECK COMPACT_GOOGLE_LOG_EX_DCHECK(LogMessage)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // wingdi.h defines ERROR to be 0. When we call LOG(ERROR), it gets
 // substituted with 0, and it expands to COMPACT_GOOGLE_LOG_0. To allow us
 // to keep using this syntax, we define this macro to do the same thing
@@ -469,7 +469,7 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 #define VPLOG_STREAM(verbose_level) \
   ::logging::Win32ErrorLogMessage(__FILE__, __LINE__, -(verbose_level), \
     ::logging::GetLastSystemErrorCode()).stream()
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #define VPLOG_STREAM(verbose_level) \
   ::logging::ErrnoLogMessage(__FILE__, __LINE__, -(verbose_level), \
     ::logging::GetLastSystemErrorCode()).stream()
@@ -488,11 +488,11 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
   LOG_IF(FATAL, !(ANALYZER_ASSUME_TRUE(condition))) \
       << "Assert failed: " #condition ". "
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define PLOG_STREAM(severity) \
   COMPACT_GOOGLE_LOG_EX_ ## severity(Win32ErrorLogMessage, \
       ::logging::GetLastSystemErrorCode()).stream()
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #define PLOG_STREAM(severity) \
   COMPACT_GOOGLE_LOG_EX_ ## severity(ErrnoLogMessage, \
       ::logging::GetLastSystemErrorCode()).stream()
@@ -634,9 +634,9 @@ class LogMessageVoidify {
   void operator&(std::ostream&) { }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef unsigned long SystemErrorCode;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 typedef int SystemErrorCode;
 #endif
 
@@ -645,7 +645,7 @@ typedef int SystemErrorCode;
 BASE_EXPORT SystemErrorCode GetLastSystemErrorCode();
 BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Appends a formatted system message of the GetLastError() type.
 class BASE_EXPORT Win32ErrorLogMessage : public LogMessage {
  public:
@@ -661,7 +661,7 @@ class BASE_EXPORT Win32ErrorLogMessage : public LogMessage {
  private:
   SystemErrorCode err_;
 };
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Appends a formatted system message of the errno type
 class BASE_EXPORT ErrnoLogMessage : public LogMessage {
  public:
@@ -677,7 +677,7 @@ class BASE_EXPORT ErrnoLogMessage : public LogMessage {
  private:
   SystemErrorCode err_;
 };
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Closes the log file explicitly if open.
 // NOTE: Since the log file is opened as necessary by the action of logging
@@ -699,7 +699,7 @@ BASE_EXPORT void RawLog(int level, const char* message);
 #define RAW_LOG(level, message) \
   ::logging::RawLog(::logging::LOGGING_##level, message)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Returns true if logging to file is enabled.
 BASE_EXPORT bool IsLoggingToFileEnabled();
 

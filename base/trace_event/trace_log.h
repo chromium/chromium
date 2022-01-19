@@ -133,13 +133,13 @@ class BASE_EXPORT TraceLog :
   // implement the TRACE_EVENT_IS_NEW_TRACE() primitive.
   int GetNumTracesRecorded();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void StartATrace(const std::string& category_filter);
   void StopATrace();
   void AddClockSyncMetadataEvent();
   void SetupATraceStartupTrace(const std::string& category_filter);
   absl::optional<TraceConfig> TakeATraceStartupConfig();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Enabled state listeners give a callback when tracing is enabled or
   // disabled. This can be used to tie into other library's tracing systems
@@ -438,7 +438,7 @@ class BASE_EXPORT TraceLog :
   // may not handle the flush request in time causing lost of unflushed events.
   void SetCurrentThreadBlocksMessageLoop();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This function is called by the ETW exporting module whenever the ETW
   // keyword (flags) changes. This keyword indicates which categories should be
   // exported, so whenever it changes, we adjust accordingly.
@@ -656,17 +656,17 @@ class BASE_EXPORT TraceLog :
   std::unique_ptr<::base::tracing::PerfettoPlatform> perfetto_platform_;
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>
       trace_processor_;
   std::unique_ptr<JsonStringOutputWriter> json_output_writer_;
   OutputCallback proto_output_callback_;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   FilterFactoryForTesting filter_factory_for_testing_ = nullptr;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   absl::optional<TraceConfig> atrace_startup_config_;
 #endif
 };

@@ -10,15 +10,15 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "base/base_paths_mac.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "base/base_paths_android.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/base_paths_posix.h"
 #endif
 
@@ -29,7 +29,7 @@ enum BasePathKey {
 
   // The following refer to the current application.
   FILE_EXE,  // Path and filename of the current executable.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // Prefer keys (e.g., DIR_ASSETS) that are specific to the use case as the
   // module location may not work as expected on some platforms. For this
   // reason, this key is not defined on Fuchsia. See crbug.com/1263691 for
@@ -40,7 +40,7 @@ enum BasePathKey {
                 // example).
 #endif
   DIR_EXE,  // Directory containing FILE_EXE.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // Prefer keys (e.g., DIR_ASSETS) that are specific to the use case as the
   // module location may not work as expected on some platforms. For this
   // reason, this key is not defined on Fuchsia. See crbug.com/1263691 for

@@ -74,7 +74,7 @@ class TestThread : public PlatformThread::Delegate {
 
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SetThreadCpuAffinityMode SetThreadCpuAffinityMode
 #else
 // The test only considers Android device hardware models at the moment. Some

@@ -196,7 +196,7 @@ TEST(CPU, X86FamilyAndModel) {
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 
 #if defined(ARCH_CPU_ARM_FAMILY) && \
-    (defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
 TEST(CPU, ARMImplementerAndPartNumber) {
   base::CPU cpu;
 
@@ -208,5 +208,5 @@ TEST(CPU, ARMImplementerAndPartNumber) {
   EXPECT_GT(cpu.implementer(), 0u);
   EXPECT_GT(cpu.part_number(), 0u);
 }
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_LINUX) ||
-        // defined(OS_ANDROID) || defined(OS_CHROMEOS))
+#endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))

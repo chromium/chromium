@@ -400,7 +400,7 @@ TEST_F(MemoryDumpManagerTest, MultipleDumpers) {
 // Checks that the dump provider invocations depend only on the current
 // registration state and not on previous registrations and dumps.
 // Flaky on iOS, see crbug.com/706874
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_RegistrationConsistency DISABLED_RegistrationConsistency
 #else
 #define MAYBE_RegistrationConsistency RegistrationConsistency

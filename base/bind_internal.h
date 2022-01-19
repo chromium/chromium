@@ -25,7 +25,7 @@
 #include "base/template_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE) && !HAS_FEATURE(objc_arc)
+#if BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
 #include "base/mac/scoped_block.h"
 #endif
 
@@ -56,7 +56,7 @@
 //  BindState<> -- Stores the curried parameters, and is the main entry point
 //                 into the Bind() system.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace Microsoft {
 namespace WRL {
 template <typename>
@@ -431,7 +431,7 @@ struct FunctorTraits<R (*)(Args...)> {
   }
 };
 
-#if defined(OS_WIN) && !defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
 // For functions.
 template <typename R, typename... Args>
@@ -461,9 +461,9 @@ struct FunctorTraits<R(__fastcall*)(Args...)> {
   }
 };
 
-#endif  // defined(OS_WIN) && !defined(ARCH_CPU_64_BITS)
+#endif  // BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 // Support for Objective-C blocks. There are two implementation depending
 // on whether Automated Reference Counting (ARC) is enabled. When ARC is
@@ -518,7 +518,7 @@ struct FunctorTraits<base::mac::ScopedBlock<R (^)(Args...)>> {
 };
 
 #endif  // HAS_FEATURE(objc_arc)
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 // For methods.
 template <typename R, typename Receiver, typename... Args>
@@ -552,7 +552,7 @@ struct FunctorTraits<R (Receiver::*)(Args...) const> {
   }
 };
 
-#if defined(OS_WIN) && !defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
 // For __stdcall methods.
 template <typename R, typename Receiver, typename... Args>
@@ -586,7 +586,7 @@ struct FunctorTraits<R (__stdcall Receiver::*)(Args...) const> {
   }
 };
 
-#endif  // defined(OS_WIN) && !defined(ARCH_CPU_64_BITS)
+#endif  // BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
 #ifdef __cpp_noexcept_function_type
 // noexcept makes a distinct function type in C++17.
@@ -1378,7 +1378,7 @@ struct BindUnwrapTraits<internal::PassedWrapper<T>> {
   static T Unwrap(const internal::PassedWrapper<T>& o) { return o.Take(); }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <typename T>
 struct BindUnwrapTraits<Microsoft::WRL::ComPtr<T>> {
   static T* Unwrap(const Microsoft::WRL::ComPtr<T>& ptr) { return ptr.Get(); }

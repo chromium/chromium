@@ -152,7 +152,7 @@ class BASE_EXPORT TraceEvent {
                : nullptr;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SendToATrace();
 #endif
 

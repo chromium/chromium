@@ -13,8 +13,8 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MALLOC_MEMORY_TRACING_SUPPORTED
 #endif
 

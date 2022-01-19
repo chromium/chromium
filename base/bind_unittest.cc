@@ -1624,7 +1624,7 @@ TEST_F(BindTest, OnceCallback) {
 //
 // TODO(ajwong): Is there actually a way to test this?
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int __fastcall FastCallFunc(int n) {
   return n;
 }

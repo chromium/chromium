@@ -202,7 +202,7 @@ TEST_F(ShortcutTest, CreateShortcutVerifyProperties) {
 }
 
 // TODO(crbug.com/1271993): Flaky on Win7 x86.
-#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 #define MAYBE_UpdateShortcutVerifyProperties \
   DISABLED_UpdateShortcutVerifyProperties
 #else

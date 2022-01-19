@@ -21,10 +21,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "winbase.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/mman.h>
 #endif
 
@@ -39,19 +39,19 @@ const char* const kTestDumpNameWhitelist[] = {
     "Whitelisted/0x?/TestName", "Whitelisted/0x?", nullptr};
 
 void* Map(size_t size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ::VirtualAlloc(nullptr, size, MEM_RESERVE | MEM_COMMIT,
                         PAGE_READWRITE);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return ::mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON,
                 0, 0);
 #endif
 }
 
 void Unmap(void* addr, size_t size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ::VirtualFree(addr, 0, MEM_DECOMMIT);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   ::munmap(addr, size);
 #else
 #error This architecture is not (yet) supported.
@@ -476,7 +476,7 @@ TEST(ProcessMemoryDumpTest, GuidsTest) {
 }
 
 #if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/851760): Counting resident bytes is not supported on Fuchsia.
 #define MAYBE_CountResidentBytes DISABLED_CountResidentBytes
 #else
@@ -506,7 +506,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytes) {
   Unmap(memory2, kVeryLargeMemorySize);
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/851760): Counting resident bytes is not supported on Fuchsia.
 #define MAYBE_CountResidentBytesInSharedMemory \
   DISABLED_CountResidentBytesInSharedMemory

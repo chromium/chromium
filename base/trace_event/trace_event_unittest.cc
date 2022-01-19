@@ -1801,11 +1801,11 @@ TEST_F(TraceEventTestFixture, TraceWithDefaultCategoryFilters) {
 }
 
 // Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 #define MAYBE_TraceWithDisabledByDefaultCategoryFilters DISABLED_TraceWithDisabledByDefaultCategoryFilters
 #else
 #define MAYBE_TraceWithDisabledByDefaultCategoryFilters TraceWithDisabledByDefaultCategoryFilters
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 TEST_F(TraceEventTestFixture, MAYBE_TraceWithDisabledByDefaultCategoryFilters) {
   TraceLog* trace_log = TraceLog::GetInstance();
 
@@ -2480,11 +2480,11 @@ bool MockLogMessageHandler(int, const char*, int, size_t,
 }
 
 // Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 #define MAYBE_EchoToConsole DISABLED_EchoToConsole
 #else
 #define MAYBE_EchoToConsole EchoToConsole
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 TEST_F(TraceEventTestFixture, MAYBE_EchoToConsole) {
   logging::LogMessageHandlerFunction old_log_message_handler =
       logging::GetLogMessageHandler();
@@ -2580,11 +2580,11 @@ TEST_F(TraceEventTestFixture, TimeOffset) {
 // Runtime filtering isn't supported with Perfetto.
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 #define MAYBE_TraceFilteringMode DISABLED_TraceFilteringMode
 #else
 #define MAYBE_TraceFilteringMode TraceFilteringMode
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 TEST_F(TraceEventTestFixture, MAYBE_TraceFilteringMode) {
   const char config_json[] =
       "{"
@@ -2677,11 +2677,11 @@ TEST_F(TraceEventTestFixture, MAYBE_TraceFilteringMode) {
 }
 
 // Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 #define MAYBE_EventFiltering DISABLED_EventFiltering
 #else
 #define MAYBE_EventFiltering EventFiltering
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 TEST_F(TraceEventTestFixture, MAYBE_EventFiltering) {
   const char config_json[] =
       "{"
@@ -2727,11 +2727,11 @@ TEST_F(TraceEventTestFixture, MAYBE_EventFiltering) {
 }
 
 // Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 #define MAYBE_EventAllowlistFiltering DISABLED_EventAllowlistFiltering
 #else
 #define MAYBE_EventAllowlistFiltering EventAllowlistFiltering
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
+#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
 TEST_F(TraceEventTestFixture, MAYBE_EventAllowlistFiltering) {
   std::string config_json = StringPrintf(
       "{"

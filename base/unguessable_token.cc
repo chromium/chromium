@@ -10,7 +10,7 @@
 #include "base/rand_util.h"
 #include "build/build_config.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #endif
 
@@ -41,7 +41,7 @@ UnguessableToken UnguessableToken::Deserialize(uint64_t high, uint64_t low) {
 }
 
 bool UnguessableToken::operator==(const UnguessableToken& other) const {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // BoringSSL is unavailable for NaCl builds so it remains timing dependent.
   return token_ == other.token_;
 #else

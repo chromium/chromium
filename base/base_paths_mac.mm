@@ -74,15 +74,15 @@ bool PathProviderMac(int key, base::FilePath* result) {
     case base::DIR_APP_DATA: {
       bool success = base::mac::GetUserDirectory(NSApplicationSupportDirectory,
                                                  result);
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       // On IOS, this directory does not exist unless it is created explicitly.
       if (success && !base::PathExists(*result))
         success = base::CreateDirectory(*result);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
       return success;
     }
     case base::DIR_SRC_TEST_DATA_ROOT:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       // On iOS, there is no access to source root, however, the necessary
       // resources are packaged into the test as assets.
       return PathService::Get(base::DIR_ASSETS, result);
@@ -105,9 +105,9 @@ bool PathProviderMac(int key, base::FilePath* result) {
         *result = result->DirName().DirName();
       }
       return true;
-#endif  // !defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
     case base::DIR_USER_DESKTOP:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       // iOS does not have desktop directories.
       NOTIMPLEMENTED();
       return false;
@@ -115,7 +115,7 @@ bool PathProviderMac(int key, base::FilePath* result) {
       return base::mac::GetUserDirectory(NSDesktopDirectory, result);
 #endif
     case base::DIR_ASSETS:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       // On iOS, the assets are located next to the module binary.
       return PathService::Get(base::DIR_MODULE, result);
 #else
@@ -125,7 +125,7 @@ bool PathProviderMac(int key, base::FilePath* result) {
       *result = base::mac::FrameworkBundlePath().Append(
           FILE_PATH_LITERAL("Resources"));
       return true;
-#endif  // !defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
     case base::DIR_CACHE:
       return base::mac::GetUserDirectory(NSCachesDirectory, result);
     default:

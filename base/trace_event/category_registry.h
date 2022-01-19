@@ -70,8 +70,8 @@ class BASE_EXPORT CategoryRegistry {
   // TraceCategory owned by the registry.
   static constexpr TraceCategory* GetBuiltinCategoryByName(
       const char* category_group) {
-#if defined(OS_WIN) && defined(COMPONENT_BUILD)
-    // The address cannot be evaluated at compile-time in Windows compoment
+#if BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+    // The address cannot be evaluated at compile-time in Windows component
     // builds.
     return nullptr;
 #else

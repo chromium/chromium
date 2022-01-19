@@ -26,22 +26,22 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <signal.h>
 #include <unistd.h>
 #include "base/posix/eintr_wrapper.h"
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <ucontext.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <excpt.h>
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
 #include <lib/zx/event.h>
 #include <lib/zx/exception.h>
@@ -49,7 +49,7 @@
 #include <zircon/syscalls/debug.h>
 #include <zircon/syscalls/exception.h>
 #include <zircon/types.h>
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -213,7 +213,7 @@ TEST_F(LoggingTest, LogToStdErrFlag) {
 // Check that messages with severity ERROR or higher are always logged to
 // stderr if no log-destinations are set, other than LOG_TO_FILE.
 // This test is currently only POSIX-compatible.
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 namespace {
 void TestForLogToStderr(int log_destinations,
                         bool* did_log_info,
@@ -263,7 +263,7 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
   bool did_log_error = false;
 
   // Fuchsia only logs to stderr when explicitly specified.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // When no destinations are specified, ERRORs should still log to stderr.
   TestForLogToStderr(LOG_NONE, &did_log_info, &did_log_error);
   EXPECT_FALSE(did_log_info);
@@ -286,7 +286,7 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
   EXPECT_TRUE(did_log_info);
   EXPECT_TRUE(did_log_error);
 }
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(LoggingTest, InitWithFileDescriptor) {
@@ -346,7 +346,7 @@ TEST_F(LoggingTest, DuplicateLogFile) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OFFICIAL_BUILD) && defined(OS_WIN)
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(IS_WIN)
 NOINLINE void CheckContainingFunc(int death_location) {
   CHECK(death_location != 1);
   CHECK(death_location != 2);
@@ -397,7 +397,7 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
   EXPECT_NE(addr1, addr3);
   EXPECT_NE(addr2, addr3);
 }
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 
 // CHECK causes a direct crash (without jumping to another function) only in
 // official builds. Unfortunately, continuous test coverage on official builds
@@ -541,7 +541,7 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
   ASSERT_NE(child_crash_addr_1, child_crash_addr_3);
   ASSERT_NE(child_crash_addr_2, child_crash_addr_3);
 }
-#elif defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_IOS) && \
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS) && \
     (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY))
 
 int g_child_crash_pipe;
@@ -552,7 +552,7 @@ void CheckCrashTestSighandler(int, siginfo_t* info, void* context_ptr) {
   // need the arch-specific boilerplate below, which is inspired by breakpad.
   // At the same time, on OSX, ucontext.h is deprecated but si_addr works fine.
   uintptr_t crash_addr = 0;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   crash_addr = reinterpret_cast<uintptr_t>(info->si_addr);
 #else  // OS_*
   ucontext_t* context = reinterpret_cast<ucontext_t*>(context_ptr);
@@ -635,7 +635,7 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
   ASSERT_NE(child_crash_addr_1, child_crash_addr_3);
   ASSERT_NE(child_crash_addr_2, child_crash_addr_3);
 }
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(LoggingTest, DebugLoggingReleaseBehavior) {
 #if DCHECK_IS_ON()

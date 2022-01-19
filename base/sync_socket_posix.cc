@@ -14,7 +14,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#if defined(OS_SOLARIS)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_SOLARIS)
 #include <sys/filio.h>
 #endif
 
@@ -53,9 +55,9 @@ bool SyncSocket::CreatePair(SyncSocket* socket_a, SyncSocket* socket_b) {
   DCHECK(!socket_a->IsValid());
   DCHECK(!socket_b->IsValid());
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   int nosigpipe = 1;
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   ScopedHandle handles[2];
 
@@ -68,7 +70,7 @@ bool SyncSocket::CreatePair(SyncSocket* socket_a, SyncSocket* socket_b) {
     handles[1].reset(raw_handles[1]);
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On OSX an attempt to read or write to a closed socket may generate a
   // SIGPIPE rather than returning -1.  setsockopt will shut this off.
   if (0 != setsockopt(handles[0].get(), SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe,

@@ -29,7 +29,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <io.h>
 #include <windows.h>
 typedef HANDLE FileHandle;
@@ -38,20 +38,20 @@ typedef HANDLE FileHandle;
 // Windows doesn't define STDERR_FILENO.  Define it here.
 #define STDERR_FILENO 2
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 // In MacOS 10.12 and iOS 10.0 and later ASL (Apple System Log) was deprecated
 // in favor of OS_LOG (Unified Logging).
 #include <AvailabilityMacros.h>
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
 #define USE_ASL
 #endif
-#else  // !defined(OS_IOS)
+#else  // BUILDFLAG(IS_IOS)
 #if !defined(MAC_OS_X_VERSION_10_12) || \
     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_12
 #define USE_ASL
 #endif
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 #if defined(USE_ASL)
 #include <asl.h>
@@ -64,22 +64,22 @@ typedef HANDLE FileHandle;
 #include <mach/mach_time.h>
 #include <mach-o/dyld.h>
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-#if defined(OS_NACL)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_NACL)
 #include <sys/time.h>  // timespec doesn't seem to be in <time.h>
 #endif
 #include <time.h>
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/scoped_fx_logger.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
 #endif
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <errno.h>
 #include <paths.h>
 #include <stdio.h>
@@ -123,11 +123,11 @@ typedef FILE* FileHandle;
 #include "base/vlog.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/posix/safe_strerror.h"
 #endif
 
@@ -163,7 +163,7 @@ uint32_t g_logging_destination = LOG_DEFAULT;
 LogFormat g_log_format = LogFormat::LOG_FORMAT_SYSLOG;
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Retains system logging structures.
 base::ScopedFxLogger& GetScopedFxLogger() {
   static base::NoDestructor<base::ScopedFxLogger> logger;
@@ -205,18 +205,18 @@ base::stack<LogAssertHandlerFunction>& GetLogAssertHandlerStack() {
 LogMessageHandlerFunction g_log_message_handler = nullptr;
 
 uint64_t TickCount() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GetTickCount();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return zx_clock_get_monotonic() /
          static_cast<zx_time_t>(base::Time::kNanosecondsPerMicrosecond);
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return mach_absolute_time();
-#elif defined(OS_NACL)
+#elif BUILDFLAG(IS_NACL)
   // NaCl sadly does not have _POSIX_TIMERS enabled in sys/features.h
   // So we have to use clock() for now.
   return clock();
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
 
@@ -228,11 +228,11 @@ uint64_t TickCount() {
 }
 
 void DeleteFilePath(const PathString& log_name) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DeleteFile(log_name.c_str());
-#elif defined(OS_NACL)
+#elif BUILDFLAG(IS_NACL)
   // Do nothing; unlink() isn't supported on NaCl.
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   unlink(log_name.c_str());
 #else
 #error Unsupported platform
@@ -240,7 +240,7 @@ void DeleteFilePath(const PathString& log_name) {
 }
 
 PathString GetDefaultLogFile() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows we use the same path as the exe.
   wchar_t module_name[MAX_PATH];
   GetModuleFileName(nullptr, module_name, MAX_PATH);
@@ -251,7 +251,7 @@ PathString GetDefaultLogFile() {
     log_name.erase(last_backslash + 1);
   log_name += FILE_PATH_LITERAL("debug.log");
   return log_name;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On other platforms we just use the current directory.
   return PathString("debug.log");
 #endif
@@ -259,14 +259,14 @@ PathString GetDefaultLogFile() {
 
 // We don't need locks on Windows for atomically appending to files. The OS
 // provides this functionality.
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 base::Lock& GetLoggingLock() {
   static base::NoDestructor<base::Lock> lock;
   return *lock;
 }
 
-#endif  // OS_POSIX || OS_FUCHSIA
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // Called by logging functions to ensure that |g_log_file| is initialized
 // and can be used for writing. Returns false if the file could not be
@@ -284,7 +284,7 @@ bool InitializeLogFileHandle() {
   if ((g_logging_destination & LOG_TO_FILE) == 0)
     return true;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The FILE_APPEND_DATA access mask ensures that the file is atomically
   // appended to across accesses from multiple threads.
   // https://msdn.microsoft.com/en-us/library/windows/desktop/aa364399(v=vs.85).aspx
@@ -319,7 +319,7 @@ bool InitializeLogFileHandle() {
       return false;
     }
   }
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   g_log_file = fopen(g_log_file_name->c_str(), "a");
   if (g_log_file == nullptr)
     return false;
@@ -331,9 +331,9 @@ bool InitializeLogFileHandle() {
 }
 
 void CloseFile(FileHandle log) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CloseHandle(log);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   fclose(log);
 #else
 #error Unsupported platform
@@ -353,7 +353,7 @@ void CloseLogFileUnlocked() {
     g_logging_destination &= ~LOG_TO_FILE;
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 inline FuchsiaLogSeverity LogSeverityToFuchsiaLogSeverity(
     LogSeverity severity) {
   switch (severity) {
@@ -391,7 +391,7 @@ BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
 std::ostream* g_swallow_stream;
 
 bool BaseInitLoggingImpl(const LoggingSettings& settings) {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // Can log only to the system debug log and stderr.
   CHECK_EQ(settings.logging_dest & ~(LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR),
            0u);
@@ -422,7 +422,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 
   g_logging_destination = settings.logging_dest;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   if (g_logging_destination & LOG_TO_SYSTEM_DEBUG_LOG) {
     GetScopedFxLogger() = base::ScopedFxLogger::CreateForProcess();
   }
@@ -432,7 +432,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   if ((g_logging_destination & LOG_TO_FILE) == 0)
     return true;
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::AutoLock guard(GetLoggingLock());
 #endif
 
@@ -553,7 +553,7 @@ void DisplayDebugMessageInDialog(const std::string& str) {
   if (!show_error_dialogs)
     return;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We intentionally don't implement a dialog on other platforms.
   // You can just look at stderr.
   if (base::win::IsUser32AndGdi32Available()) {
@@ -562,7 +562,7 @@ void DisplayDebugMessageInDialog(const std::string& str) {
   } else {
     OutputDebugStringW(base::as_wcstr(base::UTF8ToUTF16(str)));
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 #endif  // !defined(NDEBUG)
 
@@ -579,8 +579,8 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
 
 LogMessage::~LogMessage() {
   size_t stack_start = stream_.tellp();
-#if !defined(OFFICIAL_BUILD) && !defined(OS_NACL) && !defined(__UCLIBC__) && \
-    !defined(OS_AIX)
+#if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
+    !BUILDFLAG(IS_AIX)
   if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
     // Include a stack trace on a fatal, unless a debugger is attached.
     base::debug::StackTrace stack_trace;
@@ -616,9 +616,9 @@ LogMessage::~LogMessage() {
   }
 
   if ((g_logging_destination & LOG_TO_SYSTEM_DEBUG_LOG) != 0) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     OutputDebugStringA(str_newline.c_str());
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
     // In LOG_TO_SYSTEM_DEBUG_LOG mode, log messages are always written to
     // stderr. If stderr is /dev/null, also log via ASL (Apple System Log) or
     // its successor OS_LOG. If there's something weird about stderr, assume
@@ -768,7 +768,7 @@ LogMessage::~LogMessage() {
                        str_newline.c_str());
 #endif  // defined(USE_ASL)
     }
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     android_LogPriority priority =
         (severity_ < 0) ? ANDROID_LOG_VERBOSE : ANDROID_LOG_UNKNOWN;
     switch (severity_) {
@@ -801,7 +801,7 @@ LogMessage::~LogMessage() {
     // The Android system may truncate the string if it's too long.
     __android_log_write(priority, kAndroidLogTag, str_newline.c_str());
 #endif
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
     // LogMessage() will silently drop the message if the logger is not valid.
     // Skip the final character of |str_newline|, since LogMessage() will add
     // a newline.
@@ -809,7 +809,7 @@ LogMessage::~LogMessage() {
     GetScopedFxLogger().LogMessage(file_, line_,
                                    message.substr(0, message.size() - 1),
                                    LogSeverityToFuchsiaLogSeverity(severity_));
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
   }
 
   if (ShouldLogToStderr(severity_)) {
@@ -825,18 +825,18 @@ LogMessage::~LogMessage() {
     // to do this at the same time, there will be a race condition to create
     // the lock. This is why InitLogging should be called from the main
     // thread at the beginning of execution.
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::AutoLock guard(GetLoggingLock());
 #endif
     if (InitializeLogFileHandle()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       DWORD num_written;
       WriteFile(g_log_file,
                 static_cast<const void*>(str_newline.c_str()),
                 static_cast<DWORD>(str_newline.length()),
                 &num_written,
                 nullptr);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
       ignore_result(fwrite(
           str_newline.data(), str_newline.size(), 1, g_log_file));
       fflush(g_log_file);
@@ -915,7 +915,7 @@ void LogMessage::Init(const char* file, int line) {
     if (g_log_thread_id)
       stream_ << base::PlatformThread::CurrentId() << ':';
     if (g_log_timestamp) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       SYSTEMTIME local_time;
       GetLocalTime(&local_time);
       stream_ << std::setfill('0')
@@ -928,7 +928,7 @@ void LogMessage::Init(const char* file, int line) {
               << '.'
               << std::setw(3) << local_time.wMilliseconds
               << ':';
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
       timeval tv;
       gettimeofday(&tv, nullptr);
       time_t t = tv.tv_sec;
@@ -961,7 +961,7 @@ void LogMessage::Init(const char* file, int line) {
   message_start_ = stream_.str().length();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This has already been defined in the header, but defining it again as DWORD
 // ensures that the type used in the header is equivalent to DWORD. If not,
 // the redefinition is a compile error.
@@ -969,15 +969,15 @@ typedef DWORD SystemErrorCode;
 #endif
 
 SystemErrorCode GetLastSystemErrorCode() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ::GetLastError();
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return errno;
 #endif
 }
 
 BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const int kErrorMessageBufferSize = 256;
   char msgbuf[kErrorMessageBufferSize];
   DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
@@ -990,14 +990,13 @@ BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
   }
   return base::StringPrintf("Error (0x%lX) while retrieving error. (0x%lX)",
                             GetLastError(), error_code);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::safe_strerror(error_code) +
          base::StringPrintf(" (%d)", error_code);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 Win32ErrorLogMessage::Win32ErrorLogMessage(const char* file,
                                            int line,
                                            LogSeverity severity,
@@ -1011,7 +1010,7 @@ Win32ErrorLogMessage::~Win32ErrorLogMessage() {
   DWORD last_error = err_;
   base::debug::Alias(&last_error);
 }
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 ErrnoLogMessage::ErrnoLogMessage(const char* file,
                                  int line,
                                  LogSeverity severity,
@@ -1025,10 +1024,10 @@ ErrnoLogMessage::~ErrnoLogMessage() {
   int last_error = err_;
   base::debug::Alias(&last_error);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void CloseLogFile() {
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::AutoLock guard(GetLoggingLock());
 #endif
   CloseLogFileUnlocked();
@@ -1136,7 +1135,7 @@ void RawLog(int level, const char* message) {
 // This was defined at the beginning of this file.
 #undef write
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsLoggingToFileEnabled() {
   return g_logging_destination & LOG_TO_FILE;
 }

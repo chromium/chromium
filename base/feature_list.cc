@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+
 #include <string>
+
+#include "build/build_config.h"
 
 // feature_list.h is a widely included header and its size impacts build
 // time. Try not to raise this limit unless necessary. See
@@ -639,11 +642,11 @@ void FeatureList::RegisterOverridesFromCommandLine(
     if (pos != std::string::npos) {
       feature_name = StringPiece(value.data(), pos);
       trial = FieldTrialList::Find(value.substr(pos + 1));
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
       // If the below DCHECK fires, it means a non-existent trial name was
       // specified via the "Feature<Trial" command-line syntax.
       DCHECK(trial) << "trial='" << value.substr(pos + 1) << "' does not exist";
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
     }
 
     RegisterOverride(feature_name, overridden_state, trial);
