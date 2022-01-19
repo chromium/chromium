@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1290 tests; 1287 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1292 tests; 1287 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -194,6 +194,7 @@ PASS AbortSignal interface: existence and properties of interface prototype obje
 PASS AbortSignal interface: operation abort(optional any)
 PASS AbortSignal interface: attribute aborted
 PASS AbortSignal interface: attribute reason
+FAIL AbortSignal interface: operation throwIfAborted() assert_own_property: interface prototype object missing non-static operation expected property "throwIfAborted" missing
 PASS AbortSignal interface: attribute onabort
 PASS AbortSignal must be primary interface of new AbortController().signal
 PASS Stringification of new AbortController().signal
@@ -201,6 +202,7 @@ PASS AbortSignal interface: new AbortController().signal must inherit property "
 PASS AbortSignal interface: calling abort(optional any) on new AbortController().signal with too few arguments must throw TypeError
 PASS AbortSignal interface: new AbortController().signal must inherit property "aborted" with the proper type
 PASS AbortSignal interface: new AbortController().signal must inherit property "reason" with the proper type
+FAIL AbortSignal interface: new AbortController().signal must inherit property "throwIfAborted()" with the proper type assert_inherits: property "throwIfAborted" not found in prototype chain
 PASS AbortSignal interface: new AbortController().signal must inherit property "onabort" with the proper type
 PASS EventTarget interface: new AbortController().signal must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
 PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on new AbortController().signal with too few arguments must throw TypeError

@@ -19,8 +19,14 @@ interface EventCounts {
 };
 
 [Exposed=Window]
+interface InteractionCounts {
+    readonly maplike<DOMString, unsigned long long>;
+};
+
+[Exposed=Window]
 partial interface Performance {
     [SameObject] readonly attribute EventCounts eventCounts;
+    [SameObject] readonly attribute InteractionCounts interactionCounts;
 };
 
 partial dictionary PerformanceObserverInit {

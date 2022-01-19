@@ -933,6 +933,8 @@ interface HTMLInputElement : HTMLElement {
   undefined setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
   undefined setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
 
+  undefined showPicker();
+
   // also has obsolete members
 };
 
@@ -1367,7 +1369,14 @@ interface mixin CanvasShadowStyles {
 
 interface mixin CanvasFilters {
   // filters
-  attribute DOMString filter; // (default "none")
+  attribute (DOMString or CanvasFilter) filter; // (default "none")
+};
+
+typedef record<DOMString, any> CanvasFilterInput;
+
+[Exposed=(Window,Worker,PaintWorklet)]
+interface CanvasFilter {
+  constructor(optional (CanvasFilterInput or sequence<CanvasFilterInput>) filters);
 };
 
 interface mixin CanvasRect {
@@ -1993,9 +2002,9 @@ interface mixin WindowOrWorkerGlobalScope {
 
   // timers
   long setTimeout(TimerHandler handler, optional long timeout = 0, any... arguments);
-  undefined clearTimeout(optional long handle = 0);
+  undefined clearTimeout(optional long id = 0);
   long setInterval(TimerHandler handler, optional long timeout = 0, any... arguments);
-  undefined clearInterval(optional long handle = 0);
+  undefined clearInterval(optional long id = 0);
 
   // microtask queuing
   undefined queueMicrotask(VoidFunction callback);

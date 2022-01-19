@@ -46,8 +46,8 @@ dictionary WebTransportOptions {
 };
 
 dictionary WebTransportCloseInfo {
-  unsigned long closeCode;
-  DOMString reason;
+  unsigned long closeCode = 0;
+  DOMString reason = "";
 };
 
 dictionary WebTransportStats {

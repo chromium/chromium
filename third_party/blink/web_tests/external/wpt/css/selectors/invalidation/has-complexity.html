@@ -9,7 +9,7 @@
 div, main { color: grey }
 main:has(span) .subject { color: red }
 main:has(span + span) .subject { color: green }
-main:has(final) .subject { color: blue }
+main:has(span + final) .subject { color: blue }
 main:has(nonexistent + span) .subject { color: black }
 main:has(span) span { color: black }
 main:has(nonexistent) span { color: black }
