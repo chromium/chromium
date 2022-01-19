@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_APPLICATION_CONTEXT_H_
 #define IOS_CHROME_BROWSER_APPLICATION_CONTEXT_H_
 
+#import <Foundation/Foundation.h>
+
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -67,12 +69,7 @@ class BrowserPolicyConnectorIOS;
 class IOSChromeIOThread;
 class PrefService;
 class SafeBrowsingService;
-
-// Unused. Present to ensure that all files including application_context.h
-// has been converted to Objective-C++ and that it is safe to include ObjC
-// in this file in the future. Will be removed when real ObjC use is added
-// in a followup CL.
-@class NSObject;
+@protocol SingleSignOnService;
 
 // Gets the global application context. Cannot return null.
 ApplicationContext* GetApplicationContext();
@@ -165,6 +162,9 @@ class ApplicationContext {
   // Will be null if breadcrumb collection is not enabled.
   virtual breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() = 0;
+
+  // Returns the SingleSignOnService instance used by this application.
+  virtual id<SingleSignOnService> GetSSOService() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

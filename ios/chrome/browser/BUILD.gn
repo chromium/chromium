@@ -127,7 +127,10 @@ source_set("browser") {
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/browser_state",
   ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "UIKit.framework",
+    "Foundation.framework",
+  ]
 }
 
 source_set("utils") {
@@ -244,6 +247,7 @@ source_set("browser_impl") {
     "//ios/chrome/common/app_group",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
     "//ios/web",
     "//ios/web/public/init",
     "//mojo/public/cpp/bindings",

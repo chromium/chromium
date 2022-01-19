@@ -68,6 +68,7 @@ class TestingApplicationContext : public ApplicationContext {
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() override;
+  id<SingleSignOnService> GetSSOService() override;
 
  private:
   base::ThreadChecker thread_checker_;
@@ -87,6 +88,7 @@ class TestingApplicationContext : public ApplicationContext {
   scoped_refptr<SafeBrowsingService> fake_safe_browsing_service_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
+  __strong id<SingleSignOnService> single_sign_on_service_ = nil;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_

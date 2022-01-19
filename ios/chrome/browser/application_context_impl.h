@@ -81,6 +81,7 @@ class ApplicationContextImpl : public ApplicationContext {
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() override;
+  id<SingleSignOnService> GetSSOService() override;
 
  private:
   // Sets the locale used by the application.
@@ -126,6 +127,8 @@ class ApplicationContextImpl : public ApplicationContext {
       network_connection_tracker_;
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
+
+  __strong id<SingleSignOnService> single_sign_on_service_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_IMPL_H_
