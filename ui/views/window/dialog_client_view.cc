@@ -23,8 +23,9 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -200,13 +201,9 @@ void DialogClientView::ViewHierarchyChanged(
   if (details.parent != button_row_container_)
     return;
 
-  // SetupViews() removes all children, managing data members itself.
+  // SetupViews() adds/removes children, and manages their position.
   if (adding_or_removing_views_)
     return;
-
-  // Otherwise, this should only happen during teardown. Ensure there are no
-  // references to deleted Views.
-  button_row_container_->SetLayoutManager(nullptr);
 
   if (child == ok_button_)
     ok_button_ = nullptr;
@@ -325,8 +322,7 @@ void DialogClientView::SetupLayout() {
   FocusManager* focus_manager = GetFocusManager();
   ViewTracker view_tracker(focus_manager->GetFocusedView());
 
-  // Clobber any existing LayoutManager since it has weak references to child
-  // Views which may be removed by SetupViews().
+  // Clobber the layout manager in case there are no views in which to layout.
   button_row_container_->SetLayoutManager(nullptr);
 
   SetupViews();
@@ -344,46 +340,50 @@ void DialogClientView::SetupLayout() {
       button_row_container_->AddChildViewAt(extra_view_.get(), 0);
   }
 
-  GridLayout* layout = button_row_container_->SetLayoutManager(
-      std::make_unique<views::GridLayout>());
-  layout->set_minimum_size(minimum_size_);
-
   if (std::count(views.begin(), views.end(), nullptr) == kNumButtons)
     return;
 
+  // This will also clobber any existing layout manager and clear any settings
+  // it may already have.
+  auto* layout = button_row_container_->SetLayoutManager(
+      std::make_unique<views::TableLayout>());
+  layout->SetMinimumSize(minimum_size_);
+
   // The |resize_percent| constants. There's only one stretchy column (padding
   // to the left of ok/cancel buttons).
-  constexpr float kFixed = 0.f;
-  constexpr float kStretchy = 1.f;
+  constexpr float kFixed = views::TableLayout::kFixedSize;
+  constexpr float kStretchy = 1.0f;
 
-  // Button row is [ extra <pad+stretchy> second <pad> third ]. Ensure the <pad>
-  // column is zero width if there isn't a button on either side.
+  // Button row is [ extra <pad+stretchy> second <pad> third ]. Ensure the
+  // <pad> column is zero width if there isn't a button on either side.
   // GetExtraViewSpacing() handles <pad+stretchy>.
   LayoutProvider* const layout_provider = LayoutProvider::Get();
   const int button_spacing = (ok_button_ && cancel_button_)
                                  ? layout_provider->GetDistanceMetric(
                                        DISTANCE_RELATED_BUTTON_HORIZONTAL)
                                  : 0;
-
-  constexpr int kButtonRowId = 0;
-  ColumnSet* column_set = layout->AddColumnSet(kButtonRowId);
-
-  // Rather than giving |button_row_container_| a Border, incorporate the insets
-  // into the layout. This simplifies min/max size calculations.
-  column_set->AddPaddingColumn(kFixed, button_row_insets_.left());
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, kFixed,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(kStretchy, GetExtraViewSpacing());
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, kFixed,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(kFixed, button_spacing);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, kFixed,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(kFixed, button_row_insets_.right());
+  // Rather than giving |button_row_container_| a Border, incorporate the
+  // insets into the layout. This simplifies min/max size calculations.
+  layout->SetMinimumSize(minimum_size_)
+      .AddPaddingColumn(kFixed, button_row_insets_.left())
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, kFixed,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(kStretchy, GetExtraViewSpacing())
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, kFixed,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(kFixed, button_spacing)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, kFixed,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(kFixed, button_row_insets_.right())
+      .AddPaddingRow(kFixed, button_row_insets_.top())
+      .AddRows(1, kFixed)
+      .AddPaddingRow(kFixed, button_row_insets_.bottom())
+      .SetLinkedColumnSizeLimit(layout_provider->GetDistanceMetric(
+          DISTANCE_BUTTON_MAX_LINKABLE_WIDTH));
 
   // Track which columns to link sizes under MD.
   constexpr int kViewToColumnIndex[] = {1, 3, 5};
-  std::vector<int> columns_to_link;
+  std::vector<size_t> columns_to_link;
 
   // Skip views that are not a button, or are a specific subclass of Button
   // that should never be linked. Otherwise, link everything.
@@ -392,23 +392,18 @@ void DialogClientView::SetupLayout() {
            !IsViewClass<ImageButton>(view);
   };
 
-  layout->StartRowWithPadding(kFixed, kButtonRowId, kFixed,
-                              button_row_insets_.top());
   for (size_t view_index = 0; view_index < kNumButtons; ++view_index) {
     if (views[view_index]) {
-      layout->AddExistingView(views[view_index]);
+      RemoveFillerView(view_index);
+      button_row_container_->ReorderChildView(views[view_index], view_index);
       if (should_link(views[view_index]))
         columns_to_link.push_back(kViewToColumnIndex[view_index]);
     } else {
-      layout->SkipColumns(1);
+      AddFillerView(view_index);
     }
   }
 
-  column_set->set_linked_column_size_limit(
-      layout_provider->GetDistanceMetric(DISTANCE_BUTTON_MAX_LINKABLE_WIDTH));
-  column_set->LinkColumnSizes(columns_to_link);
-
-  layout->AddPaddingRow(kFixed, button_row_insets_.bottom());
+  layout->LinkColumnSizes(columns_to_link);
 
   // The default focus is lost when child views are added back into the dialog.
   // This restores focus if the button is still available.
@@ -434,8 +429,27 @@ void DialogClientView::SetupViews() {
 
   delete extra_view_;
   extra_view_ = disowned_extra_view.release();
-  if (extra_view_ && Button::AsButton(extra_view_))
+  if (extra_view_ && IsViewClass<Button>(extra_view_))
     extra_view_->SetGroup(kButtonGroup);
+}
+
+void DialogClientView::AddFillerView(size_t view_index) {
+  DCHECK_LT(view_index, kNumButtons);
+  View*& filler = filler_views_[view_index];
+  if (!filler) {
+    filler = button_row_container_->AddChildViewAt(
+        std::make_unique<View>(),
+        std::min(button_row_container_->children().size(), view_index));
+  }
+}
+
+void DialogClientView::RemoveFillerView(size_t view_index) {
+  DCHECK_LT(view_index, kNumButtons);
+  View*& filler = filler_views_[view_index];
+  if (filler) {
+    button_row_container_->RemoveChildViewT(filler);
+    filler = nullptr;
+  }
 }
 
 BEGIN_METADATA(DialogClientView, ClientView)

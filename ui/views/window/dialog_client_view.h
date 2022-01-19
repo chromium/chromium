@@ -112,6 +112,11 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // After calling this, no button row Views will be in the view hierarchy.
   void SetupViews();
 
+  // Adds/Removes a filler view depending on whether the corresponding live view
+  // is present.
+  void AddFillerView(size_t view_index);
+  void RemoveFillerView(size_t view_index);
+
   // How much to inset the button row.
   gfx::Insets button_row_insets_;
 
@@ -128,6 +133,9 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
 
   // Container view for the button row.
   raw_ptr<ButtonRowContainer> button_row_container_ = nullptr;
+
+  // List of "filler" views used to keep columns in sync for TableLayout.
+  std::array<View*, kNumButtons> filler_views_ = {nullptr, nullptr, nullptr};
 
   // Used to prevent unnecessary or potentially harmful changes during
   // SetupLayout(). Everything will be manually updated afterwards.

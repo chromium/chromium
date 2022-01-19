@@ -278,7 +278,13 @@ TEST_F(DialogClientViewTest, SetupFocusChain) {
 
   // Views are added to the contents view, not the client view, so the focus
   // chain within the client view is not affected.
-  EXPECT_EQ(nullptr, client_view()->cancel_button()->GetNextFocusableView());
+  // NOTE: The TableLayout requires a view to be in every cell. "Dummy" non-
+  // focusable views are inserted to satisfy this requirement.
+  EXPECT_TRUE(!client_view()->cancel_button()->GetNextFocusableView() ||
+              client_view()
+                      ->cancel_button()
+                      ->GetNextFocusableView()
+                      ->GetFocusBehavior() == View::FocusBehavior::NEVER);
 }
 
 // Test that the contents view gets its preferred size in the basic dialog
