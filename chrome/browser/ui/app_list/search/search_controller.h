@@ -124,6 +124,8 @@ class SearchController {
 
   virtual void set_results_changed_callback_for_test(
       ResultsChangedCallback callback) = 0;
+
+  virtual void disable_ranking_for_test() = 0;
 };
 
 }  // namespace app_list

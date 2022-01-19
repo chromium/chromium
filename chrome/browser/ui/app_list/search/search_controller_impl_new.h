@@ -83,6 +83,7 @@ class SearchControllerImplNew : public SearchController {
       ResultsChangedCallback callback) override;
   std::u16string get_query() override;
   base::Time session_start() override;
+  void disable_ranking_for_test() override;
 
   void set_ranker_delegate_for_test(
       std::unique_ptr<RankerDelegate> ranker_delegate) {
@@ -134,6 +135,8 @@ class SearchControllerImplNew : public SearchController {
 
   // Top-level result ranker.
   std::unique_ptr<RankerDelegate> ranker_;
+
+  bool disable_ranking_for_test_ = false;
 
   // Storage for all search results for the current query.
   ResultsMap results_;

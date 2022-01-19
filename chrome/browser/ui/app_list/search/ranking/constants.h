@@ -15,7 +15,7 @@ constexpr int kMaxOmniboxResults = 3;
 constexpr size_t kNumTopMatches = 3u;
 
 // The score threshold before we consider a result a top match.
-constexpr double kTopMatchThreshold = 0.9;
+constexpr double kTopMatchThreshold = 0.8;
 
 // String to add to the details text of top match results. Keep the char[] and
 // char16_t versions in sync.

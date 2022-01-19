@@ -291,4 +291,9 @@ void SearchControllerImpl::set_results_changed_callback_for_test(
   results_changed_callback_ = std::move(callback);
 }
 
+void SearchControllerImpl::disable_ranking_for_test() {
+  // Only called for the productivity launcher.
+  NOTREACHED();
+}
+
 }  // namespace app_list

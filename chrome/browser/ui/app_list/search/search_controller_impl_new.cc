@@ -318,6 +318,9 @@ void SearchControllerImplNew::Rank(ash::AppListSearchResultType provider_type) {
     return;
   }
 
+  if (disable_ranking_for_test_)
+    return;
+
   // Update ranking of all results and categories for this provider. This
   // ordering is important, as result scores may affect category scores.
   ranker_->UpdateResultRanks(results_, provider_type);
@@ -542,6 +545,10 @@ base::Time SearchControllerImplNew::session_start() {
 void SearchControllerImplNew::set_results_changed_callback_for_test(
     ResultsChangedCallback callback) {
   // Unused.
+}
+
+void SearchControllerImplNew::disable_ranking_for_test() {
+  disable_ranking_for_test_ = true;
 }
 
 }  // namespace app_list

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/top_match_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
+#include "chrome/browser/ui/app_list/search/util/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/util/score_normalizer.pb.h"
 
 namespace app_list {
@@ -29,6 +30,14 @@ constexpr base::TimeDelta kNoWriteDelay = base::Seconds(0);
 }  // namespace
 
 RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
+  // Score normalization parameters:
+  ScoreNormalizer::Params score_normalizer_params;
+  // Change this version number when changing the number of bins below.
+  score_normalizer_params.version = 1;
+  // The maximum number of buckets the score normalizer discretizes result
+  // scores into.
+  score_normalizer_params.max_bins = 5;
+
   // Result ranking parameters.
   // TODO(crbug.com/1199206): These need tweaking.
   FtrlOptimizer::Params ftrl_result_params;
@@ -66,6 +75,7 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
 
   // 2. Score normalization, a precursor to other ranking.
   AddRanker(std::make_unique<ScoreNormalizingRanker>(
+      score_normalizer_params,
       PersistentProto<ScoreNormalizerProto>(
           state_dir.AppendASCII("score_norm.pb"), kStandardWriteDelay)));
 

@@ -80,6 +80,7 @@ class SearchControllerImpl : public SearchController {
   base::Time session_start() override;
   void set_results_changed_callback_for_test(
       ResultsChangedCallback callback) override;
+  void disable_ranking_for_test() override;
 
   void NotifyResultsAdded(const std::vector<ChromeSearchResult*>& results);
 

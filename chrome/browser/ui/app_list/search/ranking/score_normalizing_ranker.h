@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
+#include "chrome/browser/ui/app_list/search/util/score_normalizer.h"
 
 namespace app_list {
 
@@ -23,12 +24,10 @@ class ScoreNormalizerProto;
 //
 // Some providers don't have any transformation applied, see
 // ShouldIgnoreProvider in the implementation for details.
-//
-// TODO(crbug.com/1199206): This was made a no-op after stability concerns, but
-// will be re-added soon.
 class ScoreNormalizingRanker : public Ranker {
  public:
-  explicit ScoreNormalizingRanker(PersistentProto<ScoreNormalizerProto> proto);
+  ScoreNormalizingRanker(ScoreNormalizer::Params params,
+                         PersistentProto<ScoreNormalizerProto> proto);
   ~ScoreNormalizingRanker() override;
 
   ScoreNormalizingRanker(const ScoreNormalizingRanker&) = delete;
@@ -36,6 +35,9 @@ class ScoreNormalizingRanker : public Ranker {
 
   // Ranker:
   void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
+
+ private:
+  ScoreNormalizer normalizer_;
 };
 
 }  // namespace app_list
