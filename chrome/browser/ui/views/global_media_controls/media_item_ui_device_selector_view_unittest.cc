@@ -141,6 +141,7 @@ class MockCastDialogController : public CastDialogController {
                     media_router::MediaCastMode cast_mode));
   MOCK_METHOD1(StopCasting, void(const std::string& route_id));
   MOCK_METHOD1(ClearIssue, void(const media_router::Issue::Id& issue_id));
+  MOCK_METHOD0(GetInitiator, content::WebContents*());
 };
 
 }  // anonymous namespace

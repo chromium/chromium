@@ -17,12 +17,15 @@
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_socket_service.h"
 #include "components/cast_channel/cast_test_util.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,7 +58,7 @@ class MockPage : public access_code_cast::mojom::Page {
 
 }  // namespace
 
-class AccessCodeCastHandlerTest : public testing::Test {
+class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   AccessCodeCastHandlerTest()
       : mock_time_task_runner_(new base::TestMockTimeTaskRunner()),
@@ -66,7 +69,6 @@ class AccessCodeCastHandlerTest : public testing::Test {
             new CastSessionTracker(&dual_media_sink_service_,
                                    &message_handler_,
                                    mock_cast_socket_service_->task_runner())),
-        profile_manager_(TestingBrowserProcess::GetGlobal()),
         mock_cast_media_sink_service_impl_(
             new MockCastMediaSinkServiceImpl(mock_sink_discovered_cb_.Get(),
                                              mock_cast_socket_service_.get(),
@@ -76,23 +78,38 @@ class AccessCodeCastHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
+    ChromeRenderViewHostTestHarness::SetUp();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    router_ = static_cast<MockMediaRouter*>(
+        MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
+            web_contents()->GetBrowserContext(),
+            base::BindRepeating(&MockMediaRouter::Create)));
+    media_router::CastModeSet cast_mode_set = {
+        media_router::MediaCastMode::DESKTOP_MIRROR};
     handler_ = std::make_unique<AccessCodeCastHandler>(
         mojo::PendingReceiver<access_code_cast::mojom::PageHandler>(),
         page_.BindAndGetRemote(),
-        profile_manager()->CreateTestingProfile("foo_email"),
+        profile_manager()->CreateTestingProfile("foo_email"), router_,
+        cast_mode_set, web_contents(),
         mock_cast_media_sink_service_impl_.get());
   }
-  void TearDown() override { handler_.reset(); }
+  void TearDown() override {
+    handler_.reset();
+    profile_manager_->DeleteAllTestingProfiles();
+    profile_manager_.reset();
+    task_environment()->RunUntilIdle();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
   AccessCodeCastHandler* handler() { return handler_.get(); }
 
-  TestingProfileManager* profile_manager() { return &profile_manager_; }
+  TestingProfileManager* profile_manager() { return profile_manager_.get(); }
 
  private:
-  // Everything must be called on Chrome_UIThread.
-  content::BrowserTaskEnvironment task_environment_;
-
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
+
+  raw_ptr<MockMediaRouter> router_;
 
   static std::vector<DiscoveryNetworkInfo> GetFakeNetworkInfo() {
     return {
@@ -114,7 +131,7 @@ class AccessCodeCastHandlerTest : public testing::Test {
   testing::NiceMock<cast_channel::MockCastMessageHandler> message_handler_;
   std::unique_ptr<media_router::CastSessionTracker> session_tracker_;
   testing::StrictMock<MockPage> page_;
-  TestingProfileManager profile_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::unique_ptr<MockCastMediaSinkServiceImpl>
       mock_cast_media_sink_service_impl_;

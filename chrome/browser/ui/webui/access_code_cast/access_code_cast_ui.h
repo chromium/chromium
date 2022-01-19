@@ -12,18 +12,27 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "url/gurl.h"
 
+namespace content {
+class BrowserContext;
+class WebContents;
+}  // namespace content
+
 class AccessCodeCastDialog : public ui::WebDialogDelegate {
  public:
-  explicit AccessCodeCastDialog(media_router::MediaCastMode cast_mode);
+  AccessCodeCastDialog(content::BrowserContext* context,
+                       const media_router::CastModeSet& cast_mode_set,
+                       content::WebContents* web_contents);
   ~AccessCodeCastDialog() override;
   AccessCodeCastDialog(const AccessCodeCastDialog&) = delete;
   AccessCodeCastDialog& operator=(const AccessCodeCastDialog&) = delete;
-  static void Show(media_router::MediaCastMode mode =
-                       media_router::MediaCastMode::DESKTOP_MIRROR);
+  static void Show(const media_router::CastModeSet& cast_mode_set =
+                       {media_router::MediaCastMode::DESKTOP_MIRROR},
+                   content::WebContents* web_contents = nullptr);
 
  private:
   ui::ModalType GetDialogModalType() const override;
@@ -47,8 +56,17 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate {
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
+
+  static void Show(gfx::NativeView parent,
+                   content::BrowserContext* context,
+                   const media_router::CastModeSet& cast_mode_set,
+                   content::WebContents* web_contents);
+
   raw_ptr<content::WebUI> webui_ = nullptr;
-  media_router::MediaCastMode cast_mode_;
+  const raw_ptr<content::BrowserContext> context_;
+  // Cast modes that should be attempted.
+  const media_router::CastModeSet cast_mode_set_;
+  const raw_ptr<content::WebContents> web_contents_;
 };
 
 // The WebUI controller for chrome://access-code-cast.
@@ -65,6 +83,18 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
       mojo::PendingReceiver<access_code_cast::mojom::PageHandlerFactory>
           receiver);
 
+  // Set the set of modes that should be attempted when casting.
+  virtual void SetCastModeSet(const media_router::CastModeSet& cast_mode_set);
+
+  // This is the browser context that was used to launch the media router
+  // dialog. This may be different than the context that was used to launch
+  // this dialog.
+  virtual void SetBrowserContext(content::BrowserContext* context);
+
+  // The webcontents that were in focus when the media router dialog was
+  // launched. May be null in the case of desktop casting.
+  virtual void SetWebContents(content::WebContents* web_contents);
+
  private:
   // access_code_cast::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -75,6 +105,10 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
   std::unique_ptr<media_router::AccessCodeCastHandler> page_handler_;
   mojo::Receiver<access_code_cast::mojom::PageHandlerFactory> factory_receiver_{
       this};
+
+  raw_ptr<content::BrowserContext> context_ = nullptr;
+  media_router::CastModeSet cast_mode_set_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

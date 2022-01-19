@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
@@ -15,7 +16,11 @@
 #include "chrome/grit/access_code_cast_resources.h"
 #include "chrome/grit/access_code_cast_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_router_factory.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/bindings_policy.h"
@@ -28,19 +33,47 @@ using media_router::AccessCodeCastHandler;
 ///////////////////////////////////////////////////////////////////////////////
 
 AccessCodeCastDialog::AccessCodeCastDialog(
-    media_router::MediaCastMode cast_mode)
-    : cast_mode_(cast_mode) {
+    content::BrowserContext* context,
+    const media_router::CastModeSet& cast_mode_set,
+    content::WebContents* web_contents)
+    : context_(context),
+      cast_mode_set_(cast_mode_set),
+      web_contents_(web_contents) {
+  DCHECK(context_) << "Must have a context!";
+  DCHECK(!cast_mode_set_.empty())
+      << "Must have at least one available casting mode!";
+  DCHECK(*cast_mode_set_.begin() ==
+             media_router::MediaCastMode::DESKTOP_MIRROR ||
+         web_contents_)
+      << "Web contents must be set for non desktop-mode casting!";
   set_can_resize(false);
 }
 
-void AccessCodeCastDialog::Show(media_router::MediaCastMode mode) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  AccessCodeCastDialog* dialog = new AccessCodeCastDialog(mode);
-  chrome::ShowWebDialog(nullptr, profile, dialog);
+void AccessCodeCastDialog::Show(const media_router::CastModeSet& cast_mode_set,
+                                content::WebContents* web_contents) {
+  AccessCodeCastDialog::Show(web_contents ? web_contents->GetMainFrame()
+                                                ->GetOutermostMainFrame()
+                                                ->GetNativeView()
+                                          : nullptr,
+                             web_contents
+                                 ? web_contents->GetBrowserContext()
+                                 : ProfileManager::GetActiveUserProfile(),
+                             cast_mode_set, web_contents);
+}
+
+void AccessCodeCastDialog::Show(gfx::NativeView parent,
+                                content::BrowserContext* context,
+                                const media_router::CastModeSet& cast_mode_set,
+                                content::WebContents* web_contents) {
+  chrome::ShowWebDialog(
+      parent, context,
+      new AccessCodeCastDialog(context, cast_mode_set, web_contents));
 }
 
 ui::ModalType AccessCodeCastDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_NONE;
+  // If there are no web_contents_, that means that the dialog was launched
+  // from the system tray, so therefore it shuold be a system dialog.
+  return web_contents_ ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
 }
 
 std::u16string AccessCodeCastDialog::GetDialogTitle() const {
@@ -63,7 +96,6 @@ void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
 
 std::string AccessCodeCastDialog::GetDialogArgs() const {
   base::DictionaryValue args;
-  args.SetKey("castMode", base::Value(cast_mode_));
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;
@@ -71,6 +103,11 @@ std::string AccessCodeCastDialog::GetDialogArgs() const {
 
 void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
   webui_ = webui;
+  AccessCodeCastUI* controller =
+      webui_->GetController()->GetAs<AccessCodeCastUI>();
+  controller->SetCastModeSet(cast_mode_set_);
+  controller->SetBrowserContext(context_);
+  controller->SetWebContents(web_contents_);
 }
 
 void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {
@@ -116,7 +153,6 @@ AccessCodeCastDialog::~AccessCodeCastDialog() = default;
 ///////////////////////////////////////////////////////////////////////////////
 //  AccessCodeCast UI controller:
 ///////////////////////////////////////////////////////////////////////////////
-
 AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
     : MojoWebDialogUI(web_ui) {
   auto source = base::WrapUnique(
@@ -149,6 +185,19 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
 
 AccessCodeCastUI::~AccessCodeCastUI() = default;
 
+void AccessCodeCastUI::SetCastModeSet(
+    const media_router::CastModeSet& cast_mode_set) {
+  cast_mode_set_ = cast_mode_set;
+}
+
+void AccessCodeCastUI::SetBrowserContext(content::BrowserContext* context) {
+  context_ = context;
+}
+
+void AccessCodeCastUI::SetWebContents(content::WebContents* web_contents) {
+  web_contents_ = web_contents;
+}
+
 void AccessCodeCastUI::BindInterface(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandlerFactory>
         receiver) {
@@ -161,8 +210,18 @@ void AccessCodeCastUI::CreatePageHandler(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> receiver) {
   DCHECK(page);
 
+  // We only get a MediaRouter if the browser context is present. This is to
+  // prevent our js unit tests from failing.
+  media_router::MediaRouter* router =
+      context_
+          ? media_router::MediaRouterFactory::GetApiForBrowserContext(context_)
+          : nullptr;
+
   page_handler_ = std::make_unique<AccessCodeCastHandler>(
-      std::move(receiver), std::move(page), Profile::FromWebUI(web_ui()));
+      std::move(receiver), std::move(page),
+      context_ ? Profile::FromBrowserContext(context_)
+               : Profile::FromWebUI(web_ui()),
+      router, cast_mode_set_, web_contents_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AccessCodeCastUI)

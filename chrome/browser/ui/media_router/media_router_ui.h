@@ -70,6 +70,7 @@ class MediaRouterUI : public CastDialogController,
                     MediaCastMode cast_mode) override;
   void StopCasting(const std::string& route_id) override;
   void ClearIssue(const Issue::Id& issue_id) override;
+  content::WebContents* GetInitiator() override;
 
   // Initializes internal state (e.g. starts listening for MediaSinks) for
   // targeting the default MediaSource (if any) of |initiator_|. The contents of

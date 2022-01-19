@@ -11,6 +11,7 @@
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,6 +21,14 @@ using ::access_code_cast::mojom::AddSinkResultCode;
 using ::media_router::AccessCodeCastDiscoveryInterface;
 using ::media_router::CreateCastMediaSinkResult;
 using ::media_router::MediaSinkInternal;
+
+namespace content {
+class WebContents;
+}
+
+namespace media_router {
+class MediaRouter;
+}
 
 // TODO(b/213324920): Remove WebUI from the media_router namespace after
 // expiration module has been completed.
@@ -32,13 +41,19 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler {
   AccessCodeCastHandler(
       mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
       mojo::PendingRemote<access_code_cast::mojom::Page> page,
-      Profile* profile);
+      Profile* profile,
+      media_router::MediaRouter* media_router,
+      const media_router::CastModeSet& cast_mode_set,
+      content::WebContents* web_contents);
 
   // Constructor that is used for testing.
   AccessCodeCastHandler(
       mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
       mojo::PendingRemote<access_code_cast::mojom::Page> page,
       Profile* profile,
+      media_router::MediaRouter* media_router,
+      const media_router::CastModeSet& cast_mode_set,
+      content::WebContents* web_contents,
       CastMediaSinkServiceImpl* cast_media_sink_service_impl);
 
   ~AccessCodeCastHandler() override;
@@ -82,6 +97,10 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler {
 
   // Used to fetch OAuth2 access tokens.
   raw_ptr<Profile> const profile_;
+
+  const raw_ptr<media_router::MediaRouter> media_router_;
+  const media_router::CastModeSet cast_mode_set_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   AddSinkCallback add_sink_callback_;
 

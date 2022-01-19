@@ -24,10 +24,16 @@ namespace media_router {
 AccessCodeCastHandler::AccessCodeCastHandler(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
     mojo::PendingRemote<access_code_cast::mojom::Page> page,
-    Profile* profile)
+    Profile* profile,
+    MediaRouter* media_router,
+    const media_router::CastModeSet& cast_mode_set,
+    content::WebContents* web_contents)
     : AccessCodeCastHandler(std::move(page_handler),
                             std::move(page),
                             profile,
+                            media_router,
+                            cast_mode_set,
+                            web_contents,
                             media_router::DualMediaSinkService::GetInstance()
                                 ->GetCastMediaSinkServiceImpl()) {
   DCHECK(profile_);
@@ -37,10 +43,16 @@ AccessCodeCastHandler::AccessCodeCastHandler(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
     mojo::PendingRemote<access_code_cast::mojom::Page> page,
     Profile* profile,
+    MediaRouter* media_router,
+    const media_router::CastModeSet& cast_mode_set,
+    content::WebContents* web_contents,
     CastMediaSinkServiceImpl* cast_media_sink_service_impl)
     : page_(std::move(page)),
       receiver_(this, std::move(page_handler)),
       profile_(profile),
+      media_router_(media_router),
+      cast_mode_set_(cast_mode_set),
+      web_contents_(web_contents),
       cast_media_sink_service_impl_(cast_media_sink_service_impl) {
   DCHECK(profile_);
 }

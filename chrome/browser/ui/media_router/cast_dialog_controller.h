@@ -11,6 +11,10 @@
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace media_router {
 
 class CastDialogModel;
@@ -47,6 +51,9 @@ class CastDialogController {
 
   // Removes the specified issue. No-op if the ID is invalid.
   virtual void ClearIssue(const Issue::Id& issue_id) = 0;
+
+  // Gets the tab contents (if any) that was used to initiate this dialog box.
+  virtual content::WebContents* GetInitiator() = 0;
 };
 
 }  // namespace media_router

@@ -63,6 +63,7 @@ class MockCastDialogController : public media_router::CastDialogController {
                     media_router::MediaCastMode cast_mode) override {}
   void StopCasting(const media_router::MediaRoute::Id& route_id) override {}
   void ClearIssue(const media_router::Issue::Id& issue_id) override {}
+  content::WebContents* GetInitiator() override { return nullptr; }
 };
 
 }  // namespace

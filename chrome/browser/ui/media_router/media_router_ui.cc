@@ -177,6 +177,10 @@ void MediaRouterUI::ClearIssue(const Issue::Id& issue_id) {
   RemoveIssue(issue_id);
 }
 
+content::WebContents* MediaRouterUI::GetInitiator() {
+  return initiator();
+}
+
 void MediaRouterUI::InitWithDefaultMediaSource() {
   DCHECK(!query_result_manager_);
   InitCommon();
