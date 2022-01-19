@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -475,8 +476,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   cookie_tracker.cookie_accesses().clear();
 }
 
+// TODO(https://crbug.com/1288573): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_CookieCallbacks_Subframe DISABLED_CookieCallbacks_Subframe
+#else
+#define MAYBE_CookieCallbacks_Subframe CookieCallbacks_Subframe
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
-                       CookieCallbacks_Subframe) {
+                       MAYBE_CookieCallbacks_Subframe) {
   CookieTracker cookie_tracker(web_contents());
 
   GURL first_party_url("http://a.com/");
