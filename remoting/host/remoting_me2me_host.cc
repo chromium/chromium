@@ -104,7 +104,7 @@
 #include "remoting/signaling/remoting_log_to_server.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/webrtc/rtc_base/event_tracer.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <signal.h>
@@ -204,10 +204,6 @@ const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
 // The default email domain for Googlers. Used to determine whether the host's
 // email address is Google-internal or not.
 constexpr char kGooglerEmailDomain[] = "@google.com";
-
-// File to write webrtc trace events to. If not specified, webrtc trace events
-// will not be enabled.
-const char kWebRtcTraceEventFile[] = "webrtc-trace-event-file";
 
 }  // namespace
 
@@ -1885,14 +1881,14 @@ void HostProcess::CrashHostProcess(const std::string& function_name,
 
 int HostProcessMain() {
   HOST_LOG << "Starting host process: version " << STRINGIZE(VERSION);
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
   // use X11 safely (such as the WebRTC capturer, GTK ...)
   x11::InitXlib();
 
-  if (!cmd_line->HasSwitch(kReportOfflineReasonSwitchName)) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kReportOfflineReasonSwitchName)) {
     // Required for any calls into GTK functions, such as the Disconnect and
     // Continue windows, though these should not be used for the Me2Me case
     // (crbug.com/104377).
@@ -1907,12 +1903,6 @@ int HostProcessMain() {
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-  if (cmd_line->HasSwitch(kWebRtcTraceEventFile)) {
-    rtc::tracing::SetupInternalTracer();
-    rtc::tracing::StartInternalCapture(
-        cmd_line->GetSwitchValuePath(kWebRtcTraceEventFile).value().c_str());
-  }
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 
@@ -1951,8 +1941,6 @@ int HostProcessMain() {
 
   // Block until tasks blocking shutdown have completed their execution.
   base::ThreadPoolInstance::Get()->Shutdown();
-
-  rtc::tracing::ShutdownInternalTracer();
 
   return exit_code;
 }
