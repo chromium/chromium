@@ -66,8 +66,8 @@ MATCHER_P(InfoEquals, expected, "") {
 // Set the user preference for |origin| to prefer tab mirroring.
 void EnableTabMirroringForOrigin(PrefService* prefs,
                                  const std::string& origin) {
-  ListPrefUpdateDeprecated update(
-      prefs, media_router::prefs::kMediaRouterTabMirroringSources);
+  ListPrefUpdate update(prefs,
+                        media_router::prefs::kMediaRouterTabMirroringSources);
   if (!base::Contains(update->GetList(), base::Value(origin)))
     update->Append(origin);
 }
@@ -797,8 +797,8 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
 
   // Remove the user preference for |origin|.
   {
-    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                    prefs::kMediaRouterTabMirroringSources);
+    ListPrefUpdate update(profile()->GetPrefs(),
+                          prefs::kMediaRouterTabMirroringSources);
     update->EraseListValue(base::Value(origin));
   }
 
@@ -854,7 +854,7 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
 
   // Remove the user preference for |origin| in OffTheRecord.
   {
-    ListPrefUpdateDeprecated update(
+    ListPrefUpdate update(
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
         prefs::kMediaRouterTabMirroringSources);
     update->EraseListValue(base::Value(origin));
