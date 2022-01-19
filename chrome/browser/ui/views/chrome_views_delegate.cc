@@ -88,7 +88,7 @@ void ChromeViewsDelegate::SaveWindowPlacement(const views::Widget* window,
   if (!prefs)
     return;
 
-  std::unique_ptr<DictionaryPrefUpdateDeprecated> pref_update =
+  std::unique_ptr<DictionaryPrefUpdate> pref_update =
       chrome::GetWindowPlacementDictionaryReadWrite(window_name, prefs);
   base::Value* window_preferences = pref_update->Get();
   window_preferences->SetIntKey("left", bounds.x());

@@ -15,7 +15,7 @@ class Browser;
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace gfx {
@@ -31,12 +31,12 @@ std::string GetWindowName(const Browser* browser);
 // of the window that is stored in the given PrefService. If the window_name
 // isn't the name of a registered preference it is assumed to be the name of an
 // app and the AppWindowPlacement key is used to find the app's dictionary.
-std::unique_ptr<DictionaryPrefUpdateDeprecated>
-GetWindowPlacementDictionaryReadWrite(const std::string& window_name,
-                                      PrefService* prefs);
+std::unique_ptr<DictionaryPrefUpdate> GetWindowPlacementDictionaryReadWrite(
+    const std::string& window_name,
+    PrefService* prefs);
 // Returns NULL if the window corresponds to an app that doesn't have placement
 // information stored in the preferences system.
-const base::DictionaryValue* GetWindowPlacementDictionaryReadOnly(
+const base::Value* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs);
 

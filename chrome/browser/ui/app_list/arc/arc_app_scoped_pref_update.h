@@ -14,7 +14,7 @@ class PrefService;
 namespace arc {
 
 // Pref updater for ARC apps. Used in deferent pref sections.
-class ArcAppScopedPrefUpdate : public DictionaryPrefUpdateDeprecated {
+class ArcAppScopedPrefUpdate : public DictionaryPrefUpdate {
  public:
   // This is used in following cases:
   // |path| is "arc.apps" - To update ARC apps preferences. In this case |id|
@@ -32,8 +32,8 @@ class ArcAppScopedPrefUpdate : public DictionaryPrefUpdateDeprecated {
 
   ~ArcAppScopedPrefUpdate() override;
 
-  // DictionaryPrefUpdateDeprecated:
-  base::DictionaryValue* Get() override;
+  // DictionaryPrefUpdate:
+  base::Value* Get() override;
 
  private:
   const std::string id_;

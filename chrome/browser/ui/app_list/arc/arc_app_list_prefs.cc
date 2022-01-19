@@ -882,9 +882,9 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
 
   const base::Time time = base::Time::Now();
   arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
-  base::DictionaryValue* app_dict = update.Get();
+  base::Value* app_dict = update.Get();
   const std::string string_value = base::NumberToString(time.ToInternalValue());
-  app_dict->SetString(kLastLaunchTime, string_value);
+  app_dict->SetStringKey(kLastLaunchTime, string_value);
 
   for (auto& observer : observer_list_)
     observer.OnAppLastLaunchTimeUpdated(app_id);
@@ -1064,8 +1064,8 @@ void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
   instance->SetResizeLockState(app_info->package_name, state);
 
   arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
-  base::DictionaryValue* app_dict = update.Get();
-  app_dict->SetInteger(kResizeLockState, static_cast<int32_t>(state));
+  base::Value* app_dict = update.Get();
+  app_dict->SetIntKey(kResizeLockState, static_cast<int32_t>(state));
 
   NotifyAppStatesChanged(app_id);
 }
@@ -1090,7 +1090,7 @@ void ArcAppListPrefs::SetResizeLockNeedsConfirmation(const std::string& app_id,
   }
 
   arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
-  base::DictionaryValue* app_dict = update.Get();
+  base::Value* app_dict = update.Get();
   app_dict->SetBoolKey(kResizeLockNeedsConfirmation, is_needed);
 }
 
@@ -1282,28 +1282,28 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
       GetResizeLockNeedsConfirmation(app_id);
 
   arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
-  base::DictionaryValue* app_dict = update.Get();
-  app_dict->SetString(kName, updated_name);
-  app_dict->SetString(kPackageName, package_name);
-  app_dict->SetString(kActivity, activity);
-  app_dict->SetString(kIntentUri, intent_uri);
-  app_dict->SetString(kIconResourceId, icon_resource_id);
-  app_dict->SetBoolean(kSuspended, suspended);
-  app_dict->SetBoolean(kSticky, sticky);
-  app_dict->SetBoolean(kNotificationsEnabled, notifications_enabled);
-  app_dict->SetInteger(kResizeLockState,
-                       static_cast<int32_t>(resize_lock_state));
-  app_dict->SetBoolean(kResizeLockNeedsConfirmation,
+  base::Value* app_dict = update.Get();
+  app_dict->SetStringKey(kName, updated_name);
+  app_dict->SetStringKey(kPackageName, package_name);
+  app_dict->SetStringKey(kActivity, activity);
+  app_dict->SetStringKey(kIntentUri, intent_uri);
+  app_dict->SetStringKey(kIconResourceId, icon_resource_id);
+  app_dict->SetBoolKey(kSuspended, suspended);
+  app_dict->SetBoolKey(kSticky, sticky);
+  app_dict->SetBoolKey(kNotificationsEnabled, notifications_enabled);
+  app_dict->SetIntKey(kResizeLockState,
+                      static_cast<int32_t>(resize_lock_state));
+  app_dict->SetBoolKey(kResizeLockNeedsConfirmation,
                        resize_lock_needs_confirmation);
-  app_dict->SetBoolean(kShortcut, shortcut);
-  app_dict->SetBoolean(kLaunchable, launchable);
+  app_dict->SetBoolKey(kShortcut, shortcut);
+  app_dict->SetBoolKey(kLaunchable, launchable);
 
   // Note the install time is the first time the Chrome OS sees the app, not the
   // actual install time in Android side.
   if (GetInstallTime(app_id).is_null()) {
     std::string install_time_str =
         base::NumberToString(base::Time::Now().ToInternalValue());
-    app_dict->SetString(kInstallTime, install_time_str);
+    app_dict->SetStringKey(kInstallTime, install_time_str);
   }
 
   const bool was_disabled = ready_apps_.count(app_id) == 0;
@@ -1434,20 +1434,20 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
 
   arc::ArcAppScopedPrefUpdate update(prefs_, package_name,
                                      arc::prefs::kArcPackages);
-  base::DictionaryValue* package_dict = update.Get();
+  base::Value* package_dict = update.Get();
   const std::string id_str =
       base::NumberToString(package.last_backup_android_id);
   const std::string time_str = base::NumberToString(package.last_backup_time);
 
   int old_package_version =
       package_dict->FindIntKey(kPackageVersion).value_or(-1);
-  package_dict->SetBoolean(kShouldSync, package.sync);
-  package_dict->SetInteger(kPackageVersion, package.package_version);
-  package_dict->SetString(kLastBackupAndroidId, id_str);
-  package_dict->SetString(kLastBackupTime, time_str);
-  package_dict->SetBoolean(kSystem, package.system);
-  package_dict->SetBoolean(kUninstalled, false);
-  package_dict->SetBoolean(kVPNProvider, package.vpn_provider);
+  package_dict->SetBoolKey(kShouldSync, package.sync);
+  package_dict->SetIntKey(kPackageVersion, package.package_version);
+  package_dict->SetStringKey(kLastBackupAndroidId, id_str);
+  package_dict->SetStringKey(kLastBackupTime, time_str);
+  package_dict->SetBoolKey(kSystem, package.system);
+  package_dict->SetBoolKey(kUninstalled, false);
+  package_dict->SetBoolKey(kVPNProvider, package.vpn_provider);
 
   base::DictionaryValue permissions_dict;
   if (package.permission_states.has_value()) {
@@ -1663,13 +1663,13 @@ void ArcAppListPrefs::OnPackageAppListRefreshed(
 
   arc::ArcAppScopedPrefUpdate update(prefs_, package_name,
                                      arc::prefs::kArcPackages);
-  base::DictionaryValue* package_dict = update.Get();
+  base::Value* package_dict = update.Get();
   if (!apps_to_remove.empty()) {
     auto* shelf_controller = ChromeShelfController::instance();
     if (shelf_controller) {
       int pin_index =
           shelf_controller->PinnedItemIndexByAppID(*apps_to_remove.begin());
-      package_dict->SetInteger(kPinIndex, pin_index);
+      package_dict->SetIntKey(kPinIndex, pin_index);
     }
   }
 

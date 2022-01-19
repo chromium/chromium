@@ -329,7 +329,7 @@ void ArcDefaultAppList::SetAppHidden(const std::string& app_id, bool hidden) {
   // Store hidden flag.
   arc::ArcAppScopedPrefUpdate(profile_->GetPrefs(), app_id, kDefaultApps)
       .Get()
-      ->SetBoolean(kHidden, hidden);
+      ->SetBoolKey(kHidden, hidden);
 }
 
 void ArcDefaultAppList::SetAppsHiddenForPackage(

@@ -48,11 +48,11 @@ bool ParseCommaSeparatedIntegers(const std::string& str,
   return true;
 }
 
-class WindowPlacementPrefUpdate : public DictionaryPrefUpdateDeprecated {
+class WindowPlacementPrefUpdate : public DictionaryPrefUpdate {
  public:
   WindowPlacementPrefUpdate(PrefService* service,
                             const std::string& window_name)
-      : DictionaryPrefUpdateDeprecated(service, prefs::kAppWindowPlacement),
+      : DictionaryPrefUpdate(service, prefs::kAppWindowPlacement),
         window_name_(window_name) {}
 
   WindowPlacementPrefUpdate(const WindowPlacementPrefUpdate&) = delete;
@@ -61,16 +61,14 @@ class WindowPlacementPrefUpdate : public DictionaryPrefUpdateDeprecated {
 
   ~WindowPlacementPrefUpdate() override {}
 
-  base::DictionaryValue* Get() override {
-    base::DictionaryValue* all_apps_dict =
-        DictionaryPrefUpdateDeprecated::Get();
-    base::DictionaryValue* this_app_dict_weak = nullptr;
-    if (!all_apps_dict->GetDictionary(window_name_, &this_app_dict_weak)) {
-      auto this_app_dict = std::make_unique<base::DictionaryValue>();
-      this_app_dict_weak = this_app_dict.get();
-      all_apps_dict->Set(window_name_, std::move(this_app_dict));
+  base::Value* Get() override {
+    base::Value* all_apps_dict = DictionaryPrefUpdate::Get();
+    base::Value* this_app_dict = all_apps_dict->FindDictPath(window_name_);
+    if (!this_app_dict) {
+      this_app_dict = all_apps_dict->SetPath(
+          window_name_, base::Value(base::Value::Type::DICTIONARY));
     }
-    return this_app_dict_weak;
+    return this_app_dict;
   }
 
  private:
@@ -96,32 +94,29 @@ std::string GetWindowName(const Browser* browser) {
   }
 }
 
-std::unique_ptr<DictionaryPrefUpdateDeprecated>
-GetWindowPlacementDictionaryReadWrite(const std::string& window_name,
-                                      PrefService* prefs) {
+std::unique_ptr<DictionaryPrefUpdate> GetWindowPlacementDictionaryReadWrite(
+    const std::string& window_name,
+    PrefService* prefs) {
   DCHECK(!window_name.empty());
-  // A normal DictionaryPrefUpdateDeprecated will suffice for non-app windows.
+  // A normal DictionaryPrefUpdate will suffice for non-app windows.
   if (prefs->FindPreference(window_name)) {
-    return std::make_unique<DictionaryPrefUpdateDeprecated>(prefs, window_name);
+    return std::make_unique<DictionaryPrefUpdate>(prefs, window_name);
   }
-  return std::unique_ptr<DictionaryPrefUpdateDeprecated>(
-      new WindowPlacementPrefUpdate(prefs, window_name));
+  return std::make_unique<WindowPlacementPrefUpdate>(prefs, window_name);
 }
 
-const base::DictionaryValue* GetWindowPlacementDictionaryReadOnly(
+const base::Value* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs) {
   DCHECK(!window_name.empty());
   if (prefs->FindPreference(window_name))
-    return &base::Value::AsDictionaryValue(*prefs->GetDictionary(window_name));
+    return prefs->GetDictionary(window_name);
 
-  const base::DictionaryValue* app_windows = &base::Value::AsDictionaryValue(
-      *prefs->GetDictionary(prefs::kAppWindowPlacement));
+  const base::Value* app_windows =
+      prefs->GetDictionary(prefs::kAppWindowPlacement);
   if (!app_windows)
     return nullptr;
-  const base::DictionaryValue* to_return = nullptr;
-  app_windows->GetDictionary(window_name, &to_return);
-  return to_return;
+  return app_windows->FindDictKey(window_name);
 }
 
 bool ShouldSaveWindowPlacement(const Browser* browser) {
