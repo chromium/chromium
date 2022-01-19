@@ -708,42 +708,18 @@ void DistributeExcessBlockSizeToRows(
 
   auto RowBlockSizeDeficit = [&percentage_resolution_block_size](
                                  const NGTableTypes::Row& row) {
-    if (percentage_resolution_block_size == kIndefiniteSize)
-      return LayoutUnit();
+    DCHECK_NE(percentage_resolution_block_size, kIndefiniteSize);
     DCHECK(row.percent);
     return (LayoutUnit(*row.percent * percentage_resolution_block_size / 100) -
             row.block_size)
         .ClampNegativeToZero();
   };
 
-  auto IsUnconstrainedNonEmptyRow =
-      [&percentage_resolution_block_size](const NGTableTypes::Row& row) {
-        if (row.block_size == LayoutUnit())
-          return false;
-        if (row.percent && percentage_resolution_block_size == kIndefiniteSize)
-          return true;
-        return !row.is_constrained;
-      };
-
-  auto IsRowWithOriginatingRowspan =
-      [&start_row,
-       &desired_block_size_is_rowspan](const NGTableTypes::Row& row) {
-        // Rowspans are treated specially only during rowspan distribution.
-        return desired_block_size_is_rowspan && &row != start_row &&
-               row.has_rowspan_start;
-      };
-
-  auto IsEmptyRow =
-      [&percentage_resolution_block_size](const NGTableTypes::Row& row) {
-        bool is_percent = percentage_resolution_block_size != kIndefiniteSize &&
-                          row.percent && *row.percent != 0;
-        return row.block_size == LayoutUnit() && !is_percent;
-      };
-
-  Vector<wtf_size_t> percent_rows_with_deficit;
   Vector<wtf_size_t> rows_with_originating_rowspan;
+  Vector<wtf_size_t> percent_rows_with_deficit;
   Vector<wtf_size_t> unconstrained_non_empty_rows;
   Vector<wtf_size_t> empty_rows;
+  Vector<wtf_size_t> non_empty_rows;
   Vector<wtf_size_t> unconstrained_empty_rows;
   unsigned constrained_non_empty_row_count = 0;
 
@@ -754,25 +730,43 @@ void DistributeExcessBlockSizeToRows(
   for (auto index = start_row_index; index < end_row_index; ++index) {
     const auto& row = rows->at(index);
     total_block_size += row.block_size;
-    if (row.percent) {
+
+    // Rowspans are treated specially only during rowspan distribution.
+    bool is_row_with_originating_rowspan = desired_block_size_is_rowspan &&
+                                           index != start_row_index &&
+                                           row.has_rowspan_start;
+    if (is_row_with_originating_rowspan)
+      rows_with_originating_rowspan.push_back(index);
+
+    bool is_row_empty = row.block_size == LayoutUnit();
+
+    if (row.percent && *row.percent != 0 &&
+        percentage_resolution_block_size != kIndefiniteSize) {
       LayoutUnit deficit = RowBlockSizeDeficit(row);
       if (deficit != LayoutUnit()) {
         percent_rows_with_deficit.push_back(index);
         percent_block_size_deficit += deficit;
+        is_row_empty = false;
       }
     }
-    if (IsRowWithOriginatingRowspan(row))
-      rows_with_originating_rowspan.push_back(index);
-    if (IsUnconstrainedNonEmptyRow(row)) {
-      unconstrained_non_empty_rows.push_back(index);
-      unconstrained_non_empty_row_block_size += row.block_size;
-    } else if (row.is_constrained && !IsEmptyRow(row)) {
-      constrained_non_empty_row_count++;
-    }
-    if (IsEmptyRow(row)) {
+
+    // Only consider percent rows that resolve as constrained.
+    const bool is_row_constrained =
+        row.is_constrained &&
+        (!row.percent || percentage_resolution_block_size != kIndefiniteSize);
+
+    if (is_row_empty) {
       empty_rows.push_back(index);
-      if (!row.is_constrained)
+      if (!is_row_constrained)
         unconstrained_empty_rows.push_back(index);
+    } else {
+      non_empty_rows.push_back(index);
+      if (is_row_constrained) {
+        constrained_non_empty_row_count++;
+      } else {
+        unconstrained_non_empty_rows.push_back(index);
+        unconstrained_non_empty_row_block_size += row.block_size;
+      }
     }
   }
 
@@ -833,7 +827,6 @@ void DistributeExcessBlockSizeToRows(
     LayoutUnit remaining_deficit = distributable_block_size;
     for (auto& index : unconstrained_non_empty_rows) {
       auto& row = rows->at(index);
-      DCHECK(IsUnconstrainedNonEmptyRow(row));
       LayoutUnit delta =
           LayoutUnit(row.block_size * distributable_block_size.ToFloat() /
                      unconstrained_non_empty_row_block_size);
@@ -893,20 +886,19 @@ void DistributeExcessBlockSizeToRows(
 
   // Step 5: Grow non-empty rows in proportion to current block size.
   // It grows constrained, and unconstrained rows.
-  NGTableTypes::Row* last_row = nullptr;
-  LayoutUnit remaining_deficit = distributable_block_size;
-  for (NGTableTypes::Row* row = start_row; row != end_row; ++row) {
-    if (row->block_size == LayoutUnit())
-      continue;
-    last_row = row;
-    LayoutUnit delta = LayoutUnit(distributable_block_size *
-                                  row->block_size.ToFloat() / total_block_size);
-    row->block_size += delta;
-    remaining_deficit -= delta;
-  }
-  if (last_row) {
-    last_row->block_size += remaining_deficit;
-    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
+  if (!non_empty_rows.IsEmpty()) {
+    LayoutUnit remaining_deficit = distributable_block_size;
+    for (auto& index : non_empty_rows) {
+      auto& row = rows->at(index);
+      LayoutUnit delta =
+          LayoutUnit(distributable_block_size * row.block_size.ToFloat() /
+                     total_block_size);
+      row.block_size += delta;
+      remaining_deficit -= delta;
+    }
+    auto& last_row = rows->at(non_empty_rows.back());
+    last_row.block_size += remaining_deficit;
+    last_row.block_size = std::max(last_row.block_size, LayoutUnit());
   }
 }
 
