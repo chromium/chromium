@@ -308,6 +308,7 @@ class WebStateImpl final : public WebState {
   bool CanTakeSnapshot() const final;
   void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) final;
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) final;
+  void CloseMediaPresentations() final;
   void AddObserver(WebStateObserver* observer) final;
   void RemoveObserver(WebStateObserver* observer) final;
   void CloseWebState() final;

@@ -548,6 +548,12 @@ void WebStateImpl::CreateFullPagePdf(
   RealizedState()->CreateFullPagePdf(std::move(callback));
 }
 
+void WebStateImpl::CloseMediaPresentations() {
+  if (pimpl_) {
+    pimpl_->CloseMediaPresentations();
+  }
+}
+
 void WebStateImpl::AddObserver(WebStateObserver* observer) {
   observers_.AddObserver(observer);
 }

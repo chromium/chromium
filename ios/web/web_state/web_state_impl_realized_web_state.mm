@@ -778,6 +778,10 @@ void WebStateImpl::RealizedWebState::CreateFullPagePdf(
       }];
 }
 
+void WebStateImpl::RealizedWebState::CloseMediaPresentations() {
+  [web_controller_ closeMediaPresentations];
+}
+
 void WebStateImpl::RealizedWebState::CloseWebState() {
   if (delegate_) {
     delegate_->CloseWebState(owner_);

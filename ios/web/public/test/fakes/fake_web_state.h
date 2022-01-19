@@ -109,6 +109,7 @@ class FakeWebState : public WebState {
   bool CanTakeSnapshot() const override;
   void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) override;
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) override;
+  void CloseMediaPresentations() override;
 
   // Setters for test data.
   void SetBrowserState(BrowserState* browser_state);

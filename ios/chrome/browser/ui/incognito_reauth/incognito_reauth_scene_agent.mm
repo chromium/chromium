@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -178,6 +179,9 @@
   } else if (level >= SceneActivationLevelForegroundInactive) {
     [self updateWindowHasIncognitoContent:sceneState];
     [self logEnabledHistogramOnce];
+    // Close media presentations when the app is foregrounded rather than
+    // backgrounded to avoid freezes.
+    [self closeMediaPresentations];
   }
 }
 
@@ -217,6 +221,24 @@
 - (BOOL)featureEnabled {
   return self.localState &&
          self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
+}
+
+// Closes the media presentations to avoid having the fullscreen video on top of
+// the blocker.
+- (void)closeMediaPresentations {
+  if (![self featureEnabled])
+    return;
+
+  Browser* browser =
+      self.sceneState.interfaceProvider.incognitoInterface.browser;
+  if (browser) {
+    if (browser->GetWebStateList() &&
+        browser->GetWebStateList()->GetActiveWebState()) {
+      browser->GetWebStateList()
+          ->GetActiveWebState()
+          ->CloseMediaPresentations();
+    }
+  }
 }
 
 @end
