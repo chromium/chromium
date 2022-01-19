@@ -206,8 +206,6 @@ class HttpStreamFactory::Job
   }
 
   bool is_waiting() const { return next_state_ == STATE_WAIT_COMPLETE; }
-  const SSLConfig& server_ssl_config() const;
-  const SSLConfig& proxy_ssl_config() const;
   const ProxyInfo& proxy_info() const;
   ResolveErrorInfo resolve_error_info() const;
 

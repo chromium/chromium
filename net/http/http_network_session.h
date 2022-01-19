@@ -280,9 +280,6 @@ class NET_EXPORT HttpNetworkSession {
     return application_settings_;
   }
 
-  // Populates |server_config| and |proxy_config| based on this session.
-  void GetSSLConfig(SSLConfig* server_config, SSLConfig* proxy_config) const;
-
   // Evaluates if QUIC is enabled for new streams.
   bool IsQuicEnabled() const;
 

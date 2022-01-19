@@ -374,15 +374,6 @@ void HttpNetworkSession::SetServerPushDelegate(
   quic_stream_factory_.set_server_push_delegate(push_delegate_.get());
 }
 
-void HttpNetworkSession::GetSSLConfig(SSLConfig* server_config,
-                                      SSLConfig* proxy_config) const {
-  server_config->alpn_protos = GetAlpnProtos();
-  server_config->application_settings = GetApplicationSettings();
-  server_config->ignore_certificate_errors = params_.ignore_certificate_errors;
-  *proxy_config = *server_config;
-  server_config->early_data_enabled = params_.enable_early_data;
-}
-
 bool HttpNetworkSession::IsQuicEnabled() const {
   return params_.enable_quic;
 }
