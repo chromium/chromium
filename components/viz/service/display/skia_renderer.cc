@@ -574,7 +574,8 @@ class SkiaRenderer::ScopedSkImageBuilder {
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
                        GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin,
                        const absl::optional<gfx::ColorSpace>&
-                           override_colorspace = absl::nullopt);
+                           override_colorspace = absl::nullopt,
+                       bool raw_draw_if_possible = false);
 
   ScopedSkImageBuilder(const ScopedSkImageBuilder&) = delete;
   ScopedSkImageBuilder& operator=(const ScopedSkImageBuilder&) = delete;
@@ -597,7 +598,8 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     bool maybe_concurrent_reads,
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin,
-    const absl::optional<gfx::ColorSpace>& override_color_space) {
+    const absl::optional<gfx::ColorSpace>& override_color_space,
+    bool raw_draw_if_possible) {
   if (!resource_id)
     return;
   auto* resource_provider = skia_renderer->resource_provider();
@@ -605,7 +607,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
 
   auto* image_context = skia_renderer->lock_set_for_external_use_->LockResource(
       resource_id, maybe_concurrent_reads, /*is_video_plane=*/false,
-      override_color_space);
+      override_color_space, raw_draw_if_possible);
 
   // |ImageContext::image| provides thread safety: (a) this ImageContext is
   // only accessed by GPU thread after |image| is set and (b) the fields of
@@ -2206,9 +2208,18 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   // |resource_provider()| can be NULL in resourceless software draws, which
   // should never produce tile quads in the first place.
   DCHECK(resource_provider());
+
+  // If quad->ShouldDrawWithBlending() is true, we need to raster tile paint ops
+  // to an offscreen texture first, and then blend it with content behind the
+  // tile. Since a tile could be used cross frames, so it would better to not
+  // use raw draw.
+  bool raw_draw_if_possible =
+      is_using_raw_draw_ && !quad->ShouldDrawWithBlending();
   ScopedSkImageBuilder builder(
       this, quad->resource_id(), /*maybe_concurrent_reads=*/false,
-      quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
+      quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
+      /*origin=*/kTopLeft_GrSurfaceOrigin,
+      /*override_colorspace=*/absl::nullopt, raw_draw_if_possible);
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);

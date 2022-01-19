@@ -121,7 +121,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       ResourceFormat format,
       bool maybe_concurrent_reads,
       const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-      sk_sp<SkColorSpace> color_space) = 0;
+      sk_sp<SkColorSpace> color_space,
+      bool raw_draw_if_possible) = 0;
 
   virtual gpu::SyncToken ReleaseImageContexts(
       std::vector<std::unique_ptr<ImageContext>> image_contexts) = 0;

@@ -52,7 +52,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
                    bool maybe_concurrent_reads,
                    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace> color_space,
-                   const bool allow_keeping_read_access = true);
+                   bool allow_keeping_read_access = true,
+                   bool raw_draw_if_possible = false);
 
   ImageContextImpl(const ImageContextImpl&) = delete;
   ImageContextImpl& operator=(const ImageContextImpl&) = delete;
@@ -104,6 +105,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   const bool maybe_concurrent_reads_ = false;
   const bool allow_keeping_read_access_ = true;
+  const bool raw_draw_if_possible_ = false;
 
   // Fallback in case we cannot produce a |representation_|.
   raw_ptr<gpu::SharedContextState> fallback_context_state_ = nullptr;

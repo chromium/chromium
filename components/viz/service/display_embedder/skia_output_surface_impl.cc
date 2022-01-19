@@ -495,10 +495,12 @@ SkiaOutputSurfaceImpl::CreateImageContext(
     ResourceFormat format,
     bool maybe_concurrent_reads,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-    sk_sp<SkColorSpace> color_space) {
-  return std::make_unique<ImageContextImpl>(holder, size, format,
-                                            maybe_concurrent_reads, ycbcr_info,
-                                            std::move(color_space));
+    sk_sp<SkColorSpace> color_space,
+    bool raw_draw_if_possible) {
+  return std::make_unique<ImageContextImpl>(
+      holder, size, format, maybe_concurrent_reads, ycbcr_info,
+      std::move(color_space),
+      /*allow_keeping_read_access=*/true, raw_draw_if_possible);
 }
 
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
