@@ -44,6 +44,10 @@ namespace mojom {
 class Crosapi;
 }  // namespace mojom
 
+namespace test {
+class AshBrowserTestStarter;
+}  // namespace test
+
 class BrowserLoader;
 class TestMojoConnectionManager;
 
@@ -273,6 +277,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // web apps in Lacros. Need to decouple the App Platform systems from
   // needing lacros-chrome running all the time.
   friend class apps::AppServiceProxyAsh;
+  // Currently in practice KeepAlive is enabled for AppService as described
+  // above. To make the testing environment closer to the case, set up
+  // KeepAlive for AshBrowserTestStarter, too.
+  friend class test::AshBrowserTestStarter;
 
   // Returns true if the binary is ready to launch or already launched.
   bool IsReady() const;

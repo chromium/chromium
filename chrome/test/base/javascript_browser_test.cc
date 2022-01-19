@@ -18,18 +18,13 @@ void JavaScriptBrowserTest::AddLibrary(const base::FilePath& library_path) {
   user_libraries_.push_back(library_path);
 }
 
-JavaScriptBrowserTest::JavaScriptBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+JavaScriptBrowserTest::JavaScriptBrowserTest() = default;
 
-#endif
-}
-
-JavaScriptBrowserTest::~JavaScriptBrowserTest() {
-}
+JavaScriptBrowserTest::~JavaScriptBrowserTest() = default;
 
 void JavaScriptBrowserTest::SetUpInProcessBrowserTestFixture() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash_starter_ = std::make_unique<test::AshBrowserTestStarter>();
+  ash_starter_ = std::make_unique<crosapi::test::AshBrowserTestStarter>();
   if (ash_starter_->HasLacrosArgument())
     ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

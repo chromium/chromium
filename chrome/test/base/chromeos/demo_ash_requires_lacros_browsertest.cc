@@ -34,7 +34,7 @@ class DemoAshRequiresLacrosTest : public InProcessBrowserTest {
   }
 
  protected:
-  test::AshBrowserTestStarter ash_starter_;
+  crosapi::test::AshBrowserTestStarter ash_starter_;
 };
 
 IN_PROC_BROWSER_TEST_F(DemoAshRequiresLacrosTest, NewTab) {

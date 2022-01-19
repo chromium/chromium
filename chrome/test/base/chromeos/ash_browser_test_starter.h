@@ -7,9 +7,11 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 
 class InProcessBrowserTest;
 
+namespace crosapi {
 namespace test {
 
 class AshBrowserTestStarter {
@@ -37,8 +39,10 @@ class AshBrowserTestStarter {
   // This is XDG_RUNTIME_DIR.
   base::ScopedTempDir scoped_temp_dir_xdg_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<BrowserManager::ScopedKeepAlive> lacros_keep_alive_;
 };
 
 }  // namespace test
+}  // namespace crosapi
 
 #endif  // CHROME_TEST_BASE_CHROMEOS_ASH_BROWSER_TEST_STARTER_H_
