@@ -679,7 +679,28 @@ void SiteSettingsHandler::OnGetUsageInfo() {
     int64_t size = site->InclusiveSize();
     if (size != 0)
       usage_string = base::UTF16ToUTF8(ui::FormatBytes(size));
-    int num_cookies = site->NumberOfCookies();
+
+    // Usage info only includes unpartitioned cookies, so each cookie must be
+    // inspected.
+    // TODO (crbug.com/1271155): This is slow, the replacement for the
+    // CookiesTreeModel should improve this significantly.
+    int num_cookies = 0;
+    for (const auto& site_child : site->children()) {
+      if (site_child->GetDetailedInfo().node_type !=
+          CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
+        continue;
+      }
+
+      num_cookies += base::ranges::count_if(
+          site_child->children(),
+          [](const std::unique_ptr<CookieTreeNode>& cookie) {
+            const auto& detailed_info = cookie->GetDetailedInfo();
+            DCHECK(detailed_info.node_type ==
+                   CookieTreeNode::DetailedInfo::TYPE_COOKIE);
+            DCHECK(detailed_info.cookie);
+            return !detailed_info.cookie->IsPartitioned();
+          });
+    }
     if (num_cookies != 0) {
       cookie_string = base::UTF16ToUTF8(l10n_util::GetPluralStringFUTF16(
           IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES, num_cookies));
@@ -767,7 +788,8 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
   usage_host_ = args->GetList()[0].GetString();
 
   update_site_details_ = true;
-  if (cookies_tree_model_ && !send_sites_list_) {
+  if (cookies_tree_model_ && !send_sites_list_ &&
+      !tree_model_set_for_testing_) {
     cookies_tree_model_->RemoveCookiesTreeObserver(this);
     cookies_tree_model_.reset();
   }
@@ -1730,6 +1752,7 @@ void SiteSettingsHandler::HandleRecordAction(const base::ListValue* args) {
 void SiteSettingsHandler::SetCookiesTreeModelForTesting(
     std::unique_ptr<CookiesTreeModel> cookies_tree_model) {
   cookies_tree_model_ = std::move(cookies_tree_model);
+  tree_model_set_for_testing_ = true;
 }
 
 void SiteSettingsHandler::ClearAllSitesMapForTesting() {

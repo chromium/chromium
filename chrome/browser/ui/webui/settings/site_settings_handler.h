@@ -140,6 +140,7 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            IncludeWebUISchemesInGetOriginPermissions);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetUsageInfo);
 
   // Creates the CookiesTreeModel if necessary.
   void EnsureCookiesTreeModelCreated();
@@ -308,6 +309,10 @@ class SiteSettingsHandler
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   std::unique_ptr<CookiesTreeModel> cookies_tree_model_;
+
+  // Whether the tree model was set for testing. Allows the handler to avoid
+  // resetting the tree model.
+  bool tree_model_set_for_testing_ = false;
 
   // Whether to send all sites list on cookie tree model update.
   bool send_sites_list_ = false;

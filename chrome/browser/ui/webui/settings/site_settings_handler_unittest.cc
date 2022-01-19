@@ -426,6 +426,25 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_EQ(expected_string, data.arg2()->GetString());
   }
 
+  void ValidateUsageInfo(const std::string& expected_usage_host,
+                         const std::string& expected_usage_string,
+                         const std::string& expected_cookie_string) {
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("usage-total-changed", data.arg1()->GetString());
+
+    ASSERT_TRUE(data.arg2()->is_string());
+    EXPECT_EQ(expected_usage_host, data.arg2()->GetString());
+
+    ASSERT_TRUE(data.arg3()->is_string());
+    EXPECT_EQ(expected_usage_string, data.arg3()->GetString());
+
+    ASSERT_TRUE(data.arg4()->is_string());
+    EXPECT_EQ(expected_cookie_string, data.arg4()->GetString());
+  }
+
   void CreateIncognitoProfile() {
     incognito_profile_ = TestingProfile::Builder().BuildIncognito(profile());
   }
@@ -2790,4 +2809,24 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
   EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(int64_t(size))),
             data.arg3()->GetString());
 }
+
+TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
+  // Confirm that usage info only returns unpartitioned storage.
+  SetUpCookiesTreeModel();
+
+  EXPECT_EQ(28, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+
+  base::Value args(base::Value::Type::LIST);
+  args.Append("www.example.com");
+  handler()->HandleFetchUsageTotal(&base::Value::AsListValue(args));
+  handler()->OnGetUsageInfo();
+  ValidateUsageInfo("www.example.com", "2 B", "1 cookie");
+
+  args.ClearList();
+  args.Append("example.com");
+  handler()->HandleFetchUsageTotal(&base::Value::AsListValue(args));
+  handler()->OnGetUsageInfo();
+  ValidateUsageInfo("example.com", "", "1 cookie");
+}
+
 }  // namespace settings
