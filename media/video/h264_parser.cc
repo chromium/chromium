@@ -1200,7 +1200,15 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
   READ_BOOL_OR_RETURN(&pps->constrained_intra_pred_flag);
   READ_BOOL_OR_RETURN(&pps->redundant_pic_cnt_present_flag);
 
-  if (br_.HasMoreRBSPData()) {
+  bool pps_remainder_unencrypted = true;
+  if (encrypted_ranges_.size()) {
+    Ranges<const uint8_t*> pps_range;
+    pps_range.Add(previous_nalu_range_.end(0) - br_.NumBitsLeft() / 8,
+                  previous_nalu_range_.end(0));
+    pps_remainder_unencrypted =
+        (encrypted_ranges_.IntersectionWith(pps_range).size() == 0);
+  }
+  if (pps_remainder_unencrypted && br_.HasMoreRBSPData()) {
     READ_BOOL_OR_RETURN(&pps->transform_8x8_mode_flag);
     READ_BOOL_OR_RETURN(&pps->pic_scaling_matrix_present_flag);
 
