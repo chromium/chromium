@@ -160,10 +160,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   void GetAccountEmail(const ::account_manager::AccountKey& account_key,
                        base::OnceCallback<void(const std::string&)> callback);
 
-  // Removes an account. Does not do anything if |account_key| is not known by
-  // |AccountManager|.
+  // Removes an account. Does not do anything if `account_key` is not known by
+  // `AccountManager`.
   // Observers are notified about an account removal through
-  // |Observer::OnAccountRemoved|.
+  // `Observer::OnAccountRemoved`.
   // If the account being removed is a GAIA account, a token revocation with
   // GAIA is also attempted, on a best effort basis. Even if token revocation
   // with GAIA fails, AccountManager will forget the account.
@@ -286,10 +286,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // been initialized, otherwise saves the |closure| for running later, when the
   // class is initialized.
   void RunOnInitialization(base::OnceClosure closure);
-
-  // Does the actual work of removing an account. Assumes that
-  // |AccountManager| initialization (|init_state_|) is complete.
-  void RemoveAccountInternal(const ::account_manager::AccountKey& account_key);
 
   // Assumes that |AccountManager| initialization (|init_state_|) is complete.
   void UpdateTokenInternal(const ::account_manager::AccountKey& account_key,

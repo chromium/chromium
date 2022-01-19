@@ -513,19 +513,18 @@ void AccountManager::GetAccountEmail(
 
 void AccountManager::RemoveAccount(
     const ::account_manager::AccountKey& account_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::RemoveAccountInternal,
-                     weak_factory_.GetWeakPtr(), account_key);
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure =
+        base::BindOnce(&AccountManager::RemoveAccount,
+                       weak_factory_.GetWeakPtr(), account_key);
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::RemoveAccountInternal(
-    const ::account_manager::AccountKey& account_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   auto it = accounts_.find(account_key);
   if (it == accounts_.end()) {
     return;
