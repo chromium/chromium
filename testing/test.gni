@@ -685,6 +685,7 @@ template("test") {
 
       if (_use_xvfb) {
         executable = "//testing/xvfb.py"
+        data += [ "//.vpython3" ]
       } else {
         executable = "//testing/test_env.py"
       }
@@ -720,10 +721,7 @@ template("test") {
         executable_args += [ "--cfi-diag=true" ]
       }
 
-      data += [
-        "//build/lacros/test_runner.py",
-        "//.vpython",
-      ]
+      data += [ "//build/lacros/test_runner.py" ]
 
       if (use_rts) {
         data_deps += [ ":${invoker.target_name}__rts_filters" ]

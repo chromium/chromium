@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -11,7 +11,6 @@ from __future__ import print_function
 import copy
 import os
 import os.path
-import psutil
 import random
 import re
 import signal
@@ -19,7 +18,11 @@ import subprocess
 import sys
 import threading
 import time
+
+import psutil
+
 import test_env
+
 
 class _XvfbProcessError(Exception):
   """Exception raised when Xvfb cannot start."""
