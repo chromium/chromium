@@ -40,6 +40,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -13032,5 +13033,73 @@ TEST_F(URLRequestTest, SetURLChain) {
     EXPECT_EQ(r->url_chain()[2], original_url);
   }
 }
+
+class URLRequestMaybeAsyncFirstPartySetsTest
+    : public URLRequestTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  URLRequestMaybeAsyncFirstPartySetsTest()
+      : cookie_monster_(/*store=*/nullptr,
+                        /*net_log=*/nullptr,
+                        /*first_party_sets_enabled=*/true) {
+    auto cookie_access_delegate = std::make_unique<TestCookieAccessDelegate>();
+    cookie_access_delegate->set_invoke_callbacks_asynchronously(
+        invoke_callbacks_asynchronously());
+    cookie_monster_.SetCookieAccessDelegate(std::move(cookie_access_delegate));
+
+    CHECK(test_server_.Start());
+  }
+
+  bool invoke_callbacks_asynchronously() { return GetParam(); }
+
+  CookieStore* cookie_store() { return &cookie_monster_; }
+
+  HttpTestServer& test_server() { return test_server_; }
+
+ private:
+  CookieMonster cookie_monster_;
+  HttpTestServer test_server_;
+};
+
+TEST_P(URLRequestMaybeAsyncFirstPartySetsTest, SimpleRequest) {
+  TestURLRequestContext context(/*delay_initialization=*/true);
+  context.set_cookie_store(cookie_store());
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(
+      context.CreateRequest(test_server().GetURL("/echo"), DEFAULT_PRIORITY, &d,
+                            TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(d.data_received(), "Echo");
+  EXPECT_THAT(d.request_status(), IsOk());
+  EXPECT_EQ(req->GetResponseCode(), 200);
+}
+
+TEST_P(URLRequestMaybeAsyncFirstPartySetsTest, SingleRedirect) {
+  TestURLRequestContext context(/*delay_initialization=*/true);
+  context.set_cookie_store(cookie_store());
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      test_server().GetURL(base::StrCat({
+          "/server-redirect?",
+          test_server().GetURL("/echo").spec(),
+      })),
+      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(d.data_received(), "Echo");
+  EXPECT_THAT(d.request_status(), IsOk());
+  EXPECT_EQ(req->GetResponseCode(), 200);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         URLRequestMaybeAsyncFirstPartySetsTest,
+                         testing::Bool());
 
 }  // namespace net

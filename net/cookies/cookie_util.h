@@ -244,11 +244,14 @@ NET_EXPORT bool IsSchemefulSameSiteEnabled();
 // `force_ignore_top_frame_party` is true, the top frame from `isolation_info`
 // will be assumed to be same-party with `request_site`, regardless of what it
 // is.
-NET_EXPORT FirstPartySetMetadata
-ComputeFirstPartySetMetadata(const SchemefulSite& request_site,
-                             const IsolationInfo& isolation_info,
-                             const CookieAccessDelegate* cookie_access_delegate,
-                             bool force_ignore_top_frame_party);
+//
+// `callback` may be invoked either synchronously or asynchronously.
+NET_EXPORT void ComputeFirstPartySetMetadataMaybeAsync(
+    const SchemefulSite& request_site,
+    const IsolationInfo& isolation_info,
+    const CookieAccessDelegate* cookie_access_delegate,
+    bool force_ignore_top_frame_party,
+    base::OnceCallback<void(FirstPartySetMetadata)> callback);
 
 // Get the SameParty inclusion status. If the cookie is not SameParty, returns
 // kNoSamePartyEnforcement; if the cookie is SameParty but does not have a

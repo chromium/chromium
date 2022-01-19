@@ -60,14 +60,17 @@ bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
   return false;
 }
 
-net::FirstPartySetMetadata
-CookieAccessDelegateImpl::ComputeFirstPartySetMetadata(
+void CookieAccessDelegateImpl::ComputeFirstPartySetMetadataMaybeAsync(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context) const {
-  return first_party_sets_ ? first_party_sets_->ComputeMetadata(
-                                 site, top_frame_site, party_context)
-                           : net::FirstPartySetMetadata();
+    const std::set<net::SchemefulSite>& party_context,
+    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
+  if (!first_party_sets_) {
+    std::move(callback).Run(net::FirstPartySetMetadata());
+    return;
+  }
+  first_party_sets_->ComputeMetadata(site, top_frame_site, party_context,
+                                     std::move(callback));
 }
 
 absl::optional<net::SchemefulSite>

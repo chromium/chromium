@@ -141,6 +141,35 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
+  // Called after getting First-Party Set data when setting a cookie.
+  void OnGotFirstPartySetMetadataForSet(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      std::unique_ptr<net::CanonicalCookie> sanitized_cookie,
+      const GURL& origin_url,
+      SetCanonicalCookieCallback callback,
+      net::FirstPartySetMetadata first_party_set_metadata) const;
+
+  // Called after getting First-Party Set data when getting all cookies for a
+  // URL.
+  void OnGotFirstPartySetMetadataForGetAllForUrl(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      mojom::CookieManagerGetOptionsPtr options,
+      GetAllForUrlCallback callback,
+      net::FirstPartySetMetadata first_party_set_metadata) const;
+
+  // Called after getting First-Party Set data when adding a cookie change
+  // listener.
+  void OnGotFirstPartySetMetadataForAddChangeListener(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener,
+      AddChangeListenerCallback callback,
+      net::FirstPartySetMetadata first_party_set_metadata);
+
   // Reports the result of setting the cookie to |network_context_client_|, and
   // invokes the user callback.
   void SetCanonicalCookieResult(const GURL& url,

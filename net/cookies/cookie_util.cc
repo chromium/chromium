@@ -739,26 +739,25 @@ bool IsSchemefulSameSiteEnabled() {
   return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
 }
 
-// Returns First-Party Set metadata for the given context. Returns empty/default
-// metadata if `isolation_info` is not fully populated, or
-// `isolation_info.party_context` is nullopt.
-FirstPartySetMetadata ComputeFirstPartySetMetadata(
+void ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,
-    bool force_ignore_top_frame_party) {
+    bool force_ignore_top_frame_party,
+    base::OnceCallback<void(FirstPartySetMetadata)> callback) {
   if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
       cookie_access_delegate) {
-    return cookie_access_delegate->ComputeFirstPartySetMetadata(
+    cookie_access_delegate->ComputeFirstPartySetMetadataMaybeAsync(
         request_site,
         force_ignore_top_frame_party
             ? nullptr
             : base::OptionalOrNullptr(
                   isolation_info.network_isolation_key().GetTopFrameSite()),
-        isolation_info.party_context().value());
+        isolation_info.party_context().value(), std::move(callback));
+    return;
   }
 
-  return FirstPartySetMetadata();
+  std::move(callback).Run(FirstPartySetMetadata());
 }
 
 CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,

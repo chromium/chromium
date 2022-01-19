@@ -54,10 +54,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override;
-  net::FirstPartySetMetadata ComputeFirstPartySetMetadata(
+  void ComputeFirstPartySetMetadataMaybeAsync(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const override;
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback)
+      const override;
   absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
       const net::SchemefulSite& site) const override;
   void RetrieveFirstPartySets(

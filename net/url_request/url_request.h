@@ -913,6 +913,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // the request if it's a value other than OK.
   void OnCallToDelegateComplete(int error = OK);
 
+  // Called after getting First-Party Set metadata, when starting a request leg.
+  void OnGotFirstPartySetMetadata(
+      std::unique_ptr<URLRequestJob> job,
+      FirstPartySetMetadata first_party_set_metadata);
+
   // Records the referrer policy of the given request, bucketed by
   // whether the request is same-origin or not. To save computation,
   // takes this fact as a boolean parameter rather than dynamically

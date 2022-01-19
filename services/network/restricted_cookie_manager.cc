@@ -29,6 +29,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/first_party_set_metadata.h"
+#include "net/cookies/site_for_cookies.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -40,13 +41,20 @@ namespace network {
 
 namespace {
 
+// TODO(cfredric): the `force_ignore_top_frame_party` param being false prevents
+// `document.cookie` access for same-party scripts embedded in an extension
+// frame. It would be better if we allowed that similarly to how we allow
+// SameParty cookies for requests in same-party contexts embedded in top-level
+// extension frames.
+const bool kForceIgnoreTopFrameParty = false;
+
 net::CookieOptions MakeOptionsForSet(
     mojom::RestrictedCookieManagerRole role,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info,
     const CookieSettings& cookie_settings,
-    const net::CookieAccessDelegate* cookie_access_delegate) {
+    const net::FirstPartySetMetadata& first_party_set_metadata) {
   net::CookieOptions options;
   bool force_ignore_site_for_cookies =
       cookie_settings.ShouldIgnoreSameSiteRestrictions(url, site_for_cookies);
@@ -62,16 +70,6 @@ net::CookieOptions MakeOptionsForSet(
         net::cookie_util::ComputeSameSiteContextForSubresource(
             url, site_for_cookies, force_ignore_site_for_cookies));
   }
-  // TODO(cfredric): the `force_ignore_top_frame_party` param below prevents
-  // `document.cookie` access for same-party scripts embedded in an extension
-  // frame. It would be better if we allowed that similarly to how we allow
-  // SameParty cookies for requests in same-party contexts embedded in top-level
-  // extension frames.
-  bool force_ignore_top_frame_party = false;
-  net::FirstPartySetMetadata first_party_set_metadata =
-      net::cookie_util::ComputeFirstPartySetMetadata(
-          /*request_site=*/net::SchemefulSite(url), isolation_info,
-          cookie_access_delegate, force_ignore_top_frame_party);
   options.set_same_party_context(first_party_set_metadata.context());
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
@@ -94,7 +92,7 @@ net::CookieOptions MakeOptionsForGet(
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info,
     const CookieSettings& cookie_settings,
-    const net::CookieAccessDelegate* cookie_access_delegate) {
+    const net::FirstPartySetMetadata& first_party_set_metadata) {
   // TODO(https://crbug.com/925311): Wire initiator here.
   net::CookieOptions options;
   bool force_ignore_site_for_cookies =
@@ -112,11 +110,6 @@ net::CookieOptions MakeOptionsForGet(
         net::cookie_util::ComputeSameSiteContextForSubresource(
             url, site_for_cookies, force_ignore_site_for_cookies));
   }
-  bool force_ignore_top_frame_party = false;
-  net::FirstPartySetMetadata first_party_set_metadata =
-      net::cookie_util::ComputeFirstPartySetMetadata(
-          /*request_site=*/net::SchemefulSite(url), isolation_info,
-          cookie_access_delegate, force_ignore_top_frame_party);
   options.set_same_party_context(first_party_set_metadata.context());
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
@@ -390,11 +383,27 @@ void RestrictedCookieManager::GetAllForUrl(
 
   // TODO(morlovich): Try to validate site_for_cookies as well.
 
-  net::CookieOptions net_options = MakeOptionsForGet(
-      role_, url, site_for_cookies, isolation_info_, cookie_settings(),
-      cookie_store_->cookie_access_delegate());
+  net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
+      /*request_site=*/net::SchemefulSite(url), isolation_info_,
+      cookie_store_->cookie_access_delegate(), kForceIgnoreTopFrameParty,
+      base::BindOnce(
+          &RestrictedCookieManager::OnGotFirstPartySetMetadataForGetAllForUrl,
+          weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
+          top_frame_origin, std::move(options), std::move(callback)));
+}
+
+void RestrictedCookieManager::OnGotFirstPartySetMetadataForGetAllForUrl(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    mojom::CookieManagerGetOptionsPtr options,
+    GetAllForUrlCallback callback,
+    net::FirstPartySetMetadata first_party_set_metadata) const {
+  net::CookieOptions net_options =
+      MakeOptionsForGet(role_, url, site_for_cookies, isolation_info_,
+                        cookie_settings(), first_party_set_metadata);
   // TODO(https://crbug.com/977040): remove set_return_excluded_cookies() once
-  //                                 removing deprecation warnings.
+  // removing deprecation warnings.
   net_options.set_return_excluded_cookies();
 
   cookie_store_->GetCookieListWithOptionsAsync(
@@ -606,11 +615,12 @@ void RestrictedCookieManager::SetCanonicalCookie(
                           cookie_partition_key.has_value());
   }
 
-  auto sanitized_cookie = net::CanonicalCookie::FromStorage(
-      cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(), now,
-      cookie.ExpiryDate(), now, cookie.IsSecure(), cookie.IsHttpOnly(),
-      cookie.SameSite(), cookie.Priority(), cookie.IsSameParty(),
-      cookie_partition_key, source_scheme, origin_.port());
+  std::unique_ptr<net::CanonicalCookie> sanitized_cookie =
+      net::CanonicalCookie::FromStorage(
+          cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(), now,
+          cookie.ExpiryDate(), now, cookie.IsSecure(), cookie.IsHttpOnly(),
+          cookie.SameSite(), cookie.Priority(), cookie.IsSameParty(),
+          cookie_partition_key, source_scheme, origin_.port());
   DCHECK(sanitized_cookie);
   // FromStorage() uses a less strict version of IsCanonical(), we need to check
   // the stricter version as well here.
@@ -618,11 +628,27 @@ void RestrictedCookieManager::SetCanonicalCookie(
     std::move(callback).Run(false);
     return;
   }
-  net::CanonicalCookie cookie_copy = *sanitized_cookie;
 
-  net::CookieOptions options = MakeOptionsForSet(
-      role_, url, site_for_cookies, isolation_info_, cookie_settings(),
-      cookie_store_->cookie_access_delegate());
+  net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
+      /*request_site=*/net::SchemefulSite(url), isolation_info_,
+      cookie_store_->cookie_access_delegate(), kForceIgnoreTopFrameParty,
+      base::BindOnce(&RestrictedCookieManager::OnGotFirstPartySetMetadataForSet,
+                     weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
+                     std::move(sanitized_cookie), origin_url,
+                     std::move(callback)));
+}
+
+void RestrictedCookieManager::OnGotFirstPartySetMetadataForSet(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    std::unique_ptr<net::CanonicalCookie> sanitized_cookie,
+    const GURL& origin_url,
+    SetCanonicalCookieCallback callback,
+    net::FirstPartySetMetadata first_party_set_metadata) const {
+  net::CanonicalCookie cookie_copy = *sanitized_cookie;
+  net::CookieOptions options =
+      MakeOptionsForSet(role_, url, site_for_cookies, isolation_info_,
+                        cookie_settings(), first_party_set_metadata);
 
   cookie_store_->SetCanonicalCookieAsync(
       std::move(sanitized_cookie), origin_url, options,
@@ -668,9 +694,26 @@ void RestrictedCookieManager::AddChangeListener(
     return;
   }
 
-  net::CookieOptions net_options = MakeOptionsForGet(
-      role_, url, site_for_cookies, isolation_info_, cookie_settings(),
-      cookie_store_->cookie_access_delegate());
+  net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
+      /*request_site=*/net::SchemefulSite(url), isolation_info_,
+      cookie_store_->cookie_access_delegate(), kForceIgnoreTopFrameParty,
+      base::BindOnce(&RestrictedCookieManager::
+                         OnGotFirstPartySetMetadataForAddChangeListener,
+                     weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
+                     top_frame_origin, std::move(mojo_listener),
+                     std::move(callback)));
+}
+
+void RestrictedCookieManager::OnGotFirstPartySetMetadataForAddChangeListener(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener,
+    AddChangeListenerCallback callback,
+    net::FirstPartySetMetadata first_party_set_metadata) {
+  net::CookieOptions net_options =
+      MakeOptionsForGet(role_, url, site_for_cookies, isolation_info_,
+                        cookie_settings(), first_party_set_metadata);
   auto listener = std::make_unique<Listener>(
       cookie_store_, this, url, site_for_cookies, top_frame_origin,
       cookie_partition_key_, net_options, std::move(mojo_listener),

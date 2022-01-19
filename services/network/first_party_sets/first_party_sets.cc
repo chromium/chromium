@@ -175,10 +175,11 @@ bool FirstPartySets::IsContextSamePartyWithSite(
   return base::ranges::all_of(party_context, is_owned_by_site_owner);
 }
 
-net::FirstPartySetMetadata FirstPartySets::ComputeMetadata(
+void FirstPartySets::ComputeMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context) const {
+    const std::set<net::SchemefulSite>& party_context,
+    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::ElapsedTimer timer;
 
@@ -201,9 +202,9 @@ net::FirstPartySetMetadata FirstPartySets::ComputeMetadata(
   net::FirstPartySetsContextType first_party_sets_context_type =
       ComputeContextType(site, top_frame_site, party_context);
 
-  return net::FirstPartySetMetadata(context,
-                                    base::OptionalOrNullptr(FindOwner(site)),
-                                    first_party_sets_context_type);
+  std::move(callback).Run(net::FirstPartySetMetadata(
+      context, base::OptionalOrNullptr(FindOwner(site)),
+      first_party_sets_context_type));
 }
 
 net::FirstPartySetsContextType FirstPartySets::ComputeContextType(

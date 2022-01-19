@@ -65,10 +65,13 @@ class FirstPartySets {
   void ParseAndSet(base::File sets_file);
 
   // Computes the First-Party Set metadata related to the given context.
-  net::FirstPartySetMetadata ComputeMetadata(
+  //
+  // `callback` may be invoked either synchronously or asynchronously.
+  void ComputeMetadata(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const;
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   int64_t size() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -40,10 +40,11 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
-  FirstPartySetMetadata ComputeFirstPartySetMetadata(
+  void ComputeFirstPartySetMetadataMaybeAsync(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const override;
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(FirstPartySetMetadata)> callback) const override;
   absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
       const net::SchemefulSite& site) const override;
   void RetrieveFirstPartySets(
@@ -71,6 +72,10 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>&
           sets);
 
+  void set_invoke_callbacks_asynchronously(bool async) {
+    invoke_callbacks_asynchronously_ = async;
+  }
+
  private:
   // Discard any leading dot in the domain string.
   std::string GetKeyForDomainValue(const std::string& domain) const;
@@ -79,6 +84,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
   base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
       first_party_sets_;
+  bool invoke_callbacks_asynchronously_ = false;
 };
 
 }  // namespace net

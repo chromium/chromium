@@ -50,14 +50,17 @@ class NET_EXPORT CookieAccessDelegate {
       const GURL& url,
       const SiteForCookies& site_for_cookies) const = 0;
 
-  // Returns the metadata indicating whether `site` is same-party with
+  // Calls `callback` with metadata indicating whether `site` is same-party with
   // `party_context` and `top_frame_site`; and `site`'s owner, if applicable..
   // If `top_frame_site` is nullptr, then `site` will be checked only against
   // `party_context`.
-  virtual FirstPartySetMetadata ComputeFirstPartySetMetadata(
+  //
+  // `callback` may be invoked synchronously or asynchronously.
+  virtual void ComputeFirstPartySetMetadataMaybeAsync(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const = 0;
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(FirstPartySetMetadata)> callback) const = 0;
 
   // Returns the owner of a `site`'s First-Party Set if `site` is in a
   // non-trivial set. Returns nullopt otherwise.
