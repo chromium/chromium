@@ -107,6 +107,7 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
           /*number_of_factories=*/3, web_contents_->GetMainFrame(), top_origin_,
           spec.AsWeakPtr(), /*twa_package_name=*/GetParam(), web_data_service_,
           /*may_crawl_for_installable_payment_apps=*/true,
+          /*is_off_the_record=*/false,
           base::BindRepeating(&MockCallback::NotifyCanMakePaymentCalculated,
                               base::Unretained(&mock_callback)),
           base::BindRepeating(&MockCallback::NotifyPaymentAppCreated,
