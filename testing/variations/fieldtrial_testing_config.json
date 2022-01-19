@@ -6238,6 +6238,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "use_basic_close_label": "true"
+                    },
                     "enable_features": [
                         "PasswordChange"
                     ]
