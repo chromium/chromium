@@ -242,8 +242,8 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
   if (!slot_span->bucket)
     return {};
   PA_SCAN_DCHECK(PartitionRoot<ThreadSafe>::IsValidSlotSpan(slot_span));
-  const uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
-      SlotSpanMetadata<ThreadSafe>::ToSlotSpanStartPtr(slot_span));
+  const uintptr_t slot_span_start =
+      SlotSpanMetadata<ThreadSafe>::ToSlotSpanStart(slot_span);
   const ptrdiff_t ptr_offset = maybe_inner_address - slot_span_start;
   PA_SCAN_DCHECK(0 <= ptr_offset &&
                  ptr_offset < static_cast<ptrdiff_t>(
@@ -434,8 +434,7 @@ SuperPageSnapshot::SuperPageSnapshot(uintptr_t super_page) {
 
   IterateNonEmptySlotSpans(
       super_page, nonempty_slot_spans, [this, &current](SlotSpan* slot_span) {
-        const uintptr_t payload_begin = reinterpret_cast<uintptr_t>(
-            SlotSpan::ToSlotSpanStartPtr(slot_span));
+        const uintptr_t payload_begin = SlotSpan::ToSlotSpanStart(slot_span);
         // For single-slot slot-spans, scan only utilized slot part.
         const size_t provisioned_size = UNLIKELY(slot_span->CanStoreRawSize())
                                             ? slot_span->GetRawSize()
@@ -674,8 +673,7 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
 
 #if !PA_STARSCAN_USE_CARD_TABLE
   // Pointer from a normal bucket is always in the first superpage.
-  auto* root =
-      Root::FromPointerInFirstSuperpage(reinterpret_cast<char*>(maybe_ptr));
+  auto* root = Root::FromAddrInFirstSuperpage(maybe_ptr);
   // Without the card table, we must make sure that |maybe_ptr| doesn't point to
   // metadata partition.
   // TODO(bikineev): To speed things up, consider removing the check and
@@ -1016,8 +1014,8 @@ void UnmarkInCardTable(uintptr_t object,
   size_t freelist_entries = 0;
 
   const auto bitmap_iterator = [&](uintptr_t address) {
+    SlotSpan* current_slot_span = SlotSpan::FromSlotStart(address);
     auto* ptr = reinterpret_cast<void*>(memory::RemaskPtr(address));
-    SlotSpan* current_slot_span = SlotSpan::FromSlotStartPtr(ptr);
     auto* entry = new (ptr) PartitionFreelistEntry();
 
     if (current_slot_span != previous_slot_span) {

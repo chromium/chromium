@@ -150,11 +150,10 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
       last = root.AdjustPointerForExtrasSubtract(ptr);
   }
 
-  EXPECT_EQ(SlotSpan::FromSlotStartPtr(first),
-            SlotSpan::FromSlotStartPtr(last));
+  EXPECT_EQ(SlotSpan::FromSlotStart(first), SlotSpan::FromSlotStart(last));
   if (bucket.num_system_pages_per_slot_span == NumSystemPagesPerPartitionPage())
-    PA_EXPECT_PTR_EQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
-                     reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
+    PA_EXPECT_PTR_EQ(first & PartitionPageBaseMask(),
+                     last & PartitionPageBaseMask());
   EXPECT_EQ(num_slots, bucket.active_slot_spans_head->num_allocated_slots);
   EXPECT_EQ(nullptr, bucket.active_slot_spans_head->get_freelist_head());
   EXPECT_TRUE(bucket.is_valid());
@@ -167,7 +166,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
 
 bool IsInFreeList(uintptr_t slot_start) {
   slot_start = memory::RemaskPtr(slot_start);
-  auto* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
+  auto* slot_span = SlotSpan::FromSlotStart(slot_start);
   for (auto* entry = slot_span->get_freelist_head(); entry;
        entry = entry->GetNext(slot_span->bucket->slot_size)) {
     if (reinterpret_cast<uintptr_t>(entry) == slot_start)
@@ -244,8 +243,8 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReference(PartitionAllocPCScanTest& test,
                            SourceList* source,
                            ValueList* value) {
-  auto* value_root = ThreadSafePartitionRoot::FromPointerInFirstSuperpage(
-      reinterpret_cast<char*>(value));
+  auto* value_root = ThreadSafePartitionRoot::FromAddrInFirstSuperpage(
+      reinterpret_cast<uintptr_t>(value));
   {
     // Free |value| and leave the dangling reference in |source|.
     ValueList::Destroy(*value_root, value);
@@ -272,8 +271,8 @@ void TestDanglingReference(PartitionAllocPCScanTest& test,
 
 void TestDanglingReferenceNotVisited(PartitionAllocPCScanTest& test,
                                      void* value) {
-  auto* value_root = ThreadSafePartitionRoot::FromPointerInFirstSuperpage(
-      reinterpret_cast<char*>(value));
+  auto* value_root = ThreadSafePartitionRoot::FromAddrInFirstSuperpage(
+      reinterpret_cast<uintptr_t>(value));
   value_root->Free(value);
   // Check that |value| is in the quarantine now.
   EXPECT_TRUE(test.IsInQuarantine(value));
@@ -325,25 +324,24 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceDifferentBucketsAligned) {
   // Double check the setup -- make sure that exactly two slot spans were
   // allocated, within the same super page, with a gap in between.
   {
-    auto* value_root = ThreadSafePartitionRoot::FromPointerInFirstSuperpage(
-        reinterpret_cast<char*>(value));
+    auto* value_root = ThreadSafePartitionRoot::FromAddrInFirstSuperpage(
+        reinterpret_cast<uintptr_t>(value));
     ::partition_alloc::ScopedGuard guard{value_root->lock_};
 
     auto super_page = reinterpret_cast<uintptr_t>(value) & kSuperPageBaseMask;
     ASSERT_EQ(super_page,
               reinterpret_cast<uintptr_t>(source) & kSuperPageBaseMask);
     size_t i = 0;
-    void* first_slot_span_end = nullptr;
-    void* second_slot_span_start = nullptr;
+    uintptr_t first_slot_span_end = 0;
+    uintptr_t second_slot_span_start = 0;
     IterateSlotSpans<ThreadSafe>(
         super_page, true, [&](SlotSpan* slot_span) -> bool {
           if (i == 0) {
-            first_slot_span_end = reinterpret_cast<char*>(
-                                      SlotSpan::ToSlotSpanStartPtr(slot_span)) +
+            first_slot_span_end = SlotSpan::ToSlotSpanStart(slot_span) +
                                   slot_span->bucket->get_pages_per_slot_span() *
                                       PartitionPageSize();
           } else {
-            second_slot_span_start = SlotSpan::ToSlotSpanStartPtr(slot_span);
+            second_slot_span_start = SlotSpan::ToSlotSpanStart(slot_span);
           }
           ++i;
           return false;
@@ -586,8 +584,8 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
                                         SourceList* source,
                                         ValueList* value) {
-  auto* value_root = ThreadSafePartitionRoot::FromPointerInFirstSuperpage(
-      reinterpret_cast<char*>(value));
+  auto* value_root = ThreadSafePartitionRoot::FromAddrInFirstSuperpage(
+      reinterpret_cast<uintptr_t>(value));
   {
     // Free |value| and leave the dangling reference in |source|.
     ValueList::Destroy(*value_root, value);

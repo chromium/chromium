@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
@@ -60,8 +61,8 @@ ALWAYS_INLINE void PartitionDirectUnmap(
   PA_DCHECK(root->total_size_of_direct_mapped_pages >= reservation_size);
   root->total_size_of_direct_mapped_pages -= reservation_size;
 
-  uintptr_t reservation_start = reinterpret_cast<uintptr_t>(
-      SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
+  uintptr_t reservation_start =
+      SlotSpanMetadata<thread_safe>::ToSlotSpanStart(slot_span);
   // The mapping may start at an unspecified location within a super page, but
   // we always reserve memory aligned to super page size.
   reservation_start = bits::AlignDown(reservation_start, kSuperPageSize);
@@ -213,8 +214,7 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   root->lock_.AssertAcquired();
   PA_DCHECK(is_empty());
   PA_DCHECK(!bucket->is_direct_mapped());
-  uintptr_t slot_span_start =
-      reinterpret_cast<uintptr_t>(SlotSpanMetadata::ToSlotSpanStartPtr(this));
+  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(this);
   // If lazy commit is enabled, only provisioned slots are committed.
   size_t dirty_size = bits::AlignUp(GetProvisionedSize(), SystemPageSize());
   size_t size_to_decommit =
@@ -254,7 +254,7 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
 template <bool thread_safe>
 void SlotSpanMetadata<thread_safe>::SortFreelist() {
   std::bitset<kMaxSlotsPerSlotSpan> free_slots;
-  char* slot_span_base = reinterpret_cast<char*>(ToSlotSpanStartPtr(this));
+  uintptr_t slot_span_start = ToSlotSpanStart(this);
 
   size_t num_provisioned_slots =
       bucket->get_slots_per_span() - num_unprovisioned_slots;
@@ -266,7 +266,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
        head = head->GetNext(slot_size)) {
     ++num_free_slots;
     size_t offset_in_slot_span =
-        reinterpret_cast<char*>(memory::UnmaskPtr(head)) - slot_span_base;
+        memory::UnmaskPtr(reinterpret_cast<uintptr_t>(head)) - slot_span_start;
     size_t slot_number = bucket->GetSlotNumber(offset_in_slot_span);
     PA_DCHECK(slot_number < num_provisioned_slots);
     free_slots[slot_number] = true;
@@ -280,9 +280,10 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
     for (size_t slot_number = 0; slot_number < num_provisioned_slots;
          slot_number++) {
       if (free_slots[slot_number]) {
-        char* slot_address =
-            memory::RemaskPtr(slot_span_base + (slot_size * slot_number));
-        auto* entry = new (slot_address) PartitionFreelistEntry();
+        uintptr_t slot_address =
+            memory::RemaskPtr(slot_span_start + (slot_size * slot_number));
+        auto* entry = new (reinterpret_cast<void*>(slot_address))
+            PartitionFreelistEntry();
 
         if (!head)
           head = entry;

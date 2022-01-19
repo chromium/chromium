@@ -355,12 +355,12 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
   // These two functions work unconditionally for normal buckets.
   // For direct map, they only work for the first super page of a reservation,
-  // that is the first "2MiB minus a bit" (see partition_alloc_constants.h for
-  // the direct map allocation layout).
+  // (see partition_alloc_constants.h for the direct map allocation layout).
   // In particular, the functions always work for a pointer to the start of a
   // reservation.
   ALWAYS_INLINE static PartitionRoot* FromFirstSuperPage(uintptr_t super_page);
-  ALWAYS_INLINE static PartitionRoot* FromPointerInFirstSuperpage(char* ptr);
+  ALWAYS_INLINE static PartitionRoot* FromAddrInFirstSuperpage(
+      uintptr_t address);
 
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
@@ -785,19 +785,18 @@ PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
   auto* page = first_page + first_page->slot_span_metadata_offset;
   PA_DCHECK(page->is_valid);
   PA_DCHECK(!page->slot_span_metadata_offset);
-  auto* ret = SlotSpanMetadata<ThreadSafe>::ToSlotSpanStartPtr(
-      &page->slot_span_metadata);
+  uintptr_t slot_start =
+      SlotSpanMetadata<ThreadSafe>::ToSlotSpanStart(&page->slot_span_metadata);
 #if DCHECK_IS_ON()
   auto* metadata =
       reinterpret_cast<PartitionDirectMapMetadata<ThreadSafe>*>(page);
   size_t padding_for_alignment =
       metadata->direct_map_extent.padding_for_alignment;
   PA_DCHECK(padding_for_alignment == (page - first_page) * PartitionPageSize());
-  PA_DCHECK(ret ==
-            reinterpret_cast<void*>(reservation_start + PartitionPageSize() +
-                                    padding_for_alignment));
-#endif                                      // DCHECK_IS_ON()
-  return reinterpret_cast<uintptr_t>(ret);  // TODO(bartekn): Remove cast.
+  PA_DCHECK(slot_start ==
+            reservation_start + PartitionPageSize() + padding_for_alignment);
+#endif  // DCHECK_IS_ON()
+  return slot_start;
 }
 
 // Gets the pointer to the beginning of the allocated slot.
@@ -826,17 +825,14 @@ ALWAYS_INLINE uintptr_t PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
       PartitionAllocGetDirectMapSlotStartInBRPPool(address);
   if (UNLIKELY(directmap_slot_start))
     return directmap_slot_start;
-  auto* slot_span =
-      internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
-          address);
-  auto* root = PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span);
+  auto* slot_span = PartitionAllocGetSlotSpanForSizeQuery<ThreadSafe>(address);
+  auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
   // Double check that ref-count is indeed present.
   PA_DCHECK(root->brp_enabled());
 
   // Get the offset from the beginning of the slot span.
-  uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
-      internal::SlotSpanMetadata<internal::ThreadSafe>::ToSlotSpanStartPtr(
-          slot_span));
+  uintptr_t slot_span_start =
+      SlotSpanMetadata<ThreadSafe>::ToSlotSpanStart(slot_span);
   PA_DCHECK(slot_span_start == memory::UnmaskPtr(slot_span_start));
   size_t offset_in_slot_span = address - slot_span_start;
 
@@ -891,7 +887,7 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(uintptr_t address,
 ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   PA_DCHECK(!internal::PartitionRefCountPointer(slot_start)->IsAlive());
 
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStartPtr(slot_start);
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStart(slot_start);
   auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
   // PartitionRefCount is required to be allocated inside a `PartitionRoot` that
   // supports reference counts.
@@ -966,7 +962,7 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
     if (UNLIKELY(!slot_start))
       return 0;
 
-    slot_span = SlotSpan::FromSlotStartPtr(slot_start);
+    slot_span = SlotSpan::FromSlotStart(slot_start);
     // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
     PA_DCHECK(IsValidSlotSpan(slot_span));
     // For direct mapped allocations, |bucket| is the sentinel.
@@ -1029,7 +1025,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&              \
     ((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)) || \
      (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_64_BITS)))
-  PA_CHECK(IsManagedByPartitionAlloc(reinterpret_cast<uintptr_t>(ptr)));
+  PA_CHECK(IsManagedByPartitionAlloc(address));
 #endif
 
   // Fetch the root from the pointer, and not the SlotSpan. This is important,
@@ -1038,12 +1034,12 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   // traffic (since they're read on every free(), and written to on any
   // malloc()/free() that is not a hit in the thread cache). This way we change
   // the critical path from ptr -> slot_span -> root into two *parallel* ones:
-  // 1. ptr -> root
+  // 1. address -> root
   // 2. ptr -> slot_span
-  auto* root = FromPointerInFirstSuperpage(reinterpret_cast<char*>(ptr));
+  auto* root = FromAddrInFirstSuperpage(address);
 
-  // Call FromSlotInnerPtr instead of FromSlotStartPtr because the pointer
-  // hasn't been adjusted yet.
+  // Call FromSlotInnerPtr instead of FromSlotStart because the pointer hasn't
+  // been adjusted yet.
   SlotSpan* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
   // We are going to read from |*slot_span| in all branches. Since
   // |FromSlotSpan()| below doesn't touch *slot_span, there is some time for the
@@ -1199,7 +1195,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(uintptr_t slot_start) {
-  SlotSpan* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
+  SlotSpan* slot_span = SlotSpan::FromSlotStart(slot_start);
   RawFree(slot_start, slot_span);
 }
 
@@ -1289,7 +1285,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(
     uintptr_t slot_start) {
-  SlotSpan* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
+  SlotSpan* slot_span = SlotSpan::FromSlotStart(slot_start);
   // Direct-mapped deallocation releases then re-acquires the lock. The caller
   // may not expect that, but we never call this function on direct-mapped
   // allocations.
@@ -1325,11 +1321,10 @@ PartitionRoot<thread_safe>::FromFirstSuperPage(uintptr_t super_page) {
   return root;
 }
 
-// TODO(bartekn): char* -> uintptr_t, Pointer -> Addr
 template <bool thread_safe>
 ALWAYS_INLINE PartitionRoot<thread_safe>*
-PartitionRoot<thread_safe>::FromPointerInFirstSuperpage(char* ptr) {
-  uintptr_t super_page = reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask;
+PartitionRoot<thread_safe>::FromAddrInFirstSuperpage(uintptr_t address) {
+  uintptr_t super_page = address & kSuperPageBaseMask;
   PA_DCHECK(internal::IsReservationStart(super_page));
   return FromFirstSuperPage(super_page);
 }
@@ -1572,7 +1567,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 #if DCHECK_IS_ON()
       // Make sure that the allocated pointer comes from the same place it would
       // for a non-thread cache allocation.
-      SlotSpan* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
+      SlotSpan* slot_span = SlotSpan::FromSlotStart(slot_start);
       PA_DCHECK(IsValidSlotSpan(slot_span));
       PA_DCHECK(slot_span->bucket == &bucket_at(bucket_index));
       PA_DCHECK(slot_span->bucket->slot_size == slot_size);

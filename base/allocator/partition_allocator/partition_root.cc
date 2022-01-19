@@ -199,12 +199,12 @@ static size_t PartitionPurgeSlotSpan(
         RoundUpToSystemPage(slot_span->GetUtilizedSlotSize()));
     discardable_bytes = bucket->slot_size - utilized_slot_size;
     if (discardable_bytes && discard) {
-      char* ptr = reinterpret_cast<char*>(
-          internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
-              slot_span));
-      ptr += utilized_slot_size;
+      uintptr_t slot_span_start =
+          internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStart(slot_span);
+      uintptr_t committed_data_end = slot_span_start + utilized_slot_size;
       ScopedSyscallTimer<thread_safe> timer{root};
-      DiscardSystemPages(ptr, discardable_bytes);
+      DiscardSystemPages(reinterpret_cast<void*>(committed_data_end),
+                         discardable_bytes);
     }
     return discardable_bytes;
   }
@@ -233,15 +233,15 @@ static size_t PartitionPurgeSlotSpan(
   size_t last_slot = static_cast<size_t>(-1);
 #endif
   memset(slot_usage, 1, num_slots);
-  char* ptr = reinterpret_cast<char*>(
-      internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
+  uintptr_t slot_span_start =
+      SlotSpanMetadata<thread_safe>::ToSlotSpanStart(slot_span);
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
-  for (internal::PartitionFreelistEntry* entry = slot_span->get_freelist_head();
-       entry;
+  for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
        /**/) {
     size_t slot_index =
-        (reinterpret_cast<char*>(base::memory::UnmaskPtr(entry)) - ptr) /
+        (base::memory::UnmaskPtr(reinterpret_cast<uintptr_t>(entry)) -
+         slot_span_start) /
         slot_size;
     PA_DCHECK(slot_index < num_slots);
     slot_usage[slot_index] = 0;
@@ -269,17 +269,15 @@ static size_t PartitionPurgeSlotSpan(
   // discard anything unless the discard flag was passed in.
   if (truncated_slots) {
     size_t unprovisioned_bytes = 0;
-    char* begin_ptr = ptr + (num_slots * slot_size);
-    char* end_ptr = begin_ptr + (slot_size * truncated_slots);
-    begin_ptr = reinterpret_cast<char*>(
-        RoundUpToSystemPage(reinterpret_cast<size_t>(begin_ptr)));
-    // We round the end pointer here up and not down because we're at the end of
+    uintptr_t begin_addr = slot_span_start + (num_slots * slot_size);
+    uintptr_t end_addr = begin_addr + (slot_size * truncated_slots);
+    begin_addr = RoundUpToSystemPage(begin_addr);
+    // We round the end address here up and not down because we're at the end of
     // a slot span, so we "own" all the way up the page boundary.
-    end_ptr = reinterpret_cast<char*>(
-        RoundUpToSystemPage(reinterpret_cast<size_t>(end_ptr)));
-    PA_DCHECK(end_ptr <= ptr + bucket->get_bytes_per_span());
-    if (begin_ptr < end_ptr) {
-      unprovisioned_bytes = end_ptr - begin_ptr;
+    end_addr = RoundUpToSystemPage(end_addr);
+    PA_DCHECK(end_addr <= slot_span_start + bucket->get_bytes_per_span());
+    if (begin_addr < end_addr) {
+      unprovisioned_bytes = end_addr - begin_addr;
       discardable_bytes += unprovisioned_bytes;
     }
     if (unprovisioned_bytes && discard) {
@@ -297,7 +295,8 @@ static size_t PartitionPurgeSlotSpan(
         if (slot_usage[slot_index])
           continue;
 
-        auto* entry = new (ptr + (slot_size * slot_index))
+        auto* entry = new (
+            reinterpret_cast<void*>(slot_span_start + (slot_size * slot_index)))
             internal::PartitionFreelistEntry();
         if (!head) {
           head = entry;
@@ -317,7 +316,8 @@ static size_t PartitionPurgeSlotSpan(
       PA_DCHECK(num_new_entries == num_slots - slot_span->num_allocated_slots);
       // Discard the memory.
       ScopedSyscallTimer<thread_safe> timer{root};
-      DiscardSystemPages(begin_ptr, unprovisioned_bytes);
+      DiscardSystemPages(reinterpret_cast<void*>(begin_addr),
+                         unprovisioned_bytes);
     }
   }
 
@@ -330,24 +330,23 @@ static size_t PartitionPurgeSlotSpan(
     // The first address we can safely discard is just after the freelist
     // pointer. There's one quirk: if the freelist pointer is actually nullptr,
     // we can discard that pointer value too.
-    char* begin_ptr = ptr + (i * slot_size);
-    char* end_ptr = begin_ptr + slot_size;
+    uintptr_t begin_addr = slot_span_start + (i * slot_size);
+    uintptr_t end_addr = begin_addr + slot_size;
 #if !BUILDFLAG(IS_WIN)
     if (i != last_slot)
-      begin_ptr += sizeof(internal::PartitionFreelistEntry);
+      begin_addr += sizeof(internal::PartitionFreelistEntry);
 #else
-    begin_ptr += sizeof(internal::PartitionFreelistEntry);
+    begin_addr += sizeof(internal::PartitionFreelistEntry);
 #endif
-    begin_ptr = reinterpret_cast<char*>(
-        RoundUpToSystemPage(reinterpret_cast<size_t>(begin_ptr)));
-    end_ptr = reinterpret_cast<char*>(
-        RoundDownToSystemPage(reinterpret_cast<size_t>(end_ptr)));
-    if (begin_ptr < end_ptr) {
-      size_t partial_slot_bytes = end_ptr - begin_ptr;
+    begin_addr = RoundUpToSystemPage(begin_addr);
+    end_addr = RoundDownToSystemPage(end_addr);
+    if (begin_addr < end_addr) {
+      size_t partial_slot_bytes = end_addr - begin_addr;
       discardable_bytes += partial_slot_bytes;
       if (discard) {
         ScopedSyscallTimer<thread_safe> timer{root};
-        DiscardSystemPages(begin_ptr, partial_slot_bytes);
+        DiscardSystemPages(reinterpret_cast<void*>(begin_addr),
+                           partial_slot_bytes);
       }
     }
   }
@@ -737,8 +736,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 
   // bucket->slot_size is the currently committed size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
-  uintptr_t slot_start =
-      reinterpret_cast<uintptr_t>(SlotSpan::ToSlotSpanStartPtr(slot_span));
+  uintptr_t slot_start = SlotSpan::ToSlotSpanStart(slot_span);
   // This is the available part of the reservation up to which the new
   // allocation can grow.
   size_t available_reservation_size =

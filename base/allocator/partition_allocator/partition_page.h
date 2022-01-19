@@ -188,16 +188,13 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // span, and potentially shrinking the ring.
   void RegisterEmpty();
 
-  // Pointer manipulation functions. These must be static as the input
+  // Pointer/address manipulation functions. These must be static as the input
   // |slot_span| pointer may be the result of an offset calculation and
   // therefore cannot be trusted. The objective of these functions is to
   // sanitize this input.
-  // TODO(bartekn): void* -> uintptr_t
-  ALWAYS_INLINE static void* ToSlotSpanStartPtr(
+  ALWAYS_INLINE static uintptr_t ToSlotSpanStart(
       const SlotSpanMetadata* slot_span);
-  // TODO(bartekn): Remove the void* version. Drop Ptr from the name.
-  ALWAYS_INLINE static SlotSpanMetadata* FromSlotStartPtr(void* slot_start);
-  ALWAYS_INLINE static SlotSpanMetadata* FromSlotStartPtr(uintptr_t slot_start);
+  ALWAYS_INLINE static SlotSpanMetadata* FromSlotStart(uintptr_t slot_start);
   ALWAYS_INLINE static SlotSpanMetadata* FromSlotInnerPtr(void* ptr);
 
   ALWAYS_INLINE PartitionSuperPageExtentEntry<thread_safe>* ToSuperPageExtent()
@@ -358,9 +355,6 @@ struct __attribute__((packed)) PartitionPage {
   uint8_t unused;
 
   ALWAYS_INLINE static PartitionPage* FromPtr(void* slot_start);
-
- private:
-  ALWAYS_INLINE static void* ToSlotSpanStartPtr(const PartitionPage* page);
 };
 
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
@@ -475,18 +469,6 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address,
   return address >= payload_start && address < payload_end;
 }
 
-// Converts from a pointer to the PartitionPage object (within super pages's
-// metadata) into a pointer to the beginning of the slot span.
-// |page| must be the first PartitionPage of the slot span.
-template <bool thread_safe>
-ALWAYS_INLINE void* PartitionPage<thread_safe>::ToSlotSpanStartPtr(
-    const PartitionPage* page) {
-  PA_DCHECK(page->is_valid);
-  PA_DCHECK(!page->slot_span_metadata_offset);
-  return SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
-      &page->slot_span_metadata);
-}
-
 // Converts from a pointer inside a super page into a pointer to the
 // PartitionPage object (within super pages's metadata) that describes the
 // partition page where |ptr| is located. |ptr| doesn't have to be located
@@ -497,7 +479,7 @@ ALWAYS_INLINE void* PartitionPage<thread_safe>::ToSlotSpanStartPtr(
 // care has to be taken with direct maps that span multiple super pages. This
 // function's behavior is undefined if |ptr| lies in a subsequent super page.
 //
-// TODO(bartekn): void* -> uintptr_t, Ptr -> Addr
+// TODO(bartekn): Consider void* -> uintptr_t, Ptr -> Addr
 template <bool thread_safe>
 ALWAYS_INLINE PartitionPage<thread_safe>* PartitionPage<thread_safe>::FromPtr(
     void* ptr) {
@@ -530,10 +512,8 @@ ALWAYS_INLINE PartitionPage<thread_safe>* PartitionPage<thread_safe>::FromPtr(
 // Converts from a pointer to the SlotSpanMetadata object (within a super
 // pages's metadata) into a pointer to the beginning of the slot span. This
 // works on direct maps too.
-//
-// TODO(bartekn): void* -> uintptr_t, Ptr -> Addr
 template <bool thread_safe>
-ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
+ALWAYS_INLINE uintptr_t SlotSpanMetadata<thread_safe>::ToSlotSpanStart(
     const SlotSpanMetadata* slot_span) {
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(slot_span);
   uintptr_t super_page_offset = (pointer_as_uint & kSuperPageOffsetMask);
@@ -553,9 +533,7 @@ ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
   PA_DCHECK(partition_page_index);
   PA_DCHECK(partition_page_index < NumPartitionPagesPerSuperPage() - 1);
   uintptr_t super_page_base = (pointer_as_uint & kSuperPageBaseMask);
-  void* ret = reinterpret_cast<void*>(
-      super_page_base + (partition_page_index << PartitionPageShift()));
-  return ret;
+  return super_page_base + (partition_page_index << PartitionPageShift());
 }
 
 // Converts from a pointer inside a slot into a pointer to the SlotSpanMetadata
@@ -565,7 +543,7 @@ ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
 // CAUTION! For direct-mapped allocation, |ptr| has to be within the first
 // partition page.
 //
-// TODO(bartekn): void* -> uintptr_t, Ptr -> Addr
+// TODO(bartekn): Consider void* -> uintptr_t, Ptr -> Addr
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(void* ptr) {
@@ -595,24 +573,18 @@ SlotSpanMetadata<thread_safe>::ToSuperPageExtent() const {
 
 // Like |FromSlotInnerPtr|, but asserts that pointer points to the beginning of
 // the slot. This works on direct maps too.
-//
-// TODO(bartekn): void* -> uintptr_t, Ptr -> Addr
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
-SlotSpanMetadata<thread_safe>::FromSlotStartPtr(void* slot_start) {
-  auto* slot_span = FromSlotInnerPtr(slot_start);
+SlotSpanMetadata<thread_safe>::FromSlotStart(uintptr_t slot_start) {
+  auto* slot_span = FromSlotInnerPtr(reinterpret_cast<void*>(slot_start));
+#if DCHECK_IS_ON()
   // Checks that the pointer is a multiple of slot size.
-  auto* slot_span_start = ToSlotSpanStartPtr(slot_span);
+  uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   PA_DCHECK(
-      !((reinterpret_cast<uintptr_t>(memory::UnmaskPtr(slot_start)) -
-         reinterpret_cast<uintptr_t>(memory::UnmaskPtr(slot_span_start))) %
+      !((memory::UnmaskPtr(slot_start) - memory::UnmaskPtr(slot_span_start)) %
         slot_span->bucket->slot_size));
+#endif  // DCHECK_IS_ON()
   return slot_span;
-}
-template <bool thread_safe>
-ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
-SlotSpanMetadata<thread_safe>::FromSlotStartPtr(uintptr_t slot_start) {
-  return FromSlotStartPtr(reinterpret_cast<void*>(slot_start));
 }
 
 template <bool thread_safe>
@@ -707,11 +679,12 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::AppendFreeList(
     size_t number_of_entries = 0;
     for (auto* entry = head; entry;
          entry = entry->GetNext(bucket->slot_size), ++number_of_entries) {
-      auto* unmasked_entry = reinterpret_cast<char*>(memory::UnmaskPtr(entry));
+      uintptr_t unmasked_entry =
+          memory::UnmaskPtr(reinterpret_cast<uintptr_t>(entry));
       // Check that all entries belong to this slot span.
-      PA_DCHECK(ToSlotSpanStartPtr(this) <= unmasked_entry);
-      PA_DCHECK(unmasked_entry < (static_cast<char*>(ToSlotSpanStartPtr(this)) +
-                                  bucket->get_bytes_per_span()));
+      PA_DCHECK(ToSlotSpanStart(this) <= unmasked_entry);
+      PA_DCHECK(unmasked_entry <
+                ToSlotSpanStart(this) + bucket->get_bytes_per_span());
     }
     PA_DCHECK(number_of_entries == number_of_freed);
   }
