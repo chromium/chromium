@@ -448,7 +448,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     tree_closing = True,
 )
 
