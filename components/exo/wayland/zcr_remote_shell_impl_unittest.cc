@@ -61,8 +61,11 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
 
     wl_display_.reset(wl_display_create());
     wl_client_.reset(wl_client_create(wl_display_.get(), reader_.release()));
-    wl_shell_resource_.reset(wl_resource_create(
-        wl_client_.get(), &zcr_remote_shell_v2_interface, 1, 1));
+    // Use 0 as the id here to avoid the id conflict (i.e. let wayland library
+    // choose the id from available ids.) Otherwise that will cause memory leak.
+    wl_shell_resource_.reset(wl_resource_create(wl_client_.get(),
+                                                &zcr_remote_shell_v2_interface,
+                                                /*version=*/1, /*id=*/0));
 
     display_ = std::make_unique<Display>();
     shell_ = std::make_unique<WaylandRemoteShell>(
@@ -191,8 +194,8 @@ TEST_F(WaylandRemoteShellTest, DeferBoundsChangeWhileTabletTransition) {
   auto shell_surface =
       exo_test_helper()->CreateClientControlledShellSurface(surface.get());
 
-  ScopedWlResource wl_res(
-      wl_resource_create(wl_client(), &zcr_remote_surface_v2_interface, 1, 1));
+  ScopedWlResource wl_res(wl_resource_create(
+      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
   shell_surface->set_delegate(
       shell()->CreateShellSurfaceDelegate(wl_res.get()));
 
@@ -229,8 +232,8 @@ TEST_F(WaylandRemoteShellTest, DesktopFocusState) {
   auto shell_surface =
       exo_test_helper()->CreateClientControlledShellSurface(surface.get());
 
-  ScopedWlResource wl_res(
-      wl_resource_create(wl_client(), &zcr_remote_surface_v2_interface, 1, 1));
+  ScopedWlResource wl_res(wl_resource_create(
+      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
   shell_surface->set_delegate(
       shell()->CreateShellSurfaceDelegate(wl_res.get()));
   SetSurfaceResource(surface.get(), wl_res.get());
