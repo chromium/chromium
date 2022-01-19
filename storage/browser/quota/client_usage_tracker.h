@@ -67,11 +67,21 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   void GetGlobalUsage(GlobalUsageCallback callback);
   void GetHostUsage(const std::string& host, UsageCallback callback);
   void UpdateUsageCache(const blink::StorageKey& storage_key, int64_t delta);
+
+  // Accumulates all cached usage to determine storage pressure.
   int64_t GetCachedUsage() const;
+
+  // Returns cached usage organized by host. Expected to be called after
+  // GetGlobalUsage which retrieves and caches host usage.
   std::map<std::string, int64_t> GetCachedHostsUsage() const;
+
+  // Returns cached usage organized by StorageKey. Used for histogram recording.
   std::map<blink::StorageKey, int64_t> GetCachedStorageKeysUsage() const;
   bool IsUsageCacheEnabledForStorageKey(
       const blink::StorageKey& storage_key) const;
+
+  // Sets if a `storage_key` for `client_` should / should not be excluded from
+  // quota restrictions.
   void SetUsageCacheEnabled(const blink::StorageKey& storage_key, bool enabled);
 
  private:

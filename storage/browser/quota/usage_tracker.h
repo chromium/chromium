@@ -65,14 +65,28 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   void UpdateUsageCache(QuotaClientType client_type,
                         const blink::StorageKey& storage_key,
                         int64_t delta);
+
+  // Returns accumulated usage for all cached StorageKeys from registered
+  // ClientUsageTrackers. Used to determine storage pressure.
   int64_t GetCachedUsage() const;
+
+  // Retrieves all cached usage organized by host. Expected to be called after
+  // GetGlobalUsage which retrieves and caches host usage.
   std::map<std::string, int64_t> GetCachedHostsUsage() const;
+
+  // Returns all cached usage organized by StorageKey. Used for histogram
+  // recording.
   std::map<blink::StorageKey, int64_t> GetCachedStorageKeysUsage() const;
+
+  // Checks if there are ongoing tasks to get global or host usage. Used to
+  // prevent a UsageTracker reset from happening before a task is complete.
   bool IsWorking() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return !global_usage_callbacks_.empty() || !host_usage_callbacks_.empty();
   }
 
+  // Sets if a `storage_key` for `client_type` should / should not be excluded
+  // from quota restrictions.
   void SetUsageCacheEnabled(QuotaClientType client_type,
                             const blink::StorageKey& storage_key,
                             bool enabled);
