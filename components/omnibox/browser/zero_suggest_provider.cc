@@ -287,27 +287,7 @@ ZeroSuggestProvider::ZeroSuggestProvider(AutocompleteProviderClient* client,
                                          AutocompleteProviderListener* listener)
     : BaseSearchProvider(AutocompleteProvider::TYPE_ZERO_SUGGEST, client),
       listener_(listener),
-      result_type_running_(NONE) {
-  // Record whether remote zero suggest is possible for this user / profile.
-  const TemplateURLService* template_url_service =
-      client->GetTemplateURLService();
-  // Template URL service can be null in tests.
-  if (template_url_service != nullptr) {
-    GURL suggest_url = RemoteSuggestionsService::EndpointUrl(
-        TemplateURLRef::SearchTermsArgs(), template_url_service);
-    // To check whether this is allowed, use an arbitrary insecure (http) URL
-    // as the URL we'd want suggestions for.  The value of OTHER as the current
-    // page classification is to correspond with that URL.
-    UMA_HISTOGRAM_BOOLEAN(
-        "Omnibox.ZeroSuggest.Eligible.OnProfileOpen",
-        suggest_url.is_valid() &&
-            CanSendURL(GURL(kArbitraryInsecureUrlString), suggest_url,
-                       template_url_service->GetDefaultSearchProvider(),
-                       metrics::OmniboxEventProto::OTHER,
-                       template_url_service->search_terms_data(), client,
-                       false));
-  }
-}
+      result_type_running_(NONE) {}
 
 ZeroSuggestProvider::~ZeroSuggestProvider() = default;
 

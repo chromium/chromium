@@ -1066,6 +1066,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.ZeroSuggest.Eligible.OnProfileOpen"
     enum="BooleanSupported" expires_after="2022-01-02">
+  <obsolete>
+    Since Q1 2022
+  </obsolete>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
