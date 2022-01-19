@@ -1076,7 +1076,7 @@ const base::Feature kQuickUnlockPinAutosubmitBackfill{
 
 // Enables redirect to default IdP without interstitial step.
 const base::Feature kRedirectToDefaultIdP{"RedirectToDefaultIdP",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables suppression of Displays notifications other than resolution change.
 const base::Feature kReduceDisplayNotifications{
