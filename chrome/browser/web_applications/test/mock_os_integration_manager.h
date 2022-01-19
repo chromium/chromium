@@ -110,31 +110,10 @@ class MockOsIntegrationManager : public OsIntegrationManager {
 
   // Update:
   MOCK_METHOD(void,
-              UpdateFileHandlers,
-              (const AppId& app_id,
-               FileHandlerUpdateAction file_handlers_need_os_update,
-               ResultCallback finished_callback),
-              (override));
-  MOCK_METHOD(void,
               UpdateShortcuts,
               (const AppId& app_id,
                base::StringPiece old_name,
                base::OnceClosure callback),
-              (override));
-  MOCK_METHOD(void,
-              UpdateShortcutsMenu,
-              (const AppId& app_id, const WebAppInstallInfo& web_app_info),
-              (override));
-  MOCK_METHOD(void,
-              UpdateUrlHandlers,
-              (const AppId& app_id,
-               base::OnceCallback<void(bool success)> callback),
-              (override));
-  MOCK_METHOD(void,
-              UpdateProtocolHandlers,
-              (const AppId& app_id,
-               bool force_shortcut_updates_if_needed,
-               base::OnceClosure update_finished_callback),
               (override));
 
   // Utility methods:

@@ -642,6 +642,13 @@ ApiApprovalState WebAppRegistrar::GetAppFileHandlerApprovalState(
   return web_app->file_handler_approval_state();
 }
 
+bool WebAppRegistrar::ExpectThatFileHandlersAreRegisteredWithOs(
+    const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->file_handler_os_integration_state() ==
+                        OsIntegrationState::kEnabled;
+}
+
 absl::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

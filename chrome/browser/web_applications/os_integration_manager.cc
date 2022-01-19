@@ -626,8 +626,13 @@ void OsIntegrationManager::UpdateFileHandlers(
     const AppId& app_id,
     FileHandlerUpdateAction file_handlers_need_os_update,
     ResultCallback finished_callback) {
-  if (!IsFileHandlingAPIAvailable(app_id) ||
-      file_handlers_need_os_update == FileHandlerUpdateAction::kNoUpdate) {
+  if (file_handlers_need_os_update == FileHandlerUpdateAction::kNoUpdate) {
+    std::move(finished_callback).Run(Result::kOk);
+    return;
+  }
+
+  if (file_handlers_need_os_update == FileHandlerUpdateAction::kUpdate &&
+      !IsFileHandlingAPIAvailable(app_id)) {
     std::move(finished_callback).Run(Result::kOk);
     return;
   }

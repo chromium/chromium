@@ -147,6 +147,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool IsAppFileHandlerPermissionBlocked(const web_app::AppId& app_id) const;
   // Returns the state of the File Handling API for the given app.
   ApiApprovalState GetAppFileHandlerApprovalState(const AppId& app_id) const;
+  // Returns true iff it's expected that File Handlers have been, **or are in
+  // the process of being**, registered with the OS.
+  bool ExpectThatFileHandlersAreRegisteredWithOs(const AppId& app_id) const;
 
   // Returns the start_url with launch_query_params appended to the end if any.
   GURL GetAppLaunchUrl(const AppId& app_id) const;

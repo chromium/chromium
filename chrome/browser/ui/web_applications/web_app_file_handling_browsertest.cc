@@ -50,6 +50,7 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -623,5 +624,124 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
 // TODO(crbug.com/1218210): add more tests.
 
 INSTANTIATE_TEST_SUITE_P(, WebAppFileHandlingIconBrowserTest, testing::Bool());
+
+// The following fixtures help test what happens when the feature's state
+// changes between browser launches.
+class WebAppFileHandlingBrowserTest_FeatureSwitchesState
+    : public WebAppFileHandlingBrowserTest {
+ public:
+  explicit WebAppFileHandlingBrowserTest_FeatureSwitchesState(
+      bool feature_switches_from_off_to_on = false) {
+    if (feature_switches_from_off_to_on == content::IsPreTest()) {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kFileHandlingAPI);
+    }
+
+    WebAppFileHandlerManager::DisableOsIntegrationForTesting(
+        base::BindRepeating(
+            &WebAppFileHandlingBrowserTest_FeatureSwitchesState::
+                IntegrationWasSet,
+            base::Unretained(this)));
+  }
+  ~WebAppFileHandlingBrowserTest_FeatureSwitchesState() override = default;
+
+  void InstallApp() {
+    EXPECT_EQ(0u, registrar().GetAppIds().size());
+    InstallFileHandlingPWA();
+    EXPECT_EQ(1u, registrar().GetAppIds().size());
+
+    // `InstallFileHandlingPWA()` doesn't perform OS integration, so explicitly
+    // call it here to simulate a user install. Note: does nothing if the
+    // feature is disabled.
+    file_handler_manager().EnableAndRegisterOsFileHandlers(app_id());
+  }
+
+  void IntegrationWasSet(bool enabled) {
+    if (enabled)
+      added_count_++;
+    else
+      removed_count_++;
+  }
+
+ protected:
+  // The number of times Chrome has called into the OS to set state.
+  int added_count_ = 0;
+  int removed_count_ = 0;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This test fixture will run the PRE_ test with the feature disabled, then the
+// main test with the feature enabled. If a FH app was installed when the
+// feature was disabled, then the feature becomes enabled, it should be
+// registered with the OS.
+class WebAppFileHandlingBrowserTest_FeatureSwitchesOn
+    : public WebAppFileHandlingBrowserTest_FeatureSwitchesState {
+ public:
+  WebAppFileHandlingBrowserTest_FeatureSwitchesOn()
+      : WebAppFileHandlingBrowserTest_FeatureSwitchesState(
+            /*feature_switches_from_off_to_on=*/true) {}
+  ~WebAppFileHandlingBrowserTest_FeatureSwitchesOn() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest_FeatureSwitchesOn,
+                       PRE_PRE_OsIntegrationIsAdded) {
+  InstallApp();
+  EXPECT_FALSE(file_handler_manager().IsFileHandlingAPIAvailable(app_id()));
+  EXPECT_FALSE(registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id()));
+  EXPECT_EQ(0, added_count_);
+  EXPECT_EQ(0, removed_count_);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest_FeatureSwitchesOn,
+                       PRE_OsIntegrationIsAdded) {
+  // In this intermediate test, the feature is still off. Verify that Chrome
+  // doesn't make excess calls to the OS.
+  EXPECT_EQ(0, added_count_);
+  EXPECT_EQ(0, removed_count_);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest_FeatureSwitchesOn,
+                       OsIntegrationIsAdded) {
+  ASSERT_EQ(1u, registrar().GetAppIds().size());
+  AppId app_id = registrar().GetAppIds()[0];
+  EXPECT_TRUE(file_handler_manager().IsFileHandlingAPIAvailable(app_id));
+  EXPECT_TRUE(registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id));
+  EXPECT_EQ(1, added_count_);
+  EXPECT_EQ(0, removed_count_);
+}
+
+// This test fixture verifies the opposite of the above. It will run the PRE_
+// test with the feature enabled, then the main test with the feature disabled.
+// If a FH app was installed when the feature was enabled, then the feature
+// becomes disabled, it should be no longer be registered with the OS.
+class WebAppFileHandlingBrowserTest_FeatureSwitchesOff
+    : public WebAppFileHandlingBrowserTest_FeatureSwitchesState {
+ public:
+  WebAppFileHandlingBrowserTest_FeatureSwitchesOff()
+      : WebAppFileHandlingBrowserTest_FeatureSwitchesState(
+            /*feature_switches_from_off_to_on=*/false) {}
+  ~WebAppFileHandlingBrowserTest_FeatureSwitchesOff() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest_FeatureSwitchesOff,
+                       PRE_OsIntegrationIsRemoved) {
+  InstallApp();
+  EXPECT_TRUE(file_handler_manager().IsFileHandlingAPIAvailable(app_id()));
+  EXPECT_TRUE(registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id()));
+  EXPECT_EQ(1, added_count_);
+  EXPECT_EQ(0, removed_count_);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest_FeatureSwitchesOff,
+                       OsIntegrationIsRemoved) {
+  ASSERT_EQ(1u, registrar().GetAppIds().size());
+  AppId app_id = registrar().GetAppIds()[0];
+  EXPECT_FALSE(file_handler_manager().IsFileHandlingAPIAvailable(app_id));
+  EXPECT_FALSE(registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id));
+  EXPECT_EQ(0, added_count_);
+  EXPECT_EQ(1, removed_count_);
+}
 
 }  // namespace web_app

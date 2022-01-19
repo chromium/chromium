@@ -9,7 +9,7 @@ namespace web_app {
 
 FakeWebAppFileHandlerManager::FakeWebAppFileHandlerManager(Profile* profile)
     : WebAppFileHandlerManager(profile) {
-  WebAppFileHandlerManager::DisableOsIntegrationForTesting();
+  WebAppFileHandlerManager::DisableOsIntegrationForTesting(base::DoNothing());
 }
 
 FakeWebAppFileHandlerManager::~FakeWebAppFileHandlerManager() = default;

@@ -206,11 +206,11 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
   // is needed. Uninstalling already cleans up shortcuts (and thus, file
   // handlers).
   auto* provider = WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider->registrar().IsInstalled(app_id));
   if (provider->registrar().IsUninstalling(app_id)) {
     std::move(callback).Run(Result::kOk);
     return;
   }
+  DCHECK(provider->registrar().IsInstalled(app_id));
 
   // Otherwise, simply recreate the .desktop file.
   UpdateFileHandlerRegistrationInOs(app_id, profile, std::move(callback));

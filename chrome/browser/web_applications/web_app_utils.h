@@ -27,6 +27,8 @@ class BrowserContext;
 
 namespace web_app {
 
+class WebAppProvider;
+
 // These functions return true if the WebApp System or its subset is allowed
 // for a given profile.
 // |profile| can be original profile or its secondary off-the-record profile.
@@ -114,6 +116,19 @@ void PersistFileHandlersUserChoice(Profile* profile,
                                    const AppId& app_id,
                                    bool allowed,
                                    base::OnceClosure update_finished_callback);
+
+// Updates the file handler registration with the OS to match the app's
+// settings. Note that this tries to avoid extra work by no-oping if the current
+// OS state matches what is calculated to be the desired stated. For example, if
+// Chromium has already registered file handlers with the OS, and finds that
+// file handlers *should* be registered with the OS, this function will no-op.
+// This will not account for what the current file handlers actually are. The
+// actual set of file handlers can only change on app update, and that path must
+// go through `OsIntegrationManager::UpdateOsHooks()`, which always clobbers and
+// renews the entire set of OS-registered file handlers (and other OS hooks).
+void UpdateFileHandlerOsIntegration(WebAppProvider* provider,
+                                    const AppId& app_id,
+                                    base::OnceClosure update_finished_callback);
 
 // Check if only |specified_sources| exist in the |sources|
 bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,

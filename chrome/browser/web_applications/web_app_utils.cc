@@ -301,32 +301,51 @@ void PersistFileHandlersUserChoice(Profile* profile,
       app_id,
       allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed);
 
-  if (allowed) {
+  UpdateFileHandlerOsIntegration(provider, app_id,
+                                 std::move(update_finished_callback));
+}
+
+void UpdateFileHandlerOsIntegration(
+    WebAppProvider* provider,
+    const AppId& app_id,
+    base::OnceClosure update_finished_callback) {
+  bool enabled =
+      provider->os_integration_manager().IsFileHandlingAPIAvailable(app_id) &&
+      !provider->registrar().IsAppFileHandlerPermissionBlocked(app_id);
+
+  if (enabled ==
+      provider->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id)) {
     std::move(update_finished_callback).Run();
-  } else {
-#if BUILDFLAG(IS_MAC)
-    // On Mac, the file handlers are encoded in the app shortcut. First
-    // unregister the file handlers (verifying that it finishes synchronously),
-    // then update the shortcut.
-    Result unregister_file_handlers_result = Result::kError;
-    provider->os_integration_manager().UpdateFileHandlers(
-        app_id, FileHandlerUpdateAction::kRemove,
-        base::BindOnce(
-            [](Result* result_out, Result actual_result) {
-              *result_out = actual_result;
-            },
-            &unregister_file_handlers_result));
-    DCHECK_EQ(Result::kOk, unregister_file_handlers_result);
-    provider->os_integration_manager().UpdateShortcuts(
-        app_id, /*old_name=*/{}, std::move(update_finished_callback));
-#else
-    provider->os_integration_manager().UpdateFileHandlers(
-        app_id, FileHandlerUpdateAction::kRemove,
-        base::BindOnce([](base::OnceClosure closure,
-                          Result ignored) { std::move(closure).Run(); },
-                       std::move(update_finished_callback)));
-#endif
+    return;
   }
+
+  FileHandlerUpdateAction action = enabled ? FileHandlerUpdateAction::kUpdate
+                                           : FileHandlerUpdateAction::kRemove;
+
+#if BUILDFLAG(IS_MAC)
+  // On Mac, the file handlers are encoded in the app shortcut. First
+  // unregister the file handlers (verifying that it finishes synchronously),
+  // then update the shortcut.
+  Result unregister_file_handlers_result = Result::kError;
+  provider->os_integration_manager().UpdateFileHandlers(
+      app_id, action,
+      base::BindOnce([](Result* result_out,
+                        Result actual_result) { *result_out = actual_result; },
+                     &unregister_file_handlers_result));
+  DCHECK_EQ(Result::kOk, unregister_file_handlers_result);
+  provider->os_integration_manager().UpdateShortcuts(
+      app_id, /*old_name=*/{}, std::move(update_finished_callback));
+#else
+  provider->os_integration_manager().UpdateFileHandlers(
+      app_id, action,
+      base::BindOnce([](base::OnceClosure closure,
+                        Result ignored) { std::move(closure).Run(); },
+                     std::move(update_finished_callback)));
+#endif
+
+  DCHECK_EQ(
+      enabled,
+      provider->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id));
 }
 
 bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
@@ -345,4 +364,8 @@ bool CanUserUninstallWebApp(WebAppSources sources) {
   return HasAnySpecifiedSourcesAndNoOtherSources(sources, specified_sources);
 }
 
+void RegisterFileHandlersWithOs(WebAppProvider* provider,
+                                const AppId& app_id,
+                                absl::optional<ApiApprovalState> approval_state,
+                                base::OnceClosure finished_closure) {}
 }  // namespace web_app

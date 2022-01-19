@@ -10,14 +10,17 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -32,7 +35,10 @@ namespace {
 // icons.
 absl::optional<bool> g_icons_supported_by_os_override;
 
-bool g_disable_automatic_file_handler_cleanup_for_testing = false;
+base::RepeatingCallback<void(bool)>& GetOsIntegrationCallback() {
+  static base::NoDestructor<base::RepeatingCallback<void(bool)>> instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -48,22 +54,19 @@ void WebAppFileHandlerManager::SetSubsystems(WebAppSyncBridge* sync_bridge) {
 void WebAppFileHandlerManager::Start() {
   DCHECK(sync_bridge_);
 
-  if (!g_disable_automatic_file_handler_cleanup_for_testing) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(
-                       base::IgnoreResult(
-                           &WebAppFileHandlerManager::CleanupAfterOriginTrials),
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Don't compete for resources during browser startup.
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(base::IgnoreResult(
+                             &WebAppFileHandlerManager::SyncOsIntegrationState),
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void WebAppFileHandlerManager::DisableOsIntegrationForTesting() {
-  disable_os_integration_for_testing_ = true;
-}
-
-int WebAppFileHandlerManager::TriggerFileHandlerCleanupForTesting() {
-  return CleanupAfterOriginTrials();
+// static
+void WebAppFileHandlerManager::DisableOsIntegrationForTesting(
+    const base::RepeatingCallback<void(bool)>& set_os_integration) {
+  GetOsIntegrationCallback() = set_os_integration;
 }
 
 // static
@@ -78,17 +81,20 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
 
   SetOsIntegrationState(app_id, OsIntegrationState::kEnabled);
 
-  if (!ShouldRegisterFileHandlersWithOs() ||
-      disable_os_integration_for_testing_) {
+  if (GetOsIntegrationCallback()) {
+    GetOsIntegrationCallback().Run(true);
     return;
   }
 
+  if (!ShouldRegisterFileHandlersWithOs())
+    return;
+
+#if !BUILDFLAG(IS_MAC)
   // File handler registration is done via shortcuts creation on MacOS,
   // WebAppShortcutManager::BuildShortcutInfoForWebApp collects file handler
   // information to shortcut_info->file_handler_extensions, then used by MacOS
   // implementation of |internals::CreatePlatformShortcuts|. So we avoid
   // creating shortcuts twice here.
-#if !BUILDFLAG(IS_MAC)
   const apps::FileHandlers* file_handlers = GetEnabledFileHandlers(app_id);
   if (file_handlers) {
     RegisterFileHandlersWithOs(app_id, GetRegistrar()->GetAppShortName(app_id),
@@ -110,8 +116,13 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
 
   SetOsIntegrationState(app_id, OsIntegrationState::kDisabled);
 
-  if (!ShouldRegisterFileHandlersWithOs() ||
-      disable_os_integration_for_testing_) {
+  if (GetOsIntegrationCallback()) {
+    GetOsIntegrationCallback().Run(false);
+    std::move(callback).Run(Result::kOk);
+    return;
+  }
+
+  if (!ShouldRegisterFileHandlersWithOs()) {
     // This enumeration signals if there was not an error. Exiting early here is
     // WAI, so this is a success.
     std::move(callback).Run(Result::kOk);
@@ -165,25 +176,8 @@ bool WebAppFileHandlerManager::IconsEnabled() {
          base::FeatureList::IsEnabled(blink::features::kFileHandlingIcons);
 }
 
-void WebAppFileHandlerManager::DisableAutomaticFileHandlerCleanupForTesting() {
-  g_disable_automatic_file_handler_cleanup_for_testing = true;
-}
-
-int WebAppFileHandlerManager::CleanupAfterOriginTrials() {
-  int cleaned_up_count = 0;
-  for (const AppId& app_id : GetRegistrar()->GetAppIds()) {
-    if (!ShouldOsIntegrationBeEnabled(app_id))
-      continue;
-
-    if (IsFileHandlingAPIAvailable(app_id))
-      continue;
-
-    // If the trial has expired, unregister handlers.
-    DisableAndUnregisterOsFileHandlers(app_id, base::DoNothing());
-    cleaned_up_count++;
-  }
-
-  return cleaned_up_count;
+void WebAppFileHandlerManager::SyncOsIntegrationStateForTesting() {
+  SyncOsIntegrationState();
 }
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
@@ -242,16 +236,22 @@ void WebAppFileHandlerManager::SetOsIntegrationState(
 
 bool WebAppFileHandlerManager::ShouldOsIntegrationBeEnabled(
     const AppId& app_id) const {
-  if (!GetRegistrar())
-    return false;
-
-  const WebApp* web_app = GetRegistrar()->GetAppById(app_id);
-  return web_app && web_app->file_handler_os_integration_state() ==
-                        OsIntegrationState::kEnabled;
+  return GetRegistrar() &&
+         GetRegistrar()->ExpectThatFileHandlersAreRegisteredWithOs(app_id);
 }
 
 const WebAppRegistrar* WebAppFileHandlerManager::GetRegistrar() const {
   return sync_bridge_ ? &sync_bridge_->registrar() : nullptr;
+}
+
+void WebAppFileHandlerManager::SyncOsIntegrationState() {
+  if (GetRegistrar()) {
+    for (AppId& id : GetRegistrar()->GetAppIds()) {
+      UpdateFileHandlerOsIntegration(
+          WebAppProvider::GetForLocalAppsUnchecked(profile_), id,
+          base::DoNothing());
+    }
+  }
 }
 
 }  // namespace web_app

@@ -189,27 +189,6 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   EXPECT_FALSE(uninstall_errors[OsHookType::kUninstallationViaOsSettings]);
 }
 
-TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
-  const AppId app_id = "test";
-  testing::StrictMock<MockOsIntegrationManager> manager;
-
-  WebAppInstallInfo web_app_info;
-  base::StringPiece old_name = "test-name";
-
-  EXPECT_CALL(
-      manager,
-      UpdateFileHandlers(app_id, FileHandlerUpdateAction::kUpdate, testing::_))
-      .Times(1);
-  EXPECT_CALL(manager, UpdateShortcuts(app_id, old_name, testing::_)).Times(1);
-  EXPECT_CALL(manager, UpdateShortcutsMenu(app_id, testing::_)).Times(1);
-  EXPECT_CALL(manager, UpdateUrlHandlers(app_id, testing::_)).Times(1);
-  EXPECT_CALL(manager, UpdateProtocolHandlers(app_id, false, testing::_))
-      .Times(1);
-
-  manager.UpdateOsHooks(app_id, old_name, FileHandlerUpdateAction::kUpdate,
-                        web_app_info, base::DoNothing());
-}
-
 TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {
 #if BUILDFLAG(IS_WIN)
   // UpdateProtocolHandlers is a no-op on Win7
