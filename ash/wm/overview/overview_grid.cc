@@ -753,8 +753,10 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
 }
 
 void OverviewGrid::RemoveAllItemsForDesksTemplatesLaunch() {
-  for (auto& item : window_list_)
-    item->RestoreWindow(/*reset_tranform=*/true);
+  for (auto& item : window_list_) {
+    item->RestoreWindow(/*reset_tranform=*/true,
+                        /*was_desks_templates_grid_showing=*/true);
+  }
   window_list_.clear();
 }
 

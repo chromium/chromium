@@ -206,6 +206,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // mode.
   gfx::Rect original_clip_rect_;
 
+  // Removes clipping on `window_` during destruction in the case it was not
+  // removed in `RestoreWindw()`. See destructor for more information.
+  bool reset_clip_on_shutdown_ = true;
+
   std::unique_ptr<ScopedOverviewHideWindows> hidden_transient_children_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

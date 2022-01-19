@@ -112,9 +112,9 @@ void ClipWindow(aura::Window* window, const gfx::Rect& clip_rect) {
     return;
 
   gfx::Rect new_clip_rect = clip_rect;
-  if (new_clip_rect.IsEmpty() &&
-      animator->IsAnimatingProperty(ui::LayerAnimationElement::CLIP)) {
-    // Animate to a clip the size of |window|. Create a self deleting object
+  if (new_clip_rect.IsEmpty() && animator->is_animating() &&
+      !animator->GetTransitionDuration().is_zero()) {
+    // Animate to a clip the size of `window`. Create a self deleting object
     // which removes the clip when the animation is finished.
     new_clip_rect = gfx::Rect(window->bounds().size());
     new RemoveClipObserver(window);
@@ -219,11 +219,12 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
 }
 
 ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
-  // Reset clipping in the case RestoreWindow() is not called, such as when
-  // |this| is dragged to another display. This is a no-op if SetClipping() was
-  // called in RestoreWindow().
-  // See crbug.com/1140639.
-  SetClipping({ClippingType::kExit, gfx::SizeF()});
+  // Reset clipping in the case `RestoreWindow()` is not called, such as when
+  // `this` is dragged to another display. Without this check, `SetClipping`
+  // would override the one we called in `RestoreWindow()` which would result in
+  // the same final clip but may remove the animation. See crbug.com/1140639.
+  if (reset_clip_on_shutdown_)
+    SetClipping({ClippingType::kExit, gfx::SizeF()});
 
   for (auto* transient : GetTransientTreeIterator(window_)) {
     transient->ClearProperty(chromeos::kIsShowingInOverviewKey);
@@ -265,10 +266,16 @@ void ScopedOverviewTransformWindow::RestoreWindow(
   if (Shell::Get()->shadow_controller())
     Shell::Get()->shadow_controller()->UpdateShadowForWindow(window_);
 
+  // We will handle clipping here, no need to do anything in the destructor.
+  reset_clip_on_shutdown_ = false;
+
   if (IsMinimized() || was_desk_templates_grid_showing) {
     // Minimized windows may have had their transforms altered by swiping up
     // from the shelf.
+    ScopedOverviewAnimationSettings animation_settings(OVERVIEW_ANIMATION_NONE,
+                                                       window_);
     SetTransform(window_, gfx::Transform());
+    SetClipping({ClippingType::kExit, gfx::SizeF()});
     return;
   }
 
@@ -299,11 +306,8 @@ void ScopedOverviewTransformWindow::RestoreWindow(
     }
   }
 
-  OverviewAnimationType animation_type =
-      was_desk_templates_grid_showing
-          ? OVERVIEW_ANIMATION_NONE
-          : overview_item_->GetExitOverviewAnimationType();
-  ScopedOverviewAnimationSettings animation_settings(animation_type, window_);
+  ScopedOverviewAnimationSettings animation_settings(
+      overview_item_->GetExitOverviewAnimationType(), window_);
   SetOpacity(original_opacity_);
   SetClipping({ClippingType::kExit, gfx::SizeF()});
 }
