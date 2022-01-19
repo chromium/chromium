@@ -91,13 +91,6 @@ void LayoutHTMLCanvas::InvalidatePaint(
   LayoutReplaced::InvalidatePaint(context);
 }
 
-CompositingReasons LayoutHTMLCanvas::AdditionalCompositingReasons() const {
-  NOT_DESTROYED();
-  if (To<HTMLCanvasElement>(GetNode())->ShouldBeDirectComposited())
-    return CompositingReason::kCanvas;
-  return CompositingReason::kNone;
-}
-
 void LayoutHTMLCanvas::StyleDidChange(StyleDifference diff,
                                       const ComputedStyle* old_style) {
   NOT_DESTROYED();

@@ -43,17 +43,16 @@ TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
   auto* painting_layer = GetLayoutObjectByElementId("canvas")->PaintingLayer();
   EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
   canvas->CreateLayer();
-  EXPECT_TRUE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(
       painting_layer,
       To<LayoutBoxModelObject>(canvas->GetLayoutObject())->PaintingLayer());
-  EXPECT_TRUE(canvas->GetLayoutObject()
-                  ->FirstFragment()
-                  .PaintProperties()
-                  ->PaintOffsetTranslation()
-                  ->HasDirectCompositingReasons());
+  EXPECT_FALSE(canvas->GetLayoutObject()
+                   ->FirstFragment()
+                   .PaintProperties()
+                   ->PaintOffsetTranslation());
 }
 
 TEST_P(HTMLCanvasElementTest, CanvasInvalidation) {

@@ -1448,8 +1448,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       mojom::blink::PageVisibilityState::kHidden,
       /*is_initial_state=*/false);
   blink::test::RunPendingTasks();  // Run hibernation task.
-  // If enabled, hibernation should cause compositing update.
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, box->NeedsPaintPropertyUpdate());
+  // If enabled, hibernation should cause repaint of the painting layer.
+  EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, painting_layer->SelfNeedsRepaint());
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
             !CanvasElement().ResourceProvider());
@@ -1459,11 +1459,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
 
-  // Wake up again, which should request a compositing update synchronously.
+  // Wake up again, which should request repaint of the painting layer.
   GetDocument().GetPage()->SetVisibilityState(
       mojom::blink::PageVisibilityState::kVisible,
       /*is_initial_state=*/false);
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, box->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, painting_layer->SelfNeedsRepaint());
 }
 

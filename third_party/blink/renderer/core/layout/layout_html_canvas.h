@@ -63,12 +63,6 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
     NOT_DESTROYED();
     CanvasSizeChanged();
   }
-
-  bool CanHaveAdditionalCompositingReasons() const override {
-    NOT_DESTROYED();
-    return true;
-  }
-  CompositingReasons AdditionalCompositingReasons() const override;
 };
 
 template <>
