@@ -54,7 +54,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     transport_availability.request_type =
         device::FidoRequestType::kGetAssertion;
     model->StartFlow(std::move(transport_availability),
-                     /*use_location_bar_bubble=*/false);
+                     /*use_location_bar_bubble=*/false,
+                     /*prefer_native_api=*/false);
 
     // The dialog should immediately close as soon as it is displayed.
     if (name == "mechanisms") {

@@ -269,10 +269,15 @@ class AuthenticatorRequestDialogModel {
   // If |use_location_bar_bubble| is true, a non-modal bubble will be displayed
   // on the location bar instead of the full-blown page-modal UI.
   //
+  // |prefer_native_api| indicates that the UI should jump directly to the
+  // system WebAuthn UI if there's no better option. This is currently only
+  // meaningful on Windows, but the parameter exists on all platforms to avoid
+  // too much #ifdef soup.
+  //
   // Valid action when at step: kNotStarted.
-  void StartFlow(
-      TransportAvailabilityInfo transport_availability,
-      bool use_location_bar_bubble);
+  void StartFlow(TransportAvailabilityInfo transport_availability,
+                 bool use_location_bar_bubble,
+                 bool prefer_native_api);
 
   // Restarts the UX flow.
   void StartOver();
@@ -594,7 +599,14 @@ class AuthenticatorRequestDialogModel {
   void DispatchRequestAsyncInternal(const std::string& authenticator_id);
 
   void ContactNextPhoneByName(const std::string& name);
-  void PopulateMechanisms();
+
+  // PopulateMechanisms fills in |mechanisms_|.
+  //
+  // |prefer_native_api| indicates that the UI should jump directly to the
+  // system WebAuthn UI if there's no better option. This is currently only
+  // meaningful on Windows, but the parameter exists on all platforms to avoid
+  // too much #ifdef soup.
+  void PopulateMechanisms(bool prefer_native_api);
 
   // Proceeds straight to the platform authenticator prompt.
   //
@@ -662,6 +674,11 @@ class AuthenticatorRequestDialogModel {
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
   bool cable_extension_provided_ = false;
+
+  // have_restarted_due_to_windows_cancel_ is set to true if the request was
+  // restarted because the UI jumped directly to the Windows UI but the user
+  // hit cancel.
+  bool have_restarted_due_to_windows_cancel_ = false;
 
   // mechanisms contains the entries that appear in the "transport" selection
   // sheet and the drop-down menu.

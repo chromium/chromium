@@ -35,6 +35,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -81,6 +82,14 @@ bool IsWebauthnRPIDListedInEnterprisePolicy(
                        return v.GetString() == relying_party_id;
                      });
 }
+
+#if BUILDFLAG(IS_WIN)
+// kWebAuthnLastOperationWasNativeAPI is a boolean preference that records
+// whether the last successful operation used the Windows native API. If so
+// then we'll try and jump directly to it next time.
+const char kWebAuthnLastOperationWasNativeAPI[] =
+    "webauthn.last_op_used_native_api";
+#endif
 
 #if BUILDFLAG(IS_MAC)
 const char kWebAuthnTouchIdMetadataSecretPrefName[] =
@@ -144,6 +153,23 @@ bool ChromeWebAuthenticationDelegate::IsFocused(
     content::WebContents* web_contents) {
   return web_contents->GetVisibility() == content::Visibility::VISIBLE;
 }
+
+#if BUILDFLAG(IS_WIN)
+void ChromeWebAuthenticationDelegate::OperationSucceeded(
+    content::BrowserContext* browser_context,
+    bool used_win_api) {
+  // If a registration or assertion operation was successful, record whether the
+  // Windows native API was used for it. If so we'll jump directly to the native
+  // UI for the next operation.
+  Profile* const profile = Profile::FromBrowserContext(browser_context);
+  if (profile->IsOffTheRecord()) {
+    return;
+  }
+
+  profile->GetPrefs()->SetBoolean(kWebAuthnLastOperationWasNativeAPI,
+                                  used_win_api);
+}
+#endif
 
 #if BUILDFLAG(IS_MAC)
 // static
@@ -232,6 +258,9 @@ ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
 // static
 void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(kWebAuthnLastOperationWasNativeAPI, false);
+#endif
 #if BUILDFLAG(IS_MAC)
   registry->RegisterStringPref(kWebAuthnTouchIdMetadataSecretPrefName,
                                std::string());
@@ -544,13 +573,21 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  weak_dialog_model_->AddObserver(this);
-
-  weak_dialog_model_->StartFlow(std::move(data), is_conditional_);
-
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+
+  bool last_used_native_api = false;
+#if BUILDFLAG(IS_WIN)
+  PrefService* const prefs =
+      user_prefs::UserPrefs::Get(web_contents->GetBrowserContext());
+  last_used_native_api = prefs->GetBoolean(kWebAuthnLastOperationWasNativeAPI);
+#endif
+
+  weak_dialog_model_->AddObserver(this);
+  weak_dialog_model_->StartFlow(std::move(data), is_conditional_,
+                                last_used_native_api);
+
+  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
   if (browser) {
     browser->window()->UpdatePageActionIcon(PageActionIconType::kWebAuthn);
   }

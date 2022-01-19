@@ -1298,6 +1298,11 @@ void AuthenticatorCommon::OnRegisterResponse(
       DCHECK(response_data.has_value());
       DCHECK(authenticator);
 
+#if BUILDFLAG(IS_WIN)
+      GetWebAuthenticationDelegate()->OperationSucceeded(
+          GetBrowserContext(), authenticator->IsWinNativeApiAuthenticator());
+#endif
+
       absl::optional<device::FidoTransportProtocol> transport =
           authenticator->AuthenticatorTransport();
       bool is_transport_used_internal = false;
@@ -1513,6 +1518,11 @@ void AuthenticatorCommon::OnSignResponse(
     case device::GetAssertionStatus::kSuccess:
       DCHECK(response_data.has_value());
       DCHECK(authenticator);
+
+#if BUILDFLAG(IS_WIN)
+      GetWebAuthenticationDelegate()->OperationSucceeded(
+          GetBrowserContext(), authenticator->IsWinNativeApiAuthenticator());
+#endif
 
       // Show an account picker for requests with empty allow lists.
       // Authenticators may omit the identifying information in the user entity

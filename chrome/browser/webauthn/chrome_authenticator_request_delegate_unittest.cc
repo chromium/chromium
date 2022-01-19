@@ -6,15 +6,20 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/fido_request_handler_base.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +36,7 @@
 class ChromeAuthenticatorRequestDelegateTest
     : public ChromeRenderViewHostTestHarness {};
 
-class TestAuthenticatorModelObserver
+class TestAuthenticatorModelObserver final
     : public AuthenticatorRequestDialogModel::Observer {
  public:
   explicit TestAuthenticatorModelObserver(
@@ -144,6 +149,78 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ShouldPromptForAttestationWin) {
                                    cb.callback());
   cb.WaitForCallback();
   EXPECT_EQ(cb.value(), true);
+}
+
+class ChromeAuthenticatorRequestDelegateWindowsBehaviorTest
+    : public ChromeAuthenticatorRequestDelegateTest {
+ public:
+  void CreateObjectsUnderTest() {
+    delegate_.emplace(main_rfh());
+    delegate_->SetRelyingPartyId("example.com");
+
+    AuthenticatorRequestDialogModel* const model = delegate_->dialog_model();
+    observer_.emplace(model);
+    model->AddObserver(&observer_.value());
+    CHECK_EQ(observer_->last_step(),
+             AuthenticatorRequestDialogModel::Step::kNotStarted);
+  }
+
+  absl::optional<ChromeAuthenticatorRequestDelegate> delegate_;
+  absl::optional<TestAuthenticatorModelObserver> observer_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthPhoneSupport};
+};
+
+TEST_F(ChromeAuthenticatorRequestDelegateWindowsBehaviorTest,
+       CancelAfterMechanismSelection) {
+  // Test that, on Windows, the `ChromeAuthenticatorRequestDelegate` should
+  // remember whether the last successful operation was with the native API or
+  // not and immediately trigger that UI for the next operation accordingly.
+
+  // Setup the Windows native authenticator and configure caBLE such that adding
+  // a phone is an option.
+  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  tai.has_win_native_api_authenticator = true;
+  tai.win_native_api_authenticator_id = "ID";
+  tai.available_transports.insert(
+      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+
+  CreateObjectsUnderTest();
+  delegate_->dialog_model()->set_cable_transport_info(
+      absl::nullopt, {}, base::DoNothing(), "fido:/1234");
+  delegate_->OnTransportAvailabilityEnumerated(tai);
+
+  // Since there are two options, the mechanism selection sheet should be shown.
+  EXPECT_EQ(observer_->last_step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+
+  // Simulate the Windows native API being used successfully.
+  ChromeWebAuthenticationDelegate non_request_delegate;
+  non_request_delegate.OperationSucceeded(profile(), /* used_win_api= */ true);
+
+  CreateObjectsUnderTest();
+  delegate_->dialog_model()->set_cable_transport_info(
+      absl::nullopt, {}, base::DoNothing(), "fido:/1234");
+  delegate_->OnTransportAvailabilityEnumerated(tai);
+
+  // Since the Windows API was used successfully last time, it should jump
+  // directly to the native UI this time.
+  EXPECT_EQ(observer_->last_step(),
+            AuthenticatorRequestDialogModel::Step::kNotStarted);
+
+  // Simulate that caBLE was used successfully.
+  non_request_delegate.OperationSucceeded(profile(), /* used_win_api= */ false);
+
+  CreateObjectsUnderTest();
+  delegate_->dialog_model()->set_cable_transport_info(
+      absl::nullopt, {}, base::DoNothing(), "fido:/1234");
+  delegate_->OnTransportAvailabilityEnumerated(tai);
+
+  // Should show the mechanism selection sheet again.
+  EXPECT_EQ(observer_->last_step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
 }
 
 #endif  // BUILDFLAG(IS_WIN)

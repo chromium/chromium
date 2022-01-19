@@ -55,6 +55,12 @@ bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
   return true;
 }
 
+#if BUILDFLAG(IS_WIN)
+void WebAuthenticationDelegate::OperationSucceeded(
+    BrowserContext* browser_context,
+    bool used_win_api) {}
+#endif
+
 #if BUILDFLAG(IS_MAC)
 absl::optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
 WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
