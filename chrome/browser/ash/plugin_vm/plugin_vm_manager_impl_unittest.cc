@@ -72,6 +72,10 @@ class PluginVmManagerImplTest : public testing::Test {
     // Make StartVm succeed by default, tests can override as needed.
     VmPluginDispatcherClient().set_start_vm_response(
         vm_tools::plugin_dispatcher::StartVmResponse());
+
+    // Borealis makes a call, unrelated to this test so just reset it.
+    DCHECK_EQ(ConciergeClient().get_vm_info_call_count(), 1);
+    ConciergeClient().reset_get_vm_info_call_count();
   }
 
   PluginVmManagerImplTest(const PluginVmManagerImplTest&) = delete;

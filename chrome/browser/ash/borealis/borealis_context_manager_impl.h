@@ -94,7 +94,7 @@ class BorealisContextManagerImpl
       base::OnceCallback<void(BorealisShutdownResult)> on_shutdown_callback,
       const std::string& vm_name);
 
-  void ShutDownBorealisIfChromeCrashed();
+  void ShutDownBorealisIfRunning();
 
   Profile* const profile_;
 

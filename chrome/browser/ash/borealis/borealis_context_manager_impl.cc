@@ -87,7 +87,7 @@ BorealisContextManagerImpl::BorealisContextManagerImpl(Profile* profile)
     : profile_(profile), weak_factory_(this) {
   // DBusThreadManager may not be initialized in tests.
   if (chromeos::DBusThreadManager::IsInitialized()) {
-    ShutDownBorealisIfChromeCrashed();
+    ShutDownBorealisIfRunning();
     chromeos::ConciergeClient::Get()->AddVmObserver(this);
   }
 }
@@ -103,10 +103,9 @@ BorealisContextManagerImpl::~BorealisContextManagerImpl() {
 }
 
 // Note that this method gets called in the constructor.
-void BorealisContextManagerImpl::ShutDownBorealisIfChromeCrashed() {
-  if (ExitTypeService::GetLastSessionExitType(profile_) != ExitType::kCrashed) {
-    return;
-  }
+// If Borealis was running when chrome crashed/restarted then Borealis
+// may still be running and should be shut down.
+void BorealisContextManagerImpl::ShutDownBorealisIfRunning() {
   vm_tools::concierge::GetVmInfoRequest request;
   request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_name(kBorealisVmName);
