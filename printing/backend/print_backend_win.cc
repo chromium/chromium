@@ -209,28 +209,28 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
   DCHECK(printer_list);
   DWORD bytes_needed = 0;
   DWORD count_returned = 0;
+  constexpr DWORD kFlags = PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS;
   const DWORD kLevel = 4;
-  EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr, kLevel,
-               nullptr, 0, &bytes_needed, &count_returned);
-  if (bytes_needed == 0) {
-    // No bytes needed could mean the operation failed or that there are simply
-    // no printer drivers installed.  Rely upon system error code to
-    // distinguish between these.
-    logging::SystemErrorCode code = logging::GetLastSystemErrorCode();
-    if (code == ERROR_SUCCESS) {
-      VLOG(1) << "Found no printers";
-      return mojom::ResultCode::kSuccess;
-    }
+  EnumPrinters(kFlags, nullptr, kLevel, nullptr, 0, &bytes_needed,
+               &count_returned);
+  logging::SystemErrorCode code = logging::GetLastSystemErrorCode();
+  if (code == ERROR_SUCCESS) {
+    // If EnumPrinters() succeeded, that means there are no printer drivers
+    // installed because 0 bytes was sufficient.
+    DCHECK_EQ(bytes_needed, 0u);
+    VLOG(1) << "Found no printers";
+    return mojom::ResultCode::kSuccess;
+  }
 
+  if (code != ERROR_INSUFFICIENT_BUFFER) {
     LOG(ERROR) << "Error enumerating printers: "
                << logging::SystemErrorCodeToString(code);
     return GetResultCodeFromSystemErrorCode(code);
   }
 
   auto printer_info_buffer = std::make_unique<BYTE[]>(bytes_needed);
-  if (!EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr,
-                    kLevel, printer_info_buffer.get(), bytes_needed,
-                    &bytes_needed, &count_returned)) {
+  if (!EnumPrinters(kFlags, nullptr, kLevel, printer_info_buffer.get(),
+                    bytes_needed, &bytes_needed, &count_returned)) {
     NOTREACHED();
     return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
   }
