@@ -27,8 +27,7 @@ class EventDetector;
 class MetricEventObserver;
 class MetricEventObserverManager;
 class MetricReportQueue;
-class OneShotCollector;
-class PeriodicCollector;
+class CollectorBase;
 class ReportQueue;
 class Sampler;
 
@@ -55,9 +54,57 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
     virtual std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
     CreateReportQueue(Destination destination);
 
-    virtual std::unique_ptr<Sampler> CreateHttpsLatencySampler();
-
     virtual bool IsDeprovisioned();
+
+    virtual std::unique_ptr<MetricReportQueue> CreateMetricReportQueue(
+        Destination destination,
+        Priority priority);
+
+    virtual std::unique_ptr<MetricReportQueue> CreatePeriodicUploadReportQueue(
+        Destination destination,
+        Priority priority,
+        ReportingSettings* reporting_settings,
+        const std::string& rate_setting_path,
+        base::TimeDelta default_rate,
+        int rate_unit_to_ms = 1);
+
+    virtual std::unique_ptr<CollectorBase> CreateOneShotCollector(
+        Sampler* sampler,
+        MetricReportQueue* metric_report_queue,
+        ReportingSettings* reporting_settings,
+        const std::string& enable_setting_path,
+        bool setting_enabled_default_value);
+
+    virtual std::unique_ptr<CollectorBase> CreatePeriodicCollector(
+        Sampler* sampler,
+        MetricReportQueue* metric_report_queue,
+        ReportingSettings* reporting_settings,
+        const std::string& enable_setting_path,
+        bool setting_enabled_default_value,
+        const std::string& rate_setting_path,
+        base::TimeDelta default_rate,
+        int rate_unit_to_ms);
+
+    virtual std::unique_ptr<CollectorBase> CreatePeriodicEventCollector(
+        Sampler* sampler,
+        std::unique_ptr<EventDetector> event_detector,
+        std::vector<Sampler*> additional_samplers,
+        MetricReportQueue* metric_report_queue,
+        ReportingSettings* reporting_settings,
+        const std::string& enable_setting_path,
+        bool setting_enabled_default_value,
+        const std::string& rate_setting_path,
+        base::TimeDelta default_rate,
+        int rate_unit_to_ms);
+
+    virtual std::unique_ptr<MetricEventObserverManager>
+    CreateEventObserverManager(
+        std::unique_ptr<MetricEventObserver> event_observer,
+        MetricReportQueue* metric_report_queue,
+        ReportingSettings* reporting_settings,
+        const std::string& enable_setting_path,
+        bool setting_enabled_default_value,
+        std::vector<Sampler*> additional_samplers);
   };
 
   static std::unique_ptr<MetricReportingManager> Create(
@@ -89,31 +136,25 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // affiliated user login, should only be called once on login.
   void InitOnAffiliatedLogin();
 
-  std::unique_ptr<MetricReportQueue> CreateMetricReportQueue(
-      Destination destination,
-      Priority priority);
-  std::unique_ptr<MetricReportQueue> CreateTelemetryQueue();
-
-  void CreateOneShotCollector(std::unique_ptr<Sampler> sampler,
-                              MetricReportQueue* report_queue,
-                              const std::string& enable_setting_path,
-                              bool setting_enabled_default_value);
-  void CreatePeriodicCollector(std::unique_ptr<Sampler> sampler,
-                               const std::string& enable_setting_path,
-                               bool setting_enabled_default_value,
-                               const std::string& rate_setting_path,
-                               base::TimeDelta default_rate,
-                               int rate_unit_to_ms = 1);
-  void CreatePeriodicEventCollector(
-      std::unique_ptr<Sampler> sampler,
-      std::unique_ptr<EventDetector> event_detector,
-      std::vector<Sampler*> additional_samplers,
-      const std::string& enable_setting_path,
-      bool setting_enabled_default_value,
-      const std::string& rate_setting_path,
-      base::TimeDelta default_rate,
-      int rate_unit_to_ms = 1);
-  void CreateEventObserverManager(
+  void InitOneShotCollector(std::unique_ptr<Sampler> sampler,
+                            MetricReportQueue* report_queue,
+                            const std::string& enable_setting_path,
+                            bool setting_enabled_default_value);
+  void InitPeriodicCollector(std::unique_ptr<Sampler> sampler,
+                             const std::string& enable_setting_path,
+                             bool setting_enabled_default_value,
+                             const std::string& rate_setting_path,
+                             base::TimeDelta default_rate,
+                             int rate_unit_to_ms = 1);
+  void InitPeriodicEventCollector(std::unique_ptr<Sampler> sampler,
+                                  std::unique_ptr<EventDetector> event_detector,
+                                  std::vector<Sampler*> additional_samplers,
+                                  const std::string& enable_setting_path,
+                                  bool setting_enabled_default_value,
+                                  const std::string& rate_setting_path,
+                                  base::TimeDelta default_rate,
+                                  int rate_unit_to_ms = 1);
+  void InitEventObserverManager(
       std::unique_ptr<MetricEventObserver> event_observer,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value,
@@ -130,10 +171,16 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   CrosReportingSettings reporting_settings_;
 
+  // Samplers and queues should be destructed on the same sequence where
+  // collectors are destructed. Queues should also be destructed on the same
+  // sequence where event observer managers are destructed, this is currently
+  // enforced by destructing all of them using the `Shutdown` method if they
+  // need to be deleted before the destruction of the MetricReportingManager
+  // instance.
   std::vector<std::unique_ptr<Sampler>> samplers_;
 
-  std::vector<std::unique_ptr<PeriodicCollector>> periodic_collectors_;
-  std::vector<std::unique_ptr<OneShotCollector>> one_shot_collectors_;
+  std::vector<std::unique_ptr<CollectorBase>> periodic_collectors_;
+  std::vector<std::unique_ptr<CollectorBase>> one_shot_collectors_;
   std::vector<std::unique_ptr<MetricEventObserverManager>>
       event_observer_managers_;
 

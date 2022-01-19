@@ -39,7 +39,7 @@ class MetricEventObserverManager {
   MetricEventObserverManager& operator=(
       const MetricEventObserverManager& other) = delete;
 
-  ~MetricEventObserverManager();
+  virtual ~MetricEventObserverManager();
 
  private:
   void SetReportingEnabled(bool is_enabled);
