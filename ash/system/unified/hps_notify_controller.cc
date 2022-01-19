@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -226,6 +227,8 @@ void HpsNotifyController::UpdatePrefState() {
   ReconfigureHps(hps_available_, session_active_, pref_enabled);
   UpdateSnooperStatus(session_active_, hps_state_ && pref_enabled,
                       pref_enabled);
+  base::UmaHistogramBoolean("ChromeOS.HPS.SnoopingProtection.Enabled",
+                            pref_enabled);
 }
 
 }  // namespace ash

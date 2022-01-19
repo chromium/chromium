@@ -15,6 +15,7 @@
 #include "ash/system/power/hps_sense_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -219,6 +220,22 @@ void PowerPrefs::OnActiveUserPrefServiceChanged(PrefService* prefs) {
   ObservePrefs(prefs);
 }
 
+void PowerPrefs::UpdatePowerPolicyFromPrefsChange() {
+  PrefService* prefs = GetPrefService();
+  if (!prefs)
+    return;
+
+  bool new_quick_dim_pref_enabled =
+      prefs->GetBoolean(prefs::kPowerQuickDimEnabled);
+  if (quick_dim_pref_enabled_ != new_quick_dim_pref_enabled) {
+    quick_dim_pref_enabled_ = new_quick_dim_pref_enabled;
+    base::UmaHistogramBoolean("ChromeOS.HPS.QuickDim.Enabled",
+                              quick_dim_pref_enabled_);
+  }
+
+  UpdatePowerPolicyFromPrefs();
+}
+
 void PowerPrefs::UpdatePowerPolicyFromPrefs() {
   PrefService* prefs = GetPrefService();
   if (!prefs || !local_state_)
@@ -387,9 +404,13 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
 }
 
 void PowerPrefs::ObservePrefs(PrefService* prefs) {
+  // Store initial state of the quick dim preference to detect whether it has
+  // been manually flipped.
+  quick_dim_pref_enabled_ = prefs->GetBoolean(prefs::kPowerQuickDimEnabled);
+
   // Observe pref updates from policy.
   base::RepeatingClosure update_callback(base::BindRepeating(
-      &PowerPrefs::UpdatePowerPolicyFromPrefs, base::Unretained(this)));
+      &PowerPrefs::UpdatePowerPolicyFromPrefsChange, base::Unretained(this)));
 
   profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
   profile_registrar_->Init(prefs);

@@ -22,6 +22,27 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="ChromeOS.HPS.QuickDim.Enabled" enum="BooleanEnabled"
+    expires_after="2022-07-01">
+  <owner>evanbenn@chromium.org</owner>
+  <owner>avg@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>
+    Records when users change the kQuickDim setting on the privacy page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.HPS.SnoopingProtection.Enabled" enum="BooleanEnabled"
+    expires_after="2022-07-01">
+  <owner>evanbenn@chromium.org</owner>
+  <owner>avg@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>
+    Records when users change the kSnoopingProtectionEnabled setting on the
+    privacy page.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.HPS.TurnOn.Result" enum="HpsTurnOnResult"
     expires_after="2022-07-01">
   <owner>evanbenn@chromium.org</owner>
