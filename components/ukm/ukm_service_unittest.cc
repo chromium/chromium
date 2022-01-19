@@ -484,9 +484,6 @@ TEST_F(UkmServiceTest, AddEntryWithEmptyMetrics) {
 }
 
 TEST_F(UkmServiceTest, MetricsProviderTest) {
-  ScopedUkmFeatureParams params(
-      {{"WhitelistEntries", std::string(TestProviderEvent::kEntryName)}});
-
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
   TestRecordingHelper recorder(&service);
