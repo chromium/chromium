@@ -227,7 +227,7 @@ crbug.com/1093466 virtual/portals/wpt_internal/portals/* [ Pass ]
 # These tests require fenced-frames
 # Keep this in sync with VirtualTestSuites.
 crbug.com/1123606 wpt_internal/fenced_frame/* [ Skip ]
-crbug.com/1123606 fenced_frame/* [ Skip ]
+crbug.com/1123606 http/tests/fenced_frame/* [ Skip ]
 crbug.com/1123606 virtual/fenced-frame-shadow-dom/* [ Pass ]
 crbug.com/1123606 virtual/fenced-frame-mparch/* [ Pass ]
 

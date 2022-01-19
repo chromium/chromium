@@ -1029,7 +1029,7 @@
   {
     "prefix": "fenced-frame-mparch",
     "bases": [
-      "fenced_frame",
+      "http/tests/fenced_frame",
       "wpt_internal/fenced_frame",
       "http/tests/inspector-protocol/fenced-frame"
     ],
@@ -1038,7 +1038,7 @@
   {
     "prefix": "fenced-frame-shadow-dom",
     "bases": [
-      "fenced_frame",
+      "http/tests/fenced_frame",
       "wpt_internal/fenced_frame"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,Prerender2,PartitionedCookies"]
