@@ -113,14 +113,14 @@ class VirtualCardEnrollmentManager {
       std::unique_ptr<VirtualCardEnrollmentProcessState> state);
 
   // Handles the response from the GetDetailsForEnrollRequest. |result| and
-  // |get_details_for_enrollment_response_fields| are received from the
+  // |get_details_for_enrollment_response_details| are received from the
   // GetDetailsForEnroll server call response, while |state| is passed down from
   // GetDetailsForEnroll() to track the current process' state.
   void OnDidGetDetailsForEnrollResponse(
       std::unique_ptr<VirtualCardEnrollmentProcessState> state,
       AutofillClient::PaymentsRpcResult result,
       const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
-          get_details_for_enrollment_response_fields);
+          get_details_for_enrollment_response_details);
 
   // Shows the VirtualCardEnrollmentBubble. |state|'s
   // |virtual_card_enrollment_fields| will contain all of the dynamic fields

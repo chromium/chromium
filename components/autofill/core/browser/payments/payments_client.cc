@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
@@ -47,8 +48,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace autofill {
-namespace payments {
+namespace autofill::payments {
 
 namespace {
 
@@ -225,7 +225,7 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
   GetUnmaskDetailsRequest(const GetUnmaskDetailsRequest&) = delete;
   GetUnmaskDetailsRequest& operator=(const GetUnmaskDetailsRequest&) = delete;
 
-  ~GetUnmaskDetailsRequest() override {}
+  ~GetUnmaskDetailsRequest() override = default;
 
   std::string GetRequestUrlPath() override {
     return kGetUnmaskDetailsRequestPath;
@@ -319,7 +319,7 @@ class OptChangeRequest : public PaymentsRequest {
   OptChangeRequest(const OptChangeRequest&) = delete;
   OptChangeRequest& operator=(const OptChangeRequest&) = delete;
 
-  ~OptChangeRequest() override {}
+  ~OptChangeRequest() override = default;
 
   std::string GetRequestUrlPath() override { return kOptChangeRequestPath; }
 
@@ -444,7 +444,7 @@ class GetUploadDetailsRequest : public PaymentsRequest {
   GetUploadDetailsRequest(const GetUploadDetailsRequest&) = delete;
   GetUploadDetailsRequest& operator=(const GetUploadDetailsRequest&) = delete;
 
-  ~GetUploadDetailsRequest() override {}
+  ~GetUploadDetailsRequest() override = default;
 
   std::string GetRequestUrlPath() override {
     return kGetUploadDetailsRequestPath;
@@ -564,12 +564,12 @@ class GetUploadDetailsRequest : public PaymentsRequest {
       int start;
       base::StringToInt(range[0], &start);
       if (range.size() == 1) {
-        supported_card_bin_ranges.push_back(std::make_pair(start, start));
+        supported_card_bin_ranges.emplace_back(start, start);
       } else {
         int end;
         base::StringToInt(range[1], &end);
         DCHECK_LE(start, end);
-        supported_card_bin_ranges.push_back(std::make_pair(start, end));
+        supported_card_bin_ranges.emplace_back(start, end);
       }
     }
     return supported_card_bin_ranges;
@@ -607,7 +607,7 @@ class UploadCardRequest : public PaymentsRequest {
   UploadCardRequest(const UploadCardRequest&) = delete;
   UploadCardRequest& operator=(const UploadCardRequest&) = delete;
 
-  ~UploadCardRequest() override {}
+  ~UploadCardRequest() override = default;
 
   std::string GetRequestUrlPath() override { return kUploadCardRequestPath; }
 
@@ -729,7 +729,7 @@ class MigrateCardsRequest : public PaymentsRequest {
   MigrateCardsRequest(const MigrateCardsRequest&) = delete;
   MigrateCardsRequest& operator=(const MigrateCardsRequest&) = delete;
 
-  ~MigrateCardsRequest() override {}
+  ~MigrateCardsRequest() override = default;
 
   std::string GetRequestUrlPath() override { return kMigrateCardsRequestPath; }
 
@@ -964,8 +964,19 @@ PaymentsClient::SelectChallengeOptionRequestDetails::
 PaymentsClient::SelectChallengeOptionRequestDetails::
     ~SelectChallengeOptionRequestDetails() = default;
 
+PaymentsClient::GetDetailsForEnrollmentRequestDetails::
+    GetDetailsForEnrollmentRequestDetails() = default;
+PaymentsClient::GetDetailsForEnrollmentRequestDetails::
+    GetDetailsForEnrollmentRequestDetails(
+        const GetDetailsForEnrollmentRequestDetails& other) = default;
+PaymentsClient::GetDetailsForEnrollmentRequestDetails::
+    ~GetDetailsForEnrollmentRequestDetails() = default;
+
 PaymentsClient::GetDetailsForEnrollmentResponseDetails::
     GetDetailsForEnrollmentResponseDetails() = default;
+PaymentsClient::GetDetailsForEnrollmentResponseDetails::
+    GetDetailsForEnrollmentResponseDetails(
+        const GetDetailsForEnrollmentResponseDetails& other) = default;
 PaymentsClient::GetDetailsForEnrollmentResponseDetails::
     ~GetDetailsForEnrollmentResponseDetails() = default;
 
@@ -1331,5 +1342,4 @@ void PaymentsClient::StartRequest() {
                      base::Unretained(this)));
 }
 
-}  // namespace payments
-}  // namespace autofill
+}  // namespace autofill::payments

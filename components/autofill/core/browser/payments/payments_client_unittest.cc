@@ -39,8 +39,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
-namespace payments {
+namespace autofill::payments {
 namespace {
 
 int kAllDetectableValues =
@@ -332,8 +331,8 @@ class PaymentsClientTest : public testing::Test {
       card1.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");
       card2.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");
     }
-    migratable_credit_cards_.push_back(MigratableCreditCard(card1));
-    migratable_credit_cards_.push_back(MigratableCreditCard(card2));
+    migratable_credit_cards_.emplace_back(card1);
+    migratable_credit_cards_.emplace_back(card2);
     client_->MigrateCards(
         request_details, migratable_credit_cards_,
         base::BindOnce(&PaymentsClientTest::OnDidMigrateLocalCards,
@@ -1494,7 +1493,7 @@ TEST_F(PaymentsClientTest,
 
 TEST_F(PaymentsClientTest, MigrationRequestIncludesCardNickname) {
   StartMigrating(/*has_cardholder_name=*/true,
-                 /*set_nickname_to_first_card=*/true);
+                 /*set_nickname_for_first_card=*/true);
   IssueOAuthToken();
 
   // Nickname was set for the first card.
@@ -1727,5 +1726,4 @@ TEST_P(UpdateVirtualCardEnrollmentTest,
   TriggerFlow();
 }
 
-}  // namespace payments
-}  // namespace autofill
+}  // namespace autofill::payments

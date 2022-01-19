@@ -324,15 +324,37 @@ class PaymentsClient {
     absl::optional<std::string> vcn_context_token;
   };
 
-  // TODO(crbug.com/1281695): Add GetDetailsForEnrollRequest.
+  // The struct to hold all detailed information to construct a
+  // GetDetailsForEnrollmentRequest.
+  struct GetDetailsForEnrollmentRequestDetails {
+    GetDetailsForEnrollmentRequestDetails();
+    GetDetailsForEnrollmentRequestDetails(
+        const GetDetailsForEnrollmentRequestDetails& other);
+    ~GetDetailsForEnrollmentRequestDetails();
+
+    // The type of the enrollment this request is for.
+    VirtualCardEnrollmentSource type = VirtualCardEnrollmentSource::kNone;
+
+    // |instrument_id| is used by the server to identify a specific card to get
+    // details for.
+    int64_t instrument_id = 0;
+
+    // The billing customer number of the account this request is sent to.
+    int64_t billing_customer_number = 0;
+
+    // |risk_data| contains some fingerprint data for the user and the device.
+    std::string risk_data;
+
+    // |app_locale| is the Chrome locale.
+    std::string app_locale;
+  };
+
   // A collection of information received in the response for a
   // GetDetailsForEnrollRequest.
   struct GetDetailsForEnrollmentResponseDetails {
     GetDetailsForEnrollmentResponseDetails();
     GetDetailsForEnrollmentResponseDetails(
-        const GetDetailsForEnrollmentResponseDetails&) = delete;
-    GetDetailsForEnrollmentResponseDetails& operator=(
-        const GetDetailsForEnrollmentResponseDetails&) = delete;
+        const GetDetailsForEnrollmentResponseDetails& other);
     ~GetDetailsForEnrollmentResponseDetails();
     // |vcn_context_token| is used in the sequential Enroll call, where it
     // allows the server to get the instrument id for this |vcn_context_token|

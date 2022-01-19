@@ -37,7 +37,7 @@ void OnDidGetDetailsForEnrollResponse(
     std::unique_ptr<VirtualCardEnrollmentProcessState> state,
     AutofillClient::PaymentsRpcResult result,
     payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails
-        get_details_for_enrollment_response_fields) {}
+        get_details_for_enrollment_response_details) {}
 
 void VirtualCardEnrollmentManager::ShowVirtualCardEnrollmentBubble(
     std::unique_ptr<VirtualCardEnrollmentProcessState> state) {}
