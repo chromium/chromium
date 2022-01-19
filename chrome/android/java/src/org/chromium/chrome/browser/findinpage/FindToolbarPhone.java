@@ -44,23 +44,19 @@ public class FindToolbarPhone extends FindToolbar {
 
     @Override
     protected void updateVisualsForTabModel(boolean isIncognito) {
+        setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), isIncognito));
+        final ColorStateList color = ChromeColors.getPrimaryIconTint(getContext(), isIncognito);
+        ApiCompatibilityUtils.setImageTintList(mFindNextButton, color);
+        ApiCompatibilityUtils.setImageTintList(mFindPrevButton, color);
+        ApiCompatibilityUtils.setImageTintList(mCloseFindButton, color);
+
         int queryTextColorId;
         int queryHintTextColorId;
         if (isIncognito) {
-            setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), true));
-            ColorStateList white = ChromeColors.getPrimaryIconTint(getContext(), true);
-            ApiCompatibilityUtils.setImageTintList(mFindNextButton, white);
-            ApiCompatibilityUtils.setImageTintList(mFindPrevButton, white);
-            ApiCompatibilityUtils.setImageTintList(mCloseFindButton, white);
             queryTextColorId = R.color.find_in_page_query_white_color;
             queryHintTextColorId = R.color.find_in_page_query_incognito_hint_color;
             mDivider.setBackgroundResource(R.color.white_alpha_12);
         } else {
-            setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), false));
-            ColorStateList dark = ChromeColors.getPrimaryIconTint(getContext(), false);
-            ApiCompatibilityUtils.setImageTintList(mFindNextButton, dark);
-            ApiCompatibilityUtils.setImageTintList(mFindPrevButton, dark);
-            ApiCompatibilityUtils.setImageTintList(mCloseFindButton, dark);
             queryTextColorId = R.color.default_text_color_list;
             queryHintTextColorId = R.color.find_in_page_query_default_hint_color;
             mDivider.setBackgroundColor(SemanticColorUtils.getDividerLineBgColor(getContext()));

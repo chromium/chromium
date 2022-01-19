@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService.EligibilityFailureReason;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -287,13 +288,15 @@ public class AssistantVoiceSearchServiceUnitTest {
         mAssistantVoiceSearchService.onAccountsChanged();
 
         // Colorful mic should be returned when only 1 account is present.
-        Assert.assertNull(mAssistantVoiceSearchService.getButtonColorStateList(0, mContext));
+        Assert.assertNull(mAssistantVoiceSearchService.getButtonColorStateList(
+                BrandedColorScheme.APP_DEFAULT, mContext));
 
         // Adding new account would trigger onAccountsChanged() automatically
         mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL2);
 
         // Colorful mic should be returned when only 1 account is present.
-        Assert.assertNotNull(mAssistantVoiceSearchService.getButtonColorStateList(0, mContext));
+        Assert.assertNotNull(mAssistantVoiceSearchService.getButtonColorStateList(
+                BrandedColorScheme.APP_DEFAULT, mContext));
     }
 
     @Test
@@ -313,7 +316,8 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Feature("OmniboxAssistantVoiceSearch")
     public void getButtonColorStateList_ColorfulMicEnabled() {
         mAssistantVoiceSearchService.setColorfulMicEnabledForTesting(true);
-        Assert.assertNull(mAssistantVoiceSearchService.getButtonColorStateList(0, mContext));
+        Assert.assertNull(mAssistantVoiceSearchService.getButtonColorStateList(
+                BrandedColorScheme.APP_DEFAULT, mContext));
     }
 
     @Test

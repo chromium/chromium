@@ -37,7 +37,6 @@ public class OmniboxResourceProviderTest {
     private Activity mActivity;
 
     private @ColorInt int mDefaultColor;
-    private @ColorInt int mDefaultIncognitoColor;
 
     @Before
     public void setUp() {
@@ -45,16 +44,6 @@ public class OmniboxResourceProviderTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mDefaultColor = ChromeColors.getDefaultThemeColor(mActivity, false);
-        mDefaultIncognitoColor = ChromeColors.getDefaultThemeColor(mActivity, true);
-    }
-
-    @Test
-    public void isDarkMode() {
-        Assert.assertTrue(
-                OmniboxResourceProvider.isDarkMode(BrandedColorScheme.DARK_BRANDED_THEME));
-        Assert.assertTrue(OmniboxResourceProvider.isDarkMode(BrandedColorScheme.INCOGNITO));
-        Assert.assertFalse(
-                OmniboxResourceProvider.isDarkMode(BrandedColorScheme.LIGHT_BRANDED_THEME));
     }
 
     @Test

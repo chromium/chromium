@@ -183,6 +183,7 @@ class LocationBarMediator
     private final BooleanSupplier mIsToolbarMicEnabledSupplier;
     // Tracks if the location bar is laid out in a focused state due to an ntp scroll.
     private boolean mIsLocationBarFocusedFromNtpScroll;
+    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
     /*package */ LocationBarMediator(@NonNull Context context,
             @NonNull LocationBarLayout locationBarLayout,
@@ -907,8 +908,8 @@ class LocationBarMediator
                 mAssistantVoiceSearchServiceSupplier.get();
         if (assistantVoiceSearchService == null) return;
 
-        mLocationBarLayout.setMicButtonTint(assistantVoiceSearchService.getButtonColorStateList(
-                getPrimaryBackgroundColor(), mContext));
+        mLocationBarLayout.setMicButtonTint(
+                assistantVoiceSearchService.getButtonColorStateList(mBrandedColorScheme, mContext));
         mLocationBarLayout.setMicButtonDrawable(
                 assistantVoiceSearchService.getCurrentMicDrawable());
     }
@@ -919,8 +920,8 @@ class LocationBarMediator
                 mAssistantVoiceSearchServiceSupplier.get();
         if (assistantVoiceSearchService == null) return;
 
-        mLocationBarLayout.setLensButtonTint(assistantVoiceSearchService.getButtonColorStateList(
-                getPrimaryBackgroundColor(), mContext));
+        mLocationBarLayout.setLensButtonTint(
+                assistantVoiceSearchService.getButtonColorStateList(mBrandedColorScheme, mContext));
     }
 
     /**
@@ -928,20 +929,19 @@ class LocationBarMediator
      */
     @VisibleForTesting
     /* package */ void updateBrandedColorScheme() {
-        final @BrandedColorScheme int brandedColorScheme =
-                OmniboxResourceProvider.getBrandedColorScheme(mContext,
-                        mLocationBarDataProvider.isIncognito(), getPrimaryBackgroundColor());
+        mBrandedColorScheme = OmniboxResourceProvider.getBrandedColorScheme(
+                mContext, mLocationBarDataProvider.isIncognito(), getPrimaryBackgroundColor());
 
         mLocationBarLayout.setDeleteButtonTint(
-                ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme));
+                ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme));
         // If the URL changed colors and is not focused, update the URL to account for the new
         // color scheme.
-        if (mUrlCoordinator.setBrandedColorScheme(brandedColorScheme) && !isUrlBarFocused()) {
+        if (mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme) && !isUrlBarFocused()) {
             updateUrl();
         }
-        mStatusCoordinator.setBrandedColorScheme(brandedColorScheme);
+        mStatusCoordinator.setBrandedColorScheme(mBrandedColorScheme);
         if (mAutocompleteCoordinator != null) {
-            mAutocompleteCoordinator.updateVisualsForState(brandedColorScheme);
+            mAutocompleteCoordinator.updateVisualsForState(mBrandedColorScheme);
         }
     }
 
@@ -1167,9 +1167,11 @@ class LocationBarMediator
 
     @Override
     public void onPrimaryColorChanged() {
+        // This method needs to be called first as it computes |mBrandedColorScheme|.
+        updateBrandedColorScheme();
+
         updateAssistantVoiceSearchDrawableAndColors();
         updateLensButtonColors();
-        updateBrandedColorScheme();
     }
 
     @Override

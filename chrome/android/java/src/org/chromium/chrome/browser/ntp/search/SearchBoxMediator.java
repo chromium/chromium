@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.chrome.browser.gsa.GSAState;
@@ -27,7 +26,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.base.ViewUtils;
@@ -103,10 +102,8 @@ class SearchBoxMediator
         Drawable drawable = mAssistantVoiceSearchService.getCurrentMicDrawable();
         mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, drawable);
 
-        final @ColorInt int primaryColor =
-                ChromeColors.getDefaultThemeColor(mContext, false /* forceDarkBgColor= */);
-        ColorStateList colorStateList =
-                mAssistantVoiceSearchService.getButtonColorStateList(primaryColor, mContext);
+        ColorStateList colorStateList = mAssistantVoiceSearchService.getButtonColorStateList(
+                BrandedColorScheme.APP_DEFAULT, mContext);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
     }
 

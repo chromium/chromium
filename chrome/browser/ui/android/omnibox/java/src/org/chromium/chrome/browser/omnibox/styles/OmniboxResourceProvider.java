@@ -28,12 +28,6 @@ import org.chromium.ui.util.ColorUtils;
 public class OmniboxResourceProvider {
     private static final String TAG = "OmniboxResourceProvider";
 
-    /** @return Whether the mode is dark (dark theme or incognito). */
-    public static boolean isDarkMode(@BrandedColorScheme int brandedColorScheme) {
-        return brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME
-                || brandedColorScheme == BrandedColorScheme.INCOGNITO;
-    }
-
     /**
      * Returns a drawable for a given attribute depending on a {@link BrandedColorScheme}
      *

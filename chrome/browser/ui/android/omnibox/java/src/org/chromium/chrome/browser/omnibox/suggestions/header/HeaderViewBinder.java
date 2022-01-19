@@ -9,8 +9,8 @@ import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -22,12 +22,12 @@ public class HeaderViewBinder {
         if (HeaderViewProperties.TITLE == propertyKey) {
             view.getTextView().setText(model.get(HeaderViewProperties.TITLE));
         } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
-            final boolean useDarkColors = !OmniboxResourceProvider.isDarkMode(
-                    model.get(SuggestionCommonProperties.COLOR_SCHEME));
-            TextViewCompat.setTextAppearance(view.getTextView(),
-                    ChromeColors.getTextMediumThickSecondaryStyle(!useDarkColors));
+            final boolean isIncognito = model.get(SuggestionCommonProperties.COLOR_SCHEME)
+                    == BrandedColorScheme.INCOGNITO;
+            TextViewCompat.setTextAppearance(
+                    view.getTextView(), ChromeColors.getTextMediumThickSecondaryStyle(isIncognito));
             ApiCompatibilityUtils.setImageTintList(view.getIconView(),
-                    ChromeColors.getPrimaryIconTint(view.getContext(), !useDarkColors));
+                    ChromeColors.getPrimaryIconTint(view.getContext(), isIncognito));
         } else if (propertyKey == SuggestionCommonProperties.LAYOUT_DIRECTION) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
