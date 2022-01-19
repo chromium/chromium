@@ -660,6 +660,15 @@ void PagedAppsGridView::EnsureViewVisible(const GridIndex& index) {
     pagination_model_.SelectPage(index.page, false);
 }
 
+PagedAppsGridView::VisibleItemIndexRange
+PagedAppsGridView::GetVisibleItemIndexRange() const {
+  // TODO(https://crbug.com/1287334): implement the reorder animation for tablet
+  // mode.
+  NOTIMPLEMENTED();
+
+  return VisibleItemIndexRange();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // PaginationModelObserver:
 

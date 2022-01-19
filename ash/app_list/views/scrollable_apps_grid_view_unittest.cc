@@ -149,6 +149,15 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
 
+  // Verifies the visible item index range.
+  bool IsIndexRangeExpected(int first_index, int last_index) {
+    const AppsGridView::VisibleItemIndexRange index_range =
+        apps_grid_view_->GetVisibleItemIndexRange();
+
+    return index_range.first_index == first_index &&
+           index_range.last_index == last_index;
+  }
+
   void AddPageBreakItem() { GetAppListTestHelper()->AddPageBreakItem(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -904,6 +913,124 @@ TEST_F(ScrollableAppsGridViewTest, ControlShiftArrowMovesItemOutOfFolder) {
   histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
                                      kMoveByKeyboardOutOfFolder, 4);
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+}
+
+// Verify on the apps grid with zero scroll offset.
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeByDefault) {
+  PopulateApps(33);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a number that is not the
+  // multiple of 5 as the total item count.
+  ASSERT_EQ(5, cols);
+
+  // Verify that the items on row 0 to row 3 are visible at default.
+  EXPECT_TRUE(
+      IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/4 * cols - 1));
+}
+
+// Verify on the apps grid whose first row is unfilled.
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowUnfilled) {
+  PopulateApps(4);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a smaller number as the total
+  // item count.
+  ASSERT_EQ(5, cols);
+
+  // Verify that the items on the first row are visible at default.
+  EXPECT_TRUE(IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/3));
+}
+
+// Verify on the apps grid whose first row is filled.
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowFilled) {
+  PopulateApps(5);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so apps just fill the first row.
+  ASSERT_EQ(5, cols);
+
+  // Verify that the items on the first row are visible at default.
+  EXPECT_TRUE(IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/4));
+}
+
+// Verify on the apps grid with a non-zero scroll offset.
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeAfterScrolling) {
+  PopulateApps(33);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a number that is not the
+  // multiple of 5 as the total item count.
+  ASSERT_EQ(5, cols);
+
+  // Scroll the apps grid so that the item views on the first row are hidden.
+  // To calculate the scroll offset, the origin of the item view at (row 1,
+  // column 0) should be translated into the scroll content's coordinates.
+  views::View* item_view = apps_grid_view_->GetItemViewAt(5);
+  views::ScrollView* scroll_view = apps_grid_view_->scroll_view_for_test();
+  gfx::Point local_origin;
+  views::View::ConvertPointToTarget(item_view, scroll_view->contents(),
+                                    &local_origin);
+  const int offset = local_origin.y() - scroll_view->GetVisibleRect().y();
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), offset);
+
+  // Verify that in this case the items on row 1 to row 5 are visible.
+  EXPECT_TRUE(
+      IsIndexRangeExpected(/*first_index=*/cols, /*last_index=*/6 * cols - 1));
+}
+
+// Verify visible items' index range by scrolling to the end on a partially
+// filled apps grid.
+TEST_F(ScrollableAppsGridViewTest,
+       VerifyVisibleRangeAfterScrollingToEndPartiallyFilled) {
+  constexpr int populated_app_count = 33;
+  PopulateApps(populated_app_count);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a number that is not the
+  // multiple of 5 as the total item count.
+  ASSERT_EQ(5, cols);
+
+  // Scroll to the end.
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 std::numeric_limits<int>::max());
+
+  // Verify that the items on row 3 to row 6 are visible.
+  EXPECT_TRUE(IsIndexRangeExpected(/*first_index=*/3 * cols,
+                                   /*last_index=*/populated_app_count - 1));
+}
+
+// Verify visible items' item index range by scrolling to the end on a full
+// apps grid.
+TEST_F(ScrollableAppsGridViewTest,
+       VerifyVisibleRangeAfterScrollingToEndFilled) {
+  constexpr int populated_app_count = 35;
+  PopulateApps(populated_app_count);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a column count's multiple as
+  // the total item count.
+  ASSERT_EQ(5, cols);
+
+  // Scroll to the end.
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 std::numeric_limits<int>::max());
+
+  // Verify that the items on row 3 to row 6 are visible.
+  EXPECT_TRUE(IsIndexRangeExpected(/*first_index=*/3 * cols,
+                                   /*last_index=*/populated_app_count - 1));
 }
 
 }  // namespace ash

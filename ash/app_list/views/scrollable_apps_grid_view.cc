@@ -12,6 +12,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -306,6 +307,63 @@ void ScrollableAppsGridView::EnsureViewVisible(const GridIndex& index) {
   AppListItemView* view = GetViewAtIndex(index);
   if (view)
     view->ScrollViewToVisible();
+}
+
+ScrollableAppsGridView::VisibleItemIndexRange
+ScrollableAppsGridView::GetVisibleItemIndexRange() const {
+  // Indicate the first row on which item views are visible.
+  absl::optional<int> first_visible_row;
+
+  // Indicate the first invisible row that is right after the last visible row.
+  absl::optional<int> first_invisible_row;
+
+  const gfx::Rect scroll_view_visible_rect = scroll_view_->GetVisibleRect();
+  for (int view_index = 0; view_index < view_model()->view_size();
+       view_index += cols()) {
+    // Calculate an item view's bounds in the scroll content's coordinates.
+    gfx::Point item_view_local_origin;
+    views::View* item_view = view_model()->view_at(view_index);
+    views::View::ConvertPointToTarget(item_view, scroll_view_->contents(),
+                                      &item_view_local_origin);
+    gfx::Rect item_view_bounds_in_scroll_view =
+        gfx::Rect(item_view_local_origin, item_view->size());
+
+    // Calculate the overlapped area between the item view's bounds and the
+    // visible area.
+    item_view_bounds_in_scroll_view.InclusiveIntersect(
+        scroll_view_visible_rect);
+
+    // An item is deemed to visible if the overlapped area is not empty.
+    const bool is_current_row_visible =
+        !item_view_bounds_in_scroll_view.IsEmpty();
+
+    const int current_row = view_index / cols();
+    if (is_current_row_visible) {
+      // Already find the first visible row so continue.
+      if (first_visible_row)
+        continue;
+
+      first_visible_row = current_row;
+    } else if (first_visible_row) {
+      DCHECK(!first_invisible_row);
+      first_invisible_row = current_row;
+      break;
+    }
+  }
+
+  VisibleItemIndexRange result;
+
+  // Expect that at least one row is within the visible area.
+  if (first_visible_row) {
+    result.first_index = *first_visible_row * cols();
+
+    // If `first_invisible_row` is not found, it means that the last item view
+    // in the view model is visible.
+    result.last_index = first_invisible_row ? *first_invisible_row * cols() - 1
+                                            : view_model()->view_size() - 1;
+  }
+
+  return result;
 }
 
 const gfx::Vector2d ScrollableAppsGridView::CalculateTransitionOffset(

@@ -56,6 +56,7 @@ class AppsGridViewFocusDelegate;
 class AppsGridViewFolderDelegate;
 class PulsingBlockView;
 class GhostImageView;
+class ScrollableAppsGridViewTest;
 
 // Represents the index to an item view in the grid.
 struct ASH_EXPORT GridIndex {
@@ -325,6 +326,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   AppsGridContextMenu* context_menu_for_test() { return context_menu_.get(); }
 
  protected:
+  friend ScrollableAppsGridViewTest;
+
   // The cardified apps grid should be scaled down by this factor.
   static constexpr float kCardifiedScale = 0.84f;
 
@@ -391,6 +394,17 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Sets the focus to the correct view when a drag ends. Focus is on the app
   // list item view during the drag.
   virtual void SetFocusAfterEndDrag() = 0;
+
+  struct VisibleItemIndexRange {
+    // The view index of the first visible item on the apps grid.
+    int first_index = 0;
+
+    // The view index of the last visible item on the apps grid.
+    int last_index = 0;
+  };
+
+  // Calculates the index range of the visible item views.
+  virtual VisibleItemIndexRange GetVisibleItemIndexRange() const = 0;
 
   // Sets the max number of columns that the grid can have.
   // For root apps grid view, the grid size depends on the space available to
