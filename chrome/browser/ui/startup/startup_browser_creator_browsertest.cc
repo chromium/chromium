@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
@@ -1644,7 +1645,18 @@ web_app::AppId InstallPWAWithName(Profile* profile,
   return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForAllProfiles) {
+class StartupBrowserWithListAppsFeature : public StartupBrowserCreatorTest {
+ public:
+  StartupBrowserWithListAppsFeature() {
+    scoped_feature_list_.InitAndEnableFeature(features::kListWebAppsSwitch);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
+                       ListAppsForAllProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
   Profile* profile1 = browser()->profile();
@@ -1751,7 +1763,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForAllProfiles) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForGivenProfile) {
+IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
+                       ListAppsForGivenProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
   Profile* profile1 = browser()->profile();

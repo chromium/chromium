@@ -911,7 +911,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Writes open and installed web apps to the specified file without
   // launching a new browser window or tab.
-  if (command_line.HasSwitch(switches::kListApps)) {
+  if (base::FeatureList::IsEnabled(features::kListWebAppsSwitch) &&
+      command_line.HasSwitch(switches::kListApps)) {
     base::FilePath output_file(
         command_line.GetSwitchValuePath(switches::kListApps));
     if (!output_file.empty() && output_file.IsAbsolute()) {
