@@ -39,9 +39,10 @@ class PrivacySandboxSettings : public KeyedService {
     virtual void OnFlocDataAccessibleSinceUpdated(bool reset_compute_timer) = 0;
   };
 
-  PrivacySandboxSettings(HostContentSettingsMap* host_content_settings_map,
-                         content_settings::CookieSettings* cookie_settings,
-                         PrefService* pref_service);
+  PrivacySandboxSettings(
+      HostContentSettingsMap* host_content_settings_map,
+      scoped_refptr<content_settings::CookieSettings> cookie_settings,
+      PrefService* pref_service);
   ~PrivacySandboxSettings() override;
 
   // Returns whether FLoC is allowed at all. If false, FLoC calculations should
@@ -146,7 +147,7 @@ class PrivacySandboxSettings : public KeyedService {
   base::ObserverList<Observer>::Unchecked observers_;
 
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
-  raw_ptr<content_settings::CookieSettings> cookie_settings_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
 };
 

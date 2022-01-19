@@ -41,7 +41,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
     InitializePrefsBeforeStart();
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
-        host_content_settings_map(), cookie_settings(), prefs());
+        host_content_settings_map(), cookie_settings_, prefs());
   }
 
   virtual void InitializePrefsBeforeStart() {}

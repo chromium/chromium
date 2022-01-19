@@ -192,7 +192,7 @@ class FlocIdProviderUnitTest : public testing::Test {
                                              /*is_incognito=*/false);
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
-        settings_map_.get(), cookie_settings_.get(), &prefs_);
+        settings_map_.get(), cookie_settings_, &prefs_);
 
     task_environment_.RunUntilIdle();
   }

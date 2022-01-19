@@ -72,7 +72,7 @@ ContentSettingsPattern FledgeBlockToContentSettingsPattern(
 
 PrivacySandboxSettings::PrivacySandboxSettings(
     HostContentSettingsMap* host_content_settings_map,
-    content_settings::CookieSettings* cookie_settings,
+    scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service)
     : host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),

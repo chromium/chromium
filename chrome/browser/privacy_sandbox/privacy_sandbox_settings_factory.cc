@@ -27,10 +27,7 @@ PrivacySandboxSettings* PrivacySandboxSettingsFactory::GetForProfile(
 PrivacySandboxSettingsFactory::PrivacySandboxSettingsFactory()
     : BrowserContextKeyedServiceFactory(
           "PrivacySandboxSettings",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(HostContentSettingsMapFactory::GetInstance());
-  DependsOn(CookieSettingsFactory::GetInstance());
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
 KeyedService* PrivacySandboxSettingsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
