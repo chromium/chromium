@@ -538,19 +538,13 @@ TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   ExpectClean();
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1287235): Failing consistently on Mac.
-#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
-  DISABLED_UninstallUpdaterWhenAllAppsUninstalled
-#else
-#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
-  UninstallUpdaterWhenAllAppsUninstalled
-#endif
-TEST_F(IntegrationTest, MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
+TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   Install();
   RegisterApp("test1");
   ExpectInstalled();
   WaitForUpdaterExit();
+  // TODO(crbug.com/1287235): The test is flaky without the following line.
+  SetServerStarts(24);
   RunWake(0);
   WaitForUpdaterExit();
   ExpectInstalled();
