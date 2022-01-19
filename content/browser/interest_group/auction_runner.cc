@@ -12,11 +12,13 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
@@ -289,6 +291,26 @@ void AuctionRunner::OnBidderWorkletReceived(BidState* bid_state) {
       bid_state->bidder.bidding_browser_signals.Clone(), auction_start_time_,
       base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
                      weak_ptr_factory_.GetWeakPtr(), bid_state));
+
+  // Invoke SendPendingSignalsRequests() asynchronously, if necessary. Do this
+  // asynchronously so that all GenerateBid() calls that share a BidderWorklet
+  // will have been invoked before the first SendPendingSignalsRequests() call.
+  //
+  // This relies on AuctionWorkletManager::Handle invoking all the callbacks
+  // listening for creation of the same BidderWorklet synchronously.
+  if (interest_group.trusted_bidding_signals_keys &&
+      interest_group.trusted_bidding_signals_keys->size() > 0) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AuctionRunner::SendPendingSignalsRequestsForBidder,
+                       weak_ptr_factory_.GetWeakPtr(), bid_state));
+  }
+}
+
+void AuctionRunner::SendPendingSignalsRequestsForBidder(BidState* bid_state) {
+  // Don't invoke callback if worklet was unloaded in the meantime.
+  if (bid_state->worklet_handle)
+    bid_state->worklet_handle->GetBidderWorklet()->SendPendingSignalsRequests();
 }
 
 void AuctionRunner::OnBidderWorkletGenerateBidFatalError(

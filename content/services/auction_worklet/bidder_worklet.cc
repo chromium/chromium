@@ -23,6 +23,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
@@ -158,14 +159,22 @@ BidderWorklet::BidderWorklet(
       v8_helper_(v8_helper),
       debug_id_(
           base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helper.get())),
+      url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(script_source_url),
       wasm_helper_url_(wasm_helper_url),
-      trusted_bidding_signals_url_(trusted_bidding_signals_url),
+      trusted_signals_request_manager_(
+          trusted_bidding_signals_url
+              ? std::make_unique<TrustedSignalsRequestManager>(
+                    TrustedSignalsRequestManager::Type::kBiddingSignals,
+                    url_loader_factory_.get(),
+                    /*automatically_send_requests=*/false,
+                    top_window_origin,
+                    *trusted_bidding_signals_url,
+                    v8_helper_.get())
+              : nullptr),
       top_window_origin_(top_window_origin),
       v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-
-  url_loader_factory_.Bind(std::move(pending_url_loader_factory));
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper, debug_id_, script_source_url_, top_window_origin_,
@@ -211,22 +220,23 @@ void BidderWorklet::GenerateBid(
   const auto& trusted_bidding_signals_keys =
       generate_bid_task->bidder_worklet_non_shared_params
           ->trusted_bidding_signals_keys;
-  if (trusted_bidding_signals_url_.has_value() &&
+  if (trusted_signals_request_manager_ &&
       trusted_bidding_signals_keys.has_value() &&
       !trusted_bidding_signals_keys->empty()) {
-    generate_bid_task->trusted_bidding_signals =
-        TrustedSignals::LoadBiddingSignals(
-            url_loader_factory_.get(),
-            std::set<std::string>(trusted_bidding_signals_keys->begin(),
-                                  trusted_bidding_signals_keys->end()),
-            top_window_origin_.host(), *trusted_bidding_signals_url_,
-            v8_helper_,
+    generate_bid_task->trusted_bidding_signals_request =
+        trusted_signals_request_manager_->RequestBiddingSignals(
+            *trusted_bidding_signals_keys,
             base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
                            base::Unretained(this), generate_bid_task));
     return;
   }
 
   GenerateBidIfReady(generate_bid_task);
+}
+
+void BidderWorklet::SendPendingSignalsRequests() {
+  if (trusted_signals_request_manager_)
+    trusted_signals_request_manager_->StartBatchedTrustedSignalsRequest();
 }
 
 void BidderWorklet::ReportWin(
@@ -781,14 +791,14 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
 
   task->trusted_bidding_signals_error_msg = std::move(error_msg);
   task->trusted_bidding_signals_result = std::move(result);
-  task->trusted_bidding_signals.reset();
+  task->trusted_bidding_signals_request.reset();
 
   GenerateBidIfReady(task);
 }
 
 void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (task->trusted_bidding_signals || !IsCodeReady())
+  if (task->trusted_bidding_signals_request || !IsCodeReady())
     return;
 
   // Other than the callback field, no fields of `task` are needed after this

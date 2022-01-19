@@ -308,7 +308,14 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   MockBidderWorklet(const MockBidderWorklet&) = delete;
   const MockBidderWorklet& operator=(const MockBidderWorklet&) = delete;
 
-  ~MockBidderWorklet() override = default;
+  ~MockBidderWorklet() override {
+    // `send_pending_signals_requests_called_` should always be called if any
+    // bids are generated, except in the unlikely event that the Mojo pipe is
+    // closed before a posted task is executed (this cannot be simulated by
+    // closing a pipe in tests, due to vagaries of timing of the two messages).
+    if (generate_bid_called_)
+      EXPECT_TRUE(send_pending_signals_requests_called_);
+  }
 
   // auction_worklet::mojom::BidderWorklet implementation:
 
@@ -321,12 +328,23 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       GenerateBidCallback generate_bid_callback) override {
+    generate_bid_called_ = true;
     // While the real BidderWorklet implementation supports multiple pending
     // callbacks, this class does not.
     DCHECK(!generate_bid_callback_);
+
+    // Single auctions should invoke all GenerateBid() calls on a worklet
+    // before invoking SendPendingSignalsRequests().
+    EXPECT_FALSE(send_pending_signals_requests_called_);
+
     generate_bid_callback_ = std::move(generate_bid_callback);
     if (generate_bid_run_loop_)
       generate_bid_run_loop_->Quit();
+  }
+
+  void SendPendingSignalsRequests() override {
+    // This allows multiple calls.
+    send_pending_signals_requests_called_ = true;
   }
 
   void ReportWin(const std::string& interest_group_name,
@@ -415,6 +433,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   std::unique_ptr<base::RunLoop> generate_bid_run_loop_;
   std::unique_ptr<base::RunLoop> report_win_run_loop_;
   ReportWinCallback report_win_callback_;
+
+  bool generate_bid_called_ = false;
+  bool send_pending_signals_requests_called_ = false;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -2343,6 +2364,83 @@ TEST_F(AuctionRunnerTest, SellerLoadErrorWhileWaitingForBidders) {
                   "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSellerWorkletLoadFailed,
                   2 /* expected_interest_groups */, 2 /* expected_owners */);
+}
+
+// Test the case where two interest groups use the same BidderWorklet, with a
+// trusted bidding signals URL. The requests should be batched. This test
+// basically makes sure that SendPendingSignalsRequests() is only invoked on the
+// BidderWorklet after both GenerateBid() calls have been invoked.
+TEST_F(AuctionRunnerTest, ReusedBidderWorkletBatchesSignalsRequests) {
+  // Bidding script used by both interest groups. Since the default bid script
+  // checks the interest group name, and this test uses two interest groups with
+  // the same bidder script, have to use a different script for this test.
+  //
+  // This script uses trusted bidding signals and the interest group name to
+  // select a winner, to make sure the trusted bidding signals makes it to the
+  // bidder.
+  const char kBidderScript[] = R"(
+    function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                         trustedBiddingSignals, browserSignals) {
+      return {
+        ad: 0,
+        bid: trustedBiddingSignals[interestGroup.name],
+        render: interestGroup.ads[0].renderUrl
+      };
+    }
+
+    // Prevent an error about this method not existing.
+    function reportWin() {}
+  )";
+
+  // Need to use a different seller script as well, due to the validation logic
+  // in the default one being dependent on the details of the default bidder
+  // script.
+  const char kSellerScript[] = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                     browserSignals) {
+      return 2 * bid;
+    }
+
+    // Prevent an error about this method not existing.
+    function reportResult() {}
+  )";
+
+  // Two interest groups with all of the same URLs. They vary only in name,
+  // render URL, and bidding signals key.
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"0", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{"0"}, GURL("https://ad1.com")));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{"1"}, GURL("https://ad2.com")));
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidderScript);
+
+  // Trusted signals response for the single expected request. Interest group
+  // "0" bids 2, interest group "1" bids 1.
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=0,1"),
+                                   R"({"0":2, "1": 1})");
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  StartAuction(kSellerUrl, std::move(bidders),
+               /*auction_signals_json=*/"null",
+               auction_worklet::mojom::BrowserSignals::New(
+                   url::Origin::Create(GURL("https://publisher1.com")),
+                   url::Origin::Create(kSellerUrl)));
+  auction_run_loop_->Run();
+  EXPECT_TRUE(auction_complete_);
+
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_FALSE(result_.bidder_report_url);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
 TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {

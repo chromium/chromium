@@ -137,6 +137,15 @@ interface BidderWorklet {
           BidderWorkletBid? bid,
           array<string> errors);
 
+  // Sends pending bidding signals URL requests, if any. Unlike with
+  // SellerWorklets, this must be called for BidderWorklets that need to send
+  // requests for realtime bidding signals URL. The difference is because each
+  // auction makes all GenerateBid() calls to a single BidderWorklet at once
+  // one after another, so they know at what point they have made their last
+  // GenerateBid() invocation, and only one signals request will need to be
+  // made.
+  SendPendingSignalsRequests();
+
   // Calls the worklet's reportWin() method. Waits for the worklet script to
   // be loaded first, if needed.
   //

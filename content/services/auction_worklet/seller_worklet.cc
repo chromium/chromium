@@ -556,7 +556,7 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
-  task->trusted_bidding_signals_result = std::move(result);
+  task->trusted_scoring_signals_result = std::move(result);
   // Clean up single-use object, now that it has done its job.
   task->trusted_scoring_signals_request.reset();
 
@@ -575,7 +575,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
           task->ad_metadata_json, task->bid,
           std::move(task->shareable_auction_config),
-          std::move(task->trusted_bidding_signals_result),
+          std::move(task->trusted_scoring_signals_result),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_ad_components),

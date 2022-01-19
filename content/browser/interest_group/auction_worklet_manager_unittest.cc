@@ -112,7 +112,12 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   MockBidderWorklet(const MockBidderWorklet&) = delete;
   const MockBidderWorklet& operator=(const MockBidderWorklet&) = delete;
 
-  ~MockBidderWorklet() override = default;
+  ~MockBidderWorklet() override {
+    // Process any pending SendPendingSignalsRequests() calls.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(expected_num_send_pending_signals_requests_calls_,
+              num_send_pending_signals_requests_calls_);
+  }
 
   // auction_worklet::mojom::SellerWorklet implementation:
 
@@ -126,6 +131,14 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       base::Time auction_start_time,
       GenerateBidCallback generate_bid_callback) override {
     NOTREACHED();
+  }
+
+  void SendPendingSignalsRequests() override {
+    ++num_send_pending_signals_requests_calls_;
+    if (num_send_pending_signals_requests_calls_ ==
+        expected_num_send_pending_signals_requests_calls_) {
+      send_pending_signals_requests_called_loop_->Quit();
+    }
   }
 
   void ReportWin(const std::string& interest_group_name,
@@ -150,6 +163,24 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     receiver_.ResetWithReason(/*custom_reason_code=*/0, error);
   }
 
+  void WaitForSendPendingSignalsRequests(
+      int expected_num_send_pending_signals_requests_calls) {
+    DCHECK_LT(expected_num_send_pending_signals_requests_calls_,
+              expected_num_send_pending_signals_requests_calls);
+
+    expected_num_send_pending_signals_requests_calls_ =
+        expected_num_send_pending_signals_requests_calls;
+    if (num_send_pending_signals_requests_calls_ <
+        expected_num_send_pending_signals_requests_calls_) {
+      send_pending_signals_requests_called_loop_ =
+          std::make_unique<base::RunLoop>();
+      send_pending_signals_requests_called_loop_->Run();
+    }
+
+    EXPECT_EQ(expected_num_send_pending_signals_requests_calls_,
+              num_send_pending_signals_requests_calls_);
+  }
+
   mojo::Remote<network::mojom::URLLoaderFactory>& url_loader_factory() {
     return url_loader_factory_;
   }
@@ -161,6 +192,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   }
   const url::Origin& top_window_origin() const { return top_window_origin_; }
 
+  int num_send_pending_signals_requests_calls() const {
+    return num_send_pending_signals_requests_calls_;
+  }
+
  private:
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
@@ -168,6 +203,17 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   const absl::optional<GURL> wasm_url_;
   const absl::optional<GURL> trusted_bidding_signals_url_;
   const url::Origin top_window_origin_;
+
+  // Number of times SendPendingSignalsRequests() has been invoked. Used to
+  // check that calls through Mojo BidderWorklet interfaces make it to the
+  // correct MockBidderWorklet.
+  int num_send_pending_signals_requests_calls_ = 0;
+  // Number of SendPendingSignalsRequests() to wait for. Once this is hit,
+  // `send_pending_signals_requests_called_loop_` is invoked. Must match
+  // num_send_pending_signals_requests_calls_ on destruction (which catches
+  // unexpected extra calls).
+  int expected_num_send_pending_signals_requests_calls_ = 0;
+  std::unique_ptr<base::RunLoop> send_pending_signals_requests_called_loop_;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -283,8 +329,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   const url::Origin top_window_origin_;
 
   // Number of times SendPendingSignalsRequests() has been invoked. Used to
-  // check that SellerWorklet calls make it to the SellerWorklet as expected,
-  // and that worklets are being shared correctly.
+  // check that calls through Mojo SellerWorklet interfaces make it to the
+  // correct MockSellerWorklet.
   int num_send_pending_signals_requests_calls_ = 0;
   // Number of SendPendingSignalsRequests() to wait for. Once this is hit,
   // `send_pending_signals_requests_called_loop_` is invoked. Must match
@@ -518,6 +564,10 @@ TEST_F(AuctionWorkletManagerTest, SingleBidderWorklet) {
   EXPECT_EQ(kWasmUrl, bidder_worklet->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet->top_window_origin());
+
+  EXPECT_EQ(0, bidder_worklet->num_send_pending_signals_requests_calls());
+  handle->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet->WaitForSendPendingSignalsRequests(1);
 }
 
 TEST_F(AuctionWorkletManagerTest, SingleSellerWorklet) {
@@ -573,6 +623,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
     EXPECT_EQ(absl::nullopt, bidder_worklet->trusted_bidding_signals_url());
     EXPECT_EQ(kTopWindowOrigin, bidder_worklet->top_window_origin());
 
+    EXPECT_EQ(0, bidder_worklet->num_send_pending_signals_requests_calls());
+    handle->GetBidderWorklet()->SendPendingSignalsRequests();
+    bidder_worklet->WaitForSendPendingSignalsRequests(1);
+
     handles.emplace_back(std::move(handle));
     bidder_worklets.emplace_back(std::move(bidder_worklet));
   }
@@ -606,6 +660,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
   EXPECT_EQ(kWasmUrl, bidder_worklet->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet->top_window_origin());
+
+  EXPECT_EQ(0, bidder_worklet->num_send_pending_signals_requests_calls());
+  handle->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet->WaitForSendPendingSignalsRequests(1);
 
   // Should still be at the process limit.
   EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
@@ -705,6 +763,8 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
   EXPECT_EQ(kWasmUrl, bidder_worklet1->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet1->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet1->top_window_origin());
+  handle1->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet1->WaitForSendPendingSignalsRequests(1);
   // Should only be one process.
   EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
 
@@ -717,6 +777,8 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
       handle2));
   EXPECT_EQ(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
   EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
+  handle2->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet1->WaitForSendPendingSignalsRequests(2);
   // Should still only be one process.
   EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
 
@@ -734,6 +796,8 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
       handle3));
   EXPECT_EQ(handle2->GetBidderWorklet(), handle3->GetBidderWorklet());
   EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
+  handle3->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet1->WaitForSendPendingSignalsRequests(3);
   // Should still only be one process.
   EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
 
@@ -758,6 +822,8 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
   EXPECT_EQ(kWasmUrl, bidder_worklet2->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet2->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet2->top_window_origin());
+  handle4->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet2->WaitForSendPendingSignalsRequests(1);
   EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
 }
 
@@ -996,6 +1062,11 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletLoadError) {
   EXPECT_EQ(AuctionWorkletManager::FatalErrorType::kScriptLoadFailed,
             load_error_helper.fatal_error_type());
 
+  // Should be safe to call into the worklet, even after the error. This allows
+  // errors to be handled asynchronously.
+  handle->GetBidderWorklet()->SendPendingSignalsRequests();
+  task_environment_.RunUntilIdle();
+
   // Another request for the same worklet should trigger creation of a new
   // worklet, even though the old handle for the worklet hasn't been deleted
   // yet.
@@ -1073,6 +1144,12 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCrash) {
               testing::ElementsAre("https://origin.test/script crashed."));
   EXPECT_EQ(AuctionWorkletManager::FatalErrorType::kWorkletCrash,
             load_error_helper.fatal_error_type());
+
+  // Should be safe to call into the worklet, even after the error. This allows
+  // errors to be handled asynchronously.
+  handle->GetBidderWorklet()->SendPendingSignalsRequests();
+  task_environment_.RunUntilIdle();
+  handle->GetBidderWorklet()->SendPendingSignalsRequests();
 
   // Another request for the same worklet should trigger creation of a new
   // worklet, even though the old handle for the worklet hasn't been deleted

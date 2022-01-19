@@ -118,7 +118,7 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_scoring_signals_request;
-    scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result;
+    scoped_refptr<TrustedSignals::Result> trusted_scoring_signals_result;
 
     // Error message from downloading trusted scoring signals, if any. Prepended
     // to errors passed to the ScoreAdCallback.
@@ -243,7 +243,7 @@ class SellerWorklet : public mojom::SellerWorklet {
 
   const GURL script_source_url_;
 
-  // This is populated only if `this` was created with a non-null
+  // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.
   std::unique_ptr<TrustedSignalsRequestManager>
       trusted_signals_request_manager_;

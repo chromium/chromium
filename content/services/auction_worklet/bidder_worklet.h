@@ -19,6 +19,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -97,6 +98,7 @@ class BidderWorklet : public mojom::BidderWorklet {
       mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       GenerateBidCallback generate_bid_callback) override;
+  void SendPendingSignalsRequests() override;
   void ReportWin(const std::string& interest_group_name,
                  const absl::optional<std::string>& auction_signals_json,
                  const absl::optional<std::string>& per_buyer_signals_json,
@@ -121,7 +123,8 @@ class BidderWorklet : public mojom::BidderWorklet {
     base::Time auction_start_time;
 
     // Set while loading is in progress.
-    std::unique_ptr<TrustedSignals> trusted_bidding_signals;
+    std::unique_ptr<TrustedSignalsRequestManager::Request>
+        trusted_bidding_signals_request;
     // Results of loading trusted bidding signals.
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result;
     // Error message returned by attempt to load `trusted_bidding_signals_`.
@@ -286,7 +289,11 @@ class BidderWorklet : public mojom::BidderWorklet {
   // for.
   const GURL script_source_url_;
   absl::optional<GURL> wasm_helper_url_;
-  const absl::optional<GURL> trusted_bidding_signals_url_;
+
+  // Populated only if `this` was created with a non-null
+  // `trusted_scoring_signals_url`.
+  std::unique_ptr<TrustedSignalsRequestManager>
+      trusted_signals_request_manager_;
 
   // Top window origin for the auctions sharing this BidderWorklet.
   const url::Origin top_window_origin_;

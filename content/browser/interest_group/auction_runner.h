@@ -234,6 +234,16 @@ class CONTENT_EXPORT AuctionRunner {
   // the bidder identified by `bid_state`. Starts generating a bid.
   void OnBidderWorkletReceived(BidState* bid_state);
 
+  // Calls SendPendingSignalsRequests() for the BidderWorklet of `bid_state`, if
+  // it hasn't been destroyed. This is done asynchronously, so that BidStates
+  // that share a BidderWorklet all call GenerateBid() before this is invoked
+  // for all of them.
+  //
+  // This does result in invoking SendPendingSignalsRequests() multiple times
+  // for BidStates that share BidderWorklets, though that should be fairly low
+  // overhead.
+  void SendPendingSignalsRequestsForBidder(BidState* bid_state);
+
   // Called when the `bid_state` BidderWorklet crashes or fails to load, and
   // `bid_state` is in state kGeneratingBid. Fails the GenerateBid() call and
   // releases the worklet handle, as the callback passed to the GenerateBid Mojo
