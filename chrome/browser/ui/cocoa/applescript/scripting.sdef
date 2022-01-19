@@ -270,7 +270,7 @@
         <cocoa key="uniqueID"/>
       </property>
       <property name="title" code="pnam" description="The title of the folder." type="text"/>
-      <property name="parent index" code="Pidx" description="Returns the index with respect to its parent bookmark folder" type="number" access="r">
+      <property name="index" code="pidx" description="Returns the index with respect to its parent bookmark folder." type="number" access="r">
         <cocoa key="index"/>
       </property>
     </class>
@@ -282,7 +282,7 @@
       </property>
       <property name="title" code="pnam" description="The title of the bookmark item." type="text"/>
       <property name="URL" code="URL " description="The URL of the bookmark." type="text"/>
-      <property name="parent index" code="Pidx" description="Returns the index with respect to its parent bookmark folder" type="number" access="r">
+      <property name="index" code="pidx" description="Returns the index with respect to its parent bookmark folder." type="number" access="r">
         <cocoa key="index"/>
       </property>
     </class>
