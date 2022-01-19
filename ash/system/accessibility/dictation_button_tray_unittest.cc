@@ -25,6 +25,7 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -60,7 +61,36 @@ ui::GestureEvent CreateTapEvent(
                           ui::GestureEventDetails(ui::ET_GESTURE_TAP));
 }
 
+// ProgressIndicatorWaiter -----------------------------------------------------
+
+// A class which supports waiting for a progress indicator to reach a desired
+// state of progress.
+class ProgressIndicatorWaiter {
+ public:
+  ProgressIndicatorWaiter() = default;
+  ProgressIndicatorWaiter(const ProgressIndicatorWaiter&) = delete;
+  ProgressIndicatorWaiter& operator=(const ProgressIndicatorWaiter&) = delete;
+  ~ProgressIndicatorWaiter() = default;
+
+  // Waits for `progress_indicator` to reach the specified `progress`. If the
+  // `progress_indicator` is already at `progress`, this method no-ops.
+  void WaitForProgress(HoldingSpaceProgressIndicator* progress_indicator,
+                       const absl::optional<float>& progress) {
+    if (progress_indicator->progress() == progress)
+      return;
+    base::RunLoop run_loop;
+    auto subscription = progress_indicator->AddProgressChangedCallback(
+        base::BindLambdaForTesting([&]() {
+          if (progress_indicator->progress() == progress)
+            run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+};
+
 }  // namespace
+
+// DictationButtonTrayTest -----------------------------------------------------
 
 class DictationButtonTrayTest : public AshTestBase {
  public:
@@ -69,6 +99,7 @@ class DictationButtonTrayTest : public AshTestBase {
   DictationButtonTrayTest(const DictationButtonTrayTest&) = delete;
   DictationButtonTrayTest& operator=(const DictationButtonTrayTest&) = delete;
 
+  // AshTestBase:
   void SetUp() override { AshTestBase::SetUp(); }
 
  protected:
@@ -139,7 +170,12 @@ TEST_F(DictationButtonTrayTest, ActiveStateOnlyDuringDictation) {
   EXPECT_FALSE(GetTray()->is_active());
 }
 
-class DictationButtonTraySodaTest : public DictationButtonTrayTest {
+// Base class for SODA tests of the dictation button tray, parameterized by
+// whether in-progress animation v2 is enabled.
+class DictationButtonTraySodaTest
+    : public DictationButtonTrayTest,
+      public testing::WithParamInterface<
+          /*in_progress_animation_v2_enabled=*/bool> {
  public:
   DictationButtonTraySodaTest() = default;
   ~DictationButtonTraySodaTest() override = default;
@@ -147,12 +183,24 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
   DictationButtonTraySodaTest& operator=(const DictationButtonTraySodaTest&) =
       delete;
 
+  // Returns whether in-progress animation v2 is enabled given test
+  // parameterization.
+  bool IsInProgressAnimationV2Enabled() const { return GetParam(); }
+
+  // DictationButtonTrayTest:
   void SetUp() override {
     DictationButtonTrayTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kExperimentalAccessibilityDictationOffline,
-         features::kOnDeviceSpeechRecognition},
-        {});
+
+    std::vector<base::Feature> enabled_features = {
+        ::features::kExperimentalAccessibilityDictationOffline,
+        features::kOnDeviceSpeechRecognition};
+    std::vector<base::Feature> disabled_features;
+
+    // Enable/disable in-progress animation v2 based on test parameterization.
+    (IsInProgressAnimationV2Enabled() ? enabled_features : disabled_features)
+        .push_back(features::kHoldingSpaceInProgressAnimationV2);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     // Since this test suite is part of ash unit tests, the
     // SodaInstallerImplChromeOS is never created (it's normally created when
@@ -167,12 +215,27 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
     AshTestBase::TearDown();
   }
 
+  HoldingSpaceProgressIndicator* GetProgressIndicator() {
+    return GetTray()->progress_indicator_.get();
+  }
+
   float GetProgressIndicatorProgress() {
     DCHECK(GetTray()->progress_indicator_);
     absl::optional<float> progress =
         GetTray()->progress_indicator_->CalculateProgress();
     DCHECK(progress.has_value());
     return progress.value();
+  }
+
+  bool IsImageVisible() {
+    DCHECK(GetTray()->icon_);
+
+    ui::Layer* const layer = GetTray()->icon_->layer();
+    if (!layer)
+      return true;
+
+    return layer->GetTargetOpacity() == 1.f &&
+           layer->GetTargetTransform() == gfx::Transform();
   }
 
   bool IsProgressIndicatorVisible() {
@@ -185,13 +248,18 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
   std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         DictationButtonTraySodaTest,
+                         /*in_progress_animation_v2_enabled=*/testing::Bool());
+
 // Tests the behavior of the UpdateOnSpeechRecognitionDownloadChanged() method.
-TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
+TEST_P(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   controller->dictation().SetEnabled(true);
   DictationButtonTray* tray = GetTray();
   views::ImageView* image = GetImageView(tray);
+  EXPECT_TRUE(IsImageVisible());
 
   // Download progress of 0 indicates that download is not in-progress.
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/0);
@@ -199,6 +267,12 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
   EXPECT_FALSE(IsProgressIndicatorVisible());
+
+  // The tray icon should be visible when the download is not in-progress.
+  HoldingSpaceProgressIndicator* progress_indicator = GetProgressIndicator();
+  ProgressIndicatorWaiter().WaitForProgress(
+      progress_indicator, HoldingSpaceProgressIndicator::kProgressComplete);
+  EXPECT_TRUE(IsImageVisible());
 
   // Any number 0 < number < 100 means that download is in-progress.
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/50);
@@ -208,6 +282,11 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   EXPECT_TRUE(IsProgressIndicatorVisible());
   EXPECT_EQ(0.5f, GetProgressIndicatorProgress());
 
+  // If in-progress animation v2 is enabled, the tray icon should *not* be
+  // visible when the download is in progress.
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.5f);
+  EXPECT_NE(IsImageVisible(), IsInProgressAnimationV2Enabled());
+
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/70);
   EXPECT_EQ(70, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
@@ -215,12 +294,22 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   EXPECT_TRUE(IsProgressIndicatorVisible());
   EXPECT_EQ(0.7f, GetProgressIndicatorProgress());
 
+  // If in-progress animation v2 is enabled, the tray icon should *not* be
+  // visible when the download is in progress.
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.7f);
+  EXPECT_NE(IsImageVisible(), IsInProgressAnimationV2Enabled());
+
   // Similar to 0, a value of 100 means that download is not in-progress.
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/100);
   EXPECT_EQ(100, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
   EXPECT_FALSE(IsProgressIndicatorVisible());
+
+  // The tray icon should be visible when the download is not in-progress.
+  ProgressIndicatorWaiter().WaitForProgress(
+      progress_indicator, HoldingSpaceProgressIndicator::kProgressComplete);
+  EXPECT_TRUE(IsImageVisible());
 }
 
 }  // namespace ash

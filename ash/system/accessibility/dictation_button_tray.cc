@@ -21,11 +21,23 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
+namespace {
+
+// Animation.
+constexpr base::TimeDelta kInProgressAnimationOpacityDuration =
+    base::Milliseconds(100);
+constexpr base::TimeDelta kInProgressAnimationScaleDelay =
+    base::Milliseconds(50);
+constexpr base::TimeDelta kInProgressAnimationScaleDuration =
+    base::Milliseconds(166);
+constexpr float kInProgressAnimationScaleFactor = 0.875f;
 
 // Helper function that creates an image for the dictation icon.
 gfx::ImageSkia GetIconImage(bool enabled) {
@@ -34,6 +46,8 @@ gfx::ImageSkia GetIconImage(bool enabled) {
   return enabled ? gfx::CreateVectorIcon(kDictationOnNewuiIcon, color)
                  : gfx::CreateVectorIcon(kDictationOffNewuiIcon, color);
 }
+
+}  // namespace
 
 DictationProgressIndicator::DictationProgressIndicator(
     const DictationButtonTray* tray)
@@ -129,12 +143,13 @@ void DictationButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
   icon_->SetImage(GetIconImage(
       Shell::Get()->accessibility_controller()->dictation_active()));
+  if (progress_indicator_)
+    progress_indicator_->InvalidateLayer();
 }
 
 void DictationButtonTray::Layout() {
   TrayBackgroundView::Layout();
-  if (progress_indicator_)
-    progress_indicator_->layer()->SetBounds(GetBackgroundBounds());
+  UpdateProgressIndicatorBounds();
 }
 
 const char* DictationButtonTray::GetClassName() const {
@@ -149,6 +164,79 @@ void DictationButtonTray::OnSessionStateChanged(
 void DictationButtonTray::UpdateIcon(bool dictation_active) {
   icon_->SetImage(GetIconImage(dictation_active));
   SetIsActive(dictation_active);
+}
+
+void DictationButtonTray::UpdateIconOpacityAndTransform() {
+  // Updating the tray `icon_` opacity and transform is done to prevent overlap
+  // with the inner icon of the `progress_indicator_` which is only present when
+  // in-progress animation v2 is enabled.
+  if (!features::IsHoldingSpaceInProgressAnimationV2Enabled() ||
+      !progress_indicator_) {
+    return;
+  }
+
+  // When `progress` is not `complete`, the `progress_indicator_` will paint an
+  // inner icon in the same position as the tray `icon_`. To prevent overlap,
+  // the tray `icon_` should be hidden when downloading is in `progress`.
+  const absl::optional<float>& progress = progress_indicator_->progress();
+  bool complete = progress == HoldingSpaceProgressIndicator::kProgressComplete;
+  float target_opacity = complete ? 1.f : 0.f;
+
+  // Lazily create a `layer` for `icon_`.
+  ui::Layer* layer = icon_->layer();
+  if (!layer) {
+    icon_->SetPaintToLayer();
+    layer = icon_->layer();
+    layer->SetFillsBoundsOpaquely(false);
+  }
+
+  // No-op if the tray `icon_` is already animating towards the desired state.
+  if (layer->GetTargetOpacity() == target_opacity)
+    return;
+
+  // When the tray `icon_` should be hidden, it should be hidden immediately
+  // without animation to prevent overlapping with the `progress_indicator_`'s
+  // inner icon.
+  if (target_opacity == 0.f) {
+    layer->SetOpacity(0.f);
+    return;
+  }
+
+  // When the tray `icon_` has not yet been laid out, it is not necessary to
+  // animate it in. We can do so immediately.
+  const gfx::Rect& bounds = icon_->bounds();
+  if (bounds.IsEmpty()) {
+    layer->SetOpacity(1.f);
+    layer->SetTransform(gfx::Transform());
+    return;
+  }
+
+  const auto preemption_strategy =
+      ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET;
+  const auto transform = gfx::GetScaleTransform(
+      bounds.CenterPoint(), kInProgressAnimationScaleFactor);
+  const auto tween_type = gfx::Tween::Type::FAST_OUT_SLOW_IN_3;
+
+  // Animate the tray `icon_` from:
+  // * Opacity: 0% -> 100%
+  // * Scale: 87.5% -> 100%
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(preemption_strategy)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(layer, 0.f)
+      .SetTransform(layer, transform)
+      .Then()
+      .SetDuration(kInProgressAnimationOpacityDuration)
+      .SetOpacity(layer, 1.f)
+      .Offset(kInProgressAnimationScaleDelay)
+      .SetDuration(kInProgressAnimationScaleDuration)
+      .SetTransform(layer, gfx::Transform(), tween_type);
+}
+
+void DictationButtonTray::UpdateProgressIndicatorBounds() {
+  if (progress_indicator_)
+    progress_indicator_->layer()->SetBounds(GetBackgroundBounds());
 }
 
 void DictationButtonTray::UpdateVisibility() {
@@ -178,9 +266,15 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
   download_progress_ = download_progress;
   if (!progress_indicator_) {
     // A progress indicator that is only visible when a SODA download is
-    // in-progress.
+    // in-progress and a subscription to receive notification of progress
+    // changed events.
     progress_indicator_ = std::make_unique<DictationProgressIndicator>(this);
+    progress_changed_subscription_ =
+        progress_indicator_->AddProgressChangedCallback(base::BindRepeating(
+            &DictationButtonTray::UpdateIconOpacityAndTransform,
+            base::Unretained(this)));
     layer()->Add(progress_indicator_->CreateLayer());
+    UpdateProgressIndicatorBounds();
   }
   progress_indicator_->InvalidateLayer();
 }

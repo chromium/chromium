@@ -16,7 +16,7 @@
 
 namespace views {
 class ImageView;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -86,12 +86,19 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   friend class DictationButtonTrayTest;
   friend class DictationButtonTraySodaTest;
 
-  // Updates the visibility of the button.
-  void UpdateVisibility();
-
-  // Sets the icon when Dictation is activated / deactiviated.
+  // Sets the icon when Dictation is activated / deactivated.
   // Also updates visibility when Dictation is enabled / disabled.
   void UpdateIcon(bool dictation_active);
+
+  // Updates opacity and transform for `icon_` to prevent overlap with the
+  // `progress_indicator_` when downloading is in progress.
+  void UpdateIconOpacityAndTransform();
+
+  // Updates bounds for `progress_indicator_`.
+  void UpdateProgressIndicatorBounds();
+
+  // Updates the visibility of the button.
+  void UpdateVisibility();
 
   // Actively looks up dictation status and calls UpdateIcon.
   void CheckDictationStatusAndUpdateIcon();
@@ -103,8 +110,10 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // in-progress.
   int download_progress_;
 
-  // A progress indicator to indicate SODA download progress.
+  // A progress indicator to indicate SODA download progress and a subscription
+  // to be notified of progress changed events.
   std::unique_ptr<DictationProgressIndicator> progress_indicator_;
+  base::CallbackListSubscription progress_changed_subscription_;
 };
 
 }  // namespace ash
