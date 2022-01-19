@@ -2512,6 +2512,7 @@ void InspectorCSSAgent::BuildRulesMap(
       if (it == css_style_sheet_to_inspector_style_sheet_.end())
         continue;
       InspectorStyleSheet* imported_style_sheet = it->value;
+      CHECK_NE(imported_style_sheet, nullptr);
       BuildRulesMap(imported_style_sheet, rule_to_css_rule);
     }
   }
