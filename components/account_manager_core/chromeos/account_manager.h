@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   void GetAccounts(AccountListCallback callback);
 
   // Gets (async) the raw, un-canonicalized email id corresponding to
-  // |account_key|. |callback| is called with an empty string if |account_key|
+  // `account_key`. `callback` is called with an empty string if `account_key`
   // is not known to Account Manager.
   void GetAccountEmail(const ::account_manager::AccountKey& account_key,
                        base::OnceCallback<void(const std::string&)> callback);
@@ -291,12 +291,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // been initialized, otherwise saves the |closure| for running later, when the
   // class is initialized.
   void RunOnInitialization(base::OnceClosure closure);
-
-  // Does the actual work of fetching the email for |account_key|. Assumes that
-  // |AccountManager| initialization (|init_state_|) is complete.
-  void GetAccountEmailInternal(
-      const ::account_manager::AccountKey& account_key,
-      base::OnceCallback<void(const std::string&)> callback);
 
   // Does the actual work of removing an account. Assumes that
   // |AccountManager| initialization (|init_state_|) is complete.

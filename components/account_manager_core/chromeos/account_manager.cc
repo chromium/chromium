@@ -490,20 +490,18 @@ void AccountManager::GetAccounts(AccountListCallback callback) {
 void AccountManager::GetAccountEmail(
     const ::account_manager::AccountKey& account_key,
     base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure = base::BindOnce(
-      &AccountManager::GetAccountEmailInternal, weak_factory_.GetWeakPtr(),
-      account_key, std::move(callback));
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure = base::BindOnce(
+        &AccountManager::GetAccountEmail, weak_factory_.GetWeakPtr(),
+        account_key, std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::GetAccountEmailInternal(
-    const ::account_manager::AccountKey& account_key,
-    base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   auto it = accounts_.find(account_key);
   if (it == accounts_.end()) {
     std::move(callback).Run(std::string());
