@@ -445,13 +445,6 @@ std::unique_ptr<base::Value> ModelTypeToValue(ModelType model_type) {
   return std::make_unique<base::Value>(ModelTypeToDebugString(model_type));
 }
 
-ModelType ModelTypeFromDebugString(const std::string& model_type_string) {
-  auto* iter = base::ranges::find(
-      kModelTypeInfoMap, model_type_string,
-      [](const ModelTypeInfo& info) { return info.model_type_debug_string; });
-  return iter != std::end(kModelTypeInfoMap) ? iter->model_type : UNSPECIFIED;
-}
-
 std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {
   std::string result;
   for (ModelType type : model_types) {
@@ -465,31 +458,6 @@ std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {
 
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set) {
   return out << ModelTypeSetToDebugString(model_type_set);
-}
-
-ModelTypeSet ModelTypeSetFromDebugString(
-    const std::string& model_types_string) {
-  std::string working_copy = model_types_string;
-  ModelTypeSet model_types;
-  while (!working_copy.empty()) {
-    // Remove any leading spaces.
-    working_copy = working_copy.substr(working_copy.find_first_not_of(' '));
-    if (working_copy.empty())
-      break;
-    std::string type_str;
-    size_t end = working_copy.find(',');
-    if (end == std::string::npos) {
-      end = working_copy.length() - 1;
-      type_str = working_copy;
-    } else {
-      type_str = working_copy.substr(0, end);
-    }
-    ModelType type = ModelTypeFromDebugString(type_str);
-    if (IsRealDataType(type))
-      model_types.Put(type);
-    working_copy = working_copy.substr(end + 1);
-  }
-  return model_types;
 }
 
 std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types) {

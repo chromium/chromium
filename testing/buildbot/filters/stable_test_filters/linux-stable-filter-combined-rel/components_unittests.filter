@@ -9480,7 +9480,6 @@
 -ModelTypeTest.ModelTypeHistogramMapping
 -ModelTypeTest.ModelTypeNotificationTypeMapping
 -ModelTypeTest.ModelTypeOfInvalidSpecificsFieldNumber
--ModelTypeTest.ModelTypeSetFromDebugString
 -ModelTypeTest.ModelTypeSetToValue
 -ModelTypeTest.ModelTypeStringMapping
 -ModelTypeTest.ModelTypeToFromSpecificsFieldNumber

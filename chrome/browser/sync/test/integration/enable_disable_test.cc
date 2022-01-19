@@ -27,7 +27,6 @@
 namespace {
 
 using syncer::ModelType;
-using syncer::ModelTypeFromDebugString;
 using syncer::ModelTypeSet;
 using syncer::ModelTypeToDebugString;
 using syncer::SyncUserSettings;

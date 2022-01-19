@@ -97,17 +97,6 @@ TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
   EXPECT_EQ(9, ModelTypeToStableIdentifier(TYPED_URLS));
 }
 
-TEST_F(ModelTypeTest, ModelTypeSetFromDebugString) {
-  ModelTypeSet empty;
-  ModelTypeSet one(BOOKMARKS);
-  ModelTypeSet two(BOOKMARKS, TYPED_URLS);
-
-  EXPECT_EQ(empty,
-            ModelTypeSetFromDebugString(ModelTypeSetToDebugString(empty)));
-  EXPECT_EQ(one, ModelTypeSetFromDebugString(ModelTypeSetToDebugString(one)));
-  EXPECT_EQ(two, ModelTypeSetFromDebugString(ModelTypeSetToDebugString(two)));
-}
-
 TEST_F(ModelTypeTest, DefaultFieldValues) {
   ModelTypeSet types = ProtocolTypes();
   for (ModelType type : types) {
@@ -140,16 +129,9 @@ TEST_F(ModelTypeTest, ModelTypeToRootTagValues) {
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypeStringMapping) {
-  ModelTypeSet all_types = ModelTypeSet::All();
-  for (ModelType model_type : all_types) {
-    const char* model_type_string = ModelTypeToDebugString(model_type);
-    ModelType converted_model_type =
-        ModelTypeFromDebugString(model_type_string);
-    if (IsRealDataType(model_type))
-      EXPECT_EQ(converted_model_type, model_type);
-    else
-      EXPECT_EQ(converted_model_type, UNSPECIFIED);
+TEST_F(ModelTypeTest, ModelTypeDebugStringIsNotEmpty) {
+  for (ModelType model_type : ModelTypeSet::All()) {
+    EXPECT_NE("", ModelTypeToDebugString(model_type));
   }
 }
 
