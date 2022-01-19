@@ -45,19 +45,19 @@ TEST(UnitsTest, Convertions) {
   EXPECT_EQ(0, ConvertUnit(2, 1000000000, 1));
   EXPECT_EQ(2000000000, ConvertUnit(2, 1, 1000000000));
 
-  EXPECT_EQ(100, ConvertUnitDouble(100, 100, 100));
-  EXPECT_EQ(-100, ConvertUnitDouble(-100, 100, 100));
-  EXPECT_EQ(0, ConvertUnitDouble(0, 100, 100));
-  EXPECT_DOUBLE_EQ(0.000002, ConvertUnitDouble(2, 1000, 0.001));
-  EXPECT_EQ(2000000, ConvertUnitDouble(2, 0.001, 1000));
+  EXPECT_EQ(100, ConvertUnitFloat(100, 100, 100));
+  EXPECT_EQ(-100, ConvertUnitFloat(-100, 100, 100));
+  EXPECT_EQ(0, ConvertUnitFloat(0, 100, 100));
+  EXPECT_FLOAT_EQ(0.000002, ConvertUnitFloat(2, 1000, 0.001));
+  EXPECT_FLOAT_EQ(2000000, ConvertUnitFloat(2, 0.001, 1000));
 
-  EXPECT_EQ(8.25, ConvertPixelsToPointDouble(11.0));
+  EXPECT_EQ(8.25, ConvertUnitFloat(11.0, kPixelsPerInch, kPointsPerInch));
   // Round down.
-  EXPECT_EQ(8, ConvertPixelsToPoint(11));
-  EXPECT_EQ(7.5, ConvertPixelsToPointDouble(10.0));
+  EXPECT_EQ(8, ConvertUnit(11, kPixelsPerInch, kPointsPerInch));
+  EXPECT_EQ(7.5, ConvertUnitFloat(10.0, kPixelsPerInch, kPointsPerInch));
   // Round up.
-  EXPECT_EQ(8, ConvertPixelsToPoint(10));
-  EXPECT_EQ(0, ConvertPixelsToPoint(0));
+  EXPECT_EQ(8, ConvertUnit(10, kPixelsPerInch, kPointsPerInch));
+  EXPECT_EQ(0, ConvertUnit(0, kPixelsPerInch, kPointsPerInch));
 }
 
 }  // namespace printing

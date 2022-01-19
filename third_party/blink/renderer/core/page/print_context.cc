@@ -297,15 +297,15 @@ String PrintContext::PageSizeAndMarginsInPixels(LocalFrame* frame,
                                                 int margin_bottom,
                                                 int margin_left) {
   WebPrintPageDescription description;
-  description.size = WebDoubleSize(width, height);
+  description.size.SetSize(width, height);
   description.margin_top = margin_top;
   description.margin_right = margin_right;
   description.margin_bottom = margin_bottom;
   description.margin_left = margin_left;
   frame->GetDocument()->GetPageDescription(page_number, &description);
 
-  return "(" + String::Number(floor(description.size.Width())) + ", " +
-         String::Number(floor(description.size.Height())) + ") " +
+  return "(" + String::Number(floor(description.size.width())) + ", " +
+         String::Number(floor(description.size.height())) + ") " +
          String::Number(description.margin_top) + ' ' +
          String::Number(description.margin_right) + ' ' +
          String::Number(description.margin_bottom) + ' ' +

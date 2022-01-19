@@ -52,7 +52,6 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_double_size.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -172,9 +171,9 @@ mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
   int dpi = GetDPI(page_params);
 
   blink::WebPrintPageDescription description;
-  description.size = blink::WebDoubleSize(
-      ConvertUnitDouble(page_params.page_size.width(), dpi, kPixelsPerInch),
-      ConvertUnitDouble(page_params.page_size.height(), dpi, kPixelsPerInch));
+  description.size.SetSize(
+      ConvertUnitFloat(page_params.page_size.width(), dpi, kPixelsPerInch),
+      ConvertUnitFloat(page_params.page_size.height(), dpi, kPixelsPerInch));
   description.margin_top =
       ConvertUnit(page_params.margin_top, dpi, kPixelsPerInch);
   description.margin_right = ConvertUnit(page_params.page_size.width() -
@@ -191,11 +190,10 @@ mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
   if (frame)
     frame->GetPageDescription(page_index, &description);
 
-  double new_content_width = description.size.Width() -
-                             description.margin_left - description.margin_right;
-  double new_content_height = description.size.Height() -
-                              description.margin_top -
-                              description.margin_bottom;
+  float new_content_width = description.size.width() - description.margin_left -
+                            description.margin_right;
+  float new_content_height = description.size.height() -
+                             description.margin_top - description.margin_bottom;
 
   // Invalid page size and/or margins. We just use the default setting.
   if (new_content_width < 1 || new_content_height < 1) {
@@ -208,8 +206,8 @@ mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
       FromBlinkPageOrientation(description.orientation);
 
   page_css_params->page_size =
-      gfx::Size(ConvertUnit(description.size.Width(), kPixelsPerInch, dpi),
-                ConvertUnit(description.size.Height(), kPixelsPerInch, dpi));
+      gfx::Size(ConvertUnit(description.size.width(), kPixelsPerInch, dpi),
+                ConvertUnit(description.size.height(), kPixelsPerInch, dpi));
   page_css_params->content_size =
       gfx::Size(ConvertUnit(new_content_width, kPixelsPerInch, dpi),
                 ConvertUnit(new_content_height, kPixelsPerInch, dpi));

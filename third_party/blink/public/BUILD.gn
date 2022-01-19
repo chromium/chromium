@@ -198,7 +198,6 @@ source_set("blink_headers") {
     "platform/web_dedicated_worker_host_factory_client.h",
     "platform/web_distillability.h",
     "platform/web_document_subresource_filter.h",
-    "platform/web_double_size.h",
     "platform/web_drag_data.h",
     "platform/web_effective_connection_type.h",
     "platform/web_encrypted_media_client.h",

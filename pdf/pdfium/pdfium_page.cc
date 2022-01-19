@@ -41,7 +41,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 
-using printing::ConvertUnitDouble;
+using printing::ConvertUnitFloat;
 using printing::kPixelsPerInch;
 using printing::kPointsPerInch;
 
@@ -86,10 +86,10 @@ gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
     height = 1;
 
   gfx::RectF output_rect(
-      ConvertUnitDouble(min_x, kPointsPerInch, kPixelsPerInch),
-      ConvertUnitDouble(min_y, kPointsPerInch, kPixelsPerInch),
-      ConvertUnitDouble(width, kPointsPerInch, kPixelsPerInch),
-      ConvertUnitDouble(height, kPointsPerInch, kPixelsPerInch));
+      ConvertUnitFloat(min_x, kPointsPerInch, kPixelsPerInch),
+      ConvertUnitFloat(min_y, kPointsPerInch, kPixelsPerInch),
+      ConvertUnitFloat(width, kPointsPerInch, kPixelsPerInch),
+      ConvertUnitFloat(height, kPointsPerInch, kPixelsPerInch));
   return output_rect;
 }
 

@@ -1085,7 +1085,7 @@ TEST_F(DocumentTest, AtPageMarginWithDeviceScaleFactor) {
   EXPECT_EQ(50, description.margin_right);
   EXPECT_EQ(50, description.margin_bottom);
   EXPECT_EQ(50, description.margin_left);
-  EXPECT_EQ(WebDoubleSize(400, 960), description.size);
+  EXPECT_EQ(gfx::SizeF(400, 960), description.size);
 }
 
 TEST(Document, HandlesDisconnectDuringHasTrustToken) {

@@ -28,7 +28,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
-using printing::ConvertUnitDouble;
+using printing::ConvertUnitFloat;
 using printing::kPointsPerInch;
 
 namespace chrome_pdf {
@@ -43,9 +43,9 @@ int CalculatePosition(FPDF_PAGE page,
   const int dpi_y = settings.dpi.height();
   const int dpi = std::max(dpi_x, dpi_y);
   int page_width = static_cast<int>(
-      ConvertUnitDouble(FPDF_GetPageWidthF(page), kPointsPerInch, dpi));
+      ConvertUnitFloat(FPDF_GetPageWidthF(page), kPointsPerInch, dpi));
   int page_height = static_cast<int>(
-      ConvertUnitDouble(FPDF_GetPageHeightF(page), kPointsPerInch, dpi));
+      ConvertUnitFloat(FPDF_GetPageHeightF(page), kPointsPerInch, dpi));
 
   // Start by assuming that we will draw exactly to the bounds rect
   // specified.

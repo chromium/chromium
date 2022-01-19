@@ -9,7 +9,7 @@
 
 namespace printing {
 
-int ConvertUnit(double value, int old_unit, int new_unit) {
+int ConvertUnit(float value, int old_unit, int new_unit) {
   DCHECK_GT(new_unit, 0);
   DCHECK_GT(old_unit, 0);
   // With integer arithmetic, to divide a value with correct rounding, you need
@@ -22,22 +22,10 @@ int ConvertUnit(double value, int old_unit, int new_unit) {
   }
 }
 
-double ConvertUnitDouble(double value, double old_unit, double new_unit) {
+float ConvertUnitFloat(float value, float old_unit, float new_unit) {
   DCHECK_GT(new_unit, 0);
   DCHECK_GT(old_unit, 0);
   return value * new_unit / old_unit;
-}
-
-int ConvertPixelsToPoint(int pixels) {
-  return ConvertUnit(pixels, kPixelsPerInch, kPointsPerInch);
-}
-
-double ConvertPixelsToPointDouble(double pixels) {
-  return ConvertUnitDouble(pixels, kPixelsPerInch, kPointsPerInch);
-}
-
-double ConvertPointsToPixelDouble(double points) {
-  return ConvertUnitDouble(points, kPointsPerInch, kPixelsPerInch);
 }
 
 }  // namespace printing

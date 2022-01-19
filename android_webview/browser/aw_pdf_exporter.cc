@@ -86,7 +86,7 @@ void AwPdfExporter::ExportToPdf(JNIEnv* env,
 namespace {
 // Converts from 1/1000 of inches to device units using DPI.
 int MilsToDots(int val, int dpi) {
-  return static_cast<int>(printing::ConvertUnitDouble(val, 1000.0, dpi));
+  return static_cast<int>(printing::ConvertUnitFloat(val, 1000, dpi));
 }
 }  // namespace
 

@@ -27,7 +27,7 @@
 #include "ui/gfx/geometry/size_f.h"
 
 using printing::ConvertUnit;
-using printing::ConvertUnitDouble;
+using printing::ConvertUnitFloat;
 using printing::kPointsPerInch;
 
 namespace chrome_pdf {
@@ -395,8 +395,8 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
   FPDF_RenderPageBitmap(bitmap.get(), page_to_print, 0, 0, bitmap_size.width(),
                         bitmap_size.height(), /*rotate=*/0, FPDF_PRINTING);
 
-  double ratio_x = ConvertUnitDouble(bitmap_size.width(), dpi, kPointsPerInch);
-  double ratio_y = ConvertUnitDouble(bitmap_size.height(), dpi, kPointsPerInch);
+  float ratio_x = ConvertUnitFloat(bitmap_size.width(), dpi, kPointsPerInch);
+  float ratio_y = ConvertUnitFloat(bitmap_size.height(), dpi, kPointsPerInch);
 
   // Add the bitmap to an image object and add the image object to the output
   // page.

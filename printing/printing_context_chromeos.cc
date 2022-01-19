@@ -70,7 +70,7 @@ base::StringPiece GetCollateString(bool collate) {
 // Given an integral `value` expressed in PWG units (1/100 mm), returns
 // the same value expressed in device units.
 int PwgUnitsToDeviceUnits(int value, float micrometers_per_device_unit) {
-  return ConvertUnitDouble(value, micrometers_per_device_unit, 10);
+  return ConvertUnitFloat(value, micrometers_per_device_unit, 10);
 }
 
 // Given a `media_size`, the specification of the media's `margins`, and
