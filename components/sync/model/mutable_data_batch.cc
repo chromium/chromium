@@ -4,7 +4,7 @@
 
 #include "components/sync/model/mutable_data_batch.h"
 #include "base/check.h"
-#include "components/sync/engine/entity_data.h"
+#include "components/sync/protocol/entity_data.h"
 
 namespace syncer {
 

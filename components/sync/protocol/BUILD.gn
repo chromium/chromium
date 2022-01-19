@@ -17,6 +17,8 @@ proto_library("protocol") {
 # together with the "protocol" target and simplify things.
 static_library("util") {
   sources = [
+    "entity_data.cc",
+    "entity_data.h",
     "proto_enum_conversions.cc",
     "proto_enum_conversions.h",
     "proto_memory_estimations.cc",

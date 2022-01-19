@@ -7,7 +7,6 @@ include_rules = [
   "+components/sync/base",
   "+components/sync/invalidations",
   "+components/sync/model",
-  "+components/sync/engine/entity_data.h",
   "+components/sync/protocol",
   "+components/sync/test",
   "+components/version_info",

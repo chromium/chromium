@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_ENTITY_DATA_H_
-#define COMPONENTS_SYNC_ENGINE_ENTITY_DATA_H_
+#ifndef COMPONENTS_SYNC_PROTOCOL_ENTITY_DATA_H_
+#define COMPONENTS_SYNC_PROTOCOL_ENTITY_DATA_H_
 
 #include <iosfwd>
 #include <memory>
@@ -12,11 +12,6 @@
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-
-// TODO(crbug.com/947443): Code outside components/sync depends on this file
-// to implement new datatypes, so components/sync/engine can't be hidden while
-// this file lives there. Consider moving to components/sync/protocol or
-// elsewhere.
 
 namespace base {
 class DictionaryValue;
@@ -106,4 +101,4 @@ void PrintTo(const EntityData& entity_data, std::ostream* os);
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_ENTITY_DATA_H_
+#endif  // COMPONENTS_SYNC_PROTOCOL_ENTITY_DATA_H_

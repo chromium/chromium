@@ -54,8 +54,6 @@ static_library("engine") {
     "engine_components_factory.h",
     "engine_components_factory_impl.cc",
     "engine_components_factory_impl.h",
-    "entity_data.cc",
-    "entity_data.h",
     "events/commit_request_event.cc",
     "events/commit_request_event.h",
     "events/commit_response_event.cc",

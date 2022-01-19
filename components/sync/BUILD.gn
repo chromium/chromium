@@ -163,7 +163,6 @@ source_set("unit_tests") {
     "engine/cycle/status_controller_unittest.cc",
     "engine/cycle/sync_cycle_snapshot_unittest.cc",
     "engine/debug_info_event_listener_unittest.cc",
-    "engine/entity_data_unittest.cc",
     "engine/events/protocol_event_buffer_unittest.cc",
     "engine/get_updates_processor_unittest.cc",
     "engine/loopback_server/loopback_server_unittest.cc",
@@ -203,6 +202,7 @@ source_set("unit_tests") {
     "nigori/nigori_storage_impl_unittest.cc",
     "nigori/nigori_sync_bridge_impl_unittest.cc",
     "nigori/nigori_unittest.cc",
+    "protocol/entity_data_unittest.cc",
     "protocol/proto_enum_conversions_unittest.cc",
     "protocol/proto_value_conversions_unittest.cc",
   ]
