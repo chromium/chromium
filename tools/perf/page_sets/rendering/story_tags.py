@@ -29,8 +29,6 @@ IMAGE_DECODING = Tag(
                        'rasterization) to compare YUV and RGB'))
 KEY_DESKTOP_MOVE = Tag(
     'key_desktop_move', 'Key desktop move stories')
-KEY_HIT_TEST = Tag(
-    'key_hit_test', 'Key hit test stories')
 KEY_SILK = Tag(
     'key_silk', 'Key silk stories')
 KEY_NOOP = Tag(
@@ -45,8 +43,6 @@ MOTIONMARK_RAMP = Tag('motionmark_ramp',
                       'Motionmark benchmark stories (ramped complexity)')
 PATHOLOGICAL_MOBILE_SITES = Tag(
     'pathological_mobile_sites', 'Pathological mobile sites')
-POLYMER = Tag(
-    'polymer', 'Polymer stories')
 REPAINT_DESKTOP = Tag(
     'repaint_desktop', 'Repaint desktop stories')
 # Representative story_tags are the cluster representatives of benchamrks

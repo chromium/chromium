@@ -2264,10 +2264,6 @@
         "name": "rendering.mobile/coordinated_animation"
     },
     {
-        "duration": "5.0",
-        "name": "rendering.mobile/core_scroll_header_panel"
-    },
-    {
         "duration": "23.0",
         "name": "rendering.mobile/crafty_mind"
     },
@@ -3156,42 +3152,6 @@
         "name": "rendering.mobile/overlay_background_color_css_transitions_page"
     },
     {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_button"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_calculator"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_calculator_hit_test"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_checkbox"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_fab"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_icon_button"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_shadow"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_tabs"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/paper_toggle_button"
-    },
-    {
         "duration": "20.0",
         "name": "rendering.mobile/parallax_effect"
     },
@@ -3214,10 +3174,6 @@
     {
         "duration": "12.0",
         "name": "rendering.mobile/pinterest_mobile_2018"
-    },
-    {
-        "duration": "5.0",
-        "name": "rendering.mobile/polymer_topeka"
     },
     {
         "duration": "23.0",
@@ -3304,10 +3260,6 @@
         "name": "rendering.mobile/slashdot_mobile_2018"
     },
     {
-        "duration": "92.0",
-        "name": "rendering.mobile/slide_drawer"
-    },
-    {
         "duration": "25.0",
         "name": "rendering.mobile/small_texture_uploads"
     },
@@ -3332,20 +3284,12 @@
         "name": "rendering.mobile/sticky_using_webkit"
     },
     {
-        "duration": "23.0",
-        "name": "rendering.mobile/stress_hidey_bars"
-    },
-    {
         "duration": "24.0",
         "name": "rendering.mobile/stroke_shapes"
     },
     {
         "duration": "33.0",
         "name": "rendering.mobile/svg_icon_raster"
-    },
-    {
-        "duration": "13.0",
-        "name": "rendering.mobile/swipe_action"
     },
     {
         "duration": "16.0",
@@ -3506,10 +3450,6 @@
     {
         "duration": "23.0",
         "name": "rendering.mobile/toBlob_small_canvas_in_worker.html"
-    },
-    {
-        "duration": "21.0",
-        "name": "rendering.mobile/toggle_drawer"
     },
     {
         "duration": "19.0",

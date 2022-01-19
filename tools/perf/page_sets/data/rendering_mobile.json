@@ -129,9 +129,6 @@
         "coordinated_animation": {
             "DEFAULT": "rendering_mobile_020.wprgo"
         },
-        "core_scroll_header_panel": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
         "crafty_mind": {
             "DEFAULT": "rendering_mobile_004.wprgo"
         },
@@ -489,30 +486,6 @@
         "nytimes_scroll_2018": {
             "DEFAULT": "rendering_mobile_016.wprgo"
         },
-        "paper_button": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_calculator": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_checkbox": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_fab": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_icon_button": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_shadow": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_tabs": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_toggle_button": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
         "parallax_effect": {
             "DEFAULT": "rendering_mobile_020.wprgo"
         },
@@ -533,9 +506,6 @@
         },
         "pinterest_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "polymer_topeka": {
-            "DEFAULT": "rendering_mobile_024.wprgo"
         },
         "recode_pathological_2018": {
             "DEFAULT": "rendering_mobile_025.wprgo"
