@@ -78,8 +78,6 @@ no_check_targets = [
   "//headless:headless_shared_sources",  # 4 errors
   "//headless:headless_shell_browser_lib",  # 10 errors
   "//headless:headless_shell_lib",  # 10 errors
-  "//headless:headless_unittests",  # 6 errors
-  "//headless:headless_unittests__exec",
 
   "//third_party/libwebp:*",  # 7 errors, https://crbug.com/800762
 
