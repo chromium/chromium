@@ -2594,28 +2594,28 @@ const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
 
 const FeatureEntry::FeatureParam kSnoopingProtectionPrecision[] = {
     {"filter_config_case", "2"},
-    {"count", "2"},
+    {"count", "3"},
     {"threshold", "40"},
     {"initial_state", "false"}};
 
-const FeatureEntry::FeatureParam kSnoopingProtectionBalance[] = {
+const FeatureEntry::FeatureParam kSnoopingProtectionConfidence[] = {
     {"filter_config_case", "2"},
-    {"count", "2"},
-    {"threshold", "0"},
+    {"count", "5"},
+    {"threshold", "40"},
     {"initial_state", "false"}};
 
 const FeatureEntry::FeatureParam kSnoopingProtectionRecall[] = {
     {"filter_config_case", "2"},
-    {"count", "2"},
+    {"count", "3"},
     {"threshold", "-40"},
     {"initial_state", "false"}};
 
 const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
-    {"Slow Precise", kSnoopingProtectionPrecision,
+    {"Precise", kSnoopingProtectionPrecision,
      base::size(kSnoopingProtectionPrecision), nullptr},
-    {"Slow Balanced", kSnoopingProtectionBalance,
-     base::size(kSnoopingProtectionBalance), nullptr},
-    {"Slow Comprehensive", kSnoopingProtectionRecall,
+    {"Slow Precise", kSnoopingProtectionConfidence,
+     base::size(kSnoopingProtectionConfidence), nullptr},
+    {"Comprehensive", kSnoopingProtectionRecall,
      base::size(kSnoopingProtectionRecall), nullptr}};
 
 const FeatureEntry::FeatureParam kQuickDim120s[] = {{"quick_dim_ms", "120000"}};
