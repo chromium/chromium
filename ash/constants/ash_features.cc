@@ -462,6 +462,10 @@ const base::Feature kEcheSWAResizing{"EcheSWAResizing",
 const base::Feature kEcheSWADebugMode{"EcheSWADebugMode",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Eche SWA to run in the background.
+const base::Feature kEcheSWAInBackground{"EcheSWAInBackground",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.
@@ -1505,6 +1509,10 @@ bool IsEcheSWAResizingEnabled() {
 
 bool IsEcheSWADebugModeEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWADebugMode);
+}
+
+bool IsEcheSWAInBackgroundEnabled() {
+  return base::FeatureList::IsEnabled(kEcheSWAInBackground);
 }
 
 bool IsESimPolicyEnabled() {

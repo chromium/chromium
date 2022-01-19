@@ -4422,6 +4422,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"eche-swa-debug-mode", flag_descriptions::kEcheSWADebugModeName,
      flag_descriptions::kEcheSWADebugModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEcheSWADebugMode)},
+    {"eche-swa-in-background", flag_descriptions::kEcheSWAInBackgroundName,
+     flag_descriptions::kEcheSWAInBackgroundDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEcheSWAInBackground)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
