@@ -211,8 +211,7 @@ const RequestPriority HttpProxyConnectJob::kH2QuicTunnelPriority =
 
 LoadState HttpProxyConnectJob::GetLoadState() const {
   switch (next_state_) {
-    case STATE_TCP_CONNECT_COMPLETE:
-    case STATE_SSL_CONNECT_COMPLETE:
+    case STATE_TRANSPORT_CONNECT_COMPLETE:
       return nested_connect_job_->GetLoadState();
     case STATE_HTTP_PROXY_CONNECT:
     case STATE_HTTP_PROXY_CONNECT_COMPLETE:
@@ -224,10 +223,10 @@ LoadState HttpProxyConnectJob::GetLoadState() const {
     case STATE_RESTART_WITH_AUTH:
     case STATE_RESTART_WITH_AUTH_COMPLETE:
       return LOAD_STATE_ESTABLISHING_PROXY_TUNNEL;
-    // These states shouldn't be possible to be called in.
-    case STATE_TCP_CONNECT:
-    case STATE_SSL_CONNECT:
-
+    // This state shouldn't be possible to be called in.
+    case STATE_TRANSPORT_CONNECT:
+      NOTREACHED();
+      [[fallthrough]];
     case STATE_BEGIN_CONNECT:
     case STATE_NONE:
       // May be possible for this method to be called after an error, shouldn't
@@ -263,8 +262,7 @@ scoped_refptr<SSLCertRequestInfo> HttpProxyConnectJob::GetCertRequestInfo() {
 
 void HttpProxyConnectJob::OnConnectJobComplete(int result, ConnectJob* job) {
   DCHECK_EQ(nested_connect_job_.get(), job);
-  DCHECK(next_state_ == STATE_TCP_CONNECT_COMPLETE ||
-         next_state_ == STATE_SSL_CONNECT_COMPLETE);
+  DCHECK_EQ(next_state_, STATE_TRANSPORT_CONNECT_COMPLETE);
   OnIOComplete(result);
 }
 
@@ -326,10 +324,7 @@ void HttpProxyConnectJob::UpdateFieldTrialParametersForTesting() {
 int HttpProxyConnectJob::ConnectInternal() {
   DCHECK_EQ(next_state_, STATE_NONE);
   next_state_ = STATE_BEGIN_CONNECT;
-  int result = DoLoop(OK);
-  if (result != ERR_IO_PENDING)
-    HandleConnectResult(result);
-  return result;
+  return DoLoop(OK);
 }
 
 ProxyServer::Scheme HttpProxyConnectJob::GetProxyServerScheme() const {
@@ -345,8 +340,6 @@ ProxyServer::Scheme HttpProxyConnectJob::GetProxyServerScheme() const {
 void HttpProxyConnectJob::OnIOComplete(int result) {
   int rv = DoLoop(result);
   if (rv != ERR_IO_PENDING) {
-    HandleConnectResult(rv);
-
     // May delete |this|.
     NotifyDelegateOfCompletion(rv);
   }
@@ -375,19 +368,12 @@ int HttpProxyConnectJob::DoLoop(int result) {
         DCHECK_EQ(OK, rv);
         rv = DoBeginConnect();
         break;
-      case STATE_TCP_CONNECT:
+      case STATE_TRANSPORT_CONNECT:
         DCHECK_EQ(OK, rv);
         rv = DoTransportConnect();
         break;
-      case STATE_TCP_CONNECT_COMPLETE:
+      case STATE_TRANSPORT_CONNECT_COMPLETE:
         rv = DoTransportConnectComplete(rv);
-        break;
-      case STATE_SSL_CONNECT:
-        DCHECK_EQ(OK, rv);
-        rv = DoSSLConnect();
-        break;
-      case STATE_SSL_CONNECT_COMPLETE:
-        rv = DoSSLConnectComplete(rv);
         break;
       case STATE_HTTP_PROXY_CONNECT:
         DCHECK_EQ(OK, rv);
@@ -444,10 +430,8 @@ int HttpProxyConnectJob::DoBeginConnect() {
       has_established_connection_ = true;
       break;
     case ProxyServer::SCHEME_HTTP:
-      next_state_ = STATE_TCP_CONNECT;
-      break;
     case ProxyServer::SCHEME_HTTPS:
-      next_state_ = STATE_SSL_CONNECT;
+      next_state_ = STATE_TRANSPORT_CONNECT;
       break;
     default:
       NOTREACHED();
@@ -456,79 +440,74 @@ int HttpProxyConnectJob::DoBeginConnect() {
 }
 
 int HttpProxyConnectJob::DoTransportConnect() {
-  next_state_ = STATE_TCP_CONNECT_COMPLETE;
-  nested_connect_job_ = TransportConnectJob::CreateTransportConnectJob(
-      params_->transport_params(), priority(), socket_tag(),
-      common_connect_job_params(), this, &net_log());
+  ProxyServer::Scheme scheme = GetProxyServerScheme();
+  if (scheme == ProxyServer::SCHEME_HTTP) {
+    nested_connect_job_ = TransportConnectJob::CreateTransportConnectJob(
+        params_->transport_params(), priority(), socket_tag(),
+        common_connect_job_params(), this, &net_log());
+  } else {
+    DCHECK_EQ(scheme, ProxyServer::SCHEME_HTTPS);
+    DCHECK(params_->ssl_params());
+    // Skip making a new connection if we have an existing HTTP/2 session.
+    if (params_->tunnel() &&
+        common_connect_job_params()->spdy_session_pool->FindAvailableSession(
+            CreateSpdySessionKey(), /*enable_ip_based_pooling=*/false,
+            /*is_websocket=*/false, net_log())) {
+      using_spdy_ = true;
+      next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
+      return OK;
+    }
+
+    nested_connect_job_ = std::make_unique<SSLConnectJob>(
+        priority(), socket_tag(), common_connect_job_params(),
+        params_->ssl_params(), this, &net_log());
+  }
+
+  next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   return nested_connect_job_->Connect();
 }
 
 int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
   resolve_error_info_ = nested_connect_job_->GetResolveErrorInfo();
+  ProxyServer::Scheme scheme = GetProxyServerScheme();
   if (result != OK) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Insecure.Error",
-                               base::TimeTicks::Now() - connect_start_time_);
-    return ERR_PROXY_CONNECTION_FAILED;
-  }
+    base::UmaHistogramMediumTimes(
+        scheme == ProxyServer::SCHEME_HTTP
+            ? "Net.HttpProxy.ConnectLatency.Insecure.Error"
+            : "Net.HttpProxy.ConnectLatency.Secure.Error",
+        base::TimeTicks::Now() - connect_start_time_);
 
-  has_established_connection_ = true;
-
-  next_state_ = STATE_HTTP_PROXY_CONNECT;
-  return result;
-}
-
-int HttpProxyConnectJob::DoSSLConnect() {
-  DCHECK(params_->ssl_params());
-  if (params_->tunnel()) {
-    if (common_connect_job_params()->spdy_session_pool->FindAvailableSession(
-            CreateSpdySessionKey(), /* enable_ip_based_pooling = */ false,
-            /* is_websocket = */ false, net_log())) {
-      using_spdy_ = true;
-      next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
-      return OK;
+    if (IsCertificateError(result)) {
+      DCHECK_EQ(ProxyServer::SCHEME_HTTPS, scheme);
+      // TODO(rch): allow the user to deal with proxy cert errors in the
+      // same way as server cert errors.
+      return ERR_PROXY_CERTIFICATE_INVALID;
     }
-  }
-  next_state_ = STATE_SSL_CONNECT_COMPLETE;
-  nested_connect_job_ = std::make_unique<SSLConnectJob>(
-      priority(), socket_tag(), common_connect_job_params(),
-      params_->ssl_params(), this, &net_log());
-  return nested_connect_job_->Connect();
-}
 
-int HttpProxyConnectJob::DoSSLConnectComplete(int result) {
-  resolve_error_info_ = nested_connect_job_->GetResolveErrorInfo();
-  if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Secure.Error",
-                               base::TimeTicks::Now() - connect_start_time_);
+    if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+      DCHECK_EQ(ProxyServer::SCHEME_HTTPS, scheme);
+      ssl_cert_request_info_ = nested_connect_job_->GetCertRequestInfo();
+      DCHECK(ssl_cert_request_info_);
+      ssl_cert_request_info_->is_proxy = true;
+      return result;
+    }
 
-    ssl_cert_request_info_ = nested_connect_job_->GetCertRequestInfo();
-    DCHECK(ssl_cert_request_info_);
-    ssl_cert_request_info_->is_proxy = true;
-    return result;
-  }
-
-  if (IsCertificateError(result)) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Secure.Error",
-                               base::TimeTicks::Now() - connect_start_time_);
-    // TODO(rch): allow the user to deal with proxy cert errors in the
-    // same way as server cert errors.
-    return ERR_PROXY_CERTIFICATE_INVALID;
-  }
-  if (result < 0) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Secure.Error",
-                               base::TimeTicks::Now() - connect_start_time_);
     return ERR_PROXY_CONNECTION_FAILED;
   }
+
+  base::UmaHistogramMediumTimes(
+      scheme == ProxyServer::SCHEME_HTTP
+          ? "Net.HttpProxy.ConnectLatency.Insecure.Success"
+          : "Net.HttpProxy.ConnectLatency.Secure.Success",
+      base::TimeTicks::Now() - connect_start_time_);
 
   has_established_connection_ = true;
 
   negotiated_protocol_ = nested_connect_job_->socket()->GetNegotiatedProtocol();
   using_spdy_ = negotiated_protocol_ == kProtoHTTP2;
-
-  // Reset the timer to just the length of time allowed for HttpProxy handshake
-  // so that a fast SSL connection plus a slow HttpProxy failure doesn't take
-  // longer to timeout than it should.
-  ResetTimer(kHttpProxyConnectJobTunnelTimeout);
+  if (scheme != ProxyServer::SCHEME_HTTPS) {
+    DCHECK_EQ(negotiated_protocol_, kProtoUnknown);
+  }
 
   // TODO(rch): If we ever decide to implement a "trusted" SPDY proxy
   // (one that we speak SPDY over SSL to, but to which we send HTTPS
@@ -551,14 +530,6 @@ int HttpProxyConnectJob::DoHttpProxyConnect() {
   // so that a fast TCP connection plus a slow HttpProxy failure doesn't take
   // longer to timeout than it should.
   ResetTimer(kHttpProxyConnectJobTunnelTimeout);
-
-  if (params_->transport_params()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Insecure.Success",
-                               base::TimeTicks::Now() - connect_start_time_);
-  } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Secure.Success",
-                               base::TimeTicks::Now() - connect_start_time_);
-  }
 
   // Add a HttpProxy connection on top of the tcp socket.
   transport_socket_ = std::make_unique<HttpProxyClientSocket>(
@@ -586,10 +557,14 @@ int HttpProxyConnectJob::DoHttpProxyConnectComplete(int result) {
 
   // In TLS 1.2 with False Start or TLS 1.3, alerts from the server rejecting
   // our client certificate are received at the first Read(), not Connect(), so
-  // the error mapping in DoSSLConnectComplete does not apply. Repeat the
+  // the error mapping in DoTransportConnectComplete does not apply. Repeat the
   // mapping here.
   if (result == ERR_BAD_SSL_CLIENT_AUTH_CERT)
     return ERR_PROXY_CONNECTION_FAILED;
+
+  if (result == OK) {
+    SetSocket(std::move(transport_socket_), /*dns_aliases=*/absl::nullopt);
+  }
 
   return result;
 }
@@ -667,8 +642,8 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   DCHECK(!common_connect_job_params()->quic_supported_versions->empty());
 
   // Reset the timer to just the length of time allowed for HttpProxy handshake
-  // so that a fast TCP connection plus a slow HttpProxy failure doesn't take
-  // longer to timeout than it should.
+  // so that a fast QUIC connection plus a slow tunnel setup doesn't take longer
+  // to timeout than it should.
   ResetTimer(kHttpProxyConnectJobTunnelTimeout);
 
   next_state_ = STATE_QUIC_PROXY_CREATE_STREAM;
@@ -801,19 +776,13 @@ void HttpProxyConnectJob::ChangePriorityInternal(RequestPriority priority) {
 }
 
 void HttpProxyConnectJob::OnTimedOutInternal() {
-  if (next_state_ == STATE_TCP_CONNECT_COMPLETE) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Insecure.TimedOut",
-                               base::TimeTicks::Now() - connect_start_time_);
-  } else if (next_state_ == STATE_SSL_CONNECT_COMPLETE) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Secure.TimedOut",
-                               base::TimeTicks::Now() - connect_start_time_);
+  if (next_state_ == STATE_TRANSPORT_CONNECT_COMPLETE) {
+    base::UmaHistogramMediumTimes(
+        GetProxyServerScheme() == ProxyServer::SCHEME_HTTP
+            ? "Net.HttpProxy.ConnectLatency.Insecure.TimedOut"
+            : "Net.HttpProxy.ConnectLatency.Secure.TimedOut",
+        base::TimeTicks::Now() - connect_start_time_);
   }
-}
-
-int HttpProxyConnectJob::HandleConnectResult(int result) {
-  if (result == OK)
-    SetSocket(std::move(transport_socket_), absl::nullopt /* dns_aliases */);
-  return result;
 }
 
 void HttpProxyConnectJob::OnAuthChallenge() {
