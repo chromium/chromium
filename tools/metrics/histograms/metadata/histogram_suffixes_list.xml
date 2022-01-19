@@ -4939,30 +4939,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ContentSuggestions.Feed.LoadStepLatency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FeedNetworkRequestType" separator=".">
-  <suffix name="FeedQuery" label="Requests to fetch new feed content"/>
-  <suffix name="FollowWebFeed" label="Requests to follow a web feed"/>
-  <suffix name="ListFollowedWebFeeds"
-      label="Requests to list followed web feeds"/>
-  <suffix name="ListRecommendedWebFeeds"
-      label="Requests to list recommended web feeds"/>
-  <suffix name="NextPage" label="Requests to fetch the next page of the feed"/>
-  <suffix name="QueryBackgroundFeed"
-      label="Background requests to DiscoFeed to fetch new feed content"/>
-  <suffix name="QueryInteractiveFeed"
-      label="Requests to DiscoFeed to fetch new feed content"/>
-  <suffix name="QueryNextPage"
-      label="Requests to DiscoFeed to fetch the next page of content"/>
-  <suffix name="UnfollowWebFeed" label="Requests to unfollow a web feed"/>
-  <suffix name="UploadActions" label="Requests to upload user action data"/>
-  <suffix name="WebFeedListContents"
-      label="Request to fetch the contents of the web feed"/>
-  <affected-histogram
-      name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB"/>
-  <affected-histogram name="ContentSuggestions.Feed.Network.Duration"/>
-  <affected-histogram name="ContentSuggestions.Feed.Network.ResponseStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FeedOrHostOlder" separator=".">
   <suffix name="FeedIsOlder" label=""/>
   <suffix name="HostIsOlder" label=""/>

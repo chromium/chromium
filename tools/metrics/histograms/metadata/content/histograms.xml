@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="FeedNetworkRequestType">
+  <variant name=".FeedQuery" summary="FeedQuery"/>
+  <variant name=".FollowWebFeed" summary="FollowWebFeed"/>
+  <variant name=".ListFollowedWebFeeds" summary="ListFollowedWebFeeds"/>
+  <variant name=".ListRecommendedWebFeeds" summary="ListRecommendedWebFeeds"/>
+  <variant name=".NextPage" summary="NextPage"/>
+  <variant name=".QueryBackgroundFeed" summary="QueryBackgroundFeed"/>
+  <variant name=".QueryInteractiveFeed" summary="QueryInteractiveFeed"/>
+  <variant name=".QueryNextPage" summary="QueryNextPage"/>
+  <variant name=".UnfollowWebFeed" summary="UnfollowWebFeed"/>
+  <variant name=".UploadActions" summary="UploadActions"/>
+  <variant name=".WebFeedListContents" summary="WebFeedListContents"/>
+</variants>
+
 <histogram name="ContentCapture.CaptureContentDelayTime" units="ms"
     expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
@@ -640,43 +654,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB"
+<histogram name="ContentSuggestions.Feed.LoadTime" units="ms"
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The time it takes for the Feed to load entries from the storage.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB{NetworkRequestType}"
     units="KB" expires_after="2022-07-03">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Android: The wire size (potentially compressed) of a Feed network response
-    received by the Feed's networking host. Recorded when a successful response
-    is received.
+    Android: The wire size (potentially compressed) of a {NetworkRequestType}
+    network response received by the Feed's networking host. Recorded when a
+    successful response is received.
   </summary>
+  <token key="NetworkRequestType" variants="FeedNetworkRequestType">
+    <variant name="" summary="Feed"/>
+  </token>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Network.Duration" units="ms"
-    expires_after="2022-07-11">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The duration of a network request made by the Feed component. Recorded when
-    each network request is completed. This includes the time it takes to get an
-    auth token for signed in users.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Network.Duration.{NetworkEvent}"
-    units="ms" expires_after="2022-03-01">
+<histogram name="ContentSuggestions.Feed.Network.Duration{NetworkEvent}"
+    units="ms" expires_after="2022-07-03">
   <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>The amount of time a {NetworkEvent} network event took.</summary>
-  <token key="NetworkEvent">
-    <variant name="ActionUploadFailure"/>
-    <variant name="ActionUploadSuccess"/>
-    <variant name="ArticlesFetchFailure"/>
-    <variant name="ArticlesFetchSuccess"/>
-    <variant name="MoreArticlesFetchFailure"/>
-    <variant name="MoreArticlesFetchSuccess"/>
+  <token key="NetworkEvent" variants="FeedNetworkRequestType">
+    <variant name="" summary="Feed component"/>
+    <variant name=".ActionUploadFailure" summary="ActionUploadFailure"/>
+    <variant name=".ActionUploadSuccess" summary="ActionUploadSuccess"/>
+    <variant name=".ArticlesFetchFailure" summary="ArticlesFetchFailure"/>
+    <variant name=".ArticlesFetchSuccess" summary="ArticlesFetchSuccess"/>
+    <variant name=".MoreArticlesFetchFailure"
+        summary="MoreArticlesFetchFailure"/>
+    <variant name=".MoreArticlesFetchSuccess"
+        summary="MoreArticlesFetchSuccess"/>
   </token>
 </histogram>
 
@@ -714,13 +736,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Network.ResponseStatus"
+<histogram name="ContentSuggestions.Feed.Network.ResponseStatus{Type}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-07-03">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     The HTTP response status for a network request made by the Feed component.
+  </summary>
+  <token key="Type" variants="FeedNetworkRequestType"/>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.Network.TokenDuration" units="ms"
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The amount of time it takes to get an access token for signed in users.
   </summary>
 </histogram>
 
