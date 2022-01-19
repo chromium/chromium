@@ -52,7 +52,7 @@ bool IsURLHandledByNetworkStack(const GURL& url) {
   if (blink::IsRendererDebugURL(url))
     return false;
 
-  // For you information, even though a "data:" url doesn't generate actual
+  // For your information, even though a "data:" url doesn't generate actual
   // network requests, it is handled by the network stack and so must return
   // true. The reason is that a few "data:" urls can't be handled locally. For
   // instance:
