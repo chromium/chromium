@@ -258,3 +258,66 @@ class CheckStableMojomCompatibilityTest(unittest.TestCase):
                [Stable] struct T { foo.S s; int32 x; };
                """)
     ])
+
+  def testWithPartialImport(self):
+    """The compatibility checking tool correctly parses imports with partial
+    paths."""
+    self.assertBackwardCompatible([
+        UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
+        Change('foo/bar.mojom',
+               old="""\
+               module bar;
+               import "foo/foo.mojom";
+               [Stable] struct T { foo.S s; };
+               """,
+               new="""\
+               module bar;
+               import "foo.mojom";
+               [Stable] struct T { foo.S s; };
+               """)
+    ])
+
+    self.assertBackwardCompatible([
+        UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
+        Change('foo/bar.mojom',
+               old="""\
+               module bar;
+               import "foo.mojom";
+               [Stable] struct T { foo.S s; };
+               """,
+               new="""\
+               module bar;
+               import "foo/foo.mojom";
+               [Stable] struct T { foo.S s; };
+               """)
+    ])
+
+    self.assertNotBackwardCompatible([
+        UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
+        Change('bar/bar.mojom',
+               old="""\
+               module bar;
+               import "foo/foo.mojom";
+               [Stable] struct T { foo.S s; };
+               """,
+               new="""\
+               module bar;
+               import "foo.mojom";
+               [Stable] struct T { foo.S s; };
+               """)
+    ])
+
+    self.assertNotBackwardCompatible([
+        UnchangedFile('foo/foo.mojom', 'module foo; [Stable] struct S {};'),
+        Change('bar/bar.mojom',
+               old="""\
+               module bar;
+               import "foo.mojom";
+               [Stable] struct T { foo.S s; };
+               """,
+               new="""\
+               module bar;
+               import "foo/foo.mojom";
+               [Stable] struct T { foo.S s; };
+               """)
+    ])
