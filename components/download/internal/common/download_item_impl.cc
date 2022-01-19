@@ -686,7 +686,9 @@ void DownloadItemImpl::UpdateResumptionInfo(bool user_resume) {
     bytes_wasted_ = 0;
   }
 
-  auto_resume_count_ = user_resume ? 0 : ++auto_resume_count_;
+  ++auto_resume_count_;
+  if (user_resume)
+    auto_resume_count_ = 0;
   download_schedule_ = absl::nullopt;
   RecordDownloadLaterEvent(DownloadLaterEvent::kScheduleRemoved);
 }
