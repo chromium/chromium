@@ -98,8 +98,7 @@ void EnhancedNetworkTtsImpl::GetAudioData(mojom::TtsRequestPtr request,
   std::vector<uint16_t> text_breaks =
       FindTextBreaks(utterance_u16string, char_limit_per_request_);
   uint16_t text_piece_start_index = 0;
-  const uint16_t text_breaks_size = text_breaks.size();
-  for (uint16_t i = 0; i < text_breaks_size; i++) {
+  for (size_t i = 0; i < text_breaks.size(); i++) {
     uint16_t text_piece_end_index = text_breaks[i];
     auto size = text_piece_end_index - text_piece_start_index + 1;
     const std::string text_piece = base::UTF16ToUTF8(
@@ -108,7 +107,7 @@ void EnhancedNetworkTtsImpl::GetAudioData(mojom::TtsRequestPtr request,
     mojom::TtsRequestPtr new_tts_request = mojom::TtsRequest::New(
         text_piece, request->rate, request->voice, request->lang);
     std::unique_ptr<network::SimpleURLLoader> url_loader = MakeRequestLoader();
-    const bool last_request = i == text_breaks_size - 1;
+    const bool last_request = i == text_breaks.size() - 1;
     url_loader->AttachStringForUpload(
         FormatJsonRequest(std::move(new_tts_request)),
         kNetworkRequestUploadType);
