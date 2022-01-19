@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
@@ -438,32 +437,6 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
           dest_pass->transform_to_root_target, dest_root_target_clip_rect);
 
   surface_damage_rect_list_->push_back(damage_rect_in_root_target_space);
-
-  // TODO(crbug.com/1257765): CHECK is temporary and is for validating the
-  // fixes for integer overflows on surface damage rects.
-  // Remove this CHECK before the next branch M99 scheduled on 01/20/2022.
-  if (!damage_rect_in_root_target_space.size().GetCheckedArea().IsValid()) {
-    const gfx::Rect default_damage_rect0 = default_damage_rect;
-    const gfx::Rect damage_rect0 = damage_rect;
-    const gfx::Rect damage_rect_in_root_target_space0 =
-        damage_rect_in_root_target_space;
-
-    const gfx::Transform dest_pass_transform_to_root_target0 =
-        dest_pass->transform_to_root_target;
-    const gfx::Transform parent_target_transform0 = parent_target_transform;
-
-    const gfx::Rect dest_root_target_clip_rect0 =
-        dest_root_target_clip_rect.value_or(gfx::Rect());
-
-    base::debug::Alias(&default_damage_rect0);
-    base::debug::Alias(&damage_rect0);
-    base::debug::Alias(&damage_rect_in_root_target_space0);
-    base::debug::Alias(&dest_pass_transform_to_root_target0);
-    base::debug::Alias(&parent_target_transform0);
-    base::debug::Alias(&dest_root_target_clip_rect0);
-
-    CHECK(false);
-  }
 }
 
 // This function returns the overlay candidate quad ptr which has an
