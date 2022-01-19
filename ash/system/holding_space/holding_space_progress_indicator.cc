@@ -13,8 +13,10 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_icon_animation.h"
 #include "ash/system/holding_space/holding_space_progress_ring_animation.h"
+#include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -156,7 +158,9 @@ class HoldingSpaceControllerProgressIndicator
  public:
   explicit HoldingSpaceControllerProgressIndicator(
       HoldingSpaceController* controller)
-      : HoldingSpaceProgressIndicator(/*animation_key=*/controller),
+      : HoldingSpaceProgressIndicator(
+            /*animation_registry=*/HoldingSpaceAnimationRegistry::GetInstance(),
+            /*animation_key=*/controller),
         controller_(controller) {
     controller_observation_.Observe(controller_);
     if (controller_->model())
@@ -252,7 +256,10 @@ class HoldingSpaceItemProgressIndicator : public HoldingSpaceProgressIndicator,
                                           public HoldingSpaceModelObserver {
  public:
   explicit HoldingSpaceItemProgressIndicator(const HoldingSpaceItem* item)
-      : HoldingSpaceProgressIndicator(/*animation_key=*/item), item_(item) {
+      : HoldingSpaceProgressIndicator(
+            /*animation_registry=*/HoldingSpaceAnimationRegistry::GetInstance(),
+            /*animation_key=*/item),
+        item_(item) {
     model_observation_.Observe(HoldingSpaceController::Get()->model());
   }
 
@@ -300,16 +307,17 @@ constexpr char HoldingSpaceProgressIndicator::kClassName[];
 constexpr float HoldingSpaceProgressIndicator::kProgressComplete;
 
 HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
+    ProgressIndicatorAnimationRegistry* animation_registry,
     const void* animation_key)
-    : animation_key_(animation_key) {
-  HoldingSpaceAnimationRegistry* animation_registry =
-      HoldingSpaceAnimationRegistry::GetInstance();
+    : animation_registry_(animation_registry), animation_key_(animation_key) {
+  if (!animation_registry_)
+    return;
 
   // Register to be notified of changes to the icon animation associated with
   // this progress indicator's `animation_key_`. Note that it is safe to use a
   // raw pointer here since `this` owns the subscription.
   icon_animation_changed_subscription_ =
-      animation_registry->AddProgressIconAnimationChangedCallbackForKey(
+      animation_registry_->AddProgressIconAnimationChangedCallbackForKey(
           animation_key_,
           base::BindRepeating(
               &HoldingSpaceProgressIndicator::OnProgressIconAnimationChanged,
@@ -318,7 +326,7 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
   // If an `icon_animation` is already registered, perform additional
   // initialization.
   HoldingSpaceProgressIconAnimation* icon_animation =
-      animation_registry->GetProgressIconAnimationForKey(animation_key_);
+      animation_registry_->GetProgressIconAnimationForKey(animation_key_);
   if (icon_animation)
     OnProgressIconAnimationChanged(icon_animation);
 
@@ -326,7 +334,7 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
   // this progress indicator's `animation_key_`. Note that it is safe to use a
   // raw pointer here since `this` owns the subscription.
   ring_animation_changed_subscription_ =
-      animation_registry->AddProgressRingAnimationChangedCallbackForKey(
+      animation_registry_->AddProgressRingAnimationChangedCallbackForKey(
           animation_key_,
           base::BindRepeating(
               &HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged,
@@ -335,7 +343,7 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
   // If `ring_animation` is already registered, perform additional
   // initialization.
   HoldingSpaceProgressRingAnimation* ring_animation =
-      animation_registry->GetProgressRingAnimationForKey(animation_key_);
+      animation_registry_->GetProgressRingAnimationForKey(animation_key_);
   if (ring_animation)
     OnProgressRingAnimationChanged(ring_animation);
 }
@@ -405,8 +413,9 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
     const ui::PaintContext& context) {
   // Look up the associated `ring_animation` (if one exists).
   HoldingSpaceProgressRingAnimation* ring_animation =
-      HoldingSpaceAnimationRegistry::GetInstance()
-          ->GetProgressRingAnimationForKey(animation_key_);
+      animation_registry_
+          ? animation_registry_->GetProgressRingAnimationForKey(animation_key_)
+          : nullptr;
 
   // Unless `this` is animating, nothing will paint if `progress_` is complete.
   if (progress_ == kProgressComplete && !ring_animation)
@@ -484,8 +493,9 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
 
   // Look up the associated `icon_animation` (if one exists).
   HoldingSpaceProgressIconAnimation* icon_animation =
-      HoldingSpaceAnimationRegistry::GetInstance()
-          ->GetProgressIconAnimationForKey(animation_key_);
+      animation_registry_
+          ? animation_registry_->GetProgressIconAnimationForKey(animation_key_)
+          : nullptr;
 
   float inner_ring_stroke_width = GetInnerRingStrokeWidth(layer());
 

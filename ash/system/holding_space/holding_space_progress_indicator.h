@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "base/callback_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_delegate.h"
@@ -21,6 +20,7 @@ class HoldingSpaceController;
 class HoldingSpaceItem;
 class HoldingSpaceProgressIconAnimation;
 class HoldingSpaceProgressRingAnimation;
+class ProgressIndicatorAnimationRegistry;
 
 // A class owning a `ui::Layer` which paints indication of progress.
 // NOTE: The owned `layer()` is not painted if progress == `1.f`.
@@ -75,10 +75,13 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
 
  protected:
   // Each progress indicator is associated with an `animation_key_` which is
-  // used to look up animations in the `HoldingSpaceAnimationRegistry`. When an
+  // used to look up animations in the provided `animation_registry`. When an
   // animation exists, it will be painted in lieu of the determinate progress
   // indication that would otherwise be painted for the cached `progress_`.
-  explicit HoldingSpaceProgressIndicator(const void* animation_key);
+  // NOTE: `animation_registry` may be `nullptr` if animations are not needed.
+  HoldingSpaceProgressIndicator(
+      ProgressIndicatorAnimationRegistry* animation_registry,
+      const void* animation_key);
 
   // Returns the calculated progress to paint to the owned `layer()`. This is
   // invoked during `UpdateVisualState()` just prior to painting.
@@ -94,30 +97,36 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
   void UpdateVisualState() override;
 
   // Invoked when the icon `animation` associated with this progress indicator's
-  // `animation_key_` has changed in the `HoldingSpaceAnimationRegistry`.
+  // `animation_key_` has changed in the `animation_registry_`.
   // NOTE: The specified `animation` may be `nullptr`.
   void OnProgressIconAnimationChanged(
       HoldingSpaceProgressIconAnimation* animation);
 
   // Invoked when the ring `animation` associated with this progress indicator's
-  // `animation_key_` has changed in the `HoldingSpaceAnimationRegistry`.
+  // `animation_key_` has changed in the `animation_registry_`.
   // NOTE: The specified `animation` may be `nullptr`.
   void OnProgressRingAnimationChanged(
       HoldingSpaceProgressRingAnimation* animation);
 
-  // The key for which to look up animations in the
-  // `HoldingSpaceAnimationRegistry`. When an animation exists, it will be
-  // painted in lieu of the determinate progress indication that would otherwise
-  // be painted for the cached `progress_`.
+  // The animation registry in which to look up animations for the associated
+  // `animation_key_`. When an animation exists, it will be painted in lieu of
+  // the determinate progress indication that would otherwise be painted for the
+  // cached `progress_`.
+  ProgressIndicatorAnimationRegistry* const animation_registry_;
+
+  // The key for which to look up animations in the `animation_registry_`.
+  // When an animation exists, it will be painted in lieu of the determinate
+  // progress indication that would otherwise be painted for the cached
+  // `progress_`.
   const void* const animation_key_;
 
   // A subscription to receive events when the icon animation associated with
   // this progress indicator's `animation_key_` has changed in the
-  // `HoldingSpaceAnimationRegistry`.
+  // `animation_registry_`.
   base::CallbackListSubscription icon_animation_changed_subscription_;
 
   // A subscription to receive events on updates to the icon animation owned by
-  // the `HoldingSpaceAnimationRegistry` which is associated with this progress
+  // the `animation_registry_` which is associated with this progress
   // indicator's `animation_key_`. On icon animation update, the progress
   // indicator will `InvalidateLayer()` to trigger paint of the next animation
   // frame.
@@ -125,11 +134,11 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
 
   // A subscription to receive events when the ring animation associated with
   // this progress indicator's `animation_key_` has changed in the
-  // `HoldingSpaceAnimationRegistry`.
+  // `animation_registry_`.
   base::CallbackListSubscription ring_animation_changed_subscription_;
 
   // A subscription to receive events on updates to the ring animation owned by
-  // the `HoldingSpaceAnimationRegistry` which is associated with this progress
+  // the `animation_registry_` which is associated with this progress
   // indicator's `animation_key_`. On ring animation update, the progress
   // indicator will `InvalidateLayer()` to trigger paint of the next animation
   // frame.

@@ -15,7 +15,8 @@ namespace {
 class TestHoldingSpaceProgressIndicator : public HoldingSpaceProgressIndicator {
  public:
   TestHoldingSpaceProgressIndicator()
-      : HoldingSpaceProgressIndicator(/*animation_key=*/this) {}
+      : HoldingSpaceProgressIndicator(/*animation_registry=*/nullptr,
+                                      /*animation_key=*/this) {}
 
   void SetProgress(const absl::optional<float>& progress) {
     progress_ = progress;

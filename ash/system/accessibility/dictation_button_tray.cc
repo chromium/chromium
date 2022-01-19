@@ -51,7 +51,9 @@ gfx::ImageSkia GetIconImage(bool enabled) {
 
 DictationProgressIndicator::DictationProgressIndicator(
     const DictationButtonTray* tray)
-    : HoldingSpaceProgressIndicator(/*animation_key=*/tray), tray_(tray) {}
+    : HoldingSpaceProgressIndicator(/*animation_registry=*/nullptr,
+                                    /*animation_key=*/tray),
+      tray_(tray) {}
 
 bool DictationProgressIndicator::IsVisible() {
   absl::optional<float> progress = CalculateProgress();

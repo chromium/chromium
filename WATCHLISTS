@@ -1126,6 +1126,7 @@
     'holding_space': {
       'filepath': 'ash/public/cpp/holding_space|'\
                   'ash/system/holding_space|'\
+                  'ash/system/progress_indicator|'\
                   'chrome/browser/lacros/.*holding_space|'\
                   'chrome/browser/ui/ash/holding_space|'\
                   'chrome/browser/ui/ash/thumbnail_loader|'\
