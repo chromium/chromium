@@ -309,12 +309,11 @@ base::Value ForeignSessionHandler::GetForeignSessions() {
     // Use a pref to keep track of sessions that were collapsed by the user.
     // To prevent the pref from accumulating stale sessions, clear it each time
     // and only add back sessions that are still current.
-    DictionaryPrefUpdateDeprecated pref_update(
-        Profile::FromWebUI(web_ui())->GetPrefs(),
-        prefs::kNtpCollapsedForeignSessions);
-    base::DictionaryValue* current_collapsed_sessions = pref_update.Get();
-    std::unique_ptr<base::DictionaryValue> collapsed_sessions(
-        current_collapsed_sessions->DeepCopy());
+    DictionaryPrefUpdate pref_update(Profile::FromWebUI(web_ui())->GetPrefs(),
+                                     prefs::kNtpCollapsedForeignSessions);
+    base::Value* current_collapsed_sessions = pref_update.Get();
+    std::unique_ptr<base::Value> collapsed_sessions(
+        current_collapsed_sessions->CreateDeepCopy());
     current_collapsed_sessions->DictClear();
 
     // Note: we don't own the SyncedSessions themselves.
@@ -450,10 +449,9 @@ void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
   // Store session tags for collapsed sessions in a preference so that the
   // collapsed state persists.
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  DictionaryPrefUpdateDeprecated update(prefs,
-                                        prefs::kNtpCollapsedForeignSessions);
+  DictionaryPrefUpdate update(prefs, prefs::kNtpCollapsedForeignSessions);
   if (is_collapsed)
-    update.Get()->SetBoolean(session_tag, true);
+    update.Get()->SetBoolKey(session_tag, true);
   else
     update.Get()->RemoveKey(session_tag);
 }
