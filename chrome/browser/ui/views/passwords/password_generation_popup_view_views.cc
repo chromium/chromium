@@ -71,9 +71,6 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // Construct a ColumnSet with one view on the left and another on the right.
-  static void BuildColumnSet(views::GridLayout* layout);
-
   raw_ptr<views::Label> suggestion_label_ = nullptr;
   raw_ptr<views::Label> password_label_ = nullptr;
   base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
@@ -82,12 +79,14 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
 void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
     base::WeakPtr<PasswordGenerationPopupController> controller) {
   controller_ = controller;
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  BuildColumnSet(layout);
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL)));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  suggestion_label_ = layout->AddView(std::make_unique<views::Label>(
+  suggestion_label_ = AddChildView(std::make_unique<views::Label>(
       controller_->SuggestedText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       controller_->state() ==
               PasswordGenerationPopupController::kOfferGeneration
@@ -95,9 +94,10 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
           : views::style::STYLE_SECONDARY));
 
   DCHECK(!password_label_);
-  password_label_ = layout->AddView(std::make_unique<views::Label>(
+  password_label_ = AddChildView(std::make_unique<views::Label>(
       controller_->password(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       STYLE_SECONDARY_MONOSPACED));
+  layout->SetFlexForView(password_label_, 1);
 }
 
 void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnMouseEntered(
@@ -141,22 +141,6 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnGestureEvent(
     default:
       return;
   }
-}
-
-// static
-void PasswordGenerationPopupViewViews::GeneratedPasswordBox::BuildColumnSet(
-    views::GridLayout* layout) {
-  views::ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                        0 /* resize_percent */,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(
-      0 /* resize_percent */,
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL));
-  column_set->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                        1.0 /* resize_percent */,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 }
 
 BEGIN_METADATA(PasswordGenerationPopupViewViews,
