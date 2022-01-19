@@ -10,6 +10,27 @@ package segmentation_platform.proto;
 import "components/segmentation_platform/internal/proto/aggregation.proto";
 import "components/segmentation_platform/internal/proto/types.proto";
 
+// The version is used to verify if the metadata provided by the server is
+// supported in current version of the code. Update the version number for any
+// new feature added to metadata proto, and add a log of the new changes in the
+// current version in this file.
+// Version 0 supports UMA features and aggregation in |features| field.
+// Version 1 supports UMA features and custom inputs in |input_features| field.
+enum CurrentVersion { METADATA_VERSION = 0; }
+
+// Version information for segmentation models.
+message VersionInfo {
+  // Minimum model metadata version that is supported. Some newer
+  // features/fields might not be available before this version. This field is
+  // set on the server and read by the client to verify if model is valid.
+  optional int32 metadata_min_version = 1;
+
+  // Current model metadata version. This field is set by the client while
+  // sending a model download request to optimization guide server so that the
+  // server knows the capabilities of the client.
+  optional int32 metadata_cur_version = 2;
+}
+
 // Used as time unit for rest of this proto.
 enum TimeUnit {
   UNKNOWN_TIME_UNIT = 0;
@@ -54,6 +75,9 @@ message Feature {
 // Metadata about a segmentation model for a given segment. Contains information
 // on how to use the model such as collecting signals, interpreting results etc.
 message SegmentationModelMetadata {
+  // The version information needed to validate segmentation models.
+  optional VersionInfo version_info = 9;
+
   // An ordered list of required features.
   repeated Feature features = 1;
 

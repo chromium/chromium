@@ -31,7 +31,8 @@ enum class ValidationResult {
   kFeatureAggregationNotFound = 7,
   kFeatureTensorLengthInvalid = 8,
   kFeatureNameHashDoesNotMatchName = 9,
-  kMaxValue = kFeatureNameHashDoesNotMatchName,
+  kVersionNotSupported = 10,
+  kMaxValue = kVersionNotSupported,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the

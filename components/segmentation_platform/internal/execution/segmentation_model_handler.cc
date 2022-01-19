@@ -20,13 +20,14 @@ SegmentationModelHandler::SegmentationModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const ModelUpdatedCallback& model_updated_callback)
+    const ModelUpdatedCallback& model_updated_callback,
+    absl::optional<optimization_guide::proto::Any>&& model_metadata)
     : optimization_guide::ModelHandler<float, const std::vector<float>&>(
           model_provider,
           background_task_runner,
           std::make_unique<SegmentationModelExecutor>(),
           optimization_target,
-          /*model_metadata=*/absl::nullopt),
+          model_metadata),
       model_updated_callback_(model_updated_callback) {
   stats::RecordModelAvailability(
       optimization_target,

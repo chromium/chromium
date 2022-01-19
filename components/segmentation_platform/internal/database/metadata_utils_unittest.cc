@@ -71,6 +71,12 @@ TEST_F(MetadataUtilsTest, MetadataValidation) {
   metadata.set_time_unit(proto::DAY);
   EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
             metadata_utils::ValidateMetadata(metadata));
+
+  proto::VersionInfo* version_info = metadata.mutable_version_info();
+  version_info->set_metadata_min_version(
+      proto::CurrentVersion::METADATA_VERSION + 1);
+  EXPECT_EQ(metadata_utils::ValidationResult::kVersionNotSupported,
+            metadata_utils::ValidateMetadata(metadata));
 }
 
 TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {

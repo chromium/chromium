@@ -89,7 +89,8 @@ class MockSegmentationModelHandler : public SegmentationModelHandler {
       : SegmentationModelHandler(model_provider,
                                  background_task_runner,
                                  optimization_target,
-                                 model_updated_callback) {}
+                                 model_updated_callback,
+                                 absl::nullopt) {}
 
   MOCK_METHOD(void,
               ExecuteModelWithInput,

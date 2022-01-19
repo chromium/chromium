@@ -35,6 +35,11 @@ class SegmentInfoDatabase;
 class SignalDatabase;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+const char kSegmentationModelMetadataTypeUrl[] =
+    "type.googleapis.com/"
+    "google.internal.chrome.optimizationguide.v1.SegmentationModelMetadata";
+
 // CreateModelHandler makes it possible to pass in any creator of the
 // SegmentationModelHandler, which makes it possible to create mock versions.
 std::unique_ptr<SegmentationModelHandler> CreateModelHandler(
@@ -43,9 +48,18 @@ std::unique_ptr<SegmentationModelHandler> CreateModelHandler(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const SegmentationModelHandler::ModelUpdatedCallback&
         model_updated_callback) {
+  // Preparing the version data to be sent to server along with the request to
+  // download the model.
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(kSegmentationModelMetadataTypeUrl);
+  proto::SegmentationModelMetadata model_metadata;
+  proto::VersionInfo* version_info = model_metadata.mutable_version_info();
+  version_info->set_metadata_cur_version(
+      proto::CurrentVersion::METADATA_VERSION);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
   return std::make_unique<SegmentationModelHandler>(
       model_provider, background_task_runner, optimization_target,
-      model_updated_callback);
+      model_updated_callback, std::move(any_metadata));
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 

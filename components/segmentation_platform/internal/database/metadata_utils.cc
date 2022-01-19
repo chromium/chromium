@@ -90,6 +90,11 @@ ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info) {
 
 ValidationResult ValidateMetadata(
     const proto::SegmentationModelMetadata& model_metadata) {
+  if (proto::CurrentVersion::METADATA_VERSION <
+      model_metadata.version_info().metadata_min_version()) {
+    return ValidationResult::kVersionNotSupported;
+  }
+
   if (model_metadata.time_unit() == proto::TimeUnit::UNKNOWN_TIME_UNIT)
     return ValidationResult::kTimeUnitInvald;
 

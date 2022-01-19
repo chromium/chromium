@@ -37,7 +37,9 @@ class SegmentationModelHandler
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const ModelUpdatedCallback& model_updated_callback);
+      const ModelUpdatedCallback& model_updated_callback,
+      absl::optional<optimization_guide::proto::Any>&& model_metadata);
+
   ~SegmentationModelHandler() override;
 
   // Disallow copy/assign.
