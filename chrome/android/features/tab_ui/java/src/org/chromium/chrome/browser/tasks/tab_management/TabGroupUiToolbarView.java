@@ -25,7 +25,6 @@ import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -151,10 +150,10 @@ public class TabGroupUiToolbarView extends FrameLayout {
     }
 
     void setIsIncognito(boolean isIncognito) {
+        @ColorRes
+        int primaryColorRes = isIncognito ? R.color.dialog_bg_color_dark : R.color.dialog_bg_color;
         @ColorInt
-        int primaryColor =
-                isIncognito ? getResources().getColor(R.color.dialog_bg_color_dark_baseline)
-                            : SemanticColorUtils.getDialogBgColor(getContext());
+        int primaryColor = getResources().getColor(primaryColorRes);
         setPrimaryColor(primaryColor);
 
         @ColorRes

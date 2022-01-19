@@ -204,7 +204,6 @@ android_resources("java_resources") {
     "java/res/drawable/smartphone_black_24dp.xml",
     "java/res/drawable/toolbar_hairline.xml",
     "java/res/values-night/colors.xml",
-    "java/res/values-night/dimens.xml",
     "java/res/values-night/drawables.xml",
     "java/res/values-night/styles.xml",
     "java/res/values-night/themes.xml",

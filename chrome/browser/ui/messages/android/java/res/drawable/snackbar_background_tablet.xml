@@ -6,10 +6,10 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle" >
 
-    <solid android:color="@color/snackbar_background_color_baseline" />
+    <solid android:color="@color/snackbar_background_color" />
 
     <corners
-        android:topLeftRadius="2dp"
-        android:topRightRadius="2dp"/>
+        android:topLeftRadius="2dip"
+        android:topRightRadius="2dip"/>
 
 </shape>
