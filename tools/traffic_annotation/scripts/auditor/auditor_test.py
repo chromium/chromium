@@ -11,10 +11,14 @@ import itertools
 import os
 import platform
 import sys
+import tempfile
 import unittest
 
-from auditor import *
 from typing import cast, Tuple
+
+from auditor import *
+from error import *
+from util import *
 
 # Path to the test_data/ dir.
 TEST_DATA_DIR = SCRIPT_DIR.parent / "test_data"
@@ -187,13 +191,13 @@ class AuditorTest(unittest.TestCase):
          Annotation.Type.BRANCHED_COMPLETING),
         ("good_completing_annotation.txt", None, Annotation.Type.COMPLETING),
         ("good_partial_annotation.txt", None, Annotation.Type.PARTIAL),
-        ("good_test_annotation.txt", AuditorError.Type.TEST_ANNOTATION, None),
-        ("missing_annotation.txt", AuditorError.Type.MISSING_TAG_USED, None),
-        ("good_no_annotation.txt", AuditorError.Type.NO_ANNOTATION, None),
-        ("bad_syntax_annotation1.txt", AuditorError.Type.SYNTAX, None),
-        ("bad_syntax_annotation2.txt", AuditorError.Type.SYNTAX, None),
-        ("bad_syntax_annotation3.txt", AuditorError.Type.SYNTAX, None),
-        ("bad_syntax_annotation4.txt", AuditorError.Type.SYNTAX, None),
+        ("good_test_annotation.txt", ErrorType.TEST_ANNOTATION, None),
+        ("missing_annotation.txt", ErrorType.MISSING_TAG_USED, None),
+        ("good_no_annotation.txt", ErrorType.NO_ANNOTATION, None),
+        ("bad_syntax_annotation1.txt", ErrorType.SYNTAX, None),
+        ("bad_syntax_annotation2.txt", ErrorType.SYNTAX, None),
+        ("bad_syntax_annotation3.txt", ErrorType.SYNTAX, None),
+        ("bad_syntax_annotation4.txt", ErrorType.SYNTAX, None),
         # "fatal" means a Python exception gets raised.
         ("fatal_annotation1.txt", "fatal", None),
         ("fatal_annotation2.txt", "fatal", None),
@@ -247,14 +251,14 @@ class AuditorTest(unittest.TestCase):
       annotation.unique_id = reserved_id
       errors = self.run_id_checker(annotation)
       self.assertEqual(1, len(errors))
-      self.assertEqual(AuditorError.Type.RESERVED_ID_HASH_CODE, errors[0].type)
+      self.assertEqual(ErrorType.RESERVED_ID_HASH_CODE, errors[0].type)
 
       annotation.type = Annotation.Type.PARTIAL
       annotation.unique_id = "nonempty"
       annotation.second_id = reserved_id
       errors = self.run_id_checker(annotation)
       self.assertEqual(1, len(errors))
-      self.assertEqual(AuditorError.Type.RESERVED_ID_HASH_CODE, errors[0].type)
+      self.assertEqual(ErrorType.RESERVED_ID_HASH_CODE, errors[0].type)
 
   def test_repeated_ids_detection(self):
     """Tests if use of repeated ids are detected."""
@@ -272,7 +276,7 @@ class AuditorTest(unittest.TestCase):
         self.create_annotation_sample(unique_id=i // 2) for i in range(20)
     ]
     errors = id_checker.check_ids(annotations)
-    self.assertCountEqual([AuditorError.Type.REPEATED_ID] * 10,
+    self.assertCountEqual([ErrorType.REPEATED_ID] * 10,
                           [e.type for e in errors])
 
   def test_similar_unique_and_second_ids_detection(self):
@@ -680,7 +684,7 @@ class AuditorTest(unittest.TestCase):
 
     self.assertTrue(errors)
     result = errors[0]
-    self.assertEqual(AuditorError.Type.SYNTAX, result.type)
+    self.assertEqual(ErrorType.SYNTAX, result.type)
     self.assertTrue("sender: \"Cloud Policy\"': Expected \"{\"" in str(result))
 
   def test_incomplete_error(self) -> None:
@@ -691,7 +695,7 @@ class AuditorTest(unittest.TestCase):
     errors = self.auditor.run_all_checks([], True)
     self.assertTrue(errors)
     result = errors[0]
-    self.assertEqual(AuditorError.Type.INCOMPLETE_ANNOTATION, result.type)
+    self.assertEqual(ErrorType.INCOMPLETE_ANNOTATION, result.type)
 
     expected_missing_fields = [
         "sender", "chrome_policy", "cookies_store",
@@ -714,6 +718,23 @@ class AuditorTest(unittest.TestCase):
                        get_current_platform(TEST_DATA_DIR / "out" / "Android"))
     else:
       raise ValueError("Unrecognized host platform {}".format(host_platform))
+
+  def test_write_annotations_tsv_file(self) -> None:
+    annotation, errors = self.deserialize("good_complete_annotation.txt")
+    self.assertEqual([], errors)
+    annotations = [annotation]
+
+    self.maxDiff = None
+    tsv_path = Path(tempfile.mktemp())
+    write_annotations_tsv_file(tsv_path, annotations, [])
+    self.assertTrue(tsv_path.exists())
+    tsv_contents = tsv_path.read_text(encoding="utf-8")
+    expected_contents = """Unique ID\tLast Update\tSender\tDescription\tTrigger\tData\tDestination\tCookies Allowed\tCookies Store\tSetting\tChrome Policy\tComments\tSource File
+supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 refresh token scoped down to the Supervised User Sync scope and tied to the given Supervised User ID, identifying the Supervised User Profile to be created.\tCalled when creating a new Supervised User profile in Chromium to fetch OAuth credentials for using Sync with the new profile.\t"The request is authenticated with an OAuth2 access token identifying the Google account and contains the following information:
+* The Supervised User ID, a randomly generated 64-bit identifier for the profile.
+* The device name, to identify the refresh token in account management."\tGoogle\tNo\t\tUsers can disable this feature by toggling 'Let anyone add a person to Chrome' in Chromium settings, under People.\tSupervisedUserCreationEnabled: false\t\thttps://cs.chromium.org/chromium/src/?l=0
+"""
+    self.assertEqual(expected_contents, tsv_contents)
 
 
 if __name__ == "__main__":
