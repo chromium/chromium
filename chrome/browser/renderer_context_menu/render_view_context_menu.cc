@@ -625,7 +625,7 @@ bool ShouldUseShareMenu() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||    \
         BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ui::MenuSourceType GetMenuSourceType(int event_flags) {
-  if (event_flags & ui::EF_LEFT_MOUSE_BUTTON)
+  if (event_flags & ui::EF_MOUSE_BUTTON)
     return ui::MENU_SOURCE_MOUSE;
   else if (event_flags & ui::EF_FROM_TOUCH)
     return ui::MENU_SOURCE_TOUCH;
