@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -142,6 +144,10 @@ void ConsolidatedConsentScreen::ShowImpl() {
   is_enterprise_managed_account_ =
       profile->GetProfilePolicyConnector()->IsManaged() && !is_child_account_;
 
+  DeviceSettingsService::Get()->GetOwnershipStatusAsync(
+      base::BindOnce(&ConsolidatedConsentScreen::OnOwnershipStatusCheckDone,
+                     weak_factory_.GetWeakPtr()));
+
   bool is_demo = arc::IsArcDemoModeSetupFlow();
   bool is_arc_enabled = arc::IsArcTermsOfServiceOobeNegotiationNeeded();
   if (!is_demo && is_arc_enabled) {
@@ -205,6 +211,22 @@ void ConsolidatedConsentScreen::OnLocationServicesModeChanged(bool enabled,
   location_services_managed_ = managed;
   if (view_)
     view_->SetLocationMode(enabled, managed);
+}
+
+void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
+    DeviceSettingsService::OwnershipStatus status) {
+  bool is_owner = false;
+
+  // If no ownership is established yet, then the current user is the first
+  // user to sign in. Therefore, the current user would be the owner.
+  if (status == DeviceSettingsService::OWNERSHIP_NONE) {
+    is_owner = true;
+  } else if (status == DeviceSettingsService::OWNERSHIP_TAKEN) {
+    is_owner = user_manager::UserManager::Get()->IsCurrentUserOwner();
+  }
+
+  if (view_)
+    view_->SetIsDeviceOwner(is_owner);
 }
 
 void ConsolidatedConsentScreen::RecordConsents(

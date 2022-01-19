@@ -36,7 +36,7 @@ void GuestTosScreenHandler::DeclareLocalizedValues(
   builder->Add("guestTosUsageOptin", IDS_GUEST_TOS_USAGE_OPT_IN);
   builder->Add("guestTosUsageOptInLearnMore",
                IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE);
-  builder->Add("guestTosLearnMore", IDS_GUEST_TOS_LEARN_MORE);
+  builder->Add("guestTosLearnMore", IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE_LINK);
   builder->Add("guestTosOk", IDS_GUEST_TOS_OK);
   builder->Add("guestTosLoading", IDS_GUEST_TOS_LOADING);
 }

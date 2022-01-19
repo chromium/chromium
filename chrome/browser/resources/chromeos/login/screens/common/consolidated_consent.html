@@ -218,11 +218,12 @@ found in the LICENSE file. -->
             <span id="usageTitle" class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
             </span>
-            [[getUsageText_(locale, isChildAccount_, isArcEnabled_,  isDemo_)]]
+            [[getUsageText_(locale, isChildAccount_, isArcEnabled_,
+                            isDemo_, isOwner_)]]
             <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
-                class="oobe-local-link" is="action-link"
-                aria-describedby="usageTitle">
-              [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
+                class="oobe-local-link" is="action-link">
+              [[i18nDynamic(locale,
+                            'consolidatedConsentUsageOptInLearnMoreLink')]]
             </a>
           </div>
           <iron-icon class="managed-icon" icon="oobe-32:enterprise"
@@ -246,9 +247,9 @@ found in the LICENSE file. -->
               [[i18nDynamic(locale, 'consolidatedConsentBackupOptInChild')]]
             </span>
             <a id="backupLearnMore" on-click="onBackupLearnMoreClick_"
-                class="oobe-local-link" is="action-link"
-                aria-describedby="backupTitle">
-              [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
+                class="oobe-local-link" is="action-link">
+              [[i18nDynamic(locale,
+                            'consolidatedConsenttBackupOptInLearnMoreLink')]]
             </a>
           </div>
           <iron-icon class="managed-icon" icon="oobe-32:enterprise"
@@ -273,9 +274,9 @@ found in the LICENSE file. -->
               [[i18nDynamic(locale, 'consolidatedConsentLocationOptInChild')]]
             </span>
             <a id="locationLearnMore" on-click="onLocationLearnMoreClick_"
-                class="oobe-local-link" is="action-link"
-                aria-describedby="locationTitle">
-              [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
+                class="oobe-local-link" is="action-link">
+              [[i18nDynamic(locale,
+                            'consolidatedConsenttLocationOptInLearnMoreLink')]]
             </a>
           </div>
           <iron-icon class="managed-icon" icon="oobe-32:enterprise"
@@ -328,7 +329,7 @@ found in the LICENSE file. -->
         <span
             inner-h-t-m-l=
                 "[[getUsageLearnMoreText_(locale, isChildAccount_,
-                                          isArcEnabled_, isDemo_)]]">
+                                          isArcEnabled_, isDemo_, isOwner_)]]">
         </span>
       </div>
     </oobe-modal-dialog>
