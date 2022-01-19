@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/scheduler/task_priority_change_event.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_task_priority_change_event_init.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

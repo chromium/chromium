@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_predicate.h"  // Number, StringExpression
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"  // HeapVector, Member, etc.
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"  // HeapVector, Member, etc.
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #include <cmath>
