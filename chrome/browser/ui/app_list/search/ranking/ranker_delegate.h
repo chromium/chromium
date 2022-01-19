@@ -20,6 +20,10 @@ class SearchController;
 //
 // This is the place to configure experiments or flags that change ranking
 // behavior.
+//
+// TODO(crbug.com/1199206): This is now much more than a delegate, because it
+// does all the work of setting up the rankers. Rename to something more
+// appropriate.
 class RankerDelegate : public Ranker {
  public:
   RankerDelegate(Profile* profile, SearchController* controller);

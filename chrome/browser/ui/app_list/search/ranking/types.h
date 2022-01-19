@@ -23,14 +23,14 @@ using ProviderType = ash::AppListSearchResultType;
 // incrementally updated by rankers as needed. Generally, each ranker should
 // control one score.
 //
-// TODO(crbug.com/1199206): Category scores need to be removed from this and
-// added to a separate struct.
+// TODO(crbug.com/1199206): Remove defunct members from this struct.
 struct Scoring {
   bool filter = false;
   bool top_match = false;
   double normalized_relevance = 0.0f;
   double category_item_score = 0.0f;
   double category_usage_score = 0.0f;
+  double ftrl_result_score = 0.0;
   double usage_score = 0.0f;
 
   // A counter for the burn-in iteration number, where 0 signifies the

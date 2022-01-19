@@ -123,4 +123,39 @@ TEST_F(FtrlOptimizerTest, Train) {
   EXPECT_THAT(proto.weights()[1], DoubleNear(two_score / total, kEps));
 }
 
+// Test that a 'good' expert will outweigh a 'bad' expert after several training
+// iterations, but that the 'bad' expert can recover if it starts predicting
+// accurately.
+TEST_F(FtrlOptimizerTest, TrainSeveralTimes) {
+  WriteWeightsToDisk({0.5, 0.5});
+  FtrlOptimizer ftrl(GetProto(), TestingParams(/*num_experts=*/2u));
+  Wait();
+
+  // Do several iterations of training where the first expert is correct.
+  for (int i = 0; i < 10; ++i) {
+    ftrl.Score({"a", "b", "c", "d"},
+               {{1.0, 2.0, 3.0, 4.0}, {4.0, 3.0, 2.0, 1.0}});
+    ftrl.Train("d");
+  }
+  Wait();
+
+  // The first expert should outweigh the second.
+  auto proto = ReadFromDisk();
+  EXPECT_GT(proto.weights()[0], 0.9);
+  EXPECT_LT(proto.weights()[1], 0.1);
+
+  // Do several iterations of training where the second expert is correct.
+  for (int i = 0; i < 10; ++i) {
+    ftrl.Score({"a", "b", "c", "d"},
+               {{1.0, 2.0, 3.0, 4.0}, {4.0, 3.0, 2.0, 1.0}});
+    ftrl.Train("a");
+  }
+  Wait();
+
+  // The second expert should have recovered and outweigh the first.
+  proto = ReadFromDisk();
+  EXPECT_LT(proto.weights()[0], 0.1);
+  EXPECT_GT(proto.weights()[1], 0.9);
+}
+
 }  // namespace app_list

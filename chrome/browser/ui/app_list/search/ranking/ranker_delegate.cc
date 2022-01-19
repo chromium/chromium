@@ -6,8 +6,7 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/answer_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
-#include "chrome/browser/ui/app_list/search/ranking/ftrl_category_ranker.h"
-#include "chrome/browser/ui/app_list/search/ranking/ftrl_result_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/ftrl_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/query_highlighter.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
@@ -30,23 +29,73 @@ constexpr base::TimeDelta kNoWriteDelay = base::Seconds(0);
 }  // namespace
 
 RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
+  // Result ranking parameters.
+  // TODO(crbug.com/1199206): These need tweaking.
+  FtrlOptimizer::Params ftrl_result_params;
+  ftrl_result_params.alpha = 0.1;
+  ftrl_result_params.gamma = 0.1;
+  ftrl_result_params.num_experts = 2u;
+
+  MrfuCache::Params mrfu_result_params;
+  mrfu_result_params.half_life = 10.0f;
+  mrfu_result_params.boost_factor = 5.0f;
+  mrfu_result_params.max_items = 200u;
+
+  // Category ranking parameters.
+  // TODO(crbug.com/1199206): These need tweaking.
+  FtrlOptimizer::Params ftrl_category_params;
+  ftrl_category_params.alpha = 0.1;
+  ftrl_category_params.gamma = 0.1;
+  ftrl_category_params.num_experts = 2u;
+
+  MrfuCache::Params mrfu_category_params;
+  mrfu_category_params.half_life = 10.0f;
+  mrfu_category_params.boost_factor = 5.0f;
+  mrfu_category_params.max_items = 200u;
+
   const auto state_dir = RankerStateDirectory(profile);
 
-  // Main result and category ranking.
+  // 1. Result pre-processing. These filter or modify search results but don't
+  // change their scores.
+  AddRanker(std::make_unique<QueryHighlighter>());
+  AddRanker(std::make_unique<AnswerRanker>());
+  AddRanker(std::make_unique<FilteringRanker>());
+  AddRanker(std::make_unique<RemovedResultsRanker>(
+      PersistentProto<RemovedResultsProto>(
+          state_dir.AppendASCII("removed_results.pb"), kNoWriteDelay)));
+
+  // 2. Score normalization, a precursor to other ranking.
   AddRanker(std::make_unique<ScoreNormalizingRanker>(
       PersistentProto<ScoreNormalizerProto>(
           state_dir.AppendASCII("score_norm.pb"), kStandardWriteDelay)));
 
-  // Result post-processing.
-  AddRanker(std::make_unique<QueryHighlighter>());
-  AddRanker(std::make_unique<TopMatchRanker>());
-  AddRanker(std::make_unique<AnswerRanker>());
-  AddRanker(std::make_unique<FilteringRanker>());
+  // 3. Ranking for results.
+  auto result_ranker = std::make_unique<FtrlRanker>(
+      FtrlRanker::RankingKind::kResults, ftrl_result_params,
+      PersistentProto<FtrlOptimizerProto>(
+          state_dir.AppendASCII("ftrl_results.pb"), kStandardWriteDelay));
+  result_ranker->AddExpert(std::make_unique<MrfuResultRanker>(
+      mrfu_result_params,
+      PersistentProto<MrfuCacheProto>(state_dir.AppendASCII("mrfu_results.pb"),
+                                      kStandardWriteDelay)));
+  result_ranker->AddExpert(std::make_unique<NormalizedScoreResultRanker>());
+  AddRanker(std::move(result_ranker));
 
-  // Result removal.
-  AddRanker(std::make_unique<RemovedResultsRanker>(
-      PersistentProto<RemovedResultsProto>(
-          state_dir.AppendASCII("removed_results.pb"), kNoWriteDelay)));
+  // 4. Ranking for categories.
+  auto category_ranker = std::make_unique<FtrlRanker>(
+      FtrlRanker::RankingKind::kCategories, ftrl_category_params,
+      PersistentProto<FtrlOptimizerProto>(
+          state_dir.AppendASCII("ftrl_categories.pb"), kStandardWriteDelay));
+  category_ranker->AddExpert(std::make_unique<MrfuCategoryRanker>(
+      mrfu_category_params,
+      PersistentProto<MrfuCacheProto>(
+          state_dir.AppendASCII("mrfu_categories.pb"), kStandardWriteDelay)));
+  category_ranker->AddExpert(std::make_unique<BestResultCategoryRanker>());
+  AddRanker(std::move(category_ranker));
+
+  // 5. Result post-processing.
+  // Nb. the top-match ranker relies on score normalization.
+  AddRanker(std::make_unique<TopMatchRanker>());
 }
 
 RankerDelegate::~RankerDelegate() {}
