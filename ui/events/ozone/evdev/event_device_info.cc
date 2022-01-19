@@ -21,6 +21,10 @@
 #define EVIOCGMTSLOTS(len) _IOC(_IOC_READ, 'E', 0x0a, len)
 #endif
 
+#ifndef INPUT_PROP_HAPTICPAD
+#define INPUT_PROP_HAPTICPAD 0x07
+#endif
+
 namespace ui {
 
 namespace {
@@ -625,6 +629,10 @@ bool EventDeviceInfo::HasPointingStick() const {
 
 bool EventDeviceInfo::HasTouchpad() const {
   return HasAbsXY() && HasPointer() && !HasStylus();
+}
+
+bool EventDeviceInfo::HasHapticTouchpad() const {
+  return HasTouchpad() && HasProp(INPUT_PROP_HAPTICPAD);
 }
 
 bool EventDeviceInfo::HasTablet() const {

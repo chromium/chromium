@@ -9,10 +9,13 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/ozone/evdev/input_device_settings_evdev.h"
+#include "ui/events/ozone/evdev/libgestures_glue/haptic_touchpad_handler.h"
 
 namespace ui {
 
@@ -39,6 +42,13 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
 
     // Notifier for stop. This is called with the final event state.
     virtual void OnLibEvdevCrosStopped(Evdev* evdev, EventStateRec* state) = 0;
+
+    // For haptic touchpads. Start using gesture library to determine when
+    // physical clicks occur, based on force thresholds.
+    // The passed callback function should be called whenever the gesture
+    // library determines that a physical click has occurred.
+    virtual void SetupHapticButtonGeneration(
+        const base::RepeatingCallback<void(bool)>& callback) = 0;
   };
 
   EventReaderLibevdevCros(base::ScopedFD fd,
@@ -58,15 +68,26 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   bool HasMouse() const override;
   bool HasPointingStick() const override;
   bool HasTouchpad() const override;
+  bool HasHapticTouchpad() const override;
   bool HasCapsLockLed() const override;
   bool HasStylusSwitch() const override;
   void OnDisabled() override;
+  void PlayHapticTouchpadEffect(HapticTouchpadEffect effect,
+                                HapticTouchpadEffectStrength strength) override;
+  void SetHapticTouchpadEffectForNextButtonRelease(
+      HapticTouchpadEffect effect,
+      HapticTouchpadEffectStrength strength) override;
+  void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings) override;
 
  private:
   static void OnSynReport(void* data,
                           EventStateRec* evstate,
                           struct timeval* tv);
   static void OnLogMessage(void*, int level, const char*, ...);
+
+  // Returns true if this is a haptic touchpad, UI haptics are enabled, and it
+  // is actively being touched.
+  bool CanHandleHapticFeedback();
 
   // Input modalities for this device.
   bool has_keyboard_;
@@ -87,8 +108,17 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   // Path to input device.
   base::FilePath path_;
 
+  // For touchpads, number of fingers present.
+  int touch_count_;
+
+  // Is UI haptic feedback enabled?
+  bool haptic_feedback_enabled_;
+
   // Delegate for event processing.
   std::unique_ptr<Delegate> delegate_;
+
+  // Haptic effect handling for touchpads
+  std::unique_ptr<HapticTouchpadHandler> haptic_touchpad_handler_;
 };
 
 }  // namespace ui

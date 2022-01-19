@@ -1398,6 +1398,46 @@ const DeviceCapabilities kJinlonKeyboard = {
     /* kbd_top_row_layout */ "",
 };
 
+// Captured from Redrix. Haptic touchpad.
+const DeviceAbsoluteAxis kRedrixTouchpadAxes[] = {
+    {ABS_X, {0, 0, 3630, 0, 0, 32}},
+    {ABS_Y, {0, 0, 2346, 0, 0, 31}},
+    {ABS_PRESSURE, {0, 0, 4095, 0, 0, 4}},
+    {ABS_MISC, {0, 1, 15, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 4, 0, 0, 0}},
+    {ABS_MT_TOUCH_MAJOR, {0, 0, 4095, 0, 0, 0}},
+    {ABS_MT_TOUCH_MINOR, {0, 0, 4095, 0, 0, 0}},
+    {ABS_MT_ORIENTATION, {0, 0, 1, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 3630, 0, 0, 32}},
+    {ABS_MT_POSITION_Y, {0, 0, 2346, 0, 0, 31}},
+    {ABS_MT_TOOL_TYPE, {0, 0, 2, 0, 0, 0}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+    {ABS_MT_PRESSURE, {0, 0, 4095, 0, 0, 4}},
+};
+const DeviceCapabilities kRedrixTouchpad = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:19.1/i2c_designware.5/i2c-18/"
+    "i2c-ELAN2703:00/0018:04F3:323B.0001/input/input7/event6",
+    /* name */ "ELAN2703:00 04F3:323B Touchpad",
+    /* phys */ "i2c-ELAN2703:00",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "04f3",
+    /* product */ "323b",
+    /* version */ "0100",
+    /* prop */ "85",
+    /* ev */ "20001b",
+    /* key */ "e520 10000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "6f3810001000003",
+    /* msc */ "20",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "8000 0",
+    kRedrixTouchpadAxes,
+    base::size(kRedrixTouchpadAxes),
+};
+
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.

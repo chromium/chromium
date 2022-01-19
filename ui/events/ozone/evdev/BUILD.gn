@@ -159,6 +159,8 @@ component("evdev") {
       "libgestures_glue/gesture_property_provider.h",
       "libgestures_glue/gesture_timer_provider.cc",
       "libgestures_glue/gesture_timer_provider.h",
+      "libgestures_glue/haptic_touchpad_handler.cc",
+      "libgestures_glue/haptic_touchpad_handler.h",
     ]
 
     deps += [ "//ui/ozone/public/mojom:gesture_properties_service" ]
@@ -233,6 +235,9 @@ source_set("unittests") {
     "gamepad_event_converter_evdev_unittest.cc",
     "input_controller_evdev_unittest.cc",
     "input_injector_evdev_unittest.cc",
+    "libgestures_glue/haptic_touchpad_handler.cc",
+    "libgestures_glue/haptic_touchpad_handler.h",
+    "libgestures_glue/haptic_touchpad_handler_unittest.cc",
     "microphone_mute_switch_event_converter_evdev_unittest.cc",
     "stylus_button_event_converter_evdev_unittest.cc",
     "tablet_event_converter_evdev_unittest.cc",

@@ -149,6 +149,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // Determine whether there's a touchpad on this device.
   bool HasTouchpad() const;
 
+  // Determine whether there's a haptic touchpad on this device.
+  bool HasHapticTouchpad() const;
+
   // Determine whether there's a tablet on this device.
   bool HasTablet() const;
 
