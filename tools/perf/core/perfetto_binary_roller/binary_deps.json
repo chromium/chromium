@@ -5,8 +5,8 @@
             "remote_path": "perfetto_binaries/trace_processor_shell/linux_arm64/49b4b5dcbc312d8d2c3751cf29238b8efeb4e494/trace_processor_shell"
         },
         "win": {
-            "hash": "fac45c375ca5740c962699bf1badc5ef6ef9d1a6",
-            "remote_path": "perfetto_binaries/trace_processor_shell/win/56f2ccce0511ebd51e2f7d2fa659719a712a6044/trace_processor_shell.exe"
+            "hash": "d6cb1144b9294741e65294ca97dba70916de332c",
+            "remote_path": "perfetto_binaries/trace_processor_shell/win/5a202e1c1c7fb14817bb4df498d5f0ea71915653/trace_processor_shell.exe"
         },
         "linux_arm": {
             "hash": "58893933be305d3bfe0a72ebebcacde2ac3ca893",
