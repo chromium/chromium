@@ -57,15 +57,15 @@ void ContentAutofillAssistantDriver::SetAnnotateDomModelService(
 
 void ContentAutofillAssistantDriver::GetAnnotateDomModel(
     GetAnnotateDomModelCallback callback) {
-  DCHECK(annotate_dom_model_service_);
   if (!annotate_dom_model_service_) {
+    NOTREACHED() << "No model service";
     std::move(callback).Run(base::File());
     return;
   }
 
   absl::optional<base::File> file = annotate_dom_model_service_->GetModelFile();
   if (file) {
-    std::move(callback).Run(file->Duplicate());
+    std::move(callback).Run(*std::move(file));
     return;
   }
 
@@ -82,13 +82,13 @@ void ContentAutofillAssistantDriver::OnModelAvailabilityChanged(
     return;
   }
 
-  auto file_opt = annotate_dom_model_service_->GetModelFile();
-  DCHECK(file_opt);
-  if (!file_opt) {
+  absl::optional<base::File> file = annotate_dom_model_service_->GetModelFile();
+  if (!file) {
+    NOTREACHED() << "No model file where expected.";
     std::move(callback).Run(base::File());
     return;
   }
-  std::move(callback).Run(file_opt->Duplicate());
+  std::move(callback).Run(*std::move(file));
 }
 
 }  // namespace autofill_assistant

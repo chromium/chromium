@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("proto") {
+proto_library("model_metadata_proto") {
   sources = [ "model_metadata.proto" ]
 }
 
@@ -12,16 +12,54 @@ static_library("renderer") {
   sources = [
     "autofill_assistant_agent.cc",
     "autofill_assistant_agent.h",
+    "autofill_assistant_model_executor.cc",
+    "autofill_assistant_model_executor.h",
   ]
 
   deps = [
-    ":proto",
+    ":model_metadata_proto",
+    "//base",
     "//components/autofill_assistant/content/common:common",
     "//components/autofill_assistant/content/common:mojo_interfaces",
+    "//components/optimization_guide/core:model_executor",
     "//content/public/common:common",
     "//content/public/renderer:renderer",
     "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
+  ]
+  public_deps = [
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_assistant_model_executor_unittest.cc" ]
+
+  deps = [
+    ":renderer",
+    "//base",
+    "//base/test:test_support",
+    "//third_party/blink/public:blink",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "autofill_assistant_agent_browsertest.cc" ]
+
+  deps = [
+    ":renderer",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill_assistant/content/common:mojo_interfaces",
+    "//content/public/browser",
+    "//content/public/renderer",
+    "//content/test:test_support",
   ]
 }
