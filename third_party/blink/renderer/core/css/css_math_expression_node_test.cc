@@ -56,11 +56,11 @@ void TestAccumulatePixelsAndPercent(
     float expected_percent) {
   scoped_refptr<const CalculationExpressionNode> value =
       expression->ToCalculationExpression(conversion_data);
-  EXPECT_TRUE(value->IsLeaf());
+  EXPECT_TRUE(value->IsPixelsAndPercent());
   EXPECT_EQ(expected_pixels,
-            To<CalculationExpressionLeafNode>(*value).Pixels());
+            To<CalculationExpressionPixelsAndPercentNode>(*value).Pixels());
   EXPECT_EQ(expected_percent,
-            To<CalculationExpressionLeafNode>(*value).Percent());
+            To<CalculationExpressionPixelsAndPercentNode>(*value).Percent());
 
   absl::optional<PixelsAndPercent> pixels_and_percent =
       expression->ToPixelsAndPercent(conversion_data);
