@@ -2523,4 +2523,20 @@ TEST_P(PaintLayerTest, AddLayerNeedsRepaintAndCullRectUpdate) {
   EXPECT_TRUE(child_layer->NeedsCullRectUpdate());
 }
 
+TEST_P(PaintLayerTest, HitTestLayerWith3DDescendantCrash) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="transform: translate(0)">
+      <div style="transform-style: preserve-3d; transform: rotateY(1deg)"></div>
+    </div>
+  )HTML");
+
+  auto* target = GetPaintLayerByElementId("target");
+  EXPECT_TRUE(target->Has3DTransformedDescendant());
+  HitTestRequest request(0);
+  HitTestLocation location;
+  HitTestResult result(request, location);
+  // This should not crash.
+  target->HitTest(location, result, PhysicalRect(0, 0, 800, 600));
+}
+
 }  // namespace blink

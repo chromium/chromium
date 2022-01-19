@@ -1453,6 +1453,11 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
                 recursion_data.location.TransformedRect(),
                 gfx::QuadF(gfx::RectF(recursion_data.rect)));
 
+  if (&transform_container == this) {
+    DCHECK(!container_transform_state);
+    return transform_state;
+  }
+
   if (container_transform_state &&
       (!transform_container.Preserves3D() ||
        &transform_container.GetLayoutObject() !=
