@@ -5,7 +5,6 @@
 
 #include "third_party/liburlpattern/tokenize.h"
 
-#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
@@ -242,7 +241,7 @@ class Tokenizer {
   // `codepoint_`.  In addition, `next_index_` is updated to the codepoint to be
   // read next.  Returns true iff the codepoint was read successfully. On
   // success, `codepoint_` is non-negative.
-  bool Next() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Next() {
     U8_NEXT(pattern_.data(), next_index_, pattern_.size(), codepoint_);
     return codepoint_ >= 0;
   }
@@ -251,7 +250,7 @@ class Tokenizer {
   // `codepoint_`.  In addition, `next_index_` is updated to the codepoint to be
   // read next.  Returns true iff the codepoint was read successfully. On
   // success, `codepoint_` is non-negative.
-  bool NextAt(size_t index) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool NextAt(size_t index) {
     next_index_ = index;
     return Next();
   }
