@@ -165,7 +165,9 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
 }
 
 // Disabled on Windows, ChromeOS, and Linux due to flakes: crbug.com/1263465.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+// Disabled on Mac due to flakes: crbug.com/1288805.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_DirectNavigationWithToggleToBasic \
   DISABLED_DirectNavigationWithToggleToBasic
 #else
