@@ -169,10 +169,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // with GAIA fails, AccountManager will forget the account.
   void RemoveAccount(const ::account_manager::AccountKey& account_key);
 
-  // Updates or inserts an account. |raw_email| is the raw, un-canonicalized
-  // email id for |account_key|. |raw_email| must not be empty. Use
-  // |AccountManager::kActiveDirectoryDummyToken| as the |token| for Active
-  // Directory accounts, and |AccountManager::kInvalidToken| for Gaia accounts
+  // Updates or inserts an account. `raw_email` is the raw, un-canonicalized
+  // email id for `account_key`. `raw_email` must not be empty. Use
+  // `AccountManager::kActiveDirectoryDummyToken` as the `token` for Active
+  // Directory accounts, and `AccountManager::kInvalidToken` for Gaia accounts
   // with unknown tokens.
   // Note: This API is idempotent.
   void UpsertAccount(const ::account_manager::AccountKey& account_key,
@@ -185,12 +185,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Note: This API is idempotent.
   void UpdateToken(const ::account_manager::AccountKey& account_key,
                    const std::string& token);
-
-  // Updates the email associated with |account_key|. The account must be known
-  // to Account Manager. See |UpsertAccount| for information about adding an
-  // account.
-  void UpdateEmail(const ::account_manager::AccountKey& account_key,
-                   const std::string& raw_email);
 
   // Add a non owning pointer to an |AccountManager::Observer|.
   void AddObserver(Observer* observer);
@@ -286,10 +280,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // been initialized, otherwise saves the |closure| for running later, when the
   // class is initialized.
   void RunOnInitialization(base::OnceClosure closure);
-
-  // Assumes that |AccountManager| initialization (|init_state_|) is complete.
-  void UpdateEmailInternal(const ::account_manager::AccountKey& account_key,
-                           const std::string& raw_email);
 
   // Does the actual work of upserting an account and performing related tasks
   // like revoking old tokens and informing observers. All account updates

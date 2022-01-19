@@ -578,30 +578,6 @@ void AccountManager::UpdateToken(
   UpsertAccountInternal(account_key, AccountInfo{it->second.raw_email, token});
 }
 
-void AccountManager::UpdateEmail(
-    const ::account_manager::AccountKey& account_key,
-    const std::string& raw_email) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(init_state_, InitializationState::kNotStarted);
-
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::UpdateEmailInternal,
-                     weak_factory_.GetWeakPtr(), account_key, raw_email);
-  RunOnInitialization(std::move(closure));
-}
-
-void AccountManager::UpdateEmailInternal(
-    const ::account_manager::AccountKey& account_key,
-    const std::string& raw_email) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
-  auto it = accounts_.find(account_key);
-  DCHECK(it != accounts_.end())
-      << "UpdateEmail cannot be used for adding accounts";
-  UpsertAccountInternal(account_key, AccountInfo{raw_email, it->second.token});
-}
-
 void AccountManager::UpsertAccountInternal(
     const ::account_manager::AccountKey& account_key,
     const AccountInfo& account) {
