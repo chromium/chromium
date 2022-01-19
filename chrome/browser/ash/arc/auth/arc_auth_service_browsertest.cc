@@ -128,6 +128,11 @@ class FakeAuthInstance : public mojom::AuthInstance {
     }
   }
 
+  void SetAccounts(std::vector<mojom::ArcAccountInfoPtr> accounts) override {
+    ++num_set_accounts_calls_;
+    last_set_accounts_list_ = std::move(accounts);
+  }
+
   void RequestPrimaryAccountInfo(base::OnceClosure done_closure) {
     host_remote_->RequestPrimaryAccountInfo(base::BindOnce(
         &FakeAuthInstance::OnPrimaryAccountInfoResponse,
@@ -169,6 +174,12 @@ class FakeAuthInstance : public mojom::AuthInstance {
 
   std::string last_removed_account() const { return last_removed_account_; }
 
+  int num_set_accounts_calls() const { return num_set_accounts_calls_; }
+
+  const std::vector<mojom::ArcAccountInfoPtr>* last_set_accounts_list() const {
+    return &last_set_accounts_list_;
+  }
+
  private:
   void OnPrimaryAccountInfoResponse(base::OnceClosure done_closure,
                                     mojom::ArcAuthCodeStatus status,
@@ -198,6 +209,8 @@ class FakeAuthInstance : public mojom::AuthInstance {
   std::string last_upserted_account_;
   int num_account_removed_calls_ = 0;
   std::string last_removed_account_;
+  int num_set_accounts_calls_ = 0;
+  std::vector<mojom::ArcAccountInfoPtr> last_set_accounts_list_;
 
   base::WeakPtrFactory<FakeAuthInstance> weak_ptr_factory_{this};
 };
@@ -922,15 +935,30 @@ IN_PROC_BROWSER_TEST_P(
     ArcAuthServiceTest,
     PrimaryAccountReauthIsNotAttemptedJustAfterProvisioning) {
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
-  const int initial_num_calls = auth_instance().num_account_upserted_calls();
+  const int initial_num_account_upserted_calls =
+      auth_instance().num_account_upserted_calls();
+  const int initial_num_set_accounts_calls =
+      auth_instance().num_set_accounts_calls();
   // Our test setup manually sets the device as provisioned and invokes
   // |ArcAuthService::OnConnectionReady|. Hence, we would have received an
   // update for the Primary Account.
-  EXPECT_EQ(1, initial_num_calls);
+  if (IsArcAccountRestrictionsEnabled()) {
+    // 1 SetAccounts() call for the Primary account.
+    EXPECT_EQ(1, initial_num_set_accounts_calls);
+    EXPECT_EQ(1, auth_instance().last_set_accounts_list()->size());
+    EXPECT_EQ(kFakeUserName,
+              (*auth_instance().last_set_accounts_list())[0]->email);
+    EXPECT_EQ(0, initial_num_account_upserted_calls);
+  } else {
+    EXPECT_EQ(1, initial_num_account_upserted_calls);
+  }
 
   // Simulate ARC first time provisioning call.
   OnArcInitialStart();
-  EXPECT_EQ(initial_num_calls, auth_instance().num_account_upserted_calls());
+  EXPECT_EQ(initial_num_account_upserted_calls,
+            auth_instance().num_account_upserted_calls());
+  EXPECT_EQ(initial_num_set_accounts_calls,
+            auth_instance().num_set_accounts_calls());
 }
 
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
@@ -938,8 +966,18 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
   const AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
 
   const int initial_num_calls = auth_instance().num_account_upserted_calls();
-  // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
-  EXPECT_EQ(2, initial_num_calls);
+  if (IsArcAccountRestrictionsEnabled()) {
+    // 1 SetAccounts() call for the Primary account.
+    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+    EXPECT_EQ(1, auth_instance().last_set_accounts_list()->size());
+    EXPECT_EQ(kFakeUserName,
+              (*auth_instance().last_set_accounts_list())[0]->email);
+    // 1 call for the Secondary Account.
+    EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
+  } else {
+    // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
+    EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
+  }
 
   SetInvalidRefreshTokenForAccount(account_info.account_id);
   EXPECT_EQ(initial_num_calls, auth_instance().num_account_upserted_calls());
@@ -950,10 +988,18 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, AccountUpdatesArePropagated) {
 
   SetInvalidRefreshTokenForAccount(account_info.account_id);
   const int initial_num_calls = auth_instance().num_account_upserted_calls();
-  // 2 calls: 1 for the Primary account, 1 for the Secondary account on addition
-  // and 0 for Secondary account after SetInvalidRefreshTokenForAccount.
-  EXPECT_EQ(2, initial_num_calls);
-
+  if (IsArcAccountRestrictionsEnabled()) {
+    // 1 SetAccounts() call for the Primary account.
+    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+    EXPECT_EQ(1, auth_instance().last_set_accounts_list()->size());
+    EXPECT_EQ(kFakeUserName,
+              (*auth_instance().last_set_accounts_list())[0]->email);
+    // 1 call for the Secondary Account.
+    EXPECT_EQ(1, initial_num_calls);
+  } else {
+    // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
+    EXPECT_EQ(2, initial_num_calls);
+  }
   SetRefreshTokenForAccount(account_info.account_id);
   // Expect exactly one call for the account update above.
   EXPECT_EQ(1,
@@ -969,8 +1015,14 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
 
   SetInvalidRefreshTokenForAccount(account_info.account_id);
   const int initial_num_calls = auth_instance().num_account_upserted_calls();
-  // 1 call for the Secondary account on addition and 0 for Secondary account
-  // after SetInvalidRefreshTokenForAccount.
+  EXPECT_EQ(1, initial_num_calls);
+  if (IsArcAccountRestrictionsEnabled()) {
+    // 1 SetAccounts() call with empty list of accounts.
+    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+    EXPECT_EQ(0, auth_instance().last_set_accounts_list()->size());
+  }
+
+  // 1 call for the Secondary Account.
   EXPECT_EQ(1, initial_num_calls);
 
   SetRefreshTokenForAccount(account_info.account_id);
@@ -989,9 +1041,13 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
 
   SetInvalidRefreshTokenForAccount(account_info.account_id);
   const int initial_num_calls = auth_instance().num_account_upserted_calls();
-  // 2 calls: 1 for the Primary account, 1 for the Secondary account on addition
-  // and 0 for Secondary account after SetInvalidRefreshTokenForAccount.
-  EXPECT_EQ(2, initial_num_calls);
+  // 1 SetAccounts() call for the Primary account.
+  EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+  EXPECT_EQ(1, auth_instance().last_set_accounts_list()->size());
+  EXPECT_EQ(kFakeUserName,
+            (*auth_instance().last_set_accounts_list())[0]->email);
+  // 1 call for the Secondary Account.
+  EXPECT_EQ(1, initial_num_calls);
 
   EXPECT_TRUE(SetIsAccountAvailableInArc(account_info.gaia,
                                          /*make_available_in_arc=*/false));
@@ -1356,7 +1412,18 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
                        RegularUserSecondaryAccountsArePropagated) {
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   SeedAccountInfo(kSecondaryAccountEmail);
-  EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
+  if (IsArcAccountRestrictionsEnabled()) {
+    // 1 SetAccounts() call for the Primary account.
+    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+    EXPECT_EQ(1, auth_instance().last_set_accounts_list()->size());
+    EXPECT_EQ(kFakeUserName,
+              (*auth_instance().last_set_accounts_list())[0]->email);
+    // 1 call for the Secondary Account.
+    EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
+  } else {
+    // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
+    EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
+  }
 }
 
 // Tests child account propagation for Family Link user.
@@ -1365,7 +1432,18 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
   SetAccountAndProfile(user_manager::USER_TYPE_CHILD);
   SeedAccountInfo(kSecondaryAccountEmail);
   EXPECT_TRUE(profile()->IsChild());
-  EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
+  if (IsArcAccountRestrictionsEnabled()) {
+    // 1 SetAccounts() call for the Primary account.
+    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
+    EXPECT_EQ(1, auth_instance().last_set_accounts_list()->size());
+    EXPECT_EQ(kFakeUserName,
+              (*auth_instance().last_set_accounts_list())[0]->email);
+    // 1 call for the Secondary Account.
+    EXPECT_EQ(1, auth_instance().num_account_upserted_calls());
+  } else {
+    // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
+    EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ArcRobotAccountAuthServiceTest, testing::Bool());

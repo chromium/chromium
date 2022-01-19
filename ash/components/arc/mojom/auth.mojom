@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 29
+// Next MinVersion: 30
 
 module arc.mojom;
 
@@ -393,8 +393,7 @@ struct AccountInfo {
   bool is_managed@2;
 };
 
-// Information about an account in ARC. Used during the one-time migration of
-// accounts from ARC to Chrome OS Account Manager.
+// Information about an account in ARC.
 struct ArcAccountInfo {
   // Account's email id.
   string email;
@@ -485,7 +484,7 @@ interface AuthHost {
   [MinVersion=28] ReportAndroidIdSource@21(AndroidIdSource source);
 };
 
-// Next Method ID: 6
+// Next Method ID: 7
 interface AuthInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=12] Init@2(pending_remote<AuthHost> host_remote) => ();
@@ -504,4 +503,19 @@ interface AuthInstance {
   // Gets resolution status of main account for statistics reporting.
   [MinVersion=22] GetMainAccountResolutionStatus@5()
       => (MainAccountResolutionStatus status);
+
+  // Pushes the `accounts` list to ARC on session start.
+  // - Just after ARC provisioning, all accounts except the primary account
+  // are pushed to ARC. Pushing the primary account is not required since ARC
+  // was just provisioned and it may also cause performance issues, see
+  // https://crrev.com/c/1796344.
+  // - On the start of the following sessions all accounts (including the
+  // primary account) are pushed to ARC.
+  // ARC will remove any accounts in the Android account manager that are not
+  // present in `accounts` (with an exception for the primary account as noted
+  // above). Accounts in `accounts` will be added or updated to the Android
+  // account manager.
+  // During a session, subsequent changes to the list of accounts are still
+  // managed through OnAccountUpdated.
+  [MinVersion=29] SetAccounts@6(array<ArcAccountInfo> accounts);
 };

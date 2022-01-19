@@ -882,14 +882,35 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
 void ArcAuthService::CompleteAccountsPushToArc(
     bool filter_primary_account,
     const base::flat_set<account_manager::Account>& accounts) {
-  // TODO(crbug/1260909): call `SetAccounts` when the API is implemented in ARC.
+  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+
+  std::vector<mojom::ArcAccountInfoPtr> arc_accounts =
+      std::vector<mojom::ArcAccountInfoPtr>();
   for (const auto& account : accounts) {
     DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
     if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id()))
       continue;
 
-    OnAccountAvailableInArc(account);
+    arc_accounts.emplace_back(mojom::ArcAccountInfo::New(
+        /*email=*/account.raw_email, /*gaia_id=*/account.key.id()));
   }
+
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->auth(), SetAccounts);
+  if (!instance) {
+    VLOG(1) << "SetAccounts API is not available in ARC. Fallback to "
+               "OnAccountAvailableInArc";
+    for (const auto& account : accounts) {
+      DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
+      if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id()))
+        continue;
+
+      OnAccountAvailableInArc(account);
+    }
+    return;
+  }
+
+  instance->SetAccounts(std::move(arc_accounts));
 }
 
 void ArcAuthService::DispatchAccountsInArc(
