@@ -44,6 +44,25 @@ std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
   return hosts;
 }
 
+// A version of WebTransportFingerprintProofVerifier that enforces
+// Chromium-specific policies.
+class ChromiumWebTransportFingerprintProofVerifier
+    : public quic::WebTransportFingerprintProofVerifier {
+ public:
+  using WebTransportFingerprintProofVerifier::
+      WebTransportFingerprintProofVerifier;
+
+ protected:
+  bool IsKeyTypeAllowedByPolicy(
+      const quic::CertificateView& certificate) override {
+    if (certificate.public_key_type() == quic::PublicKeyType::kRsa) {
+      return false;
+    }
+    return WebTransportFingerprintProofVerifier::IsKeyTypeAllowedByPolicy(
+        certificate);
+  }
+};
+
 std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
     const NetworkIsolationKey& isolation_key,
     URLRequestContext* context,
@@ -57,8 +76,9 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
         isolation_key);
   }
 
-  auto verifier = std::make_unique<quic::WebTransportFingerprintProofVerifier>(
-      context->quic_context()->clock(), kCustomCertificateMaxValidityDays);
+  auto verifier =
+      std::make_unique<ChromiumWebTransportFingerprintProofVerifier>(
+          context->quic_context()->clock(), kCustomCertificateMaxValidityDays);
   for (const quic::CertificateFingerprint& fingerprint :
        parameters.server_certificate_fingerprints) {
     bool success = verifier->AddFingerprint(fingerprint);

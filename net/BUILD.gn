@@ -1965,6 +1965,7 @@ bundle_data("test_support_bundle_data") {
     "data/ssl/certificates/prime256v1-ecdsa-intermediate.pem",
     "data/ssl/certificates/punycodetest.pem",
     "data/ssl/certificates/quic-chain.pem",
+    "data/ssl/certificates/quic-ecdsa-leaf.key",
     "data/ssl/certificates/quic-leaf-cert.key",
     "data/ssl/certificates/quic-leaf-cert.key.pkcs8.pem",
     "data/ssl/certificates/quic-leaf-cert.key.sct",
