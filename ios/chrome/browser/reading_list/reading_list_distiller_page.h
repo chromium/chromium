@@ -83,14 +83,10 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
   // HandleGoogleCachedAMPPage will navigate to the iframe containing the actual
   // article page.
   void HandleGoogleCachedAMPPage();
-  // OnHandleGoogleCachedAMPPageResult is called asynchronously with the
-  // result of the javascript evaluation started in
-  // HandleGoogleCachedAMPPage.
-  void OnHandleGoogleCachedAMPPageResult(const base::Value* value);
   // Handles the JavaScript response. If the URL of the iframe is returned,
   // triggers a navigation to it. Stop distillation of the page there as the new
   // load will trigger a new distillation.
-  bool HandleGoogleCachedAMPPageJavaScriptResult(id result, id error);
+  void OnHandleGoogleCachedAMPPageResult(const base::Value* value, bool error);
 
   // Work around the fact that articles from wikipedia has the major part of the
   // article hidden.

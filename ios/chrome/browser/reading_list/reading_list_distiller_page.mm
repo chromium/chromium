@@ -254,46 +254,28 @@ void ReadingListDistillerPage::HandleGoogleCachedAMPPage() {
       base::BindOnce(
           &ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult,
           weak_ptr_factory_.GetWeakPtr()));
-
-  // If there is no error, the navigation completion will
-  // trigger a new |OnLoadURLDone| call that will resume
-  // the distillation.
 }
 
 void ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult(
-    const base::Value* value) {
-  if (!value->is_string()) {
-    return;
+    const base::Value* value,
+    bool error) {
+  if (!error && value->is_string()) {
+    GURL new_gurl(value->GetString());
+    if (new_gurl.is_valid()) {
+      FetchFavicon(new_gurl);
+      web::NavigationManager::WebLoadParams params(new_gurl);
+      CurrentWebState()->GetNavigationManager()->LoadURLWithParams(params);
+
+      // If there is no error, the navigation completion will
+      // trigger a new |OnLoadURLDone| call that will resume
+      // the distillation.
+      return;
+    }
   }
 
-  NSString* result = base::SysUTF8ToNSString(value->GetString());
-  if (!HandleGoogleCachedAMPPageJavaScriptResult(result, nil)) {
-    // If there is an error on navigation, continue
-    // normal distillation.
-    ContinuePageDistillation();
-  }
-}
-
-bool ReadingListDistillerPage::HandleGoogleCachedAMPPageJavaScriptResult(
-    id result,
-    id error) {
-  if (error) {
-    return false;
-  }
-  NSString* result_string = base::mac::ObjCCast<NSString>(result);
-  NSURL* new_url = [NSURL URLWithString:result_string];
-  if (!new_url) {
-    return false;
-  }
-
-  GURL new_gurl = net::GURLWithNSURL(new_url);
-  if (!new_gurl.is_valid()) {
-    return false;
-  }
-  FetchFavicon(new_gurl);
-  web::NavigationManager::WebLoadParams params(new_gurl);
-  CurrentWebState()->GetNavigationManager()->LoadURLWithParams(params);
-  return true;
+  // If there is an error on navigation, continue
+  // normal distillation.
+  ContinuePageDistillation();
 }
 
 bool ReadingListDistillerPage::IsWikipediaPage() {
