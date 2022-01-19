@@ -407,15 +407,15 @@ void KioskAppData::SetCache(const std::string& name,
   SaveIcon(icon, cache_dir);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdateDeprecated dict_update(local_state, dictionary_name());
+  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
   SaveToDictionary(dict_update);
 
   const std::string app_key = std::string(kKeyApps) + '.' + app_id();
   const std::string required_platform_version_key =
       app_key + '.' + kKeyRequiredPlatformVersion;
 
-  dict_update->SetString(required_platform_version_key,
-                         required_platform_version);
+  dict_update->SetStringPath(required_platform_version_key,
+                             required_platform_version);
 }
 
 void KioskAppData::OnExtensionIconLoaded(const gfx::Image& icon) {

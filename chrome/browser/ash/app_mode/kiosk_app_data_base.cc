@@ -79,24 +79,22 @@ KioskAppDataBase::KioskAppDataBase(const std::string& dictionary_name,
 
 KioskAppDataBase::~KioskAppDataBase() = default;
 
-void KioskAppDataBase::SaveToDictionary(
-    DictionaryPrefUpdateDeprecated& dict_update) {
+void KioskAppDataBase::SaveToDictionary(DictionaryPrefUpdate& dict_update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const std::string app_key = std::string(kKeyApps) + '.' + app_id_;
   const std::string name_key = app_key + '.' + kKeyName;
   const std::string icon_path_key = app_key + '.' + kKeyIcon;
 
-  dict_update->SetString(name_key, name_);
-  dict_update->SetString(icon_path_key, icon_path_.value());
+  dict_update->SetStringPath(name_key, name_);
+  dict_update->SetStringPath(icon_path_key, icon_path_.value());
 }
 
-void KioskAppDataBase::SaveIconToDictionary(
-    DictionaryPrefUpdateDeprecated& dict_update) {
+void KioskAppDataBase::SaveIconToDictionary(DictionaryPrefUpdate& dict_update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const std::string app_key = std::string(kKeyApps) + '.' + app_id_;
   const std::string icon_path_key = app_key + '.' + kKeyIcon;
 
-  dict_update->SetString(icon_path_key, icon_path_.value());
+  dict_update->SetStringPath(icon_path_key, icon_path_.value());
 }
 
 bool KioskAppDataBase::LoadFromDictionary(const base::Value& dict,
@@ -154,7 +152,7 @@ void KioskAppDataBase::ClearCache() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PrefService* local_state = g_browser_process->local_state();
 
-  DictionaryPrefUpdateDeprecated dict_update(local_state, dictionary_name());
+  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
 
   const std::string app_key =
       std::string(KioskAppDataBase::kKeyApps) + '.' + app_id_;

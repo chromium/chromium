@@ -32,8 +32,8 @@ using ::chromeos::UserDataAuthClient;
 void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
   PrefService* const local_state = g_browser_process->local_state();
   {
-    DictionaryPrefUpdateDeprecated dict_update(local_state,
-                                               prefs::kAllKioskUsersToRemove);
+    DictionaryPrefUpdate dict_update(local_state,
+                                     prefs::kAllKioskUsersToRemove);
     dict_update->SetKey(cryptohome::Identification(account_id).id(),
                         base::Value(account_id.GetUserEmail()));
   }
@@ -43,8 +43,8 @@ void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
 void UnscheduleDelayedCryptohomeRemoval(const cryptohome::Identification& id) {
   PrefService* const local_state = g_browser_process->local_state();
   {
-    DictionaryPrefUpdateDeprecated dict_update(local_state,
-                                               prefs::kAllKioskUsersToRemove);
+    DictionaryPrefUpdate dict_update(local_state,
+                                     prefs::kAllKioskUsersToRemove);
     dict_update->RemoveKey(id.id());
   }
   local_state->CommitPendingWrite();

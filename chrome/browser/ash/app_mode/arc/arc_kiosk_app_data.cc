@@ -60,7 +60,7 @@ void ArcKioskAppData::SetCache(const std::string& name,
   SaveIcon(*icon_.bitmap(), cache_dir);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdateDeprecated dict_update(local_state, dictionary_name());
+  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
 
   SaveToDictionary(dict_update);
 }

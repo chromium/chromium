@@ -47,10 +47,10 @@ class KioskAppDataBase : public KioskAppIconLoader::Delegate {
   ~KioskAppDataBase() override;
 
   // Helper to save name and icon to provided dictionary.
-  void SaveToDictionary(DictionaryPrefUpdateDeprecated& dict_update);
+  void SaveToDictionary(DictionaryPrefUpdate& dict_update);
 
   // Helper to save icon to provided dictionary.
-  void SaveIconToDictionary(DictionaryPrefUpdateDeprecated& dict_update);
+  void SaveIconToDictionary(DictionaryPrefUpdate& dict_update);
 
   // Helper to load name and icon from provided dictionary.
   // if |lazy_icon_load| is set to true, the icon will not be updated, only

@@ -230,7 +230,7 @@ void WebKioskAppData::UpdateFromWebAppInfo(
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdateDeprecated dict_update(local_state, dictionary_name());
+  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
   SaveToDictionary(dict_update);
 
   launch_url_ = GURL(app_info->start_url);
@@ -299,7 +299,7 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
   SaveIcon(icon, cache_dir);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdateDeprecated dict_update(local_state, dictionary_name());
+  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
   SaveIconToDictionary(dict_update);
 
   dict_update->FindDictKey(KioskAppDataBase::kKeyApps)
