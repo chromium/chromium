@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/browser_sync/profile_sync_components_factory_impl.h"
+#include "components/browser_sync/sync_api_component_factory_impl.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/history/core/browser/history_service.h"
@@ -83,7 +83,7 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
 
   component_factory_ =
-      std::make_unique<browser_sync::ProfileSyncComponentsFactoryImpl>(
+      std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
           this, ::GetChannel(),
           base::CreateSingleThreadTaskRunner({web::WebThread::UI}), db_thread_,
           profile_web_data_service_, account_web_data_service_, password_store_,

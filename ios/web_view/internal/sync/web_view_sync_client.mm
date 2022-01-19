@@ -101,7 +101,7 @@ WebViewSyncClient::WebViewSyncClient(
       invalidation_service_(invalidation_service),
       sync_invalidations_service_(sync_invalidations_service) {
   component_factory_ =
-      std::make_unique<browser_sync::ProfileSyncComponentsFactoryImpl>(
+      std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
           this, version_info::Channel::STABLE,
           base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
           profile_web_data_service_->GetDBTaskRunner(),

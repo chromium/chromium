@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/browser_sync/profile_sync_components_factory_impl.h"
+#include "components/browser_sync/sync_api_component_factory_impl.h"
 
 #include <utility>
 
@@ -124,7 +124,7 @@ base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
 
 }  // namespace
 
-ProfileSyncComponentsFactoryImpl::ProfileSyncComponentsFactoryImpl(
+SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
     browser_sync::BrowserSyncClient* sync_client,
     version_info::Channel channel,
     const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
@@ -154,10 +154,10 @@ ProfileSyncComponentsFactoryImpl::ProfileSyncComponentsFactoryImpl(
   DCHECK(sync_client_);
 }
 
-ProfileSyncComponentsFactoryImpl::~ProfileSyncComponentsFactoryImpl() = default;
+SyncApiComponentFactoryImpl::~SyncApiComponentFactoryImpl() = default;
 
 syncer::DataTypeController::TypeVector
-ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
+SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     syncer::ModelTypeSet disabled_types,
     syncer::SyncService* sync_service) {
   syncer::DataTypeController::TypeVector controllers;
@@ -398,7 +398,7 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
 }
 
 std::unique_ptr<DataTypeManager>
-ProfileSyncComponentsFactoryImpl::CreateDataTypeManager(
+SyncApiComponentFactoryImpl::CreateDataTypeManager(
     const syncer::WeakHandle<syncer::DataTypeDebugInfoListener>&
         debug_info_listener,
     const DataTypeController::TypeMap* controllers,
@@ -411,7 +411,7 @@ ProfileSyncComponentsFactoryImpl::CreateDataTypeManager(
 }
 
 std::unique_ptr<syncer::SyncEngine>
-ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
+SyncApiComponentFactoryImpl::CreateSyncEngine(
     const std::string& name,
     invalidation::InvalidationService* invalidator,
     syncer::SyncInvalidationsService* sync_invalidation_service) {
@@ -428,7 +428,7 @@ ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
                           base::Unretained(sync_client_)));
 }
 
-void ProfileSyncComponentsFactoryImpl::ClearAllTransportData() {
+void SyncApiComponentFactoryImpl::ClearAllTransportData() {
   syncer::SyncTransportDataPrefs sync_transport_data_prefs(
       sync_client_->GetPrefService());
 
@@ -450,20 +450,21 @@ void ProfileSyncComponentsFactoryImpl::ClearAllTransportData() {
 }
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>
-ProfileSyncComponentsFactoryImpl::CreateForwardingControllerDelegate(
+SyncApiComponentFactoryImpl::CreateForwardingControllerDelegate(
     syncer::ModelType type) {
   return std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
       sync_client_->GetControllerDelegateForModelType(type).get());
 }
 
-std::unique_ptr<ModelTypeController> ProfileSyncComponentsFactoryImpl::
-    CreateModelTypeControllerForModelRunningOnUIThread(syncer::ModelType type) {
+std::unique_ptr<ModelTypeController>
+SyncApiComponentFactoryImpl::CreateModelTypeControllerForModelRunningOnUIThread(
+    syncer::ModelType type) {
   return std::make_unique<ModelTypeController>(
       type, CreateForwardingControllerDelegate(type));
 }
 
 std::unique_ptr<ModelTypeController>
-ProfileSyncComponentsFactoryImpl::CreateWalletModelTypeController(
+SyncApiComponentFactoryImpl::CreateWalletModelTypeController(
     syncer::ModelType type,
     const base::RepeatingCallback<
         base::WeakPtr<syncer::ModelTypeControllerDelegate>(
@@ -478,13 +479,13 @@ ProfileSyncComponentsFactoryImpl::CreateWalletModelTypeController(
       sync_client_->GetPrefService(), sync_service);
 }
 
-std::unique_ptr<ModelTypeController> ProfileSyncComponentsFactoryImpl::
-    CreateWalletModelTypeControllerWithInMemorySupport(
-        syncer::ModelType type,
-        const base::RepeatingCallback<
-            base::WeakPtr<syncer::ModelTypeControllerDelegate>(
-                autofill::AutofillWebDataService*)>& delegate_from_web_data,
-        syncer::SyncService* sync_service) {
+std::unique_ptr<ModelTypeController>
+SyncApiComponentFactoryImpl::CreateWalletModelTypeControllerWithInMemorySupport(
+    syncer::ModelType type,
+    const base::RepeatingCallback<
+        base::WeakPtr<syncer::ModelTypeControllerDelegate>(
+            autofill::AutofillWebDataService*)>& delegate_from_web_data,
+    syncer::SyncService* sync_service) {
   return std::make_unique<AutofillWalletModelTypeController>(
       type, /*delegate_for_full_sync_mode=*/
       std::make_unique<syncer::ProxyModelTypeControllerDelegate>(

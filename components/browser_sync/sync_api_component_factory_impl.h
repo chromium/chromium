@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_BROWSER_SYNC_PROFILE_SYNC_COMPONENTS_FACTORY_IMPL_H__
-#define COMPONENTS_BROWSER_SYNC_PROFILE_SYNC_COMPONENTS_FACTORY_IMPL_H__
+#ifndef COMPONENTS_BROWSER_SYNC_SYNC_API_COMPONENT_FACTORY_IMPL_H_
+#define COMPONENTS_BROWSER_SYNC_SYNC_API_COMPONENT_FACTORY_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -39,11 +39,9 @@ namespace browser_sync {
 
 class BrowserSyncClient;
 
-// TODO(crbug.com/1201272): Rename to SyncApiComponentFactoryImpl.
-class ProfileSyncComponentsFactoryImpl
-    : public syncer::SyncApiComponentFactory {
+class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
  public:
-  ProfileSyncComponentsFactoryImpl(
+  SyncApiComponentFactoryImpl(
       BrowserSyncClient* sync_client,
       version_info::Channel channel,
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
@@ -57,11 +55,10 @@ class ProfileSyncComponentsFactoryImpl
       const scoped_refptr<password_manager::PasswordStoreInterface>&
           account_password_store,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service);
-  ProfileSyncComponentsFactoryImpl(const ProfileSyncComponentsFactoryImpl&) =
+  SyncApiComponentFactoryImpl(const SyncApiComponentFactoryImpl&) = delete;
+  SyncApiComponentFactoryImpl& operator=(const SyncApiComponentFactoryImpl&) =
       delete;
-  ProfileSyncComponentsFactoryImpl& operator=(
-      const ProfileSyncComponentsFactoryImpl&) = delete;
-  ~ProfileSyncComponentsFactoryImpl() override;
+  ~SyncApiComponentFactoryImpl() override;
 
   // Creates and returns enabled datatypes and their controllers.
   // |disabled_types| allows callers to prevent certain types from being
@@ -134,4 +131,4 @@ class ProfileSyncComponentsFactoryImpl
 
 }  // namespace browser_sync
 
-#endif  // COMPONENTS_BROWSER_SYNC_PROFILE_SYNC_COMPONENTS_FACTORY_IMPL_H__
+#endif  // COMPONENTS_BROWSER_SYNC_SYNC_API_COMPONENT_FACTORY_IMPL_H_

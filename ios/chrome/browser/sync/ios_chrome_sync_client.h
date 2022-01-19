@@ -23,7 +23,7 @@ class PasswordStoreInterface;
 }
 
 namespace browser_sync {
-class ProfileSyncComponentsFactoryImpl;
+class SyncApiComponentFactoryImpl;
 }
 
 class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
@@ -65,8 +65,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   ChromeBrowserState* const browser_state_;
 
   // The sync api component factory in use by this client.
-  std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
-      component_factory_;
+  std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
 
   std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
 

@@ -57,7 +57,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/browser_sync/profile_sync_components_factory_impl.h"
+#include "components/browser_sync/sync_api_component_factory_impl.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
@@ -203,7 +203,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
   account_password_store_ = AccountPasswordStoreFactory::GetForProfile(
       profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
-  component_factory_ = std::make_unique<ProfileSyncComponentsFactoryImpl>(
+  component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
       this, chrome::GetChannel(), content::GetUIThreadTaskRunner({}),
       web_data_service_thread_, profile_web_data_service_,
       account_web_data_service_, profile_password_store_,

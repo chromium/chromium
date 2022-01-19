@@ -34,7 +34,7 @@ class SyncableService;
 
 namespace browser_sync {
 
-class ProfileSyncComponentsFactoryImpl;
+class SyncApiComponentFactoryImpl;
 
 class ChromeSyncClient : public browser_sync::BrowserSyncClient {
  public:
@@ -93,8 +93,7 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   const raw_ptr<Profile> profile_;
 
   // The sync api component factory in use by this client.
-  std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
-      component_factory_;
+  std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
 
   std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
 
