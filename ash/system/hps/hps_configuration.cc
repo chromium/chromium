@@ -15,7 +15,7 @@ namespace ash {
 namespace {
 
 // Default quick dim delay to configure power_manager.
-constexpr base::TimeDelta kQuickDimDelayDefault = base::Seconds(60);
+constexpr base::TimeDelta kQuickDimDelayDefault = base::Seconds(45);
 
 // Default value determines whether send feedback to configure power_manager.
 constexpr int kShouldSendFeedbackIfUndimmed = false;
