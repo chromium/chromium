@@ -21,6 +21,7 @@ declare global {
     // TODO(crbug.com/980846): Refactor to use a better way rather than window
     // properties to pass data to other modules.
     appWindow: Comlink.Remote<AppWindow>|null;
+    windowCreationTime: number;
   }
 }
 
@@ -31,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const testBridge = Comlink.wrap<TestBridge>(sharedWorker.port);
   const appWindow = await testBridge.bindWindow(window.location.href);
   window.appWindow = appWindow;
-  window['windowCreationTime'] = performance.now();
+  window.windowCreationTime = performance.now();
   if (appWindow !== null) {
     await appWindow.waitUntilReadyOnTastSide();
   }

@@ -275,7 +275,7 @@ export class App {
       nav.close(ViewName.SPLASH);
       nav.open(ViewName.CAMERA);
 
-      const windowCreationTime = window['windowCreationTime'];
+      const windowCreationTime = window.windowCreationTime;
       this.perfLogger.start(
           PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
       this.perfLogger.stop(
