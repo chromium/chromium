@@ -204,7 +204,11 @@ class OzonePlatformWayland : public OzonePlatform,
     return connection_->xdg_decoration_manager_v1() == nullptr;
   }
 
-  void InitializeUI(const InitParams& args) override {
+  bool InitializeUI(const InitParams& args) override {
+    if (ShouldFailInitializeUIForTest()) {
+      LOG(ERROR) << "Failing for test";
+      return false;
+    }
     // Initialize DeviceDataManager early as devices are set during
     // WaylandConnection::Initialize().
     DeviceDataManager::CreateInstance();
@@ -217,8 +221,10 @@ class OzonePlatformWayland : public OzonePlatform,
     KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
         keyboard_layout_engine_.get());
     connection_ = std::make_unique<WaylandConnection>();
-    if (!connection_->Initialize())
-      LOG(FATAL) << "Failed to initialize Wayland platform";
+    if (!connection_->Initialize()) {
+      LOG(ERROR) << "Failed to initialize Wayland platform";
+      return false;
+    }
 
     buffer_manager_connector_ = std::make_unique<WaylandBufferManagerConnector>(
         connection_->buffer_manager_host());
@@ -239,6 +245,8 @@ class OzonePlatformWayland : public OzonePlatform,
 
     menu_utils_ = std::make_unique<WaylandMenuUtils>(connection_.get());
     wayland_utils_ = std::make_unique<WaylandUtils>();
+
+    return true;
   }
 
   void InitializeGPU(const InitParams& args) override {

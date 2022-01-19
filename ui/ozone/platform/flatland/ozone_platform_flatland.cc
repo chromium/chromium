@@ -148,7 +148,7 @@ class OzonePlatformFlatland : public OzonePlatform,
         delegate, window_manager_->GetWindow(widget)->CloneViewRef());
   }
 
-  void InitializeUI(const InitParams& params) override {
+  bool InitializeUI(const InitParams& params) override {
     if (!PlatformEventSource::GetInstance())
       platform_event_source_ = std::make_unique<FlatlandPlatformEventSource>();
     keyboard_layout_engine_ = std::make_unique<StubKeyboardLayoutEngine>();
@@ -170,6 +170,8 @@ class OzonePlatformFlatland : public OzonePlatform,
 
     if (base::ThreadTaskRunnerHandle::IsSet())
       BindInMainProcessIfNecessary();
+
+    return true;
   }
 
   void InitializeGPU(const InitParams& params) override {

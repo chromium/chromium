@@ -225,8 +225,11 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // Initializes the subsystems/resources necessary for the UI process (e.g.
   // events) with additional properties to customize the ozone platform
   // implementation. Ozone will not retain InitParams after returning from
-  // InitalizeForUI.
-  static void InitializeForUI(const InitParams& args);
+  // InitializeForUI.
+  // Returns whether the initialisation completed successfully.  Should this
+  // have returned false, the browser must stop the startup and exit because it
+  // would not be able to work normally.
+  static bool InitializeForUI(const InitParams& args);
 
   // Initializes the subsystems for rendering but with additional properties
   // provided by |args| as with InitalizeForUI.
@@ -338,12 +341,26 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   bool single_process() const { return single_process_; }
 
+  static bool ShouldFailInitializeUIForTest();
+
  private:
+  friend class OzonePlatformTest;
+
+  // For platforms that may fail at the early stage of initialising, sets so
+  // that they fail.
+  // See https://crbug.com/1280138.
+  static void SetFailInitializeUIForTest(bool fail);
+
   // Optional method for pre-early initialization. In case of X11, sets X11
   // error handlers so that errors can be caught if early initialization fails.
   virtual void PreEarlyInitialize();
 
-  virtual void InitializeUI(const InitParams& params) = 0;
+  // Initialises the platform in the UI process.  Returns whether that completed
+  // successfully, i. e., the startup process may proceed further.
+  // The platform implementation must check all conditions critical for normal
+  // operation, and return false if any of them are not met (e. g., the display
+  // server is not available).
+  virtual bool InitializeUI(const InitParams& params) = 0;
   virtual void InitializeGPU(const InitParams& params) = 0;
 
   bool initialized_ui_ = false;

@@ -86,7 +86,7 @@ class OzonePlatformWindows : public OzonePlatform {
     return nullptr;
   }
 
-  void InitializeUI(const InitParams& params) override {
+  bool InitializeUI(const InitParams& params) override {
     window_manager_ = std::make_unique<WindowsWindowManager>();
     surface_factory_ = std::make_unique<WindowsSurfaceFactory>();
     // This unbreaks tests that create their own.
@@ -100,6 +100,8 @@ class OzonePlatformWindows : public OzonePlatform {
     input_controller_ = CreateStubInputController();
     cursor_factory_ = std::make_unique<WinCursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
+
+    return true;
   }
 
   void InitializeGPU(const InitParams& params) override {

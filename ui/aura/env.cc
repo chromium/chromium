@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
@@ -99,8 +100,9 @@ std::unique_ptr<Env> Env::CreateInstance() {
   DCHECK(!g_primary_instance);
   // No make_unique as constructor is private.
   std::unique_ptr<Env> env(new Env());
+  if (!env->Init())
+    return {};
   g_primary_instance = env.get();
-  env->Init();
   return env;
 }
 
@@ -209,7 +211,7 @@ Env::Env()
 #endif
 }
 
-void Env::Init() {
+bool Env::Init() {
 #if defined(USE_OZONE)
   // The ozone platform can provide its own event source. So initialize the
   // platform before creating the default event source
@@ -219,10 +221,14 @@ void Env::Init() {
   // Env::CreateInstance() instead of checking flags here.
   params.single_process = command_line->HasSwitch("single-process") ||
                           command_line->HasSwitch("in-process-gpu");
-  ui::OzonePlatform::InitializeForUI(params);
+  if (!ui::OzonePlatform::InitializeForUI(params)) {
+    LOG(ERROR) << "The platform failed to initialize.  Exiting.";
+    return false;
+  }
 #endif
   if (!ui::PlatformEventSource::GetInstance())
     event_source_ = ui::PlatformEventSource::CreateDefault();
+  return true;
 }
 
 void Env::NotifyWindowInitialized(Window* window) {

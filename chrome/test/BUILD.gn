@@ -2205,7 +2205,10 @@ if (!is_android && !is_fuchsia) {
     }
 
     if (is_linux) {
-      sources += [ "../browser/ui/views/frame/desktop_browser_frame_aura_linux_browsertest.cc" ]
+      sources += [
+        "../browser/ozone_platform_browsertest.cc",
+        "../browser/ui/views/frame/desktop_browser_frame_aura_linux_browsertest.cc",
+      ]
     }
 
     if (is_linux || is_chromeos) {

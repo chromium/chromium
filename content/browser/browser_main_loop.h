@@ -143,6 +143,10 @@ class CONTENT_EXPORT BrowserMainLoop {
   void CreateMainMessageLoop();
   void PostCreateMainMessageLoop();
 
+  // Creates a "bare" message loop that is required to exit gracefully at the
+  // early stage if the toolkit failed to initialise.
+  void CreateMessageLoopForEarlyShutdown();
+
   // Create and start running the tasks we need to complete startup. Note that
   // this can be called more than once (currently only on Android) if we get a
   // request for synchronous startup while the tasks created by asynchronous

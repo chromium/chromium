@@ -221,14 +221,19 @@ class OzonePlatformX11 : public OzonePlatform,
     return false;
   }
 
-  void InitializeUI(const InitParams& params) override {
-    // If opening the connection failed there is nothing we can do. Crash here
-    // instead of crashing later. If you are crashing here, make sure there is
-    // an X server running and $DISPLAY is set.
-    // In case of non-Ozone/X11, the very same check happens during the
-    // BrowserMainLoop::InitializeToolkit call.
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-      CHECK(x11::Connection::Get()->Ready()) << "Missing X server or $DISPLAY";
+  bool InitializeUI(const InitParams& params) override {
+    if (ShouldFailInitializeUIForTest()) {
+      LOG(ERROR) << "Failing for test";
+      return false;
+    }
+    // If opening the connection failed, we can not do anything.  The platform
+    // cannot initialise.
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kHeadless) &&
+        !x11::Connection::Get()->Ready()) {
+      LOG(ERROR) << "Missing X server or $DISPLAY";
+      return false;
+    }
 
     InitializeCommon(params);
     CreatePlatformEventSource();
@@ -253,6 +258,8 @@ class OzonePlatformX11 : public OzonePlatform,
     x11_utils_ = std::make_unique<X11Utils>();
 
     base::UmaHistogramEnumeration("Linux.WindowManager", GetWindowManagerUMA());
+
+    return true;
   }
 
   void InitializeGPU(const InitParams& params) override {

@@ -124,7 +124,7 @@ class OzonePlatformCast : public OzonePlatform {
            usage == gfx::BufferUsage::SCANOUT;
   }
 
-  void InitializeUI(const InitParams& params) override {
+  bool InitializeUI(const InitParams& params) override {
     device_manager_ = CreateDeviceManager();
     cursor_factory_ = std::make_unique<CursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
@@ -148,6 +148,8 @@ class OzonePlatformCast : public OzonePlatform {
 
     if (enable_dummy_software_rendering)
       surface_factory_ = std::make_unique<SurfaceFactoryCast>();
+
+    return true;
   }
   void InitializeGPU(const InitParams& params) override {
     overlay_manager_ = std::make_unique<OverlayManagerCast>();

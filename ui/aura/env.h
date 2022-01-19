@@ -147,7 +147,9 @@ class AURA_EXPORT Env : public ui::EventTarget,
 
   Env();
 
-  void Init();
+  // Returns whether the initialisation was successful.  If it was not,
+  // CreateInstance will return nullptr, and the process will eventually exit.
+  bool Init();
 
   // Called by the Window when it is initialized. Notifies observers.
   void NotifyWindowInitialized(Window* window);

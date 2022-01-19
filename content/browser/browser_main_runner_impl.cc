@@ -113,8 +113,10 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
       return early_init_error_code;
 
     // Must happen before we try to use a message loop or display any UI.
-    if (!main_loop_->InitializeToolkit())
+    if (!main_loop_->InitializeToolkit()) {
+      main_loop_->CreateMessageLoopForEarlyShutdown();
       return 1;
+    }
 
     main_loop_->PreCreateMainMessageLoop();
     main_loop_->CreateMainMessageLoop();

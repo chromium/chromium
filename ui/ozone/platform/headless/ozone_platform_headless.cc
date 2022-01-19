@@ -98,7 +98,7 @@ class OzonePlatformHeadless : public OzonePlatform {
     return std::make_unique<InputMethodMinimal>(delegate);
   }
 
-  void InitializeUI(const InitParams& params) override {
+  bool InitializeUI(const InitParams& params) override {
     window_manager_ = std::make_unique<HeadlessWindowManager>();
     surface_factory_ = std::make_unique<HeadlessSurfaceFactory>(file_path_);
     // This unbreaks tests that create their own.
@@ -112,6 +112,8 @@ class OzonePlatformHeadless : public OzonePlatform {
     input_controller_ = CreateStubInputController();
     cursor_factory_ = std::make_unique<BitmapCursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
+
+    return true;
   }
 
   void InitializeGPU(const InitParams& params) override {
