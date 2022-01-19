@@ -245,6 +245,7 @@ test("components_unittests") {
       "//components/previous_session_info:unit_tests",
       "//components/safe_browsing/ios/browser:unit_tests",
       "//components/security_state/ios:unit_tests",
+      "//components/shared_highlighting/ios:unit_tests",
       "//components/signin/ios/browser:unit_tests",
       "//components/signin/public/identity_manager/objc:unit_tests",
       "//components/translate/ios/browser:unit_tests",

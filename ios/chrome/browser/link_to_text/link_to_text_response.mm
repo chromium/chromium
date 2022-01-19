@@ -8,6 +8,7 @@
 #import "base/values.h"
 #import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
+#import "components/shared_highlighting/ios/parsing_utils.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_utils.h"
@@ -88,7 +89,7 @@ using shared_highlighting::TextFragment;
 
   ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(webState);
 
-  if (!link_to_text::IsValidDictValue(value)) {
+  if (!shared_highlighting::IsValidDictValue(value)) {
     if (link_to_text::IsLinkGenerationTimeout(latency)) {
       return [[self alloc] initWithError:LinkGenerationError::kTimeout
                                 sourceID:sourceID
@@ -120,7 +121,7 @@ using shared_highlighting::TextFragment;
       TextFragment::FromValue(value->FindKey("fragment"));
   const std::string* selectedText = value->FindStringKey("selectedText");
   absl::optional<CGRect> sourceRect =
-      link_to_text::ParseRect(value->FindKey("selectionRect"));
+      shared_highlighting::ParseRect(value->FindKey("selectionRect"));
 
   // All values must be present to have a valid payload.
   if (!title || !fragment || !selectedText || !sourceRect) {
@@ -131,7 +132,7 @@ using shared_highlighting::TextFragment;
 
   GURL baseURL = webState->GetLastCommittedURL();
   absl::optional<GURL> canonicalURL =
-      link_to_text::ParseURL(value->FindStringKey("canonicalUrl"));
+      shared_highlighting::ParseURL(value->FindStringKey("canonicalUrl"));
 
   // Use the canonical URL as base when it exists, and only on HTTPS pages.
   if (baseURL.SchemeIsCryptographic() && canonicalURL) {
@@ -147,8 +148,8 @@ using shared_highlighting::TextFragment;
              title:title
       selectedText:base::SysUTF8ToNSString(*selectedText)
         sourceView:webState->GetView()
-        sourceRect:link_to_text::ConvertToBrowserRect(sourceRect.value(),
-                                                      webState)];
+        sourceRect:shared_highlighting::ConvertToBrowserRect(sourceRect.value(),
+                                                             webState)];
   return [[self alloc] initWithPayload:payload
                               sourceID:sourceID
                                latency:latency];
