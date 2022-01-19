@@ -58,7 +58,14 @@ var SidePanelBookmarkFolderTest = class extends SidePanelBrowserTest {
   }
 };
 
-TEST_F('SidePanelBookmarkFolderTest', 'All', function() {
+
+GEN('#if defined(OS_MAC)');
+GEN('// Flaky, https://crbug.com/1288747');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+TEST_F('SidePanelBookmarkFolderTest', 'MAYBE_All', function() {
   mocha.run();
 });
 
