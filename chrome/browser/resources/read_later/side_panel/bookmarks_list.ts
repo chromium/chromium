@@ -276,7 +276,7 @@ export class BookmarksListElement extends PolymerElement {
     event.preventDefault();
     const eventTarget = event.composedPath()[0] as HTMLElement;
     const bookmarkData = getBookmarkFromElement(eventTarget);
-    if (!bookmarkData) {
+    if (!bookmarkData || !eventTarget.matches(':focus-visible')) {
       return;
     }
 

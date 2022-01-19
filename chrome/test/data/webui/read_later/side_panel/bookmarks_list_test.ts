@@ -284,6 +284,7 @@ suite('SidePanelBookmarksListTest', () => {
   test('CutsCopyPastesBookmark', async () => {
     const folderElement = getFolderElements(bookmarksList)[0]!;
     const bookmarkElement = getBookmarkElements(folderElement)[0]!;
+    bookmarkElement.focus();
 
     bookmarkElement.dispatchEvent(new KeyboardEvent(
         'keydown', {key: 'x', ctrlKey: true, bubbles: true, composed: true}));
