@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -342,12 +343,10 @@ TEST_F(IntentPickerBubbleViewTest, RememberCheckbox) {
   bubble_->PressButtonForTesting(0, event);
   ASSERT_FALSE(bubble_->remember_selection_checkbox_->GetEnabled());
 
-  // kWeb entries should allow persistence when kIntentPickerPWAPersistence is
-  // enabled.
+  // kWeb entries should allow persistence when PWA persistence is enabled.
   bubble_->PressButtonForTesting(1, event);
-  ASSERT_EQ(
-      bubble_->remember_selection_checkbox_->GetEnabled(),
-      base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence));
+  ASSERT_EQ(bubble_->remember_selection_checkbox_->GetEnabled(),
+            apps::IntentPickerPwaPersistenceEnabled());
 
   // Other app types can be persisted.
   bubble_->PressButtonForTesting(2, event);

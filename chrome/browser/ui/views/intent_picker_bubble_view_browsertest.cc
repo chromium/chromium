@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -82,8 +83,7 @@ class IntentPickerBubbleViewBrowserTest
 };
 
 // Tests that clicking a link from a tabbed browser to within the scope of an
-// installed app shows the intent picker icon in Omnibox. The intent picker
-// bubble will only show up for android apps which is too hard to test.
+// installed app shows the intent picker icon in Omnibox.
 IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
                        NavigationToInScopeLinkShowsIntentPicker) {
   InstallTestWebApp();

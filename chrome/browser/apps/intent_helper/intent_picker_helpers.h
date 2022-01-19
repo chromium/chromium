@@ -27,6 +27,9 @@ void MaybeShowIntentPicker(content::WebContents* web_contents);
 void ShowIntentPickerBubble(content::WebContents* web_contents,
                             const GURL& url);
 
+// Returns true if persistence for PWA entries in the Intent Picker is enabled.
+bool IntentPickerPwaPersistenceEnabled();
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_HELPERS_H_

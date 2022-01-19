@@ -325,27 +325,21 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
 #endif
 
 class WebAppDeclarativeLinkCapturingBrowserTest
-    : public WebAppLinkCapturingBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+    : public WebAppLinkCapturingBrowserTest {
  public:
-  static std::string ParamToString(
-      const ::testing::TestParamInfo<bool> param_info) {
-    return param_info.param ? "PersistenceOn" : "PersistenceOff";
-  }
-
   WebAppDeclarativeLinkCapturingBrowserTest() {
-    if (GetParam()) {
-      features_.InitWithFeatures({blink::features::kWebAppEnableLinkCapturing,
-                                  features::kIntentPickerPWAPersistence},
-                                 {});
-    } else {
-      features_.InitWithFeatures({blink::features::kWebAppEnableLinkCapturing},
-                                 {features::kIntentPickerPWAPersistence});
-    }
+    features_.InitAndEnableFeature(blink::features::kWebAppEnableLinkCapturing);
   }
 
   bool IsIntentPickerPersistenceEnabled() {
-    return base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO: Run these tests with persistence enabled on Lacros, and then
+    // replace this method with apps::IntentPickerPwaPersistenceEnabled().
+    return true;
+#else
+    // App service intent handling is not yet available outside of Chrome OS.
+    return false;
+#endif
   }
 
  protected:
@@ -355,7 +349,7 @@ class WebAppDeclarativeLinkCapturingBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksUnset) {
   InstallTestApp("/web_apps/basic.html", /*await_metric=*/false);
 
@@ -380,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksNone) {
   InstallTestApp("/web_apps/get_manifest.html?capture_links_none.json",
                  /*await_metric=*/true);
@@ -412,7 +406,7 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
 #else
 #define MAYBE_CaptureLinksNewClient CaptureLinksNewClient
 #endif
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
                        MAYBE_CaptureLinksNewClient) {
   InstallTestApp("/web_apps/get_manifest.html?capture_links_new_client.json",
                  /*await_metric=*/true);
@@ -444,7 +438,7 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(app_browser_2, {in_scope_2_});
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
                        InAppScopeNavigationIgnored) {
   InstallTestApp("/web_apps/get_manifest.html?capture_links_new_client.json",
                  /*await_metric=*/true);
@@ -468,7 +462,7 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksExistingClientNavigate) {
   InstallTestApp(
       "/web_apps/get_manifest.html?capture_links_existing_client_navigate.json",
@@ -508,17 +502,6 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
 }
 #endif
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppDeclarativeLinkCapturingBrowserTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    /*persistence=*/testing::Values(true, false),
-#else
-    // App service intent handling is not yet available outside of Chrome OS.
-    /*persistence=*/testing::Values(false),
-#endif
-    &WebAppDeclarativeLinkCapturingBrowserTest::ParamToString);
-
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
 
@@ -539,7 +522,7 @@ class WebAppDeclarativeLinkCapturingPrerenderBrowserTest
   PrerenderTestHelper prerender_helper_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingPrerenderBrowserTest,
                        CaptureLinksCancelPrerendering) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -589,17 +572,7 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingPrerenderBrowserTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppDeclarativeLinkCapturingPrerenderBrowserTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    /*persistence=*/testing::Values(true, false),
-#else
-    // App service intent handling is not yet available outside of Chrome OS.
-    /*persistence=*/testing::Values(false),
-#endif
-    &WebAppDeclarativeLinkCapturingPrerenderBrowserTest::ParamToString);
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class WebAppDeclarativeLinkCapturingOriginTrialBrowserTest
     : public WebAppLinkCapturingBrowserTest {
@@ -607,8 +580,8 @@ class WebAppDeclarativeLinkCapturingOriginTrialBrowserTest
   WebAppDeclarativeLinkCapturingOriginTrialBrowserTest() {
     // Intent handling persistence enabled and DLC disable by default (needs
     // origin trial to enable).
-    features_.InitWithFeatures({features::kIntentPickerPWAPersistence},
-                               {blink::features::kWebAppEnableLinkCapturing});
+    features_.InitAndDisableFeature(
+        blink::features::kWebAppEnableLinkCapturing);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -641,9 +614,8 @@ class WebAppLaunchHandlerLinkCaptureBrowserTest
     : public WebAppLinkCapturingBrowserTest {
  public:
   WebAppLaunchHandlerLinkCaptureBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kWebAppEnableLaunchHandler,
-                                    features::kIntentPickerPWAPersistence},
-                                   {});
+    feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppEnableLaunchHandler);
   }
   ~WebAppLaunchHandlerLinkCaptureBrowserTest() override = default;
 

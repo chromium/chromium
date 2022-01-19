@@ -4793,10 +4793,6 @@ const char kCrosLanguageSettingsImeOptionsInSettingsName[] =
 const char kCrosLanguageSettingsImeOptionsInSettingsDescription[] =
     "Adds IME settings to the settings menu";
 
-const char kIntentPickerPWAPersistenceName[] = "Intent picker PWA Persistence";
-const char kIntentPickerPWAPersistenceDescription[] =
-    "Allow user to always open with PWA in intent picker.";
-
 const char kKeyboardBasedDisplayArrangementInSettingsName[] =
     "Keyboard-based Display Arrangement in Settings";
 const char kKeyboardBasedDisplayArrangementInSettingsDescription[] =

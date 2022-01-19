@@ -446,11 +446,6 @@ extern const base::Feature kIncognitoClearBrowsingDataDialogForDesktop;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
 
-#if !BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kIntentPickerPWAPersistence;
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kInvalidatorUniqueOwnerName;
 

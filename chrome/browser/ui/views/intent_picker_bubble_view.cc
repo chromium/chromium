@@ -502,8 +502,7 @@ void IntentPickerBubbleView::UpdateCheckboxState() {
     // TODO(crbug.com/1000037): Allow persisting remote devices.
     should_enable = false;
   } else if (selected_app_type == apps::PickerEntryType::kWeb) {
-    should_enable =
-        base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
+    should_enable = apps::IntentPickerPwaPersistenceEnabled();
   }
 
   // Reset the checkbox state to the default unchecked if becomes disabled.

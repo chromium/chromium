@@ -2760,9 +2760,6 @@ extern const char kImeSystemEmojiPickerClipboardDescription[];
 extern const char kImeStylusHandwritingName[];
 extern const char kImeStylusHandwritingDescription[];
 
-extern const char kIntentPickerPWAPersistenceName[];
-extern const char kIntentPickerPWAPersistenceDescription[];
-
 extern const char kKeyboardBasedDisplayArrangementInSettingsName[];
 extern const char kKeyboardBasedDisplayArrangementInSettingsDescription[];
 

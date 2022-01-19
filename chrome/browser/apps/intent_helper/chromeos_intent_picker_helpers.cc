@@ -72,15 +72,6 @@ bool ShouldAutoDisplayUi(
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  // If we only have PWAs in the app list, do not show the intent picker.
-  // Instead just show the omnibox icon. This is to reduce annoyance to users
-  // until "Remember my choice" is available for desktop PWAs.
-  // TODO(crbug.com/826982): show the intent picker when the app registry is
-  // available to persist "Remember my choice" for PWAs.
-  if (!base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence) &&
-      ContainsOnlyPwasAndMacApps(apps_for_picker)) {
-    return false;
-  }
 
   // If the preferred app is use browser, do not show the intent picker.
   Profile* profile =
@@ -142,14 +133,6 @@ void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
       web_contents, std::move(apps),
       base::BindOnce(&OnAppIconsLoaded, web_contents, ui_auto_display_service,
                      url));
-}
-
-bool ContainsOnlyPwasAndMacApps(const std::vector<IntentPickerAppInfo>& apps) {
-  return std::all_of(apps.begin(), apps.end(),
-                     [](const IntentPickerAppInfo& app_info) {
-                       return app_info.type == PickerEntryType::kWeb ||
-                              app_info.type == PickerEntryType::kMacOs;
-                     });
 }
 
 void OnIntentPickerClosedChromeOs(

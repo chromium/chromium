@@ -5565,11 +5565,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseFakeDeviceForMediaStreamName,
      flag_descriptions::kUseFakeDeviceForMediaStreamDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(media::kUseFakeDeviceForMediaStream)},
-
-    {"intent-picker-pwa-persistence",
-     flag_descriptions::kIntentPickerPWAPersistenceName,
-     flag_descriptions::kIntentPickerPWAPersistenceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kIntentPickerPWAPersistence)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

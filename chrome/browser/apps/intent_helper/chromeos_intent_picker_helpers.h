@@ -22,9 +22,6 @@ namespace apps {
 void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
                                  std::vector<IntentPickerAppInfo> apps);
 
-bool ContainsOnlyPwasAndMacApps(
-    const std::vector<apps::IntentPickerAppInfo>& apps);
-
 // These enums are used to define the intent picker show state, whether the
 // picker is popped out or just displayed as a clickable omnibox icon.
 enum class PickerShowState {

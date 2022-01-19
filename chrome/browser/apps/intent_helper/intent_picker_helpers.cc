@@ -190,4 +190,12 @@ void ShowIntentPickerBubble(content::WebContents* web_contents,
                      /*ui_auto_display_service=*/nullptr, url));
 }
 
+bool IntentPickerPwaPersistenceEnabled() {
+#if defined(OS_CHROMEOS)
+  return true;
+#else
+  return false;
+#endif
+}
+
 }  // namespace apps

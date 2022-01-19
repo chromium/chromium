@@ -662,17 +662,6 @@ const base::Feature kIncognitoClearBrowsingDataDialogForDesktop{
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if !BUILDFLAG(IS_ANDROID)
-// Allow user to have preference for PWA in the intent picker.
-const base::Feature kIntentPickerPWAPersistence{
-#if BUILDFLAG(IS_CHROMEOS)
-  "IntentPickerPWAPersistence", base::FEATURE_ENABLED_BY_DEFAULT
-#else
-  "IntentPickerPWAPersistence", base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // If enabled, CloudPolicyInvalidator and RemoteCommandInvalidator instances
 // will have unique owner name.
 const base::Feature kInvalidatorUniqueOwnerName{

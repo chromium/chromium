@@ -200,12 +200,11 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
     return false;
   }
 
-  // Only automatically launch PWA if the flag is on.
+  // Only automatically launch supported app types.
   apps::mojom::AppType app_type =
       proxy->AppRegistryCache().GetAppType(preferred_app_id.value());
   if (app_type != apps::mojom::AppType::kArc &&
-      (app_type != apps::mojom::AppType::kWeb ||
-       !base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence)) &&
+      app_type != apps::mojom::AppType::kWeb &&
       !IsSystemWebApp(profile, preferred_app_id.value())) {
     return false;
   }
