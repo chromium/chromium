@@ -101,6 +101,7 @@ class ContentSettingImageModel {
   // Returns the resource ID of a string to show when the icon appears, or 0 if
   // we don't wish to show anything.
   int explanatory_string_id() const { return explanatory_string_id_; }
+  int AccessibilityAnnouncementStringId() const;
   const std::u16string& get_tooltip() const { return tooltip_; }
   const gfx::VectorIcon* get_icon_badge() const { return icon_badge_; }
 
@@ -120,6 +121,9 @@ class ContentSettingImageModel {
   bool IsMacRestoreLocationPermissionExperimentActive();
 
  protected:
+  // Note: image_type_should_notify_accessibility by itself does not guarantee
+  // the item will be read; it also needs a valid explanatory_text_id or
+  // accessibility_string_id.
   explicit ContentSettingImageModel(
       ImageType type,
       bool image_type_should_notify_accessibility = false);
@@ -139,6 +143,8 @@ class ContentSettingImageModel {
     icon_badge_ = &badge;
   }
 
+  void set_accessibility_string_id(int id) { accessibility_string_id_ = id; }
+
   void set_tooltip(const std::u16string& tooltip) { tooltip_ = tooltip; }
   void set_should_auto_open_bubble(const bool should_auto_open_bubble) {
     should_auto_open_bubble_ = should_auto_open_bubble;
@@ -153,6 +159,7 @@ class ContentSettingImageModel {
   raw_ptr<const gfx::VectorIcon> icon_;
   raw_ptr<const gfx::VectorIcon> icon_badge_;
   int explanatory_string_id_ = 0;
+  int accessibility_string_id_ = 0;
   std::u16string tooltip_;
   const ImageType image_type_;
   const bool image_type_should_notify_accessibility_;

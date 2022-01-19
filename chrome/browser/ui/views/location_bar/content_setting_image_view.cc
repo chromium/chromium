@@ -27,6 +27,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -111,10 +112,17 @@ void ContentSettingImageView::Update() {
   SetVisible(true);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
-    GetViewAccessibility().OverrideName(l10n_util::GetStringUTF16(
-        content_setting_image_model_->explanatory_string_id()));
-    GetViewAccessibility().OverrideDescription(
-        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT));
+    auto name = l10n_util::GetStringUTF16(
+        content_setting_image_model_->AccessibilityAnnouncementStringId());
+    auto desc = l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
+    GetViewAccessibility().OverrideName(name);
+    GetViewAccessibility().OverrideDescription(desc);
+#if BUILDFLAG(IS_MAC)
+    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+#else
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, name, desc));
+#endif
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
     content_setting_image_model_->AccessibilityWasNotified(web_contents);
   }
