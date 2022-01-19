@@ -45,7 +45,7 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // Helper function to update the selected segment in the prefs. Auto-extends
   // the selection if the new result is unknown.
-  void UpdateSelectedSegment(OptimizationTarget new_selection);
+  virtual void UpdateSelectedSegment(OptimizationTarget new_selection);
 
   // ModelExecutionScheduler::Observer overrides.
 

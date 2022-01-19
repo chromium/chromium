@@ -13,13 +13,34 @@ struct ServiceStatus {
   int32 intialization_status;
 };
 
-// Information about a segment
+// Information about a segment.
 struct SegmentInfo {
-  // Target of the optimization.
-  string optimization_target;
+  // String representation of the segment ID.
+  string segment_name;
+
+  // Int value of the segment ID.
+  int32 segment_id;
 
   // Detailed segmentation information.
   string segment_data;
+
+  // Whether the segment can be executed.
+  bool can_execute_segment;
+
+  // Latest result for executing the segment.
+  string prediction_result;
+};
+
+// Information about a segmentation client.
+struct ClientInfo {
+  // Key uniquely identifies a segmentation client.
+  string segmentation_key;
+
+  // Which segment is currently selected.
+  string selected_segment;
+
+  // A list of segments needed by this client.
+  array<SegmentInfo> segment_info;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -33,6 +54,17 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Gets the segmentation service status.
   GetServiceStatus();
+
+  // Executes a segment using available metrics data in the DB.
+  ExecuteModel(int32 segment_id);
+
+  // Overwrites the result for the given segment identified by |segment_id|.
+  // This will trigger a new round of segment selection and update the existing
+  // result in Prefs.
+  OverwriteResult(int32 segment_id, float result);
+
+  // Sets the selected segment for the client identified by |segmentation_key|.
+  SetSelected(string segmentation_key, int32 optimization_target);
 };
 
 // Renderer-side handler for internal page to process the updates from
@@ -45,8 +77,8 @@ interface Page {
   OnServiceStatusChanged(bool is_initialized,
                          int32 status_flag);
 
-  // Notifies the page when all segment info becomes available from the service.
-  // |segment_info| is an array of all segment information stored in the
-  // database,
-  OnSegmentInfoAvailable(array<SegmentInfo> segment_info);
+  // Notifies the page when all client info becomes available from the service.
+  // |client_info| is an array of all client information stored in the
+  // database.
+  OnClientInfoAvailable(array<ClientInfo> client_info);
 };

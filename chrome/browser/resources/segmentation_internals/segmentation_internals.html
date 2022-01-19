@@ -2,9 +2,22 @@
 <html lang="en" dir="ltr">
   <head>
     <style>
-      .segment {
+      .client {
         border: 1px outset black;
-        margin: 2px 2px 2px 2px;
+        margin: 1px 1px 1px 1px;
+      }
+      .segment {
+        border: 1px outset blue;
+        margin: 1px 1px 1px 1px;
+      }
+      .hidden-meta {
+        display : none;
+      }
+      .shown-meta {
+        display : block;
+      }
+      .overwrite {
+        width : 50px;
       }
     </style>
     <meta charset="utf-8">
@@ -18,8 +31,8 @@
     <div>
       Initialized: <span id="initialized">false</span>, Service status: <span id="service-status">0</span>
     </div>
-    <h4>Segment information</h4>
-    <div id="segment-container">
+    <h4>Client information</h4>
+    <div id="client-container">
     </div>
     <script type="module" src="segmentation_internals.js"></script>
   </body>

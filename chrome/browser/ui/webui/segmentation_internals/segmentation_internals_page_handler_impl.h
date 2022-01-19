@@ -35,13 +35,17 @@ class SegmentationInternalsPageHandlerImpl
 
   // segmentation_internals::mojom::PageHandler:
   void GetServiceStatus() override;
+  void ExecuteModel(int segment_id) override;
+  void OverwriteResult(int segment_id, float result) override;
+  void SetSelected(const std::string& segmentation_key,
+                   int segment_id) override;
 
  private:
   // segmentation_platform::ServiceProxy::Observer overrides.
   void OnServiceStatusChanged(bool is_initialized, int status_flag) override;
-  void OnSegmentInfoAvailable(
-      const std::vector<std::pair<std::string, std::string>>& segment_info)
-      override;
+  void OnClientInfoAvailable(
+      const std::vector<segmentation_platform::ServiceProxy::ClientInfo>&
+          client_info) override;
 
   mojo::Receiver<segmentation_internals::mojom::PageHandler> receiver_;
   mojo::Remote<segmentation_internals::mojom::Page> page_;

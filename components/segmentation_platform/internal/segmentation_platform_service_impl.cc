@@ -104,7 +104,6 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       std::move(signal_storage_config_db), clock);
   segmentation_result_prefs_ =
       std::make_unique<SegmentationResultPrefs>(pref_service);
-  proxy_ = std::make_unique<ServiceProxyImpl>(segment_info_database_.get());
 
   // Construct signal processors.
   user_action_signal_handler_ =
@@ -123,6 +122,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
             platform_options_);
   }
 
+  proxy_ = std::make_unique<ServiceProxyImpl>(segment_info_database_.get(),
+                                              signal_storage_config_.get(),
+                                              &configs_, &segment_selectors_);
   for (const auto& config : configs_) {
     for (const auto& segment_id : config->segment_ids)
       all_segment_ids_.insert(segment_id);
@@ -241,6 +243,8 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
           &SegmentationPlatformServiceImpl::OnExecuteDatabaseMaintenanceTasks,
           weak_ptr_factory_.GetWeakPtr()),
       kDatabaseMaintenanceDelay);
+
+  proxy_->SetModelExecutionScheduler(model_execution_scheduler_.get());
 }
 
 void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(

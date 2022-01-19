@@ -21,6 +21,18 @@ export class SegmentationInternalsBrowserProxy {
     return this.handler.getServiceStatus();
   }
 
+  executeModel(target: number) {
+    return this.handler.executeModel(target);
+  }
+
+  overwriteResult(target: number, result: number) {
+    return this.handler.overwriteResult(target, result);
+  }
+
+  setSelected(segmentationKey: string, target: number) {
+    return this.handler.setSelected(segmentationKey, target);
+  }
+
   static getInstance(): SegmentationInternalsBrowserProxy {
     return instance || (instance = new SegmentationInternalsBrowserProxy());
   }

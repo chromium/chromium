@@ -17,6 +17,7 @@ source_set("public") {
     "segment_selection_result.h",
     "segmentation_platform_service.cc",
     "segmentation_platform_service.h",
+    "service_proxy.cc",
     "service_proxy.h",
   ]
 
