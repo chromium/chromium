@@ -96,7 +96,6 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/pdf/browser/pdf_web_contents_helper.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/reputation/core/safety_tip_test_utils.h"
@@ -147,6 +146,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "pdf/buildflags.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -160,6 +160,10 @@
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_web_contents_helper.h"
 #endif
 
 using content::BrowserContext;
@@ -2855,6 +2859,7 @@ class DownloadTestSplitCacheEnabled : public DownloadTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if BUILDFLAG(ENABLE_PDF)
 IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
                        SaveMainFramePdfFromContextMenu_IsolationInfo) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -3020,6 +3025,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
             download_waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
   CheckDownloadStates(1, DownloadItem::COMPLETE);
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
                        SaveSubframeImageFromContextMenu_IsolationInfo) {
@@ -4335,7 +4341,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_CrazyFilenames) {
     base::FilePath file_path(origin_directory.Append(
 #if BUILDFLAG(IS_WIN)
         crazy_w
-#elif BUILDFLAG(IS_POSIX)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
         crazy8
 #endif
         ));
@@ -5199,7 +5205,8 @@ class DisableSafeBrowsingOnInProgressDownload
 
 #if BUILDFLAG(IS_WIN)
 const char kDangerousMockFilePath[] = "/downloads/dangerous/dangerous.exe";
-#elif BUILDFLAG(IS_POSIX)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1264058): Find an actually "dangerous" extension for Fuchsia.
 const char kDangerousMockFilePath[] = "/downloads/dangerous/dangerous.sh";
 #endif
 

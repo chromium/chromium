@@ -89,6 +89,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdf_features.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -431,14 +432,6 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
   raw_ptr<content::RenderFrameHost> extension_frame_ = nullptr;
   guest_view::TestGuestViewManagerFactory factory_;
   raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
-};
-
-class PdfPluginContextMenuBrowserTestWithUnseasonedOverride
-    : public base::test::WithFeatureOverride,
-      public PdfPluginContextMenuBrowserTest {
- public:
-  PdfPluginContextMenuBrowserTestWithUnseasonedOverride()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
 };
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -1864,6 +1857,15 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
   EXPECT_THAT(new_tab_content, testing::MatchesRegex(".*ep=ccm&s=&st=\\d+"));
 }
 
+#if BUILDFLAG(ENABLE_PDF)
+class PdfPluginContextMenuBrowserTestWithUnseasonedOverride
+    : public base::test::WithFeatureOverride,
+      public PdfPluginContextMenuBrowserTest {
+ public:
+  PdfPluginContextMenuBrowserTestWithUnseasonedOverride()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
+};
+
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithUnseasonedOverride,
                        FullPagePdfHasPageItems) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
@@ -1946,6 +1948,7 @@ IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTestWithUnseasonedEnabled,
     run_loop.Run();
   }
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 class LoadImageRequestObserver : public content::WebContentsObserver {
  public:

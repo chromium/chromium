@@ -122,7 +122,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "pdf/pdf_features.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/features.h"
@@ -148,6 +148,11 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/ppapi_test_utils.h"
 #endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using extensions::ContextMenuMatcher;
 using extensions::ExtensionsAPIClient;
@@ -3928,16 +3933,15 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestFocusWhileFocused) {
   TestHelper("testFocusWhileFocused", "web_view/shim", NO_TEST_SERVER);
 }
 
-class WebViewTestWithUnseasonedOverride
-    : public base::test::WithFeatureOverride,
-      public WebViewTest {
+#if BUILDFLAG(ENABLE_PDF)
+class WebViewPdfTest : public base::test::WithFeatureOverride,
+                       public WebViewTest {
  public:
-  WebViewTestWithUnseasonedOverride()
+  WebViewPdfTest()
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
 };
 
-IN_PROC_BROWSER_TEST_P(WebViewTestWithUnseasonedOverride,
-                       NestedGuestContainerBounds) {
+IN_PROC_BROWSER_TEST_P(WebViewPdfTest, NestedGuestContainerBounds) {
   TestHelper("testPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
   std::vector<content::WebContents*> guest_web_contents_list;
@@ -3960,8 +3964,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTestWithUnseasonedOverride,
 
 // Test that context menu Back/Forward items in a MimeHandlerViewGuest affect
 // the embedder WebContents. See crbug.com/587355.
-IN_PROC_BROWSER_TEST_P(WebViewTestWithUnseasonedOverride,
-                       ContextMenuNavigationInMimeHandlerView) {
+IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ContextMenuNavigationInMimeHandlerView) {
   TestHelper("testNavigateToPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
   std::vector<content::WebContents*> guest_web_contents_list;
@@ -3993,12 +3996,12 @@ IN_PROC_BROWSER_TEST_P(WebViewTestWithUnseasonedOverride,
             web_view_contents->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewTestWithUnseasonedOverride,
-                       Shim_TestDialogInPdf) {
+IN_PROC_BROWSER_TEST_P(WebViewPdfTest, Shim_TestDialogInPdf) {
   TestHelper("testDialogInPdf", "web_view/shim", NO_TEST_SERVER);
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebViewTestWithUnseasonedOverride);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebViewPdfTest);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestMailtoLink) {
   TestHelper("testMailtoLink", "web_view/shim", NEEDS_TEST_SERVER);
