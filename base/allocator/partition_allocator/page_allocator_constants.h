@@ -36,7 +36,7 @@
 
 #endif
 
-namespace base {
+namespace partition_alloc::internal {
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PageAllocationGranularityShift() {
@@ -111,6 +111,23 @@ SystemPageBaseMask() {
 
 constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
 constexpr size_t kPageMetadataSize = 1 << kPageMetadataShift;
+
+}  // namespace partition_alloc::internal
+
+namespace base {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::kPageMetadataShift;
+using ::partition_alloc::internal::kPageMetadataSize;
+using ::partition_alloc::internal::PageAllocationGranularity;
+using ::partition_alloc::internal::PageAllocationGranularityBaseMask;
+using ::partition_alloc::internal::PageAllocationGranularityOffsetMask;
+using ::partition_alloc::internal::PageAllocationGranularityShift;
+using ::partition_alloc::internal::SystemPageBaseMask;
+using ::partition_alloc::internal::SystemPageOffsetMask;
+using ::partition_alloc::internal::SystemPageShift;
+using ::partition_alloc::internal::SystemPageSize;
 
 }  // namespace base
 

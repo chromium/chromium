@@ -13,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 
-namespace base {
+namespace partition_alloc::internal {
 
 // Alignment has two constraints:
 // - Alignment requirement for scalar types: alignof(std::max_align_t)
@@ -36,6 +36,14 @@ constexpr size_t kAlignment = alignof(max_align_t);
 static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "
               "than 16 bytes.");
+
+}  // namespace partition_alloc::internal
+
+namespace base {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::kAlignment;
 
 namespace internal {
 
@@ -81,7 +89,8 @@ class PartitionStatsDumper;
 // kAlignment boundary. This is useful for e.g. using aligned vector
 // instructions in the constructor for zeroing.
 #if __has_attribute(assume_aligned)
-#define MALLOC_ALIGNED __attribute__((assume_aligned(base::kAlignment)))
+#define MALLOC_ALIGNED \
+  __attribute__((assume_aligned(::partition_alloc::internal::kAlignment)))
 #endif
 
 #endif  // defined(__has_attribute)
