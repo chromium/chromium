@@ -21,6 +21,15 @@ absl::optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
   if (current_policy->IsFeatureEnabled(feature))
     return absl::nullopt;
 
+  // All permissions are disabled by default for fenced frames, irrespective of
+  // headers (see PermissionsPolicy::CreateForFencedFrame).
+  if (frame->IsInFencedFrameTree()) {
+    return PermissionsPolicyBlockLocator{
+        IdentifiersFactory::FrameId(frame),
+        PermissionsPolicyBlockReason::kInFencedFrameTree,
+    };
+  }
+
   Frame* current_frame = frame;
   Frame* child_frame = nullptr;
 

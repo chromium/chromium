@@ -796,6 +796,10 @@ CreatePermissionsPolicyBlockLocator(
       reason =
           protocol::Page::PermissionsPolicyBlockReasonEnum::IframeAttribute;
       break;
+    case blink::PermissionsPolicyBlockReason::kInFencedFrameTree:
+      reason =
+          protocol::Page::PermissionsPolicyBlockReasonEnum::InFencedFrameTree;
+      break;
   }
 
   return protocol::Page::PermissionsPolicyBlockLocator::create()

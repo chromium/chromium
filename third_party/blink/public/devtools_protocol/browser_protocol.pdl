@@ -6899,6 +6899,8 @@ domain Page
       Header
       # Declaration in iframe attribute.
       IframeAttribute
+      # Inside fenced frame.
+      InFencedFrameTree
 
   experimental type PermissionsPolicyBlockLocator extends object
     properties

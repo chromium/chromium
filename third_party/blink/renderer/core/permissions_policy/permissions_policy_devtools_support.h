@@ -20,6 +20,9 @@ enum class PermissionsPolicyBlockReason {
   // or in iframe attribute.
   kHeader,
   kIframeAttribute,
+  // All permissions are disabled by default for fenced frames, irrespective of
+  // headers.
+  kInFencedFrameTree,
 };
 
 struct PermissionsPolicyBlockLocator {
