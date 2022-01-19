@@ -49,9 +49,9 @@ namespace blink {
 
 void V8DevToolsHost::PlatformMethodCustom(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   V8SetReturnValue(info, V8AtomicString(info.GetIsolate(), "mac"));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   V8SetReturnValue(info, V8AtomicString(info.GetIsolate(), "windows"));
 #else  // Unix-like systems
   V8SetReturnValue(info, V8AtomicString(info.GetIsolate(), "linux"));

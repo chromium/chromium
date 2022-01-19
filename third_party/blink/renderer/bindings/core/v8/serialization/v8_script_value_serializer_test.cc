@@ -1124,7 +1124,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmap) {
 // this test intends to ensure that a platform can decode images it has
 // previously written. At format version 9, Android writes RGBA and every
 // other platform writes BGRA.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x67, 0x01, 0x01, 0x02, 0x01,
                        0x08, 0xff, 0x00, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff});
