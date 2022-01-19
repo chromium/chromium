@@ -228,7 +228,7 @@ DesktopCaptureAccessHandler::~DesktopCaptureAccessHandler() = default;
 
 void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     content::WebContents* web_contents,
-    const std::u16string& application_title,
+    const extensions::Extension* extension,
     std::unique_ptr<PendingAccessRequest> pending_request) {
   DCHECK_EQ(pending_request->request.video_type,
             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
@@ -252,6 +252,15 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     std::move(pending_request->callback)
         .Run(blink::MediaStreamDevices(),
              blink::mojom::MediaStreamRequestResult::INVALID_STATE,
+             /*ui=*/nullptr);
+    return;
+  }
+
+  if (!IsRequestApproved(web_contents, pending_request->request, extension,
+                         pending_request->is_allowlisted_extension)) {
+    std::move(pending_request->callback)
+        .Run(blink::MediaStreamDevices(),
+             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
              /*ui=*/nullptr);
     return;
   }
@@ -283,7 +292,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
   // destroyed when the browser process terminates.
   policy::DlpContentManagerAsh::Get()->CheckScreenShareRestriction(
-      screen_id, application_title,
+      screen_id, GetApplicationTitle(web_contents, extension),
       base::BindOnce(&DesktopCaptureAccessHandler::OnDlpRestrictionChecked,
                      base::Unretained(this), web_contents->GetWeakPtr(),
                      std::move(pending_request), screen_id, capture_audio));
@@ -376,18 +385,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
       return;
     }
 #endif
-    if (!IsRequestApproved(web_contents, request, extension,
-                           is_allowlisted_extension)) {
-      std::move(pending_request->callback)
-          .Run(blink::MediaStreamDevices(),
-               blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-               /*ui=*/nullptr);
-      return;
-    }
-
-    ProcessScreenCaptureAccessRequest(
-        web_contents, GetApplicationTitle(web_contents, extension),
-        std::move(pending_request));
+    ProcessScreenCaptureAccessRequest(web_contents, extension,
+                                      std::move(pending_request));
     return;
   }
 

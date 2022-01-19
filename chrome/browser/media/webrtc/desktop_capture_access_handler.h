@@ -74,7 +74,7 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
 
   void ProcessScreenCaptureAccessRequest(
       content::WebContents* web_contents,
-      const std::u16string& application_title,
+      const extensions::Extension* extension,
       std::unique_ptr<PendingAccessRequest> pending_request);
 
   // WebContentsCollection::Observer:
