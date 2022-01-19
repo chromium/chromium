@@ -33,8 +33,9 @@ const CGFloat kHeaderMenuButtonInsetSides = 2;
 // TODO(crbug.com/1085419): Get card width from Mulder.
 const CGFloat kDiscoverFeedContentWith = 430;
 // The height of the header container. The content is unaffected.
-const CGFloat kFeedHeaderHeight = 40;
-
+// TODO(crbug.com/1277504): Only keep the WC header after launch.
+const CGFloat kWebChannelsHeaderHeight = 52;
+const CGFloat kDiscoverFeedHeaderHeight = 40;
 // * Values below are exclusive to Web Channels.
 // The width of the feed selector segments.
 const CGFloat kHeaderSegmentWidth = 150;
@@ -79,6 +80,9 @@ const CGFloat kMenuButtonSize = 28;
   [super viewDidLoad];
 
   self.container = [[UIView alloc] init];
+
+  self.view.backgroundColor =
+      [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
 
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.container.translatesAutoresizingMaskIntoConstraints = NO;
@@ -191,7 +195,6 @@ const CGFloat kMenuButtonSize = 28;
 - (void)applyHeaderConstraints {
   // Anchor container and menu button.
   [NSLayoutConstraint activateConstraints:@[
-    [self.view.heightAnchor constraintEqualToConstant:kFeedHeaderHeight],
     [self.container.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [self.container.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
@@ -209,6 +212,8 @@ const CGFloat kMenuButtonSize = 28;
   if (IsWebChannelsEnabled()) {
     // Anchor segmented control.
     [NSLayoutConstraint activateConstraints:@[
+      [self.view.heightAnchor
+          constraintEqualToConstant:kWebChannelsHeaderHeight],
       [self.segmentedControl.centerXAnchor
           constraintEqualToAnchor:self.container.centerXAnchor],
       [self.segmentedControl.centerYAnchor
@@ -219,6 +224,8 @@ const CGFloat kMenuButtonSize = 28;
   } else {
     // Anchors title label.
     [NSLayoutConstraint activateConstraints:@[
+      [self.view.heightAnchor
+          constraintEqualToConstant:kDiscoverFeedHeaderHeight],
       [self.titleLabel.leadingAnchor
           constraintEqualToAnchor:self.container.leadingAnchor
                          constant:kTitleHorizontalMargin],

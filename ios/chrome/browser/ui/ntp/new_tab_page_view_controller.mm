@@ -32,10 +32,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-const CGFloat kFeedHeaderTopPaddingWhenStuck = 10;
-}
-
 @interface NewTabPageViewController () <NewTabPageOmniboxPositioning,
                                         UICollectionViewDelegate,
                                         UIGestureRecognizerDelegate>
@@ -646,8 +642,7 @@ const CGFloat kFeedHeaderTopPaddingWhenStuck = 10;
 
   self.feedHeaderConstraints = @[
     [self.feedHeaderViewController.view.topAnchor
-        constraintEqualToAnchor:self.headerController.view.bottomAnchor
-                       constant:kFeedHeaderTopPaddingWhenStuck],
+        constraintEqualToAnchor:self.headerController.view.bottomAnchor],
   ];
 
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
@@ -821,8 +816,7 @@ const CGFloat kFeedHeaderTopPaddingWhenStuck = 10;
 // should stick to the top of the NTP.
 - (CGFloat)offsetToStickOmniboxAndHeader {
   return -(self.headerController.view.frame.size.height -
-           [self stickyOmniboxHeight]) -
-         kFeedHeaderTopPaddingWhenStuck;
+           [self stickyOmniboxHeight]);
 }
 
 // Whether the collection view has attained its minimum height.
