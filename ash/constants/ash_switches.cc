@@ -383,6 +383,10 @@ const char kEnableArcVm[] = "enable-arcvm";
 // Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
 
+// Enables testing the selfie camera feature of Capture Mode using fake cameras.
+// Used only in tests and the emulator.
+const char kEnableCaptureModeFakeCameras[] = "enable-capture-mode-fake-cameras";
+
 // Enables the Cast Receiver.
 const char kEnableCastReceiver[] = "enable-cast-receiver";
 
@@ -841,6 +845,11 @@ bool IsAuthSessionCryptohomeEnabled() {
 
 bool IsCellularFirstDevice() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kCellularFirst);
+}
+
+bool AreCaptureModeFakeCamerasEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnableCaptureModeFakeCameras);
 }
 
 bool IsRevenBranding() {
