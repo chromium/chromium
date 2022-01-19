@@ -37,6 +37,24 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace app_list {
+namespace {
+
+// TODO(crbug.com/1288636): This is brittle as it relies on knowing exactly
+// which providers are sending zero-state results. We should replace it with an
+// approach where providers indicate whether a result type is for query search
+// or zero-state.
+void ClearAllResultsExceptContinue(ResultsMap& results) {
+  for (auto it = results.begin(); it != results.end();) {
+    if (it->first != ResultType::kZeroStateFile &&
+        it->first != ResultType::kZeroStateDrive) {
+      it = results.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+}  // namespace
 
 SearchControllerImplNew::SearchControllerImplNew(
     AppListModelUpdater* model_updater,
@@ -69,28 +87,34 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   // else.
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
 
-  // Clear all results.
-  // - If the search is transitioning out of zero-state, clear the model updater
-  // so that old results are never shown.
-  // - Otherwise, do not publish this clear so that the results for the last
-  // query remain on-screen until the results are ready.
-  results_.clear();
-  categories_ = CreateAllCategories();
+  // Clear all search results but preserve zero-state results. On a call to
+  // StartSearch, we were previously either in zero-state, or another query
+  // search. Handle these two cases differently:
+  //
+  // a) were in zero-state: publish these changes, so that results from a
+  //    previous search aren't shown.
+  //
+  // b) were in search query: do not publish these changes, so that the
+  //    old results stay on screen until the new ones are ready.
+  ClearAllResultsExceptContinue(results_);
   if (last_query_.empty())
-    model_updater_->ClearSearchResults();
+    Publish();
   for (Observer& observer : observer_list_)
     observer.OnResultsCleared();
 
+  categories_ = CreateAllCategories();
+  ranker_->Start(query, results_, categories_);
+
   burnin_iteration_counter_ = 0;
   ids_to_burnin_iteration_.clear();
-
   session_start_ = base::Time::Now();
   last_query_ = query;
 
-  ranker_->Start(query, results_, categories_);
-
-  // Search all providers. The query can be empty if the user has entered and
-  // then deleted a query.
+  // Search all providers.
+  //
+  // TODO(crbug.com/1288712): The query can be empty if the user has entered and
+  // then deleted a query. We should consider whether this should trigger a
+  // StartSearch call or not.
   for (const auto& provider : providers_) {
     if (query.empty()) {
       provider->StartZeroState();
