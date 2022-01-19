@@ -2928,9 +2928,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
     // its tree. If it is possible that the navigation is both inside and
     // outside the frame tree and we discard it entirely because we don't
     // want to end up in a history state that didn't exist before.
-    if (base::FeatureList::IsEnabled(
-            features::kHistoryPreventSandboxedNavigation) &&
-        !navigates_inside_tree) {
+    if (!navigates_inside_tree) {
       DiscardPendingEntry(false);
       return;
     }

@@ -17491,11 +17491,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 class SandboxedNavigationControllerBrowserTest
     : public NavigationControllerBrowserTest {
  protected:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kHistoryPreventSandboxedNavigation);
-    NavigationControllerBrowserTest::SetUp();
-  }
 
   void SetupNavigation() {
     NavigationControllerImpl& controller =
@@ -17613,8 +17608,7 @@ class SandboxedNavigationControllerWithBfcacheBrowserTest
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
-         {features::kHistoryPreventSandboxedNavigation, {}}},
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
     NavigationControllerBrowserTest::SetUp();
@@ -17658,11 +17652,6 @@ IN_PROC_BROWSER_TEST_P(SandboxedNavigationControllerWithBfcacheBrowserTest,
 class SandboxedNavigationControllerPopupBrowserTest
     : public NavigationControllerBrowserTest {
  protected:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kHistoryPreventSandboxedNavigation);
-    NavigationControllerBrowserTest::SetUp();
-  }
 
   void SetupNavigation() {
     EXPECT_EQ(1u, Shell::windows().size());

@@ -98,7 +98,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
     kFledgeLimitNumAuctionsParam;
 CONTENT_EXPORT extern const base::Feature kFractionalScrollOffsets;
 CONTENT_EXPORT extern const base::Feature kGreaseUACH;
-CONTENT_EXPORT extern const base::Feature kHistoryPreventSandboxedNavigation;
 CONTENT_EXPORT extern const base::Feature kIdleDetection;
 CONTENT_EXPORT extern const base::Feature kIncludeIpcOverheadInNavigationStart;
 CONTENT_EXPORT extern const base::Feature kInstalledApp;
