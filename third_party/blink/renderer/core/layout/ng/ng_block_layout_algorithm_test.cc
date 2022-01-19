@@ -426,9 +426,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase1WithFloats) {
     )HTML");
 
   // ** Run LayoutNG algorithm **
-  NGConstraintSpace space;
-  scoped_refptr<const NGPhysicalBoxFragment> fragment;
-  std::tie(fragment, space) = RunBlockLayoutAlgorithmForElement(
+  auto [fragment, space] = RunBlockLayoutAlgorithmForElement(
       GetDocument().getElementsByTagName("html")->item(0));
   ASSERT_EQ(fragment->Children().size(), 1UL);
   PhysicalOffset body_offset = fragment->Children()[0].Offset();
@@ -508,9 +506,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase2WithFloats) {
     )HTML");
 
   // ** Run LayoutNG algorithm **
-  NGConstraintSpace space;
-  scoped_refptr<const NGPhysicalBoxFragment> fragment;
-  std::tie(fragment, space) = RunBlockLayoutAlgorithmForElement(
+  auto [fragment, space] = RunBlockLayoutAlgorithmForElement(
       GetDocument().getElementsByTagName("html")->item(0));
 
   auto* body_fragment =
@@ -1210,9 +1206,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, PositionFloatInsideEmptyBlocks) {
     )HTML");
 
   // ** Run LayoutNG algorithm **
-  NGConstraintSpace space;
-  scoped_refptr<const NGPhysicalBoxFragment> fragment;
-  std::tie(fragment, space) = RunBlockLayoutAlgorithmForElement(
+  auto [fragment, space] = RunBlockLayoutAlgorithmForElement(
       GetDocument().getElementsByTagName("html")->item(0));
 
   const auto* body_fragment =
@@ -1315,9 +1309,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, PositionFloatFragments) {
       )HTML");
 
   // ** Run LayoutNG algorithm **
-  NGConstraintSpace space;
-  scoped_refptr<const NGPhysicalBoxFragment> fragment;
-  std::tie(fragment, space) = RunBlockLayoutAlgorithmForElement(
+  auto [fragment, space] = RunBlockLayoutAlgorithmForElement(
       GetDocument().getElementsByTagName("html")->item(0));
 
   // ** Verify LayoutNG fragments and the list of positioned floats **
