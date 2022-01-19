@@ -1158,6 +1158,7 @@ extern const char kCartDiscountAcknowledged[];
 extern const char kCartDiscountEnabled[];
 extern const char kCartUsedDiscounts[];
 extern const char kCartDiscountLastFetchedTime[];
+extern const char kCartDiscountConsentShown[];
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

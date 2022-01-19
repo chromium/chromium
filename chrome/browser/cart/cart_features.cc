@@ -45,4 +45,11 @@ bool IsFakeDataEnabled() {
              ntp_features::kNtpChromeCartModuleDataParam) == "fake";
 }
 
+bool IsCartDiscountFeatureEnabled() {
+  return base::GetFieldTrialParamValueByFeature(
+             ntp_features::kNtpChromeCartModule,
+             ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
+         "true";
+}
+
 }  // namespace cart_features

@@ -5,7 +5,9 @@
 #include "chrome/browser/cart/cart_service.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
@@ -1354,6 +1356,9 @@ class CartServiceDiscountTest : public CartServiceTest {
     }
     service_->SetCartDiscountLinkFetcherForTesting(std::move(mock_fetcher));
   }
+
+ protected:
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests discount consent should not show when welcome surface is still showing.
@@ -1563,6 +1568,185 @@ TEST_F(CartServiceDiscountTest, TestFetchInvalidFallback) {
                      base::Unretained(this), run_loop[1].QuitClosure(),
                      default_cart_url));
   run_loop[1].Run();
+}
+
+// Tests whether discount consent has shown is correctly recorded.
+TEST_F(CartServiceDiscountTest, TestSetDiscountConsentShown) {
+  base::RunLoop run_loop[2];
+  for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
+    service_->IncreaseWelcomeSurfaceCounter();
+  }
+  ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
+  ASSERT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountConsentShown));
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+  ASSERT_TRUE(
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountConsentShown));
+
+  service_->DeleteCart(GURL(kMockMerchantURLA), true);
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+  ASSERT_TRUE(
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountConsentShown));
+}
+
+TEST_F(CartServiceDiscountTest, TestRecordDiscountConsentStatus_NotRecord) {
+  base::RunLoop run_loop[2];
+  // Simulate that the welcome surface is not showing, the discount feature is
+  // disabled and there is no partner merchant carts.
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   CartService::kWelcomSurfaceShowLimit);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  service_->GetDB()->DeleteAllCarts(
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  // Don't record when there is no abandoned cart and cart module is not
+  // showing.
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.Carts.DiscountConsentStatusAtLoad", 0);
+}
+
+TEST_F(CartServiceDiscountTest, TestRecordDiscountConsentStatus_NeverShown) {
+  base::RunLoop run_loop[2];
+  // Simulate that the welcome surface is not showing, the discount feature is
+  // disabled and there is no partner merchant carts.
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   CartService::kWelcomSurfaceShowLimit);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  service_->GetDB()->DeleteAllCarts(
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  // Add a non-partner-merchant cart.
+  service_->AddCart(kMockMerchantC, absl::nullopt, kMockProtoC);
+  task_environment_.RunUntilIdle();
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Carts.DiscountConsentStatusAtLoad",
+      CartDiscountMetricCollector::DiscountConsentStatus::NEVER_SHOWN, 1);
+}
+
+TEST_F(CartServiceDiscountTest, TestRecordDiscountConsentStatus_NoShow) {
+  base::RunLoop run_loop[2];
+  // Simulate that the welcome surface is not showing, the discount feature is
+  // disabled and there is no partner merchant carts.
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   CartService::kWelcomSurfaceShowLimit);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  service_->GetDB()->DeleteAllCarts(
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  // Add a non-partner-merchant cart, and simulate that the consent has shown
+  // before but the user has never acted on it.
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountConsentShown, true);
+  service_->AddCart(kMockMerchantC, absl::nullopt, kMockProtoC);
+  task_environment_.RunUntilIdle();
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Carts.DiscountConsentStatusAtLoad",
+      CartDiscountMetricCollector::DiscountConsentStatus::NO_SHOW, 1);
+}
+
+TEST_F(CartServiceDiscountTest, TestRecordDiscountConsentStatus_Ignored) {
+  base::RunLoop run_loop[2];
+  // Simulate that the welcome surface is not showing, the discount feature is
+  // disabled and there is no partner merchant carts.
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   CartService::kWelcomSurfaceShowLimit);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  service_->GetDB()->DeleteAllCarts(
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  // Add a partner-merchant cart.
+  service_->AddCart(kMockMerchantA, absl::nullopt, kMockProtoA);
+  task_environment_.RunUntilIdle();
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  run_loop[1].Run();
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Carts.DiscountConsentStatusAtLoad",
+      CartDiscountMetricCollector::DiscountConsentStatus::IGNORED, 1);
+}
+
+TEST_F(CartServiceDiscountTest, TestRecordDiscountConsentStatus_Declined) {
+  base::RunLoop run_loop[2];
+  // Simulate that the welcome surface is not showing, the discount feature is
+  // disabled and there is no partner merchant carts.
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   CartService::kWelcomSurfaceShowLimit);
+  service_->GetDB()->DeleteAllCarts(
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  // Add a non-partner-merchant cart, and simulate that user has rejected the
+  // consent.
+  service_->AddCart(kMockMerchantA, absl::nullopt, kMockProtoA);
+  task_environment_.RunUntilIdle();
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Carts.DiscountConsentStatusAtLoad",
+      CartDiscountMetricCollector::DiscountConsentStatus::DECLINED, 1);
+}
+
+TEST_F(CartServiceDiscountTest, TestRecordDiscountConsentStatus_Accepted) {
+  base::RunLoop run_loop[2];
+  // Simulate that the welcome surface is not showing, the discount feature is
+  // disabled and there is no partner merchant carts.
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   CartService::kWelcomSurfaceShowLimit);
+  service_->GetDB()->DeleteAllCarts(
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  // Add a non-partner-merchant cart, and simulate that user has accepted the
+  // consent.
+  service_->AddCart(kMockMerchantA, absl::nullopt, kMockProtoA);
+  task_environment_.RunUntilIdle();
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Carts.DiscountConsentStatusAtLoad",
+      CartDiscountMetricCollector::DiscountConsentStatus::ACCEPTED, 1);
 }
 
 class CartServiceSkipExtractionTest : public CartServiceTest {

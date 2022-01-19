@@ -11738,6 +11738,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Failed to open low latency stream"/>
 </enum>
 
+<enum name="CartDiscountConsentStatus">
+  <summary>ChromeCart discount consent status.</summary>
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Declined"/>
+  <int value="2" label="Ignored"/>
+  <int value="3" label="No show"/>
+  <int value="4" label="Never shown"/>
+</enum>
+
 <enum name="CartDiscountDataType">
   <summary>Discount related data associated with the cart module.</summary>
   <int value="0" label="cart_discount_info"/>

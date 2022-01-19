@@ -187,10 +187,11 @@ class CartService : public history::HistoryServiceObserver,
                             const cart_db::ChromeCartContentProto& cart_proto,
                             const GURL& discount_url);
 
-  // A callback to decide if there are partner carts.
-  void HasPartnerCarts(base::OnceCallback<void(bool)> callback,
-                       bool success,
-                       std::vector<CartDB::KeyAndValue> proto_pairs);
+  // A callback to decide whether to show discount consent or not.
+  void ShouldShowDiscountConsentCallback(
+      base::OnceCallback<void(bool)> callback,
+      bool success,
+      std::vector<CartDB::KeyAndValue> proto_pairs);
   // Set discount_link_fetcher_ for testing purpose.
   void SetCartDiscountLinkFetcherForTesting(
       std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher);

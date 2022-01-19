@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 
 namespace {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum CartDataRequestType {
   kCartDiscountInfo = 0,
   kCartDiscountUrl = 1,
@@ -36,4 +38,10 @@ void CartDiscountMetricCollector::RecordAppliedDiscount() {
 void CartDiscountMetricCollector::RecordClickedOnDiscount(bool has_discounts) {
   base::UmaHistogramBoolean("NewTabPage.Carts.ClickCart.HasDiscount",
                             has_discounts);
+}
+
+void CartDiscountMetricCollector::RecordDiscountConsentStatus(
+    DiscountConsentStatus status) {
+  base::UmaHistogramEnumeration("NewTabPage.Carts.DiscountConsentStatusAtLoad",
+                                status);
 }

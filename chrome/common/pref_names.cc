@@ -3318,6 +3318,9 @@ const char kCartUsedDiscounts[] = "cart_used_discounts";
 // A time pref indicating the timestamp of when last cart discount fetch
 // happened.
 const char kCartDiscountLastFetchedTime[] = "cart_discount_last_fetched_time";
+// Boolean pref indicating whether the consent for discount has ever shown or
+// not.
+const char kCartDiscountConsentShown[] = "cart_discount_consent_shown";
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

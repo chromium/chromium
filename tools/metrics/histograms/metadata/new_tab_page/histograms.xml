@@ -171,6 +171,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Carts.DiscountConsentStatusAtLoad"
+    enum="CartDiscountConsentStatus" expires_after="2022-06-19">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when the cart module is created and if there is at least one
+    abandoned cart. &quot;Accept&quot; and &quot;Decline&quot; to record
+    interaction result for users who have acted on the consent;
+    &quot;IGNORED&quot; for users who have seen the consent before but never
+    acted on it, and the consent is showing now; &quot;No show&quot; for users
+    who have seen the consent before but never acted on it, and the consent is
+    not showing now; &quot;Never shown&quot; for users who have never seen the
+    consent. Only logged on the 1P NTP. Note that even if the user has Google as
+    their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Carts.DiscountCountAtLoad" units="count"
     expires_after="2022-06-19">
   <owner>meiliang@chromium.org</owner>
