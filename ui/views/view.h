@@ -199,7 +199,7 @@ enum PropertyEffects {
 //   a callback.
 //
 //   base::CallbackListSubscription AddFrobbleChangedCallback(
-//       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+//       PropertyChangedCallback callback);
 //
 //   Each callback uses the the existing base::Bind mechanisms which allow for
 //   various kinds of callbacks; object methods, normal functions and lambdas.

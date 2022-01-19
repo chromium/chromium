@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
@@ -99,7 +98,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return std::move(this->AddChildrenImpl(&child, &args...));
   }
 
-  std::unique_ptr<ViewClass_> Build() && WARN_UNUSED_RESULT {
+  [[nodiscard]] std::unique_ptr<ViewClass_> Build() && {
     DCHECK(!root_view_) << "Root view specified. Use BuildChildren() instead.";
     DCHECK(view_);
     SetProperties(view_.get());
@@ -400,8 +399,8 @@ namespace views {                                                       \
     Builder<ViewClass_>(Builder&&) = default;                           \
     Builder<ViewClass_>& operator=(Builder<ViewClass_>&&) = default;    \
     ~Builder<ViewClass_>() = default;                                   \
-    std::unique_ptr<internal::ViewBuilderCore> Release() override       \
-        WARN_UNUSED_RESULT {                                            \
+    [[nodiscard]] std::unique_ptr<internal::ViewBuilderCore> Release()  \
+        override {                                                      \
       return std::make_unique<Builder<view_class>>(std::move(*this));   \
     }                                                                   \
   };                                                                    \

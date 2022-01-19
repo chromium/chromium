@@ -87,7 +87,7 @@ class RepeatingCallbackList;
 // returned by CallbackListBase::Add() does not outlive the bound object in the
 // callback. A typical way to do this is to bind a callback to a member function
 // on `this` and store the returned subscription as a member variable.
-class BASE_EXPORT CallbackListSubscription {
+class [[nodiscard]] BASE_EXPORT CallbackListSubscription {
  public:
   CallbackListSubscription();
   CallbackListSubscription(CallbackListSubscription&& subscription);
