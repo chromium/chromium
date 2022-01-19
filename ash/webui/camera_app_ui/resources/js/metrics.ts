@@ -39,11 +39,15 @@ const gaHelper = util.createUntrustedJSModule<GAHelperInterface>(
  */
 async function sendEvent(
     event: UniversalAnalytics.FieldsObject, dimen?: Map<number, unknown>) {
-  const assignDimension = (e, d) => {
-    for (const [key, value] of d.entries()) {
-      e[`dimension${key}`] = value;
-    }
-  };
+  const assignDimension =
+      (e: UniversalAnalytics.FieldsObject, d: Map<number, unknown>) => {
+        for (const [key, value] of d.entries()) {
+          // The TypeScript definition for UniversalAnalytics.FieldsObject
+          // manually listed out dimension1 ~ dimension200, and TypeScript don't
+          // recognize accessing it using []. Force the type here.
+          (e as Record<string, unknown>)[`dimension${key}`] = value;
+        }
+      };
 
   assert(baseDimen !== null);
   assignDimension(event, baseDimen);
@@ -124,9 +128,18 @@ enum MetricDimension {
  */
 export async function initMetrics(): Promise<void> {
   const board = loadTimeData.getBoard();
-  const boardName = /^(x86-)?(\w*)/.exec(board)[0];
-  const match = navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/);
-  const osVer = match ? match[1] : '';
+  const boardName = (() => {
+    const match = /^(x86-)?(\w*)/.exec(board);
+    assert(match !== null);
+    return match[0];
+  })();
+  const osVer = (() => {
+    const match = navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/);
+    if (match === null) {
+      return '';
+    }
+    return match[1];
+  })();
   baseDimen = new Map<MetricDimension, string|number>([
     [MetricDimension.BOARD, boardName],
     [MetricDimension.OS_VERSION, osVer],
@@ -136,7 +149,7 @@ export async function initMetrics(): Promise<void> {
   const GA_LOCAL_STORAGE_KEY = 'google-analytics.analytics.user-id';
   const clientId = localStorage.getString(GA_LOCAL_STORAGE_KEY);
 
-  const setClientId = (id) => {
+  const setClientId = (id: string) => {
     localStorage.set(GA_LOCAL_STORAGE_KEY, id);
   };
 
@@ -375,7 +388,7 @@ export interface IntentEventParam {
  */
 export function sendIntentEvent({intent, result}: IntentEventParam): void {
   const {mode, shouldHandleResult, shouldDownScale, isSecure} = intent;
-  const getBoolValue = (b) => b ? '1' : '0';
+  const getBoolValue = (b: boolean) => b ? '1' : '0';
   sendEvent(
       {
         eventCategory: 'intent',
