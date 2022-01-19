@@ -57,13 +57,17 @@ class ChromeSearchResult {
   const Tags& title_tags() const { return metadata_->title_tags; }
   const std::u16string& details() const { return metadata_->details; }
   const Tags& details_tags() const { return metadata_->details_tags; }
+
   const TextVector& title_text_vector() const {
     return metadata_->title_vector;
   }
   const TextVector& details_text_vector() const {
     return metadata_->details_vector;
   }
-  const std::u16string& big_title() const { return metadata_->big_title; }
+  const TextVector& big_title_text_vector() const {
+    return metadata_->big_title_vector;
+  }
+
   const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }
@@ -105,7 +109,7 @@ class ChromeSearchResult {
   void SetDetailsTags(const Tags& tags);
   void SetTitleTextVector(const TextVector& text_vector);
   void SetDetailsTextVector(const TextVector& text_vector);
-  void SetBigTitle(const std::u16string& big_title);
+  void SetBigTitleTextVector(const TextVector& text_vector);
   void SetAccessibleName(const std::u16string& name);
   void SetRating(float rating);
   void SetFormattedPrice(const std::u16string& formatted_price);

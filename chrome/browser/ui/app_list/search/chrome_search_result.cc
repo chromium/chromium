@@ -55,13 +55,14 @@ void ChromeSearchResult::SetTitleTextVector(const TextVector& text_vector) {
   metadata_->title_vector = text_vector;
   SetSearchResultMetadata();
 }
+
 void ChromeSearchResult::SetDetailsTextVector(const TextVector& text_vector) {
   metadata_->details_vector = text_vector;
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetBigTitle(const std::u16string& big_title) {
-  metadata_->big_title = big_title;
+void ChromeSearchResult::SetBigTitleTextVector(const TextVector& text_vector) {
+  metadata_->big_title_vector = text_vector;
   SetSearchResultMetadata();
 }
 

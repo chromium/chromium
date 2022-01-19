@@ -472,15 +472,10 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // The title of the result, e.g. an app's name, an autocomplete query, etc.
   // TODO (crbug/1216097): deprecate title text.
   std::u16string title;
-  // The title of the result, e.g. an app's name, an autocomplete query, etc.
-  // Supports embedded icons.
-  std::vector<SearchResultTextItem> title_vector;
 
   // A detail string of this result.
   // TODO (crbug/1216097): deprecate details text.
   std::u16string details;
-  // The title of the result, e.g. an app's name, an autocomplete query, etc.
-  std::vector<SearchResultTextItem> details_vector;
 
   // How the title matches the query. See the SearchResultTag section for more
   // details.
@@ -492,8 +487,15 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // TODO (crbug/1216097): deprecate details_tags.
   std::vector<SearchResultTag> details_tags;
 
+  // The title of the result, e.g. an app's name, an autocomplete query, etc.
+  // Supports embedded icons.
+  std::vector<SearchResultTextItem> title_vector;
+
+  // The details of the result, supports embedded icons.
+  std::vector<SearchResultTextItem> details_vector;
+
   // Big title text to be displayed prominently on an answer card.
-  std::u16string big_title;
+  std::vector<SearchResultTextItem> big_title_vector;
 
   // Text to be announced by a screen reader app.
   std::u16string accessible_name;

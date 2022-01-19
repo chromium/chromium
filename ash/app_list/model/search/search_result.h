@@ -43,6 +43,8 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   using DisplayIndex = ash::SearchResultDisplayIndex;
   using IconInfo = ash::SearchResultIconInfo;
   using IconShape = ash::SearchResultIconShape;
+  using TextItem = ash::SearchResultTextItem;
+  using TextVector = std::vector<TextItem>;
 
   SearchResult();
   SearchResult(const SearchResult&) = delete;
@@ -66,6 +68,13 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   const Tags& title_tags() const { return metadata_->title_tags; }
   void set_title_tags(const Tags& tags) { metadata_->title_tags = tags; }
 
+  const TextVector& title_text_vector() const {
+    return metadata_->title_vector;
+  }
+  void set_title_text_vector(const TextVector& vector) {
+    metadata_->title_vector = vector;
+  }
+
   const std::u16string& details() const { return metadata_->details; }
   void set_details(const std::u16string& details) {
     metadata_->details = details;
@@ -74,9 +83,18 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   const Tags& details_tags() const { return metadata_->details_tags; }
   void set_details_tags(const Tags& tags) { metadata_->details_tags = tags; }
 
-  const std::u16string& big_title() const { return metadata_->big_title; }
-  void set_big_title(const std::u16string& big_title) {
-    metadata_->big_title = big_title;
+  const TextVector& details_text_vector() const {
+    return metadata_->details_vector;
+  }
+  void set_details_text_vector(const TextVector& vector) {
+    metadata_->details_vector = vector;
+  }
+
+  const TextVector& big_title_text_vector() const {
+    return metadata_->big_title_vector;
+  }
+  void set_big_title_text_vector(const TextVector& vector) {
+    metadata_->big_title_vector = vector;
   }
 
   const std::u16string& accessible_name() const {

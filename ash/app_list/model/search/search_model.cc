@@ -83,6 +83,10 @@ void SearchModel::PublishResults(
       // Update and use the old result if it exists.
       std::unique_ptr<SearchResult> ui_result = std::move(ui_result_it->second);
       ui_result->SetMetadata(new_result->TakeMetadata());
+      // TODO(crbug/1216097): Setup TextVector metadata if none is sent from the
+      // backend. TextVector metadata will eventually be set for all results by
+      // the backend but we need to do this for now to update how all search
+      // result views are created.
       results_->Add(std::move(ui_result));
 
       // Remove the item from the map so that it ends up only with unused
