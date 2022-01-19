@@ -573,6 +573,13 @@ MAC_LOW_END = PerfPlatform(
     26,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
+MAC_LOW_END_LAPTOP = PerfPlatform(
+    'mac-laptop_low_end-perf',
+    'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',
+    _MAC_LOW_END_BENCHMARK_CONFIGS,
+    26,
+    'mac',
+    executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
 MAC_M1_MINI_2020 = PerfPlatform(
     'mac-m1_mini_2020-perf',
     'Mac M1 Mini 2020',

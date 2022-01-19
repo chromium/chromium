@@ -104,6 +104,7 @@ LIGHTWEIGHT_TESTERS = [
     'win-10-perf',
     'win-10_laptop_low_end-perf',
     'mac-laptop_high_end-perf',
+    'mac-laptop_low_end-perf',
 ]
 
 # This is an opt-in list for builders which uses dynamic sharding.
@@ -942,6 +943,30 @@ BUILDERS = {
             'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
         },
     },
+    'mac-laptop_low_end-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu':
+            'x86-64',
+            'gpu':
+            '8086:1626',
+            'os':
+            'Mac-10.12.6',
+            'pool':
+            'chrome.tests.perf',
+            'synthetic_product_name':
+            'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
+        },
+    },
     'mac-m1_mini_2020-perf': {
         'tests': [
             {
@@ -1069,6 +1094,10 @@ BUILDERS = {
         'perf_processor': True,
     },
     'mac-10_12_laptop_low_end-processor-perf': {
+        'platform': 'linux',
+        'perf_processor': True,
+    },
+    'mac-laptop_low_end-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },
