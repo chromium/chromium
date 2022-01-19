@@ -683,8 +683,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void UpdateHasSelfPaintingLayerDescendant() const;
 
-  void AppendSingleFragmentIgnoringPaginationForHitTesting(
+  void AppendSingleFragmentForHitTesting(
       PaintLayerFragments&,
+      const PaintLayerFragment* container_fragment,
       ShouldRespectOverflowClipType) const;
 
   void CollectFragments(PaintLayerFragments&,
@@ -704,7 +705,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   };
 
   PaintLayer* HitTestLayer(const PaintLayer& transform_container,
-                           const FragmentData* container_fragment,
+                           const PaintLayerFragment* container_fragment,
                            HitTestResult&,
                            const HitTestRecursionData& recursion_data,
                            bool applied_transform = false,
@@ -713,8 +714,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                            bool check_resizer_only = false);
   PaintLayer* HitTestLayerByApplyingTransform(
       const PaintLayer& transform_container,
-      const FragmentData* container_fragment,
-      const FragmentData& local_fragment,
+      const PaintLayerFragment* container_fragment,
+      const PaintLayerFragment& local_fragment,
       HitTestResult&,
       const HitTestRecursionData& recursion_data,
       HitTestingTransformState*,
@@ -724,7 +725,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* HitTestChildren(
       PaintLayerIteration,
       const PaintLayer& transform_container,
-      const FragmentData* container_fragment,
+      const PaintLayerFragment* container_fragment,
       HitTestResult&,
       const HitTestRecursionData& recursion_data,
       HitTestingTransformState* container_transform_state,
@@ -752,7 +753,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                                    bool& inside_clip_rect) const;
   PaintLayer* HitTestTransformedLayerInFragments(
       const PaintLayer& transform_container,
-      const FragmentData* container_fragment,
+      const PaintLayerFragment* container_fragment,
       HitTestResult&,
       const HitTestRecursionData&,
       HitTestingTransformState*,

@@ -1190,11 +1190,23 @@ void PaintLayer::UpdateScrollableArea() {
     DirtyStackingContextZOrderLists();
 }
 
-void PaintLayer::AppendSingleFragmentIgnoringPaginationForHitTesting(
+void PaintLayer::AppendSingleFragmentForHitTesting(
     PaintLayerFragments& fragments,
+    const PaintLayerFragment* container_fragment,
     ShouldRespectOverflowClipType respect_overflow_clip) const {
   PaintLayerFragment fragment;
-  fragment.fragment_data = &GetLayoutObject().FirstFragment();
+  if (container_fragment) {
+    fragment = *container_fragment;
+  } else {
+    fragment.fragment_data = &GetLayoutObject().FirstFragment();
+    if (GetLayoutObject().CanTraversePhysicalFragments()) {
+      // Make sure that we actually traverse the fragment tree, by providing a
+      // physical fragment. Otherwise we'd fall back to LayoutObject traversal.
+      if (const auto* layout_box = GetLayoutBox())
+        fragment.physical_fragment = layout_box->GetPhysicalFragment(0);
+    }
+  }
+
   ClipRectsContext clip_rects_context(this, fragment.fragment_data,
                                       kExcludeOverlayScrollbarSizeForHitTesting,
                                       respect_overflow_clip);
@@ -1202,12 +1214,6 @@ void PaintLayer::AppendSingleFragmentIgnoringPaginationForHitTesting(
       .CalculateRects(clip_rects_context, fragment.fragment_data,
                       fragment.layer_bounds, fragment.background_rect,
                       fragment.foreground_rect);
-  if (GetLayoutObject().CanTraversePhysicalFragments()) {
-    // Make sure that we actually traverse the fragment tree, by providing a
-    // physical fragment. Otherwise we'd fall back to LayoutObject traversal.
-    if (const auto* layout_box = GetLayoutBox())
-      fragment.physical_fragment = layout_box->GetPhysicalFragment(0);
-  }
 
   fragments.push_back(fragment);
 }
@@ -1544,13 +1550,15 @@ static bool IsHitCandidateForStopNode(const LayoutObject& candidate,
 // test their fragments that are descendants of |container_fragment|.
 PaintLayer* PaintLayer::HitTestLayer(
     const PaintLayer& transform_container,
-    const FragmentData* container_fragment,
+    const PaintLayerFragment* container_fragment,
     HitTestResult& result,
     const HitTestRecursionData& recursion_data,
     bool applied_transform,
     HitTestingTransformState* container_transform_state,
     double* z_offset,
     bool check_resizer_only) {
+  const FragmentData* container_fragment_data =
+      container_fragment ? container_fragment->fragment_data : nullptr;
   const auto& container_layout_object = transform_container.GetLayoutObject();
   DCHECK(container_layout_object.CanContainFixedPositionObjects());
   DCHECK(container_layout_object.CanContainAbsolutePositionObjects());
@@ -1647,13 +1655,13 @@ PaintLayer* PaintLayer::HitTestLayer(
     DCHECK(!Preserves3D());
     // We need transform state for the first time, or to offset the container
     // state, so create it here.
-    const FragmentData* container_fragment_for_transform_state =
-        container_fragment;
     const FragmentData* local_fragment_for_transform_state =
         &layout_object.FirstFragment();
-    if (container_fragment) {
+    const FragmentData* container_fragment_for_transform_state;
+    if (container_fragment_data) {
+      container_fragment_for_transform_state = container_fragment_data;
       const auto& container_transform =
-          container_fragment->LocalBorderBoxProperties().Transform();
+          container_fragment_data->LocalBorderBoxProperties().Transform();
       while (local_fragment_for_transform_state) {
         // Find the first local fragment that is a descendant of
         // container_fragment.
@@ -1715,11 +1723,11 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (recursion_data.intersects_location) {
     if (applied_transform) {
       DCHECK_EQ(&transform_container, this);
-      AppendSingleFragmentIgnoringPaginationForHitTesting(layer_fragments,
-                                                          clip_behavior);
+      AppendSingleFragmentForHitTesting(layer_fragments, container_fragment,
+                                        clip_behavior);
     } else {
       CollectFragments(layer_fragments, &transform_container, clip_behavior,
-                       container_fragment);
+                       container_fragment_data);
     }
 
     // See if the hit test pos is inside the resizer of current layer. This
@@ -1895,18 +1903,20 @@ bool PaintLayer::HitTestContentsForFragments(
 
 PaintLayer* PaintLayer::HitTestTransformedLayerInFragments(
     const PaintLayer& transform_container,
-    const FragmentData* container_fragment,
+    const PaintLayerFragment* container_fragment,
     HitTestResult& result,
     const HitTestRecursionData& recursion_data,
     HitTestingTransformState* container_transform_state,
     double* z_offset,
     bool check_resizer_only,
     ShouldRespectOverflowClipType clip_behavior) {
+  const FragmentData* container_fragment_data =
+      container_fragment ? container_fragment->fragment_data : nullptr;
   PaintLayerFragments fragments;
   ClearCollectionScope<PaintLayerFragments> scope(&fragments);
 
   CollectFragments(fragments, &transform_container, clip_behavior,
-                   container_fragment);
+                   container_fragment_data);
 
   for (const auto& fragment : fragments) {
     // Apply any clips established by layers in between us and the root layer.
@@ -1914,8 +1924,8 @@ PaintLayer* PaintLayer::HitTestTransformedLayerInFragments(
       continue;
 
     PaintLayer* hit_layer = HitTestLayerByApplyingTransform(
-        transform_container, container_fragment, *fragment.fragment_data,
-        result, recursion_data, container_transform_state, z_offset,
+        transform_container, container_fragment, fragment, result,
+        recursion_data, container_transform_state, z_offset,
         check_resizer_only);
     if (hit_layer)
       return hit_layer;
@@ -1926,8 +1936,8 @@ PaintLayer* PaintLayer::HitTestTransformedLayerInFragments(
 
 PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
     const PaintLayer& transform_container,
-    const FragmentData* container_fragment,
-    const FragmentData& local_fragment,
+    const PaintLayerFragment* container_fragment,
+    const PaintLayerFragment& local_fragment,
     HitTestResult& result,
     const HitTestRecursionData& recursion_data,
     HitTestingTransformState* root_transform_state,
@@ -1938,9 +1948,9 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
   HitTestingTransformState new_transform_state = CreateLocalTransformState(
       transform_container,
       container_fragment
-          ? *container_fragment
+          ? *container_fragment->fragment_data
           : transform_container.GetLayoutObject().FirstFragment(),
-      local_fragment, recursion_data, root_transform_state);
+      *local_fragment.fragment_data, recursion_data, root_transform_state);
 
   // If the transform can't be inverted, then don't hit test this layer at all.
   if (!new_transform_state.AccumulatedTransform().IsInvertible())
@@ -2037,7 +2047,7 @@ bool PaintLayer::IsReplacedNormalFlowStacking() const {
 PaintLayer* PaintLayer::HitTestChildren(
     PaintLayerIteration children_to_visit,
     const PaintLayer& transform_container,
-    const FragmentData* container_fragment,
+    const PaintLayerFragment* container_fragment,
     HitTestResult& result,
     const HitTestRecursionData& recursion_data,
     HitTestingTransformState* container_transform_state,
