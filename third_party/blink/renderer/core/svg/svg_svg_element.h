@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 #include "third_party/blink/renderer/core/svg/svg_zoom_and_pan.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {

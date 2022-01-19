@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/transition_pseudo_element_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

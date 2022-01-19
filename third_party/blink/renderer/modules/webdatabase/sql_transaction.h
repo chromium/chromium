@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/modules/webdatabase/sql_statement.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction_state_machine.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
