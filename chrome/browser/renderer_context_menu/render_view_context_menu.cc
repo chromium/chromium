@@ -155,6 +155,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -573,9 +574,7 @@ void AddAvatarToLastMenuItem(const gfx::Image& icon,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void OnProfileCreated(const GURL& link_url,
-                      const content::Referrer& referrer,
-                      Profile* profile) {
+void OnProfileCreated(const GURL& link_url, Profile* profile) {
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   NavigateParams nav_params(
       browser, link_url,
@@ -586,7 +585,9 @@ void OnProfileCreated(const GURL& link_url,
          destination browser which is not correct. */
       ui::PAGE_TRANSITION_TYPED);
   nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  nav_params.referrer = referrer;
+  // We are opening the link across profiles, so sending the referer
+  // header is a privacy risk.
+  nav_params.referrer = content::Referrer();
   nav_params.window_action = NavigateParams::SHOW_WINDOW;
   Navigate(&nav_params);
 }
@@ -3249,8 +3250,7 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
   base::FilePath profile_path = profile_link_paths_[profile_index];
   profiles::SwitchToProfile(
       profile_path, false,
-      base::BindRepeating(OnProfileCreated, params_.link_url,
-                          CreateReferrer(params_.link_url, params_)));
+      base::BindRepeating(OnProfileCreated, params_.link_url));
 }
 
 void RenderViewContextMenu::ExecInspectElement() {
