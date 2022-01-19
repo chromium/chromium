@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_prefs.h"
@@ -63,13 +63,13 @@ void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
 
   if (app_type == apps::mojom::AppType::kWeb ||
       app_type == apps::mojom::AppType::kSystemWeb) {
-    chrome::ShowAppManagementPage(
-        profile, app_id,
-        AppManagementEntryPoint::kAppListContextMenuAppInfoWebApp);
+    chrome::ShowAppManagementPage(profile, app_id,
+                                  ash::settings::AppManagementEntryPoint::
+                                      kAppListContextMenuAppInfoWebApp);
   } else {
-    chrome::ShowAppManagementPage(
-        profile, app_id,
-        AppManagementEntryPoint::kAppListContextMenuAppInfoChromeApp);
+    chrome::ShowAppManagementPage(profile, app_id,
+                                  ash::settings::AppManagementEntryPoint::
+                                      kAppListContextMenuAppInfoChromeApp);
   }
 }
 

@@ -446,7 +446,7 @@ void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
 
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
-                           AppManagementEntryPoint entry_point) {
+                           ash::settings::AppManagementEntryPoint entry_point) {
   // This histogram is also declared and used at chrome/browser/resources/
   // settings/chrome_os/os_apps_page/app_management_page/constants.js.
   constexpr char kAppManagementEntryPointsHistogramName[] =

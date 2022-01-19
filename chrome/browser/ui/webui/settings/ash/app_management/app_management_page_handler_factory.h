@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_FACTORY_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_FACTORY_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_FACTORY_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_FACTORY_H_
 
 #include <memory>
 
@@ -15,6 +15,9 @@
 class Profile;
 
 class AppManagementPageHandler;
+
+namespace ash {
+namespace settings {
 
 class AppManagementPageHandlerFactory
     : public app_management::mojom::PageHandlerFactory {
@@ -46,4 +49,14 @@ class AppManagementPageHandlerFactory
   Profile* profile_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_FACTORY_H_
+}  // namespace settings
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace settings {
+using ::ash::settings::AppManagementPageHandlerFactory;
+}
+}  // namespace chromeos
+
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_FACTORY_H_

@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APP_MANAGEMENT_APP_MANAGEMENT_UMA_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APP_MANAGEMENT_APP_MANAGEMENT_UMA_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_APP_MANAGEMENT_APP_MANAGEMENT_UMA_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_APP_MANAGEMENT_APP_MANAGEMENT_UMA_H_
+
+namespace ash {
+namespace settings {
 
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
@@ -28,4 +31,7 @@ enum class AppManagementEntryPoint {
   kMaxValue = kPageInfoView,
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APP_MANAGEMENT_APP_MANAGEMENT_UMA_H_
+}  // namespace settings
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_APP_MANAGEMENT_APP_MANAGEMENT_UMA_H_

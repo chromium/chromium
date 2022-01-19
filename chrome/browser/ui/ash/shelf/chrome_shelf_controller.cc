@@ -80,7 +80,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -848,11 +848,11 @@ void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
       app_type == apps::mojom::AppType::kSystemWeb) {
     chrome::ShowAppManagementPage(
         profile, app_id,
-        AppManagementEntryPoint::kShelfContextMenuAppInfoWebApp);
+        ash::settings::AppManagementEntryPoint::kShelfContextMenuAppInfoWebApp);
   } else {
-    chrome::ShowAppManagementPage(
-        profile, app_id,
-        AppManagementEntryPoint::kShelfContextMenuAppInfoChromeApp);
+    chrome::ShowAppManagementPage(profile, app_id,
+                                  ash::settings::AppManagementEntryPoint::
+                                      kShelfContextMenuAppInfoChromeApp);
   }
 }
 

@@ -34,7 +34,7 @@
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -436,7 +436,7 @@ void AppServiceContextMenu::ShowAppInfo() {
   if (app_type_ == apps::AppType::kArc) {
     chrome::ShowAppManagementPage(
         profile(), app_id(),
-        AppManagementEntryPoint::kAppListContextMenuAppInfoArc);
+        ash::settings::AppManagementEntryPoint::kAppListContextMenuAppInfoArc);
     return;
   }
 

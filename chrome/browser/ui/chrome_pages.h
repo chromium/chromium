@@ -22,7 +22,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #endif
 
 namespace signin {
@@ -166,7 +166,7 @@ GURL GetOSSettingsUrl(const std::string& sub_page);
 
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
-                           AppManagementEntryPoint entry_point);
+                           ash::settings::AppManagementEntryPoint entry_point);
 
 void ShowPrintManagementApp(Profile* profile);
 

@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
 #include "net/base/escape.h"
 #include "ui/base/models/image_model.h"
@@ -104,10 +104,11 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
       return;
     }
     case ash::SHOW_APP_INFO: {
-      AppManagementEntryPoint entry =
-          (source_ == Source::kShelf)
-              ? AppManagementEntryPoint::kShelfContextMenuAppInfoChromeApp
-              : AppManagementEntryPoint::kAppListContextMenuAppInfoChromeApp;
+      ash::settings::AppManagementEntryPoint entry =
+          (source_ == Source::kShelf) ? ash::settings::AppManagementEntryPoint::
+                                            kShelfContextMenuAppInfoChromeApp
+                                      : ash::settings::AppManagementEntryPoint::
+                                            kAppListContextMenuAppInfoChromeApp;
 
       // Normally app ids would only contain alphanumerics, but Lacros uses '#'
       // as a delimiter.

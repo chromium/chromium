@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
@@ -455,7 +455,7 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
   if (app_type_ == apps::AppType::kArc) {
     chrome::ShowAppManagementPage(
         controller()->profile(), item().id.app_id,
-        AppManagementEntryPoint::kShelfContextMenuAppInfoArc);
+        ash::settings::AppManagementEntryPoint::kShelfContextMenuAppInfoArc);
     return;
   }
 
