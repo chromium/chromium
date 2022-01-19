@@ -124,9 +124,9 @@ class ScopedDisableTimerTracking {
 
 - (void)closeToolsMenu {
   if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
-      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-    // With the new overflow menu on iPhone, the half sheet covers the bottom
-    // half of the screen. Swiping down on the sheet will close the menu.
+      [ChromeEarlGrey isCompactWidth]) {
+    // With the new overflow menu on compact devices, the half sheet covers the
+    // bottom half of the screen. Swiping down on the sheet will close the menu.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
         performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   } else {

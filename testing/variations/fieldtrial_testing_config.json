@@ -4422,6 +4422,21 @@
             ]
         }
     ],
+    "IOSNewOverflowMenu": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NewOverflowMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSRestoreSessionFromCache": [
         {
             "platforms": [

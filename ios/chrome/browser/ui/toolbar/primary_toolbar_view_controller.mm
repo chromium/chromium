@@ -268,7 +268,6 @@
 - (void)expandLocationBar {
   [self deactivateViewLocationBarConstraints];
   [NSLayoutConstraint activateConstraints:self.view.expandedConstraints];
-  NSLog(@"rkgibson: Expanding");
   [self.view layoutIfNeeded];
 }
 
@@ -277,7 +276,6 @@
   if (IsSplitToolbarMode(self)) {
     [NSLayoutConstraint
         activateConstraints:self.view.contractedNoMarginConstraints];
-    NSLog(@"rkgibson: Contracting");
   } else {
     [NSLayoutConstraint activateConstraints:self.view.contractedConstraints];
   }
