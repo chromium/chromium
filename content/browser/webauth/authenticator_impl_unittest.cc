@@ -1863,7 +1863,8 @@ class TestAuthenticatorRequestDelegate
       : action_callbacks_registered_callback_(
             std::move(action_callbacks_registered_callback)),
         attestation_consent_(attestation_consent),
-        started_over_callback_(std::move(started_over_callback)) {}
+        started_over_callback_(std::move(started_over_callback)),
+        does_block_request_on_failure_(!started_over_callback_.is_null()) {}
 
   TestAuthenticatorRequestDelegate(const TestAuthenticatorRequestDelegate&) =
       delete;
@@ -1886,8 +1887,7 @@ class TestAuthenticatorRequestDelegate
     std::move(action_callbacks_registered_callback_).Run();
     if (started_over_callback_) {
       action_callbacks_registered_callback_ = std::move(started_over_callback_);
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(start_over_callback)));
+      start_over_callback_ = start_over_callback;
     }
   }
 
@@ -1932,10 +1932,22 @@ class TestAuthenticatorRequestDelegate
     }
   }
 
+  bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
+    if (!does_block_request_on_failure_) {
+      return false;
+    }
+
+    std::move(start_over_callback_).Run();
+    does_block_request_on_failure_ = false;
+    return true;
+  }
+
   base::OnceClosure action_callbacks_registered_callback_;
   absl::optional<base::OnceClosure> cancel_callback_;
   const AttestationConsent attestation_consent_;
   base::OnceClosure started_over_callback_;
+  base::OnceClosure start_over_callback_;
+  bool does_block_request_on_failure_ = false;
   bool attestation_consent_queried_ = false;
 };
 
@@ -1982,7 +1994,8 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   // be restarted after action callbacks are registered, and
   // |started_over_callback| will replace
   // |action_callbacks_registered_callback|. This should then be called the
-  // second time action callbacks are registered.
+  // second time action callbacks are registered. It also causes
+  // DoesBlockRequestOnFailure to return true, once.
   base::OnceClosure started_over_callback_;
 };
 
@@ -3094,6 +3107,9 @@ TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialStartOver) {
 
   PublicKeyCredentialCreationOptionsPtr options =
       GetTestPublicKeyCredentialCreationOptions();
+  // Make the request fail so that it's started over.
+  options->authenticator_selection->user_verification_requirement =
+      device::UserVerificationRequirement::kRequired;
 
   TestRequestStartedCallback request_started;
   test_client_.action_callbacks_registered_callback =
@@ -3104,6 +3120,13 @@ TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialStartOver) {
   authenticator->MakeCredential(std::move(options), base::DoNothing());
   request_started.WaitForCallback();
   request_restarted.WaitForCallback();
+
+  const auto& discoveries_trace = virtual_device_factory_->trace()->discoveries;
+  ASSERT_EQ(discoveries_trace.size(), 2u);
+  EXPECT_TRUE(discoveries_trace[0].is_stopped);
+  EXPECT_TRUE(discoveries_trace[0].is_destroyed);
+  EXPECT_FALSE(discoveries_trace[1].is_stopped);
+  EXPECT_FALSE(discoveries_trace[1].is_destroyed);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionStartOver) {
@@ -3123,6 +3146,13 @@ TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionStartOver) {
   authenticator->GetAssertion(std::move(options), base::DoNothing());
   request_started.WaitForCallback();
   request_restarted.WaitForCallback();
+
+  const auto& discoveries_trace = virtual_device_factory_->trace()->discoveries;
+  ASSERT_EQ(discoveries_trace.size(), 2u);
+  EXPECT_TRUE(discoveries_trace[0].is_stopped);
+  EXPECT_TRUE(discoveries_trace[0].is_destroyed);
+  EXPECT_FALSE(discoveries_trace[1].is_stopped);
+  EXPECT_FALSE(discoveries_trace[1].is_destroyed);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest, Unfocused) {

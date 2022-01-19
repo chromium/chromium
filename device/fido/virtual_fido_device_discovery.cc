@@ -14,18 +14,28 @@
 namespace device {
 namespace test {
 
+VirtualFidoDeviceDiscovery::Trace::Trace() = default;
+VirtualFidoDeviceDiscovery::Trace::~Trace() = default;
+
 VirtualFidoDeviceDiscovery::VirtualFidoDeviceDiscovery(
+    scoped_refptr<Trace> trace,
+    size_t trace_index,
     FidoTransportProtocol transport,
     scoped_refptr<VirtualFidoDevice::State> state,
     ProtocolVersion supported_protocol,
     const VirtualCtap2Device::Config& ctap2_config,
     std::unique_ptr<FidoDeviceDiscovery::EventStream<bool>> disconnect_events)
     : FidoDeviceDiscovery(transport),
+      trace_(std::move(trace)),
+      trace_index_(trace_index),
       state_(std::move(state)),
       supported_protocol_(supported_protocol),
       ctap2_config_(ctap2_config),
       disconnect_events_(std::move(disconnect_events)) {}
-VirtualFidoDeviceDiscovery::~VirtualFidoDeviceDiscovery() = default;
+
+VirtualFidoDeviceDiscovery::~VirtualFidoDeviceDiscovery() {
+  trace_->discoveries[trace_index_].is_destroyed = true;
+}
 
 void VirtualFidoDeviceDiscovery::StartInternal() {
   std::unique_ptr<FidoDevice> device;
@@ -54,6 +64,11 @@ void VirtualFidoDeviceDiscovery::StartInternal() {
 void VirtualFidoDeviceDiscovery::Disconnect(bool _) {
   CHECK(!id_.empty());
   RemoveDevice(id_);
+}
+
+bool VirtualFidoDeviceDiscovery::MaybeStop() {
+  trace_->discoveries[trace_index_].is_stopped = true;
+  return FidoDeviceDiscovery::MaybeStop();
 }
 
 }  // namespace test

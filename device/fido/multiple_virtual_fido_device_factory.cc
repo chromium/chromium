@@ -31,9 +31,11 @@ MultipleVirtualFidoDeviceFactory::Create(FidoTransportProtocol transport) {
     if (device.transport != transport) {
       continue;
     }
+    const size_t trace_index = trace_->discoveries.size();
+    trace_->discoveries.emplace_back();
     discoveries.push_back(std::make_unique<VirtualFidoDeviceDiscovery>(
-        device.transport, device.state, device.protocol, device.config,
-        std::move(device.disconnect_events)));
+        trace_, trace_index, device.transport, device.state, device.protocol,
+        device.config, std::move(device.disconnect_events)));
   }
   return discoveries;
 }
