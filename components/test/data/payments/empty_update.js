@@ -9,6 +9,16 @@
  * addresses by calling updateWith({}), which is an "empty update."
  */
 function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([{supportedMethods: 'basic-card'}]);
+}
+
+/**
+ * Invokes PaymentRequest with shipping and immediately rejects all shipping
+ * addresses by calling updateWith({}), which is an "empty update."
+ * @param {sequence<PaymentMethodData>} methodData An array of payment method
+ *        objects.
+ */
+function buyWithMethods(methodData) {
   try {
     var details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
@@ -23,7 +33,7 @@ function buy() { // eslint-disable-line no-unused-vars
     };
 
     var request = new PaymentRequest(
-        [{supportedMethods: 'basic-card'}], details, {requestShipping: true});
+        methodData, details, {requestShipping: true});
 
     request.addEventListener('shippingaddresschange', function(evt) {
       evt.updateWith({});
