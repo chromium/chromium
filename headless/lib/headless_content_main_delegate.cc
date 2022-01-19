@@ -310,8 +310,13 @@ void HeadlessContentMainDelegate::InitLogging(
 
 void HeadlessContentMainDelegate::InitCrashReporter(
     const base::CommandLine& command_line) {
-  if (!options()->enable_crash_reporter)
+  if (!options()->enable_crash_reporter
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+      && !command_line.HasSwitch(crash_reporter::switches::kCrashpadHandlerPid)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  ) {
     return;
+  }
 
 #if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/1226159): Implement this when crash reporting is available
@@ -319,18 +324,18 @@ void HeadlessContentMainDelegate::InitCrashReporter(
   NOTIMPLEMENTED();
 #else
   crash_reporter::SetCrashReporterClient(g_headless_crash_client.Pointer());
-  g_headless_crash_client.Pointer()->set_crash_dumps_dir(
-      options()->crash_dumps_dir);
-
   crash_reporter::InitializeCrashKeys();
-  crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
 
-#if !BUILDFLAG(IS_WIN)
   const std::string process_type =
       command_line.GetSwitchValueASCII(::switches::kProcessType);
-  if (process_type != switches::kZygoteProcess)
+  if (process_type != switches::kZygoteProcess) {
+    g_headless_crash_client.Pointer()->set_crash_dumps_dir(
+        options()->crash_dumps_dir);
+#if !BUILDFLAG(IS_WIN)
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
 #endif  // !BUILDFLAG(IS_WIN)
+    crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
+  }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Mark any bug reports from headless mode as such.
@@ -417,6 +422,7 @@ void HeadlessContentMainDelegate::ZygoteForked() {
     const std::string process_type =
         command_line.GetSwitchValueASCII(::switches::kProcessType);
     crash_reporter::InitializeCrashpad(false, process_type);
+    crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
   }
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
