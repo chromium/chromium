@@ -14,8 +14,6 @@
 -CrossPlatformAccessibilityBrowserTest.ControlsIdsForDateTimePopup
 -DirectSocketsTcpBrowserTest.OpenTcp_MDNS
 -DnsHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
--MHTMLGenerationSitePerProcessTest/*
--MHTMLGenerationTest/*
 -MemoryTracingTest.BrowserInitiatedDump
 -MidiBrowserTest.RequestMIDIAccess
 -MidiBrowserTest.SubscribeAll

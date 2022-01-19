@@ -746,6 +746,16 @@ CloseFileResult MHTMLGenerationManager::Job::FinalizeOnFileThread(
     TRACE_EVENT0("page-serialization",
                  "MHTMLGenerationManager::Job MHTML footer writing");
 
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1288816): Remove the Seek call.
+    // On fuchsia, fds do not share state. As the fd has been duped and sent to
+    // the renderer process, it must be seeked to the end to ensure the data is
+    // appended.
+    if (file.Seek(base::File::FROM_END, 0) == -1) {
+      save_status = mojom::MhtmlSaveStatus::kFileWritingError;
+    }
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
     // Write the extra data into a part of its own, if we have any.
     std::string serialized_extra_data_parts =
         CreateExtraDataParts(boundary, extra_data_parts);
