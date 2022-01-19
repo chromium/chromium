@@ -27,9 +27,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppRanker;
 // AppSearchResultRankerPredictorName.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableZeroStateAppsRanker;
 
-// Enable a model that ranks query based non-apps result.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableQueryBasedMixedTypesRanker;
-
 // Enable a model that ranks zero-state files and recent queries.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableZeroStateMixedTypesRanker;
 

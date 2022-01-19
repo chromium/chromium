@@ -7231,24 +7231,6 @@
             ]
         }
     ],
-    "SearchRankerQueryBasedMixedTypes": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "use_aggregated_model": "true"
-                    },
-                    "enable_features": [
-                        "EnableQueryBasedMixedTypesRanker"
-                    ]
-                }
-            ]
-        }
-    ],
     "SendAllUserInteractionLatencies": [
         {
             "platforms": [

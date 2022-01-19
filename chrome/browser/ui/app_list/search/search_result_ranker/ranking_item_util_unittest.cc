@@ -37,12 +37,6 @@ class RankingItemUtilTest : public AppListTestBase {
         std::make_unique<::test::TestAppListControllerDelegate>();
   }
 
-  void SetAdaptiveRankerParams(
-      const std::map<std::string, std::string>& params) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        app_list_features::kEnableQueryBasedMixedTypesRanker, params);
-  }
-
   std::unique_ptr<OmniboxResult> MakeOmniboxResult(
       AutocompleteMatchType::Type type) {
     AutocompleteMatch match;
