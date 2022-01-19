@@ -848,28 +848,6 @@ if (is_linux || is_chromeos) {
     libfuzzer_options = [ "max_len=16384" ]
   }
 
-  fuzzer_test("gpu_swiftshader_fuzzer") {
-    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
-
-    defines = [ "GPU_FUZZER_USE_SWIFTSHADER" ]
-
-    deps = [
-      ":gles2",
-      ":gpu",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
-
   fuzzer_test("gpu_swangle_passthrough_fuzzer") {
     sources = [ "command_buffer/tests/fuzzer_main.cc" ]
 
@@ -925,31 +903,6 @@ if (is_linux || is_chromeos) {
       "GPU_FUZZER_USE_ANGLE",
       "GPU_FUZZER_USE_RASTER_DECODER",
       "GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER",
-    ]
-
-    deps = [
-      ":gles2",
-      ":gpu",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
-
-  fuzzer_test("gpu_raster_swiftshader_fuzzer") {
-    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
-
-    defines = [
-      "GPU_FUZZER_USE_RASTER_DECODER",
-      "GPU_FUZZER_USE_SWIFTSHADER",
     ]
 
     deps = [
