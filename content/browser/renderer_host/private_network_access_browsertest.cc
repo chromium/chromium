@@ -218,8 +218,7 @@ class LazyServer {
 //    - private network request policy
 //  - testing the inheritance semantics of these properties
 //  - testing the correct handling of the CSP: treat-as-public-address directive
-//  - testing that insecure private network requests are blocked when the right
-//    feature flag is enabled
+//  - testing that subresource requests are subject to PNA checks
 //  - and a few other odds and ends
 //
 // We use the `--ip-address-space-overrides` command-line switch to test against
@@ -313,7 +312,7 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
 };
 
 // Test with insecure private network subresource requests from the `public`
-// address space blocked.
+// address space blocked and preflights otherwise enabled but not enforced.
 class PrivateNetworkAccessBrowserTest
     : public PrivateNetworkAccessBrowserTestBase {
  public:
@@ -321,7 +320,6 @@ class PrivateNetworkAccessBrowserTest
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
-                features::kWarnAboutSecurePrivateNetworkRequests,
             },
             {}) {}
 };
@@ -336,9 +334,7 @@ class PrivateNetworkAccessBrowserTestBlockFromPrivate
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                // This feature should be superseded by the one above.
                 features::kPrivateNetworkAccessRespectPreflightResults,
-                features::kWarnAboutSecurePrivateNetworkRequests,
             },
             {}) {}
 };
@@ -353,9 +349,7 @@ class PrivateNetworkAccessBrowserTestBlockFromUnknown
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromUnknown,
-                // This feature should be superseded by the one above.
                 features::kPrivateNetworkAccessRespectPreflightResults,
-                features::kWarnAboutSecurePrivateNetworkRequests,
             },
             {}) {}
 };
@@ -369,13 +363,12 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                features::kWarnAboutSecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
             },
             {}) {}
 };
 
-// Test with the feature to send preflights (unenforced) enabled, and insecure
+// Test with the feature to send preflights (unenforced) disabled, and insecure
 // private network subresource requests blocked.
 class PrivateNetworkAccessBrowserTestNoPreflights
     : public PrivateNetworkAccessBrowserTestBase {
@@ -400,6 +393,34 @@ class PrivateNetworkAccessBrowserTestRespectPreflightResults
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessRespectPreflightResults,
+            },
+            {}) {}
+};
+
+// Test with PNA checks for worker-related fetches enabled.
+class PrivateNetworkAccessBrowserTestForWorkers
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessBrowserTestForWorkers()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kPrivateNetworkAccessForWorkers,
+            },
+            {}) {}
+};
+
+// Test with PNA checks for worker-related fetches enabled and preflight
+// enforcement enabled.
+class PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kPrivateNetworkAccessRespectPreflightResults,
+                features::kPrivateNetworkAccessForWorkers,
             },
             {}) {}
 };
@@ -2182,10 +2203,11 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 }
 
 // This test verifies that with the blocking feature disabled, the private
-// network request policy used by RenderFrameHostImpl is to allow requests from
-// secure contexts.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
-                       PrivateNetworkPolicyIsAllowByDefaultForSecureContexts) {
+// network request policy used by RenderFrameHostImpl is to send unenforced
+// preflight requests from secure contexts.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestNoBlocking,
+    PrivateNetworkPolicyIsPreflightWarnByDefaultForSecureContexts) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2970,6 +2992,210 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
   // Check that the page cannot load a `file:` URL.
   EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
                                                  "", "empty.html"))));
+}
+
+// =========================
+// WORKER SCRIPT FETCH TESTS
+// =========================
+
+namespace {
+
+// Path to a worker script that posts a message to its creator once loaded.
+constexpr char kWorkerScriptPath[] = "/workers/post_ready.js";
+
+// Same as above, but with PNA headers set correctly for preflight requests.
+constexpr char kWorkerScriptWithPnaHeadersPath[] =
+    "/workers/post_ready_with_pna_headers.js";
+
+// Instantiates a dedicated worker script from `path`.
+// If it loads successfully, the worker should post a message to its creator to
+// signal success.
+std::string FetchWorkerScript(base::StringPiece path) {
+  constexpr char kTemplate[] = R"(
+    new Promise((resolve) => {
+      const worker = new Worker($1);
+      worker.addEventListener("message", () => resolve(true));
+      worker.addEventListener("error", () => resolve(false));
+    })
+  )";
+
+  return JsReplace(kTemplate, path);
+}
+
+// Path to a worker script that posts a message to each client that connects.
+constexpr char kSharedWorkerScriptPath[] = "/workers/shared_post_ready.js";
+
+// Same as above, but with PNA headers set correctly for preflight requests.
+constexpr char kSharedWorkerScriptWithPnaHeadersPath[] =
+    "/workers/shared_post_ready_with_pna_headers.js";
+
+// Instantiates a shared worker script from `path`.
+// If it loads successfully, the worker should post a message to each client
+// that connects to it to signal success.
+std::string FetchSharedWorkerScript(base::StringPiece path) {
+  constexpr char kTemplate[] = R"(
+    new Promise((resolve) => {
+      const worker = new SharedWorker($1);
+      worker.port.addEventListener("message", () => resolve(true));
+      worker.addEventListener("error", () => resolve(false));
+      worker.port.start();
+    })
+  )";
+
+  return JsReplace(kTemplate, path);
+}
+
+// TODO(https://crbug.com/154571): Remove this and replace calls below with
+// calls to `EXPECT_EQ` directly once Shared Workers are supported on Android.
+void ExpectFetchSharedWorkerScriptResult(bool expected,
+                                         const EvalJsResult& result) {
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(expected, result);
+#else
+  EXPECT_NE("", result.error);
+#endif
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FetchWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
+                       FetchWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FetchWorkerFromSecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
+                       FetchWorkerFromSecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchWorkerFromSecureTreatAsPublicToLocalFailedPreflight) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchWorkerFromSecureTreatAsPublicToLocalSuccess) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchWorkerScript(kWorkerScriptWithPnaHeadersPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FetchSharedWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      true, EvalJs(root_frame_host(),
+                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
+                       FetchSharedWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      false, EvalJs(root_frame_host(),
+                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchSharedWorkerFromInsecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      false, EvalJs(root_frame_host(),
+                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       FetchSharedWorkerFromSecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      true, EvalJs(root_frame_host(),
+                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForWorkers,
+                       FetchSharedWorkerFromSecureTreatAsPublicToLocal) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      true, EvalJs(root_frame_host(),
+                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchSharedWorkerFromSecureTreatAsPublicToLocalFailedPreflight) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      false, EvalJs(root_frame_host(),
+                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers,
+    FetchSharedWorkerFromSecureTreatAsPublicToLocalSuccess) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      true,
+      EvalJs(root_frame_host(),
+             FetchSharedWorkerScript(kSharedWorkerScriptWithPnaHeadersPath)));
 }
 
 // ======================

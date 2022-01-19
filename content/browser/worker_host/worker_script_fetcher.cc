@@ -14,6 +14,7 @@
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
@@ -25,7 +26,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
@@ -139,7 +139,7 @@ void DidCreateScriptLoader(
       std::move(controller_service_worker_object_host), final_response_url);
 }
 
-bool ShouldCreateWebUILoader(RenderFrameHost* creator_render_frame_host) {
+bool ShouldCreateWebUILoader(RenderFrameHostImpl* creator_render_frame_host) {
   if (!creator_render_frame_host)
     return false;
 
@@ -163,8 +163,8 @@ void WorkerScriptFetcher::CreateAndStart(
     int worker_process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     const GURL& initial_request_url,
-    RenderFrameHost* ancestor_render_frame_host,
-    RenderFrameHost* creator_render_frame_host,
+    RenderFrameHostImpl* ancestor_render_frame_host,
+    RenderFrameHostImpl* creator_render_frame_host,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& request_initiator,
     const blink::StorageKey& request_initiator_storage_key,
@@ -299,7 +299,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
     int worker_process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     const GURL& initial_request_url,
-    RenderFrameHost* creator_render_frame_host,
+    RenderFrameHostImpl* creator_render_frame_host,
     const net::IsolationInfo& trusted_isolation_info,
     std::unique_ptr<network::ResourceRequest> resource_request,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -335,14 +335,16 @@ void WorkerScriptFetcher::CreateScriptLoader(
     // For unit tests.
     url_loader_factory = std::move(url_loader_factory_override);
   } else {
+    network::mojom::ClientSecurityStatePtr client_security_state;
+
     // Add the default factory to the bundle for browser.
     DCHECK(factory_bundle_for_browser_info);
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer;
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer;
     // If we have a |creator_render_frame_host| associate the load with that
-    // RenderFrameHost. Note that |factory_process| may be different than the
-    // |creator_render_frame_host|'s RenderProcessHost.
+    // RenderFrameHostImpl. Note that |factory_process| may be different than
+    // the |creator_render_frame_host|'s RenderProcessHost.
     if (creator_render_frame_host) {
       url_loader_network_observer =
           factory_process->GetStoragePartition()
@@ -351,6 +353,16 @@ void WorkerScriptFetcher::CreateScriptLoader(
                   creator_render_frame_host->GetRoutingID());
       devtools_observer = NetworkServiceDevToolsObserver::MakeSelfOwned(
           creator_render_frame_host->GetDevToolsFrameToken().ToString());
+
+      if (base::FeatureList::IsEnabled(
+              features::kPrivateNetworkAccessForWorkers)) {
+        client_security_state =
+            creator_render_frame_host->BuildClientSecurityState();
+
+        // Do not enforce COEP on the main script fetch.
+        client_security_state->cross_origin_embedder_policy =
+            network::CrossOriginEmbedderPolicy();
+      }
     }
 
     const url::Origin& request_initiator = *resource_request->request_initiator;
@@ -363,7 +375,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
             factory_process, request_initiator, trusted_isolation_info,
             /*coep_reporter=*/mojo::NullRemote(),
             std::move(url_loader_network_observer),
-            std::move(devtools_observer), /*client_security_state=*/nullptr,
+            std::move(devtools_observer), std::move(client_security_state),
             /*debug_tag=*/"CreateScriptLoader");
 
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
@@ -435,7 +447,7 @@ WorkerScriptFetcher::CreateFactoryBundle(
     const std::string& storage_domain,
     bool file_support,
     bool filesystem_url_support,
-    RenderFrameHost* creator_render_frame_host,
+    RenderFrameHostImpl* creator_render_frame_host,
     const blink::StorageKey& request_initiator_storage_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

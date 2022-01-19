@@ -39,7 +39,7 @@ class URLLoaderThrottle;
 namespace content {
 
 class DevToolsAgentHostImpl;
-class RenderFrameHost;
+class RenderFrameHostImpl;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerMainResourceHandle;
 class ServiceWorkerObjectHost;
@@ -85,8 +85,8 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       int worker_process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       const GURL& initial_request_url,
-      RenderFrameHost* ancestor_render_frame_host,
-      RenderFrameHost* creator_render_frame_host,
+      RenderFrameHostImpl* ancestor_render_frame_host,
+      RenderFrameHostImpl* creator_render_frame_host,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& request_initiator,
       const blink::StorageKey& request_initiator_storage_key,
@@ -116,7 +116,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
                       const std::string& storage_domain,
                       bool file_support,
                       bool filesystem_url_support,
-                      RenderFrameHost* creator_render_frame_host,
+                      RenderFrameHostImpl* creator_render_frame_host,
                       const blink::StorageKey& request_initiator_storage_key);
 
   // Calculates the final response URL from the redirect chain, URLs fetched by
@@ -140,7 +140,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       int worker_process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       const GURL& initial_request_url,
-      RenderFrameHost* creator_render_frame_host,
+      RenderFrameHostImpl* creator_render_frame_host,
       const net::IsolationInfo& trusted_isolation_info,
       std::unique_ptr<network::ResourceRequest> resource_request,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
