@@ -71,9 +71,11 @@ int PpapiPluginMain(MainFunctionParams parameters) {
 
 #if BUILDFLAG(IS_WIN)
   // https://crbug.com/1139752 Premature unload of shell32 caused process to
-  // crash during process shutdown.
-  HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
-  UNREFERENCED_PARAMETER(shell32_pin);
+  // crash during process shutdown. Fixed in Windows 11.
+  if (base::win::GetVersion() < base::win::Version::WIN11) {
+    HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
+    UNREFERENCED_PARAMETER(shell32_pin);
+  }
 
   g_target_services = parameters.sandbox_info->target_services;
 #endif

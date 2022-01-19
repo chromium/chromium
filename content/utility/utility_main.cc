@@ -62,6 +62,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/rand_util.h"
+#include "base/win/windows_version.h"
 #include "sandbox/win/src/sandbox.h"
 
 sandbox::TargetServices* g_utility_target_services = nullptr;
@@ -222,9 +223,12 @@ int UtilityMain(MainFunctionParams parameters) {
   DVLOG(1) << "Sandbox type: " << static_cast<int>(sandbox_type);
 
   // https://crbug.com/1076771 https://crbug.com/1075487 Premature unload of
-  // shell32 caused process to crash during process shutdown.
-  HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
-  UNREFERENCED_PARAMETER(shell32_pin);
+  // shell32 caused process to crash during process shutdown. See also a
+  // separate fix for https://crbug.com/1139752. Fixed in Windows 11.
+  if (base::win::GetVersion() < base::win::Version::WIN11) {
+    HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
+    UNREFERENCED_PARAMETER(shell32_pin);
+  }
 
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
       sandbox_type != sandbox::mojom::Sandbox::kCdm &&
