@@ -38,6 +38,27 @@ class PrivacySandboxService : public KeyedService,
                               public syncer::SyncServiceObserver,
                               public signin::IdentityManager::Observer {
  public:
+  // Possible types of Privacy Sandbox dialogs that may be shown to the user.
+  enum class DialogType { kNone, kNotice, kConsent };
+
+  // An exhaustive list of actions related to showing & interacting with the
+  // dialog. Includes actions which do not impact consent / notice state.
+  enum class DialogAction {
+    // Shared between notice & consent:
+    kShown,
+    kOpenSettings,
+    kOpenMoreInfo,
+    kCloseMoreInfo,
+
+    // Consent Only
+    kAcceptConsent,
+    kDeclineConsent,
+
+    // Notice Only
+    kAcknowledge,
+    kClose,
+  };
+
   PrivacySandboxService(PrivacySandboxSettings* privacy_sandbox_settings,
                         content_settings::CookieSettings* cookie_settings,
                         PrefService* pref_service,
@@ -46,6 +67,20 @@ class PrivacySandboxService : public KeyedService,
                         signin::IdentityManager* identity_manager,
                         federated_learning::FlocIdProvider* floc_id_provider);
   ~PrivacySandboxService() override;
+
+  // Returns the dialog type that should be shown to the user. This consults
+  // previous consent / notice information stored in preferences, the current
+  // state of the Privacy Sandbox settings, and the current location of the
+  // user, to determine the appropriate type. This is expected to be called by
+  // UI code locations determining whether a dialog should be shown on startup.
+  DialogType GetRequiredDialogType();
+
+  // Informs the service that |action| occurred with the dialog. This allows
+  // the service to record this information in preferences such that future
+  // calls to GetRequiredDialogType() are correct. This is expected to be
+  // called appropriately by all locations showing the dialog. Metrics shared
+  // between platforms will also be recorded.
+  void DialogActionOccur(DialogAction action);
 
   // Returns a description of FLoC ready for display to the user. Correctly
   // takes into account the FLoC feature parameters when determining the number

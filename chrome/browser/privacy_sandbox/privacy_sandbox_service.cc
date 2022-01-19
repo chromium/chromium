@@ -147,6 +147,24 @@ PrivacySandboxService::PrivacySandboxService(
 
 PrivacySandboxService::~PrivacySandboxService() = default;
 
+PrivacySandboxService::DialogType
+PrivacySandboxService::GetRequiredDialogType() {
+  // Only consult feature parameters
+  // TODO(crbug.com/1286276): Implement additional behavior.
+  if (features::kPrivacySandboxSettings3ForceShowConsent.Get())
+    return DialogType::kConsent;
+
+  if (features::kPrivacySandboxSettings3ForceShowNotice.Get())
+    return DialogType::kNotice;
+
+  return DialogType::kNone;
+}
+
+void PrivacySandboxService::DialogActionOccur(
+    PrivacySandboxService::DialogAction action) {
+  // TODO(crbug.com/1286276): Not yet implemented.
+}
+
 std::u16string PrivacySandboxService::GetFlocDescriptionForDisplay() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION,
