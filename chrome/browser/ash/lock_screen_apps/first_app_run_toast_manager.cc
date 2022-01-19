@@ -144,9 +144,9 @@ void FirstAppRunToastManager::CreateAndShowToastDialog() {
 void FirstAppRunToastManager::ToastDialogDismissed() {
   {
     const extensions::Extension* app = app_window_->GetExtension();
-    DictionaryPrefUpdateDeprecated dict_update(
+    DictionaryPrefUpdate dict_update(
         profile_->GetPrefs(), prefs::kNoteTakingAppsLockScreenToastShown);
-    dict_update->SetBoolean(app->id(), true);
+    dict_update->SetBoolKey(app->id(), true);
   }
   Reset();
 }
