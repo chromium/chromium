@@ -43,7 +43,7 @@ TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
 // Perform Trusted Type checks, for a dynamically or statically determined
 // type.
 // Returns the effective value (which may have been modified by the "default"
-// policy. We use WARN_UNUSED_RESULT to prevent erroneous usage.
+// policy.
 [[nodiscard]] String TrustedTypesCheckFor(SpecificTrustedType,
                                           String,
                                           const ExecutionContext*,

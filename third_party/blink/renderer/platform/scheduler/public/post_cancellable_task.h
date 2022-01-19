@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_POST_CANCELLABLE_TASK_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -50,21 +49,21 @@ class PLATFORM_EXPORT TaskHandle {
   friend PLATFORM_EXPORT TaskHandle
   PostCancellableTask(base::SequencedTaskRunner&,
                       const base::Location&,
-                      base::OnceClosure) WARN_UNUSED_RESULT;
+                      base::OnceClosure);
   friend PLATFORM_EXPORT TaskHandle
   PostDelayedCancellableTask(base::SequencedTaskRunner&,
                              const base::Location&,
                              base::OnceClosure,
-                             base::TimeDelta delay) WARN_UNUSED_RESULT;
+                             base::TimeDelta delay);
   friend PLATFORM_EXPORT TaskHandle
   PostNonNestableCancellableTask(base::SequencedTaskRunner&,
                                  const base::Location&,
-                                 base::OnceClosure) WARN_UNUSED_RESULT;
-  friend PLATFORM_EXPORT TaskHandle PostNonNestableDelayedCancellableTask(
-      base::SequencedTaskRunner&,
-      const base::Location&,
-      base::OnceClosure,
-      base::TimeDelta delay) WARN_UNUSED_RESULT;
+                                 base::OnceClosure);
+  friend PLATFORM_EXPORT TaskHandle
+  PostNonNestableDelayedCancellableTask(base::SequencedTaskRunner&,
+                                        const base::Location&,
+                                        base::OnceClosure,
+                                        base::TimeDelta delay);
 
   explicit TaskHandle(scoped_refptr<Runner>);
   scoped_refptr<Runner> runner_;
@@ -72,24 +71,24 @@ class PLATFORM_EXPORT TaskHandle {
 
 // For same-thread cancellable task posting. Returns a TaskHandle object for
 // cancellation.
-PLATFORM_EXPORT TaskHandle PostCancellableTask(base::SequencedTaskRunner&,
-                                               const base::Location&,
-                                               base::OnceClosure)
-    WARN_UNUSED_RESULT;
-PLATFORM_EXPORT TaskHandle
+[[nodiscard]] PLATFORM_EXPORT TaskHandle
+PostCancellableTask(base::SequencedTaskRunner&,
+                    const base::Location&,
+                    base::OnceClosure);
+[[nodiscard]] PLATFORM_EXPORT TaskHandle
 PostDelayedCancellableTask(base::SequencedTaskRunner&,
                            const base::Location&,
                            base::OnceClosure,
-                           base::TimeDelta delay) WARN_UNUSED_RESULT;
-PLATFORM_EXPORT TaskHandle
+                           base::TimeDelta delay);
+[[nodiscard]] PLATFORM_EXPORT TaskHandle
 PostNonNestableCancellableTask(base::SequencedTaskRunner&,
                                const base::Location&,
-                               base::OnceClosure) WARN_UNUSED_RESULT;
-PLATFORM_EXPORT TaskHandle
+                               base::OnceClosure);
+[[nodiscard]] PLATFORM_EXPORT TaskHandle
 PostNonNestableDelayedCancellableTask(base::SequencedTaskRunner&,
                                       const base::Location&,
                                       base::OnceClosure,
-                                      base::TimeDelta delay) WARN_UNUSED_RESULT;
+                                      base::TimeDelta delay);
 
 }  // namespace blink
 

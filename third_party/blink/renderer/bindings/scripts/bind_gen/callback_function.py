@@ -186,7 +186,7 @@ def make_callback_invocation_function(cg_context,
     func_decl = CxxFuncDeclNode(name=function_name,
                                 arg_decls=arg_decls,
                                 return_type=maybe_return_type,
-                                warn_unused_result=True)
+                                nodiscard=True)
     if cg_context.callback_function:
         if is_construct_call:
             comment = T("""\
