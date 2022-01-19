@@ -123,13 +123,12 @@ void BluetoothPowerControllerImpl::InitLocalStatePrefService(
 void BluetoothPowerControllerImpl::ApplyBluetoothLocalStatePref() {
   if (local_state_->FindPreference(prefs::kSystemBluetoothAdapterEnabled)
           ->IsDefaultValue()) {
-    // If the device has not had the local state Bluetooth pref, set the pref
-    // according to whatever the current Bluetooth power is.
-    BLUETOOTH_LOG(EVENT) << "Saving current power state of "
-                         << adapter_state_controller_->GetAdapterState()
-                         << " to local state.";
-    SaveCurrentPowerStateToPrefs(local_state_,
-                                 prefs::kSystemBluetoothAdapterEnabled);
+    // If the device has not had the local state Bluetooth pref set, this is a
+    // fresh install. On fresh installs, the Bluetooth adapter defaults to
+    // powered on. Save this state to prefs.
+    BLUETOOTH_LOG(EVENT) << "No local state pref has been set, saving"
+                         << "Bluetooth power state of enabled to local state";
+    local_state_->SetBoolean(ash::prefs::kSystemBluetoothAdapterEnabled, true);
     return;
   }
 
