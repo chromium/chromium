@@ -1968,9 +1968,15 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
   }
 };
 
+// crbug.com/1288780: flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_MaxConnectionsPerProxy DISABLED_MaxConnectionsPerProxy
+#else
+#define MAYBE_MaxConnectionsPerProxy MaxConnectionsPerProxy
+#endif
 IN_PROC_BROWSER_TEST_P(
     NetworkContextConfigurationManagedProxySettingsBrowserTest,
-    MaxConnectionsPerProxy) {
+    MAYBE_MaxConnectionsPerProxy) {
   RunMaxConnectionsPerProxyTest();
 }
 
