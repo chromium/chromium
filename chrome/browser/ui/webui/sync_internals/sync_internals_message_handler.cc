@@ -183,7 +183,7 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
   base::Value type_list(base::Value::Type::LIST);
   syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
   for (syncer::ModelType type : protocol_types) {
-    type_list.Append(ModelTypeToString(type));
+    type_list.Append(ModelTypeToDebugString(type));
   }
   event_details.SetKey(syncer::sync_ui_util::kTypes, std::move(type_list));
   FireWebUIListener(syncer::sync_ui_util::kOnReceivedListOfTypes,
@@ -331,7 +331,7 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
     syncer::ModelType type =
         syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
     if (IsRealDataType(type)) {
-      data_types_list.Append(syncer::ModelTypeToString(type));
+      data_types_list.Append(syncer::ModelTypeToDebugString(type));
     }
   }
 
@@ -360,7 +360,7 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
   for (const syncer::TypeEntitiesCount& count : entity_counts) {
     DictionaryValue count_dictionary;
     count_dictionary.SetStringPath(syncer::sync_ui_util::kModelType,
-                                   ModelTypeToString(count.type));
+                                   ModelTypeToDebugString(count.type));
     count_dictionary.SetIntPath(syncer::sync_ui_util::kEntities,
                                 count.entities);
     count_dictionary.SetIntPath(syncer::sync_ui_util::kNonTombstoneEntities,

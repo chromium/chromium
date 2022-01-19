@@ -21,7 +21,7 @@ class ModelTypeTest : public testing::Test {};
 TEST_F(ModelTypeTest, ModelTypeToValue) {
   for (int i = 0; i < GetNumModelTypes(); ++i) {
     ModelType model_type = ModelTypeFromInt(i);
-    base::ExpectStringValue(ModelTypeToString(model_type),
+    base::ExpectStringValue(ModelTypeToDebugString(model_type),
                             *ModelTypeToValue(model_type));
   }
 }
@@ -68,7 +68,7 @@ TEST_F(ModelTypeTest, ModelTypeHistogramMapping) {
   std::set<ModelTypeForHistograms> histogram_values;
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    SCOPED_TRACE(ModelTypeToString(type));
+    SCOPED_TRACE(ModelTypeToDebugString(type));
     ModelTypeForHistograms histogram_value = ModelTypeHistogramValue(type);
 
     EXPECT_TRUE(histogram_values.insert(histogram_value).second)
@@ -83,7 +83,7 @@ TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
   std::set<int> identifiers;
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    SCOPED_TRACE(ModelTypeToString(type));
+    SCOPED_TRACE(ModelTypeToDebugString(type));
     int stable_identifier = ModelTypeToStableIdentifier(type);
     EXPECT_GT(stable_identifier, 0);
     EXPECT_TRUE(identifiers.insert(stable_identifier).second)
@@ -111,7 +111,7 @@ TEST_F(ModelTypeTest, ModelTypeSetFromDebugString) {
 TEST_F(ModelTypeTest, DefaultFieldValues) {
   ModelTypeSet types = ProtocolTypes();
   for (ModelType type : types) {
-    SCOPED_TRACE(ModelTypeToString(type));
+    SCOPED_TRACE(ModelTypeToDebugString(type));
 
     sync_pb::EntitySpecifics specifics;
     AddDefaultFieldValue(type, &specifics);
@@ -143,8 +143,9 @@ TEST_F(ModelTypeTest, ModelTypeToRootTagValues) {
 TEST_F(ModelTypeTest, ModelTypeStringMapping) {
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType model_type : all_types) {
-    const char* model_type_string = ModelTypeToString(model_type);
-    ModelType converted_model_type = ModelTypeFromString(model_type_string);
+    const char* model_type_string = ModelTypeToDebugString(model_type);
+    ModelType converted_model_type =
+        ModelTypeFromDebugString(model_type_string);
     if (IsRealDataType(model_type))
       EXPECT_EQ(converted_model_type, model_type);
     else

@@ -311,7 +311,7 @@ void SyncSchedulerImpl::ScheduleLocalNudge(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SDVLOG(2) << "Scheduling sync because of local change to "
-            << ModelTypeToString(type);
+            << ModelTypeToDebugString(type);
   base::TimeDelta nudge_delay = nudge_tracker_.RecordLocalChange(type);
   ScheduleNudgeImpl(nudge_delay);
 }
@@ -333,7 +333,7 @@ void SyncSchedulerImpl::ScheduleInvalidationNudge(
   DCHECK(!syncer_->IsSyncing());
 
   SDVLOG(2) << "Scheduling sync because we received invalidation for "
-            << ModelTypeToString(model_type);
+            << ModelTypeToDebugString(model_type);
   base::TimeDelta nudge_delay = nudge_tracker_.RecordRemoteInvalidation(
       model_type, std::move(invalidation));
   ScheduleNudgeImpl(nudge_delay);
@@ -344,7 +344,7 @@ void SyncSchedulerImpl::ScheduleInitialSyncNudge(ModelType model_type) {
   DCHECK(!syncer_->IsSyncing());
 
   SDVLOG(2) << "Scheduling non-blocking initial sync for "
-            << ModelTypeToString(model_type);
+            << ModelTypeToDebugString(model_type);
   nudge_tracker_.RecordInitialSyncRequired(model_type);
   ScheduleNudgeImpl(base::Seconds(0));
 }
@@ -811,7 +811,7 @@ void SyncSchedulerImpl::OnTypesBackedOff(ModelTypeSet types) {
 
     base::TimeDelta length = delay_provider_->GetDelay(last_backoff_time);
     nudge_tracker_.SetTypeBackedOff(type, length, TimeTicks::Now());
-    SDVLOG(1) << "Backing off " << ModelTypeToString(type) << " for "
+    SDVLOG(1) << "Backing off " << ModelTypeToDebugString(type) << " for "
               << length.InSeconds() << " second.";
   }
   RestartWaiting();

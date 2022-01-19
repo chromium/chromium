@@ -363,7 +363,7 @@ int GetSpecificsFieldNumberFromModelType(ModelType model_type);
 
 // Returns a string with application lifetime that represents the name of
 // |model_type|.
-const char* ModelTypeToString(ModelType model_type);
+const char* ModelTypeToDebugString(ModelType model_type);
 
 // Returns a string with application lifetime that is used as the histogram
 // suffix for |model_type|.
@@ -383,7 +383,7 @@ int ModelTypeToStableIdentifier(ModelType model_type);
 std::unique_ptr<base::Value> ModelTypeToValue(ModelType model_type);
 
 // Returns the ModelType corresponding to the name |model_type_string|.
-ModelType ModelTypeFromString(const std::string& model_type_string);
+ModelType ModelTypeFromDebugString(const std::string& model_type_string);
 
 // Returns the comma-separated string representation of |model_types|.
 std::string ModelTypeSetToDebugString(ModelTypeSet model_types);

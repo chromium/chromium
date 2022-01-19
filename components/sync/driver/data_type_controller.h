@@ -86,7 +86,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   virtual void Stop(ShutdownReason shutdown_reason, StopCallback callback) = 0;
 
   // Name of this data type.  For logging purposes only.
-  std::string name() const { return ModelTypeToString(type()); }
+  std::string name() const { return ModelTypeToDebugString(type()); }
 
   // Current state of the data type controller.
   virtual State state() const = 0;

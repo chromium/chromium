@@ -224,7 +224,7 @@ void StartupController::OnFirstPoliciesLoadedImpl(bool timeout) {
 void StartupController::OnDataTypeRequestsSyncStartup(ModelType type) {
   if (!IsDeferredStartupEnabled()) {
     DVLOG(2) << "Ignoring data type request for sync startup: "
-             << ModelTypeToString(type);
+             << ModelTypeToDebugString(type);
     return;
   }
 
@@ -232,7 +232,8 @@ void StartupController::OnDataTypeRequestsSyncStartup(ModelType type) {
     return;
   }
 
-  DVLOG(2) << "Data type requesting sync startup: " << ModelTypeToString(type);
+  DVLOG(2) << "Data type requesting sync startup: "
+           << ModelTypeToDebugString(type);
   if (!start_up_time_.is_null()) {
     RecordTimeDeferred(DeferredInitTrigger::kDataTypeRequest);
   }

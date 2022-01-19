@@ -413,7 +413,7 @@ void SyncServiceImpl::OnDataTypeRequestsSyncStartup(ModelType type) {
     // We can get here as datatype SyncableServices are typically wired up
     // to the native datatype even if sync isn't enabled.
     DVLOG(1) << "Dropping sync startup request because type "
-             << ModelTypeToString(type) << "not enabled.";
+             << ModelTypeToDebugString(type) << "not enabled.";
     return;
   }
 
@@ -1306,7 +1306,7 @@ std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging() {
 
   for (const auto& [type, controller] : data_type_controllers_) {
     auto type_status = std::make_unique<base::DictionaryValue>();
-    type_status->SetString("name", ModelTypeToString(type));
+    type_status->SetString("name", ModelTypeToDebugString(type));
 
     if (data_type_error_map_.find(type) != data_type_error_map_.end()) {
       const SyncError& error = data_type_error_map_.find(type)->second;
@@ -1577,7 +1577,7 @@ void GetAllNodesRequestHelper::OnReceivedNodesForType(
 
   // Add these results to our list.
   base::DictionaryValue type_dict;
-  type_dict.SetKey("type", base::Value(ModelTypeToString(type)));
+  type_dict.SetKey("type", base::Value(ModelTypeToDebugString(type)));
   type_dict.SetKey("nodes",
                    base::Value::FromUniquePtrValue(std::move(node_list)));
   result_accumulator_->Append(std::move(type_dict));

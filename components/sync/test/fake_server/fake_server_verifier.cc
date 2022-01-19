@@ -76,7 +76,7 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     return DictionaryCreationAssertionFailure();
   }
 
-  string model_type_string = ModelTypeToString(model_type);
+  string model_type_string = ModelTypeToDebugString(model_type);
   base::ListValue* entity_list = nullptr;
   if (!entities->GetList(model_type_string, &entity_list)) {
     return UnknownTypeAssertionFailure(model_type_string);
@@ -100,7 +100,7 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
     return DictionaryCreationAssertionFailure();
   }
 
-  string model_type_string = ModelTypeToString(model_type);
+  string model_type_string = ModelTypeToDebugString(model_type);
   base::ListValue* entity_list = nullptr;
   size_t actual_count = 0;
   if (entities->GetList(model_type_string, &entity_list)) {

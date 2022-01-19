@@ -571,7 +571,7 @@ bool MockConnectionManager::ProcessCommit(
         id_string = base::GenerateGUID();
       } else {
         ADD_FAILURE() << " for specifics type "
-                      << ModelTypeToString(model_type);
+                      << ModelTypeToDebugString(model_type);
         return false;
       }
     }

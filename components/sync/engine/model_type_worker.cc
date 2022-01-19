@@ -501,7 +501,7 @@ void ModelTypeWorker::SendPendingUpdatesToProcessorIfReady() {
          !model_type_state_.encryption_key_name().empty());
   DCHECK(entries_pending_decryption_.empty());
 
-  DVLOG(1) << ModelTypeToString(type_) << ": "
+  DVLOG(1) << ModelTypeToDebugString(type_) << ": "
            << base::StringPrintf("Delivering %" PRIuS " applicable updates.",
                                  pending_updates_.size());
 
@@ -659,7 +659,7 @@ bool ModelTypeWorker::UpdateTypeEncryptionKeyName() {
     if (model_type_state_.encryption_key_name().empty()) {
       return false;
     }
-    DLOG(WARNING) << ModelTypeToString(type_)
+    DLOG(WARNING) << ModelTypeToDebugString(type_)
                   << " : Had encryption disabled but non-empty encryption key "
                   << model_type_state_.encryption_key_name()
                   << ". Setting key to empty.";
@@ -675,7 +675,7 @@ bool ModelTypeWorker::UpdateTypeEncryptionKeyName() {
 
   std::string default_key_name = cryptographer_->GetDefaultEncryptionKeyName();
   DCHECK(!default_key_name.empty());
-  DVLOG(1) << ModelTypeToString(type_) << ": Updating encryption key "
+  DVLOG(1) << ModelTypeToDebugString(type_) << ": Updating encryption key "
            << model_type_state_.encryption_key_name() << " -> "
            << default_key_name;
   model_type_state_.set_encryption_key_name(default_key_name);

@@ -36,7 +36,7 @@ bool NudgeTracker::IsSyncRequired(ModelTypeSet types) const {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     if (tracker_it->second->IsSyncRequired()) {
       return true;
     }
@@ -56,7 +56,7 @@ bool NudgeTracker::IsGetUpdatesRequired(ModelTypeSet types) const {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     if (tracker_it->second->IsGetUpdatesRequired()) {
       return true;
     }
@@ -79,7 +79,7 @@ bool NudgeTracker::IsRetryRequired() const {
 void NudgeTracker::RecordSuccessfulCommitMessage(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     tracker_it->second->RecordSuccessfulCommitMessage();
   }
 }
@@ -95,7 +95,7 @@ void NudgeTracker::RecordSuccessfulSyncCycle(ModelTypeSet types) {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     tracker_it->second->RecordSuccessfulSyncCycle();
   }
 }
@@ -103,7 +103,7 @@ void NudgeTracker::RecordSuccessfulSyncCycle(ModelTypeSet types) {
 void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     tracker_it->second->RecordInitialSyncDone();
   }
 }
@@ -117,7 +117,7 @@ base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type) {
 base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     tracker_it->second->RecordLocalRefreshRequest();
   }
   return kLocalRefreshDelay;
@@ -188,7 +188,7 @@ bool NudgeTracker::IsAnyTypeBlocked() const {
 
 bool NudgeTracker::IsTypeBlocked(ModelType type) const {
   DCHECK(type_trackers_.find(type) != type_trackers_.end())
-      << ModelTypeToString(type);
+      << ModelTypeToDebugString(type);
   return type_trackers_.find(type)->second->IsBlocked();
 }
 

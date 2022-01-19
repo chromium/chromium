@@ -265,7 +265,7 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
   // data node.
   root_node->SetString("PARENT_ID", "r");
   root_node->SetString("UNIQUE_SERVER_TAG", "Nigori");
-  root_node->SetString("modelType", ModelTypeToString(NIGORI));
+  root_node->SetString("modelType", ModelTypeToDebugString(NIGORI));
 
   auto all_nodes = std::make_unique<base::ListValue>();
   all_nodes->Append(std::move(root_node));

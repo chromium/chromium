@@ -109,8 +109,8 @@ size_t CommitProcessor::GatherCommitContributionsForType(
   }
   auto cm_it = commit_contributor_map_->find(type);
   if (cm_it == commit_contributor_map_->end()) {
-    DLOG(ERROR) << "Could not find requested type " << ModelTypeToString(type)
-                << " in contributor map.";
+    DLOG(ERROR) << "Could not find requested type "
+                << ModelTypeToDebugString(type) << " in contributor map.";
     return 0;
   }
 

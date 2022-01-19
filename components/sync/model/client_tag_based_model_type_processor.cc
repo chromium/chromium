@@ -78,11 +78,11 @@ void ClientTagBasedModelTypeProcessor::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback start_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Sync is starting for " << ModelTypeToString(type_);
-  DCHECK(request.IsValid()) << ModelTypeToString(type_);
-  DCHECK(start_callback) << ModelTypeToString(type_);
-  DCHECK(!start_callback_) << ModelTypeToString(type_);
-  DCHECK(!IsConnected()) << ModelTypeToString(type_);
+  DVLOG(1) << "Sync is starting for " << ModelTypeToDebugString(type_);
+  DCHECK(request.IsValid()) << ModelTypeToDebugString(type_);
+  DCHECK(start_callback) << ModelTypeToDebugString(type_);
+  DCHECK(!start_callback_) << ModelTypeToDebugString(type_);
+  DCHECK(!IsConnected()) << ModelTypeToDebugString(type_);
 
   start_callback_ = std::move(start_callback);
   activation_request_ = request;
@@ -125,7 +125,7 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
     // TODO(crbug.com/872360): This DCHECK can currently trigger if the user's
     // persisted Sync metadata is in an inconsistent state.
     DCHECK(commit_only_ || batch->TakeAllMetadata().empty())
-        << ModelTypeToString(type_);
+        << ModelTypeToDebugString(type_);
   }
 
   DCHECK(model_ready_to_sync_);
@@ -354,7 +354,7 @@ ClientTagBasedModelTypeProcessor::GetControllerDelegate() {
 void ClientTagBasedModelTypeProcessor::ConnectSync(
     std::unique_ptr<CommitQueue> worker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Successfully connected " << ModelTypeToString(type_);
+  DVLOG(1) << "Successfully connected " << ModelTypeToDebugString(type_);
 
   worker_ = std::move(worker);
 
@@ -365,7 +365,7 @@ void ClientTagBasedModelTypeProcessor::DisconnectSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsConnected());
 
-  DVLOG(1) << "Disconnecting sync for " << ModelTypeToString(type_);
+  DVLOG(1) << "Disconnecting sync for " << ModelTypeToDebugString(type_);
   weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
   worker_.reset();
 
@@ -619,7 +619,7 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
 
   DCHECK(entity_tracker_)
       << "Received commit response when entity tracker is null. Type: "
-      << ModelTypeToString(type_);
+      << ModelTypeToDebugString(type_);
 
   // |error_response_list| is ignored, because all errors are treated as
   // transientand the processor with eventually retry.
@@ -637,7 +637,7 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
         entity_tracker_->GetEntityForTagHash(data.client_tag_hash);
     if (entity == nullptr) {
       NOTREACHED() << "Received commit response for missing item."
-                   << " type: " << ModelTypeToString(type_)
+                   << " type: " << ModelTypeToDebugString(type_)
                    << " client_tag_hash: " << data.client_tag_hash;
       continue;
     }
@@ -858,7 +858,7 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
           UpdateDropReason::kTombstoneInFullUpdate, type_);
       DLOG(WARNING) << "Ignoring tombstone found during initial update: "
                     << "client_tag_hash = " << client_tag_hash << " for "
-                    << ModelTypeToString(type_);
+                    << ModelTypeToDebugString(type_);
       continue;
     }
     if (bridge_->SupportsGetClientTag() &&
@@ -867,7 +867,8 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
       SyncRecordModelTypeUpdateDropReason(
           UpdateDropReason::kInconsistentClientTag, type_);
       DLOG(WARNING) << "Received unexpected client tag hash: "
-                    << client_tag_hash << " for " << ModelTypeToString(type_);
+                    << client_tag_hash << " for "
+                    << ModelTypeToDebugString(type_);
       continue;
     }
 
@@ -878,7 +879,7 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
         SyncRecordModelTypeUpdateDropReason(
             UpdateDropReason::kCannotGenerateStorageKey, type_);
         DLOG(WARNING) << "Received entity with invalid update for "
-                      << ModelTypeToString(type_);
+                      << ModelTypeToDebugString(type_);
         continue;
       }
     }
@@ -888,7 +889,7 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
     // does.
     if (entity_tracker_->GetEntityForTagHash(client_tag_hash)) {
       DLOG(ERROR) << "Received duplicate client_tag_hash " << client_tag_hash
-                  << " for " << ModelTypeToString(type_);
+                  << " for " << ModelTypeToDebugString(type_);
     }
 #endif  // DCHECK_IS_ON()
     ProcessorEntity* entity = CreateEntity(storage_key, update.entity);
@@ -1108,7 +1109,7 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
     std::unique_ptr<DataBatch> batch) {
   std::unique_ptr<base::ListValue> all_nodes =
       std::make_unique<base::ListValue>();
-  std::string type_string = ModelTypeToString(type_);
+  std::string type_string = ModelTypeToDebugString(type_);
 
   while (batch->HasNext()) {
     const auto& [storage_key, data] = batch->Next();

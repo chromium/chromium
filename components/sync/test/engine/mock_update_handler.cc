@@ -11,7 +11,7 @@ namespace syncer {
 MockUpdateHandler::MockUpdateHandler(ModelType type) {
   progress_marker_.set_data_type_id(GetSpecificsFieldNumberFromModelType(type));
   const std::string& token_str =
-      std::string("Mock token: ") + std::string(ModelTypeToString(type));
+      std::string("Mock token: ") + std::string(ModelTypeToDebugString(type));
   progress_marker_.set_token(token_str);
 }
 

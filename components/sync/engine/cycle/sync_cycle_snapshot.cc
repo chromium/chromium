@@ -121,7 +121,8 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
     type_entries.SetInteger("numToDeleteEntries",
                             num_to_delete_entries_by_type_[type]);
 
-    counter_entries.SetKey(ModelTypeToString(type), std::move(type_entries));
+    counter_entries.SetKey(ModelTypeToDebugString(type),
+                           std::move(type_entries));
   }
   value->SetKey("counter_entries", std::move(counter_entries));
   value->SetBoolean("hasRemainingLocalChanges", has_remaining_local_changes_);

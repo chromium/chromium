@@ -128,7 +128,7 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
   auto type_list = std::make_unique<base::ListValue>();
   syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
   for (syncer::ModelType type : protocol_types) {
-    type_list->Append(ModelTypeToString(type));
+    type_list->Append(ModelTypeToDebugString(type));
   }
   event_details.Set(syncer::sync_ui_util::kTypes, std::move(type_list));
   DispatchEvent(syncer::sync_ui_util::kOnReceivedListOfTypes, event_details);
@@ -263,7 +263,7 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
   for (const syncer::TypeEntitiesCount& count : entity_counts) {
     base::DictionaryValue count_dictionary;
     count_dictionary.SetStringPath(syncer::sync_ui_util::kModelType,
-                                   ModelTypeToString(count.type));
+                                   ModelTypeToDebugString(count.type));
     count_dictionary.SetIntPath(syncer::sync_ui_util::kEntities,
                                 count.entities);
     count_dictionary.SetIntPath(syncer::sync_ui_util::kNonTombstoneEntities,

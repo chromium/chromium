@@ -27,7 +27,7 @@ bool ServerCountMatchStatusChecker::IsExitConditionSatisfied(std::ostream* os) {
   size_t actual_count = fake_server()->GetSyncEntitiesByModelType(type_).size();
   *os << "Waiting for fake server entity count " << actual_count
       << " to match expected count " << count_ << " for type "
-      << ModelTypeToString(type_);
+      << ModelTypeToDebugString(type_);
   return count_ == actual_count;
 }
 

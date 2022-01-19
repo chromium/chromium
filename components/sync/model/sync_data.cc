@@ -104,7 +104,7 @@ std::string SyncData::ToString() const {
   if (!IsValid())
     return "<Invalid SyncData>";
 
-  std::string type = ModelTypeToString(GetDataType());
+  std::string type = ModelTypeToDebugString(GetDataType());
   std::string specifics;
   base::JSONWriter::WriteWithOptions(*EntitySpecificsToValue(GetSpecifics()),
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,

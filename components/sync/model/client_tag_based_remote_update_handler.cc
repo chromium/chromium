@@ -131,7 +131,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     SyncRecordModelTypeUpdateDropReason(
         UpdateDropReason::kInconsistentClientTag, type_);
     DLOG(WARNING) << "Received unexpected client tag hash: " << client_tag_hash
-                  << " for " << ModelTypeToString(type_);
+                  << " for " << ModelTypeToDebugString(type_);
     return nullptr;
   }
 
@@ -145,7 +145,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
         UpdateDropReason::kTombstoneForNonexistentInIncrementalUpdate, type_);
     DLOG(WARNING) << "Received remote delete for a non-existing item."
                   << " client_tag_hash: " << client_tag_hash << " for "
-                  << ModelTypeToString(type_);
+                  << ModelTypeToDebugString(type_);
     return nullptr;
   }
 
@@ -204,8 +204,9 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   if (!update_is_tombstone &&
       entity_tracker_->model_type_state().encryption_key_name() !=
           update_encryption_key_name) {
-    DVLOG(2) << ModelTypeToString(type_) << ": Requesting re-encrypt commit "
-             << update_encryption_key_name << " -> "
+    DVLOG(2) << ModelTypeToDebugString(type_)
+             << ": Requesting re-encrypt commit " << update_encryption_key_name
+             << " -> "
              << entity_tracker_->model_type_state().encryption_key_name();
 
     entity->IncrementSequenceNumber(base::Time::Now());

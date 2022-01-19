@@ -747,7 +747,7 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
   // Initialize an empty ListValue for all ModelTypes.
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    dictionary->SetKey(ModelTypeToString(type), base::ListValue());
+    dictionary->SetKey(ModelTypeToDebugString(type), base::ListValue());
   }
 
   for (const auto& [id, entity] : entities_) {
@@ -758,7 +758,7 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
       continue;
     }
     base::ListValue* list_value;
-    if (!dictionary->GetList(ModelTypeToString(entity->GetModelType()),
+    if (!dictionary->GetList(ModelTypeToDebugString(entity->GetModelType()),
                              &list_value)) {
       return nullptr;
     }

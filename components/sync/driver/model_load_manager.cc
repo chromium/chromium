@@ -170,7 +170,7 @@ void ModelLoadManager::Stop(ShutdownReason shutdown_reason) {
 void ModelLoadManager::ModelLoadCallback(ModelType type,
                                          const SyncError& error) {
   DVLOG(1) << "ModelLoadManager: ModelLoadCallback for "
-           << ModelTypeToString(type);
+           << ModelTypeToDebugString(type);
 
   if (error.IsSet()) {
     DVLOG(1) << "ModelLoadManager: Type encountered an error.";
