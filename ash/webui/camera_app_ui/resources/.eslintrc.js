@@ -465,6 +465,15 @@ module.exports = {
           argsIgnorePattern: '^_',
         },
       ],
+      // Disallow parseInt (go/tsstyle#type-coercion)
+      'no-restricted-syntax': [
+        'error',
+        {
+          'selector': 'CallExpression[callee.name="parseInt"]',
+          'message': 'parseInt are not allowed, use Number() instead. ' +
+              '(go/tsstyle#type-coercion)',
+        },
+      ],
     },
   }],
 };
