@@ -670,8 +670,15 @@ bool Element::IsFocusableStyle() const {
       !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
       !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this));
   // Elements in canvas fallback content are not rendered, but they are allowed
-  // to be focusable as long as their canvas is displayed and visible.
+  // to be focusable as long as they aren't expressly inert and their canvas is
+  // displayed and visible.
   if (IsInCanvasSubtree()) {
+    // TODO(obrufau): the element can be inert when GetComputedStyle() is null.
+    // Should maybe use EnsureComputedStyle(), but it's not const.
+    if (const ComputedStyle* style = GetComputedStyle()) {
+      if (style->IsInert())
+        return false;
+    }
     const HTMLCanvasElement* canvas =
         Traversal<HTMLCanvasElement>::FirstAncestorOrSelf(*this);
     DCHECK(canvas);
@@ -683,8 +690,11 @@ bool Element::IsFocusableStyle() const {
   // FIXME: Even if we are not visible, we might have a child that is visible.
   // Hyatt wants to fix that some day with a "has visible content" flag or the
   // like.
-  return GetLayoutObject() &&
-         GetLayoutObject()->Style()->Visibility() == EVisibility::kVisible;
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    const ComputedStyle& style = layout_object->StyleRef();
+    return !style.IsInert() && style.Visibility() == EVisibility::kVisible;
+  }
+  return false;
 }
 
 Node* Element::Clone(Document& factory, CloneChildrenFlag flag) const {
@@ -4648,7 +4658,7 @@ bool Element::IsFocusableStyleAfterUpdate() const {
 }
 
 bool Element::IsKeyboardFocusable() const {
-  return isConnected() && !IsInert() && IsFocusableStyleAfterUpdate() &&
+  return isConnected() && IsFocusableStyleAfterUpdate() &&
          ((SupportsFocus() &&
            GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0) ||
           (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
@@ -4656,8 +4666,7 @@ bool Element::IsKeyboardFocusable() const {
 }
 
 bool Element::IsMouseFocusable() const {
-  return isConnected() && !IsInert() && IsFocusableStyleAfterUpdate() &&
-         SupportsFocus();
+  return isConnected() && IsFocusableStyleAfterUpdate() && SupportsFocus();
 }
 
 bool Element::IsAutofocusable() const {

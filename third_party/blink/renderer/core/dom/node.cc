@@ -1389,13 +1389,6 @@ bool Node::ShouldHaveFocusAppearance() const {
   return true;
 }
 
-// TODO(crbug.com/692360): Remove this method.
-bool Node::IsInert() const {
-  if (const ComputedStyle* style = GetComputedStyle())
-    return style->IsInert();
-  return false;
-}
-
 LinkHighlightCandidate Node::IsLinkHighlightCandidate() const {
   if (const LayoutObject* layout_object = GetLayoutObject()) {
     const ECursor cursor = layout_object->StyleRef().Cursor();
