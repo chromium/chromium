@@ -4006,7 +4006,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // this test is checking the behavior of a new renderer process which is
   // created for a back forward navigation from a prerendered page.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
   const GURL kPrerenderingUrl =

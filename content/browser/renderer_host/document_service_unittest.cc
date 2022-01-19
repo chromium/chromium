@@ -105,7 +105,7 @@ TEST_F(DocumentServiceTest, DidFinishNavigation) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
   // deleted.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      BackForwardCache::TEST_REQUIRES_NO_CACHING);
   CreateEchoImpl(main_rfh_);
   SimulateNavigation(main_rfh_, GURL(kBarOrigin));
   EXPECT_FALSE(is_echo_impl_alive_);

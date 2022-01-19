@@ -2748,7 +2748,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, DontSelectInvalidFiles) {
   // With BackForwardCache, old process won't get deleted on navigation as it is
   // still in use by the bfcached document, disable back-forward cache to ensure
   // that the process gets deleted.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(shell(), GetCrossSiteURL("/title1.html")));
   exit_observer.Wait();
@@ -2810,7 +2810,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // With BackForwardCache, old process won't get deleted on navigation as it is
   // still in use by the bfcached document, disable back-forward cache to ensure
   // that the process gets deleted.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(shell(), GetCrossSiteURL("/title1.html")));
   exit_observer.Wait();
@@ -2979,7 +2979,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // With BackForwardCache, old process won't get deleted on navigation as it is
   // still in use by the bfcached document, disable back-forward cache to ensure
   // that the process gets deleted.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(shell(), GetCrossSiteURL("/title1.html")));
   exit_observer.Wait();
@@ -3110,7 +3110,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // The old RenderFrameHost might have entered the BackForwardCache. Disable
   // back-forward cache to ensure that the RenderFrameHost gets deleted.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(shell(), cross_site_url));
   rfh_observer.Wait();
@@ -3508,7 +3508,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // With BackForwardCache, swapped out RenderFrameHost won't have a
   // replacement proxy as the document is stored in cache.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   // Navigate the tab to a different site, and only wait for commit, not load
   // stop.
@@ -3885,7 +3885,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, LastCommittedOrigin) {
 
   // Disable the back-forward cache so that documents are always deleted when
   // navigating.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -5376,7 +5376,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Ensure that previous document won't be restored from the BackForwardCache,
   // to force a network fetch, which would result in a network error.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   // Create an interceptor to cause navigations to url1 to fail and go back
   // in session history.
@@ -6356,7 +6356,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   // navigate away from the page using it, which won't happen if the page is
   // kept alive in the back-forward cache.  So, we should disable back-forward
   // cache for this test.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
@@ -6442,7 +6442,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   // navigate away from the page using it, which won't happen if the page is
   // kept alive in the back-forward cache.  So, we should disable back-forward
   // cache for this test.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
@@ -6529,7 +6529,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   // navigate away from the page using it, which won't happen if the page is
   // kept alive in the back-forward cache.  So, we should disable back-forward
   // cache for this test.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
@@ -6604,7 +6604,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   // navigate away from the page using it, which won't happen if the page is
   // kept alive in the back-forward cache.  So, we should disable back-forward
   // cache for this test.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
@@ -6733,7 +6733,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteCoopTest,
   // navigate away from the page using it, which won't happen if the page is
   // kept alive in the back-forward cache.  So, we should disable back-forward
   // cache for this test.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   GURL url_1(https_server()->GetURL("a.com", "/title1.html"));
   GURL url_2(https_server()->GetURL("a.com", "/title2.html"));
@@ -8480,7 +8480,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // With BackForwardCache, old process won't be deleted on navigation as it is
   // still in use by the bfcached document, disable back-forward cache to ensure
   // that the process gets deleted.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(shell(), url3));
   exit_observer.Wait();

@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, RenderFrameHostDeleted) {
   // Test needs rfh_a to be deleted after navigating but it doesn't happen with
   // BackForwardCache as it is stored in cache.
   DisableBackForwardCacheForTesting(web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 3) Navigate to B, deleting rfh_a.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));

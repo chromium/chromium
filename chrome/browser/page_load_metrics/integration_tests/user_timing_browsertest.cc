@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, UserTiming) {
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Check web perf API.
   const base::Value eval_result =

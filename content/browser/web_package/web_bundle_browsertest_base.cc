@@ -1074,7 +1074,7 @@ void RunIframeNavigationTest(
   // back navigation will recreate the page. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(web_contents,
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   NavigateAndWaitForTitle(
       web_contents, web_bundle_url,
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
@@ -1264,7 +1264,7 @@ void RunIframeSameDocumentNavigationTest(
   // back navigation will recreate the page. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(web_contents,
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   NavigateAndWaitForTitle(
       web_contents, web_bundle_url,
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");

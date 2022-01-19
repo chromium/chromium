@@ -6772,7 +6772,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // recreated on history navigation, disable back/forward cache to force a
   // reload and a URL fetch.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 4. Go back, recreating the iframe. The subframe entry won't be found, and
   // we should fall back to the default URL.
@@ -6869,7 +6869,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // recreated on history navigation, disable back/forward cache to force a
   // reload and a URL fetch.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 3. Go back, recreating the iframe.  The subframe will have a new name this
   // time, so we won't find a history item for it.  We should let the new data
@@ -6978,7 +6978,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // later recreated on history navigations. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 1. Start on a page that injects a nested iframe into an injected
   // about:blank iframe.
@@ -7081,7 +7081,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // later recreated on history navigations. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // 1. Start on a page that injects a nested iframe srcdoc which contains a
   // nested iframe.
   GURL main_url(embedded_test_server()->GetURL(
@@ -7309,7 +7309,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // later recreated on history navigations. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 1. Start on a page with two frames.
   GURL initial_url(
@@ -7489,7 +7489,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // later recreated on history navigations. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 1. Start on a page with an iframe.
   GURL initial_url(embedded_test_server()->GetURL(
@@ -8168,7 +8168,7 @@ IN_PROC_BROWSER_TEST_P(
   // later recreated on history navigations. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
@@ -11656,7 +11656,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // start another forward navigation while another forward navigation has
   // already started.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // Navigate to a page with an iframe.
   GURL url_a(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_data_iframe.html"));
@@ -13820,7 +13820,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // later recreated on history navigations. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
@@ -13934,7 +13934,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // (which would fail with a 404 error). Disable back/forward cache to ensure
   // that it doesn't happen.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
@@ -14416,7 +14416,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // is still in use by the bfcached document, disable back/forward cache to
   // ensure that the process gets deleted.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   RenderProcessHostWatcher prev_host_watcher(
       prev_host, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
@@ -15301,7 +15301,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // instead of redirecting, disable back/forward cache to ensure that redirect
   // happens on history navigation.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Back, which should redirect to |url3|.
   FrameNavigateParamsCapturer capturer(root);
@@ -15755,7 +15755,7 @@ IN_PROC_BROWSER_TEST_P(
   // on navigation as it is stored in bfcache, disable back/forward cache to
   // ensure that the RFH will enter pending deletion state.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Navigate the main frame cross-process and wait for the unload event to
   // fire.
@@ -18993,7 +18993,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // navigation and later recreated on the back navigation. Disable back/forward
   // cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Navigate main frame to another url.
   EXPECT_TRUE(NavigateToURL(
@@ -19255,7 +19255,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // This test specifically observes behavior of creating a new frame during a
   // history navigation, so disable the back forward cache.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
@@ -19290,7 +19290,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // This test specifically observes behavior of creating a new frame during a
   // history navigation, so disable the back forward cache.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());

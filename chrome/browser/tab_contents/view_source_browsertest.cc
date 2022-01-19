@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheEnabledTest,
   // |view_source_contents| to make sure it will not be put into the back
   // forward cache.
   view_source_contents->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 4. Navigate the view-source page to a c.com/title1.html
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

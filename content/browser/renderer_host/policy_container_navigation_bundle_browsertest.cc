@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
 IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
                        NoHistoryPoliciesInheritedForNetworkUrlsOnBack) {
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start by navigating to a network URL with one policy.
   WebContents* tab = shell()->web_contents();

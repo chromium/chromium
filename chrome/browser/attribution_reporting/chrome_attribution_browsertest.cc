@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   // it doesn't get preserved in the cache.
   content::DisableBackForwardCacheForTesting(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   base::HistogramTester histogram_tester;
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(

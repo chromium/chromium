@@ -912,7 +912,7 @@ TEST_F(WebOTPServiceTest, RecordUserDismissPrompt) {
 
 TEST_F(WebOTPServiceTest, RecordUnhandledRequestOnNavigation) {
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   NavigateAndCommit(GURL(kTestUrl));
   NiceMock<MockSmsWebContentsDelegate> delegate;
   WebContentsImpl* web_contents_impl =

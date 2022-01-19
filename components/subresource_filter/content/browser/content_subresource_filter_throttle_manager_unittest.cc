@@ -744,7 +744,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(
       RenderViewHostTestHarness::web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // This test assumes that we're not in DryRun mode.
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndDisableFeature(kAdTagging);

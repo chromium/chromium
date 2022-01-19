@@ -834,7 +834,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   // doesn't get preserved in the cache.
   content::DisableBackForwardCacheForTesting(
       browser->tab_strip_model()->GetActiveWebContents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   // Start a page and wait for significant playback so we record watchtime.
   EXPECT_TRUE(SetupPageAndStartPlaying(browser, GetTestURL()));
   EXPECT_TRUE(WaitForSignificantPlayback(browser));
@@ -910,7 +910,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_AudioOnly) {
   // doesn't get preserved in the cache.
   content::DisableBackForwardCacheForTesting(
       browser->tab_strip_model()->GetActiveWebContents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start a page and wait for significant playback so we record watchtime.
   EXPECT_TRUE(SetupPageAndStartPlayingAudioOnly(browser, GetTestURL()));
@@ -980,7 +980,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, RecordWatchtime_VideoOnly) {
   // doesn't get preserved in the cache.
   content::DisableBackForwardCacheForTesting(
       browser->tab_strip_model()->GetActiveWebContents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start a page and wait for significant playback so we record watchtime.
   EXPECT_TRUE(SetupPageAndStartPlayingVideoOnly(browser, GetTestURL()));

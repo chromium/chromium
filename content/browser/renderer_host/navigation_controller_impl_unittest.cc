@@ -989,7 +989,7 @@ TEST_F(NavigationControllerTest, LoadURL_BackPreemptsPending) {
   // The test assumes the previous page gets deleted after navigation. Disable
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // First make some history.
   const GURL kExistingURL1("http://foo/eh");
@@ -1548,7 +1548,7 @@ TEST_F(NavigationControllerTest, Back_GeneratesNewPage) {
   // The test assumes the previous page gets deleted after navigation. Disable
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   const GURL url1("http://foo/1");
   const GURL url2("http://foo/2");
@@ -4020,7 +4020,7 @@ TEST_F(NavigationControllerTest, StaleNavigationsResurrected) {
   // navigation to page C not prune the entry to B. Disable back/forward cache
   // to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start on page A.
   const GURL url_a("http://foo.com/a");

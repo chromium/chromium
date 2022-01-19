@@ -422,7 +422,7 @@ TEST_F(WebUsbServiceImplTest, OpenAndNavigateCrossOrigin) {
   // back/forward cache in RenderFrameHostImpl::CreateWebUsbService(), but that
   // path is not triggered in unit tests, so this test fails. Fix this.
   content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   const auto origin = url::Origin::Create(GURL(kDefaultTestUrl));
 

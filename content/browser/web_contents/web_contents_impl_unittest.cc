@@ -582,7 +582,7 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   // Similar coverage when BFCache is on can be found in
   // BackForwardCacheBrowserTest.NavigateBackForwardRepeatedly.
   contents()->GetController().GetBackForwardCache().DisableForTesting(
-      BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   TestRenderFrameHost* orig_rfh = main_test_rfh();
   int orig_rvh_delete_count = 0;
@@ -1170,7 +1170,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackPreempted) {
   // back navigations can be stopped at ReadyToCommit timing. Disable
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const bool will_change_site_instance =
       IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled();
   // Start with a web ui page, which gets a new RVH with WebUI bindings.
@@ -1301,7 +1301,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   // The test assumes the previous page gets deleted after navigation. Disable
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const bool will_change_site_instance =
       IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled();
   // This test assumes no interaction with the back/forward cache. Indeed, it
@@ -1309,7 +1309,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   // ReadyToCommit and Commit of the first back/forward cache one. Both steps
   // are combined with it, nothing can happen in between.
   contents()->GetController().GetBackForwardCache().DisableForTesting(
-      BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start with a web ui page, which gets a new RFH with WebUI bindings.
   GURL url1(std::string(kChromeUIScheme) + "://" +

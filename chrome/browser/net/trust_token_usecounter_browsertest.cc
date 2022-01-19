@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsXhrUse) {
       ->GetActiveWebContents()
       ->GetController()
       .GetBackForwardCache()
-      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      .DisableForTesting(content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   base::HistogramTester histograms;
 
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsIframeUse) {
   // that the histogram will be recorded when the previous page is unloaded.
   // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
   web_contents->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // It's important to set the trust token arguments before updating src, as
   // the latter triggers a load. It's also important to JsReplace the trustToken
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsIframeUseViaSetat
   // that the histogram will be recorded when the previous page is unloaded.
   // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
   web_contents->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // It's important to set the trust token arguments before updating src, as
   // the latter triggers a load. It's also important to JsReplace the trustToken

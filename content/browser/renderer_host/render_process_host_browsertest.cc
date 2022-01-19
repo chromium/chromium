@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KeepAliveRendererProcess) {
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   host_destructions_ = 0;
   process_exits_ = 0;
@@ -1133,7 +1133,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // BFCache for this test.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(HandleHungBeacon, base::RepeatingClosure()));
@@ -1156,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   host_destructions_ = 0;
   process_exits_ = 0;
   Observe(rph);
@@ -1189,7 +1189,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // BFCache for this test.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(HandleHungBeacon, base::RepeatingClosure()));
@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   host_destructions_ = 0;
   process_exits_ = 0;
@@ -1558,7 +1558,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, AllowUnusedProcessToExit) {
   // BFCache for this test.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Ensure the initial tab has not loaded yet.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())

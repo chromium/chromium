@@ -1176,7 +1176,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   // Disable back/forward cache to ensure that it doesn't get preserved in the
   // back/forward cache.
   content::DisableBackForwardCacheForTesting(
-      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      GetWebContents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   std::string search_terms = "prefetch_content";
   GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
@@ -1244,7 +1244,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   // Disable back/forward cache to ensure that it doesn't get preserved in the
   // back/forward cache.
   content::DisableBackForwardCacheForTesting(
-      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      GetWebContents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   std::string search_terms = "prefetch_content";
   GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
@@ -1367,7 +1367,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   // Disable back/forward cache to ensure that it doesn't get preserved in the
   // back/forward cache.
   content::DisableBackForwardCacheForTesting(
-      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      GetWebContents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   std::string search_terms = "prefetch_content";
   GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");

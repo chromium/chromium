@@ -2277,7 +2277,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
   // See BackForwardCacheBrowserTest.RestoreWhilePendingCommit which covers the
   // same scenario for back-forward cache.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+      BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   using Response = net::test_server::ControllableHttpResponse;
   Response response_A1(embedded_test_server(), "/A");
@@ -3944,7 +3944,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   // so that the document policy to force-load-at-top will run. This will not
   // happen if the document is back-forward cached, so we need to disable it.
   DisableBackForwardCacheForTesting(web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Load the document with document policy force-load-at-top
   shell()->LoadURL(url);

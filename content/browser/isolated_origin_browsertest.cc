@@ -4782,7 +4782,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
   DisableBackForwardCacheForTesting(web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   GURL isolated_bar_url(
       embedded_test_server()->GetURL("isolated.bar.com", "/title1.html"));

@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   // TODO(sreejakshetty): Investigate why the data is being deleted after crash
   // when BackForwardCache is enabled.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CheckInPendingDeletionState) {
   // "DocumentUserDataWithBackForwardCacheTest.
   //      BackForwardCacheNavigation" test.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 2) Leave both rfh_a and rfh_b in pending deletion state.
   LeaveInPendingDeletionState(rfh_a);
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, FailedNavigation) {
   // error page, disable back-forward cache to ensure that RenderFrameHost gets
   // deleted.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 3) Browser-initiated navigation to an error page.
   NavigationHandleObserver observer(shell()->web_contents(), error_url);
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CrossSiteNavigation) {
   EXPECT_TRUE(data);
 
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 3) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, SameSiteNavigation) {
   // The test assumes the previous page gets deleted after navigation. Disable
   // back-forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 1) Navigate to A1.
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));

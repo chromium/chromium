@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, WorkletDestroyed) {
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                          "a.com", kPageWithBlankIframePath)));
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                          "a.com", kPageWithBlankIframePath)));
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   // enter keep-alive phase. To ensure this, disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));

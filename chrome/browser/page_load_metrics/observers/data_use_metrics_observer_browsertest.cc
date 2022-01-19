@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(DataUseMetricsObserverBrowserTest,
   // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
   content::DisableBackForwardCacheForTesting(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const struct {
     std::string url;
     size_t expected_min_page_size;
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(DataUseMetricsObserverBrowserTest, NavigateToPlaintext) {
   // it doesn't get preserved in the cache.
   content::DisableBackForwardCacheForTesting(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   std::unique_ptr<net::EmbeddedTestServer> plaintext_server =
       std::make_unique<net::EmbeddedTestServer>(

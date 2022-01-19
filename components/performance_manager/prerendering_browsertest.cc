@@ -58,7 +58,7 @@ class PerformanceManagerPrerenderingBrowserTest
     // and wait for the old RenderFrameHost to be deleted after we navigate away
     // from it.
     content::DisableBackForwardCacheForTesting(
-        web_contents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+        web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   }
 
   void TearDownOnMainThread() override {
