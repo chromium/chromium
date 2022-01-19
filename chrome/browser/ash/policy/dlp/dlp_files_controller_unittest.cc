@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -148,30 +149,52 @@ class DlpFilesControllerTest : public testing::Test {
   storage::FileSystemURL file_url3_;
 };
 
-TEST_F(DlpFilesControllerTest, GetDisallowedTransfers) {
+TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_DiffFileSystem) {
   AddFilesToDlpClient();
 
   std::vector<storage::FileSystemURL> transferred_files(
       {file_url1_, file_url2_, file_url3_});
   std::vector<storage::FileSystemURL> disallowed_files(
       {file_url1_, file_url3_});
-  base::MockCallback<DlpFilesController::GetDisallowedTransfersCallback>
-      disallowed_transfers_cb;
 
-  EXPECT_CALL(disallowed_transfers_cb, Run(disallowed_files));
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
       .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
 
-  base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  mount_points->RegisterFileSystem(
+      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(),
+      base::FilePath(file_manager::util::kArchiveMountPath));
+  base::ScopedClosureRunner external_mount_points_revoker(
+      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
+                     base::Unretained(mount_points)));
 
-  files_controller_.GetDisallowedTransfers(
-      transferred_files, CreateFileSystemURL("Downloads"),
-      disallowed_transfers_cb.Get().Then(std::move(quit_closure)));
+  auto dst_url = mount_points->CreateExternalFileSystemURL(
+      blink::StorageKey(), "archive",
+      base::FilePath("file.rar/path/in/archive"));
 
-  run_loop.Run();
+  base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
+  files_controller_.GetDisallowedTransfers(transferred_files, dst_url,
+                                           future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(disallowed_files, future.Take());
+}
+
+TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_SameFileSystem) {
+  AddFilesToDlpClient();
+
+  std::vector<storage::FileSystemURL> transferred_files(
+      {file_url1_, file_url2_, file_url3_});
+  std::vector<storage::FileSystemURL> disallowed_files;
+
+  base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
+  files_controller_.GetDisallowedTransfers(transferred_files,
+                                           CreateFileSystemURL("Downloads"),
+                                           future.GetCallback());
+  EXPECT_EQ(0u, future.Get().size());
 }
 
 class DlpFilesExternalDestinationTest
@@ -286,27 +309,21 @@ TEST_P(DlpFilesExternalDestinationTest, GetDisallowedTransfers_Component) {
       {file_url1_, file_url2_, file_url3_});
   std::vector<storage::FileSystemURL> disallowed_files(
       {file_url1_, file_url3_});
-  base::MockCallback<DlpFilesController::GetDisallowedTransfersCallback>
-      disallowed_transfers_cb;
 
-  EXPECT_CALL(disallowed_transfers_cb, Run(disallowed_files));
   EXPECT_CALL(rules_manager_,
               IsRestrictedComponent(_, expected_component, _, _))
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
       .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
 
-  base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), mount_name, base::FilePath(path));
 
-  files_controller_.GetDisallowedTransfers(
-      transferred_files, dst_url,
-      disallowed_transfers_cb.Get().Then(std::move(quit_closure)));
-
-  run_loop.Run();
+  base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
+  files_controller_.GetDisallowedTransfers(transferred_files, dst_url,
+                                           future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(disallowed_files, future.Take());
 }
 
 }  // namespace policy

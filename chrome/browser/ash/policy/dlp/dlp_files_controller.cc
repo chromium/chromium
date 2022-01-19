@@ -31,7 +31,7 @@ absl::optional<ino_t> GetInodeValue(const base::FilePath& path) {
 }
 
 base::flat_map<ino_t, storage::FileSystemURL> GetFilesInodes(
-    const std::vector<storage::FileSystemURL>& transferred_files) {
+    std::vector<storage::FileSystemURL> transferred_files) {
   base::flat_map<ino_t, storage::FileSystemURL> files_map;
   dlp::GetFilesSourcesRequest request;
   for (const auto& file : transferred_files) {
@@ -86,7 +86,7 @@ DlpFilesController::DlpFilesController(Profile* profile,
 DlpFilesController::~DlpFilesController() = default;
 
 void DlpFilesController::GetDisallowedTransfers(
-    const std::vector<storage::FileSystemURL>& transferred_files,
+    std::vector<storage::FileSystemURL> transferred_files,
     storage::FileSystemURL destination,
     GetDisallowedTransfersCallback result_callback) {
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
@@ -94,9 +94,17 @@ void DlpFilesController::GetDisallowedTransfers(
     return;
   }
 
+  std::vector<storage::FileSystemURL> filtered_files;
+  for (const auto& file : transferred_files) {
+    // If the file is in the same file system as the destination, no
+    // restrictions should be applied.
+    if (!file.IsInSameFileSystem(destination))
+      filtered_files.push_back(file);
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetFilesInodes, transferred_files),
+      base::BindOnce(&GetFilesInodes, std::move(filtered_files)),
       base::BindOnce(&DlpFilesController::GetFilesSources,
                      weak_ptr_factory_.GetWeakPtr(), std::move(destination),
                      std::move(result_callback)));
