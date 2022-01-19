@@ -30,9 +30,9 @@ namespace test {
 // should be destroyed in the opposite order of their Init*() methods being
 // called.
 //
-// ScopedFeatureList needs to be initialized (via one of Init*() methods)
-// before running code that inspects the state of features, such as in the
-// constructor of the test harness.
+// ScopedFeatureList needs to be initialized on the main thread (via one of
+// Init*() methods) before running code that inspects the state of features,
+// such as in the constructor of the test harness.
 //
 // WARNING: To be clear, in multithreaded test environments (such as browser
 // tests) there may background threads using FeatureList before the test body is

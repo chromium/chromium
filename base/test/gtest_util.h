@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_op.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,14 +48,13 @@
 // As above, but for CHECK().
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
-// Official builds will eat stream parameters, so don't check the error message.
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
-#define EXPECT_CHECK_DEATH(statement) EXPECT_DEATH(statement, "")
-#define ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "")
-#else
+#if CHECK_WILL_STREAM()
 #define EXPECT_CHECK_DEATH(statement) EXPECT_DEATH(statement, "Check failed")
 #define ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "Check failed")
-#endif  // defined(OFFICIAL_BUILD) && defined(NDEBUG)
+#else
+#define EXPECT_CHECK_DEATH(statement) EXPECT_DEATH(statement, "")
+#define ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "")
+#endif  // CHECK_WILL_STREAM()
 
 #else  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 

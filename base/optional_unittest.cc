@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/ignore_result.h"
+#include "base/template_util.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

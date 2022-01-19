@@ -55,6 +55,8 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
                        base::Unretained(this), std::move(run_state), callback));
   }
 
+  static bool mock_certificate_viewer_for_testing;
+
  private:
   void ShowOnDialogThread(HWND owner,
                           const scoped_refptr<net::X509Certificate>& cert) {
@@ -78,6 +80,9 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
     view_info.cStores = 1;
     view_info.rghStores = &cert_store;
 
+    if (mock_certificate_viewer_for_testing)
+      return;
+
     BOOL properties_changed;
     ::CryptUIDlgViewCertificate(&view_info, &properties_changed);
   }
@@ -90,6 +95,9 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
   }
 };
 
+// static
+bool CertificateViewerDialog::mock_certificate_viewer_for_testing = false;
+
 }  // namespace
 
 void ShowCertificateViewer(content::WebContents* web_contents,
@@ -99,4 +107,8 @@ void ShowCertificateViewer(content::WebContents* web_contents,
   dialog->Show(parent->GetHost()->GetAcceleratedWidget(), cert,
                base::BindRepeating(
                    &base::DeletePointer<CertificateViewerDialog>, dialog));
+}
+
+void MockCertificateViewerForTesting() {
+  CertificateViewerDialog::mock_certificate_viewer_for_testing = true;
 }

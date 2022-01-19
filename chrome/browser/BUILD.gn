@@ -4516,6 +4516,7 @@ static_library("browser") {
     # than here in :chrome_dll.
     if (!is_win) {
       deps += [ "//chrome:packed_resources_integrity" ]
+      sources += [ "certificate_viewer_stub.cc" ]
     }
 
     if (is_posix) {
