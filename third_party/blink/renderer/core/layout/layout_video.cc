@@ -220,4 +220,16 @@ bool LayoutVideo::SupportsAcceleratedRendering() const {
   return !!MediaElement()->CcLayer();
 }
 
+CompositingReasons LayoutVideo::AdditionalCompositingReasons() const {
+  NOT_DESTROYED();
+  auto* element = To<HTMLMediaElement>(GetNode());
+  if (element->IsFullscreen() && element->UsesOverlayFullscreenVideo())
+    return CompositingReason::kVideo;
+
+  if (GetDisplayMode() == kVideo && SupportsAcceleratedRendering())
+    return CompositingReason::kVideo;
+
+  return CompositingReason::kNone;
+}
+
 }  // namespace blink

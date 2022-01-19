@@ -81,6 +81,12 @@ class LayoutVideo final : public LayoutMedia {
 
   LayoutUnit MinimumReplacedHeight() const override;
 
+  bool CanHaveAdditionalCompositingReasons() const override {
+    NOT_DESTROYED();
+    return true;
+  }
+  CompositingReasons AdditionalCompositingReasons() const override;
+
   void UpdatePlayer(bool is_in_layout);
 
   LayoutSize cached_image_size_;
