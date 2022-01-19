@@ -10,7 +10,6 @@
     <dimen name="clear_text_button_end_padding">10dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>
     <dimen name="card_rounded_corner_radius">16dp</dimen>
-    <dimen name="sheet_background_elev">@dimen/default_elevation_0</dimen>
 
     <!-- DualControlLayout -->
     <dimen name="dual_control_margin_between_items">8dp</dimen>

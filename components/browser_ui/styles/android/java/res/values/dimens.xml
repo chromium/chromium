@@ -20,9 +20,4 @@
 
     <item name="text_highlight_alpha" format="float" type="dimen">0.2</item>
     <item name="progress_bar_bg_alpha" format="float" type="dimen">0.2</item>
-
-    <!-- Surface color elevations -->
-    <dimen name="dialog_bg_color_elev">@dimen/default_elevation_0</dimen>
-    <dimen name="sheet_bg_color_elev">@dimen/default_elevation_0</dimen>
-    <dimen name="snackbar_background_color_elev">@dimen/default_elevation_0</dimen>
 </resources>
