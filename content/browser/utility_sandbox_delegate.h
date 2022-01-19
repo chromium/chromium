@@ -16,9 +16,9 @@
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_policy.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 class UtilitySandboxedProcessLauncherDelegate
@@ -31,27 +31,27 @@ class UtilitySandboxedProcessLauncherDelegate
 
   sandbox::mojom::Sandbox GetSandboxType() override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool GetAppContainerId(std::string* appcontainer_id) override;
   bool DisableDefaultPolicy() override;
   bool ShouldLaunchElevated() override;
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   ZygoteHandle GetZygote() override;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::EnvironmentMap GetEnvironment() override;
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
  private:
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::EnvironmentMap env_;
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
   sandbox::mojom::Sandbox sandbox_type_;
   base::CommandLine cmd_line_;
 };

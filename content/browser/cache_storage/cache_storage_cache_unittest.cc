@@ -2458,7 +2458,7 @@ TEST_P(CacheStorageCacheTestP, VerifySerialScheduling) {
   EXPECT_EQ(2, sequence_out);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/936129): Flaky on Windows.
 #define MAYBE_KeysWithManyCacheEntries DISABLED_KeysWithManyCacheEntries
 #else

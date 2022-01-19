@@ -28,7 +28,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -282,7 +282,7 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
 
   void FlushIndexIfDirty();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
 
@@ -334,7 +334,7 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
   base::CancelableOnceClosure index_write_task_;
   size_t handle_ref_count_ = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
 #endif

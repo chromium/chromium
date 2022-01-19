@@ -24,15 +24,15 @@
 #include "content/public/test/test_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/wait.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/win/src/sandbox_types.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -59,7 +59,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     host->SetName(u"TestProcess");
     host->SetMetricsName(kTestProcessName);
     if (fail_launch) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // The Windows sandbox does not like the child process being a different
       // process, so launch unsandboxed for the purpose of this test.
       host->SetSandboxType(sandbox::mojom::Sandbox::kNoSandbox);
@@ -70,7 +70,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
           switches::kBrowserSubprocessPath,
           base::FilePath(FILE_PATH_LITERAL("non_existent_path")));
     }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (elevated)
       host->SetSandboxType(
           sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges);
@@ -131,7 +131,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
       const ChildProcessData& data,
       const ChildProcessTerminationInfo& info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Android does not send crash notifications but sends kills. See comment in
     // browser_child_process_observer.h.
     BrowserChildProcessCrashed(data, info);
@@ -144,9 +144,9 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
       const ChildProcessData& data,
       const ChildProcessTerminationInfo& info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_EQ(EXCEPTION_BREAKPOINT, static_cast<DWORD>(info.exit_code));
-#elif defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_TRUE(WIFSIGNALED(info.exit_code));
     EXPECT_EQ(SIGTRAP, WTERMSIG(info.exit_code));
 #endif
@@ -162,7 +162,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
       const ChildProcessTerminationInfo& info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     EXPECT_EQ(info.status, base::TERMINATION_STATUS_LAUNCH_FAILED);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, the sandbox code handles all non-elevated process launches.
     EXPECT_EQ(sandbox::SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS,
               info.exit_code);
@@ -193,13 +193,13 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcessAndCrash) {
 // TERMINATION_STATUS_ABNORMAL_TERMINATION of the forked process. However,
 // posix_spawn() is used on macOS.
 // See also ServiceProcessLauncherTest.FailToLaunchProcess.
-#if !defined(OS_POSIX) || defined(OS_MAC)
+#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, FailToLaunchProcess) {
   RunUtilityProcess(/*elevated=*/false, /*crash=*/false, /*fail_launch=*/true);
 }
-#endif  // !defined(OS_POSIX) || defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchElevatedProcess) {
   RunUtilityProcess(/*elevated=*/true, /*crash=*/false, /*fail_launch=*/false);
 }
@@ -209,6 +209,6 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
                        DISABLED_LaunchElevatedProcessAndCrash) {
   RunUtilityProcess(/*elevated=*/true, /*crash=*/true, /*fail_launch=*/false);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

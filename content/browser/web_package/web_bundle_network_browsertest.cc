@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, SameDocumentNavigation) {
 }
 
 // https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_IframeNavigation DISABLED_IframeNavigation
 #else
 #define MAYBE_IframeNavigation IframeNavigation
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
 }
 
 // https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_IframeSameDocumentNavigation DISABLED_IframeSameDocumentNavigation
 #else
 #define MAYBE_IframeSameDocumentNavigation IframeSameDocumentNavigation

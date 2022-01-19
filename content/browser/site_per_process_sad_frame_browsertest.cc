@@ -61,7 +61,7 @@ class SitePerProcessBrowserTestWithoutSadFrameTabReload
 
 // This test is flaky on Win7 and Android.
 // TODO(crbug.com/1179074): Deflake it and enable this test back.
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ChildFrameCrashMetrics_KilledWhileHiddenThenShown \
   DISABLED_ChildFrameCrashMetrics_KilledWhileHiddenThenShown
 #else

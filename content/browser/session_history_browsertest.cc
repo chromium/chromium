@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, FragmentBackForward) {
 // TODO(brettw) bug 50648: fix flakyness. This test seems like it was failing
 // about 1/4 of the time on Vista by failing to execute JavascriptGo (see bug).
 // TODO(crbug.com/1280512): Flaky on Linux and Lacros.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_JavascriptHistory DISABLED_JavascriptHistory
 #else
 #define MAYBE_JavascriptHistory JavascriptHistory

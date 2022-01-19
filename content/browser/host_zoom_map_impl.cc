@@ -29,7 +29,7 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/android/content_jni_headers/HostZoomMapImpl_jni.h"
 #endif
 
@@ -491,7 +491,7 @@ void HostZoomMapImpl::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void JNI_HostZoomMapImpl_SetZoomLevel(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,

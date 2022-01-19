@@ -4,10 +4,11 @@
 
 #include "content/browser/ppapi_plugin_sandboxed_process_launcher_delegate.h"
 
+#include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/process_mitigations.h"
@@ -21,13 +22,13 @@ namespace content {
 PpapiPluginSandboxedProcessLauncherDelegate::
     PpapiPluginSandboxedProcessLauncherDelegate(
         const ppapi::PpapiPermissions& permissions)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     : permissions_(permissions)
 #endif
 {
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
   // The Pepper process is as locked-down as a renderer except that it can
@@ -56,7 +57,7 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
 
   return true;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 ZygoteHandle PpapiPluginSandboxedProcessLauncherDelegate::GetZygote() {
@@ -75,7 +76,7 @@ PpapiPluginSandboxedProcessLauncherDelegate::GetSandboxType() {
   return sandbox::mojom::Sandbox::kPpapi;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool PpapiPluginSandboxedProcessLauncherDelegate::DisclaimResponsibility() {
   return true;
 }

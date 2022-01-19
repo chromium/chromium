@@ -40,9 +40,9 @@ namespace content {
 namespace {
 
 std::string StringTypeToString(const base::FilePath::StringType& value) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   return value;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return base::WideToUTF8(value);
 #endif
 }

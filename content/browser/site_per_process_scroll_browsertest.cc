@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(ScrollingIntegrationTest,
 
 // TODO(bokan): Mac doesn't support touch events and for an unknown reason,
 // Android doesn't like mouse wheel here. https://crbug.com/897520.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   source = content::mojom::GestureSourceType::kTouchInput;
 #else
   source = content::mojom::GestureSourceType::kTouchpadInput;
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
 // resultant page scale factor is the same for OOPIF and non-OOPIF cases. This
 // also verifies that in response to the scroll command, the root-layer scrolls
 // correctly and the <input> is visible in visual viewport.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // crbug.com/793616
 #define MAYBE_ScrollFocusedEditableElementIntoView \
   DISABLED_ScrollFocusedEditableElementIntoView
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   GURL url_a(embedded_test_server()->GetURL("a.com", kIframeOutOfViewHTML));
   GURL url_b(embedded_test_server()->GetURL("b.com", kIframeOutOfViewHTML));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The reason for Android specific code is that
   // AutoZoomFocusedNodeToLegibleScale is in blink's WebSettings and difficult
   // to access from here. It so happens that the setting is on for Android.
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   WaitForOnLoad(root);
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url_a));
   WaitForOnLoad(root->child_at(0));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   float scale_before_scroll_nonoopif = GetVisualViewportScale(root);
 #endif
   AddFocusedInputField(root->child_at(0));
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
       ->GetFrameWidgetInputHandler()
       ->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
   WaitForElementVisible(root, kIframeSelector);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   float scale_after_scroll_nonoopif = GetVisualViewportScale(root);
   // Increased scale means zoom triggered correctly.
   EXPECT_GT(scale_after_scroll_nonoopif - scale_before_scroll_nonoopif,
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
              ->GetPrimaryFrameTree()
              .root();
   WaitForOnLoad(root);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   float scale_before_scroll_oopif = GetVisualViewportScale(root);
   // Sanity-check:
   ASSERT_NEAR(scale_before_scroll_oopif, scale_before_scroll_nonoopif,
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
       ->GetFrameWidgetInputHandler()
       ->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
   WaitForElementVisible(root, kIframeSelector);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   float scale_after_scroll_oopif = GetVisualViewportScale(root);
   EXPECT_GT(scale_after_scroll_oopif - scale_before_scroll_oopif, kEpsilon);
   EXPECT_GT(scale_after_scroll_oopif, kLowerBoundOnScaleAfterScroll);
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
 
 // Failing on Android, see crbug.com/1246843
 // Flaky on Mac, see crbug.com/1156657
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScrollClippedFocusedEditableElementIntoView \
   DISABLED_ScrollClippedFocusedEditableElementIntoView
 #else
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
 
 // Make sure we still zoom in on the input box on platforms that zoom into the
 // focused editable.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_GT(scale_after, scale_before);
 #else
   EXPECT_FLOAT_EQ(scale_after, scale_before);
@@ -648,7 +648,7 @@ class ScrollObserver : public RenderWidgetHost::InputEventObserver {
 
 // Android: crbug.com/825629
 // NDEBUG: crbug.com/1063045
-#if defined(OS_ANDROID) || defined(NDEBUG)
+#if BUILDFLAG(IS_ANDROID) || defined(NDEBUG)
 #define MAYBE_ScrollBubblingFromNestedOOPIFTest \
   DISABLED_ScrollBubblingFromNestedOOPIFTest
 #else

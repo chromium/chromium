@@ -38,7 +38,7 @@ TEST(SiteIsolationPolicyTest, DisableSiteIsolationSwitch) {
   EXPECT_TRUE(SiteIsolationPolicy::IsErrorPageIsolationEnabled(true));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Since https://crbug.com/910273, the kDisableSiteIsolationForPolicy switch is
 // only available/used on Android.
 TEST(SiteIsolationPolicyTest, DisableSiteIsolationForPolicySwitch) {

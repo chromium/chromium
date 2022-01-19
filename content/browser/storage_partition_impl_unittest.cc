@@ -90,10 +90,10 @@
 #include "url/origin.h"
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using net::CanonicalCookie;
 using CookieDeletionFilter = network::mojom::CookieDeletionFilter;
@@ -2164,7 +2164,7 @@ class MockLocalTrustTokenFulfiller : public mojom::LocalTrustTokenFulfiller {
 
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(StoragePartitionImplTest, BindsTrustTokenFulfiller) {
   auto expected_answer = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
   expected_answer->status =
@@ -2232,9 +2232,9 @@ TEST_F(StoragePartitionImplTest, BindsTrustTokenFulfiller) {
     EXPECT_EQ(num_binds_attempted, 1);
   }
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(StoragePartitionImplTest, HandlesDisconnectedTrustTokenFulfiller) {
   // Construct a mock fulfiller that doesn't reply to issuance requests it
   // receives...
@@ -2272,10 +2272,10 @@ TEST_F(StoragePartitionImplTest, HandlesDisconnectedTrustTokenFulfiller) {
   EXPECT_EQ(received_answer->status,
             network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(StoragePartitionImplTest, HandlesMissingTrustTokenFulfiller) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, binding can be explicitly rejected by the Android-side
   // implementation code: to ensure we can handle the rejection, manually force
   // the bind to fail.
@@ -2294,7 +2294,7 @@ TEST_F(StoragePartitionImplTest, HandlesMissingTrustTokenFulfiller) {
       base::BindRepeating([](mojo::ScopedMessagePipeHandle handle) {
         mojo::Close(std::move(handle));
       }));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());

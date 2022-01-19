@@ -141,7 +141,7 @@ double GetDeviceScaleFactor() {
 
 // Returns the zoom factor for a given |url|.
 double GetZoomFactor(BrowserContext* context, const GURL& url) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, use the default value when the AccessibilityPageZoom
   // feature is not enabled.
   if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom))
@@ -270,7 +270,7 @@ void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
   // https://cs.chromium.org/chromium/src/third_party/WebKit/Source/core/css/viewportAndroid.css.
   double viewport_width = 980;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, use the default value when the AccessibilityPageZoom
   // feature is not enabled.
   if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
@@ -313,7 +313,7 @@ void AddViewportHeightHeader(net::HttpRequestHeaders* headers,
                                 .GetSizeInPixel()
                                 .height()) /
                            overall_scale_factor;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, the viewport is scaled so the width is 980 and the height
   // maintains the same ratio.
   // TODO(1246208): Improve the usefulness of the viewport client hints for
@@ -324,7 +324,7 @@ void AddViewportHeightHeader(net::HttpRequestHeaders* headers,
                                .width()) /
                           overall_scale_factor;
   viewport_height *= 980.0 / viewport_width;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   DCHECK_LT(0, viewport_height);
 

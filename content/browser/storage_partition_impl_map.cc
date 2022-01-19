@@ -105,7 +105,7 @@ const base::FilePath::CharType kTrashDirname[] =
 const int kPartitionNameHashBytes = 6;
 
 // Needed for selecting all files in ObliterateOneDirectory() below.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 const int kAllFileTypes = base::FileEnumerator::FILES |
                           base::FileEnumerator::DIRECTORIES |
                           base::FileEnumerator::SHOW_SYM_LINKS;

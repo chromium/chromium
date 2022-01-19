@@ -5470,7 +5470,7 @@ class NavigationBrowserTestWithPerformanceManager
 
 // TODO(crbug.com/1233836, crbug.com/1238886): Test is flaky on Mac 11, Linux
 // and ChromeOS.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BeginNewNavigationAfterCommitNavigationInMainFrame \
   DISABLED_BeginNewNavigationAfterCommitNavigationInMainFrame
 #else
@@ -5534,7 +5534,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1233836): Test is flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame \
   DISABLED_BeginNewNavigationAfterCommitNavigationInSubFrame
 #else
@@ -5715,12 +5715,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
 // new NavigationRequest, because it was trying to access the current
 // RenderFrameHost's PolicyContainerHost, which had not been set up yet by
 // RenderFrameHostImpl::DidNavigate.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: https://crbug.com/1222320.
 #define MAYBE_Bug1210234 DISABLED_Bug1210234
 #else
 #define MAYBE_Bug1210234 Bug1210234
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_Bug1210234) {
   class NavigationWebContentsDelegate : public WebContentsDelegate {
    public:

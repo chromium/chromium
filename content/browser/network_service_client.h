@@ -22,7 +22,7 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -32,7 +32,7 @@ class WebRtcConnectionsObserver;
 
 class NetworkServiceClient
     : public network::mojom::URLLoaderNetworkServiceObserver,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       public net::NetworkChangeNotifier::ConnectionTypeObserver,
       public net::NetworkChangeNotifier::MaxBandwidthObserver,
       public net::NetworkChangeNotifier::IPAddressObserver,
@@ -60,7 +60,7 @@ class NetworkServiceClient
   // require low network latency.
   void OnPeerToPeerConnectionsCountChange(uint32_t count);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
 
   // net::NetworkChangeNotifier::ConnectionTypeObserver implementation:
@@ -119,7 +119,7 @@ class NetworkServiceClient
 
   std::unique_ptr<WebRtcConnectionsObserver> webrtc_connections_observer_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;

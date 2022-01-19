@@ -123,11 +123,11 @@
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
 #include "net/android/http_auth_negotiate_android.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/browser/plugin_private_storage_helper.h"
@@ -173,7 +173,7 @@ void RunInProcessStorageService(
                                                     /*io_task_runner=*/nullptr);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void BindStorageServiceFilesystemImpl(
     const base::FilePath& directory_path,
     mojo::PendingReceiver<storage::mojom::Directory> receiver) {
@@ -187,7 +187,7 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemote() {
   mojo::Remote<storage::mojom::StorageService>& remote =
       GetStorageServiceRemoteStorage();
   if (!remote) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     const base::FilePath sandboxed_data_dir =
         GetContentClient()
             ->browser()
@@ -220,7 +220,7 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemote() {
                          directory.InitWithNewPipeAndPassReceiver()));
       remote->SetDataDirectory(sandboxed_data_dir, std::move(directory));
     } else
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
     {
       GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&RunInProcessStorageService,
@@ -722,7 +722,7 @@ class SSLErrorDelegate : public SSLErrorHandler::Delegate {
   base::WeakPtrFactory<SSLErrorDelegate> weak_factory_{this};
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FinishGenerateNegotiateAuthToken(
     std::unique_ptr<net::android::HttpAuthNegotiateAndroid> auth_negotiate,
     std::unique_ptr<std::string> auth_token,
@@ -2036,7 +2036,7 @@ void StoragePartitionImpl::OnClearSiteData(
       load_flags, cookie_partition_key, std::move(callback));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void StoragePartitionImpl::OnGenerateHttpNegotiateAuthToken(
     const std::string& server_auth_token,
     bool can_delegate,
@@ -2914,10 +2914,10 @@ void StoragePartitionImpl::
   if (local_trust_token_fulfiller_)
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   GetGlobalJavaInterfaces()->GetInterface(
       local_trust_token_fulfiller_.BindNewPipeAndPassReceiver());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (local_trust_token_fulfiller_) {
     local_trust_token_fulfiller_.set_disconnect_handler(base::BindOnce(

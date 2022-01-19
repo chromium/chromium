@@ -15,7 +15,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void DidGetInstalledApps(
     bool is_off_the_record,
     InstalledAppProviderImpl::FilterInstalledAppsCallback callback,
@@ -45,7 +45,7 @@ void InstalledAppProviderImpl::FilterInstalledApps(
     FilterInstalledAppsCallback callback) {
   bool is_implemented = false;
   if (base::FeatureList::IsEnabled(features::kInstalledAppProvider)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     is_implemented = true;
     bool is_off_the_record = render_frame_host()
                                  ->GetProcess()

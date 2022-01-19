@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
 }
 
 // Flaky on Linux TSan, http://crbug.com/1050879
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(THREAD_SANITIZER)
 #define MAYBE_PrefetchMainResourceSXG_SignatureExpire \
   DISABLED_PrefetchMainResourceSXG_SignatureExpire
 #else

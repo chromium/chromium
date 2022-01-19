@@ -18,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -31,7 +32,7 @@ struct Dictionaries {
     return dictionaries.get();
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void SetDirectory(const base::FilePath& new_dir) {
     DVLOG(1) << __func__ << " " << new_dir;
     DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
@@ -60,7 +61,7 @@ base::File GetDictionaryFile(const std::string& locale) {
   DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
              ->RunsTasksInCurrentSequence());
   Dictionaries* dictionaries = Dictionaries::Get();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const base::FilePath& dir = dictionaries->dir;
   if (dir.empty())
     return base::File();
@@ -74,7 +75,7 @@ base::File GetDictionaryFile(const std::string& locale) {
     return file.Duplicate();
   DCHECK(!file.IsValid());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::FilePath dir("/system/usr/hyphen-data");
 #endif
   std::string filename = base::StringPrintf("hyph-%s.hyb", locale.c_str());
@@ -109,7 +110,7 @@ scoped_refptr<base::SequencedTaskRunner> HyphenationImpl::GetTaskRunner() {
   return *runner;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // static
 void HyphenationImpl::RegisterGetDictionary() {
   content::ContentBrowserClient* content_browser_client =

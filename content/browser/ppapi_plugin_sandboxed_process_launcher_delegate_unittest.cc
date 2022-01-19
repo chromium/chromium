@@ -11,7 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "sandbox/policy/win/sandbox_policy_feature_test.h"
 #include "sandbox/policy/win/sandbox_test_utils.h"
@@ -32,7 +32,7 @@ namespace content {
 namespace sandbox {
 namespace policy {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class PpapiPluginFeatureSandboxWinTest
     : public ::sandbox::policy::SandboxFeatureTest {
  public:

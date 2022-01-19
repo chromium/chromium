@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigatePortal) {
   }
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_ActivatePortal DISABLED_ActivatePortal
 #else
@@ -317,7 +317,7 @@ class PortalDefaultActivationBrowserTest : public PortalBrowserTest {
   }
 };
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DefaultActivatePortal DISABLED_DefaultActivatePortal
 #else
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(PortalDefaultActivationBrowserTest,
   VerifyActivationTraceEvents(StopTracing());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222682
 #define MAYBE_AdoptPredecessor DISABLED_AdoptPredecessor
 #else
@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest, NoInputToOOPIFInPortal) {
 // Tests that an OOPIF inside a portal receives input events after the portal is
 // activated.
 // Flaky on macOS: https://crbug.com/1042703
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InputToOOPIFAfterActivation DISABLED_InputToOOPIFAfterActivation
 #else
 #define MAYBE_InputToOOPIFAfterActivation InputToOOPIFAfterActivation
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndReactivate) {
 
 // TODO(crbug.com/985078): Fix on Mac.
 // TODO(crbug.com/1191782): Test is flaky.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
                        DISABLED_TouchStateClearedBeforeActivation) {
   EXPECT_TRUE(NavigateToURL(
@@ -1053,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
 #endif
 
 // TODO(crbug.com/985078): Fix on Mac.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, GestureCleanedUpBeforeActivation) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
@@ -2500,7 +2500,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DownloadsBlockedViaDownloadLink) {
 
 // The following tests check code paths that won't be hit on Android as we
 // do not create DevTools windows on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateOnTwoPortals) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
@@ -2752,7 +2752,7 @@ class PortalPixelBrowserTest : public PortalBrowserTest {
 // as be re-rastered for the embedder's zoom so it should appear crisp.
 //
 // Flaky on Android: https://crbug.com/1120213
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PageScaleRaster DISABLED_PageScaleRaster
 #else
 #define MAYBE_PageScaleRaster PageScaleRaster

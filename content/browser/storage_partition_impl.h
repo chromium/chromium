@@ -267,7 +267,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OnCanSendDomainReliabilityUpload(
       const GURL& origin,
       OnCanSendDomainReliabilityUploadCallback callback) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnGenerateHttpNegotiateAuthToken(
       const std::string& server_auth_token,
       bool can_delegate,

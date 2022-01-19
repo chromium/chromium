@@ -86,7 +86,7 @@ class CONTENT_EXPORT UtilityProcessHost
 
   // Returns information about the utility child process.
   const ChildProcessData& GetData();
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   void SetEnv(const base::EnvironmentMap& env);
 #endif
 

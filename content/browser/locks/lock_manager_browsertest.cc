@@ -23,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -112,7 +112,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
   }
 
   bool CheckShouldRunTestAndNavigate() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Don't run the test if we couldn't override BrowserClient. It happens only
     // on Android Kitkat or older systems.
     if (!original_client_)
@@ -124,7 +124,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
         base::android::SDK_VERSION_KITKAT) {
       return false;
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(NavigateToURL(shell(), GetLocksURL("a.com")));
     return true;
   }
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverTwoLocks) {
 // Verify that content::FeatureObserver is notified that a frame stopped holding
 // locks when it is navigated away.
 // TODO(crbug.com/1286329): Flakes on Linux, Chrome OS, and Mac.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_ObserverNavigate DISABLED_ObserverNavigate
 #else
 #define MAYBE_ObserverNavigate ObserverNavigate
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverDedicatedWorker) {
 }
 
 // SharedWorkers are not enabled on Android. https://crbug.com/154571
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Verify that content::FeatureObserver is *not* notified when a lock is
 // acquired by a shared worker.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
   // Wait a short timeout to make sure that the observer is not notified.
   RunLoopWithTimeout();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that content::FeatureObserver is *not* notified when a lock is
 // acquired by a service worker.

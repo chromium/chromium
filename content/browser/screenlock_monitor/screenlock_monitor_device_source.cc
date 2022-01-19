@@ -4,18 +4,20 @@
 
 #include "content/browser/screenlock_monitor/screenlock_monitor_device_source.h"
 
+#include "build/build_config.h"
+
 namespace content {
 
 ScreenlockMonitorDeviceSource::ScreenlockMonitorDeviceSource() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   StartListeningForScreenlock();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 ScreenlockMonitorDeviceSource::~ScreenlockMonitorDeviceSource() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   StopListeningForScreenlock();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 }  // namespace content

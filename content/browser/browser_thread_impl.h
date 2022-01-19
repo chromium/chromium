@@ -11,7 +11,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
@@ -69,7 +69,7 @@ class CONTENT_EXPORT BrowserThreadImpl : public BrowserThread {
   // identifier at a given time.
   ID identifier_;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Allows usage of the FileDescriptorWatcher API on the UI thread.
   absl::optional<base::FileDescriptorWatcher> file_descriptor_watcher_;
 #endif

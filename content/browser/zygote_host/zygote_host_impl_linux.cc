@@ -216,7 +216,7 @@ pid_t ZygoteHostImpl::LaunchZygote(
   return pid;
 }
 
-#if !defined(OS_OPENBSD)
+#if !BUILDFLAG(IS_OPENBSD)
 void ZygoteHostImpl::AdjustRendererOOMScore(base::ProcessHandle pid,
                                             int score) {
   // 1) You can't change the oom_score_adj of a non-dumpable process

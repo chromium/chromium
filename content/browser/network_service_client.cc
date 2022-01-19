@@ -11,6 +11,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/sequence_bound.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/ssl/ssl_manager.h"
@@ -31,25 +32,25 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/task/current_thread.h"
 #endif
 
 namespace content {
 
 NetworkServiceClient::NetworkServiceClient()
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     : app_status_listener_(base::android::ApplicationStatusListener::New(
           base::BindRepeating(&NetworkServiceClient::OnApplicationStateChange,
                               base::Unretained(this))))
 #endif
 {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::CurrentUIThread::IsSet())  // Not set in some unit tests.
     net::CertDatabase::GetInstance()->StartListeningForKeychainEvents();
 #endif
@@ -60,7 +61,7 @@ NetworkServiceClient::NetworkServiceClient()
         FROM_HERE, base::BindRepeating(&NetworkServiceClient::OnMemoryPressure,
                                        base::Unretained(this)));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded());
     GetNetworkService()->GetNetworkChangeManager(
         network_change_manager_.BindNewPipeAndPassReceiver());
@@ -80,7 +81,7 @@ NetworkServiceClient::NetworkServiceClient()
 NetworkServiceClient::~NetworkServiceClient() {
   if (IsOutOfProcessNetworkService()) {
     net::CertDatabase::GetInstance()->RemoveObserver(this);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     net::NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
     net::NetworkChangeNotifier::RemoveMaxBandwidthObserver(this);
     net::NetworkChangeNotifier::RemoveIPAddressObserver(this);
@@ -102,7 +103,7 @@ void NetworkServiceClient::OnPeerToPeerConnectionsCountChange(uint32_t count) {
   GetNetworkService()->OnPeerToPeerConnectionsCountChange(count);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void NetworkServiceClient::OnApplicationStateChange(
     base::android::ApplicationState state) {
   GetNetworkService()->OnApplicationStateChange(state);

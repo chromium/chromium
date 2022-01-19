@@ -2212,7 +2212,7 @@ class InjectIsolationRequestingNavigation
 };
 
 // TODO(crbug.com/1110767): flaky on Android builders since 2020-07-28.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FrameTreeTestBeforeDidCommit DISABLED_FrameTreeTestBeforeDidCommit
 #else
 #define MAYBE_FrameTreeTestBeforeDidCommit FrameTreeTestBeforeDidCommit
@@ -3741,7 +3741,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_LocalStorageOriginEnforcement_NonIsolatedAccessingIsolated \
   LocalStorageOriginEnforcement_NonIsolatedAccessingIsolated
 #else
@@ -4185,7 +4185,7 @@ class IsolatedOriginPolicyOverrideTest : public IsolatedOriginFieldTrialTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     command_line->AppendSwitch(switches::kDisableSiteIsolationForPolicy);
 #endif
   }
@@ -4213,7 +4213,7 @@ class IsolatedOriginNoFlagOverrideTest : public IsolatedOriginTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     command_line->AppendSwitch(switches::kDisableSiteIsolationForPolicy);
 #endif
   }
@@ -4747,7 +4747,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // TODO(alexmos): We use EXPECT_FALSE() on platforms that support citadel
   // enforcements. Currently this is only on Android, but will be extended to
   // desktop, at which time the EXPECT_TRUE() case below can be removed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
                                               url::Origin::Create(bar_url)));
 #else

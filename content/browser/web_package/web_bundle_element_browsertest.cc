@@ -350,12 +350,12 @@ class WebBundleElementBrowserTest : public ContentBrowserTest,
   base::Lock lock_;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1263334): Flakes on macOS.
 #define MAYBE_ChangeLinkElementHref DISABLED_ChangeLinkElementHref
 #else
 #define MAYBE_ChangeLinkElementHref ChangeLinkElementHref
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
                        MAYBE_ChangeLinkElementHref) {
   // This test is only for the <link> element.
@@ -407,12 +407,12 @@ IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
   EXPECT_EQ("\"webbundle loaded after change\"", message);
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1263334): Flakes on macOS and Windows.
 #define MAYBE_RemoveLinkElement DISABLED_RemoveLinkElement
 #else
 #define MAYBE_RemoveLinkElement RemoveLinkElement
-#endif  // defined(OS_MAC)
+#endif
 IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, MAYBE_RemoveLinkElement) {
   // This test is only for the <link> element.
   if (GetElementType() == ElementType::Script)

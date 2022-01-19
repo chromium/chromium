@@ -189,7 +189,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 };
 
 // Flaky on Android. https://crbug.com/970866
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_EnterPictureInPicture DISABLED_EnterPictureInPicture
 #else
 #define MAYBE_EnterPictureInPicture EnterPictureInPicture

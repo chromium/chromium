@@ -161,7 +161,7 @@ class FakeScreenEnumerationTest : public ScreenEnumerationTest {
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_GetScreensFaked DISABLED_GetScreensFaked
 #else
 // TODO(crbug.com/1119974): Need content_browsertests permission controls.
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IsExtendedFaked DISABLED_IsExtendedFaked
 #else
 #define MAYBE_IsExtendedFaked IsExtendedFaked
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsExtendedFaked) {
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenOnchangeNoPermission DISABLED_ScreenOnchangeNoPermission
 #else
 #define MAYBE_ScreenOnchangeNoPermission ScreenOnchangeNoPermission
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenOnChangeForIsExtended DISABLED_ScreenOnChangeForIsExtended
 #else
 #define MAYBE_ScreenOnChangeForIsExtended ScreenOnChangeForIsExtended
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenOnChangeForAttributes DISABLED_ScreenOnChangeForAttributes
 #else
 #define MAYBE_ScreenOnChangeForAttributes ScreenOnChangeForAttributes

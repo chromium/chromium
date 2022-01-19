@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PageWithSharedWorkerNotCached \
   DISABLED_PageWithSharedWorkerNotCached
 #else
@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheIfWebGL) {
 // Since blink::mojom::HidService binder is not added in
 // content/browser/browser_interface_binders.cc for Android, this test is not
 // applicable for this OS.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebHID) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1281,7 +1281,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebHID) {
       {blink::scheduler::WebSchedulerTrackedFeature::kWebHID}, {}, {}, {},
       FROM_HERE);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        WakeLockReleasedUponEnteringBfcache) {
@@ -2241,7 +2241,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Disabled on Android, since we have problems starting up the websocket test
 // server in the host
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WebSocketCachedIfClosed DISABLED_WebSocketCachedIfClosed
 #else
 #define MAYBE_WebSocketCachedIfClosed WebSocketCachedIfClosed
@@ -2369,7 +2369,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
 
 // Disabled on Android, since we have problems starting up the websocket test
 // server in the host
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WebSocketNotCached DISABLED_WebSocketNotCached
 #else
 #define MAYBE_WebSocketNotCached WebSocketNotCached
@@ -3115,7 +3115,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebUSB) {
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Check that the back-forward cache is disabled when the Serial API is used.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Serial) {
   // Serial API requires HTTPS.
@@ -3586,11 +3586,11 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
 // long as it doesn't make a connection.
 // On the Android test environments, the test might fail due to IP restrictions.
 // See the discussion at http://crrev.com/c/2564926.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // TODO(https://crbug.com/1213145): The test is consistently failing on some Mac
 // bots.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TrivialRTCPeerConnectionCached \
   DISABLED_TrivialRTCPeerConnectionCached
 #else
@@ -3662,17 +3662,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     });
   )"));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // This tests that a page using WebRTC and creating actual connections cannot be
 // cached.
 // On the Android test environments, the test might fail due to IP restrictions.
 // See the discussion at http://crrev.com/c/2564926.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // TODO(https://crbug.com/1213145): The test is consistently failing on some Mac
 // bots.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_NonTrivialRTCPeerConnectionNotCached \
   DISABLED_NonTrivialRTCPeerConnectionNotCached
 #else
@@ -3749,7 +3749,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC}, {}, {}, {},
       FROM_HERE);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebLocksNotCached) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3816,11 +3816,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebMidiNotCached) {
 }
 
 // TODO(https://crbug.com/1286474): This test is flaking on some Android bots.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PresentationConnectionClosed DISABLED_PresentationConnectionClosed
 #else
 #define MAYBE_PresentationConnectionClosed PresentationConnectionClosed
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_PresentationConnectionClosed) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
@@ -3954,7 +3954,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // This test is not important for Chrome OS if TTS is called in content. For
 // more details refer (content/browser/speech/tts_platform_impl.cc).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoesNotCacheIfUsingSpeechSynthesis \
   DISABLED_DoesNotCacheIfUsingSpeechSynthesis
 #else

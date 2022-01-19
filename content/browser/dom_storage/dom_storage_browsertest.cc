@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, SanityCheckIncognito) {
 }
 
 // http://crbug.com/654704 PRE_ tests aren't supported on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DataPersists DISABLED_DataPersists
 #else
 #define MAYBE_DataPersists DataPersists
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, DeletePhysicalStorageKey) {
 
 // On Windows file://localhost/C:/src/chromium/src/content/test/data/title1.html
 // doesn't work.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // Regression test for https://crbug.com/776160.  The test verifies that there
 // is no disagreement between 1) site URL used for browser-side isolation
 // enforcement and 2) the origin requested by Blink.  Before this bug was fixed,

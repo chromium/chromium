@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_tokenizer.h"
+#include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -27,7 +28,7 @@ struct TestParameters {
     {"FaceDetector", "/blank.jpg", std::vector<std::vector<float>>{}},
     {"FaceDetector",
      "/single_face.jpg",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
      {{23, 20, 42, 42}}
 #else
      {{23, 26, 42, 42}}
@@ -97,7 +98,7 @@ class ShapeDetectionBrowserTest
 };
 
 // TODO(https://crbug.com/659138): Enable the test on other platforms.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_DetectShapesInImage DetectShapesInImage
 #else
 #define MAYBE_DetectShapesInImage DISABLED_DetectShapesInImage

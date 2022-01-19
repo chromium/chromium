@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
 }
 
 // Flaky on mac, https://crbug.com/1055282
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SiblingFramesZoom DISABLED_SiblingFramesZoom
 #else
 #define MAYBE_SiblingFramesZoom SiblingFramesZoom

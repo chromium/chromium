@@ -81,7 +81,7 @@ class ChildProcessSecurityPolicyTestBrowserClient
 };
 
 bool IsCitadelProtectionEnabled() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(lukasza): https://crbug.com/566091: Once remote NTP is capable of
   // embedding OOPIFs, start enforcing citadel-style checks on desktop
   // platforms.

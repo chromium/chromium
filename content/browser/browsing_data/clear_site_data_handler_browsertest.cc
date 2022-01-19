@@ -329,7 +329,7 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
 // may or may not send the header, so there are 8 configurations to test.
 
 // Crashes on Win only. https://crbug.com/741189
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RedirectNavigation DISABLED_RedirectNavigation
 #else
 #define MAYBE_RedirectNavigation RedirectNavigation
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
 // chain may or may not send the header, so there are 8 configurations to test.
 
 // Crashes on Win only. https://crbug.com/741189
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RedirectResourceLoad DISABLED_RedirectResourceLoad
 #else
 #define MAYBE_RedirectResourceLoad RedirectResourceLoad
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, ServiceWorker) {
 // if credentials are allowed in that fetch.
 
 // Crashes on Win only. https://crbug.com/741189
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Credentials DISABLED_Credentials
 #else
 #define MAYBE_Credentials Credentials

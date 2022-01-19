@@ -124,7 +124,7 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFile) {
   ValidateFileContents(response.opened_files[0], kFileContent1);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flakily fails on Android bots. See http://crbug.com/1027790
 TEST_F(NetworkContextClientBaseTest,
        DISABLED_UploadOneValidFileWithContentUri) {

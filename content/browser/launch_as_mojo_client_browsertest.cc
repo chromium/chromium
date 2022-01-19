@@ -34,7 +34,7 @@
 namespace content {
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kShellExecutableName[] = "content_shell.exe";
 #else
 const char kShellExecutableName[] = "content_shell";
@@ -103,7 +103,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     return controller;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::FilePath GetMojoCoreLibraryPath() {
     return GetFilePathNextToCurrentExecutable(kMojoCoreLibraryName);
   }
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
   shell_controller->ShutDown();
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/1259557): This test implementation fundamentally conflicts
 // with a fix for the linked bug because it causes a browser process to behave
 // partially as a broker and partially as a non-broker. This can be re-enabled
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest,
 
   shell_controller->ShutDown();
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace content

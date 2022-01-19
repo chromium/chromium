@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "content/browser/find_in_page_client.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -267,7 +268,7 @@ FindRequestManager::FindRequest& FindRequestManager::FindRequest::operator=(
   return *this;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 FindRequestManager::ActivateNearestFindResultState::
 ActivateNearestFindResultState() = default;
 FindRequestManager::ActivateNearestFindResultState::
@@ -392,7 +393,7 @@ void FindRequestManager::StopFinding(StopFindAction action) {
       action));
 
   current_session_id_ = kInvalidId;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // It is important that these pending replies are cleared whenever a find
   // session ends, so that subsequent replies for the old session are ignored.
   activate_.pending_replies.clear();
@@ -521,7 +522,7 @@ void FindRequestManager::RemoveFrame(RenderFrameHost* rfh) {
   }
   UpdateActiveMatchOrdinal();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The removed frame may contain the nearest find result known so far. Note
   // that once all queried frames have responded, if this result was the overall
   // nearest, then no activation will occur.
@@ -565,7 +566,7 @@ void FindRequestManager::ClearActiveFindMatch() {
   active_frame_->GetFindInPage()->ClearActiveFindMatch();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FindRequestManager::ActivateNearestFindResult(float x, float y) {
   if (current_session_id_ == kInvalidId)
     return;
@@ -656,7 +657,7 @@ void FindRequestManager::Reset(const FindRequest& initial_request) {
   selection_rect_ = gfx::Rect();
   last_reported_id_ = kInvalidId;
   frame_observers_.clear();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   activate_ = ActivateNearestFindResultState();
   match_rects_.pending_replies.clear();
 #endif
@@ -928,7 +929,7 @@ std::unique_ptr<FindInPageClient> FindRequestManager::CreateFindInPageClient(
   return std::make_unique<FindInPageClient>(this, rfh);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FindRequestManager::RemoveNearestFindResultPendingReply(
     RenderFrameHost* rfh) {
   auto it = activate_.pending_replies.find(rfh);
@@ -975,6 +976,6 @@ void FindRequestManager::RemoveFindMatchRectsPendingReply(
   contents_->NotifyFindMatchRectsReply(
       match_rects_.known_version, aggregate_rects, match_rects_.active_rect);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

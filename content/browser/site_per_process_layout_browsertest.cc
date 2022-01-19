@@ -24,7 +24,7 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
 #include "ui/base/test/scoped_preferred_scroller_style_mac.h"
 #endif
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessHighDPIBrowserTest,
   // we ensure that make frame and iframe have the same DIP scale there, but
   // not necessarily kDeviceScaleFactor.
   const double expected_dip_scale =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       GetFrameDeviceScaleFactor(web_contents());
 #else
       SitePerProcessHighDPIBrowserTest::kDeviceScaleFactor;
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessCompositorViewportBrowserTest,
   EXPECT_LT(30000, child_rwhv->GetViewBounds().height());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Android doesn't support forcing device scale factor in tests.
 INSTANTIATE_TEST_SUITE_P(SitePerProcess,
                          SitePerProcessCompositorViewportBrowserTest,
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Tests that when a large OOPIF has been scaled, the compositor raster area
 // sent from the embedder is correct.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 // Temporarily disabled on Android because this doesn't account for browser
 // control height or page scale factor.
 // Flaky on Mac. https://crbug.com/840314
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Similar to ScaledIFrameRasterSize but with nested OOPIFs to ensure
 // propagation works correctly.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Temporarily disabled on Android because this doesn't account for browser
 // control height or page scale factor.
 #define MAYBE_ScaledNestedIframeRasterSize DISABLED_ScaledNestedIframeRasterSize
@@ -1254,7 +1254,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
   blink::mojom::TextAutosizerPageInfo received_page_info;
   auto interceptor = std::make_unique<TextAutosizerPageInfoInterceptor>(
       web_contents()->GetMainFrame());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   prefs.device_scale_adjustment += 0.05f;
   // Change the device scale adjustment to trigger a RemotePageInfo update.
   web_contents()->SetWebPreferences(prefs);
@@ -1282,7 +1282,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
   base::RunLoop().RunUntilIdle();
   received_page_info = interceptor->GetTextAutosizerPageInfo();
   EXPECT_EQ(new_bounds.width(), received_page_info.main_frame_width);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Dynamically create a new, cross-process frame to test sending the cached
   // TextAutosizerPageInfo.
@@ -1482,7 +1482,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ViewBoundsInNestedFrameTest) {
 // TODO(bokan): Pretty soon most/all platforms will use overlay scrollbars. This
 // test should find a better way to check for scrollability. crbug.com/662196.
 // Flaky on Linux. crbug.com/790929.
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FrameOwnerPropertiesPropagationScrolling \
   DISABLED_FrameOwnerPropertiesPropagationScrolling
 #else
@@ -1491,7 +1491,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ViewBoundsInNestedFrameTest) {
 #endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        MAYBE_FrameOwnerPropertiesPropagationScrolling) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::test::ScopedPreferredScrollerStyle scroller_style_override(false);
 #endif
   GURL main_url(embedded_test_server()->GetURL(
@@ -2054,7 +2054,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   params.anchor = gfx::PointF(bounds.CenterPoint());
   // In SyntheticPinchGestureParams, |scale_factor| is really a delta.
   params.scale_factor = kPageScaleDelta;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   auto synthetic_pinch_gesture =
       std::make_unique<SyntheticTouchpadPinchGesture>(params);
 #else
@@ -2339,7 +2339,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   params.anchor = gfx::PointF(bounds.CenterPoint().x(), 70.f);
   // In SyntheticPinchGestureParams, |scale_factor| is really a delta.
   params.scale_factor = kPageScaleDelta;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   auto synthetic_pinch_gesture =
       std::make_unique<SyntheticTouchpadPinchGesture>(params);
 #else

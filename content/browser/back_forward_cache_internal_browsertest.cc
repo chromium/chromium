@@ -2150,7 +2150,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(rfh_a, current_frame_host());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ChildImportanceTestForBackForwardCachedPagesTest) {
   web_contents()->SetPrimaryMainFrameImportance(

@@ -85,7 +85,7 @@ class FindRequestManager {
   // Tells active frame to clear the active match highlighting.
   void ClearActiveFindMatch();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Selects and zooms to the find result nearest to the point (x, y), defined
   // in find-in-page coordinates.
   void ActivateNearestFindResult(float x, float y);
@@ -222,7 +222,7 @@ class FindRequestManager {
                        const std::u16string& search_text,
                        blink::mojom::FindOptionsPtr options);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called when a nearest find result reply is no longer pending for a frame.
   void RemoveNearestFindResultPendingReply(RenderFrameHost* rfh);
 

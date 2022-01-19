@@ -281,13 +281,13 @@ std::u16string PluginServiceImpl::GetPluginDisplayNameByPath(
   if (PluginService::GetInstance()->GetPluginInfoByPath(path, &info) &&
       !info.name.empty()) {
     plugin_name = info.name;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Many plugins on the Mac have .plugin in the actual name, which looks
     // terrible, so look for that and strip it off if present.
     static constexpr base::StringPiece16 kPluginExtension = u".plugin";
     if (base::EndsWith(plugin_name, kPluginExtension))
       plugin_name.erase(plugin_name.size() - kPluginExtension.size());
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
   return plugin_name;
 }

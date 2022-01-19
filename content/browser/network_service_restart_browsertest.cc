@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 // |StoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread()| can be
 // used after crashes.
 // Flaky on Windows. https://crbug.com/840127
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserIOPendingFactory DISABLED_BrowserIOPendingFactory
 #else
 #define MAYBE_BrowserIOPendingFactory BrowserIOPendingFactory
@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, ServiceWorkerFetch) {
 }
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker
 #else
 #define MAYBE_SharedWorker SharedWorker
@@ -947,7 +947,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, SSLKeyLogFileMetrics) {
   base::FilePath log_file_path;
   base::CreateTemporaryFile(&log_file_path);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, FilePath::value() returns std::wstring, so convert.
   std::string log_file_path_str = base::WideToUTF8(log_file_path.value());
 #else
@@ -1094,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
 #endif
 
 // TODO(crbug.com/901026): Fix deadlock on process startup on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        DISABLED_SyncCallDuringRestart) {
   if (IsInProcessNetworkService())
@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 //
 // TODO(lukasza): https://crbug.com/1129592: Flaky on Android and Mac.  No
 // flakiness observed whatsoever on Windows, Linux or CrOS.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BetweenCommitNavigationAndDidCommit \
   DISABLED_BetweenCommitNavigationAndDidCommit
 #else

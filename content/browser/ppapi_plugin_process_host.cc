@@ -39,7 +39,7 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/process_mitigations.h"
@@ -216,7 +216,7 @@ bool PpapiPluginProcessHost::Init(const PepperPluginInfo& info) {
   base::CommandLine::StringType plugin_launcher =
       browser_command_line.GetSwitchValueNative(switches::kPpapiPluginLauncher);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   int flags = plugin_launcher.empty() ? ChildProcessHost::CHILD_ALLOW_SELF :
                                         ChildProcessHost::CHILD_NORMAL;
 #else
@@ -235,9 +235,9 @@ bool PpapiPluginProcessHost::Init(const PepperPluginInfo& info) {
                               switches::kPpapiPluginProcess);
   BrowserChildProcessHostImpl::CopyTraceStartupFlags(cmd_line.get());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   cmd_line->AppendArg(switches::kPrefetchArgumentPpapi);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // These switches are forwarded to plugin pocesses.
   static const char* const kCommonForwardSwitches[] = {
@@ -249,7 +249,7 @@ bool PpapiPluginProcessHost::Init(const PepperPluginInfo& info) {
   static const char* const kPluginForwardSwitches[] = {
     sandbox::policy::switches::kDisableSeccompFilterSandbox,
     sandbox::policy::switches::kNoSandbox,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
 #endif
     switches::kPpapiStartupDialog,
@@ -264,7 +264,7 @@ bool PpapiPluginProcessHost::Init(const PepperPluginInfo& info) {
     cmd_line->AppendSwitchASCII(switches::kLang, locale);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   cmd_line->AppendSwitchASCII(
       switches::kDeviceScaleFactor,
       base::NumberToString(display::win::GetDPIScale()));

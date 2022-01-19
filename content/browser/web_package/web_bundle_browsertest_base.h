@@ -48,11 +48,11 @@ constexpr char kHeadersForJavaScript[] =
 
 base::FilePath GetTestDataPath(base::StringPiece file);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void CopyFileAndGetContentUri(const base::FilePath& file,
                               GURL* content_uri,
                               base::FilePath* new_file_path);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::string ExecuteAndGetString(const ToRenderFrameHost& adapter,
                                 const std::string& script);
@@ -430,14 +430,14 @@ void RunIframeSameDocumentNavigationTest(
 
 enum class TestFilePathMode {
   kNormalFilePath,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   kContentURI,
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 // Adding web_bundle_browsertest_utils:: extra to the prefix so the files using
 // these directives outside of the namespace don't fail.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define TEST_FILE_PATH_MODE_PARAMS                                     \
   testing::Values(                                                     \
       web_bundle_browsertest_utils::TestFilePathMode::kNormalFilePath, \
@@ -446,7 +446,7 @@ enum class TestFilePathMode {
 #define TEST_FILE_PATH_MODE_PARAMS \
   testing::Values(                 \
       web_bundle_browsertest_utils::TestFilePathMode::kNormalFilePath)
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace web_bundle_browsertest_utils
 }  // namespace content

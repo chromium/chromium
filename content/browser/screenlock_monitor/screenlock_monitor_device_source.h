@@ -12,22 +12,22 @@
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 #include "content/common/content_export.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <wtsapi32.h>
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/session_manager/core/session_manager_observer.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace base {
 namespace win {
 class MessageWindow;
 }
 }  // namespace base
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -44,7 +44,7 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
 
   ~ScreenlockMonitorDeviceSource() override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Fake session notification registration/unregistration APIs allow us to test
   // receiving and handling messages that look as if they are sent by other
   // sessions, without having to create a session host and a second session.
@@ -54,10 +54,10 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
   static void SetFakeNotificationAPIsForTesting(
       WTSRegisterSessionNotificationFunction register_function,
       WTSUnRegisterSessionNotificationFunction unregister_function);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Represents a message-only window for screenlock message handling on Win.
   // Only allow ScreenlockMonitor to create it.
   class SessionMessageWindow {
@@ -85,12 +85,12 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
   };
 
   SessionMessageWindow session_message_window_;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void StartListeningForScreenlock();
   void StopListeningForScreenlock();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   class ScreenLockListener : public session_manager::SessionManagerObserver {

@@ -16,6 +16,7 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -42,15 +43,15 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "services/network/public/mojom/network_service.mojom.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "components/os_crypt/os_crypt_switches.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "media/capture/capture_switches.h"
 #endif
 
@@ -68,7 +69,7 @@ UtilityProcessHost::UtilityProcessHost()
 
 UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
     : sandbox_type_(sandbox::mojom::Sandbox::kUtility),
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       child_flags_(ChildProcessHost::CHILD_ALLOW_SELF),
 #else
       child_flags_(ChildProcessHost::CHILD_NORMAL),
@@ -99,7 +100,7 @@ const ChildProcessData& UtilityProcessHost::GetData() {
   return process_->GetData();
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 void UtilityProcessHost::SetEnv(const base::EnvironmentMap& env) {
   env_ = env;
 }
@@ -171,7 +172,7 @@ bool UtilityProcessHost::StartProcess() {
     bool has_cmd_prefix =
         browser_command_line.HasSwitch(switches::kUtilityCmdPrefix);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // readlink("/prof/self/exe") sometimes fails on Android at startup.
     // As a workaround skip calling it here, since the executable name is
     // not needed on Android anyway. See crbug.com/500854.
@@ -182,10 +183,10 @@ bool UtilityProcessHost::StartProcess() {
       process_->EnableWarmUpConnection();
     }
 #else
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit)
       DCHECK_EQ(child_flags_, ChildProcessHost::CHILD_RENDERER);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     int child_flags = child_flags_;
 
     // When running under gdb, forking /proc/self/exe ends up forking the gdb
@@ -214,9 +215,9 @@ bool UtilityProcessHost::StartProcess() {
     std::string locale = GetContentClient()->browser()->GetApplicationLocale();
     cmd_line->AppendSwitchASCII(switches::kLang, locale);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     cmd_line->AppendArg(switches::kPrefetchArgumentOther);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     sandbox::policy::SetCommandLineFlagsForSandboxType(cmd_line.get(),
                                                        sandbox_type_);
@@ -231,10 +232,10 @@ bool UtilityProcessHost::StartProcess() {
       network::switches::kLogNetLog,
       network::switches::kNetLogCaptureMode,
       sandbox::policy::switches::kNoSandbox,
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
       switches::kDisableDevShmUsage,
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       sandbox::policy::switches::kEnableSandboxLogging,
       os_crypt::switches::kUseMockKeychain,
 #endif
@@ -261,7 +262,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kUseGL,
       switches::kV,
       switches::kVModule,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       switches::kEnableReachedCodeProfiler,
       switches::kReachedCodeSamplingIntervalUs,
 #endif
@@ -273,15 +274,15 @@ bool UtilityProcessHost::StartProcess() {
       switches::kFailAudioStreamCreation,
       switches::kMuteAudio,
       switches::kUseFileForFakeAudioCapture,
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FREEBSD) || \
-    defined(OS_SOLARIS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FREEBSD) || \
+    BUILDFLAG(IS_SOLARIS)
       switches::kAlsaInputDevice,
       switches::kAlsaOutputDevice,
 #endif
 #if defined(USE_CRAS)
       switches::kUseCras,
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       switches::kDisableHighResTimer,
       switches::kEnableExclusiveAudio,
       switches::kForceWaveAudio,
@@ -293,7 +294,7 @@ bool UtilityProcessHost::StartProcess() {
 #endif
       network::switches::kUseFirstPartySet,
       network::switches::kIpAddressSpaceOverrides,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       switches::kSchedulerBoostUrgent,
 #endif
     };
@@ -313,7 +314,7 @@ bool UtilityProcessHost::StartProcess() {
     for (const auto& extra_switch : extra_switches_)
       cmd_line->AppendSwitch(extra_switch);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (base::FeatureList::IsEnabled(
             media::kMediaFoundationD3D11VideoCapture)) {
       // MediaFoundationD3D11VideoCapture requires Gpu memory buffers,
@@ -362,7 +363,7 @@ void UtilityProcessHost::OnProcessCrashed(int exit_code) {
   // Take ownership of |client_| so the destructor doesn't notify it of
   // termination.
   auto client = std::move(client_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // OnProcessCrashed() is always called on Android even in the case of normal
   // process termination. |clean_exit| gives us a reliable indication of whether
   // this was really a crash or just normal termination.

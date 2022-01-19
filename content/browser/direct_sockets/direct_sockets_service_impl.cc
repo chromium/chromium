@@ -30,7 +30,7 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/tpm/install_attributes.h"
@@ -148,7 +148,7 @@ bool IsEnterpriseManaged() {
   if (g_is_enterprise_managed_for_testing.has_value())
     return g_is_enterprise_managed_for_testing.value();
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::IsMachineExternallyManaged();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::InstallAttributes::IsInitialized() &&

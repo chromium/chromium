@@ -17,7 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "content/public/browser/android/app_web_message_port.h"
 #endif
@@ -52,7 +52,7 @@ void PostMessageToFrameInternal(
                         std::move(message));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::u16string ToString16(JNIEnv* env,
                           const base::android::JavaParamRef<jstring>& s) {
   if (s.is_null())
@@ -73,7 +73,7 @@ void MessagePortProvider::PostMessageToFrame(
                              std::vector<blink::MessagePortDescriptor>());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MessagePortProvider::PostMessageToFrame(
     Page& page,
     JNIEnv* env,
@@ -87,7 +87,7 @@ void MessagePortProvider::PostMessageToFrame(
 }
 #endif
 
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
 // static
 void MessagePortProvider::PostMessageToFrame(
     Page& page,

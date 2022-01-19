@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 //     |
 //     C3
 // TODO(crbug.com/1012185): Flaky timeouts on Linux and Mac.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_UnloadHandlerSubframes DISABLED_UnloadHandlerSubframes
 #else
 #define MAYBE_UnloadHandlerSubframes UnloadHandlerSubframes
@@ -1339,7 +1339,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   delete_B1.WaitUntilDeleted();
 }
 
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 // See crbug.com/1275848.
 #define MAYBE_NestedSubframeWithUnloadHandler \
   DISABLED_NestedSubframeWithUnloadHandler

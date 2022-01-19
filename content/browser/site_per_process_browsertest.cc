@@ -168,7 +168,7 @@
 #include "ui/aura/window.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -502,7 +502,7 @@ void GenerateTapDownGesture(RenderWidgetHost* rwh) {
 //
 
 SitePerProcessBrowserTestBase::SitePerProcessBrowserTestBase() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(bokan): Needed for scrollability check in
   // FrameOwnerPropertiesPropagationScrolling. crbug.com/662196.
   feature_list_.InitAndDisableFeature(features::kOverlayScrollbar);
@@ -3740,7 +3740,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // the first page receives the
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame. Ensure that this
 // doesn't crash and that the RVH(A1) is not reused in that case.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RenderViewHostIsNotReusedAfterDelayedUnloadACK \
   DISABLED_RenderViewHostIsNotReusedAfterDelayedUnloadACK
 #else
@@ -4160,7 +4160,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, OpenerSetLocation) {
 }
 
 // crbug.com/1281755
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_NavigateProxyAndDetachBeforeProvisionalFrameCreation \
   DISABLED_NavigateProxyAndDetachBeforeProvisionalFrameCreation
 #else
@@ -5960,9 +5960,9 @@ class NewPopupWidgetCreatedObserver {
 // where popup menus don't create a popup RenderWidget, but rather they trigger
 // a FrameHostMsg_ShowPopup to ask the browser to build and display the actual
 // popup using native controls.
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 // Disable the test due to flaky: https://crbug.com/1126165
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TwoSubframesCreatePopupMenuWidgetsSimultaneously \
   DISABLED_TwoSubframesCreatePopupMenuWidgetsSimultaneously
 #else
@@ -7337,7 +7337,7 @@ IN_PROC_BROWSER_TEST_P(RequestDelayingSitePerProcessBrowserTest,
             EvalJs(shell(), "createFrames()", EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TextSelectionObserver : public TextInputManager::Observer {
  public:
   explicit TextSelectionObserver(TextInputManager* text_input_manager)
@@ -7460,7 +7460,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessAndroidImeTest,
     selection_observer.WaitForSelectedText(text);
   }
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test that an OOPIF at b.com can navigate to a cross-site a.com URL that
 // transfers back to b.com.  See https://crbug.com/681077#c10 and
@@ -7695,7 +7695,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // The test is flaky on Linux, Chrome OS, etc; cf https://crbug.com/1170583.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #define MAYBE_CrossProcessInertSubframe DISABLED_CrossProcessInertSubframe
 #else
 #define MAYBE_CrossProcessInertSubframe CrossProcessInertSubframe
@@ -8754,7 +8754,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -9240,7 +9240,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
 
 // This test verifies that the handles associated with an active touch selection
 // are still correctly positioned after a pinch-zoom operation.
-#if defined(OS_ANDROID)  // Flaky on Android.  See https://crbug.com/906204.
+#if BUILDFLAG(IS_ANDROID)  // Flaky on Android.  See https://crbug.com/906204.
 #define MAYBE_SelectionThenPinchInOOPIF DISABLED_SelectionThenPinchInOOPIF
 #else
 #define MAYBE_SelectionThenPinchInOOPIF SelectionThenPinchInOOPIF
@@ -9310,7 +9310,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
   // Cleanup before shutting down.
   ShutdownTest();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class TouchEventObserver : public RenderWidgetHost::InputEventObserver {
  public:
@@ -10090,7 +10090,7 @@ class CommitMessageOrderReverser : public DidCommitNavigationInterceptor {
 // its layout/animate phase. See https://crbug.com/802932.
 //
 // TODO(809580): Disabled on Android, Mac, and ChromeOS due to flakiness.
-#if defined(OS_ANDROID) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_OOPIFDetachDuringAnimation DISABLED_OOPIFDetachDuringAnimation
 #else
 #define MAYBE_OOPIFDetachDuringAnimation OOPIFDetachDuringAnimation
@@ -10329,7 +10329,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FrameDepthTest) {
 }
 
 // Disabled due to flakiness. crbug.com/1146083
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_VisibilityFrameDepthTest DISABLED_VisibilityFrameDepthTest
 #else
 #define MAYBE_VisibilityFrameDepthTest VisibilityFrameDepthTest
@@ -10482,7 +10482,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(start_url, rfh->GetLastCommittedURL());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // This test ensures that gestures from child frames notify the gesture manager
 // which exists only on the root frame. i.e. the gesture manager knows we're in
@@ -10582,7 +10582,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
         rwhv_root->gesture_listener_manager_->IsScrollInProgressForTesting());
   }
 }
-#endif  // if defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DisplayLockThrottlesOOPIF) {
   GURL url_a(embedded_test_server()->GetURL(
@@ -10805,7 +10805,7 @@ class SitePerProcessBrowserTouchActionTest : public SitePerProcessBrowserTest {
   }
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Class to set |force_enable_zoom| to true in WebkitPrefs.
 class EnableForceZoomContentClient : public TestContentBrowserClient {
  public:
@@ -10900,7 +10900,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
   SetBrowserClientForTesting(old_client);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Flaky on every platform, failing most of the time on Android.
 // See https://crbug.com/945734
@@ -11605,7 +11605,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // (typically during session restore when many navigations would be happening in
 // backgrounded processes).
 // TODO(crbug.com/1246541): Flaky on LaCrOS, Mac, and Windows.
-#if defined(OS_MAC) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NoCommitTimeoutForInvisibleWebContents \
   DISABLED_NoCommitTimeoutForInvisibleWebContents
 #else
@@ -11781,7 +11781,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // Touchscreen DoubleTapZoom is only supported on Android & ChromeOS at present.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 // A test ContentBrowserClient implementation which enforces
 // WebPreferences' |double_tap_to_zoom_enabled| to be true.
 class DoubleTapZoomContentBrowserClient : public TestContentBrowserClient {
@@ -11885,7 +11885,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   SetBrowserClientForTesting(old_client);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 
 class CrossProcessNavigationObjectElementTest
     : public SitePerProcessBrowserTestBase,
@@ -11942,7 +11942,7 @@ INSTANTIATE_TEST_SUITE_P(SitePerProcess,
                                          std::make_tuple("a", "b", "b"),
                                          std::make_tuple("a", "b", "c")));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // This test verifies that after occluding a WebContents the RAF inside a
 // cross-process child frame is throttled.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
@@ -12694,11 +12694,11 @@ IN_PROC_BROWSER_TEST_P(DisableProcessReusePolicyTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          RequestDelayingSitePerProcessBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessAndroidImeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessAndProcessPerSiteBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -12717,11 +12717,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          DisableProcessReusePolicyTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
                          TouchSelectionControllerClientAndroidSiteIsolationTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessBrowserTestWithLeakDetector,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));

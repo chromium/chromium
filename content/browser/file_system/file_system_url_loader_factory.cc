@@ -300,7 +300,7 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
 
     if (data_.empty()) {
       base::FilePath relative_path = url_.path();
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       relative_path =
           base::FilePath(FILE_PATH_LITERAL("/") + relative_path.value());
 #endif

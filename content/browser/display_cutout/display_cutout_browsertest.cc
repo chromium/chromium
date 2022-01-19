@@ -36,7 +36,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // These inset and flags simulate when we are not extending into the cutout.
 const gfx::Insets kNoCutoutInsets = gfx::Insets();
@@ -223,7 +223,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
 };
 
 // The viewport meta tag is only enabled on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, ViewportFit_Fullscreen) {
   LoadTestPageWithViewportFitFromMeta("cover");

@@ -37,7 +37,7 @@ class MockChildProcessLauncherClient
     client_->OnProcessLaunchFailed(error_code);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool CanUseWarmUpConnection() override { return true; }
 #endif
 

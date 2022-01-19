@@ -2728,7 +2728,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDisableWebSecurityTest,
   RunTestWithCrossOriginURL(kPageUrl, kScopeUrl);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android, http://crbug.com/1141870.
 #define MAYBE_RegisterNoCrash DISABLED_RegisterNoCrash
 #else
@@ -3619,7 +3619,7 @@ class ServiceWorkerBackForwardCacheBrowserTest
 };
 
 // Fails on Android. https://crbug.com/1216619
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_EvictionOfBackForwardCacheWithMultipleServiceWorkers \
   DISABLED_EvictionOfBackForwardCacheWithMultipleServiceWorkers
 #else

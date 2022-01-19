@@ -179,9 +179,9 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
       blink::features::kLoadingTasksUnfreezable,
       "grace_period_to_finish_loading_in_seconds",
       base::NumberToString(kGracePeriodToFinishLoading.InSeconds()));
-#if defined(OS_ANDROID)
-    EnableFeatureAndSetParams(features::kBackForwardCache,
-                              "process_binding_strength", "NORMAL");
+#if BUILDFLAG(IS_ANDROID)
+  EnableFeatureAndSetParams(features::kBackForwardCache,
+                            "process_binding_strength", "NORMAL");
 #endif
     // Allow BackForwardCache for all devices regardless of their memory.
     DisableFeature(features::kBackForwardCacheMemoryControls);
@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheHTTPDocumentOnly) {
 // alive in the same BrowsingInstance does not cause anything to blow up.
 
 // TODO(crbug.com/1127979): Flaky on Linux and Windows
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_NavigateToTwoPagesOnSameSite DISABLED_NavigateToTwoPagesOnSameSite
 #else
 #define MAYBE_NavigateToTwoPagesOnSameSite NavigateToTwoPagesOnSameSite
@@ -1835,7 +1835,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Disabled on Linux and Win because of flakiness, see crbug.com/1170802.
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
 #define MAYBE_PagehideRunsWhenPageIsHidden DISABLED_PagehideRunsWhenPageIsHidden
 #else
 #define MAYBE_PagehideRunsWhenPageIsHidden PagehideRunsWhenPageIsHidden

@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIgnoreCertErrorsBrowserTest,
 // iframe can be loaded from a site other than localhost (the
 // EmbeddedTestServer serves a certificate that is valid for localhost).
 // This test crashes on Windows under Dr. Memory, see https://crbug.com/600942.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PassiveMixedContentInIframe DISABLED_PassiveMixedContentInIframe
 #else
 #define MAYBE_PassiveMixedContentInIframe PassiveMixedContentInIframe

@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1231849): flaky on Cast Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PagesWithCacheControlNoStoreEvictedWithBothCookieReasons \
   DISABLED_PagesWithCacheControlNoStoreEvictedWithBothCookieReasons
 #else
@@ -846,7 +846,7 @@ class BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange
 };
 
 // TODO(https://crbug.com/1231849): flaky on Cast Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_NoCacheControlNoStoreButHTTPOnlyCookieChange \
   DISABLED_NoCacheControlNoStoreButHTTPOnlyCookieChange
 #else
@@ -888,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1231849): flaky on Cast Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PagesWithCacheControlNoStoreNotEvictedIfNormalCookieChange \
   DISABLED_PagesWithCacheControlNoStoreNotEvictedIfNormalCookieChange
 #else
@@ -936,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1231849): flaky on Cast Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange \
   DISABLED_PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange
 #else
@@ -999,7 +999,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1231849): flaky on Cast Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange \
   DISABLED_PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange
 #else

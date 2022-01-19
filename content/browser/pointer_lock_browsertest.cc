@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockAndUserActivation) {
 }
 
 // crbug.com/1210940: flaky on Linux
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PointerLockEventRouting DISABLED_PointerLockEventRouting
 #else
 #define MAYBE_PointerLockEventRouting PointerLockEventRouting
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOopifCrashes) {
   }
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_PointerLockWheelEventRouting DISABLED_PointerLockWheelEventRouting
 #else
 #define MAYBE_PointerLockWheelEventRouting PointerLockWheelEventRouting
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
   // Release pointer lock.
   EXPECT_EQ(true, PointerLockHelper::ExitPointerLock(root));
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   // Request a pointer lock with unadjustedMovement.
   EXPECT_EQ(
       true,
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
 
 #if defined(USE_AURA)
 // TODO(https://crbug.com/982379): Remove failure test when fully implemented
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ChangeUnadjustedMovementFailure \
   DISABLED_ChangeUnadjustedMovementFailure
 #else
@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
 #endif
 
 #if defined(USE_AURA)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Tests that a subsequent request to RequestPointerLock with different
 // options inside a Child view gets piped to the proper places and updates
 // the option(this option is only supported on Windows).

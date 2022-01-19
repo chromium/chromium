@@ -10,7 +10,7 @@
 namespace content {
 
 std::map<std::string, base::FilePath> GetV8SnapshotFilesToPreload() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
   return {{kV8ContextSnapshotDataDescriptor,
            base::FilePath(FILE_PATH_LITERAL(V8_CONTEXT_SNAPSHOT_FILENAME))}};
@@ -18,7 +18,7 @@ std::map<std::string, base::FilePath> GetV8SnapshotFilesToPreload() {
   return {{kV8SnapshotDataDescriptor,
            base::FilePath(FILE_PATH_LITERAL("snapshot_blob.bin"))}};
 #endif
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #if !defined(USE_V8_CONTEXT_SNAPSHOT)
   return {{kV8Snapshot64DataDescriptor,
            base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_64.bin"))},

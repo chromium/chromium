@@ -11,7 +11,7 @@
 #include "content/public/common/content_switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/sms/sms_provider_gms.h"
 #endif
 
@@ -22,7 +22,7 @@ SmsProvider::~SmsProvider() = default;
 
 // static
 std::unique_ptr<SmsProvider> SmsProvider::Create() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<SmsProviderGms>();
 #else
   return nullptr;

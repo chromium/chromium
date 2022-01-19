@@ -17,7 +17,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/files/scoped_temp_dir.h"
 #include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"
 #endif
@@ -25,7 +25,7 @@
 namespace content {
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char* kExpectedFontFamilyNames[] = {"AndroidClock",
                                           "Roboto",
                                           "Droid Sans Mono",
@@ -67,7 +67,7 @@ const char* kExpectedFontFamilyNames[] = {"AndroidClock",
                                           "Roboto Condensed",
                                           "Roboto Condensed",
                                           "Roboto"};
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char* kExpectedFontFamilyNames[] = {"Ahem",
                                           "Arimo",
                                           "Arimo",
@@ -94,7 +94,7 @@ const char* kExpectedFontFamilyNames[] = {"Ahem",
                                           "Tinos",
                                           "Mukti Narrow",
                                           "Tinos"};
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const char* kExpectedFontFamilyNames[] = {"American Typewriter",
                                           "Arial Narrow",
                                           "Baskerville",
@@ -105,7 +105,7 @@ const char* kExpectedFontFamilyNames[] = {"American Typewriter",
                                           "Malayalam Sangam MN",
                                           "Hiragino Maru Gothic Pro",
                                           "Hiragino Kaku Gothic StdN"};
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const char* kExpectedFontFamilyNames[] = {"Cambria Math", "MingLiU_HKSCS-ExtB",
                                           "NSimSun", "Calibri"};
 #endif
@@ -131,15 +131,15 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ScopedTempDir cache_directory_;
 #endif
 };
 
 // TODO(crbug.com/949181): Make this work on Fuchsia.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1270151): Fix this on Android 11 and 12.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ContentLocalFontsMatching DISABLED_ContentLocalFontsMatching
 #else
 #define MAYBE_ContentLocalFontsMatching ContentLocalFontsMatching

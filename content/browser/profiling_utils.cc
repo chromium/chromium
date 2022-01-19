@@ -26,7 +26,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/profiling_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/mojom/sandbox.mojom-shared.h"
 #endif
 
@@ -121,7 +121,7 @@ void WaitForAllChildrenToDumpProfilingData() {
   // Ask all the other child processes to dump their profiling data
   for (content::BrowserChildProcessHostIterator browser_child_iter;
        !browser_child_iter.Done(); ++browser_child_iter) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, elevated processes are never passed the profiling data file
     // so cannot dump their data.
     if (browser_child_iter.GetData().sandbox_type ==

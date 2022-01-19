@@ -17,9 +17,9 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "url/url_constants.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 namespace web_bundle_utils {
@@ -62,10 +62,10 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 bool IsSupportedFileScheme(const GURL& url) {
   if (url.SchemeIsFile())
     return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(url::kContentScheme))
     return true;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return false;
 }
 

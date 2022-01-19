@@ -2628,8 +2628,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 }
 
 // This test is flaky on Win, Mac, Linux and ChromeOS: https://crbug.com/1125998
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CrossOriginIsolatedSiteInstance_MainFrame \
   DISABLED_CrossOriginIsolatedSiteInstance_MainFrame
 #else
@@ -3596,13 +3596,13 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
 
   EXPECT_EQ(false, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(true,
             EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
-#else   // defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(false,
             EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Check setting the OriginTrial works, even in popups where the javascript
@@ -3647,7 +3647,7 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
         shell_observer.GetShell()->web_contents());
     WaitForLoadStop(popup);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(false, EvalJs(popup, "'SharedArrayBuffer' in globalThis"));
 #else
     EXPECT_EQ(true, EvalJs(popup, "'SharedArrayBuffer' in globalThis"));
@@ -3672,7 +3672,7 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 
   EXPECT_EQ(false, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(false,
             EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
 #else
@@ -3709,7 +3709,7 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
   EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
   EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(ExecJs(sub_document, R"(
     g_sab_size = new Promise(resolve => {
       addEventListener("message", event => resolve(event.data.byteLength));
@@ -3723,7 +3723,7 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
   )"));
 
   EXPECT_EQ(1234, EvalJs(sub_document, "g_sab_size"));
-#else   // defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   auto postSharedArrayBuffer = EvalJs(main_document, R"(
     // Create a WebAssembly Memory to bypass the SAB constructor restriction.
     const sab =
@@ -3733,13 +3733,14 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 
   EXPECT_THAT(postSharedArrayBuffer.error,
               HasSubstr("Failed to execute 'postMessage' on 'Window'"));
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Enable the reverse OriginTrial via a <meta> tag. Then send a Webassembly's
 // SharedArrayBuffer toward the iframe.
 // Regression test for https://crbug.com/1201589).
-#if !defined(OS_ANDROID) // The SAB reverse origin trial only work on Desktop.
+// The SAB reverse origin trial only work on Desktop.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
                        CrashForBug1201589) {
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
@@ -3817,13 +3818,13 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferOnDesktopBrowserTest,
   GURL url = https_server()->GetURL("a.test", "/empty.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_EQ(false, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(true,
             EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
-#else   // defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(false,
             EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 IN_PROC_BROWSER_TEST_P(SharedArrayBufferOnDesktopBrowserTest,
@@ -3853,19 +3854,19 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferOnDesktopBrowserTest,
   )",
                      EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(ExecJs(sub_document, R"(
     const sab = new SharedArrayBuffer(1234);
     parent.postMessage(sab, "*");
   )"));
 
   EXPECT_EQ(1234, EvalJs(main_document, "g_sab_size"));
-#else   // defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(ExecJs(sub_document, R"(
     const sab = new SharedArrayBuffer(1234);
     parent.postMessage(sab, "*");
   )"));
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Regression test for https://crbug.com/1238282#c16

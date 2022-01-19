@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
 }
 
 // TODO(https://crbug.com/1288573): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CookieCallbacks_Subframe DISABLED_CookieCallbacks_Subframe
 #else
 #define MAYBE_CookieCallbacks_Subframe CookieCallbacks_Subframe

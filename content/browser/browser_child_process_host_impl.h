@@ -29,7 +29,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/object_watcher.h"
 #endif
 
@@ -53,7 +53,7 @@ class BrowserMessageFilter;
 class BrowserChildProcessHostImpl
     : public BrowserChildProcessHost,
       public ChildProcessHostDelegate,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       public base::win::ObjectWatcher::Delegate,
 #endif
       public ChildProcessLauncher::Client,
@@ -125,7 +125,7 @@ class BrowserChildProcessHostImpl
 
   static void HistogramBadMessageTerminated(ProcessType process_type);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void EnableWarmUpConnection();
   void DumpProcessStack();
 #endif
@@ -164,7 +164,7 @@ class BrowserChildProcessHostImpl
   // ChildProcessLauncher::Client implementation.
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool CanUseWarmUpConnection() override;
 #endif
 
@@ -187,7 +187,7 @@ class BrowserChildProcessHostImpl
       base::WeakPtr<BrowserChildProcessHostImpl> process,
       const std::string& error);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // ObjectWatcher::Delegate implementation.
   void OnObjectSignaled(HANDLE object) override;
 #endif
@@ -201,7 +201,7 @@ class BrowserChildProcessHostImpl
 
   std::unique_ptr<ChildProcessLauncher> child_process_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Watches to see if the child process exits before the IPC channel has
   // been connected. Thereafter, its exit is determined by an error on the
   // IPC channel.
@@ -218,7 +218,7 @@ class BrowserChildProcessHostImpl
   bool has_legacy_ipc_channel_ = false;
   bool notify_child_connection_status_ = true;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // whether the child process can use pre-warmed up connection for better
   // performance.
   bool can_use_warm_up_connection_ = false;
@@ -228,7 +228,7 @@ class BrowserChildProcessHostImpl
   std::unique_ptr<TracingServiceController::ClientRegistration>
       tracing_registration_;
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   // For child process to connect to the system tracing service.
   std::unique_ptr<tracing::SystemTracingService> system_tracing_service_;
 #endif

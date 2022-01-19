@@ -129,8 +129,8 @@ IN_PROC_BROWSER_TEST_F(StorageServiceRestartBrowserTest,
 }
 
 // Flaky on Linux, Windows, and Mac. See crbug.com/1066138.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_LocalStorageRecovery DISABLED_LocalStorageRecovery
 #else
 #define MAYBE_LocalStorageRecovery LocalStorageRecovery

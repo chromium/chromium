@@ -12,6 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
@@ -42,7 +43,7 @@
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/base/ui_base_features.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/rendering_window_manager.h"
 #endif
 
@@ -111,7 +112,7 @@ class HostDisplayClient : public viz::HostDisplayClient {
   // viz::HostDisplayClient:
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override {
     compositor_->OnCompleteSwapWithNewSize(size);
   }
@@ -181,7 +182,7 @@ void VizProcessTransportFactory::ConnectHostFrameSinkManager() {
 
 void VizProcessTransportFactory::CreateLayerTreeFrameSink(
     base::WeakPtr<ui::Compositor> compositor) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::RenderingWindowManager::GetInstance()->UnregisterParent(
       compositor->widget());
 #endif
@@ -227,7 +228,7 @@ VizProcessTransportFactory::SharedMainThreadRasterContextProvider() {
 }
 
 void VizProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::RenderingWindowManager::GetInstance()->UnregisterParent(
       compositor->widget());
 #endif
@@ -363,7 +364,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     worker_context_provider = worker_context_provider_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::RenderingWindowManager::GetInstance()->RegisterParent(
       compositor->widget());
 #endif
@@ -404,10 +405,10 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
 
   root_params->use_preferred_interval_for_video =
       features::IsUsingPreferredIntervalForVideo();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   root_params->set_present_duration_allowed =
       features::ShouldUseSetPresentDuration();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Connects the viz process end of CompositorFrameSink message pipes. The
   // browser compositor may request a new CompositorFrameSink on context loss,
@@ -434,7 +435,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
         compositor_data.external_begin_frame_controller.get());
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows using the ANGLE D3D backend for compositing needs to disable swap
   // on resize to avoid D3D scaling the framebuffer texture. This isn't a
   // problem with software compositing or ANGLE D3D with direct composition.

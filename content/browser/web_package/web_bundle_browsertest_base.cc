@@ -18,9 +18,9 @@
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 namespace web_bundle_browsertest_utils {
@@ -33,7 +33,7 @@ base::FilePath GetTestDataPath(base::StringPiece file) {
       .AppendASCII(file);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void CopyFileAndGetContentUri(const base::FilePath& file,
                               GURL* content_uri,
                               base::FilePath* new_file_path) {
@@ -54,7 +54,7 @@ void CopyFileAndGetContentUri(const base::FilePath& file,
     *new_file_path = temp_file;
   *content_uri = GURL(base::GetContentUriFromFilePath(temp_file).value());
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::string ExecuteAndGetString(const ToRenderFrameHost& adapter,
                                 const std::string& script) {
