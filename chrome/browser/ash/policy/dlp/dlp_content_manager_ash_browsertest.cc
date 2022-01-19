@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -44,6 +43,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/storage/test_storage_module.h"
@@ -57,13 +57,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
-#include "ui/aura/test/event_generator_delegate_aura.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 
 using testing::_;
@@ -71,27 +65,6 @@ using testing::_;
 namespace policy {
 
 namespace {
-
-class DlpEventGeneratorDelegate
-    : public aura::test::EventGeneratorDelegateAura {
- public:
-  DlpEventGeneratorDelegate() = default;
-
-  DlpEventGeneratorDelegate(const DlpEventGeneratorDelegate&) = delete;
-  DlpEventGeneratorDelegate& operator=(const DlpEventGeneratorDelegate&) =
-      delete;
-
-  ~DlpEventGeneratorDelegate() override = default;
-
-  // aura::test::EventGeneratorDelegateAura overrides:
-  ui::EventTarget* GetTargetAt(const gfx::Point& point_in_screen) override {
-    display::Screen* screen = display::Screen::GetScreen();
-    display::Display display = screen->GetDisplayNearestPoint(point_in_screen);
-    return ash::Shell::GetRootWindowForDisplayId(display.id())
-        ->GetHost()
-        ->window();
-  }
-};
 
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kScreenshotRestricted(
@@ -203,11 +176,6 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
       EXPECT_THAT(events_[i], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                                   kSrcPattern, restriction, level)));
     }
-  }
-
-  std::unique_ptr<ui::test::EventGenerator> GetEventGenerator() {
-    return std::make_unique<ui::test::EventGenerator>(
-        std::make_unique<DlpEventGeneratorDelegate>());
   }
 
   // TODO(https://crbug.com/1283065): Remove this.
@@ -736,10 +704,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       on_dlp_checked_at_video_end_cb.Get());
   // Check that the warning is now shown.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
-  std::unique_ptr<ui::test::EventGenerator> event_generator =
-      GetEventGenerator();
   // Hit Enter to "Save anyway".
-  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_RETURN, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_TRUE(helper_->HasContentCachedForRestriction(
       web_contents1, DlpRulesManager::Restriction::kScreenshot));
@@ -802,10 +770,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       on_dlp_checked_at_video_end_cb.Get());
   // Check that the warning is now shown.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
-  std::unique_ptr<ui::test::EventGenerator> event_generator =
-      GetEventGenerator();
   // Hit Enter to "Cancel".
-  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_ESCAPE, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_FALSE(helper_->HasAnyContentCached());
 
@@ -948,11 +916,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
 
-  std::unique_ptr<ui::test::EventGenerator> event_generator =
-      GetEventGenerator();
-
   // Hit Enter to "Share anyway".
-  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_RETURN, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 
   EXPECT_TRUE(helper_->HasContentCachedForRestriction(
@@ -999,11 +966,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
 
-  std::unique_ptr<ui::test::EventGenerator> event_generator =
-      GetEventGenerator();
-
   // Hit Esc to "Cancel".
-  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_ESCAPE, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_FALSE(helper_->HasAnyContentCached());
   // The screen share should be stopped so would not be checked again, and this
@@ -1499,9 +1465,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   // Set up printing restriction.
   helper_->ChangeConfidentiality(web_contents, kPrintWarned);
 
-  std::unique_ptr<ui::test::EventGenerator> event_generator =
-      GetEventGenerator();
-
   MockPrintManager* print_manager = GetPrintManager(web_contents);
   testing::InSequence s;
   EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting()).Times(1);
@@ -1510,7 +1473,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   StartPrint(print_manager, web_contents);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
   // Hit Esc to "Cancel".
-  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_ESCAPE, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   // There should be no notification about printing restriction.
   EXPECT_FALSE(
@@ -1520,7 +1485,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   StartPrint(print_manager, web_contents);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
   // Hit Enter to "Print anyway".
-  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_RETURN, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_TRUE(helper_->HasContentCachedForRestriction(
       web_contents, DlpRulesManager::Restriction::kPrinting));
