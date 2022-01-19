@@ -119,6 +119,8 @@ void PeriodicCollector::OnMetricDataCollected(MetricData metric_data) {
 
 void PeriodicCollector::StartPeriodicCollection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do initial collection at startup.
+  Collect();
   rate_controller_->Start();
 }
 
