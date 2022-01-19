@@ -28,6 +28,7 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/report_sender.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/features.h"
@@ -324,11 +325,11 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
   ExpectCTReporterWaitTest& operator=(const ExpectCTReporterWaitTest&) = delete;
 
   void SetUp() override {
-    // Initializes URLRequestContext after the thread is set up.
-    context_ = std::make_unique<net::TestURLRequestContext>(
-        true /* delay_initialization */);
-    context_->set_network_delegate(&network_delegate_);
-    context_->Init();
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
+    context_builder->set_network_delegate(
+        std::make_unique<TestExpectCTNetworkDelegate>());
+
+    context_ = context_builder->Build();
     net::URLRequestFailedJob::AddUrlHandler();
   }
 
@@ -336,7 +337,12 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
     net::URLRequestFilter::GetInstance()->ClearHandlers();
   }
 
-  net::TestURLRequestContext* context() { return context_.get(); }
+  net::URLRequestContext* context() { return context_.get(); }
+  TestExpectCTNetworkDelegate* network_delegate() {
+    // This is safe as we provided a TestExpectCTNetworkDelegate in SetUp().
+    return static_cast<TestExpectCTNetworkDelegate*>(
+        context_->network_delegate());
+  }
 
  protected:
   void SendReport(ExpectCTReporter* reporter,
@@ -345,7 +351,7 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
                   base::Time expiration,
                   const net::SSLInfo& ssl_info) {
     base::RunLoop run_loop;
-    network_delegate_.set_url_request_destroyed_callback(
+    network_delegate()->set_url_request_destroyed_callback(
         run_loop.QuitClosure());
     reporter->OnExpectCTFailed(
         host_port, report_uri, expiration, ssl_info.cert.get(),
@@ -355,8 +361,7 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
   }
 
  private:
-  TestExpectCTNetworkDelegate network_delegate_;
-  std::unique_ptr<net::TestURLRequestContext> context_;
+  std::unique_ptr<net::URLRequestContext> context_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -489,8 +494,9 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
   ASSERT_TRUE(test_server().Start());
 
   TestCertificateReportSender* sender = new TestCertificateReportSender();
-  net::TestURLRequestContext context;
-  ExpectCTReporter reporter(&context, base::NullCallback(),
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
                             base::NullCallback());
   reporter.report_sender_.reset(sender);
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
@@ -538,8 +544,9 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
 // Test that no report is sent if the report URI is empty.
 TEST_F(ExpectCTReporterTest, EmptyReportURI) {
   TestCertificateReportSender* sender = new TestCertificateReportSender();
-  net::TestURLRequestContext context;
-  ExpectCTReporter reporter(&context, base::NullCallback(),
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
                             base::NullCallback());
   reporter.report_sender_.reset(sender);
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
@@ -578,8 +585,9 @@ TEST_F(ExpectCTReporterWaitTest, SendReportFailureCallback) {
 // Test that a sent report has the right format.
 TEST_F(ExpectCTReporterTest, SendReport) {
   TestCertificateReportSender* sender = new TestCertificateReportSender();
-  net::TestURLRequestContext context;
-  ExpectCTReporter reporter(&context, base::NullCallback(),
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
                             base::NullCallback());
   reporter.report_sender_.reset(sender);
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
@@ -685,8 +693,9 @@ TEST_F(ExpectCTReporterTest, SendReportSuccessCallback) {
 
   base::RunLoop run_loop;
 
-  net::TestURLRequestContext context;
-  ExpectCTReporter reporter(&context, run_loop.QuitClosure(),
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), run_loop.QuitClosure(),
                             base::NullCallback());
 
   net::SSLInfo ssl_info;
@@ -738,12 +747,12 @@ TEST_F(ExpectCTReporterTest, PreflightUsesNetworkIsolationKey) {
 
   TestCertificateReportSender* sender = new TestCertificateReportSender();
 
-  TestExpectCTNetworkDelegate network_delegate;
-  net::TestURLRequestContext context(true /* delay_initialization*/);
-  context.set_network_delegate(&network_delegate);
-  context.Init();
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto& network_delegate = *context_builder->set_network_delegate(
+      std::make_unique<TestExpectCTNetworkDelegate>());
+  auto context = context_builder->Build();
 
-  ExpectCTReporter reporter(&context, base::NullCallback(),
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
                             base::NullCallback());
   reporter.report_sender_.reset(sender);
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
@@ -792,8 +801,9 @@ TEST_F(ExpectCTReporterTest, PreflightContainsWhitespace) {
   ASSERT_TRUE(test_server().Start());
 
   TestCertificateReportSender* sender = new TestCertificateReportSender();
-  net::TestURLRequestContext context;
-  ExpectCTReporter reporter(&context, base::NullCallback(),
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
                             base::NullCallback());
   reporter.report_sender_.reset(sender);
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
@@ -823,8 +833,9 @@ TEST_F(ExpectCTReporterTest, PreflightContainsWhitespace) {
 // Access-Control-Allow-Origin.
 TEST_F(ExpectCTReporterTest, BadCorsPreflightResponseOrigin) {
   TestCertificateReportSender* sender = new TestCertificateReportSender();
-  net::TestURLRequestContext context;
-  ExpectCTReporter reporter(&context, base::NullCallback(),
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
                             base::NullCallback());
   reporter.report_sender_.reset(sender);
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
@@ -848,8 +859,9 @@ TEST_F(ExpectCTReporterTest, BadCorsPreflightResponseOrigin) {
 // Access-Control-Allow-Methods.
 TEST_F(ExpectCTReporterTest, BadCorsPreflightResponseMethods) {
   TestCertificateReportSender* sender = new TestCertificateReportSender();
-  net::TestURLRequestContext context;
-  ExpectCTReporter reporter(&context, base::NullCallback(),
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
                             base::NullCallback());
   reporter.report_sender_.reset(sender);
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
@@ -873,8 +885,9 @@ TEST_F(ExpectCTReporterTest, BadCorsPreflightResponseMethods) {
 // Access-Control-Allow-Headers.
 TEST_F(ExpectCTReporterTest, BadCorsPreflightResponseHeaders) {
   TestCertificateReportSender* sender = new TestCertificateReportSender();
-  net::TestURLRequestContext context;
-  ExpectCTReporter reporter(&context, base::NullCallback(),
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+  ExpectCTReporter reporter(context.get(), base::NullCallback(),
                             base::NullCallback());
   reporter.report_sender_.reset(sender);
   EXPECT_TRUE(sender->latest_report_uri().is_empty());

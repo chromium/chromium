@@ -14,6 +14,8 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,8 +78,7 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
   NetworkServiceProxyDelegateTest() {}
 
   void SetUp() override {
-    context_ = std::make_unique<net::TestURLRequestContext>(true);
-    context_->Init();
+    context_ = net::CreateTestURLRequestContextBuilder()->Build();
   }
 
  protected:
@@ -117,7 +118,7 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
   mojo::Remote<mojom::CustomProxyConfigClient> client_;
   // Owned by the proxy delegate returned by |CreateDelegate|.
   raw_ptr<TestCustomProxyConnectionObserver> observer_ = nullptr;
-  std::unique_ptr<net::TestURLRequestContext> context_;
+  std::unique_ptr<net::URLRequestContext> context_;
   base::test::TaskEnvironment task_environment_;
 };
 

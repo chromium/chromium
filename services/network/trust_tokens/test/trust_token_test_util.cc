@@ -9,20 +9,24 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 
 namespace network {
 
 TestURLRequestMaker::TestURLRequestMaker() {
-  context_.set_net_log(net::NetLog::Get());
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_net_log(net::NetLog::Get());
+  context_ = context_builder->Build();
 }
 
 TestURLRequestMaker::~TestURLRequestMaker() = default;
 
 std::unique_ptr<net::URLRequest> TestURLRequestMaker::MakeURLRequest(
     base::StringPiece spec) {
-  return context_.CreateRequest(GURL(spec),
-                                net::RequestPriority::DEFAULT_PRIORITY,
-                                &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+  return context_->CreateRequest(GURL(spec),
+                                 net::RequestPriority::DEFAULT_PRIORITY,
+                                 &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
 }
 
 TrustTokenRequestHelperTest::TrustTokenRequestHelperTest(

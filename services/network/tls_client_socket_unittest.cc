@@ -27,6 +27,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/mojo_socket_test_util.h"
 #include "services/network/proxy_resolving_socket_factory_mojo.h"
@@ -53,8 +55,7 @@ class TLSClientSocketTestBase {
 
   explicit TLSClientSocketTestBase(Mode mode)
       : mode_(mode),
-        task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        url_request_context_(true) {}
+        task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   TLSClientSocketTestBase(const TLSClientSocketTestBase&) = delete;
   TLSClientSocketTestBase& operator=(const TLSClientSocketTestBase&) = delete;
@@ -78,24 +79,23 @@ class TLSClientSocketTestBase {
   // Initializes the test fixture. If |use_mock_sockets|, mock client socket
   // factory will be used.
   void Init(bool use_mock_sockets, bool configure_proxy) {
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
     if (use_mock_sockets) {
       mock_client_socket_factory_.set_enable_read_if_ready(true);
-      url_request_context_.set_client_socket_factory(
+      context_builder->set_client_socket_factory_for_testing(
           &mock_client_socket_factory_);
     }
     if (configure_proxy) {
-      proxy_resolution_service_ =
+      context_builder->set_proxy_resolution_service(
           net::ConfiguredProxyResolutionService::CreateFixed(
-              "http://proxy:8080", TRAFFIC_ANNOTATION_FOR_TESTS);
-      url_request_context_.set_proxy_resolution_service(
-          proxy_resolution_service_.get());
+              "http://proxy:8080", TRAFFIC_ANNOTATION_FOR_TESTS));
     }
-    url_request_context_.Init();
-    factory_ = std::make_unique<SocketFactory>(nullptr /*net_log*/,
-                                               &url_request_context_);
+    url_request_context_ = context_builder->Build();
+    factory_ = std::make_unique<SocketFactory>(/*net_log=*/nullptr,
+                                               url_request_context_.get());
     proxy_resolving_factory_ =
         std::make_unique<ProxyResolvingSocketFactoryMojo>(
-            &url_request_context_);
+            url_request_context_.get());
   }
 
   // Reads |num_bytes| from |handle| or reads until an error occurs. Returns the
@@ -305,9 +305,8 @@ class TLSClientSocketTestBase {
   // SSLInfo obtained from UpgradeToTLS.
   absl::optional<net::SSLInfo> ssl_info_;
 
-  std::unique_ptr<net::ProxyResolutionService> proxy_resolution_service_;
-  net::TestURLRequestContext url_request_context_;
   net::MockClientSocketFactory mock_client_socket_factory_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<SocketFactory> factory_;
   std::unique_ptr<ProxyResolvingSocketFactoryMojo> proxy_resolving_factory_;
   TestSocketObserver pre_tls_observer_;

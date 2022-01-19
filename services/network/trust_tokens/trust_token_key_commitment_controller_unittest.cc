@@ -15,6 +15,8 @@
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
@@ -104,19 +106,20 @@ class CommitmentWaiter {
 class TrustTokenKeyCommitmentControllerTest : public ::testing::Test {
  public:
   TrustTokenKeyCommitmentControllerTest()
-      : issuer_request_(MakeURLRequest("https://issuer.com/")) {}
+      : context_(net::CreateTestURLRequestContextBuilder()->Build()),
+        issuer_request_(MakeURLRequest("https://issuer.com/")) {}
   ~TrustTokenKeyCommitmentControllerTest() override = default;
 
  protected:
   std::unique_ptr<net::URLRequest> MakeURLRequest(std::string spec) {
-    return context_.CreateRequest(GURL(spec),
-                                  net::RequestPriority::DEFAULT_PRIORITY,
-                                  &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+    return context_->CreateRequest(GURL(spec),
+                                   net::RequestPriority::DEFAULT_PRIORITY,
+                                   &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
   }
   const net::URLRequest& IssuerURLRequest() { return *issuer_request_; }
   base::test::TaskEnvironment env_;
   net::TestDelegate delegate_;
-  net::TestURLRequestContext context_;
+  std::unique_ptr<net::URLRequestContext> context_;
   std::unique_ptr<net::URLRequest> issuer_request_;
 };
 

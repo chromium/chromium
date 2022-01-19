@@ -8,6 +8,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
@@ -41,10 +42,11 @@ class SecHeaderHelpersTest : public PlatformTest {
  public:
   SecHeaderHelpersTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        url_request_(context_.CreateRequest(GURL(kSecureSite),
-                                            net::DEFAULT_PRIORITY,
-                                            /*delegate=*/nullptr,
-                                            TRAFFIC_ANNOTATION_FOR_TESTS)) {
+        context_(net::CreateTestURLRequestContextBuilder()->Build()),
+        url_request_(context_->CreateRequest(GURL(kSecureSite),
+                                             net::DEFAULT_PRIORITY,
+                                             /*delegate=*/nullptr,
+                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {
     url_request_->set_initiator(
         url::Origin::Create(GURL(kPrivilegedInitiator)));
   }
@@ -53,7 +55,7 @@ class SecHeaderHelpersTest : public PlatformTest {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  net::TestURLRequestContext context_;
+  std::unique_ptr<net::URLRequestContext> context_;
   std::unique_ptr<net::URLRequest> url_request_;
 };
 

@@ -26,6 +26,8 @@
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/p2p/socket_test_utils.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
@@ -502,11 +504,11 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Basic) {
                                 socket_client.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(fake_client2, SocketCreated(_, _)).Times(1);
 
-  net::TestURLRequestContext context(true);
   net::MockClientSocketFactory mock_socket_factory;
-  context.set_client_socket_factory(&mock_socket_factory);
-  context.Init();
-  ProxyResolvingClientSocketFactory factory(&context);
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&mock_socket_factory);
+  auto context = context_builder->Build();
+  ProxyResolvingClientSocketFactory factory(context.get());
 
   base::StringPiece ssl_client_hello =
       jingle_glue::FakeSSLClientSocket::GetSslClientHello();
@@ -557,14 +559,14 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
                                 socket_client.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(fake_client2, SocketCreated(_, _)).Times(1);
 
-  net::TestURLRequestContext context(true);
   net::MockClientSocketFactory mock_socket_factory;
-  context.set_client_socket_factory(&mock_socket_factory);
-  net::MockCachingHostResolver host_resolver;
-  host_resolver.rules()->AddRule(kHostname, "1.2.3.4");
-  context.set_host_resolver(&host_resolver);
-  context.Init();
-  ProxyResolvingClientSocketFactory factory(&context);
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&mock_socket_factory);
+  auto host_resolver = std::make_unique<net::MockCachingHostResolver>();
+  host_resolver->rules()->AddRule(kHostname, "1.2.3.4");
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
+  ProxyResolvingClientSocketFactory factory(context.get());
 
   base::StringPiece ssl_client_hello =
       jingle_glue::FakeSSLClientSocket::GetSslClientHello();
@@ -604,9 +606,9 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   net::HostResolver::ResolveHostParameters params;
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request1 =
-      context.host_resolver()->CreateRequest(kHostPortPair,
-                                             network_isolation_key,
-                                             net::NetLogWithSource(), params);
+      context->host_resolver()->CreateRequest(kHostPortPair,
+                                              network_isolation_key,
+                                              net::NetLogWithSource(), params);
   net::TestCompletionCallback callback1;
   int result = request1->Start(callback1.callback());
   EXPECT_EQ(net::OK, callback1.GetResult(result));
@@ -620,8 +622,8 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
                                kDestinationOrigin /* frame_origin */)};
   for (const auto& other_nik : kOtherNiks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
-        context.host_resolver()->CreateRequest(kHostPortPair, other_nik,
-                                               net::NetLogWithSource(), params);
+        context->host_resolver()->CreateRequest(
+            kHostPortPair, other_nik, net::NetLogWithSource(), params);
     net::TestCompletionCallback callback2;
     result = request2->Start(callback2.callback());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));
@@ -652,11 +654,11 @@ TEST_P(P2PSocketTcpWithTlsTest, Basic) {
                                 socket_client.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(fake_client2, SocketCreated(_, _)).Times(1);
 
-  net::TestURLRequestContext context(true);
   net::MockClientSocketFactory mock_socket_factory;
-  context.set_client_socket_factory(&mock_socket_factory);
-  context.Init();
-  ProxyResolvingClientSocketFactory factory(&context);
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&mock_socket_factory);
+  auto context = context_builder->Build();
+  ProxyResolvingClientSocketFactory factory(context.get());
   const net::IoMode io_mode = std::get<0>(GetParam());
   const P2PSocketType socket_type = std::get<1>(GetParam());
   // OnOpen() calls DoRead(), so populate the mock socket with a pending read.

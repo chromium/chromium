@@ -22,6 +22,7 @@
 
 namespace net {
 class URLRequest;
+class URLRequestContext;
 }  // namespace net
 
 namespace network {
@@ -41,7 +42,7 @@ class TestURLRequestMaker {
 
  protected:
   net::TestDelegate delegate_;
-  net::TestURLRequestContext context_;
+  std::unique_ptr<net::URLRequestContext> context_;
 };
 
 // TrustTokenRequestHelperTest is a fixture common to tests for Trust Tokens

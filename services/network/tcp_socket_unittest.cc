@@ -29,6 +29,8 @@
 #include "net/socket/server_socket.h"
 #include "net/socket/socket_test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/mojo_socket_test_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -149,7 +151,9 @@ class TestServer {
   TestServer()
       : TestServer(net::IPEndPoint(net::IPAddress::IPv6Localhost(), 0)) {}
   explicit TestServer(const net::IPEndPoint& server_addr)
-      : factory_(nullptr, &url_request_context_),
+      : url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()),
+        factory_(nullptr, url_request_context_.get()),
         readable_handle_watcher_(FROM_HERE,
                                  mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC),
         server_addr_(server_addr) {}
@@ -252,7 +256,7 @@ class TestServer {
     }
   }
 
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   SocketFactory factory_;
   mojo::Remote<mojom::TCPServerSocket> server_socket_;
   std::vector<mojo::Remote<mojom::TCPConnectedSocket>> connected_sockets_;
@@ -270,8 +274,7 @@ class TestServer {
 class TCPSocketTest : public testing::Test {
  public:
   TCPSocketTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        url_request_context_(true) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   TCPSocketTest(const TCPSocketTest&) = delete;
   TCPSocketTest& operator=(const TCPSocketTest&) = delete;
@@ -279,10 +282,12 @@ class TCPSocketTest : public testing::Test {
   ~TCPSocketTest() override {}
 
   void Init(net::ClientSocketFactory* mock_client_socket_factory) {
-    url_request_context_.set_client_socket_factory(mock_client_socket_factory);
-    url_request_context_.Init();
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
+    context_builder->set_client_socket_factory_for_testing(
+        mock_client_socket_factory);
+    url_request_context_ = context_builder->Build();
     factory_ = std::make_unique<SocketFactory>(nullptr /*net_log*/,
-                                               &url_request_context_);
+                                               url_request_context_.get());
   }
 
   void SetUp() override { Init(nullptr); }
@@ -361,7 +366,7 @@ class TCPSocketTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<SocketFactory> factory_;
   TestSocketObserver test_observer_;
   mojo::UniqueReceiverSet<mojom::TCPServerSocket> tcp_server_socket_receiver_;

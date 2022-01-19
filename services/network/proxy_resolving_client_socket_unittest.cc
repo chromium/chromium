@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +31,7 @@
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,25 +42,11 @@ namespace network {
 
 namespace {
 
-class TestURLRequestContextWithProxy : public net::TestURLRequestContext {
- public:
-  explicit TestURLRequestContextWithProxy(
-      const std::string& pac_result,
-      net::ClientSocketFactory* client_socket_factory)
-      : TestURLRequestContext(true) {
-    context_storage_.set_proxy_resolution_service(
-        net::ConfiguredProxyResolutionService::CreateFixedFromPacResult(
-            pac_result, TRAFFIC_ANNOTATION_FOR_TESTS));
-    auto host_resolver = std::make_unique<net::MockCachingHostResolver>(
-        /*cache_invalidation_num=*/0,
-        /*default_result=*/net::MockHostResolverBase::RuleResolver::
-            GetLocalhostResult());
-    context_storage_.set_host_resolver(std::move(host_resolver));
-    set_client_socket_factory(client_socket_factory);
-    Init();
-  }
-  ~TestURLRequestContextWithProxy() override {}
-};
+std::unique_ptr<net::ConfiguredProxyResolutionService>
+CreateProxyResolutionService(base::StringPiece pac_result) {
+  return net::ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      static_cast<std::string>(pac_result), TRAFFIC_ANNOTATION_FOR_TESTS);
+}
 
 }  // namespace
 
@@ -66,10 +54,7 @@ class ProxyResolvingClientSocketTest
     : public testing::Test,
       public testing::WithParamInterface<bool> {
  protected:
-  ProxyResolvingClientSocketTest()
-      : context_with_proxy_("PROXY bad:99; PROXY maybe:80; DIRECT",
-                            &mock_client_socket_factory_),
-        use_tls_(GetParam()) {
+  ProxyResolvingClientSocketTest() : use_tls_(GetParam()) {
     feature_list_.InitWithFeatures(
         // enabled_features
         {net::features::kPartitionConnectionsByNetworkIsolationKey,
@@ -86,9 +71,18 @@ class ProxyResolvingClientSocketTest
     base::RunLoop().RunUntilIdle();
   }
 
+  std::unique_ptr<net::URLRequestContextBuilder> CreateBuilder(
+      base::StringPiece pac_result = "PROXY bad:99; PROXY maybe:80; DIRECT") {
+    auto builder = net::CreateTestURLRequestContextBuilder();
+    builder->set_proxy_resolution_service(
+        CreateProxyResolutionService(pac_result));
+    builder->set_client_socket_factory_for_testing(
+        &mock_client_socket_factory_);
+    return builder;
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  TestURLRequestContextWithProxy context_with_proxy_;
   net::MockClientSocketFactory mock_client_socket_factory_;
   const bool use_tls_;
 };
@@ -107,8 +101,8 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
       kNetworkIsolationKeyOrigin /* top_frame_origin */,
       kNetworkIsolationKeyOrigin /* frame_origin */);
 
-  TestURLRequestContextWithProxy url_request_context(
-      "DIRECT", &mock_client_socket_factory_);
+  auto url_request_context = CreateBuilder("DIRECT")->Build();
+
   const GURL kDestination("https://dest.test/");
   net::StaticSocketDataProvider socket_data;
   mock_client_socket_factory_.AddSocketDataProvider(&socket_data);
@@ -116,7 +110,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_data);
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &url_request_context);
+      url_request_context.get());
   std::unique_ptr<ProxyResolvingClientSocket> socket =
       proxy_resolving_socket_factory.CreateSocket(
           kDestination, kNetworkIsolationKey, use_tls_);
@@ -131,7 +125,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   net::HostResolver::ResolveHostParameters params;
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request1 =
-      url_request_context.host_resolver()->CreateRequest(
+      url_request_context->host_resolver()->CreateRequest(
           kDestinationHostPortPair, kNetworkIsolationKey,
           net::NetLogWithSource(), params);
   net::TestCompletionCallback callback2;
@@ -146,7 +140,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
                                kDestinationOrigin /* frame_origin */)};
   for (const auto& other_nik : kOtherNiks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
-        url_request_context.host_resolver()->CreateRequest(
+        url_request_context->host_resolver()->CreateRequest(
             kDestinationHostPortPair, other_nik, net::NetLogWithSource(),
             params);
     net::TestCompletionCallback callback3;
@@ -171,8 +165,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyWithH2Proxy) {
     return;
   net::SpdySessionDependencies session_deps;
   session_deps.proxy_resolution_service =
-      net::ConfiguredProxyResolutionService::CreateFixedFromPacResult(
-          "HTTPS proxy.test:80", TRAFFIC_ANNOTATION_FOR_TESTS);
+      CreateProxyResolutionService("HTTPS proxy.test:80");
   std::unique_ptr<net::HttpNetworkSession> http_network_session =
       net::SpdySessionDependencies::SpdyCreateSession(&session_deps);
 
@@ -302,8 +295,9 @@ TEST_P(ProxyResolvingClientSocketTest, SocketLimitNotApply) {
     mock_client_socket_factory_.AddSSLSocketDataProvider(ssl_data[i].get());
   }
 
+  auto context = CreateBuilder()->Build();
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
   std::vector<std::unique_ptr<ProxyResolvingClientSocket>> sockets;
   for (int i = 0; i < kNumSockets; ++i) {
     std::unique_ptr<ProxyResolvingClientSocket> socket =
@@ -333,14 +327,9 @@ TEST_P(ProxyResolvingClientSocketTest, ConnectError) {
   };
   const GURL kDestination("https://example.com:443");
   for (auto test : kTestCases) {
-    std::unique_ptr<net::URLRequestContext> context;
-    if (test.is_direct) {
-      context = std::make_unique<TestURLRequestContextWithProxy>(
-          "DIRECT", &mock_client_socket_factory_);
-    } else {
-      context = std::make_unique<TestURLRequestContextWithProxy>(
-          "PROXY myproxy.com:89", &mock_client_socket_factory_);
-    }
+    base::StringPiece pac_result =
+        test.is_direct ? "DIRECT" : "PROXY myproxy.com:89";
+    auto context = CreateBuilder(pac_result)->Build();
     net::StaticSocketDataProvider socket_data;
     socket_data.set_connect_data(net::MockConnect(
         test.is_error_sync ? net::SYNCHRONOUS : net::ASYNC, net::ERR_FAILED));
@@ -373,15 +362,13 @@ TEST_P(ProxyResolvingClientSocketTest, ConnectToProxy) {
   const int kDirectPort = 443;
   for (bool is_direct : {true, false}) {
     net::MockClientSocketFactory socket_factory;
-    std::unique_ptr<net::URLRequestContext> context;
+    std::string pac_result;
     if (is_direct) {
-      context = std::make_unique<TestURLRequestContextWithProxy>(
-          "DIRECT", &mock_client_socket_factory_);
+      pac_result = "DIRECT";
     } else {
-      context = std::make_unique<TestURLRequestContextWithProxy>(
-          base::StringPrintf("PROXY myproxy.com:%d", kProxyPort),
-          &mock_client_socket_factory_);
+      pac_result = base::StringPrintf("PROXY myproxy.com:%d", kProxyPort);
     }
+    auto context = CreateBuilder(pac_result)->Build();
     net::MockRead reads[] = {net::MockRead("HTTP/1.1 200 Success\r\n\r\n")};
     net::MockWrite writes[] = {
         net::MockWrite("CONNECT example.com:443 HTTP/1.1\r\n"
@@ -430,8 +417,7 @@ TEST_P(ProxyResolvingClientSocketTest, SocketDestroyedBeforeConnectComplete) {
   mock_client_socket_factory_.AddSocketDataProvider(&socket_data);
   mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_socket);
 
-  auto context = std::make_unique<TestURLRequestContextWithProxy>(
-      "DIRECT", &mock_client_socket_factory_);
+  auto context = CreateBuilder("DIRECT")->Build();
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
       context.get());
@@ -467,15 +453,13 @@ TEST_P(ProxyResolvingClientSocketTest, ReadWriteErrors) {
   const int kProxyPort = 8009;
   const int kDirectPort = 80;
   for (auto test : kTestCases) {
-    std::unique_ptr<net::URLRequestContext> context;
+    std::string pac_result;
     if (test.is_direct) {
-      context = std::make_unique<TestURLRequestContextWithProxy>(
-          "DIRECT", &mock_client_socket_factory_);
+      pac_result = "DIRECT";
     } else {
-      context = std::make_unique<TestURLRequestContextWithProxy>(
-          base::StringPrintf("PROXY myproxy.com:%d", kProxyPort),
-          &mock_client_socket_factory_);
+      pac_result = base::StringPrintf("PROXY myproxy.com:%d", kProxyPort);
     }
+    auto context = CreateBuilder(pac_result)->Build();
     std::vector<net::MockWrite> writes;
     std::vector<net::MockRead> reads;
     if (!test.is_direct) {
@@ -566,8 +550,9 @@ TEST_P(ProxyResolvingClientSocketTest, ReportsBadProxies) {
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_socket);
 
+  auto context = CreateBuilder()->Build();
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
   std::unique_ptr<ProxyResolvingClientSocket> socket =
       proxy_resolving_socket_factory.CreateSocket(
           kDestination, net::NetworkIsolationKey(), use_tls_);
@@ -578,7 +563,7 @@ TEST_P(ProxyResolvingClientSocketTest, ReportsBadProxies) {
   EXPECT_EQ(net::OK, status);
 
   const net::ProxyRetryInfoMap& retry_info =
-      context_with_proxy_.proxy_resolution_service()->proxy_retry_info();
+      context->proxy_resolution_service()->proxy_retry_info();
 
   EXPECT_EQ(1u, retry_info.size());
   net::ProxyRetryInfoMap::const_iterator iter = retry_info.find("bad:99");
@@ -603,8 +588,9 @@ TEST_P(ProxyResolvingClientSocketTest, ResetSocketAfterTunnelAuth) {
   net::StaticSocketDataProvider kSocketData1(kConnectReads1, kConnectWrites1);
   mock_client_socket_factory_.AddSocketDataProvider(&kSocketData1);
 
+  auto context = CreateBuilder()->Build();
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
   std::unique_ptr<ProxyResolvingClientSocket> socket =
       proxy_resolving_socket_factory.CreateSocket(
           kDestination, net::NetworkIsolationKey(), use_tls_);
@@ -663,10 +649,10 @@ TEST_P(ProxyResolvingClientSocketTest, MultiroundAuth) {
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_socket);
 
+  auto context = CreateBuilder()->Build();
+
   net::HttpAuthCache* auth_cache =
-      context_with_proxy_.http_transaction_factory()
-          ->GetSession()
-          ->http_auth_cache();
+      context->http_transaction_factory()->GetSession()->http_auth_cache();
 
   auth_cache->Add(url::SchemeHostPort(GURL("http://bad:99")),
                   net::HttpAuth::AUTH_PROXY, "test_realm",
@@ -681,7 +667,7 @@ TEST_P(ProxyResolvingClientSocketTest, MultiroundAuth) {
                   net::AuthCredentials(u"user2", u"password2"), std::string());
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
   std::unique_ptr<ProxyResolvingClientSocket> socket =
       proxy_resolving_socket_factory.CreateSocket(
           kDestination, net::NetworkIsolationKey(), use_tls_);
@@ -723,10 +709,10 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_Lookup) {
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_socket);
 
+  auto context = CreateBuilder()->Build();
+
   net::HttpAuthCache* auth_cache =
-      context_with_proxy_.http_transaction_factory()
-          ->GetSession()
-          ->http_auth_cache();
+      context->http_transaction_factory()->GetSession()->http_auth_cache();
 
   // We are adding these credentials at an empty path so that it won't be picked
   // up by the preemptive authentication step and will only be picked up via
@@ -738,7 +724,7 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_Lookup) {
                   net::AuthCredentials(u"user", u"password"), std::string());
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
   std::unique_ptr<ProxyResolvingClientSocket> socket =
       proxy_resolving_socket_factory.CreateSocket(
           kDestination, net::NetworkIsolationKey(), use_tls_);
@@ -752,15 +738,15 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_Lookup) {
 // ProxyResolvingClientSocketFactory uses the latest cache for creating new
 // sockets.
 TEST_P(ProxyResolvingClientSocketTest, FactoryUsesLatestHTTPAuthCache) {
+  auto context = CreateBuilder()->Build();
+
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
 
   // After creating |socket_factory|, updates the auth cache with credentials.
   // New socket connections should pick up this change.
   net::HttpAuthCache* auth_cache =
-      context_with_proxy_.http_transaction_factory()
-          ->GetSession()
-          ->http_auth_cache();
+      context->http_transaction_factory()->GetSession()->http_auth_cache();
 
   // We are adding these credentials at an empty path so that it won't be picked
   // up by the preemptive authentication step and will only be picked up via
@@ -824,10 +810,10 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_Preemptive) {
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_socket);
 
+  auto context = CreateBuilder()->Build();
+
   net::HttpAuthCache* auth_cache =
-      context_with_proxy_.http_transaction_factory()
-          ->GetSession()
-          ->http_auth_cache();
+      context->http_transaction_factory()->GetSession()->http_auth_cache();
 
   auth_cache->Add(url::SchemeHostPort(GURL("http://bad:99")),
                   net::HttpAuth::AUTH_PROXY, "test_realm",
@@ -836,7 +822,7 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_Preemptive) {
                   net::AuthCredentials(u"user", u"password"), "/");
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
   std::unique_ptr<ProxyResolvingClientSocket> socket =
       proxy_resolving_socket_factory.CreateSocket(
           kDestination, net::NetworkIsolationKey(), use_tls_);
@@ -864,8 +850,10 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_NoCredentials) {
   net::StaticSocketDataProvider kSocketData(kConnectReads, kConnectWrites);
   mock_client_socket_factory_.AddSocketDataProvider(&kSocketData);
 
+  auto context = CreateBuilder()->Build();
+
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
   std::unique_ptr<ProxyResolvingClientSocket> socket =
       proxy_resolving_socket_factory.CreateSocket(
           kDestination, net::NetworkIsolationKey(), use_tls_);
@@ -879,7 +867,7 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_NoCredentials) {
 TEST_P(ProxyResolvingClientSocketTest, URLSanitized) {
   GURL url("http://username:password@www.example.com:79/?ref#hash#hash");
 
-  auto context = std::make_unique<net::TestURLRequestContext>(true);
+  auto context_builder = CreateBuilder();
   net::ProxyConfig proxy_config;
   proxy_config.set_pac_url(GURL("http://foopy/proxy.pac"));
   proxy_config.set_pac_mandatory(true);
@@ -888,14 +876,14 @@ TEST_P(ProxyResolvingClientSocketTest, URLSanitized) {
       std::make_unique<net::MockAsyncProxyResolverFactory>(false);
   net::MockAsyncProxyResolverFactory* proxy_resolver_factory_raw =
       proxy_resolver_factory.get();
-  net::ConfiguredProxyResolutionService service(
-      std::make_unique<net::ProxyConfigServiceFixed>(
-          net::ProxyConfigWithAnnotation(proxy_config,
-                                         TRAFFIC_ANNOTATION_FOR_TESTS)),
-      std::move(proxy_resolver_factory), nullptr,
-      true /* quick_check_enabled */);
-  context->set_proxy_resolution_service(&service);
-  context->Init();
+  context_builder->set_proxy_resolution_service(
+      std::make_unique<net::ConfiguredProxyResolutionService>(
+          std::make_unique<net::ProxyConfigServiceFixed>(
+              net::ProxyConfigWithAnnotation(proxy_config,
+                                             TRAFFIC_ANNOTATION_FOR_TESTS)),
+          std::move(proxy_resolver_factory), nullptr,
+          /*quick_check_enabled=*/true));
+  auto context = context_builder->Build();
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
       context.get());
@@ -924,7 +912,7 @@ TEST_P(ProxyResolvingClientSocketTest,
        SocketDestroyedBeforeProxyResolutionCompletes) {
   GURL url("http://www.example.com:79");
 
-  auto context = std::make_unique<net::TestURLRequestContext>(true);
+  auto context_builder = CreateBuilder();
   net::ProxyConfig proxy_config;
   proxy_config.set_pac_url(GURL("http://foopy/proxy.pac"));
   proxy_config.set_pac_mandatory(true);
@@ -933,14 +921,14 @@ TEST_P(ProxyResolvingClientSocketTest,
       std::make_unique<net::MockAsyncProxyResolverFactory>(false);
   net::MockAsyncProxyResolverFactory* proxy_resolver_factory_raw =
       proxy_resolver_factory.get();
-  net::ConfiguredProxyResolutionService service(
-      std::make_unique<net::ProxyConfigServiceFixed>(
-          net::ProxyConfigWithAnnotation(proxy_config,
-                                         TRAFFIC_ANNOTATION_FOR_TESTS)),
-      std::move(proxy_resolver_factory), nullptr,
-      true /* quick_check_enabled */);
-  context->set_proxy_resolution_service(&service);
-  context->Init();
+  context_builder->set_proxy_resolution_service(
+      std::make_unique<net::ConfiguredProxyResolutionService>(
+          std::make_unique<net::ProxyConfigServiceFixed>(
+              net::ProxyConfigWithAnnotation(proxy_config,
+                                             TRAFFIC_ANNOTATION_FOR_TESTS)),
+          std::move(proxy_resolver_factory), nullptr,
+          /*quick_check_enabled=*/true));
+  auto context = context_builder->Build();
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
       context.get());
@@ -962,20 +950,20 @@ TEST_P(ProxyResolvingClientSocketTest,
 TEST_P(ProxyResolvingClientSocketTest, NoSupportedProxies) {
   const GURL kDestination("https://example.com:443");
 
-  auto context = std::make_unique<net::TestURLRequestContext>(true);
+  auto context_builder = CreateBuilder();
   net::ProxyConfig proxy_config;
   // Use an unsupported proxy scheme.
   proxy_config.proxy_rules().ParseFromString("quic://foopy:8080");
   auto proxy_resolver_factory =
       std::make_unique<net::MockAsyncProxyResolverFactory>(false);
-  net::ConfiguredProxyResolutionService service(
-      std::make_unique<net::ProxyConfigServiceFixed>(
-          net::ProxyConfigWithAnnotation(proxy_config,
-                                         TRAFFIC_ANNOTATION_FOR_TESTS)),
-      std::move(proxy_resolver_factory), nullptr,
-      true /* quick_check_enabled */);
-  context->set_proxy_resolution_service(&service);
-  context->Init();
+  context_builder->set_proxy_resolution_service(
+      std::make_unique<net::ConfiguredProxyResolutionService>(
+          std::make_unique<net::ProxyConfigServiceFixed>(
+              net::ProxyConfigWithAnnotation(proxy_config,
+                                             TRAFFIC_ANNOTATION_FOR_TESTS)),
+          std::move(proxy_resolver_factory), nullptr,
+          /*quick_check_enabled=*/true));
+  auto context = context_builder->Build();
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
       context.get());
@@ -992,17 +980,11 @@ class ReconsiderProxyAfterErrorTest
     : public testing::Test,
       public testing::WithParamInterface<::testing::tuple<bool, bool, int>> {
  public:
-  ReconsiderProxyAfterErrorTest()
-      : context_with_proxy_(
-            "HTTPS badproxy:99; HTTPS badfallbackproxy:98; DIRECT",
-            &mock_client_socket_factory_),
-        use_tls_(::testing::get<0>(GetParam())) {}
-
-  ~ReconsiderProxyAfterErrorTest() override {}
+  ReconsiderProxyAfterErrorTest() : use_tls_(::testing::get<0>(GetParam())) {}
+  ~ReconsiderProxyAfterErrorTest() override = default;
 
   base::test::TaskEnvironment task_environment_;
   net::MockClientSocketFactory mock_client_socket_factory_;
-  TestURLRequestContextWithProxy context_with_proxy_;
   const bool use_tls_;
 };
 
@@ -1030,11 +1012,15 @@ TEST_P(ReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
   net::IoMode io_mode =
       ::testing::get<1>(GetParam()) ? net::SYNCHRONOUS : net::ASYNC;
   const int mock_error = ::testing::get<2>(GetParam());
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_proxy_resolution_service(CreateProxyResolutionService(
+      "HTTPS badproxy:99; HTTPS badfallbackproxy:98; DIRECT"));
+  context_builder->set_client_socket_factory_for_testing(
+      &mock_client_socket_factory_);
+  auto context = context_builder->Build();
 
   // Before starting the test, verify that there are no proxies marked as bad.
-  ASSERT_TRUE(context_with_proxy_.proxy_resolution_service()
-                  ->proxy_retry_info()
-                  .empty())
+  ASSERT_TRUE(context->proxy_resolution_service()->proxy_retry_info().empty())
       << mock_error;
 
   // Configure the HTTP CONNECT to fail with `mock_error`.
@@ -1072,7 +1058,7 @@ TEST_P(ReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
 
   const GURL kDestination("https://example.com:443");
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      &context_with_proxy_);
+      context.get());
   std::unique_ptr<ProxyResolvingClientSocket> socket =
       proxy_resolving_socket_factory.CreateSocket(
           kDestination, net::NetworkIsolationKey(), use_tls_);
@@ -1083,7 +1069,7 @@ TEST_P(ReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
   EXPECT_EQ(net::OK, status);
 
   const net::ProxyRetryInfoMap& retry_info =
-      context_with_proxy_.proxy_resolution_service()->proxy_retry_info();
+      context->proxy_resolution_service()->proxy_retry_info();
   EXPECT_EQ(2u, retry_info.size()) << mock_error;
   EXPECT_NE(retry_info.end(), retry_info.find("https://badproxy:99"));
   EXPECT_NE(retry_info.end(), retry_info.find("https://badfallbackproxy:98"));

@@ -19,6 +19,7 @@
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -1857,7 +1858,8 @@ const TestScenario kScenarios[] = {
 class ResponseAnalyzerTest : public testing::Test,
                              public testing::WithParamInterface<TestScenario> {
  public:
-  ResponseAnalyzerTest() = default;
+  ResponseAnalyzerTest()
+      : context_(net::CreateTestURLRequestContextBuilder()->Build()) {}
 
   ResponseAnalyzerTest(const ResponseAnalyzerTest&) = delete;
   ResponseAnalyzerTest& operator=(const ResponseAnalyzerTest&) = delete;
@@ -1893,9 +1895,9 @@ class ResponseAnalyzerTest : public testing::Test,
                              std::unique_ptr<ResponseAnalyzer> analyzer) {
     TestScenario scenario = GetParam();
     // Initialize |request| from the parameters.
-    std::unique_ptr<net::URLRequest> request =
-        context_.CreateRequest(GURL(scenario.target_url), net::DEFAULT_PRIORITY,
-                               &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS);
+    std::unique_ptr<net::URLRequest> request = context_->CreateRequest(
+        GURL(scenario.target_url), net::DEFAULT_PRIORITY, &delegate_,
+        TRAFFIC_ANNOTATION_FOR_TESTS);
     request->set_initiator(
         url::Origin::Create(GURL(scenario.initiator_origin)));
 
@@ -2001,7 +2003,7 @@ class ResponseAnalyzerTest : public testing::Test,
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  net::TestURLRequestContext context_;
+  std::unique_ptr<net::URLRequestContext> context_;
   net::TestDelegate delegate_;
 };  // namespace network
 

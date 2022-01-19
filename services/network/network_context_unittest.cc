@@ -167,6 +167,7 @@ namespace network {
 
 namespace {
 
+using net::CreateTestURLRequestContextBuilder;
 using ::testing::Optional;
 
 constexpr char kMockHost[] = "mock.host";
@@ -391,6 +392,33 @@ class MockP2PTrustedSocketManagerClient
                   bool incoming) override {}
 };
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
+
+class HostResolverFactory final : public net::HostResolver::Factory {
+ public:
+  explicit HostResolverFactory(std::unique_ptr<net::HostResolver> resolver)
+      : resolver_(std::move(resolver)) {}
+
+  std::unique_ptr<net::HostResolver> CreateResolver(
+      net::HostResolverManager* manager,
+      base::StringPiece host_mapping_rules,
+      bool enable_caching) override {
+    DCHECK(resolver_);
+    return std::move(resolver_);
+  }
+
+  // See HostResolver::CreateStandaloneResolver.
+  std::unique_ptr<net::HostResolver> CreateStandaloneResolver(
+      net::NetLog* net_log,
+      const net::HostResolver::ManagerOptions& options,
+      base::StringPiece host_mapping_rules,
+      bool enable_caching) override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+ private:
+  std::unique_ptr<net::HostResolver> resolver_;
+};
 
 class NetworkContextTest : public testing::Test {
  public:
@@ -1311,14 +1339,12 @@ TEST_F(NetworkContextTest, CertReporting) {
 
 // Test that host resolution error information is available.
 TEST_F(NetworkContextTest, HostResolutionFailure) {
+  auto context_builder = CreateTestURLRequestContextBuilder();
   std::unique_ptr<net::MockHostResolver> resolver =
       std::make_unique<net::MockHostResolver>();
-  std::unique_ptr<net::TestURLRequestContext> url_request_context =
-      std::make_unique<net::TestURLRequestContext>(
-          true /* delay_initialization */);
-  url_request_context->set_host_resolver(resolver.get());
   resolver->rules()->AddSimulatedTimeoutFailure("*");
-  url_request_context->Init();
+  context_builder->set_host_resolver(std::move(resolver));
+  auto url_request_context = context_builder->Build();
 
   network_context_remote_.reset();
   std::unique_ptr<NetworkContext> network_context =
@@ -1366,13 +1392,13 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   ASSERT_TRUE(ip_address.AssignFromIPLiteral("1.2.3.4"));
   net::NetworkIsolationKey network_isolation_key =
       net::NetworkIsolationKey::CreateTransient();
-  net::MockCachingHostResolver host_resolver;
-  std::unique_ptr<net::TestURLRequestContext> url_request_context =
-      std::make_unique<net::TestURLRequestContext>(
-          true /* delay_initialization */);
-  url_request_context->set_host_resolver(&host_resolver);
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(
+      std::make_unique<net::MockCachingHostResolver>());
+  auto url_request_context = context_builder->Build();
+  auto& host_resolver = *static_cast<net::MockCachingHostResolver*>(
+      url_request_context->host_resolver());
   host_resolver.rules()->AddRule(kHostname, ip_address.ToString());
-  url_request_context->Init();
 
   network_context_remote_.reset();
   std::unique_ptr<NetworkContext> network_context =
@@ -3315,11 +3341,12 @@ class TestResolveHostClient : public ResolveHostClientBase {
 TEST_F(NetworkContextTest, ResolveHost_Sync) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("sync.test", "1.2.3.4");
+  resolver->set_synchronous_mode(true);
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
+
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  network_context->url_request_context()->set_host_resolver(resolver.get());
-  resolver->set_synchronous_mode(true);
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3347,11 +3374,11 @@ TEST_F(NetworkContextTest, ResolveHost_Sync) {
 TEST_F(NetworkContextTest, ResolveHost_Async) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("async.test", "1.2.3.4");
+  resolver->set_synchronous_mode(false);
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  network_context->url_request_context()->set_host_resolver(resolver.get());
-  resolver->set_synchronous_mode(false);
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3384,12 +3411,12 @@ TEST_F(NetworkContextTest, ResolveHost_Async) {
 
 TEST_F(NetworkContextTest, ResolveHost_Failure_Sync) {
   auto resolver = std::make_unique<net::MockHostResolver>();
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  network_context->url_request_context()->set_host_resolver(resolver.get());
   resolver->rules()->AddSimulatedTimeoutFailure("example.com");
   resolver->set_synchronous_mode(true);
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3415,12 +3442,12 @@ TEST_F(NetworkContextTest, ResolveHost_Failure_Sync) {
 
 TEST_F(NetworkContextTest, ResolveHost_Failure_Async) {
   auto resolver = std::make_unique<net::MockHostResolver>();
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  network_context->url_request_context()->set_host_resolver(resolver.get());
   resolver->rules()->AddSimulatedTimeoutFailure("example.com");
   resolver->set_synchronous_mode(false);
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3454,12 +3481,13 @@ TEST_F(NetworkContextTest, ResolveHost_NetworkIsolationKey) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
 
-  net::MockHostResolver resolver;
-  resolver.rules()->AddRule("nik.test", "1.2.3.4");
+  auto resolver = std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule("nik.test", "1.2.3.4");
+  net::MockHostResolver* raw_resolver = resolver.get();
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  network_context->url_request_context()->set_host_resolver(&resolver);
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3482,7 +3510,7 @@ TEST_F(NetworkContextTest, ResolveHost_NetworkIsolationKey) {
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
   EXPECT_EQ(kNetworkIsolationKey,
-            resolver.last_request_network_isolation_key());
+            raw_resolver->last_request_network_isolation_key());
 }
 
 TEST_F(NetworkContextTest, ResolveHost_NoControlHandle) {
@@ -4628,14 +4656,12 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(test_server.Start());
 
-  std::unique_ptr<net::MockHostResolver> resolver =
-      std::make_unique<net::MockHostResolver>();
-  resolver->rules()->AddRule("example.test", test_server.GetIPLiteralString());
-  std::unique_ptr<net::TestURLRequestContext> url_request_context =
-      std::make_unique<net::TestURLRequestContext>(
-          true /* delay_initialization */);
-  url_request_context->set_host_resolver(resolver.get());
-  url_request_context->Init();
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::make_unique<net::MockHostResolver>());
+  auto url_request_context = context_builder->Build();
+  auto& resolver = *static_cast<net::MockHostResolver*>(
+      url_request_context->host_resolver());
+  resolver.rules()->AddRule("example.test", test_server.GetIPLiteralString());
 
   network_context_remote_.reset();
   std::unique_ptr<NetworkContext> network_context =
@@ -4670,10 +4696,10 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
     client.RunUntilComplete();
     if (disable_secure_dns) {
       EXPECT_EQ(net::SecureDnsPolicy::kDisable,
-                resolver->last_secure_dns_policy());
+                resolver.last_secure_dns_policy());
     } else {
       EXPECT_EQ(net::SecureDnsPolicy::kAllow,
-                resolver->last_secure_dns_policy());
+                resolver.last_secure_dns_policy());
     }
   }
 }
@@ -4686,18 +4712,18 @@ TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(test_server.Start());
 
-  net::MockHostResolver resolver;
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::make_unique<net::MockHostResolver>());
+  auto url_request_context = context_builder->Build();
+  auto& resolver = *static_cast<net::MockHostResolver*>(
+      url_request_context->host_resolver());
   resolver.rules()->AddRule("example.test", test_server.GetIPLiteralString());
-  net::TestURLRequestContext url_request_context(
-      true /* delay_initialization */);
-  url_request_context.set_host_resolver(&resolver);
-  url_request_context.Init();
 
   network_context_remote_.reset();
   NetworkContext network_context(
       network_service_.get(),
       network_context_remote_.BindNewPipeAndPassReceiver(),
-      &url_request_context,
+      url_request_context.get(),
       /*cors_exempt_header_list=*/std::vector<std::string>());
 
   for (bool disable_secure_dns : {false, true}) {

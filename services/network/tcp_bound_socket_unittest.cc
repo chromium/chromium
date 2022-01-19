@@ -27,6 +27,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/mojo_socket_test_util.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -41,7 +43,9 @@ class TCPBoundSocketTest : public testing::Test {
  public:
   TCPBoundSocketTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        factory_(nullptr /* net_log */, &url_request_context_) {}
+        url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()),
+        factory_(/*net_log=*/nullptr, url_request_context_.get()) {}
 
   TCPBoundSocketTest(const TCPBoundSocketTest&) = delete;
   TCPBoundSocketTest& operator=(const TCPBoundSocketTest&) = delete;
@@ -198,7 +202,7 @@ class TCPBoundSocketTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   SocketFactory factory_;
 };
 
