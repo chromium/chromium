@@ -170,6 +170,9 @@ void ServiceWorkerNewScriptFetcher::OnComplete(
   // header and the body.
   if (status.error_code == net::OK) {
     mojo::ReportBadMessage("SWNSF_BAD_OK");
+    // Do not continue with further script processing, but let the |callback_|
+    // hang. This renderer process would be killed soon anyways.
+    return;
   }
   std::move(callback_).Run(/*main_script_load_params=*/nullptr);
 }
