@@ -8,6 +8,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user_info.h"
@@ -33,4 +34,11 @@ void PersonalizationAppUserProviderImpl::GetUserInfo(
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
   std::move(callback).Run(ash::personalization_app::UserDisplayInfo(*user));
+}
+
+void PersonalizationAppUserProviderImpl::GetDefaultUserImages(
+    GetDefaultUserImagesCallback callback) {
+  std::vector<ash::default_user_image::DefaultUserImage> images =
+      ash::default_user_image::GetCurrentImageSet();
+  std::move(callback).Run(std::move(images));
 }

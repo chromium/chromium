@@ -9,8 +9,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "ash/public/cpp/default_user_image.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace base {
 class ListValue;
@@ -61,7 +64,7 @@ extern const int kHistogramImagesCount;
 // Returns the URL to a default user image with the specified index. If the
 // index is invalid, returns the default user image for index 0 (anonymous
 // avatar image).
-std::string GetDefaultImageUrl(int index);
+GURL GetDefaultImageUrl(int index);
 
 // Checks if the given URL points to one of the default images. If it is,
 // returns true and its index through `image_id`. If not, returns false.
@@ -82,9 +85,10 @@ bool IsValidIndex(int index);
 // Returns true if `index` is a in the current set of default images.
 bool IsInCurrentImageSet(int index);
 
-// Returns a list of dictionary values with url and title properties set for
-// each default user image in the current set.
-std::unique_ptr<base::ListValue> GetCurrentImageSet();
+// Returns a vector of current |DefaultUserImage|.
+std::vector<DefaultUserImage> GetCurrentImageSet();
+
+std::unique_ptr<base::ListValue> GetCurrentImageSetAsListValue();
 
 // Returns the source info of the default user image with specified index.
 // Returns nullopt if there is no source info.

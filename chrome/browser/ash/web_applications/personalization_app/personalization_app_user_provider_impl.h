@@ -36,6 +36,8 @@ class PersonalizationAppUserProviderImpl
   // personalization_app::mojom::UserProvider:
   void GetUserInfo(GetUserInfoCallback callback) override;
 
+  void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
+
  private:
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;

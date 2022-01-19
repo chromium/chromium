@@ -33,4 +33,7 @@ void FakePersonalizationAppUserProvider::GetUserInfo(
   std::move(callback).Run(std::move(display_info));
 }
 
+void FakePersonalizationAppUserProvider::GetDefaultUserImages(
+    GetDefaultUserImagesCallback callback) {}
+
 }  // namespace ash

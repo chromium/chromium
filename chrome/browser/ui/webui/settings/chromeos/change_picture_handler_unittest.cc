@@ -92,7 +92,8 @@ class ChangePictureHandlerTest : public testing::Test {
 
   void SelectNewDefaultImage(int default_image_index) {
     base::ListValue args;
-    args.Append(default_user_image::GetDefaultImageUrl(default_image_index));
+    args.Append(
+        default_user_image::GetDefaultImageUrl(default_image_index).spec());
     args.Append("default");
 
     web_ui_->HandleReceivedMessage("selectImage", &args);

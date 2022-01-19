@@ -5,6 +5,7 @@
 module ash.personalization_app.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 // This should be kept in sync with |ash::WallpaperLayout|
@@ -240,8 +241,22 @@ struct UserInfo {
   url.mojom.Url avatar;
 };
 
+struct DefaultUserImage {
+  // A user image is identified by an index.
+  int32 index;
+
+  // The title of the image to display to the user.
+  mojo_base.mojom.String16 title;
+
+  // A url to display the image. Typically |chrome://theme/IDR_LOGIN_DEFAULT_X|.
+  url.mojom.Url url;
+};
+
 // Provides APIs to view information about the current user.
 interface UserProvider {
   // Return information about the current user.
   GetUserInfo() => (UserInfo user_info);
+
+  // Returns an array of default user images to choose from.
+  GetDefaultUserImages() => (array<DefaultUserImage> default_user_images);
 };

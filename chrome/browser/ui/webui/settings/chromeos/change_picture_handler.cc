@@ -157,7 +157,7 @@ void ChangePictureHandler::OnJavascriptDisallowed() {
 void ChangePictureHandler::SendDefaultImages() {
   base::DictionaryValue result;
   std::unique_ptr<base::ListValue> current_default_images =
-      default_user_image::GetCurrentImageSet();
+      default_user_image::GetCurrentImageSetAsListValue();
   result.SetKey(
       "current_default_images",
       base::Value::FromUniquePtrValue(std::move(current_default_images)));
@@ -268,7 +268,8 @@ void ChangePictureHandler::SendSelectedImage() {
       if (default_user_image::IsInCurrentImageSet(previous_image_index_)) {
         // User has image from the current set of default images.
         base::Value image_url(
-            default_user_image::GetDefaultImageUrl(previous_image_index_));
+            default_user_image::GetDefaultImageUrl(previous_image_index_)
+                .spec());
         FireWebUIListener("selected-image-changed", image_url);
       } else {
         // User has a deprecated default image, send it for preview.
@@ -277,8 +278,9 @@ void ChangePictureHandler::SendSelectedImage() {
         previous_image_format_ = user_manager::UserImage::FORMAT_UNKNOWN;
 
         base::DictionaryValue result;
-        result.SetStringPath("url", default_user_image::GetDefaultImageUrl(
-                                        previous_image_index_));
+        result.SetStringPath(
+            "url", default_user_image::GetDefaultImageUrl(previous_image_index_)
+                       .spec());
         auto source_info = default_user_image::GetDefaultImageSourceInfo(
             previous_image_index_);
         if (source_info.has_value()) {

@@ -45,6 +45,10 @@ mojom("mojom") {
           cpp = "ash::personalization_app::UserDisplayInfo"
           move_only = true
         },
+        {
+          mojom = "ash.personalization_app.mojom.DefaultUserImage"
+          cpp = "ash::default_user_image::DefaultUserImage"
+        },
       ]
       traits_headers = [ "personalization_app_mojom_traits.h" ]
       traits_sources = [ "personalization_app_mojom_traits.cc" ]

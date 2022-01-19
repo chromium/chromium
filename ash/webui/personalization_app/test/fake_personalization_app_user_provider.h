@@ -40,6 +40,7 @@ class FakePersonalizationAppUserProvider
 
   // personalization_app::mojom::UserProvider
   void GetUserInfo(GetUserInfoCallback callback) override;
+  void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::UserProvider> user_receiver_{

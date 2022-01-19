@@ -7,9 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/default_user_image.h"
 #include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
@@ -266,6 +267,35 @@ bool StructTraits<ash::personalization_app::mojom::UserInfoDataView,
          ash::personalization_app::UserDisplayInfo* out) {
   return data.ReadEmail(&out->email) && data.ReadName(&out->name) &&
          data.ReadAvatar(&out->avatar);
+}
+
+int StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+                 ash::default_user_image::DefaultUserImage>::
+    index(const ash::default_user_image::DefaultUserImage& default_user_image) {
+  return default_user_image.index;
+}
+
+const std::u16string&
+StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+             ash::default_user_image::DefaultUserImage>::
+    title(const ash::default_user_image::DefaultUserImage& default_user_image) {
+  return default_user_image.title;
+}
+
+const GURL&
+StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+             ash::default_user_image::DefaultUserImage>::
+    url(const ash::default_user_image::DefaultUserImage& default_user_image) {
+  return default_user_image.url;
+}
+
+bool StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+                  ash::default_user_image::DefaultUserImage>::
+    Read(ash::personalization_app::mojom::DefaultUserImageDataView data,
+         ash::default_user_image::DefaultUserImage* out) {
+  out->index = data.index();
+
+  return data.ReadTitle(&out->title) && data.ReadUrl(&out->url);
 }
 
 }  // namespace mojo
