@@ -66,7 +66,7 @@ class ShareMenuControllerTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     url_ = embedded_test_server()->GetURL("/title2.html");
-    AddTabAtIndex(0, url_, ui::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(0, url_, ui::PAGE_TRANSITION_TYPED));
     controller_.reset([[ShareMenuController alloc] init]);
   }
 
