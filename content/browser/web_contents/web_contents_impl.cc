@@ -1354,12 +1354,6 @@ void WebContentsImpl::ForEachFrame(
   }
 }
 
-int WebContentsImpl::SendToAllFrames(IPC::Message* message) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SendToAllFrames");
-  return SendToAllFramesImpl(primary_frame_tree_, /*include_pending=*/false,
-                             message);
-}
-
 int WebContentsImpl::SendToAllFramesIncludingPending(IPC::Message* message) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::SentToAllFramesIncludingPending");

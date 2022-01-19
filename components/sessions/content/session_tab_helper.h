@@ -6,6 +6,7 @@
 #define COMPONENTS_SESSIONS_CONTENT_SESSION_TAB_HELPER_H_
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,6 +23,8 @@ class SESSIONS_EXPORT SessionTabHelper
  public:
   using DelegateLookup =
       base::RepeatingCallback<SessionTabHelperDelegate*(content::WebContents*)>;
+  using WindowIdChangedCallbackList =
+      base::RepeatingCallbackList<void(const SessionID& id)>;
 
   SessionTabHelper(const SessionTabHelper&) = delete;
   SessionTabHelper& operator=(const SessionTabHelper&) = delete;
@@ -53,6 +56,9 @@ class SESSIONS_EXPORT SessionTabHelper
   // WebContents has no SessionTabHelper.
   static SessionID IdForWindowContainingTab(const content::WebContents* tab);
 
+  base::CallbackListSubscription RegisterForWindowIdChanged(
+      WindowIdChangedCallbackList::CallbackType callback);
+
   // content::WebContentsObserver:
   void UserAgentOverrideSet(
       const blink::UserAgentOverride& ua_override) override;
@@ -69,6 +75,8 @@ class SESSIONS_EXPORT SessionTabHelper
   SessionTabHelper(content::WebContents* contents, DelegateLookup lookup);
 
   sessions::SessionTabHelperDelegate* GetDelegate();
+
+  WindowIdChangedCallbackList window_id_changed_callbacks_;
 
   DelegateLookup delegate_lookup_;
 

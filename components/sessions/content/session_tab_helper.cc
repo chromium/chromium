@@ -11,11 +11,6 @@
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/extension_messages.h"
-#endif
 
 namespace sessions {
 
@@ -31,13 +26,7 @@ SessionTabHelper::~SessionTabHelper() = default;
 
 void SessionTabHelper::SetWindowID(const SessionID& id) {
   window_id_ = id;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Extension code in the renderer holds the ID of the window that hosts it.
-  // Notify it that the window ID changed.
-  web_contents()->SendToAllFrames(
-      new ExtensionMsg_UpdateBrowserWindowId(MSG_ROUTING_NONE, id.id()));
-#endif
+  window_id_changed_callbacks_.Notify(id);
 }
 
 // static
@@ -55,6 +44,11 @@ SessionID SessionTabHelper::IdForWindowContainingTab(
       tab ? SessionTabHelper::FromWebContents(tab) : nullptr;
   return session_tab_helper ? session_tab_helper->window_id()
                             : SessionID::InvalidValue();
+}
+
+base::CallbackListSubscription SessionTabHelper::RegisterForWindowIdChanged(
+    WindowIdChangedCallbackList::CallbackType callback) {
+  return window_id_changed_callbacks_.Add(std::move(callback));
 }
 
 void SessionTabHelper::UserAgentOverrideSet(

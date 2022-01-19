@@ -347,7 +347,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       int frame_tree_node_id) override;
   void ForEachFrame(
       const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) override;
-  int SendToAllFrames(IPC::Message* message) override;
   void ForEachRenderFrameHost(
       RenderFrameHost::FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(

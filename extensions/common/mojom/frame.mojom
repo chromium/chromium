@@ -101,6 +101,9 @@ interface LocalFrame {
                            string extension_id,
                            string script_id,
                            url.mojom.Url url);
+
+  // Tell the render view which browser window it's being attached to.
+  UpdateBrowserWindowId(int32 window_id);
 };
 
 // Implemented in the browser, this interface defines the local frame host

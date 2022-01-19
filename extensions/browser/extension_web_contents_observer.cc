@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 
 #include "base/check.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -62,6 +63,18 @@ ExtensionWebContentsObserver::CreateExtensionFrameHost(
   return std::make_unique<ExtensionFrameHost>(web_contents);
 }
 
+void ExtensionWebContentsObserver::ListenToWindowIdChangesFrom(
+    sessions::SessionTabHelper* helper) {
+  if (!window_id_subscription_) {
+    // We use an unretained receiver here: the callback is inside the
+    // subscription, which is a member of |this|, so it can't be run after the
+    // destruction of |this|.
+    window_id_subscription_ = helper->RegisterForWindowIdChanged(
+        base::BindRepeating(&ExtensionWebContentsObserver::OnWindowIdChanged,
+                            base::Unretained(this)));
+  }
+}
+
 void ExtensionWebContentsObserver::Initialize() {
   if (initialized_)
     return;
@@ -79,6 +92,13 @@ void ExtensionWebContentsObserver::Initialize() {
           observer->InitializeRenderFrame(render_frame_host);
       },
       this));
+
+  // It would be ideal if SessionTabHelper was created before this object,
+  // because then we could start observing it here instead of needing to be
+  // externally notified when it is created, but it isn't. If that ordering ever
+  // changes, this code can be restructured and ListenToWindowIdChangesFrom()
+  // can become private.
+  DCHECK(!sessions::SessionTabHelper::FromWebContents(web_contents()));
 }
 
 ExtensionWebContentsObserver::ExtensionWebContentsObserver(
@@ -341,6 +361,17 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
         remote.BindNewEndpointAndPassReceiver());
   }
   return remote.get();
+}
+
+void ExtensionWebContentsObserver::OnWindowIdChanged(const SessionID& id) {
+  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
+      [](int32_t window_id, ExtensionWebContentsObserver* observer,
+         content::RenderFrameHost* rfh) {
+        auto* local_frame = observer->GetLocalFrame(rfh);
+        if (local_frame)
+          local_frame->UpdateBrowserWindowId(window_id);
+      },
+      id.id(), base::Unretained(this)));
 }
 
 }  // namespace extensions

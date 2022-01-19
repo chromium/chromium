@@ -311,10 +311,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_DispatchEvent,
                      extensions::mojom::DispatchEventParams /* params */,
                      base::ListValue /* event_args */)
 
-// Tell the render view which browser window it's being attached to.
-IPC_MESSAGE_ROUTED1(ExtensionMsg_UpdateBrowserWindowId,
-                    int /* id of browser window */)
-
 // The browser's response to the ExtensionMsg_WakeEventPage IPC.
 IPC_MESSAGE_CONTROL2(ExtensionMsg_WakeEventPageResponse,
                      int /* request_id */,

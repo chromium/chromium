@@ -426,11 +426,6 @@ class WebContents : public PageNavigator,
   virtual void ForEachFrame(
       const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) = 0;
 
-  // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
-  // Sends the given IPC to all live frames in this WebContents and returns the
-  // number of sent messages (i.e. the number of processed frames).
-  virtual int SendToAllFrames(IPC::Message* message) = 0;
-
   // Calls |on_frame| for every RenderFrameHost in this WebContents. Note that
   // this includes RenderFrameHosts that are not descended from the primary main
   // frame (e.g. bfcached pages and prerendered pages). The order of traversal
