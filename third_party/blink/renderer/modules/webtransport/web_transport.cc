@@ -1165,6 +1165,10 @@ void WebTransport::Init(const String& url,
               hash->algorithm(), value_builder.ToString()));
     }
   }
+  if (!fingerprints.IsEmpty()) {
+    execution_context->CountUse(
+        WebFeature::kWebTransportServerCertificateHashes);
+  }
 
   if (auto* scheduler = execution_context->GetScheduler()) {
     feature_handle_for_scheduler_ = scheduler->RegisterFeature(

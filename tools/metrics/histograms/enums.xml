@@ -36783,6 +36783,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4109" label="WebAppManifestHandleLinks"/>
   <int value="4110" label="HTMLParamElementURLParameterInUsePdf"/>
   <int value="4111" label="HTMLParamElementURLParameterInUseNonPdf"/>
+  <int value="4112" label="WebTransportServerCertificateHashes"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
