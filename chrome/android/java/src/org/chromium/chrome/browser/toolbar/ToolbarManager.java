@@ -1828,6 +1828,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     private void updateBookmarkButtonStatus() {
+        if (mBookmarkBridgeSupplier == null) return;
         Tab currentTab = mLocationBarModel.getTab();
         BookmarkBridge bridge = mBookmarkBridgeSupplier.get();
         boolean isBookmarked =
