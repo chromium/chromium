@@ -89,11 +89,11 @@ class BASE_EXPORT PartitionAddressSpace {
   // Initialize the GigaCage and the Pools inside of it.
   // This function must only be called from the main thread.
   static void Init();
-  // Initialize the ConfigurablePool at the given address.  The address must be
-  // aligned to the size of the pool. The size must be a power of two and must
-  // be within [ConfigurablePoolMinSize(), ConfigurablePoolMaxSize()]. This
+  // Initialize the ConfigurablePool at the given address |pool_base|. It must
+  // be aligned to the size of the pool. The size must be a power of two and
+  // must be within [ConfigurablePoolMinSize(), ConfigurablePoolMaxSize()]. This
   // function must only be called from the main thread.
-  static void InitConfigurablePool(void* address, size_t size);
+  static void InitConfigurablePool(uintptr_t pool_base, size_t size);
   static void UninitForTesting();
   static void UninitConfigurablePoolForTesting();
 

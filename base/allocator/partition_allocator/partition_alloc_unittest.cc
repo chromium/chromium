@@ -3754,7 +3754,8 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
     void* pool_memory = AllocPages(nullptr, pool_size, pool_size,
                                    PageInaccessible, PageTag::kPartitionAlloc);
     EXPECT_NE(nullptr, pool_memory);
-    PartitionAddressSpace::InitConfigurablePool(pool_memory, pool_size);
+    uintptr_t pool_base = reinterpret_cast<uintptr_t>(pool_memory);
+    PartitionAddressSpace::InitConfigurablePool(pool_base, pool_size);
 
     EXPECT_TRUE(IsConfigurablePoolAvailable());
 
@@ -3770,7 +3771,6 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
 
     const size_t count = 250;
     std::vector<void*> allocations(count, nullptr);
-    uintptr_t pool_base = reinterpret_cast<uintptr_t>(pool_memory);
     for (size_t i = 0; i < count; ++i) {
       const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
       allocations[i] = root->Alloc(size, nullptr);

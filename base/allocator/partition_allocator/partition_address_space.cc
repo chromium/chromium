@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 
 #include <array>
+#include <cstdint>
 #include <ostream>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
@@ -123,21 +124,21 @@ void PartitionAddressSpace::Init() {
 #endif  // PA_STARSCAN_USE_CARD_TABLE
 }
 
-// TODO(bartekn): Consider void* -> uintptr_t
-void PartitionAddressSpace::InitConfigurablePool(void* address, size_t size) {
+void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
+                                                 size_t size) {
   // The ConfigurablePool must only be initialized once.
   PA_CHECK(!IsConfigurablePoolInitialized());
 
   // The other Pools must be initialized first.
   Init();
 
-  PA_CHECK(address);
+  PA_CHECK(pool_base);
   PA_CHECK(size <= kConfigurablePoolMaxSize);
   PA_CHECK(size >= kConfigurablePoolMinSize);
   PA_CHECK(bits::IsPowerOfTwo(size));
-  PA_CHECK(reinterpret_cast<uintptr_t>(address) % size == 0);
+  PA_CHECK(pool_base % size == 0);
 
-  setup_.configurable_pool_base_address_ = reinterpret_cast<uintptr_t>(address);
+  setup_.configurable_pool_base_address_ = pool_base;
   setup_.configurable_pool_base_mask_ = ~(size - 1);
 
   setup_.configurable_pool_ = internal::AddressPoolManager::GetInstance()->Add(

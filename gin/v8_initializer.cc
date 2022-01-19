@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <memory>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -446,10 +447,10 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
 #endif
     // Try to reserve the maximum size of the pool at first, then keep halving
     // the size on failure until it succeeds.
-    void* pool_base = nullptr;
+    uintptr_t pool_base = 0;
     while (!pool_base && pool_size >= min_pool_size) {
-      pool_base = reinterpret_cast<void*>(sandbox_address_space->AllocatePages(
-          0, pool_size, pool_size, v8::PagePermissions::kNoAccess));
+      pool_base = sandbox_address_space->AllocatePages(
+          0, pool_size, pool_size, v8::PagePermissions::kNoAccess);
       if (!pool_base) {
         pool_size /= 2;
       }
