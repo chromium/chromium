@@ -140,7 +140,13 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIBluetoothPairingHost);
 
   AddBluetoothStrings(source);
-  source->AddLocalizedString("title", IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE);
+  if (chromeos::features::IsBluetoothRevampEnabled()) {
+    source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
+  } else {
+    source->AddLocalizedString("title",
+                               IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE);
+  }
+
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kBluetoothPairingDialogResources,
