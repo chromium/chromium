@@ -1,5 +1,5 @@
 <style include="app-management-cros-shared-css settings-shared">
-  #explanation-text {
+  #disabled-explanation-text {
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -22,7 +22,7 @@
   </localized-link>
 </div>
 <template is="dom-if" if="[[disabled_]]">
-  <span class="info-text-row">
+  <span class="info-text-row" id="disabled-explanation-text">
     <iron-icon id="info-icon" icon="app-management:info"></iron-icon>
     <localized-link id="info-string"
       localized-string="[[getDisabledExplanation_(app)]]">

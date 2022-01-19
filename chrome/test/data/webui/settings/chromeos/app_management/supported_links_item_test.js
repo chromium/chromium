@@ -162,13 +162,15 @@ suite('<app-management-supported-links-item>', () => {
     await fakeHandler.flushPipesForTesting();
     await test_util.flushTasks();
 
-    assertTrue(
-        !!supportedLinksItem.shadowRoot.querySelector('#explanation-text'));
+    assertTrue(!!supportedLinksItem.shadowRoot.querySelector(
+        '#disabled-explanation-text'));
     assertTrue(
         !!supportedLinksItem.shadowRoot.querySelector('#radio-group').disabled);
   });
 
-  test('can open and close supported link list dialog', async function() {
+  // TODO(crbug/1253891): Race condition when closing the dialog makes this test
+  // flaky.
+  test.skip('can open and close supported link list dialog', async function() {
     const supportedLink = 'google.com';
     const pwaOptions = {
       type: apps.mojom.AppType.kWeb,
@@ -221,7 +223,9 @@ suite('<app-management-supported-links-item>', () => {
                     .open);
   });
 
-  test('overlap dialog is shown and cancelled', async function() {
+  // TODO(crbug/1253891): Race condition when closing the dialog makes this test
+  // flaky.
+  test.skip('overlap dialog is shown and cancelled', async function() {
     const pwaOptions = {
       type: apps.mojom.AppType.kWeb,
       isPreferredApp: false,
