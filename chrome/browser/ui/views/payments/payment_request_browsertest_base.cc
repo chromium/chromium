@@ -95,10 +95,7 @@ void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
   // Setup the https server.
   https_server_ = std::make_unique<net::EmbeddedTestServer>(
       net::EmbeddedTestServer::TYPE_HTTPS);
-  host_resolver()->AddRule("a.com", "127.0.0.1");
-  host_resolver()->AddRule("b.com", "127.0.0.1");
-  host_resolver()->AddRule("c.com", "127.0.0.1");
-  host_resolver()->AddRule("d.com", "127.0.0.1");
+  host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(https_server_->InitializeAndListen());
   https_server_->ServeFilesFromSourceDirectory("components/test/data/payments");
   https_server_->StartAcceptingConnections();
@@ -272,12 +269,6 @@ void PaymentRequestBrowserTestBase::OnProcessingSpinnerHidden() {
 void PaymentRequestBrowserTestBase::OnPaymentHandlerWindowOpened() {
   if (event_waiter_)
     event_waiter_->OnEvent(DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED);
-}
-
-void PaymentRequestBrowserTestBase::SetHostReplaceRule(
-    const std::string& host_pattern,
-    const std::string& replacement) {
-  host_resolver()->AddRule(host_pattern, replacement);
 }
 
 // Install the payment app specified by `hostname`, e.g., "a.com". Specify the

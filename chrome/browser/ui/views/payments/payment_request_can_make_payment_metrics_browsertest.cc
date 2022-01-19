@@ -748,7 +748,6 @@ class PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest
 
   void SetUpOnMainThread() override {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
-    SetHostReplaceRule("*", "127.0.0.1");
 
     // Choosing nickpay for its JIT installation support.
     nickpay_server_.ServeFilesFromSourceDirectory(

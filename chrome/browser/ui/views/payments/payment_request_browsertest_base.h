@@ -146,9 +146,6 @@ class PaymentRequestBrowserTestBase
   void OnProcessingSpinnerHidden() override;
   void OnPaymentHandlerWindowOpened() override;
 
-  void SetHostReplaceRule(const std::string& host_pattern,
-                          const std::string& replacement);
-
   void InstallPaymentApp(const std::string& hostname,
                          const std::string& service_worker_filename,
                          std::string* url_method_output);
