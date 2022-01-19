@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -45,10 +46,15 @@ void BluetoothEnabledProvider::OnAdapterReceived(
 }
 
 bool BluetoothEnabledProvider::HasHardwareSupport() {
-  return adapter_.get() && adapter_->IsPresent() &&
-         adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
-             device::BluetoothAdapter::
-                 LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
+  if (!adapter_ || !adapter_->IsPresent())
+    return false;
+
+  if (features::IsFastPairSoftwareScanningEnabled())
+    return true;
+
+  return adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
+         device::BluetoothAdapter::
+             LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
 }
 
 }  // namespace quick_pair

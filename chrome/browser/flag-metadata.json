@@ -3109,7 +3109,12 @@
   {
     "name": "fast-pair",
     "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 102
+  },
+  {
+    "name": "fast-pair-software-scanning",
+    "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
+    "expiry_milestone": 102
   },
   {
     "name": "feature-notification-guide",

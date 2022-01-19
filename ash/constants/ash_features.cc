@@ -596,6 +596,11 @@ const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
 // Enables the Fast Pair feature.
 const base::Feature kFastPair{"FastPair", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows Fast Pair to use software scanning on devices which don't support
+// hardware offloading of BLE scans.
+const base::Feature kFastPairSoftwareScanning{
+    "FastPairSoftwareScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables mounting various archive formats (in two tiers) in Files App. This
 // flag controls the first tier, whose support is very good.
 // https://crbug.com/1216245
@@ -1537,6 +1542,10 @@ bool IsFamilyLinkOnSchoolDeviceEnabled() {
 
 bool IsFastPairEnabled() {
   return base::FeatureList::IsEnabled(kFastPair);
+}
+
+bool IsFastPairSoftwareScanningEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairSoftwareScanning);
 }
 
 bool IsFileManagerFuseBoxEnabled() {

@@ -5682,6 +5682,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPair)},
 
+    {"fast-pair-software-scanning",
+     flag_descriptions::kFastPairSoftwareScanningName,
+     flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPairSoftwareScanning)},
+
     {"pcie-billboard-notification",
      flag_descriptions::kPcieBillboardNotificationName,
      flag_descriptions::kPcieBillboardNotificationDescription, kOsCrOS,

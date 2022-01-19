@@ -233,6 +233,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kExoPointerLock;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFamilyLinkOnSchoolDevice;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFastPair;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kFastPairSoftwareScanning;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesArchivemount;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesArchivemount2;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -559,6 +561,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsESimPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsExtendedOpenVpnSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSoftwareScanningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFileManagerFuseBoxEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFileManagerSwaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFirmwareUpdaterAppEnabled();

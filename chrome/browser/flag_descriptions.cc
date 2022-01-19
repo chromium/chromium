@@ -4293,6 +4293,12 @@ const char kFastPairDescription[] =
     "Use along with #bluetooth-advertisement-monitoring to allow background "
     "scanning.";
 
+const char kFastPairSoftwareScanningName[] =
+    "Enable Fast Pair Software Scanning";
+const char kFastPairSoftwareScanningDescription[] =
+    "Allow using Fast Pair on devices which don't support hardware offloading "
+    "of BLE scans. For development use.";
+
 const char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";
 const char kUseHDRTransferFunctionDescription[] =

@@ -2460,6 +2460,9 @@ extern const char kDisplayAlignmentAssistanceDescription[];
 extern const char kFastPairName[];
 extern const char kFastPairDescription[];
 
+extern const char kFastPairSoftwareScanningName[];
+extern const char kFastPairSoftwareScanningDescription[];
+
 extern const char kUseHDRTransferFunctionName[];
 extern const char kUseHDRTransferFunctionDescription[];
 
