@@ -34,10 +34,10 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
 
   // Internal. Do not use.
   // Registers a partition to be tracked by the reclaimer.
-  void RegisterPartition(PartitionRoot<internal::ThreadSafe>* partition);
+  void RegisterPartition(PartitionRoot<>* partition);
   // Internal. Do not use.
   // Unregisters a partition to be tracked by the reclaimer.
-  void UnregisterPartition(PartitionRoot<internal::ThreadSafe>* partition);
+  void UnregisterPartition(PartitionRoot<>* partition);
 
   // Triggers an explicit reclaim now to reclaim as much free memory as
   // possible. The API callers need to invoke this method periodically
@@ -62,7 +62,7 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
   void ResetForTesting();
 
   internal::PartitionLock lock_;
-  std::set<PartitionRoot<internal::ThreadSafe>*> partitions_ GUARDED_BY(lock_);
+  std::set<PartitionRoot<>*> partitions_ GUARDED_BY(lock_);
 
   friend class NoDestructor<PartitionAllocMemoryReclaimer>;
   friend class PartitionAllocMemoryReclaimerTest;

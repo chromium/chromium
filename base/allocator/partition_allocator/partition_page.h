@@ -359,19 +359,12 @@ struct __attribute__((packed)) PartitionPage {
 
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
               "PartitionPage must be able to fit in a metadata slot");
-static_assert(sizeof(PartitionPage<NotThreadSafe>) == kPageMetadataSize,
-              "PartitionPage must be able to fit in a metadata slot");
 
 // Certain functions rely on PartitionPage being either SlotSpanMetadata or
 // SubsequentPageMetadata, and therefore freely casting between each other.
 static_assert(offsetof(PartitionPage<ThreadSafe>, slot_span_metadata) == 0, "");
 static_assert(offsetof(PartitionPage<ThreadSafe>, subsequent_page_metadata) ==
                   0,
-              "");
-static_assert(offsetof(PartitionPage<NotThreadSafe>, slot_span_metadata) == 0,
-              "");
-static_assert(offsetof(PartitionPage<NotThreadSafe>,
-                       subsequent_page_metadata) == 0,
               "");
 
 template <bool thread_safe>

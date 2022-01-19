@@ -202,7 +202,7 @@ static size_t PartitionPurgeSlotSpan(
       uintptr_t slot_span_start =
           internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStart(slot_span);
       uintptr_t committed_data_end = slot_span_start + utilized_slot_size;
-      ScopedSyscallTimer<thread_safe> timer{root};
+      ScopedSyscallTimer timer{root};
       DiscardSystemPages(reinterpret_cast<void*>(committed_data_end),
                          discardable_bytes);
     }
@@ -315,7 +315,7 @@ static size_t PartitionPurgeSlotSpan(
 
       PA_DCHECK(num_new_entries == num_slots - slot_span->num_allocated_slots);
       // Discard the memory.
-      ScopedSyscallTimer<thread_safe> timer{root};
+      ScopedSyscallTimer timer{root};
       DiscardSystemPages(reinterpret_cast<void*>(begin_addr),
                          unprovisioned_bytes);
     }
@@ -344,7 +344,7 @@ static size_t PartitionPurgeSlotSpan(
       size_t partial_slot_bytes = end_addr - begin_addr;
       discardable_bytes += partial_slot_bytes;
       if (discard) {
-        ScopedSyscallTimer<thread_safe> timer{root};
+        ScopedSyscallTimer timer{root};
         DiscardSystemPages(reinterpret_cast<void*>(begin_addr),
                            partial_slot_bytes);
       }
@@ -535,10 +535,6 @@ void PartitionRoot<thread_safe>::DecommitEmptySlotSpans() {
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   {
-    // TODO(crbug.com/1277519): Should remove all traces of thread-unsafe roots,
-    // but until this is done, forbid them from being used.
-    PA_CHECK(thread_safe);
-
 #if BUILDFLAG(IS_APPLE)
     // Needed to statically bound page size, which is a runtime constant on
     // apple OSes.

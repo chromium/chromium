@@ -78,7 +78,7 @@ ALWAYS_INLINE void PartitionDirectUnmap(
   // expected to be very rare though, and likely preferable to holding the lock
   // while releasing the address space.
   ScopedUnlockGuard unlock{root->lock_};
-  ScopedSyscallTimer<thread_safe> timer{root};
+  ScopedSyscallTimer timer{root};
   UnmapNow(reservation_start, reservation_size, root->ChoosePool());
 }
 

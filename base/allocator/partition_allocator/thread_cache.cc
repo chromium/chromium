@@ -44,7 +44,7 @@ thread_local ThreadCache* g_thread_cache;
 namespace {
 // Since |g_thread_cache_key| is shared, make sure that no more than one
 // PartitionRoot can use it.
-static std::atomic<PartitionRoot<ThreadSafe>*> g_thread_cache_root;
+static std::atomic<PartitionRoot<>*> g_thread_cache_root;
 
 #if BUILDFLAG(IS_WIN)
 void OnDllProcessDetach() {
@@ -304,7 +304,7 @@ void ThreadCache::DeleteForTesting(ThreadCache* tcache) {
 }
 
 // static
-void ThreadCache::SwapForTesting(PartitionRoot<ThreadSafe>* root) {
+void ThreadCache::SwapForTesting(PartitionRoot<>* root) {
   auto* old_tcache = ThreadCache::Get();
   g_thread_cache_root.store(nullptr, std::memory_order_relaxed);
   if (old_tcache)
@@ -327,7 +327,7 @@ void ThreadCache::RemoveTombstoneForTesting() {
 }
 
 // static
-void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
+void ThreadCache::Init(PartitionRoot<>* root) {
 #if BUILDFLAG(IS_NACL)
   IMMEDIATE_CRASH();
 #endif
@@ -339,7 +339,7 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
   EnsureThreadSpecificDataInitialized();
 
   // Make sure that only one PartitionRoot wants a thread cache.
-  PartitionRoot<ThreadSafe>* expected = nullptr;
+  PartitionRoot<>* expected = nullptr;
   if (!g_thread_cache_root.compare_exchange_strong(expected, root,
                                                    std::memory_order_seq_cst,
                                                    std::memory_order_seq_cst)) {
@@ -355,8 +355,7 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
 }
 
 // static
-void ThreadCache::SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
-                                  float multiplier) {
+void ThreadCache::SetGlobalLimits(PartitionRoot<>* root, float multiplier) {
   size_t initial_value =
       static_cast<size_t>(kSmallBucketBaseCount) * multiplier;
 
@@ -448,7 +447,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   return tcache;
 }
 
-ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
+ThreadCache::ThreadCache(PartitionRoot<>* root)
     : should_purge_(false),
       root_(root),
       thread_id_(PlatformThread::CurrentId()),

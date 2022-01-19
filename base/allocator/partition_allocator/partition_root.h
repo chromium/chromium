@@ -162,35 +162,6 @@ struct PartitionOptions {
   UseConfigurablePool use_configurable_pool;
 };
 
-namespace internal {
-
-template <bool thread_safe>
-class ScopedSyscallTimer {
- public:
-#if defined(PA_COUNT_SYSCALL_TIME)
-  explicit ScopedSyscallTimer(PartitionRoot<thread_safe>* root)
-      : root_(root), tick_(base::TimeTicks::Now()) {}
-
-  ~ScopedSyscallTimer() {
-    root_->syscall_count.fetch_add(1, std::memory_order_relaxed);
-
-    uint64_t elapsed_nanos = (base::TimeTicks::Now() - tick_).InNanoseconds();
-    root_->syscall_total_time_ns.fetch_add(elapsed_nanos,
-                                           std::memory_order_relaxed);
-  }
-
- private:
-  PartitionRoot<thread_safe>* root_;
-  const base::TimeTicks tick_;
-#else
-  explicit ScopedSyscallTimer(PartitionRoot<thread_safe>* root) {
-    root->syscall_count.fetch_add(1, std::memory_order_relaxed);
-  }
-#endif
-};
-
-}  // namespace internal
-
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
 template <bool thread_safe>
@@ -743,6 +714,30 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 
 namespace internal {
 
+class ScopedSyscallTimer {
+ public:
+#if defined(PA_COUNT_SYSCALL_TIME)
+  explicit ScopedSyscallTimer(PartitionRoot<>* root)
+      : root_(root), tick_(base::TimeTicks::Now()) {}
+
+  ~ScopedSyscallTimer() {
+    root_->syscall_count.fetch_add(1, std::memory_order_relaxed);
+
+    uint64_t elapsed_nanos = (base::TimeTicks::Now() - tick_).InNanoseconds();
+    root_->syscall_total_time_ns.fetch_add(elapsed_nanos,
+                                           std::memory_order_relaxed);
+  }
+
+ private:
+  PartitionRoot<>* root_;
+  const base::TimeTicks tick_;
+#else
+  explicit ScopedSyscallTimer(PartitionRoot<>* root) {
+    root->syscall_count.fetch_add(1, std::memory_order_relaxed);
+  }
+#endif
+};
+
 // Gets the SlotSpanMetadata object of the slot span that contains |address|.
 // It's used with intention to do obtain the slot size.
 //
@@ -1264,13 +1259,9 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
     SlotSpan* slot_span) {
   // TLS access can be expensive, do a cheap local check first.
   //
-  // Also the thread-unsafe variant doesn't have a use for a thread cache, so
-  // make it statically known to the compiler.
-  //
-  // LIKELY: performance-sensitive thread-safe partitions have a thread cache,
-  // direct-mapped allocations are uncommon.
-  if (thread_safe &&
-      LIKELY(with_thread_cache && !IsDirectMappedBucket(slot_span->bucket))) {
+  // LIKELY: performance-sensitive partitions have a thread cache, direct-mapped
+  // allocations are uncommon.
+  if (LIKELY(with_thread_cache && !IsDirectMappedBucket(slot_span->bucket))) {
     size_t bucket_index = slot_span->bucket - this->buckets;
     auto* thread_cache = internal::ThreadCache::Get();
     if (LIKELY(internal::ThreadCache::IsValid(thread_cache) &&
@@ -1358,7 +1349,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::DecommitSystemPagesForData(
     uintptr_t address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  internal::ScopedSyscallTimer<thread_safe> timer{this};
+  internal::ScopedSyscallTimer timer{this};
   DecommitSystemPages(reinterpret_cast<void*>(address), length,
                       accessibility_disposition);
   DecreaseCommittedPages(length);
@@ -1370,7 +1361,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     uintptr_t address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  internal::ScopedSyscallTimer<thread_safe> timer{this};
+  internal::ScopedSyscallTimer timer{this};
 
   void* ptr = reinterpret_cast<void*>(address);
   bool ok = TryRecommitSystemPages(ptr, length, PageReadWriteTagged,
@@ -1390,7 +1381,7 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     uintptr_t address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  internal::ScopedSyscallTimer<thread_safe> timer{this};
+  internal::ScopedSyscallTimer timer{this};
   void* ptr = reinterpret_cast<void*>(address);
   bool ok = TryRecommitSystemPages(ptr, length, PageReadWriteTagged,
                                    accessibility_disposition);
@@ -1538,16 +1529,11 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     PCScan::JoinScanIfNeeded();
   }
 
-  // !thread_safe => !with_thread_cache, but adding the condition allows the
-  // compiler to statically remove this branch for the thread-unsafe variant.
-  //
   // Don't use thread cache if higher order alignment is requested, because the
   // thread cache will not be able to satisfy it.
   //
-  // LIKELY: performance-sensitive partitions are either thread-unsafe or use
-  // the thread cache.
-  if (thread_safe &&
-      LIKELY(with_thread_cache && slot_span_alignment <= PartitionPageSize())) {
+  // LIKELY: performance-sensitive partitions use the thread cache.
+  if (LIKELY(with_thread_cache && slot_span_alignment <= PartitionPageSize())) {
     auto* tcache = internal::ThreadCache::Get();
     // LIKELY: Typically always true, except for the very first allocation of
     // this thread.
@@ -1843,7 +1829,6 @@ PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
 }
 
 using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
-using ThreadUnsafePartitionRoot = PartitionRoot<internal::NotThreadSafe>;
 
 static_assert(offsetof(ThreadSafePartitionRoot, lock_) ==
                   kPartitionCachelineSize,

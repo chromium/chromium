@@ -23,7 +23,7 @@ PartitionAllocMemoryReclaimer* PartitionAllocMemoryReclaimer::Instance() {
 }
 
 void PartitionAllocMemoryReclaimer::RegisterPartition(
-    PartitionRoot<internal::ThreadSafe>* partition) {
+    PartitionRoot<>* partition) {
   internal::PartitionAutoLock lock(lock_);
   PA_DCHECK(partition);
   auto it_and_whether_inserted = partitions_.insert(partition);

@@ -215,13 +215,12 @@ class BASE_EXPORT ThreadCache {
   // partition lock held.
   //
   // May only be called by a single PartitionRoot.
-  static void Init(PartitionRoot<ThreadSafe>* root);
-  static void Init(PartitionRoot<NotThreadSafe>* root) { IMMEDIATE_CRASH(); }
+  static void Init(PartitionRoot<>* root);
 
   static void DeleteForTesting(ThreadCache* tcache);
 
   // Deletes existing thread cache and creates a new one for |root|.
-  static void SwapForTesting(PartitionRoot<ThreadSafe>* root);
+  static void SwapForTesting(PartitionRoot<>* root);
 
   // Removes the tombstone marker that would be returned by Get() otherwise.
   static void RemoveTombstoneForTesting();
@@ -248,10 +247,7 @@ class BASE_EXPORT ThreadCache {
 
   // Create a new ThreadCache associated with |root|.
   // Must be called without the partition locked, as this may allocate.
-  static ThreadCache* Create(PartitionRoot<ThreadSafe>* root);
-  static ThreadCache* Create(PartitionRoot<NotThreadSafe>* root) {
-    IMMEDIATE_CRASH();
-  }
+  static ThreadCache* Create(PartitionRoot<>* root);
 
   ~ThreadCache();
 
@@ -331,7 +327,7 @@ class BASE_EXPORT ThreadCache {
   };
   static_assert(sizeof(Bucket) <= 2 * sizeof(void*), "Keep Bucket small.");
 
-  explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
+  explicit ThreadCache(PartitionRoot<>* root);
   static void Delete(void* thread_cache_ptr);
   void PurgeInternal();
   // Fills a bucket from the central allocator.
@@ -342,8 +338,7 @@ class BASE_EXPORT ThreadCache {
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
   void FreeAfter(PartitionFreelistEntry* head, size_t slot_size);
-  static void SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
-                              float multiplier);
+  static void SetGlobalLimits(PartitionRoot<>* root, float multiplier);
 
 #if BUILDFLAG(IS_NACL)
   // The thread cache is never used with NaCl, but its compiler doesn't
@@ -388,7 +383,7 @@ class BASE_EXPORT ThreadCache {
   Bucket buckets_[kBucketCount];
 
   // Cold data below.
-  PartitionRoot<ThreadSafe>* const root_;
+  PartitionRoot<>* const root_;
   const PlatformThreadId thread_id_;
 #if DCHECK_IS_ON()
   bool is_in_thread_cache_ = false;

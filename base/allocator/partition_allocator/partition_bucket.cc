@@ -251,7 +251,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       // Reserving memory from the GigaCage is actually not a syscall on 64 bit
       // platforms.
 #if !defined(PA_HAS_64_BITS_POINTERS)
-      ScopedSyscallTimer<thread_safe> timer{root};
+      ScopedSyscallTimer timer{root};
 #endif
       reservation_start = ReserveMemoryFromGigaCage(pool, 0, reservation_size);
     }
@@ -270,7 +270,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         reservation_start + PartitionPageSize() + padding_for_alignment;
 
     {
-      ScopedSyscallTimer<thread_safe> timer{root};
+      ScopedSyscallTimer timer{root};
       RecommitSystemPages(
           reinterpret_cast<void*>(reservation_start + SystemPageSize()),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -376,7 +376,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       }
 
       {
-        ScopedSyscallTimer<thread_safe> timer{root};
+        ScopedSyscallTimer timer{root};
 #if !defined(PA_HAS_64_BITS_POINTERS)
         AddressPoolManager::GetInstance()->MarkUnused(
             pool, reinterpret_cast<uintptr_t>(reservation_start),
@@ -626,7 +626,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   // guard page, except an "island" in the middle where we put page metadata and
   // also a tiny amount of extent metadata.
   {
-    ScopedSyscallTimer<thread_safe> timer{root};
+    ScopedSyscallTimer timer{root};
     RecommitSystemPages(
         reinterpret_cast<void*>(super_page + SystemPageSize()),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -691,7 +691,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   // could be not initialized yet.
   if (root->IsQuarantineEnabled()) {
     {
-      ScopedSyscallTimer<thread_safe> timer{root};
+      ScopedSyscallTimer timer{root};
       RecommitSystemPages(reinterpret_cast<void*>(state_bitmap),
                           state_bitmap_size_to_commit, PageReadWrite,
                           PageUpdatePermissions);
