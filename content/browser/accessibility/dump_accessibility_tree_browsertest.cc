@@ -901,9 +901,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-insertion-deletion.html"));
 }
 
+#if !defined(OS_CHROMEOS)
+// TODO(accessibility) Reennable. See crrev.com/c//3396516.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaInvalid) {
   RunAriaTest(FILE_PATH_LITERAL("aria-invalid.html"));
 }
+#endif  // defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaKeyShortcuts) {
