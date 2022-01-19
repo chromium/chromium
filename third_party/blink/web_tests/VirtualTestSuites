@@ -201,9 +201,9 @@
     "args": ["--enable-blink-features=FractionalScrollOffsets"]
   },
   {
-    "prefix": "font-access-persistent",
+    "prefix": "font-access",
     "bases": ["external/wpt/font-access"],
-    "args": ["--enable-features=FontAccess,FontAccessPersistent"]
+    "args": ["--enable-features=FontAccess"]
   },
   {
     "prefix": "compute-pressure",

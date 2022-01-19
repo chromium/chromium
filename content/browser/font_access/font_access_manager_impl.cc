@@ -21,7 +21,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/font_access_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -135,70 +134,6 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
 #endif
 }
 
-void FontAccessManagerImpl::ChooseLocalFonts(
-    const std::vector<std::string>& selection,
-    ChooseLocalFontsCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
-  std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
-                          {});
-#else
-  const BindingContext& context = receivers_.current_context();
-
-  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(context.frame_id);
-  if (rfh == nullptr) {
-    std::move(callback).Run(
-        blink::mojom::FontEnumerationStatus::kUnexpectedError, {});
-    return;
-  }
-
-  // Page Visibility is required for the API to function at all.
-  if (rfh->visibility() == blink::mojom::FrameVisibility::kNotRendered) {
-    std::move(callback).Run(blink::mojom::FontEnumerationStatus::kNotVisible,
-                            {});
-    return;
-  }
-
-  // Transient User Activation required before showing the chooser.
-  // This action will consume it.
-  if (!rfh->HasTransientUserActivation()) {
-    std::move(callback).Run(
-        blink::mojom::FontEnumerationStatus::kNeedsUserActivation, {});
-    return;
-  }
-  rfh->frame_tree_node()->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-      blink::mojom::UserActivationNotificationType::kNone);
-
-  FontAccessDelegate* delegate =
-      GetContentClient()->browser()->GetFontAccessDelegate();
-  // TODO(pwnall): It may be possible to replace the WeakPtr below with
-  //               base::Unretained(), if the FontAccessChooser guarantees that
-  //               the callback isn't run after the chooser is destroyed.
-  choosers_[context.frame_id] = delegate->RunChooser(
-      rfh, selection,
-      base::BindOnce(&FontAccessManagerImpl::DidChooseLocalFonts,
-                     weak_ptr_factory_.GetWeakPtr(), context.frame_id,
-                     std::move(callback)));
-#endif
-}
-
-void FontAccessManagerImpl::FindAllFonts(FindAllFontsCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
-  std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
-                          {});
-#else
-  font_enumeration_cache_
-      .AsyncCall(&FontEnumerationCache::GetFontEnumerationData)
-      .Then(base::BindOnce(&FontAccessManagerImpl::DidFindAllFonts,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(callback)));
-#endif
-}
-
 void FontAccessManagerImpl::DidRequestPermission(
     EnumerateLocalFontsCallback callback,
     blink::mojom::PermissionStatus status) {
@@ -226,48 +161,6 @@ void FontAccessManagerImpl::DidRequestPermission(
           },
           std::move(callback)));
 #endif
-}
-
-void FontAccessManagerImpl::DidFindAllFonts(FindAllFontsCallback callback,
-                                            FontEnumerationData data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (data.status != blink::mojom::FontEnumerationStatus::kOk) {
-    std::move(callback).Run(data.status, {});
-    return;
-  }
-
-  const base::ReadOnlySharedMemoryMapping mapping = data.font_data.Map();
-  if (mapping.size() > std::numeric_limits<int>::max()) {
-    std::move(callback).Run(
-        blink::mojom::FontEnumerationStatus::kUnexpectedError, {});
-    return;
-  }
-
-  blink::FontEnumerationTable table;
-  table.ParseFromArray(mapping.memory(), static_cast<int>(mapping.size()));
-
-  std::vector<blink::mojom::FontMetadata> font_data;
-  for (const auto& element : table.fonts()) {
-    font_data.emplace_back(element.postscript_name(), element.full_name(),
-                           element.family(), element.style());
-  }
-
-  std::move(callback).Run(data.status, std::move(font_data));
-}
-
-void FontAccessManagerImpl::DidChooseLocalFonts(
-    GlobalRenderFrameHostId frame_id,
-    ChooseLocalFontsCallback callback,
-    blink::mojom::FontEnumerationStatus status,
-    std::vector<blink::mojom::FontMetadataPtr> fonts) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // The chooser has fulfilled its purpose. It's safe to dispose of it.
-  size_t erased = choosers_.erase(frame_id);
-  DCHECK_EQ(erased, 1u);
-
-  std::move(callback).Run(std::move(status), std::move(fonts));
 }
 
 }  // namespace content

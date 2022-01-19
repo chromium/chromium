@@ -43,19 +43,9 @@ ScriptPromise FontManager::query(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (options->persistentAccess() &&
-      RuntimeEnabledFeatures::FontAccessPersistentEnabled()) {
-    remote_manager_->EnumerateLocalFonts(WTF::Bind(
-        &FontManager::DidGetEnumerationResponse, WrapWeakPersistent(this),
-        WrapPersistent(resolver), options->select()));
-    return promise;
-  }
-
-  remote_manager_->ChooseLocalFonts(
-      options->select(),
-      WTF::Bind(&FontManager::DidShowFontChooser, WrapWeakPersistent(this),
-                WrapPersistent(resolver)));
-
+  remote_manager_->EnumerateLocalFonts(WTF::Bind(
+      &FontManager::DidGetEnumerationResponse, WrapWeakPersistent(this),
+      WrapPersistent(resolver), options->select()));
   return promise;
 }
 

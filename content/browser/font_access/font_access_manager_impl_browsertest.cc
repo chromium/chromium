@@ -87,7 +87,6 @@ class FontAccessManagerImplBrowserTest
   FontAccessManagerImplBrowserTest() {
     std::vector<base::Feature> enabled_features({
         blink::features::kFontAccess,
-        blink::features::kFontAccessPersistent,
     });
     scoped_feature_list_->InitWithFeatures(std::move(enabled_features),
                                            /*disabled_features=*/{});
@@ -144,8 +143,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
       EvalJs(shell(),
              "(async () => {"
              "  let fullName = '';"
-             "  const fonts = await navigator.fonts.query({persistentAccess: "
-             "true});"
+             "  const fonts = await navigator.fonts.query();"
              "  for (const item of fonts) {"
              "    if (item.postscriptName == 'MicrosoftYaHei') {"
              "      fullName = item.fullName;"
@@ -169,8 +167,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
       EvalJs(shell(),
              "(async () => {"
              "  let family = '';"
-             "  const fonts = await navigator.fonts.query({persistentAccess: "
-             "true});"
+             "  const fonts = await navigator.fonts.query();"
              "  for (const item of fonts) {"
              "    if (item.postscriptName == 'MicrosoftYaHei') {"
              "      family = item.family;"

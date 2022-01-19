@@ -5,7 +5,7 @@
 'use strict';
 
 font_access_test(async t => {
-  const fonts = await navigator.fonts.query({persistentAccess: true});
+  const fonts = await navigator.fonts.query();
   assert_true(Array.isArray(fonts), 'Result of query() should be an Array');
   assert_greater_than_equal(fonts.length, 1, 'Need a least one font');
 
@@ -33,7 +33,7 @@ font_access_test(async t => {
   const testSet = getEnumerationTestSet();
 
   // Get the system fonts.
-  let fonts = await navigator.fonts.query({persistentAccess: true});
+  let fonts = await navigator.fonts.query();
   assert_true(Array.isArray(fonts), 'Result of query() should be an Array');
 
   // Filter to the ones we care about.

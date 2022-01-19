@@ -55,7 +55,6 @@ class URLLoaderThrottle;
 
 namespace content {
 class BrowserContext;
-class FontAccessDelegate;
 class QuotaPermissionContext;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
@@ -96,7 +95,6 @@ namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
-class ChromeFontAccessDelegate;
 class ChromeHidDelegate;
 class ChromeSerialDelegate;
 class ChromeWebAuthenticationDelegate;
@@ -577,7 +575,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       override;
   content::SerialDelegate* GetSerialDelegate() override;
   content::HidDelegate* GetHidDelegate() override;
-  content::FontAccessDelegate* GetFontAccessDelegate() override;
   content::WebAuthenticationDelegate* GetWebAuthenticationDelegate() override;
   std::unique_ptr<content::AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
@@ -886,7 +883,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #else
   std::unique_ptr<ChromeSerialDelegate> serial_delegate_;
   std::unique_ptr<ChromeHidDelegate> hid_delegate_;
-  std::unique_ptr<ChromeFontAccessDelegate> font_access_delegate_;
   std::unique_ptr<ChromeWebAuthenticationDelegate> web_authentication_delegate_;
 #endif
   std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;

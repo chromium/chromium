@@ -16,8 +16,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/font_access_chooser.h"
-#include "content/public/browser/font_access_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -27,17 +25,14 @@
 namespace content {
 
 class FontEnumerationCache;
-struct FontEnumerationData;
 
 // The ownership hierarchy for this class is:
 //
 // StoragePartitionImpl (1) <- (1) FontAccessManagerImpl
 //
 // FontAccessManagerImpl (1) <- (*) BindingContext
-// FontAccessManagerImpl (1) <- (*) FontAccessChooser
 //
 // BindingContext (1) <- (1) GlobalRenderFrameHostId
-// GlobalRenderFrameHostId (1) <-- (1) FontAccessChooser
 //
 // Legend:
 //
@@ -53,8 +48,7 @@ struct FontEnumerationData;
 // GlobalRenderFrameHostId,
 //   obtained from a corresponding BindingContext
 class CONTENT_EXPORT FontAccessManagerImpl
-    : public blink::mojom::FontAccessManager,
-      public FontAccessContext {
+    : public blink::mojom::FontAccessManager {
  public:
   // Factory method for production instances.
   static std::unique_ptr<FontAccessManagerImpl> Create();
@@ -83,11 +77,6 @@ class CONTENT_EXPORT FontAccessManagerImpl
 
   // blink::mojom::FontAccessManager:
   void EnumerateLocalFonts(EnumerateLocalFontsCallback callback) override;
-  void ChooseLocalFonts(const std::vector<std::string>& selection,
-                        ChooseLocalFontsCallback callback) override;
-
-  // content::FontAccessContext:
-  void FindAllFonts(FindAllFontsCallback callback) override;
 
   void SkipPrivacyChecksForTesting(bool skip) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -102,11 +91,6 @@ class CONTENT_EXPORT FontAccessManagerImpl
 
   void DidRequestPermission(EnumerateLocalFontsCallback callback,
                             blink::mojom::PermissionStatus status);
-  void DidFindAllFonts(FindAllFontsCallback callback, FontEnumerationData data);
-  void DidChooseLocalFonts(GlobalRenderFrameHostId frame_id,
-                           ChooseLocalFontsCallback callback,
-                           blink::mojom::FontEnumerationStatus status,
-                           std::vector<blink::mojom::FontMetadataPtr> fonts);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -121,10 +105,6 @@ class CONTENT_EXPORT FontAccessManagerImpl
 
   bool skip_privacy_checks_for_testing_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
-
-  // Here to keep the choosers alive for the user to interact with.
-  std::map<GlobalRenderFrameHostId, std::unique_ptr<FontAccessChooser>>
-      choosers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<FontAccessManagerImpl> weak_ptr_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

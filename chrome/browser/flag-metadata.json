@@ -3219,17 +3219,7 @@
   {
     "name": "font-access",
     "owners": [ "cmp", "pwnall" ],
-    "expiry_milestone": 96
-  },
-  {
-    "name": "font-access-chooser",
-    "owners": [ "pwnall" ],
-    "expiry_milestone": 96
-  },
-  {
-    "name": "font-access-persistent",
-    "owners": [ "pwnall" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 102
   },
   {
     "name": "force-color-profile",

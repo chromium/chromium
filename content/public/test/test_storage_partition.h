@@ -94,8 +94,6 @@ class TestStoragePartition : public StoragePartition {
   }
   storage::FileSystemContext* GetFileSystemContext() override;
 
-  FontAccessContext* GetFontAccessContext() override;
-
   void set_background_sync_context(BackgroundSyncContext* context) {
     background_sync_context_ = context;
   }

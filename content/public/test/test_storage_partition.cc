@@ -107,10 +107,6 @@ TestStoragePartition::GetFileSystemAccessEntryFactory() {
   return nullptr;
 }
 
-FontAccessContext* TestStoragePartition::GetFontAccessContext() {
-  return nullptr;
-}
-
 ServiceWorkerContext* TestStoragePartition::GetServiceWorkerContext() {
   return service_worker_context_;
 }

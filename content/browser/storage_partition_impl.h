@@ -68,7 +68,6 @@ class AttributionManagerImpl;
 class CookieStoreManager;
 class FileSystemAccessEntryFactory;
 class FileSystemAccessManagerImpl;
-class FontAccessContext;
 class FontAccessManagerImpl;
 class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
@@ -155,7 +154,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::QuotaManager* GetQuotaManager() override;
   BackgroundSyncContextImpl* GetBackgroundSyncContext() override;
   storage::FileSystemContext* GetFileSystemContext() override;
-  FontAccessContext* GetFontAccessContext() override;
   storage::DatabaseTracker* GetDatabaseTracker() override;
   DOMStorageContextWrapper* GetDOMStorageContext() override;
   storage::mojom::LocalStorageControl* GetLocalStorageControl() override;
@@ -235,11 +233,11 @@ class CONTENT_EXPORT StoragePartitionImpl
   AttributionManagerImpl* GetAttributionManager();
   void SetFontAccessManagerForTesting(
       std::unique_ptr<FontAccessManagerImpl> font_access_manager);
-  FontAccessManagerImpl* GetFontAccessManager();
   InterestGroupManager* GetInterestGroupManager();
   ComputePressureManager* GetComputePressureManager();
   std::string GetPartitionDomain();
   AggregationServiceImpl* GetAggregationService();
+  FontAccessManagerImpl* GetFontAccessManager();
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(

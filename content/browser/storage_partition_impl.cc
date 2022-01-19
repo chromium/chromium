@@ -1467,11 +1467,6 @@ storage::FileSystemContext* StoragePartitionImpl::GetFileSystemContext() {
   return filesystem_context_.get();
 }
 
-FontAccessContext* StoragePartitionImpl::GetFontAccessContext() {
-  DCHECK(initialized_);
-  return font_access_manager_.get();
-}
-
 storage::DatabaseTracker* StoragePartitionImpl::GetDatabaseTracker() {
   DCHECK(initialized_);
   return database_tracker_.get();

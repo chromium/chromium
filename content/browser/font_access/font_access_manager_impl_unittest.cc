@@ -65,26 +65,6 @@ class FontAccessManagerSync {
     return result;
   }
 
-  std::pair<FontEnumerationStatus, std::vector<blink::mojom::FontMetadataPtr>>
-  ChooseLocalFonts(const std::vector<std::string>& selection) {
-    std::pair<FontEnumerationStatus, std::vector<blink::mojom::FontMetadataPtr>>
-        result;
-
-    base::RunLoop run_loop;
-    manager_->ChooseLocalFonts(
-        selection,
-        base::BindLambdaForTesting(
-            [&](FontEnumerationStatus status,
-                std::vector<blink::mojom::FontMetadataPtr> font_metadata) {
-              result.first = status;
-              result.second = std::move(font_metadata);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-
-    return result;
-  }
-
  private:
   const raw_ptr<blink::mojom::FontAccessManager> manager_;
 };
@@ -297,28 +277,6 @@ TEST_F(FontAccessManagerImplTest, PermissionPreviouslyDeniedErrors) {
 
   const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kPermissionDenied);
-}
-
-TEST_F(FontAccessManagerImplTest, FontAccessContextFindAllFontsTest) {
-  FontAccessContext* font_access_context =
-      static_cast<FontAccessContext*>(manager_impl_.get());
-
-  FontEnumerationStatus status;
-  std::vector<blink::mojom::FontMetadata> fonts;
-
-  base::RunLoop run_loop;
-  font_access_context->FindAllFonts(base::BindLambdaForTesting(
-      [&](FontEnumerationStatus find_status,
-          std::vector<blink::mojom::FontMetadata> find_fonts) {
-        status = find_status;
-        fonts = std::move(find_fonts);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  EXPECT_EQ(status, FontEnumerationStatus::kOk);
-  EXPECT_GT(fonts.size(), 0u)
-      << "Enumeration expected to yield at least 1 font";
 }
 
 #endif

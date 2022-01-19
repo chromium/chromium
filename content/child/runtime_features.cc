@@ -360,7 +360,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"FileHandling", blink::features::kFileHandlingAPI},
           {"Fledge", blink::features::kFledge},
           {"FontAccess", blink::features::kFontAccess},
-          {"FontAccessPersistent", blink::features::kFontAccessPersistent},
           {"FontSrcLocalMatching", features::kFontSrcLocalMatching},
           {"ForceSynchronousHTMLParsing",
            blink::features::kForceSynchronousHTMLParsing},
