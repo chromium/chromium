@@ -32,13 +32,13 @@ class FakeMetricReportQueue : public MetricReportQueue {
   void Enqueue(const MetricData& metric_data,
                ReportQueue::EnqueueCallback callback) override;
 
-  void Flush() override;
-
   std::vector<MetricData> GetMetricDataReported() const;
 
   int GetNumFlush() const;
 
  private:
+  void Flush() override;
+
   std::vector<MetricData> reported_data_;
 
   int num_flush_ = 0;

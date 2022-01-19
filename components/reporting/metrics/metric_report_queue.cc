@@ -39,6 +39,15 @@ void MetricReportQueue::Enqueue(const MetricData& metric_data,
   report_queue_->Enqueue(&metric_data, priority_, std::move(callback));
 }
 
+void MetricReportQueue::Upload() {
+  Flush();
+  // Restart timer if the metric report queue flush is rate controlled.
+  if (rate_controller_) {
+    rate_controller_->Stop();
+    rate_controller_->Start();
+  }
+}
+
 void MetricReportQueue::Flush() {
   report_queue_->Flush(
       priority_, base::BindOnce([](Status status) {

@@ -26,6 +26,10 @@ using ::testing::_;
 namespace reporting {
 namespace {
 
+constexpr char kRateSettingPath[] = "rate_path";
+constexpr int kRateMs = 10000;
+constexpr base::TimeDelta kDefaultRate = base::Milliseconds(100);
+
 class MetricReportQueueTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -34,8 +38,6 @@ class MetricReportQueueTest : public ::testing::Test {
   }
 
  protected:
-  const std::string kRateSettingPath = "rate_path";
-
   std::unique_ptr<test::FakeReportingSettings> settings_;
 
   Priority priority_;
@@ -44,7 +46,7 @@ class MetricReportQueueTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(MetricReportQueueTest, ManualFlush) {
+TEST_F(MetricReportQueueTest, ManualUpload) {
   auto mock_queue =
       std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
           new testing::StrictMock<::reporting::MockReportQueue>(),
@@ -75,12 +77,63 @@ TEST_F(MetricReportQueueTest, ManualFlush) {
   EXPECT_TRUE(callback_called);
 
   EXPECT_CALL(*mock_queue_ptr, Flush(priority_, _)).Times(1);
-  metric_report_queue.Flush();
+  metric_report_queue.Upload();
+}
+
+TEST_F(MetricReportQueueTest, ManualUploadWithTimer) {
+  settings_->SetInteger(kRateSettingPath, kRateMs);
+
+  int upload_count = 0;
+  auto mock_queue =
+      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
+          new testing::NiceMock<::reporting::MockReportQueue>(),
+          base::OnTaskRunnerDeleter(
+              base::ThreadPool::CreateSequencedTaskRunner({})));
+  auto* mock_queue_ptr = mock_queue.get();
+  MetricData record;
+  record.set_timestamp_ms(123456);
+
+  MetricReportQueue metric_report_queue(std::move(mock_queue), priority_,
+                                        settings_.get(), kRateSettingPath,
+                                        kDefaultRate);
+
+  EXPECT_CALL(*mock_queue_ptr, AddRecord(_, _, _))
+      .WillOnce([&record, this](base::StringPiece record_string,
+                                Priority actual_priority,
+                                ReportQueue::EnqueueCallback cb) {
+        std::move(cb).Run(Status());
+        MetricData actual_record;
+
+        EXPECT_TRUE(actual_record.ParseFromArray(record_string.data(),
+                                                 record_string.size()));
+        EXPECT_EQ(actual_record.timestamp_ms(), record.timestamp_ms());
+        EXPECT_EQ(actual_priority, priority_);
+      });
+  bool callback_called = false;
+  metric_report_queue.Enqueue(
+      record, base::BindLambdaForTesting(
+                  [&callback_called](Status) { callback_called = true; }));
+  EXPECT_TRUE(callback_called);
+
+  ON_CALL(*mock_queue_ptr, Flush(priority_, _)).WillByDefault([&]() {
+    ++upload_count;
+  });
+  task_environment_.FastForwardBy(base::Milliseconds(kRateMs / 2));
+  metric_report_queue.Upload();
+  ASSERT_EQ(upload_count, 1);
+
+  // Manual upload should have reset the timer so no upload should be expected
+  // after the time is elapsed.
+  task_environment_.FastForwardBy(base::Milliseconds(kRateMs / 2));
+  ASSERT_EQ(upload_count, 1);
+
+  // Full time elapsed after manual upload, new upload should be initiated.
+  task_environment_.FastForwardBy(base::Milliseconds(kRateMs / 2));
+  ASSERT_EQ(upload_count, 2);
 }
 
 TEST_F(MetricReportQueueTest, RateControlledFlush_TimeNotElapsed) {
-  constexpr int rate_ms = 10000;
-  settings_->SetInteger(kRateSettingPath, rate_ms);
+  settings_->SetInteger(kRateSettingPath, kRateMs);
   auto mock_queue =
       std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
           new testing::StrictMock<::reporting::MockReportQueue>(),
@@ -92,7 +145,7 @@ TEST_F(MetricReportQueueTest, RateControlledFlush_TimeNotElapsed) {
 
   MetricReportQueue metric_report_queue(std::move(mock_queue), priority_,
                                         settings_.get(), kRateSettingPath,
-                                        /*default_rate=*/base::Milliseconds(1));
+                                        kDefaultRate);
 
   EXPECT_CALL(*mock_queue_ptr, AddRecord(_, _, _))
       .WillOnce([&record, this](base::StringPiece record_string,
@@ -113,12 +166,11 @@ TEST_F(MetricReportQueueTest, RateControlledFlush_TimeNotElapsed) {
   EXPECT_TRUE(callback_called);
 
   EXPECT_CALL(*mock_queue_ptr, Flush).Times(0);
-  task_environment_.FastForwardBy(base::Milliseconds(rate_ms - 1));
+  task_environment_.FastForwardBy(base::Milliseconds(kRateMs - 1));
 }
 
 TEST_F(MetricReportQueueTest, RateControlledFlush_TimeElapsed) {
-  constexpr int rate_ms = 10000;
-  settings_->SetInteger(kRateSettingPath, rate_ms);
+  settings_->SetInteger(kRateSettingPath, kRateMs);
   auto mock_queue =
       std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
           new testing::StrictMock<::reporting::MockReportQueue>(),
@@ -130,7 +182,7 @@ TEST_F(MetricReportQueueTest, RateControlledFlush_TimeElapsed) {
 
   MetricReportQueue metric_report_queue(std::move(mock_queue), priority_,
                                         settings_.get(), kRateSettingPath,
-                                        /*default_rate=*/base::Milliseconds(1));
+                                        kDefaultRate);
 
   EXPECT_CALL(*mock_queue_ptr, AddRecord(_, _, _))
       .WillOnce([&record, this](base::StringPiece record_string,
@@ -151,7 +203,7 @@ TEST_F(MetricReportQueueTest, RateControlledFlush_TimeElapsed) {
   EXPECT_TRUE(callback_called);
 
   EXPECT_CALL(*mock_queue_ptr, Flush(priority_, _)).Times(1);
-  task_environment_.FastForwardBy(base::Milliseconds(rate_ms));
+  task_environment_.FastForwardBy(base::Milliseconds(kRateMs));
 }
 }  // namespace
 }  // namespace reporting
