@@ -60,6 +60,37 @@ EditorCommand GetCommand(Document* document, const String& command_name) {
                                           EditorCommandSource::kDOM);
 }
 
+// Trusted Types requires that HTML (or Script, or script URLs) to be
+// inserted into a Document go through a Trusted Types check first. This
+// is a slightly awkward fit for execCommand API structure, which effectively
+// dispatches to very different code based on its command name. Here, we'll
+// check whether we need to run a Trusted Types check in the first place, and
+// will also run the check if necessary.
+String TrustedTypesCheck(Document* document,
+                         const EditorCommand& editor_command,
+                         const V8UnionStringOrTrustedHTML* value,
+                         ExceptionState& exception_state) {
+  // If we receive null or the value parameter is missing, then there's nothing
+  // to check.
+  if (!value)
+    return g_empty_string;
+
+  // TrustedHTML values always pass.
+  if (value->IsTrustedHTML())
+    return value->GetAsTrustedHTML()->toString();
+
+  // We received a plain string. Most editor commands won't read the value as
+  // HTML. Those commands can pass.
+  DCHECK(value->IsString());
+  if (!editor_command.IsValueInterpretedAsHTML())
+    return value->GetAsString();
+
+  // We received plain string, and it's one of the commands of interest.
+  // Run the TT check.
+  return TrustedTypesCheckForExecCommand(
+      value->GetAsString(), document->GetExecutionContext(), exception_state);
+}
+
 }  // namespace
 
 bool Document::execCommand(const String& command_name,
@@ -112,17 +143,14 @@ bool Document::execCommand(const String& command_name,
     UseCounter::Count(*this, WebFeature::kExecCommandWithTrustedTypes);
   }
 
-  // Extract the (unchecked) string from value.
-  // TODO(vogelheim): Once crbug.com/1230567 is resolved, this can be removed.
-  String string_value;
-  if (value->IsTrustedHTML())
-    string_value = value->GetAsTrustedHTML()->toString();
-  else if (value->IsString())
-    string_value = value->GetAsString();
+  String checked_value =
+      TrustedTypesCheck(this, editor_command, value, exception_state);
+  if (exception_state.HadException())
+    return false;
 
   base::UmaHistogramSparse("WebCore.Document.execCommand",
                            editor_command.IdForHistogram());
-  return editor_command.Execute(string_value);
+  return editor_command.Execute(checked_value);
 }
 
 bool Document::queryCommandEnabled(const String& command_name,
