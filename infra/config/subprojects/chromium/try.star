@@ -262,6 +262,11 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "mac-arm-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
     builder = "mac-pgo",
     branch_selector = branches.STANDARD_MILESTONE,
 )
