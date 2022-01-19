@@ -121,6 +121,8 @@ AppListItemMetadata::~AppListItemMetadata() = default;
 
 std::ostream& operator<<(std::ostream& os, AppListBubblePage page) {
   switch (page) {
+    case AppListBubblePage::kNone:
+      return os << "None";
     case AppListBubblePage::kApps:
       return os << "Apps";
     case AppListBubblePage::kSearch:

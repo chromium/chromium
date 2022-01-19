@@ -262,8 +262,8 @@ void AppListBubbleView::StartShowAnimation() {
   // AppListBubbleAppsPage handles moving the individual views. It also handles
   // smoothness reporting, because the view movement animation has a longer
   // duration.
-  if (apps_page_->GetVisible())
-    apps_page_->StartShowAnimation();
+  if (current_page_ == AppListBubblePage::kApps)
+    apps_page_->AnimateShowLauncher();
 
   // Note: The assistant page handles its own show animation internally.
 }
@@ -301,8 +301,8 @@ void AppListBubbleView::StartHideAnimation(
   const gfx::Rect target_bounds = layer()->GetTargetBounds();
   const gfx::Rect final_bounds = GetShowHideAnimationBounds(target_bounds);
 
-  if (apps_page_->GetVisible())
-    apps_page_->StartHideAnimation();
+  if (current_page_ == AppListBubblePage::kApps)
+    apps_page_->AnimateHideLauncher();
 
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(&AppListBubbleView::OnHideAnimationEnded,
@@ -335,23 +335,47 @@ bool AppListBubbleView::Back() {
 
 void AppListBubbleView::ShowPage(AppListBubblePage page) {
   DVLOG(1) << __PRETTY_FUNCTION__ << " page " << page;
+  if (page == current_page_)
+    return;
+
+  const AppListBubblePage previous_page = current_page_;
+  current_page_ = page;
+
   // The assistant has its own text input field.
   search_box_view_->SetVisible(page != AppListBubblePage::kAssistant);
   separator_->SetVisible(page != AppListBubblePage::kAssistant);
 
-  apps_page_->SetVisible(page == AppListBubblePage::kApps);
   search_page_->SetVisible(page == AppListBubblePage::kSearch);
   search_page_dialog_controller_->SetEnabled(page ==
                                              AppListBubblePage::kSearch);
   assistant_page_->SetVisible(page == AppListBubblePage::kAssistant);
-  switch (page) {
+  switch (current_page_) {
+    case AppListBubblePage::kNone:
+      NOTREACHED();
+      break;
     case AppListBubblePage::kApps:
+      if (previous_page == AppListBubblePage::kSearch)
+        apps_page_->AnimateShowPage();
+      else
+        apps_page_->SetVisible(true);
+      search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
+      // Explicitly request focus in case the search box was active before.
+      search_box_view_->search_box()->RequestFocus();
+      break;
     case AppListBubblePage::kSearch:
+      if (previous_page == AppListBubblePage::kApps)
+        apps_page_->AnimateHidePage();
+      else
+        apps_page_->SetVisible(false);
       search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
       // Explicitly request focus in case the search box was active before.
       search_box_view_->search_box()->RequestFocus();
       break;
     case AppListBubblePage::kAssistant:
+      if (previous_page == AppListBubblePage::kApps)
+        apps_page_->AnimateHidePage();
+      else
+        apps_page_->SetVisible(false);
       // Explicitly set search box inactive so the next attempt to activate it
       // will succeed.
       search_box_view_->SetSearchBoxActive(false,
@@ -362,7 +386,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
 }
 
 bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
-  return assistant_page_->GetVisible();
+  return current_page_ == AppListBubblePage::kAssistant;
 }
 
 void AppListBubbleView::ShowEmbeddedAssistantUI() {
@@ -375,6 +399,11 @@ void AppListBubbleView::ShowEmbeddedAssistantUI() {
 int AppListBubbleView::GetHeightToFitAllApps() const {
   return apps_page_->scroll_view()->contents()->bounds().height() +
          search_box_view_->GetPreferredSize().height();
+}
+
+void AppListBubbleView::OnTemporarySortOrderChanged(
+    const absl::optional<AppListSortOrder>& new_order) {
+  apps_page_->OnTemporarySortOrderChanged(new_order);
 }
 
 const char* AppListBubbleView::GetClassName() const {
@@ -429,12 +458,10 @@ void AppListBubbleView::Layout() {
 
 void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   DCHECK_EQ(sender, search_box_view_);
-  // TODO(https://crbug.com/1204551): Animated transitions.
-  const bool has_search = search_box_view_->HasSearch();
-  apps_page_->SetVisible(!has_search);
-  search_page_->SetVisible(has_search);
-  search_page_dialog_controller_->SetEnabled(has_search);
-  assistant_page_->SetVisible(false);
+  if (search_box_view_->HasSearch())
+    ShowPage(AppListBubblePage::kSearch);
+  else
+    ShowPage(AppListBubblePage::kApps);
 
   // Ask the controller to start the search.
   std::u16string query =
@@ -461,7 +488,7 @@ void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
 }
 
 bool AppListBubbleView::CanSelectSearchResults() {
-  return search_page_->GetVisible() &&
+  return current_page_ == AppListBubblePage::kSearch &&
          search_page_->search_view()->CanSelectSearchResults();
 }
 
@@ -565,6 +592,12 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
 
   // Hide any open folder by showing the apps page.
   ShowApps(/*folder_item_view=*/nullptr, /*select_folder=*/false);
+
+  // Reset pages to default visibility.
+  current_page_ = AppListBubblePage::kNone;
+  apps_page_->SetVisible(true);
+  search_page_->SetVisible(false);
+  assistant_page_->SetVisible(false);
 
   if (on_hide_animation_ended_)
     std::move(on_hide_animation_ended_).Run();

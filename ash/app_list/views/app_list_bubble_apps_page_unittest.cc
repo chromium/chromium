@@ -7,11 +7,13 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
@@ -54,6 +56,55 @@ TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
   // At the end of the animation, the recent apps layer is still destroyed,
   // even though the layer existed at the start of the second animation.
   EXPECT_FALSE(recent_apps->layer());
+}
+
+TEST_F(AppListBubbleAppsPageTest, ViewNotVisibleAfterAnimateHidePage) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  ASSERT_TRUE(apps_page->GetVisible());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Type a key to trigger the animation to transition to the search page.
+  PressAndReleaseKey(ui::VKEY_A);
+  LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
+
+  // Apps page is not visible.
+  EXPECT_FALSE(apps_page->GetVisible());
+}
+
+TEST_F(AppListBubbleAppsPageTest, ViewVisibleAfterAnimateShowPage) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  // Type a key switch to the search page.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  ASSERT_FALSE(apps_page->GetVisible());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Press escape to trigger animation back to the apps page.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
+
+  // Apps page is visible.
+  EXPECT_TRUE(apps_page->GetVisible());
 }
 
 TEST_F(AppListBubbleAppsPageTest, GradientMaskCreatedWhenAnimationsDisabled) {

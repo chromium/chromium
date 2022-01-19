@@ -80,7 +80,9 @@ AppListFolderView* GetAppListFolderView() {
 
 AppListReorderUndoContainerView* GetReorderUndoContainerViewFromBubble() {
   DCHECK(features::IsLauncherAppSortEnabled());
-  return GetAppListBubbleView()->apps_page()->reorder_undo_container_for_test();
+  return GetAppListBubbleView()
+      ->apps_page_for_test()
+      ->reorder_undo_container_for_test();
 }
 
 AppListReorderUndoContainerView*
@@ -150,11 +152,19 @@ void AppListTestApi::WaitForBubbleWindow(bool wait_for_opening_animation) {
     DCHECK_EQ(app_list_window, waiter.added_window());
   }
 
-  if (wait_for_opening_animation)
-    WaitUntilAppListAnimationIdle();
+  if (wait_for_opening_animation) {
+    // Clamshell productivity launcher animates the AppListBubbleView.
+    LayerAnimationStoppedWaiter().Wait(
+        app_list_controller->bubble_presenter_for_test()
+            ->bubble_view_for_test()
+            ->layer());
+  }
 }
 
 void AppListTestApi::WaitUntilAppListAnimationIdle() {
+  // This function waits for the fullscreen launcher animation.
+  DCHECK(!features::IsProductivityLauncherEnabled() ||
+         Shell::Get()->IsInTabletMode());
   aura::Window* app_list_window =
       Shell::Get()->app_list_controller()->GetWindow();
   DCHECK(app_list_window);
@@ -267,7 +277,9 @@ void AppListTestApi::UpdatePagedViewStructure() {
 AppsGridView* AppListTestApi::GetTopLevelAppsGridView() {
   if (features::IsProductivityLauncherEnabled() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    return GetAppListBubbleView()->apps_page()->scrollable_apps_grid_view();
+    return GetAppListBubbleView()
+        ->apps_page_for_test()
+        ->scrollable_apps_grid_view();
   }
 
   return GetPagedAppsGridView();

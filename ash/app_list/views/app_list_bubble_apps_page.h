@@ -17,6 +17,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+namespace ui {
+class Layer;
+}  // namespace ui
+
 namespace views {
 class Separator;
 }  // namespace views
@@ -57,11 +61,17 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   ~AppListBubbleAppsPage() override;
 
   // Starts the launcher show animation.
-  void StartShowAnimation();
+  void AnimateShowLauncher();
 
   // Starts the launcher hide animation. None of the child views animate, but
   // this disables the scroll view gradient mask to improve performance.
-  void StartHideAnimation();
+  void AnimateHideLauncher();
+
+  // Starts the animation for showing the apps page, coming from another page.
+  void AnimateShowPage();
+
+  // Starts the animation for hiding the apps page, going to another page.
+  void AnimateHidePage();
 
   // Aborts all layer animations, which invokes their cleanup callbacks.
   void AbortAllAnimations();
@@ -98,6 +108,9 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   ScrollableAppsGridView* scrollable_apps_grid_view() {
     return scrollable_apps_grid_view_;
   }
+
+  // Which layer animates is an implementation detail.
+  ui::Layer* GetPageAnimationLayerForTest();
 
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
   views::Separator* separator_for_test() { return separator_; }

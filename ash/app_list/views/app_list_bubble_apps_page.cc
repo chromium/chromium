@@ -35,6 +35,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
@@ -190,7 +192,9 @@ AppListBubbleAppsPage::~AppListBubbleAppsPage() {
   recent_apps_->RemoveObserver(this);
 }
 
-void AppListBubbleAppsPage::StartShowAnimation() {
+void AppListBubbleAppsPage::AnimateShowLauncher() {
+  DCHECK(GetVisible());
+
   // The animation relies on the correct positions of views, so force layout.
   if (needs_layout())
     Layout();
@@ -237,9 +241,93 @@ void AppListBubbleAppsPage::StartShowAnimation() {
                           weak_factory_.GetWeakPtr()));
 }
 
-void AppListBubbleAppsPage::StartHideAnimation() {
+void AppListBubbleAppsPage::AnimateHideLauncher() {
   // Remove the gradient mask from the scroll view to improve performance.
   gradient_helper_.reset();
+}
+
+void AppListBubbleAppsPage::AnimateShowPage() {
+  SetVisible(true);
+
+  // If skipping animations, just update visibility.
+  if (!features::IsProductivityLauncherAnimationEnabled() ||
+      ui::ScopedAnimationDurationScaleMode::is_zero()) {
+    return;
+  }
+
+  // TODO(https://crbug.com/1286590): Add ui::AnimationThroughputReporter and
+  // tests.
+
+  // Scroll contents has a layer, so animate that.
+  views::View* scroll_contents = scroll_view_->contents();
+  DCHECK(scroll_contents->layer());
+  DCHECK_EQ(scroll_contents->layer()->type(), ui::LAYER_TEXTURED);
+
+  gfx::Transform translate_down;
+  constexpr int kVerticalOffset = 40;
+  translate_down.Translate(0, kVerticalOffset);
+
+  // Position: Down 40 -> 0, duration 250ms, ease (0.00, 0.00, 0.20, 1.00)
+  // Opacity: 0% -> 100%, delay 50ms, duration 100ms
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetOpacity(scroll_contents, 0.f)
+      .SetTransform(scroll_contents, translate_down)
+      .Then()
+      .SetDuration(base::Milliseconds(250))
+      .SetTransform(scroll_contents, gfx::Transform(),
+                    gfx::Tween::LINEAR_OUT_SLOW_IN)
+      .At(base::Milliseconds(50))
+      .SetDuration(base::Milliseconds(100))
+      .SetOpacity(scroll_contents, 1.f);
+}
+
+void AppListBubbleAppsPage::AnimateHidePage() {
+  // If skipping animations, just update visibility.
+  if (!features::IsProductivityLauncherAnimationEnabled() ||
+      ui::ScopedAnimationDurationScaleMode::is_zero()) {
+    SetVisible(false);
+    return;
+  }
+
+  // TODO(https://crbug.com/1286590): Add ui::AnimationThroughputReporter and
+  // tests.
+
+  // Update view visibility when the animation is done.
+  auto set_visible_false = base::BindRepeating(
+      [](base::WeakPtr<AppListBubbleAppsPage> self) {
+        if (!self)
+          return;
+        self->SetVisible(false);
+        ui::Layer* layer = self->scroll_view()->contents()->layer();
+        layer->SetOpacity(1.f);
+        layer->SetTransform(gfx::Transform());
+      },
+      weak_factory_.GetWeakPtr());
+
+  // Scroll contents has a layer, so animate that.
+  views::View* scroll_contents = scroll_view_->contents();
+  DCHECK(scroll_contents->layer());
+  DCHECK_EQ(scroll_contents->layer()->type(), ui::LAYER_TEXTURED);
+
+  // The animation spec says 40 dips down over 250ms, but the opacity animation
+  // renders the view invisible after 50ms, so animate the visible fraction.
+  gfx::Transform translate_down;
+  constexpr int kVerticalOffset = 40 * 250 / 50;
+  translate_down.Translate(0, kVerticalOffset);
+
+  // Opacity: 100% -> 0%, duration 50ms
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(set_visible_false)
+      .OnAborted(set_visible_false)
+      .Once()
+      .SetDuration(base::Milliseconds(50))
+      .SetOpacity(scroll_contents, 0.f)
+      .SetTransform(scroll_contents, translate_down);
 }
 
 void AppListBubbleAppsPage::AbortAllAnimations() {
@@ -331,6 +419,10 @@ bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
   DCHECK(item);
   item->RequestFocus();
   return true;
+}
+
+ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {
+  return scroll_view_->contents()->layer();
 }
 
 void AppListBubbleAppsPage::UpdateSeparatorVisibility() {

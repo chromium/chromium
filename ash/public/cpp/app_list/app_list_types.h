@@ -196,7 +196,18 @@ enum class AppListState {
 };
 
 // Sub-pages of the app list bubble (with ProductivityLauncher).
-enum class AppListBubblePage { kApps, kSearch, kAssistant };
+enum class AppListBubblePage {
+  // Used at startup and when the app list bubble is not visible. Allows
+  // detection of transitions like hidden -> apps or hidden -> assistant,
+  // avoiding unnecessary page hide animations.
+  kNone = 0,
+  // The apps grid, as well as continue tasks and recent apps.
+  kApps,
+  // The search page.
+  kSearch,
+  // The assistant page.
+  kAssistant
+};
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
                                            AppListBubblePage page);

@@ -75,6 +75,9 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // apps grid. Used for computing the bubble height on large screens.
   int GetHeightToFitAllApps() const;
 
+  void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order);
+
   // views::View:
   const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -96,8 +99,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void ShowApps(AppListItemView* folder_item_view, bool select_folder) override;
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;
-
-  AppListBubbleAppsPage* apps_page() { return apps_page_; }
 
   ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
   views::View* separator_for_test() { return separator_; }
@@ -133,7 +134,14 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   std::unique_ptr<SearchResultPageDialogController>
       search_page_dialog_controller_;
 
+  // Explicitly store the current page because multiple pages can be visible
+  // during animations.
+  AppListBubblePage current_page_ = AppListBubblePage::kNone;
+
   std::unique_ptr<ViewShadow> view_shadow_;
+
+  // The individual views are implementation details and are intentionally not
+  // exposed via getters (except for tests).
   SearchBoxView* search_box_view_ = nullptr;
   views::View* separator_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;

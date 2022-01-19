@@ -20,6 +20,7 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_folder_view.h"
@@ -1606,12 +1607,15 @@ TEST_P(AppsGridViewDragTest, DragIconHiddenImmediatelyWhenGridHides) {
       search_box_view_->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_A);
 
+  auto* helper = GetAppListTestHelper();
   if (is_productivity_launcher_enabled_) {
-    ASSERT_TRUE(GetAppListTestHelper()->GetBubbleSearchPage()->GetVisible());
+    // Wait for page switch animation.
+    LayerAnimationStoppedWaiter().Wait(
+        helper->GetBubbleAppsPage()->GetPageAnimationLayerForTest());
+    ASSERT_FALSE(helper->GetBubbleAppsPage()->GetVisible());
+    ASSERT_TRUE(helper->GetBubbleSearchPage()->GetVisible());
   } else {
-    ASSERT_TRUE(GetAppListTestHelper()
-                    ->GetFullscreenSearchResultPageView()
-                    ->GetVisible());
+    ASSERT_TRUE(helper->GetFullscreenSearchResultPageView()->GetVisible());
   }
 
   // Verify the drag icon is hidden immediately.
@@ -1672,16 +1676,19 @@ TEST_P(AppsGridViewDragTest, FolderNotOpenedIfGridHidesDuringIconDrop) {
       search_box_view_->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_A);
 
+  auto* helper = GetAppListTestHelper();
   if (is_productivity_launcher_enabled_) {
-    ASSERT_TRUE(GetAppListTestHelper()->GetBubbleSearchPage()->GetVisible());
+    // Wait for page switch animation.
+    LayerAnimationStoppedWaiter().Wait(
+        helper->GetBubbleAppsPage()->GetPageAnimationLayerForTest());
+    ASSERT_FALSE(helper->GetBubbleAppsPage()->GetVisible());
+    ASSERT_TRUE(helper->GetBubbleSearchPage()->GetVisible());
   } else {
-    ASSERT_TRUE(GetAppListTestHelper()
-                    ->GetFullscreenSearchResultPageView()
-                    ->GetVisible());
+    ASSERT_TRUE(helper->GetFullscreenSearchResultPageView()->GetVisible());
   }
 
   EXPECT_FALSE(test_api_->GetDragIconLayer());
-  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_FALSE(helper->IsInFolderView());
 }
 
 TEST_P(AppsGridViewClamshellTest, CheckFolderWithMultiplePagesContents) {
