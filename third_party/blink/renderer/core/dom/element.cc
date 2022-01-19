@@ -2900,7 +2900,8 @@ bool Element::SkipStyleRecalcForContainer(
   } else {
     LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object || !layout_object->SelfNeedsLayout() ||
-        !layout_object->IsEligibleForSizeContainment()) {
+        !layout_object->IsEligibleForSizeContainment() ||
+        layout_object->ForceLegacyLayout()) {
       return false;
     }
   }
