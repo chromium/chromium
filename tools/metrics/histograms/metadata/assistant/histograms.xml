@@ -29,13 +29,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".UnitConversion" summary="UnitConversion result type"/>
 </variants>
 
-<variants name="QuickAnswersConsentInteractionType">
-  <variant name=".Accept" summary="Clicks on the accept button"/>
-  <variant name=".Dismiss" summary="Dismisses the consent"/>
-  <variant name=".ManageSettings"
-      summary="Clicks on the 'manage settings' button"/>
-</variants>
-
 <variants name="QuickAnswersV2ConsentResultType">
   <variant name=".Allow" summary="Clicks on the allow button"/>
   <variant name=".Dismiss" summary="Dismisses or ignores the consent"/>
@@ -344,67 +337,6 @@ chromium-metrics-reviews@google.com.
   <token key="QuickAnswersClickResultType"
       variants="QuickAnswersClickResultType">
     <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="QuickAnswers.Consent" units="impressions" expires_after="M98">
-  <obsolete>
-    Removed 10-2021
-  </obsolete>
-  <owner>updowndota@chromium.org</owner>
-  <owner>llin@google.com</owner>
-  <owner>croissant-eng@chromium.org</owner>
-  <summary>
-    For every quick answers consent impression, records how many times the user
-    has seen the consent. ChromeOS only.
-  </summary>
-</histogram>
-
-<histogram
-    name="QuickAnswers.Consent.Duration{QuickAnswersConsentInteractionType}"
-    units="ms" expires_after="M98">
-  <obsolete>
-    Removed 10-2021
-  </obsolete>
-  <owner>updowndota@chromium.org</owner>
-  <owner>llin@google.com</owner>
-  <owner>croissant-eng@chromium.org</owner>
-  <summary>
-    For every quick answers consent interaction event, records how long the user
-    has seen the consent before. ChromeOS only.
-    {QuickAnswersConsentInteractionType}
-  </summary>
-  <token key="QuickAnswersConsentInteractionType"
-      variants="QuickAnswersConsentInteractionType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
-<histogram
-    name="QuickAnswers.Consent.Impression{QuickAnswersConsentInteractionType}"
-    units="impressions" expires_after="M98">
-  <obsolete>
-    Removed 10-2021
-  </obsolete>
-  <owner>updowndota@chromium.org</owner>
-  <owner>llin@google.com</owner>
-  <owner>croissant-eng@chromium.org</owner>
-  <summary>
-    For every quick answers consent interaction event, records how many times
-    the user has seen the consent before. ChromeOS only.
-    {QuickAnswersConsentInteractionType}
-  </summary>
-  <token key="QuickAnswersConsentInteractionType"
-      variants="QuickAnswersConsentInteractionType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
   </token>
 </histogram>
 
