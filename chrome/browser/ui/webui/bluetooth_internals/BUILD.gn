@@ -33,6 +33,7 @@ source_set("bluetooth_internals") {
 
 mojom("mojo_bindings") {
   sources = [ "bluetooth_internals.mojom" ]
+  webui_module_path = "/"
 
   deps =
       [ "//device/bluetooth/public/mojom:deprecated_experimental_interfaces" ]

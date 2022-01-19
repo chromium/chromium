@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {UUID} from './uuid.mojom-webui.js';
+
 /**
  * Format in a user readable way service UUIDs.
- * @param ?Array<bluetooth.mojom.UUID> uuids
+ * @param ?Array<UUID> uuids
  * @return {string}
  */
 export function formatServiceUuids(serviceUuids) {

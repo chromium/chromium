@@ -9,6 +9,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 
+import {GattResult, Property} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {Snackbar, SnackbarType} from './snackbar.js';
 
@@ -300,12 +301,9 @@ ValueControl.prototype = {
    * availability of reads and writes and the current cached value.
    */
   redraw() {
-    this.readBtn_.hidden =
-        (this.properties_ & bluetooth.mojom.Property.READ) === 0;
-    this.writeBtn_.hidden =
-        (this.properties_ & bluetooth.mojom.Property.WRITE) === 0 &&
-        (this.properties_ & bluetooth.mojom.Property.WRITE_WITHOUT_RESPONSE) ===
-            0;
+    this.readBtn_.hidden = (this.properties_ & Property.READ) === 0;
+    this.writeBtn_.hidden = (this.properties_ & Property.WRITE) === 0 &&
+        (this.properties_ & Property.WRITE_WITHOUT_RESPONSE) === 0;
 
     const isAvailable = !this.readBtn_.hidden || !this.writeBtn_.hidden;
     this.unavailableMessage_.hidden = isAvailable;
@@ -330,13 +328,12 @@ ValueControl.prototype = {
 
   /**
    * Gets an error string describing the given |result| code.
-   * @param {!bluetooth.mojom.GattResult} result
+   * @param {!GattResult} result
    * @private
    */
   getErrorString_(result) {
     // TODO(crbug.com/663394): Replace with more descriptive error
     // messages.
-    const GattResult = bluetooth.mojom.GattResult;
     return Object.keys(GattResult).find(function(key) {
       return GattResult[key] === result;
     });
@@ -365,7 +362,7 @@ ValueControl.prototype = {
         .then(function(response) {
           this.readBtn_.disabled = false;
 
-          if (response.result === bluetooth.mojom.GattResult.SUCCESS) {
+          if (response.result === GattResult.SUCCESS) {
             this.setValue(response.value);
             Snackbar.show(
                 this.deviceAddress_ + ': Read succeeded', SnackbarType.SUCCESS);
@@ -403,7 +400,7 @@ ValueControl.prototype = {
         .then(function(response) {
           this.writeBtn_.disabled = false;
 
-          if (response.result === bluetooth.mojom.GattResult.SUCCESS) {
+          if (response.result === GattResult.SUCCESS) {
             Snackbar.show(
                 this.deviceAddress_ + ': Write succeeded',
                 SnackbarType.SUCCESS);

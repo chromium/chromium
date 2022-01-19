@@ -11,6 +11,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 
+import {DescriptorInfo} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ExpandableList, ExpandableListItem} from './expandable_list.js';
 import {ObjectFieldSet} from './object_fieldset.js';
@@ -28,7 +29,7 @@ const INFO_PROPERTY_NAMES = {
  * A fieldset is created within the element for the primitive
  * properties, 'id' and 'uuid' within the DescriptorInfo object.
  * @constructor
- * @param {!bluetooth.mojom.DescriptorInfo} descriptorInfo
+ * @param {!DescriptorInfo} descriptorInfo
  * @param {string} deviceAddress
  * @param {string} serviceId
  * @param {string} characteristicId
@@ -39,7 +40,7 @@ export function DescriptorListItem(
   const listItem = new ExpandableListItem();
   listItem.__proto__ = DescriptorListItem.prototype;
 
-  /** @type {!bluetooth.mojom.DescriptorInfo} */
+  /** @type {!DescriptorInfo} */
   listItem.info = descriptorInfo;
   /** @private {string} */
   listItem.deviceAddress_ = deviceAddress;

@@ -7,10 +7,10 @@
  *     chrome://bluetooth-internals/.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './device.mojom-lite.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+
+import {DeviceInfo} from './device.mojom-webui.js';
 
 /**
  * Enum of connection status for a device.
@@ -28,7 +28,7 @@ export const ConnectionStatus = {
  */
 export class DeviceCollection extends ArrayDataModel {
   /**
-   * @param {!Array<!bluetooth.mojom.DeviceInfo>} array The starting
+   * @param {!Array<!DeviceInfo>} array The starting
    *     collection of devices.
    */
   constructor(array) {
@@ -56,7 +56,7 @@ export class DeviceCollection extends ArrayDataModel {
 
   /**
    * Adds or updates a Device with new DeviceInfo.
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    */
   addOrUpdate(deviceInfo) {
     this.removedDevices_[deviceInfo.address] = false;
@@ -78,7 +78,7 @@ export class DeviceCollection extends ArrayDataModel {
 
   /**
    * Marks the Device as removed.
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    */
   remove(deviceInfo) {
     const device = this.getByAddress(deviceInfo.address);
@@ -90,7 +90,7 @@ export class DeviceCollection extends ArrayDataModel {
   /**
    * Return true if device was "removed" -- previously found via scan but
    * either no longer advertising or no longer nearby.
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    */
   isRemoved(deviceInfo) {
     return !!this.removedDevices_[deviceInfo.address];

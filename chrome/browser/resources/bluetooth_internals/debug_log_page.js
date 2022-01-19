@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './uuid.mojom-lite.js';
-import './device.mojom-lite.js';
-import './adapter.mojom-lite.js';
-import './bluetooth_internals.mojom-lite.js';
-
 import {$} from 'chrome://resources/js/util.m.js';
 
+import {BluetoothInternalsHandlerRemote, DebugLogsChangeHandlerRemote} from './bluetooth_internals.mojom-webui.js';
 import {Page} from './page.js';
 
 /** @const {string} */
@@ -20,13 +15,13 @@ const LOGS_NOT_SUPPORTED_STRING = 'Debug logs not supported';
  */
 export class DebugLogPage extends Page {
   /**
-   * @param {!mojom.BluetoothInternalsHandlerRemote} bluetoothInternalsHandler
+   * @param {!BluetoothInternalsHandlerRemote} bluetoothInternalsHandler
    */
   constructor(bluetoothInternalsHandler) {
     super('debug', 'Debug Logs', 'debug');
 
     /**
-     * @private {?mojom.DebugLogsChangeHandlerRemote}
+     * @private {?DebugLogsChangeHandlerRemote}
      */
     this.debugLogsChangeHandler_ = null;
 
@@ -47,7 +42,7 @@ export class DebugLogPage extends Page {
   }
 
   /**
-   * @param {!mojom.DebugLogsChangeHandlerRemote} handler
+   * @param {!DebugLogsChangeHandlerRemote} handler
    * @param {boolean} initialInputValue
    */
   setUpInput(handler, initialInputValue) {

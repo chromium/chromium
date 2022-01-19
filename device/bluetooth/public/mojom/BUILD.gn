@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "uuid.mojom" ]
+  webui_module_path = "/"
 
   cpp_typemaps = [
     {
@@ -48,6 +49,7 @@ mojom("deprecated_experimental_interfaces") {
     "adapter.mojom",
     "device.mojom",
   ]
+  webui_module_path = "/"
 
   public_deps = [ ":mojom" ]
 

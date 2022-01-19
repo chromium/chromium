@@ -7,6 +7,7 @@ import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 
 import {CharacteristicList} from './characteristic_list.js';
+import {ServiceInfo} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ExpandableList, ExpandableListItem} from './expandable_list.js';
 import {ObjectFieldSet} from './object_fieldset.js';
@@ -33,7 +34,7 @@ const PROPERTY_NAMES = {
  * contains an ObjectFieldSet that displays all of the properties in the
  * given |serviceInfo|. Data is not loaded until the ServiceListItem is
  * expanded for the first time.
- * @param {!bluetooth.mojom.ServiceInfo} serviceInfo
+ * @param {!ServiceInfo} serviceInfo
  * @param {string} deviceAddress
  * @extends {ExpandableListItem}
  * @constructor
@@ -42,7 +43,7 @@ export function ServiceListItem(serviceInfo, deviceAddress) {
   const listItem = new ExpandableListItem();
   listItem.__proto__ = ServiceListItem.prototype;
 
-  /** @type {!bluetooth.mojom.ServiceInfo} */
+  /** @type {!ServiceInfo} */
   listItem.info = serviceInfo;
   /** @private {string} */
   listItem.deviceAddress_ = deviceAddress;

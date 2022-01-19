@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AdapterReceiver, ConnectResult} from 'chrome://bluetooth-internals/adapter.mojom-webui.js';
+import {BluetoothInternalsHandlerReceiver} from 'chrome://bluetooth-internals/bluetooth_internals.mojom-webui.js';
+import {DeviceCallbackRouter} from 'chrome://bluetooth-internals/device.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /**
- * A mojom.BluetoothInternalsHandler for the chrome://bluetooth-internals
+ * A BluetoothInternalsHandler for the chrome://bluetooth-internals
  * page. Provides a fake BluetoothInternalsHandler::GetAdapter
  * implementation and acts as a root of all Test* classes by containing an
  * adapter member.
@@ -21,7 +25,7 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
       'getDebugLogsChangeHandler',
     ]);
 
-    this.receiver_ = new mojom.BluetoothInternalsHandlerReceiver(this);
+    this.receiver_ = new BluetoothInternalsHandlerReceiver(this);
     this.receiver_.$.bindHandle(handle);
   }
 
@@ -46,7 +50,7 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
 }
 
 /**
- * A bluetooth.mojom.Adapter implementation for the
+ * A Adapter implementation for the
  * chrome://bluetooth-internals page.
  */
 export class TestAdapter extends TestBrowserProxy {
@@ -57,12 +61,12 @@ export class TestAdapter extends TestBrowserProxy {
       'addObserver',
     ]);
 
-    this.receiver = new bluetooth.mojom.AdapterReceiver(this);
+    this.receiver = new AdapterReceiver(this);
 
     this.deviceImplMap = new Map();
     this.adapterInfo_ = adapterInfo;
     this.devices_ = [];
-    this.connectResult_ = bluetooth.mojom.ConnectResult.SUCCESS;
+    this.connectResult_ = ConnectResult.SUCCESS;
   }
 
   reset() {
@@ -138,7 +142,7 @@ export class TestAdapter extends TestBrowserProxy {
 }
 
 /**
- * A bluetooth.mojom.Device implementation for the
+ * A Device implementation for the
  * chrome://bluetooth-internals page. Remotes are returned by a
  * TestAdapter which provides the DeviceInfo.
  * @param {!device.DeviceInfo} info
@@ -156,7 +160,7 @@ export class TestDevice extends TestBrowserProxy {
     // NOTE: We use the generated CallbackRouter here because Device defines
     // lots of methods we don't care to mock here. DeviceCallbackRouter
     // callback silently discards messages that have no listeners.
-    this.router = new bluetooth.mojom.DeviceCallbackRouter;
+    this.router = new DeviceCallbackRouter;
     this.router.disconnect.addListener(() => this.router.$.close());
     this.router.getInfo.addListener(() => this.getInfo());
     this.router.getServices.addListener(() => this.getServices());
