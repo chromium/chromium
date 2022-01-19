@@ -5,13 +5,12 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_ICON_ANIMATION_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_ICON_ANIMATION_H_
 
-#include "ash/ash_export.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_animation.h"
 
 namespace ash {
 
 // An animation for a `HoldingSpaceProgressIndicator`'s icon.
-class ASH_EXPORT HoldingSpaceProgressIconAnimation
+class HoldingSpaceProgressIconAnimation
     : public HoldingSpaceProgressIndicatorAnimation {
  public:
   HoldingSpaceProgressIconAnimation();
