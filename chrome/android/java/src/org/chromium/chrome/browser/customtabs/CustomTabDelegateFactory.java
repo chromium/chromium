@@ -471,7 +471,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     public NativePage createNativePage(String url, NativePage candidatePage, Tab tab) {
         // Navigation comes from user pressing "Back to safety" on an interstitial so close the tab.
         // See crbug.com/1270695
-        if (url.equals(UrlConstants.NTP_URL) && tab.isShowingErrorPage()) {
+        if (UrlConstants.NTP_URL.equals(url) && tab.isShowingErrorPage()) {
             mNavigationDelegate.closeTab();
         }
         // Custom tab does not create native pages.
