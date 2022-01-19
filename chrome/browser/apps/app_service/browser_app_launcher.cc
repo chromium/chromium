@@ -10,8 +10,10 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -20,6 +22,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -27,24 +30,20 @@
 #include "components/sessions/core/session_id.h"
 #endif
 
-namespace apps {
-
-BrowserAppLauncher::BrowserAppLauncher(Profile* profile)
-    : profile_(profile), web_app_launch_manager_(profile) {}
-
-BrowserAppLauncher::~BrowserAppLauncher() = default;
-
-content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
-    AppLaunchParams&& params) {
+namespace {
+content::WebContents* LaunchAppWithParamsImpl(
+    apps::AppLaunchParams&& params,
+    Profile* profile,
+    web_app::WebAppLaunchManager* web_app_launch_manager) {
   const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
+      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           params.app_id);
   if (!extension) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    AppLaunchParams params_for_restore(params.app_id, params.container,
-                                       params.disposition, params.launch_source,
-                                       params.display_id, params.launch_files,
-                                       params.intent);
+    apps::AppLaunchParams params_for_restore(
+        params.app_id, params.container, params.disposition,
+        params.launch_source, params.display_id, params.launch_files,
+        params.intent);
     std::string app_id = params.app_id;
     apps::mojom::LaunchSource launch_source = params.launch_source;
     apps::mojom::LaunchContainer container = params.container;
@@ -55,19 +54,19 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
     full_restore::FullRestoreSaveHandler::GetInstance();
 
     auto* web_contents =
-        web_app_launch_manager_.OpenApplication(std::move(params));
+        web_app_launch_manager->OpenApplication(std::move(params));
 
     if (!SessionID::IsValidValue(restore_id)) {
-      RecordAppLaunchMetrics(profile_, apps::AppType::kWeb, app_id,
+      RecordAppLaunchMetrics(profile, apps::AppType::kWeb, app_id,
                              launch_source, container);
       return web_contents;
     }
 
-    RecordAppLaunchMetrics(profile_, apps::AppType::kWeb, app_id,
+    RecordAppLaunchMetrics(profile, apps::AppType::kWeb, app_id,
                            apps::mojom::LaunchSource::kFromFullRestore,
                            container);
 
-    int session_id = GetSessionIdForRestoreFromWebContents(web_contents);
+    int session_id = apps::GetSessionIdForRestoreFromWebContents(web_contents);
     if (!SessionID::IsValidValue(session_id)) {
       return web_contents;
     }
@@ -79,12 +78,11 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
         std::move(params_for_restore.intent));
-    full_restore::SaveAppLaunchInfo(profile_->GetPath(),
-                                    std::move(launch_info));
+    full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
 
     return web_contents;
 #else
-    return web_app_launch_manager_.OpenApplication(std::move(params));
+    return web_app_launch_manager->OpenApplication(std::move(params));
 #endif
   }
 
@@ -92,30 +90,60 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
   // If the restore id is available, save the launch parameters to the full
   // restore file.
   if (SessionID::IsValidValue(params.restore_id)) {
-    RecordAppLaunchMetrics(profile_, apps::AppType::kChromeApp, params.app_id,
+    RecordAppLaunchMetrics(profile, apps::AppType::kChromeApp, params.app_id,
                            apps::mojom::LaunchSource::kFromFullRestore,
                            params.container);
 
-    AppLaunchParams params_for_restore(params.app_id, params.container,
-                                       params.disposition, params.launch_source,
-                                       params.display_id, params.launch_files,
-                                       params.intent);
+    apps::AppLaunchParams params_for_restore(
+        params.app_id, params.container, params.disposition,
+        params.launch_source, params.display_id, params.launch_files,
+        params.intent);
 
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         params_for_restore.app_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
         std::move(params_for_restore.intent));
-    full_restore::SaveAppLaunchInfo(profile_->GetPath(),
-                                    std::move(launch_info));
+    full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
   } else {
-    RecordAppLaunchMetrics(profile_, apps::AppType::kChromeApp, params.app_id,
+    RecordAppLaunchMetrics(profile, apps::AppType::kChromeApp, params.app_id,
                            params.launch_source, params.container);
   }
 #endif
 
-  return ::OpenApplication(profile_, std::move(params));
+  return ::OpenApplication(profile, std::move(params));
 }
+}  // namespace
+
+namespace apps {
+
+BrowserAppLauncher::BrowserAppLauncher(Profile* profile)
+    : profile_(profile), web_app_launch_manager_(profile) {}
+
+BrowserAppLauncher::~BrowserAppLauncher() = default;
+
+// TODO(crbug.com/1244506): Make this interface only work for non-ChromeOS
+// platform after the clean up.
+content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
+    AppLaunchParams&& params) {
+  return LaunchAppWithParamsImpl(std::move(params), profile_,
+                                 &web_app_launch_manager_);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void BrowserAppLauncher::LaunchPlayStoreWithExtensions() {
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
+          arc::kPlayStoreAppId);
+  DCHECK(extension);
+  DCHECK(extensions::util::IsAppLaunchable(arc::kPlayStoreAppId, profile_));
+  LaunchAppWithParamsImpl(
+      CreateAppLaunchParamsUserContainer(
+          profile_, extension, WindowOpenDisposition::NEW_WINDOW,
+          apps::mojom::LaunchSource::kFromChromeInternal),
+      profile_, &web_app_launch_manager_);
+}
+#endif
 
 void BrowserAppLauncher::LaunchAppWithCallback(
     const std::string& app_id,

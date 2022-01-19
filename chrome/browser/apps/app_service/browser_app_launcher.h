@@ -51,6 +51,16 @@ class BrowserAppLauncher {
   // Launches an app for the given `app_id` in a way specified by `params`.
   content::WebContents* LaunchAppWithParams(AppLaunchParams&& params);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Launches Play Store with Extensions. ARC and Extensions share the same app
+  // id for Play Store, and App Service only registered the play store ARC app
+  // (see blocklist in
+  // chrome/browser/apps/app_service/publishers/extension_apps_chromeos.cc
+  // for more details). Therefore we need this interface to launch Play Store
+  // with Extensions when ARC is not enabled.
+  void LaunchPlayStoreWithExtensions();
+#endif
+
   // Attempts to open `app_id` in a new window or tab. Open an empty browser
   // window if unsuccessful. The user's preferred launch container for the app
   // (standalone window or browser tab) is used. `callback` will be called with
