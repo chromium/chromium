@@ -15,13 +15,6 @@ void Record(const PageRenderData& data) {
     base::UmaHistogramPercentageObsoleteDoNotUse(
         "Blink.Layout.NGRatio.Blocks",
         data.ng_layout_block_count * 100 / data.all_layout_block_count);
-
-    base::UmaHistogramPercentage(
-        "Blink.Layout.NGRatio.FlexboxBlocks",
-        data.flexbox_ng_layout_block_count * 100 / data.all_layout_block_count);
-    base::UmaHistogramPercentage(
-        "Blink.Layout.NGRatio.GridBlocks",
-        data.grid_ng_layout_block_count * 100 / data.all_layout_block_count);
   }
   if (data.all_layout_call_count) {
     base::UmaHistogramPercentageObsoleteDoNotUse(

@@ -1645,36 +1645,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Layout.FlexNGRatio.Blocks" units="%"
-    expires_after="2022-09-30">
-  <owner>ikilpatrick@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Records FlexNG block percentage.
-
-    This records the percentage of LayoutNGFlexibleBox objects, compared with
-    the total number of blocks. This is recorded once per page on unloading the
-    page. A value takes into account of all frames in a single page.
-
-    See https://bit.ly/ng-ratio for more details.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Layout.GridNGRatio.Blocks" units="%"
-    expires_after="2022-09-30">
-  <owner>ikilpatrick@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Records GridNG block percentage.
-
-    This records the percentage of LayoutNGGrid objects, compared with the total
-    number of blocks. This is recorded once per page on unloading the page. A
-    value takes into account of all frames in a single page.
-
-    See https://bit.ly/ng-ratio for more details.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Layout.NGRatio.Blocks" units="%"
     expires_after="2022-09-30">
   <owner>tkent@chromium.org</owner>

@@ -16,10 +16,7 @@
 namespace blink {
 
 LayoutNGFlexibleBox::LayoutNGFlexibleBox(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {
-  if (element)
-    GetDocument().IncLayoutFlexboxCounterNG();
-}
+    : LayoutNGMixin<LayoutBlock>(element) {}
 
 bool LayoutNGFlexibleBox::HasTopOverflow() const {
   if (IsHorizontalWritingMode())

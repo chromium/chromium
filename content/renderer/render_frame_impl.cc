@@ -4444,13 +4444,10 @@ void RenderFrameImpl::DidObserveLayoutShift(double score,
 void RenderFrameImpl::DidObserveLayoutNg(uint32_t all_block_count,
                                          uint32_t ng_block_count,
                                          uint32_t all_call_count,
-                                         uint32_t ng_call_count,
-                                         uint32_t flexbox_ng_block_count,
-                                         uint32_t grid_ng_block_count) {
+                                         uint32_t ng_call_count) {
   for (auto& observer : observers_)
     observer.DidObserveLayoutNg(all_block_count, ng_block_count, all_call_count,
-                                ng_call_count, flexbox_ng_block_count,
-                                grid_ng_block_count);
+                                ng_call_count);
 }
 
 void RenderFrameImpl::DidObserveLazyLoadBehavior(

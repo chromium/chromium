@@ -15,9 +15,7 @@ class LayoutCounts : public EmptyLocalFrameClient {
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
-                          uint32_t ng_call_count,
-                          uint32_t flexbox_ng_block_count,
-                          uint32_t grid_ng_block_count) override {
+                          uint32_t ng_call_count) override {
     all_call_count_ += all_call_count;
   }
 

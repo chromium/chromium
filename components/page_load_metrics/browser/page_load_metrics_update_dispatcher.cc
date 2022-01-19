@@ -782,10 +782,6 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
       render_data.all_layout_call_count_delta;
   page_render_data_.ng_layout_call_count +=
       render_data.ng_layout_call_count_delta;
-  page_render_data_.flexbox_ng_layout_block_count +=
-      render_data.flexbox_ng_layout_block_count_delta;
-  page_render_data_.grid_ng_layout_block_count +=
-      render_data.grid_ng_layout_block_count_delta;
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameRenderData(
@@ -804,10 +800,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameRenderData(
       render_data.ng_layout_block_count_delta;
   main_frame_render_data_.all_layout_call_count +=
       render_data.all_layout_call_count_delta;
-  main_frame_render_data_.flexbox_ng_layout_block_count +=
-      render_data.flexbox_ng_layout_block_count_delta;
-  page_render_data_.grid_ng_layout_block_count +=
-      render_data.grid_ng_layout_block_count_delta;
 }
 
 void PageLoadMetricsUpdateDispatcher::OnSubFrameRenderDataChanged(

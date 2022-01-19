@@ -135,10 +135,6 @@ struct PageRenderData {
 
   // How many times LayoutNG-based LayoutObject::UpdateLayout() is called.
   uint64_t ng_layout_call_count = 0;
-
-  uint64_t flexbox_ng_layout_block_count = 0;
-
-  uint64_t grid_ng_layout_block_count = 0;
 };
 
 // Information related to layout shift normalization for different strategies.

@@ -218,9 +218,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidObserveLayoutNg(uint32_t all_block_count,
                                   uint32_t ng_block_count,
                                   uint32_t all_call_count,
-                                  uint32_t ng_call_count,
-                                  uint32_t flexbox_ng_block_count,
-                                  uint32_t grid_ng_block_count) {}
+                                  uint32_t ng_call_count) {}
 
   // Reports lazy loaded behavior when the frame or image is fully deferred or
   // if the frame or image is loaded after being deferred by lazy load.

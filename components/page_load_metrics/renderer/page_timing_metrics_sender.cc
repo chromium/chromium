@@ -108,19 +108,14 @@ void PageTimingMetricsSender::DidObserveLayoutShift(
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::DidObserveLayoutNg(
-    uint32_t all_block_count,
-    uint32_t ng_block_count,
-    uint32_t all_call_count,
-    uint32_t ng_call_count,
-    uint32_t flexbox_ng_block_count,
-    uint32_t grid_ng_block_count) {
+void PageTimingMetricsSender::DidObserveLayoutNg(uint32_t all_block_count,
+                                                 uint32_t ng_block_count,
+                                                 uint32_t all_call_count,
+                                                 uint32_t ng_call_count) {
   render_data_.all_layout_block_count_delta += all_block_count;
   render_data_.ng_layout_block_count_delta += ng_block_count;
   render_data_.all_layout_call_count_delta += all_call_count;
   render_data_.ng_layout_call_count_delta += ng_call_count;
-  render_data_.flexbox_ng_layout_block_count_delta += flexbox_ng_block_count;
-  render_data_.grid_ng_layout_block_count_delta += grid_ng_block_count;
   EnsureSendTimer();
 }
 

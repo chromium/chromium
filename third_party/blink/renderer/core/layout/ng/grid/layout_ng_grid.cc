@@ -8,10 +8,7 @@
 namespace blink {
 
 LayoutNGGrid::LayoutNGGrid(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {
-  if (element)
-    GetDocument().IncLayoutGridCounterNG();
-}
+    : LayoutNGMixin<LayoutBlock>(element) {}
 
 void LayoutNGGrid::UpdateBlockLayout(bool relayout_children) {
   if (IsOutOfFlowPositioned()) {
