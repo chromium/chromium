@@ -442,3 +442,9 @@ see output if it is too long.
 ```bash
 curl -v http://localhost:8081/wpt_internal/fake/foobar.html |& less
 ```
+
+#### Debugging with a debugger
+
+You are able to debug the inside of Chromium with a debugger for particular
+WPT tests. Refer to [Running web tests using the content shell](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/testing/web_tests_in_content_shell.md)
+for details.

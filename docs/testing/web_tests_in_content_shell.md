@@ -153,6 +153,20 @@ Then start Content Shell with some additional flags:
 out/Default/content_shell --enable-experimental-web-platform-features --ignore-certificate-errors --host-resolver-rules="MAP nonexistent.*.test ~NOTFOUND, MAP *.test. 127.0.0.1, MAP *.test 127.0.0.1"
 ```
 
+You are also able to debug the inside of Chromium with a debugger for
+particular WPT tests. After starting the WPT server, run particular tests via
+Content Shell from the debugger with the following command.
+(Refer to your debugger's manual for how to start a program from your debugger.)
+
+```bash
+out/Default/content_shell --run-web-tests http://localhost:8001/<test>
+```
+
+Chromium adopts multi-process architecture. If you want to debug the child
+renderer processes, use `--single-process` Content Shell option, or
+`--renderer-startup-dialog` option and attach the debugger to the renderer
+processes after starting the tests. Refer to the Debugging section below for details.
+
 ## Debugging
 
 ### `--single-process`
