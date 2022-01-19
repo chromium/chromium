@@ -7784,6 +7784,27 @@
             ]
         }
     ],
+    "ThreadingOptimizationsOnIO": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220119",
+                    "enable_features": [
+                        "ThreadingOptimizationsOnIO"
+                    ]
+                }
+            ]
+        }
+    ],
     "ToolbarMicIphAndroid": [
         {
             "platforms": [
