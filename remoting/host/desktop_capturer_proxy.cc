@@ -17,7 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "remoting/host/client_session_control.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -130,16 +130,19 @@ void DesktopCapturerProxy::Core::OnCaptureResult(
 
 DesktopCapturerProxy::DesktopCapturerProxy(
     scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    base::WeakPtr<ClientSessionControl> client_session_control)
-    : capture_task_runner_(capture_task_runner),
-      client_session_control_(client_session_control),
-      desktop_display_info_monitor_(ui_task_runner, client_session_control) {
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
+    : capture_task_runner_(capture_task_runner) {
   core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
 }
 
 DesktopCapturerProxy::~DesktopCapturerProxy() {
   capture_task_runner_->DeleteSoon(FROM_HERE, core_.release());
+}
+
+void DesktopCapturerProxy::set_desktop_display_info_monitor(
+    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  desktop_display_info_monitor_ = std::move(monitor);
 }
 
 void DesktopCapturerProxy::CreateCapturer(
@@ -194,10 +197,14 @@ bool DesktopCapturerProxy::GetSourceList(SourceList* sources) {
 bool DesktopCapturerProxy::SelectSource(SourceId id_index) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  SourceId id = desktop_display_info_monitor_.SourceIdFromIndex(id_index);
-  capture_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Core::SelectSource, base::Unretained(core_.get()), id));
+  if (desktop_display_info_monitor_) {
+    SourceId id = desktop_display_info_monitor_->SourceIdFromIndex(id_index);
+    capture_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Core::SelectSource, base::Unretained(core_.get()), id));
+  } else {
+    NOTIMPLEMENTED();
+  }
   return false;
 }
 
@@ -208,8 +215,8 @@ void DesktopCapturerProxy::OnFrameCaptured(
 
   callback_->OnCaptureResult(result, std::move(frame));
 
-  if (client_session_control_) {
-    desktop_display_info_monitor_.QueryDisplayInfo();
+  if (desktop_display_info_monitor_) {
+    desktop_display_info_monitor_->QueryDisplayInfo();
   }
 }
 

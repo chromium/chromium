@@ -15,6 +15,7 @@
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_capturer_proxy.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/file_transfer/local_file_operations.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
@@ -148,8 +149,11 @@ std::unique_ptr<webrtc::DesktopCapturer>
 BasicDesktopEnvironment::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::unique_ptr<DesktopCapturerProxy> result(new DesktopCapturerProxy(
-      video_capture_task_runner_, ui_task_runner_, client_session_control_));
+  auto result = std::make_unique<DesktopCapturerProxy>(
+      video_capture_task_runner_, ui_task_runner_);
+  result->set_desktop_display_info_monitor(
+      std::make_unique<DesktopDisplayInfoMonitor>(ui_task_runner_,
+                                                  client_session_control_));
   result->CreateCapturer(desktop_capture_options());
   return std::move(result);
 }
