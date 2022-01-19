@@ -5510,6 +5510,7 @@
                         "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
+                        "OmniboxAggregateShortcuts",
                         "OmniboxDocumentProviderAso",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxKeywordSearchButton",
