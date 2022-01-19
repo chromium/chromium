@@ -2542,7 +2542,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   web_app::ServiceWorkerRegistrationWaiter registration_waiter(profile(), url);
-  AddTabAtIndex(1, url, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_LINK));
   registration_waiter.AwaitRegistration();
   // Install PWA.
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
@@ -2565,10 +2565,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
                        WindowedShortcutAppsHaveActivityIndicatorSet) {
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
-  AddTabAtIndex(
+  ASSERT_TRUE(AddTabAtIndex(
       1,
       GURL(embedded_test_server()->GetURL("/banners/manifest_test_page.html")),
-      ui::PAGE_TRANSITION_LINK);
+      ui::PAGE_TRANSITION_LINK));
   // Install shortcut app.
   chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
