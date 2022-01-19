@@ -20,7 +20,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace crosapi {
 namespace test {
 
 AshBrowserTestStarter::AshBrowserTestStarter() = default;
@@ -46,7 +45,7 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   return true;
 }
 
-class LacrosStartedObserver : public BrowserManagerObserver {
+class LacrosStartedObserver : public crosapi::BrowserManagerObserver {
  public:
   LacrosStartedObserver() = default;
   LacrosStartedObserver(const LacrosStartedObserver&) = delete;
@@ -54,13 +53,13 @@ class LacrosStartedObserver : public BrowserManagerObserver {
   ~LacrosStartedObserver() override = default;
 
   void OnStateChanged() override {
-    if (BrowserManager::Get()->IsRunning()) {
+    if (crosapi::BrowserManager::Get()->IsRunning()) {
       run_loop_.Quit();
     }
   }
 
   void Wait(base::TimeDelta timeout) {
-    if (BrowserManager::Get()->IsRunning()) {
+    if (crosapi::BrowserManager::Get()->IsRunning()) {
       return;
     }
     base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop_.QuitClosure(),
@@ -92,16 +91,16 @@ void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   DCHECK(HasLacrosArgument());
 
   WaitForExoStarted(scoped_temp_dir_xdg_.GetPath());
-  auto* browser_manager = BrowserManager::Get();
-  lacros_keep_alive_ =
-      browser_manager->KeepAlive(BrowserManager::Feature::kTestOnly);
+
+  crosapi::BrowserManager::Get()->NewWindow(
+      /*incongnito=*/false, /*should_trigger_session_restore=*/false);
 
   LacrosStartedObserver observer;
-  browser_manager->AddObserver(&observer);
+  crosapi::BrowserManager::Get()->AddObserver(&observer);
   observer.Wait(TestTimeouts::action_max_timeout());
-  browser_manager->RemoveObserver(&observer);
+  crosapi::BrowserManager::Get()->RemoveObserver(&observer);
 
-  CHECK(browser_manager->IsRunning());
+  CHECK(crosapi::BrowserManager::Get()->IsRunning());
 
   // Create a new ash browser window so browser() can work.
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -110,4 +109,3 @@ void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
 }
 
 }  // namespace test
-}  // namespace crosapi

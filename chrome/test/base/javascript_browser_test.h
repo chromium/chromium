@@ -49,9 +49,7 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
                                     std::vector<base::Value> args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::test::AshBrowserTestStarter* ash_starter() {
-    return ash_starter_.get();
-  }
+  test::AshBrowserTestStarter* ash_starter() { return ash_starter_.get(); }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
@@ -62,7 +60,7 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
   std::vector<base::FilePath> library_search_paths_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<crosapi::test::AshBrowserTestStarter> ash_starter_;
+  std::unique_ptr<test::AshBrowserTestStarter> ash_starter_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
