@@ -28,7 +28,7 @@
 #include "chrome/browser/translate/translate_frame_binder.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/draggable_region_host_impl.h"
-#include "chrome/browser/ui/web_applications/sub_apps_renderer_host.h"
+#include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
@@ -669,8 +669,8 @@ void PopulateChromeFrameBinders(
     defined(OS_WIN)
   if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsSubApps) &&
       !render_frame_host->GetParent()) {
-    map->Add<blink::mojom::SubAppsProvider>(
-        base::BindRepeating(&web_app::SubAppsRendererHost::CreateIfAllowed));
+    map->Add<blink::mojom::SubAppsService>(
+        base::BindRepeating(&web_app::SubAppsServiceImpl::CreateIfAllowed));
   }
 #endif
 }

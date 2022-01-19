@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/sub_apps_renderer_host.h"
+#include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 
 #include <string>
 #include <utility>
@@ -18,7 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-using blink::mojom::SubAppsProviderResult;
+using blink::mojom::SubAppsServiceResult;
 
 namespace web_app {
 
@@ -46,30 +46,30 @@ GURL ResolvePathWithOrigin(const std::string& path, GURL origin) {
   return origin.Resolve(origin.Resolve(path).PathForRequest());
 }
 
-void OnAdd(SubAppsRendererHost::AddCallback result_callback,
+void OnAdd(SubAppsServiceImpl::AddCallback result_callback,
            const AppId& app_id,
            InstallResultCode code) {
   if (code == InstallResultCode::kSuccessAlreadyInstalled ||
       code == InstallResultCode::kSuccessNewInstall) {
-    std::move(result_callback).Run(SubAppsProviderResult::kSuccess);
+    std::move(result_callback).Run(SubAppsServiceResult::kSuccess);
   } else {
-    std::move(result_callback).Run(SubAppsProviderResult::kFailure);
+    std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
 }
 
 }  // namespace
 
-SubAppsRendererHost::SubAppsRendererHost(
+SubAppsServiceImpl::SubAppsServiceImpl(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::SubAppsProvider> receiver)
+    mojo::PendingReceiver<blink::mojom::SubAppsService> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
-SubAppsRendererHost::~SubAppsRendererHost() = default;
+SubAppsServiceImpl::~SubAppsServiceImpl() = default;
 
 // static
-void SubAppsRendererHost::CreateIfAllowed(
+void SubAppsServiceImpl::CreateIfAllowed(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::SubAppsProvider> receiver) {
+    mojo::PendingReceiver<blink::mojom::SubAppsService> receiver) {
   // This class is created only on the main frame.
   DCHECK(!render_frame_host->GetParent());
 
@@ -82,18 +82,18 @@ void SubAppsRendererHost::CreateIfAllowed(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
-  new SubAppsRendererHost(render_frame_host, std::move(receiver));
+  new SubAppsServiceImpl(render_frame_host, std::move(receiver));
 }
 
-void SubAppsRendererHost::Add(const std::string& install_path,
-                              AddCallback result_callback) {
+void SubAppsServiceImpl::Add(const std::string& install_path,
+                             AddCallback result_callback) {
   // Verify that the calling app is installed itself. This check is done here
   // and not in |CreateIfAllowed| because of a potential race between doing the
   // check there and then running the current function, and the parent app being
   // installed/uninstalled.
   absl::optional<AppId> parent_app_id = GetAppId(render_frame_host());
   if (!parent_app_id.has_value()) {
-    return std::move(result_callback).Run(SubAppsProviderResult::kFailure);
+    return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
 
   // Resolve the install_path in the origin context of the calling app.

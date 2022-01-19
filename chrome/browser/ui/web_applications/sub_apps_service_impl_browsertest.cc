@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/web_applications/sub_apps_renderer_host.h"
+#include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -24,7 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/features.h"
 
-using blink::mojom::SubAppsProviderResult;
+using blink::mojom::SubAppsServiceResult;
 
 namespace web_app {
 
@@ -48,7 +48,7 @@ constexpr const char kSubAppPathInvalid[] = "/invalid/sub/app/path.html";
 // TODO(isandrk): JS API interface tests should be in
 // third_party/blink/web_tests/wpt_internal/subapps/.
 
-class SubAppsRendererHostBrowserTest : public WebAppControllerBrowserTest {
+class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
  public:
   content::RenderFrameHost* render_frame_host(
       content::WebContents* web_contents = nullptr) {
@@ -78,14 +78,14 @@ class SubAppsRendererHostBrowserTest : public WebAppControllerBrowserTest {
   void BindRemote(content::WebContents* web_contents = nullptr) {
     // Any navigation causes the remote to be destroyed (since the
     // render_frame_host that owns it gets destroyed.)
-    SubAppsRendererHost::CreateIfAllowed(render_frame_host(web_contents),
-                                         remote_.BindNewPipeAndPassReceiver());
+    SubAppsServiceImpl::CreateIfAllowed(render_frame_host(web_contents),
+                                        remote_.BindNewPipeAndPassReceiver());
   }
 
   // Calls the Add() method on the mojo interface which is async, and waits for
   // it to finish.
-  SubAppsProviderResult CallAdd(const std::string& install_path) {
-    base::test::TestFuture<SubAppsProviderResult> future;
+  SubAppsServiceResult CallAdd(const std::string& install_path) {
+    base::test::TestFuture<SubAppsServiceResult> future;
     remote_->Add(install_path, future.GetCallback());
     return future.Get();
   }
@@ -93,11 +93,11 @@ class SubAppsRendererHostBrowserTest : public WebAppControllerBrowserTest {
  protected:
   base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
   AppId parent_app_id_;
-  mojo::Remote<blink::mojom::SubAppsProvider> remote_;
+  mojo::Remote<blink::mojom::SubAppsService> remote_;
 };
 
 // Simple end-to-end test for add().
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest, EndToEndAdd) {
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, EndToEndAdd) {
   InstallParentApp();
   NavigateToParentApp();
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest, EndToEndAdd) {
 
 // End-to-end. Test that adding a sub-app from a different origin or from a
 // different domain fails.
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest,
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        EndToEndAddFailDifferentOrigin) {
   InstallParentApp();
   NavigateToParentApp();
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest,
 }
 
 // Add a single sub-app and verify all sorts of things.
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest, AddSingle) {
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
   // Dependency graph:
   // NavigateToParentApp --> BindRemote --> CallAdd
   //                   \---------------->/
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest, AddSingle) {
   BindRemote();
   InstallParentApp();
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-  EXPECT_EQ(SubAppsProviderResult::kSuccess, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
 
   // Verify a bunch of things for the newly installed sub-app.
   AppId sub_app_id =
@@ -173,74 +173,73 @@ IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest, AddSingle) {
 
 // Add one sub-app, verify count is one. Add it again, still same count. Add a
 // second sub-app, verify count is two.
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest, AddTwo) {
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddTwo) {
   InstallParentApp();
   NavigateToParentApp();
   BindRemote();
 
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
-  EXPECT_EQ(SubAppsProviderResult::kSuccess, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 
-  EXPECT_EQ(SubAppsProviderResult::kSuccess, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 
-  EXPECT_EQ(SubAppsProviderResult::kSuccess, CallAdd(kSubAppPath2));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath2));
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
 // Add call should fail if the parent app isn't installed.
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest,
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        AddFailParentAppNotInstalled) {
   NavigateToParentApp();
   BindRemote();
-  EXPECT_EQ(SubAppsProviderResult::kFailure, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallAdd(kSubAppPath));
 }
 
 // Add call should fail if the call wasn't made from the context of parent app.
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest,
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        AddFailNotInParentAppContext) {
   InstallParentApp();
   BindRemote();
-  EXPECT_EQ(SubAppsProviderResult::kFailure, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallAdd(kSubAppPath));
 }
 
 // Make sure the Add API can't force manifest update. Add sub-app, verify
 // display mode, then add the same one again with different display mode in the
 // manifest, and verify that it didn't change.
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest,
-                       AddDoesntForceReinstall) {
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
   InstallParentApp();
   NavigateToParentApp();
   BindRemote();
-  EXPECT_EQ(SubAppsProviderResult::kSuccess, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
 
   AppId sub_app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
   EXPECT_EQ(DisplayMode::kStandalone,
             provider().registrar().GetAppEffectiveDisplayMode(sub_app_id));
 
-  EXPECT_EQ(SubAppsProviderResult::kSuccess, CallAdd(kSubAppPathMinimalUi));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPathMinimalUi));
   EXPECT_EQ(DisplayMode::kStandalone,
             provider().registrar().GetAppEffectiveDisplayMode(sub_app_id));
 }
 
 // Verify that Add works if PWA is launched as standalone window.
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest, AddStandaloneWindow) {
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddStandaloneWindow) {
   InstallParentApp();
   content::WebContents* web_contents = OpenApplication(parent_app_id_);
   BindRemote(web_contents);
-  EXPECT_EQ(SubAppsProviderResult::kSuccess, CallAdd(kSubAppPath));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
 }
 
 // Verify that Add fails for an invalid (non-existing) sub-app.
-IN_PROC_BROWSER_TEST_F(SubAppsRendererHostBrowserTest, AddInvalid) {
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddInvalid) {
   InstallParentApp();
   NavigateToParentApp();
   BindRemote();
 
-  EXPECT_EQ(SubAppsProviderResult::kFailure, CallAdd(kSubAppPathInvalid));
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallAdd(kSubAppPathInvalid));
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 

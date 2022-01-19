@@ -24,11 +24,11 @@ namespace blink {
 
 namespace {
 
-// We get called back from the SubAppsProvider mojo service (inside the browser
+// We get called back from the SubAppsService mojo service (inside the browser
 // process), pass on the result to the calling context.
 void OnAddSubApp(ScriptPromiseResolver* resolver,
-                 mojom::blink::SubAppsProviderResult result) {
-  if (result == mojom::blink::SubAppsProviderResult::kSuccess) {
+                 mojom::blink::SubAppsServiceResult result) {
+  if (result == mojom::blink::SubAppsServiceResult::kSuccess) {
     resolver->Resolve();
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -58,14 +58,14 @@ void SubApps::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
 }
 
-mojo::Remote<mojom::blink::SubAppsProvider>& SubApps::GetProvider() {
-  if (!provider_.is_bound()) {
+mojo::Remote<mojom::blink::SubAppsService>& SubApps::GetService() {
+  if (!service_.is_bound()) {
     GetSupplementable()
         ->GetExecutionContext()
         ->GetBrowserInterfaceBroker()
-        .GetInterface(provider_.BindNewPipeAndPassReceiver());
+        .GetInterface(service_.BindNewPipeAndPassReceiver());
   }
-  return provider_;
+  return service_;
 }
 
 ScriptPromise SubApps::add(ScriptState* script_state,
@@ -99,8 +99,8 @@ ScriptPromise SubApps::add(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  GetProvider()->Add(completed_url.GetPath(),
-                     WTF::Bind(&OnAddSubApp, WrapPersistent(resolver)));
+  GetService()->Add(completed_url.GetPath(),
+                    WTF::Bind(&OnAddSubApp, WrapPersistent(resolver)));
 
   return resolver->Promise();
 }

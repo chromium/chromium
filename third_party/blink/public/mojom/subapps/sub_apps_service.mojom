@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-enum SubAppsProviderResult {
+enum SubAppsServiceResult {
   kSuccess,
   kFailure,
 };
@@ -17,10 +17,10 @@ enum SubAppsProviderResult {
 // NOTE: This Mojo interface is per-frame, there is one logical instance per
 // frame, and it's main-frame only. It is only valid for already-installed apps,
 // and has an origin associated with it.
-interface SubAppsProvider {
+interface SubAppsService {
   // Installs a sub-app of an already-installed app corresponding to this
-  // instance of SubAppsProvider. `install_path` is the absolute path which will
+  // instance of SubAppsService. `install_path` is the absolute path which will
   // be attached to the origin of the already-installed app (effectively
   // limiting the API to same-origin apps).
-  Add(string install_path) => (SubAppsProviderResult result);
+  Add(string install_path) => (SubAppsServiceResult result);
 };
