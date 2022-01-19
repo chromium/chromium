@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_restore/app_restore_arc_info.h"
+#include "components/app_restore/features.h"
 
 namespace ash {
 namespace app_restore {
@@ -42,12 +43,22 @@ AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
 #endif
 
   if (ash::features::AreDesksTemplatesEnabled()) {
-    desks_templates_arc_app_launch_handler_ =
-        std::make_unique<ArcAppLaunchHandler>();
+    arc_app_launcher_handers_.push_back(
+        std::make_unique<ArcAppLaunchHandler>());
+    desks_templates_arc_app_launch_handler_observer_ =
+        arc_app_launcher_handers_.back().get();
   }
-  full_restore_arc_app_launch_handler_ =
-      std::make_unique<ArcAppLaunchHandler>();
+  arc_app_launcher_handers_.push_back(std::make_unique<ArcAppLaunchHandler>());
+  full_restore_arc_app_launch_handler_observer_ =
+      arc_app_launcher_handers_.back().get();
 
+  // TODO(sstan): Modify ArcAppLaunchHandler to prevent redundant launch.
+  if (::full_restore::features::IsArcWindowPredictorEnabled()) {
+    arc_app_launcher_handers_.push_back(
+        std::make_unique<ArcAppLaunchHandler>());
+    window_predictor_arc_app_launch_handler_observer_ =
+        arc_app_launcher_handers_.back().get();
+  }
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager might not be set in tests.
   if (arc_session_manager)
@@ -90,8 +101,7 @@ void AppRestoreArcTaskHandler::OnAppConnectionReady() {
     window_handler_->OnAppInstanceConnected();
 #endif
 
-  for (auto* handler : {desks_templates_arc_app_launch_handler(),
-                        full_restore_arc_app_launch_handler()}) {
+  for (auto& handler : arc_app_launcher_handers_) {
     if (handler)
       handler->OnAppConnectionReady();
   }
@@ -110,8 +120,7 @@ void AppRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {
 }
 
 void AppRestoreArcTaskHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
-  for (auto* handler : {desks_templates_arc_app_launch_handler(),
-                        full_restore_arc_app_launch_handler()}) {
+  for (auto& handler : arc_app_launcher_handers_) {
     if (handler)
       handler->OnArcPlayStoreEnabledChanged(enabled);
   }
@@ -120,16 +129,16 @@ void AppRestoreArcTaskHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
 }
 
 void AppRestoreArcTaskHandler::OnShelfReady() {
-  for (auto* handler : {desks_templates_arc_app_launch_handler(),
-                        full_restore_arc_app_launch_handler()}) {
+  for (auto& handler : arc_app_launcher_handers_) {
     if (handler)
       handler->OnShelfReady();
   }
 }
 
 void AppRestoreArcTaskHandler::Shutdown() {
-  desks_templates_arc_app_launch_handler_.reset();
-  full_restore_arc_app_launch_handler_.reset();
+  for (auto& handler : arc_app_launcher_handers_) {
+    handler.reset();
+  }
   window_handler_.reset();
 }
 

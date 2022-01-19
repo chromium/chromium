@@ -47,10 +47,13 @@ class AppRestoreArcTaskHandler : public KeyedService,
 #endif
 
   ArcAppLaunchHandler* desks_templates_arc_app_launch_handler() {
-    return desks_templates_arc_app_launch_handler_.get();
+    return desks_templates_arc_app_launch_handler_observer_;
   }
   ArcAppLaunchHandler* full_restore_arc_app_launch_handler() {
-    return full_restore_arc_app_launch_handler_.get();
+    return full_restore_arc_app_launch_handler_observer_;
+  }
+  ArcAppLaunchHandler* window_predictor_arc_app_launch_handler() {
+    return window_predictor_arc_app_launch_handler_observer_;
   }
 
   // ArcAppListPrefs::Observer.
@@ -88,8 +91,12 @@ class AppRestoreArcTaskHandler : public KeyedService,
 
   // The ArcAppLaunchHandlers, one for each feature that wants to launch ARC
   // apps.
-  std::unique_ptr<ArcAppLaunchHandler> desks_templates_arc_app_launch_handler_;
-  std::unique_ptr<ArcAppLaunchHandler> full_restore_arc_app_launch_handler_;
+  std::vector<std::unique_ptr<ArcAppLaunchHandler>> arc_app_launcher_handers_;
+  ArcAppLaunchHandler* desks_templates_arc_app_launch_handler_observer_ =
+      nullptr;
+  ArcAppLaunchHandler* full_restore_arc_app_launch_handler_observer_ = nullptr;
+  ArcAppLaunchHandler* window_predictor_arc_app_launch_handler_observer_ =
+      nullptr;
 };
 
 }  // namespace app_restore
