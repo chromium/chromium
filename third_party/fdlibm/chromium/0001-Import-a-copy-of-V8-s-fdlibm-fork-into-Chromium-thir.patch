@@ -65,7 +65,7 @@ new file mode 100644
 index 000000000000..a94f56d77fbf
 --- /dev/null
 +++ b/third_party/fdlibm/DEPS
-@@ -0,0 +1,6 @@
+@@ -0,0 +1,5 @@
 +include_rules = [
 +    "+base/bit_cast.h",
 +    "+base/compiler_specific.h",
@@ -75,13 +75,14 @@ diff --git a/third_party/fdlibm/README.chromium b/third_party/fdlibm/README.chro
 index eb45e2ab9438..48b3ab4bc6cc 100644
 --- a/third_party/fdlibm/README.chromium
 +++ b/third_party/fdlibm/README.chromium
-@@ -13,3 +13,13 @@ This library is a copy of that V8 library intended for use in Chromium.
+@@ -13,3 +13,15 @@ This library is a copy of that V8 library intended for use in Chromium.
  
  This library may be useful when mathematical consistency across OS platforms is
  desired.
 +
 +The initial commit is not a pristine import -- the patch in the chromium/
-+subdirectory documents the changes made to the original sources.
++subdirectory documents the changes made to the original sources. This patch was
++produced via `git format-patch` and can be applied using `git am`.
 +
 +Changes from V8 upstream:
 +- Changed namespace to fdlibm.
@@ -89,6 +90,7 @@ index eb45e2ab9438..48b3ab4bc6cc 100644
 +- Implement 32-bit float functions (sinf(), etc.) by calling the 64-bit
 +  versions.
 +- Format the code.
++- Remove MSVC code, which is not supported by Chromium anymore.
 diff --git a/third_party/fdlibm/ieee754.cc b/third_party/fdlibm/ieee754.cc
 index 1706b56dfd90..4825b22fc6f5 100644
 --- a/third_party/fdlibm/ieee754.cc
@@ -98,7 +100,7 @@ index 1706b56dfd90..4825b22fc6f5 100644
  // The following is adapted from fdlibm (http://www.netlib.org/fdlibm).
  //
  // ====================================================
-@@ -12,30 +13,23 @@
+@@ -12,30 +13,22 @@
  // The original source code covered by the above license above has been
  // modified significantly by Google Inc.
  // Copyright 2016 the V8 project authors. All rights reserved.
@@ -382,7 +384,7 @@ diff --git a/third_party/fdlibm/overflowing-math.h b/third_party/fdlibm/overflow
 index 14dcfb10de1a..815fa624ce11 100644
 --- a/third_party/fdlibm/overflowing-math.h
 +++ b/third_party/fdlibm/overflowing-math.h
-@@ -1,19 +1,19 @@
+@@ -1,19 +1,17 @@
  // Copyright 2019 the V8 project authors. All rights reserved.
 +// Copyright 2020 The Chromium Authors. All rights reserved.
  // Use of this source code is governed by a BSD-style license that can be
@@ -399,7 +401,7 @@ index 14dcfb10de1a..815fa624ce11 100644
  #include <type_traits>
  
 -#include "src/base/macros.h"
- 
+-
 -namespace v8 {
 -namespace base {
 +namespace fdlibm {
