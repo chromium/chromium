@@ -1,20 +1,20 @@
-# Experimental Rust toolchain
+# Experimenting with Rust in Chromium
 
 [TOC]
 
 # Why?
 
-Parsing untrustworthy data is a major source of security bugs, and it's therefore
-against Chromium rules [to do it in the browser process](rule-of-2.md) unless
-you can use a memory safe language.
+Parsing untrustworthy data is a major source of security bugs, and it's
+therefore against Chromium rules [to do it in the browser process](rule-of-2.md)
+unless you can use a memory safe language.
 
 For teams building browser process features which need to handle untrustworthy
-data, they usually have to do the parsing in a utility process which incurs
-a performance overhead and adds engineering complexity.
+data, they usually have to do the parsing in a utility process which incurs a
+performance overhead and adds engineering complexity.
 
-The Chrome security team is working to make a cross-platform memory safe language
-available to Chromium developers. This document describes how to use that
-language in Chromium. The language, at least for now, is Rust.
+The Chrome security team is working to make a cross-platform memory safe
+language available to Chromium developers. This document describes how to use
+that language in Chromium. The language, at least for now, is Rust.
 
 # Guidelines
 
@@ -27,9 +27,9 @@ So:
 * any experiments must be reversible (you may have to write a C++ equivalent
   in order to ship)
 * Rust code must not affect production Chrome binaries nor be shipped to Chrome
-  users (we provide `#if defined(...)` and other facilities to make this easy) - so if
-  you put Rust code in Chrome, the sole purpose is to help experiment and provide
-  data for evaluation of future memory safe language options
+  users (we provide `#if defined(...)` and other facilities to make this easy) -
+  so if you put Rust code in Chrome, the sole purpose is to help experiment and
+  provide data for evaluation of future memory safe language options
 * Rust is not yet available on all Chromium platforms (just Linux and Android
   for now)
 * Facilities and tooling in Rust are not as rich as other languages yet.
@@ -47,6 +47,8 @@ for how to enable on other platforms).
 Also add `"checkout_clang_libs": True` to your `.gclient` file in order to
 include the necessary libraries for building required C++-Rust interop
 tooling.
+
+See also [Using VSCode](#using-vscode).
 
 # GN support
 
@@ -190,7 +192,8 @@ reach out to `rust-dev@chromium.org` for advice.
 # C++/Rust interop
 
 There are multiple different solutions for Rust/C++ interop. In this phase of our
-experiments, we're supporting just one: [cxx, described in this excellent online book](https://cxx.rs).
+experiments, we're supporting just one:
+[cxx, described in this excellent online book](https://cxx.rs).
 
 To use this interop facility in Chromium:
 
@@ -205,8 +208,9 @@ To use this interop facility in Chromium:
 ```
 
 You can now simply call functions and use types declared/defined in your CXX
-bridge. A typical usage might be to pass a `const std::string&` or `rust::Slice<const uint8_t>`
-from C++ into Rust and then return a struct with the parsed results.
+bridge. A typical usage might be to pass a `const std::string&` or
+`rust::Slice<const uint8_t>` from C++ into Rust and then return a struct with
+the parsed results.
 
 If you need to call back into C++ from Rust, this is also supported -
 `include!` directives within an `extern "C++"` section should work:
@@ -217,7 +221,7 @@ mod ffi {
     unsafe extern "C++" {
         include!("path/to/my_cpp_header.h");
         fn some_function_defined_in_cpp();
-    } 
+    }
 }
 
 // Rust code calls ffi::some_function_defined_in_cpp()
@@ -229,7 +233,8 @@ to declare the interface in a `#[cxx::bridge]` module.
 ## Dependencies between Rust targets
 
 If your `rust_source_set` exposes Rust APIs for other Rust targets in Chromium,
-those targets should be able to depend directly on your `rust_source_set` target.
+those targets should be able to depend directly on your `rust_source_set`
+target.
 
 If you have a `mixed_source_set` or any other component which is intended for
 both Rust _and_ C++ consumers, please reach out to `rust-dev@chromium.org`
@@ -244,7 +249,8 @@ To see an example of all this, look at `//build/rust/tests/test_variable_source_
 
 ## Known cases which don't work
 
-* At the moment LTO doesn't work, so you can't use `is_official_build = true`. ([Bug.](https://crbug.com/1229423))
+* At the moment LTO doesn't work, so you can't use `is_official_build = true`.
+  ([Bug.](https://crbug.com/1229423))
 * Windows doesn't work just yet. ([Bug.](https://crbug.com/1268157))
 
 ## Building on non-Linux platforms
@@ -276,10 +282,10 @@ directory and add any new libraries which are not listed in
    earlier forms of Rust support.
 2. Run `gn` with this extra flag: `gn gen out/Release --export-rust-project`.
 3. `ln -s out/Release/rust-project.json rust-project.json`
-4. When you run VSCode, or any other IDE that uses [rust-analyzer](https://rust-analyzer.github.io/)
-   it should detect the `rust-project.json` and use this to give you rich
-   browsing, autocompletion, type annotations etc. for all the Rust within
-   the Chromium codebase.
+4. When you run VSCode, or any other IDE that uses
+   [rust-analyzer](https://rust-analyzer.github.io/) it should detect the
+   `rust-project.json` and use this to give you rich browsing, autocompletion,
+   type annotations etc. for all the Rust within the Chromium codebase.
 
 ## Source code format
 
