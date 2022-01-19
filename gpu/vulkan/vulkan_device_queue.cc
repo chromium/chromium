@@ -391,7 +391,8 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
     VkDevice vk_device,
     VkQueue vk_queue,
     uint32_t vk_queue_index,
-    gfx::ExtensionSet enabled_extensions) {
+    gfx::ExtensionSet enabled_extensions,
+    const VkPhysicalDeviceFeatures2& vk_physical_device_features2) {
   // Currently VulkanDeviceQueue for drdc thread(aka CompositorGpuThread) uses
   // the same vulkan queue as the gpu main thread. Now since both gpu main and
   // drdc threads would be accessing/submitting work to the same queue, all the
@@ -406,6 +407,7 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
   // access map here.
   GetVulkanFunctionPointers()->per_queue_lock_map[vk_queue] =
       std::make_unique<base::Lock>();
+  enabled_device_features_2_ = vk_physical_device_features2;
   return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
                     enabled_extensions);
 }

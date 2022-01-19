@@ -65,11 +65,13 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   // have its own instance of VulkanFenceHelper and VmaAllocator. Also note that
   // this CompositorGpuThread does not own the |vk_device| and |vk_queue| and
   // hence will not destroy them.
-  bool InitializeForCompositorGpuThread(VkPhysicalDevice vk_physical_device,
-                                        VkDevice vk_device,
-                                        VkQueue vk_queue,
-                                        uint32_t vk_queue_index,
-                                        gfx::ExtensionSet enabled_extensions);
+  bool InitializeForCompositorGpuThread(
+      VkPhysicalDevice vk_physical_device,
+      VkDevice vk_device,
+      VkQueue vk_queue,
+      uint32_t vk_queue_index,
+      gfx::ExtensionSet enabled_extensions,
+      const VkPhysicalDeviceFeatures2& vk_physical_device_features2);
 
   const gfx::ExtensionSet& enabled_extensions() const {
     return enabled_extensions_;
