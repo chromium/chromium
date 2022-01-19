@@ -241,9 +241,8 @@ struct Config {
     attrib_helper.buffer_preserved = it.GetBit();
     attrib_helper.bind_generates_resource = it.GetBit();
     attrib_helper.single_buffer = it.GetBit();
-    bool es3 = it.GetBit();
+    [[maybe_unused]] bool es3 = it.GetBit();
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
-    ALLOW_UNUSED_LOCAL(es3);
     attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
 #else
     bool es31 = it.GetBit();
@@ -324,8 +323,8 @@ class CommandBufferSetup {
     CHECK(base::i18n::InitializeICU());
     base::CommandLine::Init(0, nullptr);
 
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    ALLOW_UNUSED_LOCAL(command_line);
+    [[maybe_unused]] auto* command_line =
+        base::CommandLine::ForCurrentProcess();
 
 #if defined(USE_OZONE)
     ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());

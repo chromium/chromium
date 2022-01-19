@@ -417,8 +417,7 @@ class WrappedSkImage::RepresentationSkia
         final_msaa_count, surface_props, context_state_);
     if (!surface)
       return nullptr;
-    int save_count = surface->getCanvas()->save();
-    ALLOW_UNUSED_LOCAL(save_count);
+    [[maybe_unused]] int save_count = surface->getCanvas()->save();
     DCHECK_EQ(1, save_count);
     write_surface_ = surface.get();
     return surface;

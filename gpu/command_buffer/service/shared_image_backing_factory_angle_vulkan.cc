@@ -399,9 +399,8 @@ class AngleVulkanBacking::SkiaRepresentation
       backing_impl()->context_state_->CacheSkSurface(this, surface);
     }
 
-    int count = surface->getCanvas()->save();
+    [[maybe_unused]] int count = surface->getCanvas()->save();
     DCHECK_EQ(count, 1);
-    ALLOW_UNUSED_LOCAL(count);
 
     return surface;
   }
