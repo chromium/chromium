@@ -122,6 +122,39 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
                                                : nullptr;
   }
 
+  // Sets and returns the registered icon animation for the specified `key`.
+  // NOTE: This method accepts `nullptr` to support un-registration.
+  HoldingSpaceProgressIconAnimation* SetIconAnimationForKey(
+      const void* key,
+      std::unique_ptr<HoldingSpaceProgressIconAnimation> animation) {
+    HoldingSpaceProgressIconAnimation* animation_ptr = animation.get();
+    if (animation) {
+      icon_animations_by_key_[key] = std::move(animation);
+      NotifyIconAnimationChangedForKey(key);
+    } else {
+      EraseIconAnimationForKey(key);
+    }
+    return animation_ptr;
+  }
+
+  // Sets and returns the registered ring animation for the specified `key`.
+  // NOTE: This method accepts `nullptr` to support un-registration.
+  HoldingSpaceProgressRingAnimation* SetRingAnimationForKey(
+      const void* key,
+      std::unique_ptr<HoldingSpaceProgressRingAnimation> animation) {
+    HoldingSpaceProgressRingAnimation* animation_ptr = animation.get();
+    if (animation) {
+      ring_animations_by_key_[key] = SubscribedProgressRingAnimation{
+          .animation = std::move(animation),
+          .subscription = base::CallbackListSubscription(),
+      };
+      NotifyRingAnimationChangedForKey(key);
+    } else {
+      EraseRingAnimationForKey(key);
+    }
+    return animation_ptr;
+  }
+
  private:
   // HoldingSpaceControllerObserver:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override {
@@ -563,6 +596,22 @@ HoldingSpaceAnimationRegistry::GetProgressIconAnimationForKey(const void* key) {
 HoldingSpaceProgressRingAnimation*
 HoldingSpaceAnimationRegistry::GetProgressRingAnimationForKey(const void* key) {
   return progress_indicator_animation_delegate_->GetRingAnimationForKey(key);
+}
+
+HoldingSpaceProgressIconAnimation*
+HoldingSpaceAnimationRegistry::SetProgressIconAnimationForKey(
+    const void* key,
+    std::unique_ptr<HoldingSpaceProgressIconAnimation> animation) {
+  return progress_indicator_animation_delegate_->SetIconAnimationForKey(
+      key, std::move(animation));
+}
+
+HoldingSpaceProgressRingAnimation*
+HoldingSpaceAnimationRegistry::SetProgressRingAnimationForKey(
+    const void* key,
+    std::unique_ptr<HoldingSpaceProgressRingAnimation> animation) {
+  return progress_indicator_animation_delegate_->SetRingAnimationForKey(
+      key, std::move(animation));
 }
 
 void HoldingSpaceAnimationRegistry::OnShellDestroying() {

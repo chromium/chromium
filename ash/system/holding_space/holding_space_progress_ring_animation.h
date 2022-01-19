@@ -7,13 +7,14 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_animation.h"
 
 namespace ash {
 
 // An animation for a `HoldingSpaceProgressIndicator` to be painted in lieu of
 // the determinate progress ring that would otherwise be painted.
-class HoldingSpaceProgressRingAnimation
+class ASH_EXPORT HoldingSpaceProgressRingAnimation
     : public HoldingSpaceProgressIndicatorAnimation {
  public:
   enum class Type {
