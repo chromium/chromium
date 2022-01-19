@@ -468,11 +468,11 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   private onViewEnterStart_(event: Event) {
     // The |view-enter-start| event was dispatched to the fragment that is now
-    // becoming visible. Every fragment has a |header| class element that can
-    // be focused programmatically.
+    // becoming visible. Every fragment has a [focus-element] element that is
+    // focused programmatically when the fragment becomes visible.
     const elementToFocus =
         assert((event.target! as HTMLElement)
-                   .shadowRoot!.querySelector<HTMLElement>('.header'));
+                   .shadowRoot!.querySelector<HTMLElement>('[focus-element]'));
     afterNextRender(this, () => elementToFocus!.focus());
   }
 }
