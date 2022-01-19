@@ -19653,12 +19653,13 @@
       'owners': ['ahaas@chromium.org', 'clamy@chromium.org', 'vahl@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:94-', 'chrome_os:94-'],
+      'supported_on': ['chrome.*:94-98', 'chrome_os:94-98'],
       'device_only': False,
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'deprecated': True,
       'items': [
         {
           'value': True,

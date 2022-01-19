@@ -3079,10 +3079,6 @@ const char kIsolateOrigins[] = "site_isolation.isolate_origins";
 // Boolean that specifies opting into --site-per-process (full Site Isolation).
 const char kSitePerProcess[] = "site_isolation.site_per_process";
 
-// Boolean that enable cross-origin sharing for WebAssembly modules.
-const char kCrossOriginWebAssemblyModuleSharingEnabled[] =
-    "profile.cross_origin_webassembly_module_sharing_enabled";
-
 // Boolean that is true when the display-capture permissions-policy is enabled.
 // This permissions-policy gates access to getDisplayMedia(), as per this spec:
 // https://www.w3.org/TR/screen-capture/#feature-policy-integration
