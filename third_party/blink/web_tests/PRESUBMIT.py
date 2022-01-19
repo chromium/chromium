@@ -235,7 +235,7 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
     if check_all:
         for f in input_api.change.AllFiles(
                 os_path.join(input_api.PresubmitLocalPath(), "virtual")):
-            suite = f.split(os_path.sep)[0]
+            suite = f.split('/')[0]
             if not suite in known_virtual_suites:
                 path = os_path.relpath(
                     os_path.join(input_api.PresubmitLocalPath(), "virtual", f),
@@ -247,7 +247,7 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
         for subdir in ["platform", "flag-specific"]:
             for f in input_api.change.AllFiles(
                     os_path.join(input_api.PresubmitLocalPath(), subdir)):
-                path_components = f.split(os_path.sep)
+                path_components = f.split('/')
                 if len(path_components) < 3 or path_components[1] != 'virtual':
                     continue
                 suite = path_components[2]
