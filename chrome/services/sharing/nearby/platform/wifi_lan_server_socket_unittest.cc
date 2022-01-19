@@ -6,14 +6,15 @@
 
 #include <memory>
 
+#include "ash/services/nearby/public/cpp/fake_firewall_hole.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_connected_socket.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_server_socket.h"
 #include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/services/sharing/nearby/platform/fake_tcp_connected_socket.h"
-#include "chrome/services/sharing/nearby/platform/fake_tcp_server_socket.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -35,12 +36,6 @@ const net::IPEndPoint kLocalAddress(net::IPAddress(192, 168, 86, 75),
 
 const net::IPEndPoint kRemoteAddress(net::IPAddress(192, 168, 86, 62), 33333);
 
-class FakeFirewallHole : public sharing::mojom::FirewallHole {
- public:
-  FakeFirewallHole() = default;
-  ~FakeFirewallHole() override = default;
-};
-
 }  // namespace
 
 class WifiLanServerSocketTest : public testing::Test {
@@ -51,7 +46,8 @@ class WifiLanServerSocketTest : public testing::Test {
   WifiLanServerSocketTest& operator=(const WifiLanServerSocketTest&) = delete;
 
   void SetUp() override {
-    auto fake_tcp_server_socket = std::make_unique<FakeTcpServerSocket>();
+    auto fake_tcp_server_socket =
+        std::make_unique<ash::nearby::FakeTcpServerSocket>();
     fake_tcp_server_socket_ = fake_tcp_server_socket.get();
     mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket;
     tcp_server_socket_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
@@ -60,7 +56,7 @@ class WifiLanServerSocketTest : public testing::Test {
 
     mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole;
     firewall_hole_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
-        std::make_unique<FakeFirewallHole>(),
+        std::make_unique<ash::nearby::FakeFirewallHole>(),
         firewall_hole.InitWithNewPipeAndPassReceiver());
 
     wifi_lan_server_socket_ = std::make_unique<WifiLanServerSocket>(
@@ -115,7 +111,7 @@ class WifiLanServerSocketTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   size_t num_running_accept_calls_ = 0;
   base::OnceClosure on_accept_calls_finished_;
-  FakeTcpServerSocket* fake_tcp_server_socket_;
+  ash::nearby::FakeTcpServerSocket* fake_tcp_server_socket_;
   mojo::SelfOwnedReceiverRef<network::mojom::TCPServerSocket>
       tcp_server_socket_self_owned_receiver_ref_;
   mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHole>

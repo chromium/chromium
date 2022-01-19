@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SOCKET_FACTORY_H_
-#define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SOCKET_FACTORY_H_
+#ifndef ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SOCKET_FACTORY_H_
+#define ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SOCKET_FACTORY_H_
 
 #include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
@@ -12,9 +12,8 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 
-namespace location {
+namespace ash {
 namespace nearby {
-namespace chrome {
 
 // An implementation of TcpSocketFactory used for unit tests. The user sets
 // expectations--via SetCreate{Server,Connected}SocketCallExpectations()--for
@@ -70,8 +69,7 @@ class FakeTcpSocketFactory : public sharing::mojom::TcpSocketFactory {
       pending_create_connected_socket_callbacks_;
 };
 
-}  // namespace chrome
 }  // namespace nearby
-}  // namespace location
+}  // namespace ash
 
-#endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SOCKET_FACTORY_H_
+#endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SOCKET_FACTORY_H_

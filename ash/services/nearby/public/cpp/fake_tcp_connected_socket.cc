@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/sharing/nearby/platform/fake_tcp_connected_socket.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_connected_socket.h"
 
 #include "base/notreached.h"
 
-namespace location {
+namespace ash {
 namespace nearby {
-namespace chrome {
 
 FakeTcpConnectedSocket::FakeTcpConnectedSocket(
     mojo::ScopedDataPipeProducerHandle producer_handle,
@@ -59,6 +58,5 @@ void FakeTcpConnectedSocket::SetKeepAlive(bool enable,
   NOTIMPLEMENTED();
 }
 
-}  // namespace chrome
 }  // namespace nearby
-}  // namespace location
+}  // namespace ash

@@ -4,11 +4,11 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_lan_socket.h"
 
+#include "ash/services/nearby/public/cpp/fake_tcp_connected_socket.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/services/sharing/nearby/platform/fake_tcp_connected_socket.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -44,9 +44,10 @@ class WifiLanSocketTest : public ::testing::Test {
                                                    send_pipe_producer_handle,
                                                    send_pipe_consumer_handle));
 
-    auto fake_tcp_connected_socket = std::make_unique<FakeTcpConnectedSocket>(
-        std::move(receive_pipe_producer_handle),
-        std::move(send_pipe_consumer_handle));
+    auto fake_tcp_connected_socket =
+        std::make_unique<ash::nearby::FakeTcpConnectedSocket>(
+            std::move(receive_pipe_producer_handle),
+            std::move(send_pipe_consumer_handle));
     fake_tcp_connected_socket_ = fake_tcp_connected_socket.get();
     mojo::PendingRemote<network::mojom::TCPConnectedSocket>
         tcp_connected_socket;
@@ -66,7 +67,7 @@ class WifiLanSocketTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle receive_stream_;
   mojo::ScopedDataPipeConsumerHandle send_stream_;
-  FakeTcpConnectedSocket* fake_tcp_connected_socket_;
+  ash::nearby::FakeTcpConnectedSocket* fake_tcp_connected_socket_;
   mojo::SelfOwnedReceiverRef<network::mojom::TCPConnectedSocket>
       tcp_connected_socket_self_owned_receiver_ref_;
   std::unique_ptr<WifiLanSocket> wifi_lan_socket_;

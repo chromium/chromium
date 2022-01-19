@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_CONNECTED_SOCKET_H_
-#define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_CONNECTED_SOCKET_H_
+#ifndef ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_CONNECTED_SOCKET_H_
+#define ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_CONNECTED_SOCKET_H_
 
 #include "base/callback.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -11,9 +11,8 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 
-namespace location {
+namespace ash {
 namespace nearby {
-namespace chrome {
 
 // A trivial implementation of TCPConnectedSocket that can invoke a callback
 // upon destruction. Used for unit tests.
@@ -49,8 +48,7 @@ class FakeTcpConnectedSocket : public network::mojom::TCPConnectedSocket {
   base::OnceClosure on_destroy_callback_;
 };
 
-}  // namespace chrome
 }  // namespace nearby
-}  // namespace location
+}  // namespace ash
 
-#endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_CONNECTED_SOCKET_H_
+#endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_CONNECTED_SOCKET_H_

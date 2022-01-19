@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/sharing/nearby/platform/fake_tcp_server_socket.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_server_socket.h"
 
 #include <memory>
 
-#include "chrome/services/sharing/nearby/platform/fake_tcp_connected_socket.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_connected_socket.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
 
-namespace location {
+namespace ash {
 namespace nearby {
-namespace chrome {
 
 FakeTcpServerSocket::FakeTcpServerSocket() = default;
 
@@ -83,6 +82,5 @@ void FakeTcpServerSocket::Accept(
   }
 }
 
-}  // namespace chrome
 }  // namespace nearby
-}  // namespace location
+}  // namespace ash

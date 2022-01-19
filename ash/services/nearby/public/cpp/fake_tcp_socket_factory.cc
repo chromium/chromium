@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/sharing/nearby/platform/fake_tcp_socket_factory.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 
+#include "ash/services/nearby/public/cpp/fake_tcp_connected_socket.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_server_socket.h"
 #include "base/test/bind.h"
-#include "chrome/services/sharing/nearby/platform/fake_tcp_connected_socket.h"
-#include "chrome/services/sharing/nearby/platform/fake_tcp_server_socket.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 
-namespace location {
+namespace ash {
 namespace nearby {
-namespace chrome {
 
 FakeTcpSocketFactory::FakeTcpSocketFactory(
     const net::IPEndPoint& default_local_addr)
@@ -151,6 +150,5 @@ void FakeTcpSocketFactory::CreateTCPConnectedSocket(
   }
 }
 
-}  // namespace chrome
 }  // namespace nearby
-}  // namespace location
+}  // namespace ash

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SERVER_SOCKET_H_
-#define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SERVER_SOCKET_H_
+#ifndef ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SERVER_SOCKET_H_
+#define ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SERVER_SOCKET_H_
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
@@ -11,9 +11,8 @@
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
-namespace location {
+namespace ash {
 namespace nearby {
-namespace chrome {
 
 // An implementation of TCPServerSocket used for unit tests. The user sets
 // expectations--via SetAcceptCallExpectations()--for the number of Accept()
@@ -55,8 +54,7 @@ class FakeTcpServerSocket : public network::mojom::TCPServerSocket {
   base::circular_deque<AcceptCallback> pending_accept_callbacks_;
 };
 
-}  // namespace chrome
 }  // namespace nearby
-}  // namespace location
+}  // namespace ash
 
-#endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_FAKE_TCP_SERVER_SOCKET_H_
+#endif  // ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SERVER_SOCKET_H_

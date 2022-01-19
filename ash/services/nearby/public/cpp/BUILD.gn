@@ -36,8 +36,17 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_firewall_hole.h",
+    "fake_firewall_hole_factory.cc",
+    "fake_firewall_hole_factory.h",
     "fake_nearby_process_manager.cc",
     "fake_nearby_process_manager.h",
+    "fake_tcp_connected_socket.cc",
+    "fake_tcp_connected_socket.h",
+    "fake_tcp_server_socket.cc",
+    "fake_tcp_server_socket.h",
+    "fake_tcp_socket_factory.cc",
+    "fake_tcp_socket_factory.h",
     "mock_nearby_connections.cc",
     "mock_nearby_connections.h",
     "mock_nearby_process_manager.cc",
@@ -48,9 +57,12 @@ static_library("test_support") {
 
   deps = [
     ":cpp",
+    ":tcp_server_socket_port",
     "//ash/services/nearby/public/mojom",
     "//base",
+    "//base/test:test_support",
     "//mojo/public/cpp/bindings/",
+    "//services/network/public/mojom",
     "//testing/gmock",
   ]
 }
