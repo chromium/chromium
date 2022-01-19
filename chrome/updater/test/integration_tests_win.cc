@@ -47,7 +47,6 @@
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
-#include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -67,6 +66,13 @@ enum class CheckInstallationVersions {
   kCheckSxSOnly = 0,
   kCheckActiveAndSxS = 1,
 };
+
+base::FilePath GetInstallerPath() {
+  base::FilePath test_executable;
+  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
+    return base::FilePath();
+  return test_executable.DirName().AppendASCII("UpdaterSetup_test.exe");
+}
 
 // Returns the root directory where the updater product is installed. This
 // is the parent directory where the versioned directories of the
@@ -298,13 +304,6 @@ void SleepFor(int seconds) {
 
 }  // namespace
 
-base::FilePath GetSetupExecutablePath() {
-  base::FilePath test_executable;
-  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
-    return base::FilePath();
-  return test_executable.DirName().AppendASCII("UpdaterSetup_test.exe");
-}
-
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetProductVersionPath(scope);
   if (!path)
@@ -379,7 +378,6 @@ void EnterTestMode(const GURL& url) {
                   .SetUpdateURL(std::vector<std::string>{url.spec()})
                   .SetUseCUP(false)
                   .SetInitialDelay(0.1)
-                  .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .Overwrite());
 }
 
@@ -403,13 +401,23 @@ void ExpectActiveUpdater(UpdaterScope scope) {
                     CheckInstallationVersions::kCheckActiveAndSxS);
 }
 
+void Install(UpdaterScope scope) {
+  const base::FilePath path = GetInstallerPath();
+  ASSERT_FALSE(path.empty());
+  base::CommandLine command_line(path);
+  command_line.AppendSwitch(kInstallSwitch);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  EXPECT_EQ(0, exit_code);
+}
+
 void Uninstall(UpdaterScope scope) {
   // Note: updater_test.exe --uninstall is run from the build dir, not the
   // install dir, because it is useful for tests to be able to run it to clean
   // the system even if installation has failed or the installed binaries have
   // already been removed.
   base::FilePath path =
-      GetSetupExecutablePath().DirName().AppendASCII("updater_test.exe");
+      GetInstallerPath().DirName().AppendASCII("updater_test.exe");
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch("uninstall");
@@ -792,10 +800,6 @@ void InvokeTestServiceFunction(
   command.AppendSwitchASCII("--function", function_name);
   command.AppendSwitchASCII("--args", arguments_json_string);
   EXPECT_EQ(RunVPythonCommand(command), 0);
-}
-
-void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
-  // TODO(crbug.com/1268555): Implement.
 }
 
 void RunUninstallCmdLine(UpdaterScope scope) {
