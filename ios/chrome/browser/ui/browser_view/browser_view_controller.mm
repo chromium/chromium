@@ -2624,18 +2624,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
 
-  // The language detection helper accepts a callback from the translate
-  // client, so must be created after it.
-  // This will explode if the webState doesn't have a JS injection manager
-  // (this only comes up in unit tests), so check for that and bypass the
-  // init of the translation helpers if needed.
-  // TODO(crbug.com/785238): Remove the need for this check.
-  if (webState->GetJSInjectionReceiver()) {
-    language::IOSLanguageDetectionTabHelper::CreateForWebState(
-        webState,
-        UrlLanguageHistogramFactory::GetForBrowserState(self.browserState));
-    ChromeIOSTranslateClient::CreateForWebState(webState);
-  }
+  language::IOSLanguageDetectionTabHelper::CreateForWebState(
+      webState,
+      UrlLanguageHistogramFactory::GetForBrowserState(self.browserState));
+  ChromeIOSTranslateClient::CreateForWebState(webState);
 
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
