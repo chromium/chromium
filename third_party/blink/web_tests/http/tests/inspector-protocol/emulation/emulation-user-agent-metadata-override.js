@@ -56,6 +56,17 @@
   await printHeader('sec-ch-ua-mobile');
   await printHeader('sec-ch-ua-model');
 
+  // Verifying that the low-entropy UA-CH are returned in getHighEntropyValues() by default
+  testRunner.log('');
+  testRunner.log('Testing with specifying getHighEntropyValues');
+  testRunner.log(await session.evaluateAsync(
+    'navigator.userAgentData.getHighEntropyValues(' +
+        '["architecture"])'));
+  await printHeader('sec-ch-ua');
+  await printHeader('sec-ch-ua-arch');
+  await printHeader('sec-ch-ua-platform');
+  await printHeader('sec-ch-ua-mobile');
+
   // testing effect on navigation.
   testRunner.log('');
   testRunner.log('Testing effect on navigation');

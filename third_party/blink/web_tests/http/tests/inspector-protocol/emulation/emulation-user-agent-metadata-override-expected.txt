@@ -53,6 +53,27 @@ sec-ch-ua-platform-version: "1950"
 sec-ch-ua-mobile: ?1
 sec-ch-ua-model: "QWERTY"
 
+Testing with specifying getHighEntropyValues
+{
+    architecture : Electromechanical
+    brands : [
+        [0] : {
+            brand : Ferrum
+            version : 42.0
+        }
+        [1] : {
+            brand : Iron
+            version : 3
+        }
+    ]
+    mobile : true
+    platform : Typewriter
+}
+sec-ch-ua: "Ferrum";v="42.0", "Iron";v="3"
+sec-ch-ua-arch: "Electromechanical"
+sec-ch-ua-platform: "Typewriter"
+sec-ch-ua-mobile: ?1
+
 Testing effect on navigation
 sec-ch-ua: "Ferrum";v="42.0", "Iron";v="3"
 sec-ch-ua-full-version: "42.0.3.14159"
