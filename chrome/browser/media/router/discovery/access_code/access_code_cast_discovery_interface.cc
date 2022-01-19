@@ -37,11 +37,12 @@ namespace {
 constexpr char kGetMethod[] = "GET";
 constexpr char kContentType[] = "application/json; charset=UTF-8";
 constexpr char kDiscoveryOAuth2Scope[] =
-    "https://www.googleapis.com/auth/applicense.bytebot";
+    "https://www.googleapis.com/auth/cast-edu-messaging";
+// TODO(b/215241542): Add a command-line switch to change Cast2Class endpoint
+// URL.
 constexpr char kDiscoveryEndpoint[] =
     "https://castedumessaging-pa.googleapis.com/";
 constexpr char kDiscoveryServicePath[] = "v1/receivers/";
-constexpr char kDiscoveryServiceQuery[] = "?checkOnly=true&access_token=";
 constexpr char kDiscoveryOAuthConsumerName[] = "access_code_cast_discovery";
 constexpr char kEmptyPostData[] = "";
 
@@ -63,10 +64,6 @@ constexpr char kJsonAudioIn[] = "audioIn";
 constexpr char kJsonDevMode[] = "devMode";
 
 const int64_t kTimeoutMs = 30000;
-
-const GURL GetDiscoveryEndpoint() {
-  return GURL(base::StrCat({kDiscoveryEndpoint, kDiscoveryServicePath}));
-}
 
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("chrome_cast_discovery_api",
@@ -131,8 +128,7 @@ AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
     const std::string& access_code)
     : profile_(profile),
       access_code_(access_code),
-      endpoint_fetcher_(CreateEndpointFetcher(access_code)),
-      discovery_url_(GetDiscoveryEndpoint()) {
+      endpoint_fetcher_(CreateEndpointFetcher(access_code)) {
   DCHECK(profile_);
 }
 
@@ -142,8 +138,7 @@ AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher)
     : profile_(profile),
       access_code_(access_code),
-      endpoint_fetcher_(std::move(endpoint_fetcher)),
-      discovery_url_(GetDiscoveryEndpoint()) {
+      endpoint_fetcher_(std::move(endpoint_fetcher)) {
   DCHECK(profile_);
 }
 
@@ -194,7 +189,7 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
   return std::make_unique<EndpointFetcher>(
       profile_, kDiscoveryOAuthConsumerName,
       GURL(base::StrCat(
-          {discovery_url_.spec(), access_code, kDiscoveryServiceQuery})),
+          {kDiscoveryEndpoint, kDiscoveryServicePath, access_code})),
       kGetMethod, kContentType, discovery_scopes, kTimeoutMs, kEmptyPostData,
       kTrafficAnnotation);
 }

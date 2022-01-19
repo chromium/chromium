@@ -83,8 +83,6 @@ class AccessCodeCastDiscoveryInterface {
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
 
-  const GURL discovery_url_;
-
   DiscoveryDeviceCallback callback_;
 
   base::WeakPtrFactory<AccessCodeCastDiscoveryInterface> weak_ptr_factory_{
