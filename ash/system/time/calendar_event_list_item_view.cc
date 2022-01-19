@@ -107,7 +107,7 @@ CalendarEventListItemView::CalendarEventListItemView(
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
   SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION, start_time_string,
-      end_time_string, base::TimeFormatWithPattern(start_time, "zzzz"),
+      end_time_string, base::TimeFormatWithPattern(start_time, "z"),
       base::UTF8ToUTF16(event.summary())));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 

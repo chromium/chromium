@@ -710,6 +710,7 @@ class CalendarViewAnimationTest : public AshTestBase {
   std::unique_ptr<DetailedViewDelegate> delegate_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
+  static base::Time fake_time_;
 };
 
 // The header should show the new header with animation when there's an update.

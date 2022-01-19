@@ -4,13 +4,8 @@
 
 #include "ash/system/time/calendar_utils.h"
 
-#include <codecvt>
-#include <string>
-
 #include "ash/style/ash_color_provider.h"
-#include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
@@ -22,15 +17,16 @@ namespace ash {
 
 namespace calendar_utils {
 
-bool IsToday(const base::Time selected_date) {
-  return IsTheSameDay(selected_date, base::Time::Now());
+bool IsToday(const base::Time::Exploded& selected_date) {
+  base::Time::Exploded today_exploded = GetExplodedLocal(base::Time::Now());
+  return IsTheSameDay(selected_date, today_exploded);
 }
-bool IsTheSameDay(absl::optional<base::Time> date_a,
-                  absl::optional<base::Time> date_b) {
+bool IsTheSameDay(absl::optional<base::Time::Exploded> date_a,
+                  absl::optional<base::Time::Exploded> date_b) {
   if (!date_a.has_value() || !date_b.has_value())
     return false;
-  return base::TimeFormatWithPattern(date_a.value(), "dd MMM YYYY") ==
-         base::TimeFormatWithPattern(date_b.value(), "dd MMM YYYY");
+  return date_a->year == date_b->year && date_a->month == date_b->month &&
+         date_a->day_of_month == date_b->day_of_month;
 }
 
 base::Time::Exploded GetExplodedLocal(const base::Time& date) {
@@ -46,7 +42,25 @@ base::Time::Exploded GetExplodedUTC(const base::Time& date) {
 }
 
 std::u16string GetMonthName(const base::Time date) {
-  return base::TimeFormatWithPattern(date, "MMMM");
+  // Inits status with no error, no warning.
+  UErrorCode status = U_ZERO_ERROR;
+
+  // Generates the "MMMM" pattern.
+  std::unique_ptr<icu::DateTimePatternGenerator> generator(
+      icu::DateTimePatternGenerator::createInstance(status));
+  DCHECK(U_SUCCESS(status));
+  icu::UnicodeString generated_pattern =
+      generator->getBestPattern(icu::UnicodeString(UDAT_MONTH), status);
+  DCHECK(U_SUCCESS(status));
+
+  // Then, creates the formatter and formats `date` to string with the pattern.
+  auto dfmt =
+      std::make_unique<icu::SimpleDateFormat>(generated_pattern, status);
+  UDate unicode_date = static_cast<UDate>(date.ToDoubleT() * 1000);
+  icu::UnicodeString unicode_string;
+  unicode_string = dfmt->format(unicode_date, unicode_string);
+
+  return base::i18n::UnicodeStringToString16(unicode_string);
 }
 
 void SetUpWeekColumns(views::TableLayout* layout) {
@@ -73,15 +87,9 @@ SkColor GetSecondaryTextColor() {
 }
 
 base::Time GetStartOfMonthLocal(const base::Time& date) {
-  // Using the local time format to calculate the start of a month, since the
-  // LocalExplode doesn't use the manually set timezone.
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
-  int local_day_of_month;
-  bool result = base::StringToInt(
-      converter.to_bytes(base::TimeFormatWithPattern(date, "dd")),
-      &local_day_of_month);
-  DCHECK(result);
-  return date - base::Days(local_day_of_month - 1);
+  return (date -
+          base::Days(calendar_utils::GetExplodedLocal(date).day_of_month - 1))
+      .LocalMidnight();
 }
 
 base::Time GetStartOfPreviousMonthLocal(base::Time date) {

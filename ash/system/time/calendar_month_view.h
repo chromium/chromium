@@ -21,7 +21,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   METADATA_HEADER(CalendarDateCellView);
 
   CalendarDateCellView(CalendarViewController* calendar_view_controller,
-                       base::Time date,
+                       base::Time::Exploded& date,
                        bool is_grayed_out_date,
                        int row_index);
   CalendarDateCellView(const CalendarDateCellView& other) = delete;
@@ -66,7 +66,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   void MaybeDrawEventsIndicator(gfx::Canvas* canvas);
 
   // The date used to render this cell view.
-  const base::Time date_;
+  const base::Time::Exploded date_;
 
   const bool grayed_out_;
 
@@ -114,10 +114,11 @@ class ASH_EXPORT CalendarMonthView : public views::View {
  private:
   // Adds the `current_date`'s `CalendarDateCellView` to the table layout and
   // returns it.
-  CalendarDateCellView* AddDateCellToLayout(base::Time current_date,
-                                            int column,
-                                            bool is_in_current_month,
-                                            int row_index);
+  CalendarDateCellView* AddDateCellToLayout(
+      base::Time::Exploded current_date_exploded,
+      int column,
+      bool is_in_current_month,
+      int row_index);
 
   // Owned by `CalendarView`.
   CalendarViewController* const calendar_view_controller_;

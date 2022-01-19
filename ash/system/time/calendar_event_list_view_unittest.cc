@@ -64,7 +64,7 @@ class CalendarViewEventListViewTest : public AshTestBase {
         std::make_unique<CalendarEventListView>(controller_.get());
   }
 
-  void SetSelectedDate(base::Time date) {
+  void SetSelectedDate(base::Time::Exploded date) {
     controller_->selected_date_ = date;
     controller_->ShowEventListView(date, /*row_index=*/0);
   }
@@ -93,7 +93,9 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
 
   EXPECT_EQ(0u, content_view()->children().size());
 
-  SetSelectedDate(date);
+  base::Time::Exploded selected_date;
+  date.LocalExplode(&selected_date);
+  SetSelectedDate(selected_date);
 
   // 3 events on 18 Nov 2021. And they should be sorted by the start time.
   EXPECT_EQ(3u, content_view()->children().size());
@@ -101,18 +103,21 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
   EXPECT_EQ(u"summary_0", GetSummary(1)->GetText());
   EXPECT_EQ(u"summary_2", GetSummary(2)->GetText());
 
-  SetSelectedDate(date + base::Days(1));
+  (date + base::Days(1)).LocalExplode(&selected_date);
+  SetSelectedDate(selected_date);
 
   // 1 event on 19 Nov 2021.
   EXPECT_EQ(1u, content_view()->children().size());
   EXPECT_EQ(u"summary_3", GetSummary(0)->GetText());
 
-  SetSelectedDate(date + base::Days(2));
+  (date + base::Days(2)).LocalExplode(&selected_date);
+  SetSelectedDate(selected_date);
 
   // 0 event on 20 Nov 2021.
   EXPECT_EQ(0u, content_view()->children().size());
 
-  SetSelectedDate(date + base::Days(3));
+  (date + base::Days(3)).LocalExplode(&selected_date);
+  SetSelectedDate(selected_date);
 
   // 2 events on 21 Nov 2021.
   EXPECT_EQ(2u, content_view()->children().size());
