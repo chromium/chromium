@@ -11,17 +11,17 @@
 
 namespace device {
 
-class TimeZoneMonitorChromeOS : public TimeZoneMonitor,
-                                public ash::system::TimezoneSettings::Observer {
+class TimeZoneMonitorAsh : public TimeZoneMonitor,
+                           public ash::system::TimezoneSettings::Observer {
  public:
-  TimeZoneMonitorChromeOS() : TimeZoneMonitor() {
+  TimeZoneMonitorAsh() : TimeZoneMonitor() {
     ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
   }
 
-  TimeZoneMonitorChromeOS(const TimeZoneMonitorChromeOS&) = delete;
-  TimeZoneMonitorChromeOS& operator=(const TimeZoneMonitorChromeOS&) = delete;
+  TimeZoneMonitorAsh(const TimeZoneMonitorAsh&) = delete;
+  TimeZoneMonitorAsh& operator=(const TimeZoneMonitorAsh&) = delete;
 
-  ~TimeZoneMonitorChromeOS() override {
+  ~TimeZoneMonitorAsh() override {
     ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
   }
 
@@ -36,7 +36,7 @@ class TimeZoneMonitorChromeOS : public TimeZoneMonitor,
 // static
 std::unique_ptr<TimeZoneMonitor> TimeZoneMonitor::Create(
     scoped_refptr<base::SequencedTaskRunner> file_task_runner) {
-  return std::unique_ptr<TimeZoneMonitor>(new TimeZoneMonitorChromeOS());
+  return std::make_unique<TimeZoneMonitorAsh>();
 }
 
 }  // namespace device
