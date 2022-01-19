@@ -63,7 +63,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
     const blink::StorageKey& creator_storage_key,
     const net::IsolationInfo& isolation_info,
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    network::mojom::ClientSecurityStatePtr creator_client_security_state,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host)
@@ -80,7 +80,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       storage_key_(creator_storage_key),
       isolation_info_(isolation_info),
       reporting_source_(base::UnguessableToken::Create()),
-      creator_cross_origin_embedder_policy_(cross_origin_embedder_policy),
+      creator_client_security_state_(std::move(creator_client_security_state)),
       host_receiver_(this, std::move(host)),
       creator_coep_reporter_(std::move(creator_coep_reporter)),
       ancestor_coep_reporter_(std::move(ancestor_coep_reporter)),
@@ -90,8 +90,9 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
-  DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
-         (!creator_render_frame_host_id_ && creator_worker_token_));
+  DCHECK_NE(creator_render_frame_host_id_.has_value(),
+            creator_worker_token_.has_value());
+  DCHECK(creator_client_security_state_);
 
   // TODO(https://crbug.com/11990077): Once we add more stuff to
   // `blink::StorageKey`, DCHECK that `storage_key` is consistent with
@@ -103,8 +104,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     // This is a workaround to make the worker's COEP have a value when
     // PlzDedicatedWorker is disabled. When the feature is enabled, The value is
     // initialized in DedicatedWorkerHost::DidStartScriptLoad().
-    worker_cross_origin_embedder_policy_ =
-        creator_cross_origin_embedder_policy_;
+    worker_client_security_state_ = creator_client_security_state_->Clone();
   }
 
   service_->NotifyWorkerCreated(this);
@@ -348,20 +348,29 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     return;
   }
 
+  // TODO(https://crbug.com/1282637): Compute the client security state based on
+  // the response head and the creator's client security state, just like is
+  // currently done for COEP. Preserve existing functionality in the meantime.
+  worker_client_security_state_ =
+      ancestor_render_frame_host->BuildClientSecurityState();
+
+  // Alias the COEP field inside `worker_client_security_state_` for brevity
+  // below. Note that this is a reference, not a copy.
+  network::CrossOriginEmbedderPolicy& coep =
+      worker_client_security_state_->cross_origin_embedder_policy;
+
   // https://html.spec.whatwg.org/C/#run-a-worker
-  worker_cross_origin_embedder_policy_ = network::CrossOriginEmbedderPolicy();
   if (final_response_url.SchemeIsBlob() ||
       final_response_url.SchemeIs(url::kAboutScheme) ||
       final_response_url.SchemeIs(url::kDataScheme)) {
     // > 14.5 If response's url's scheme is a local scheme, then set worker
     // global scope's embedder policy to owner's embedder policy.
-    worker_cross_origin_embedder_policy_ =
-        creator_cross_origin_embedder_policy_;
+    coep = creator_client_security_state_->cross_origin_embedder_policy;
   } else if (main_script_load_params->response_head->parsed_headers) {
     // > 14.6 Otherwise, set worker global scope's embedder policy to the result
     // of obtaining an embedder policy from response.
-    worker_cross_origin_embedder_policy_ = CoepFromMainResponse(
-        final_response_url, main_script_load_params->response_head.get());
+    coep = CoepFromMainResponse(final_response_url,
+                                main_script_load_params->response_head.get());
   }
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
@@ -369,8 +378,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // Create a COEP reporter with worker's policy.
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
       storage_partition->GetWeakPtr(), final_response_url,
-      worker_cross_origin_embedder_policy_->reporting_endpoint,
-      worker_cross_origin_embedder_policy_->report_only_reporting_endpoint,
+      coep.reporting_endpoint, coep.report_only_reporting_endpoint,
       reporting_source_, isolation_info_.network_isolation_key());
   // TODO(crbug.com/1197041): Bind the receiver of ReportingObserver to the
   // worker in the renderer process.
@@ -378,8 +386,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // > 14.8 If the result of checking a global object's embedder policy with
   // worker global scope, owner, and response is false, then set response to a
   // network error.
-  if (!CheckCrossOriginEmbedderPolicy(creator_cross_origin_embedder_policy_,
-                                      cross_origin_embedder_policy())) {
+  if (!CheckCrossOriginEmbedderPolicy()) {
     ScriptLoadStartFailed(final_response_url,
                           network::URLLoaderCompletionStatus(
                               network::mojom::BlockedByResponseReason::
@@ -472,15 +479,10 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
         coep_reporter.InitWithNewPipeAndPassReceiver());
   }
 
-  network::mojom::ClientSecurityStatePtr client_security_state =
-      ancestor_render_frame_host->BuildClientSecurityState();
-  client_security_state->cross_origin_embedder_policy =
-      cross_origin_embedder_policy();
-
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
           ancestor_render_frame_host, GetStorageKey().origin(), isolation_info_,
-          std::move(client_security_state), std::move(coep_reporter),
+          worker_client_security_state_->Clone(), std::move(coep_reporter),
           worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
               blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
@@ -511,14 +513,18 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
 
 // [spec]
 // https://html.spec.whatwg.org/C/#check-a-global-object's-embedder-policy
-bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
-    network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
-    network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy) {
+bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   DCHECK(final_response_url_);
 
   if (!creator_coep_reporter_)
     return false;
+
+  const network::CrossOriginEmbedderPolicy&
+      creator_cross_origin_embedder_policy =
+          creator_client_security_state_->cross_origin_embedder_policy;
+  const network::CrossOriginEmbedderPolicy&
+      worker_cross_origin_embedder_policy = cross_origin_embedder_policy();
 
   // [spec]: 4. If ownerPolicy's report-only value is "require-corp" or
   // "credentialless" and policy's value is "unsafe-none", then queue a
@@ -644,8 +650,9 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
           worker_process_host_->GetID(),
           /*creator_render_frame_host_id_=*/absl::nullopt,
           /*creator_worker_token=*/token_, ancestor_render_frame_host_id_,
-          GetStorageKey(), isolation_info_, cross_origin_embedder_policy(),
-          creator_coep_reporter, ancestor_coep_reporter_),
+          GetStorageKey(), isolation_info_,
+          worker_client_security_state_->Clone(), creator_coep_reporter,
+          ancestor_coep_reporter_),
       std::move(receiver));
 }
 

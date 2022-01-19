@@ -21,8 +21,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
-#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -46,6 +46,12 @@
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
 
+namespace network {
+
+struct CrossOriginEmbedderPolicy;
+
+}  // namespace network
+
 namespace content {
 
 class ServiceWorkerContainerHost;
@@ -66,6 +72,18 @@ class DedicatedWorkerHost final
       public blink::mojom::BackForwardCacheControllerHost,
       public RenderProcessHostObserver {
  public:
+  // Creates a new browser-side host for a single dedicated worker.
+  //
+  // See the class-level comment for lifetime considerations.
+  //
+  // - `service` must not be nullptr and must outlive this instance.
+  // - `worker_process_host` must not be nullptr and must outlive this instance.
+  //   It must be initialized and not be dead - see
+  //   `RenderProcessHost::IsInitializedAndNotDead()`.
+  // - Exactly one of `creator_render_frame_host_id` or `creator_worker_token`
+  //   must be specified.
+  // - `creator_client_security_state` specifies the client security state of
+  //   the creator frame or worker. It must not be nullptr.
   DedicatedWorkerHost(
       DedicatedWorkerServiceImpl* service,
       const blink::DedicatedWorkerToken& token,
@@ -75,7 +93,7 @@ class DedicatedWorkerHost final
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      network::mojom::ClientSecurityStatePtr creator_client_security_state,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host);
@@ -157,8 +175,8 @@ class DedicatedWorkerHost final
 
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
-    DCHECK(worker_cross_origin_embedder_policy_.has_value());
-    return worker_cross_origin_embedder_policy_.value();
+    DCHECK(worker_client_security_state_);
+    return worker_client_security_state_->cross_origin_embedder_policy;
   }
 
   ServiceWorkerMainResourceHandle* service_worker_handle() {
@@ -237,10 +255,8 @@ class DedicatedWorkerHost final
 
   void OnMojoDisconnect();
 
-  // Returns true if creator and worker's COEP values are valid.
-  bool CheckCrossOriginEmbedderPolicy(
-      network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
-      network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy);
+  // Returns whether creator and worker's COEP values are compatible.
+  bool CheckCrossOriginEmbedderPolicy();
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> GetWorkerCoepReporter();
 
@@ -287,15 +303,24 @@ class DedicatedWorkerHost final
 
   const base::UnguessableToken reporting_source_;
 
-  // The frame/worker's Cross-Origin-Embedder-Policy (COEP) that directly starts
-  // this worker.
-  const network::CrossOriginEmbedderPolicy
-      creator_cross_origin_embedder_policy_;
+  // The client security state of the creator execution context. Never nullptr.
+  // Copied at construction time.
+  //
+  // TODO(https://crbug.com/1177652): Consider removing this member once the
+  // creator always outlives this instance. In that case, we could copy the
+  // creator's client security state lazily instead of eagerly.
+  const network::mojom::ClientSecurityStatePtr creator_client_security_state_;
 
-  // The DedicatedWorker's Cross-Origin-Embedder-Policy (COEP). This is set when
-  // the script's response head is loaded.
-  absl::optional<network::CrossOriginEmbedderPolicy>
-      worker_cross_origin_embedder_policy_;
+  // The client security state of this worker, used for subresource fetches.
+  //
+  // If PlzDedicatedWorker is disabled, it is cloned from
+  // `creator_client_security_state_` at construction time.
+  //
+  // Otherwise, it is nullptr until the script's response head is loaded, at
+  // which point it is calculated based on the response info. If the response is
+  // loaded from a URL with a local scheme, then the worker inherits its
+  // creator's client security state.
+  network::mojom::ClientSecurityStatePtr worker_client_security_state_;
 
   // This is kept alive during the lifetime of the dedicated worker, since it's
   // associated with Mojo interfaces (ServiceWorkerContainer and

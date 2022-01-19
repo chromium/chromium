@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -53,8 +54,8 @@ class MockDedicatedWorker
             worker_process_id, render_frame_host_id,
             /*creator_worker_token=*/absl::nullopt, render_frame_host_id,
             blink::StorageKey(), net::IsolationInfo::CreateTransient(),
-            network::CrossOriginEmbedderPolicy(), coep_reporter->GetWeakPtr(),
-            coep_reporter->GetWeakPtr()),
+            network::mojom::ClientSecurityState::New(),
+            coep_reporter->GetWeakPtr(), coep_reporter->GetWeakPtr()),
         factory_.BindNewPipeAndPassReceiver());
 
     if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {

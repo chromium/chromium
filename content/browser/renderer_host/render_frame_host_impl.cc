@@ -9533,7 +9533,7 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
           /*creator_render_frame_host_id=*/GetGlobalId(),
           /*creator_worker_token=*/absl::nullopt,
           /*ancestor_render_frame_host_id=*/GetGlobalId(), storage_key(),
-          isolation_info_, cross_origin_embedder_policy(),
+          isolation_info_, BuildClientSecurityState(),
           /*creator_coep_reporter=*/coep_reporter,
           /*ancestor_coep_reporter=*/coep_reporter),
       std::move(receiver));

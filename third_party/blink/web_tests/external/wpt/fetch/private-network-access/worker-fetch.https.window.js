@@ -22,7 +22,7 @@ promise_test(t => workerFetchTest(t, {
     behavior: { response: ResponseBehavior.allowCrossOrigin() },
   },
   expected: WorkerFetchTestResult.FAILURE,
-}), "private to local: failure.");
+}), "private to local: failed preflight.");
 
 promise_test(t => workerFetchTest(t, {
   source: { server: Server.HTTPS_PRIVATE },

@@ -11,8 +11,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
-#include "services/network/public/cpp/cross_origin_embedder_policy.h"
-#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
@@ -22,9 +22,15 @@ namespace content {
 
 // A factory for creating DedicatedWorkerHosts. Its lifetime is managed by the
 // renderer over mojo via SelfOwnedReceiver. It lives on the UI thread.
+//
+// A factory instance creates at most one `DedicatedWorkerHost` instance.
 class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
     : public blink::mojom::DedicatedWorkerHostFactory {
  public:
+  // Exactly one of `creator_render_frame_host_id` and `creator_worker_token`
+  // must be specified.
+  // `creator_client_security_state` specifies the client security state of
+  // the creator frame or worker. Must not be nullptr.
   DedicatedWorkerHostFactoryImpl(
       int worker_process_id,
       absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
@@ -32,7 +38,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      network::mojom::ClientSecurityStatePtr creator_client_security_state,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter);
 
@@ -77,7 +83,11 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   // worker's origin.
   const blink::StorageKey creator_storage_key_;
   const net::IsolationInfo isolation_info_;
-  const network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+
+  // The client security state of the creator execution context.
+  // Non-nullptr before a worker is created, i.e. `CreateWorkerHost()` or
+  // `CreateWorkerHostAndStartScriptLoad()` is called. Nullptr afterwards.
+  network::mojom::ClientSecurityStatePtr creator_client_security_state_;
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
