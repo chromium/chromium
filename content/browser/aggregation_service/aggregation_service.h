@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_H_
 
-#include "base/callback_forward.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -13,6 +12,7 @@
 class GURL;
 
 namespace base {
+class Time;
 class Value;
 }  // namespace base
 
@@ -55,6 +55,13 @@ class AggregationService {
   virtual void SendReport(const GURL& url,
                           const base::Value& contents,
                           SendCallback callback) = 0;
+
+  // Deletes all data in storage that were fetched between `delete_begin` and
+  // `delete_end` time (inclusive). Null times are treated as unbounded lower or
+  // upper range.
+  virtual void ClearData(base::Time delete_begin,
+                         base::Time delete_end,
+                         base::OnceClosure done) = 0;
 };
 
 }  // namespace content

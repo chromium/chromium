@@ -15,6 +15,7 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
@@ -102,6 +103,15 @@ void AggregationServiceImpl::SendReport(const GURL& url,
 const base::SequenceBound<AggregationServiceKeyStorage>&
 AggregationServiceImpl::GetKeyStorage() {
   return key_storage_;
+}
+
+void AggregationServiceImpl::ClearData(base::Time delete_begin,
+                                       base::Time delete_end,
+                                       base::OnceClosure done) {
+  key_storage_
+      .AsyncCall(&AggregationServiceKeyStorage::ClearPublicKeysFetchedBetween)
+      .WithArgs(delete_begin, delete_end)
+      .Then(std::move(done));
 }
 
 }  // namespace content

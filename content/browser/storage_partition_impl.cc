@@ -966,6 +966,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       network::mojom::CookieManager* cookie_manager,
       InterestGroupManager* interest_group_manager,
       AttributionManagerImpl* attribution_manager,
+      AggregationServiceImpl* aggregation_service,
       bool perform_storage_cleanup,
       const base::Time begin,
       const base::Time end);
@@ -994,7 +995,8 @@ class StoragePartitionImpl::DataDeletionHelper {
     kShaderCache = 6,
     kPluginPrivate = 7,
     kConversions = 8,
-    kMaxValue = kConversions,
+    kAggregationService = 9,
+    kMaxValue = kAggregationService,
   };
 
   base::OnceClosure CreateTaskCompletionClosure(TracingDataType data_type);
@@ -2144,7 +2146,7 @@ void StoragePartitionImpl::ClearDataImpl(
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
       interest_group_manager_.get(), attribution_manager_.get(),
-      perform_storage_cleanup, begin, end);
+      aggregation_service_.get(), perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2345,6 +2347,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     network::mojom::CookieManager* cookie_manager,
     InterestGroupManager* interest_group_manager,
     AttributionManagerImpl* attribution_manager,
+    AggregationServiceImpl* aggregation_service,
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end) {
@@ -2451,8 +2454,22 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
                                            storage_policy_ref);
   if (attribution_manager && (remove_mask_ & REMOVE_DATA_MASK_CONVERSIONS)) {
     attribution_manager->ClearData(
-        begin, end, std::move(filter),
+        begin, end, filter,
         CreateTaskCompletionClosure(TracingDataType::kConversions));
+  }
+
+  if (aggregation_service &&
+      (remove_mask_ & REMOVE_DATA_MASK_AGGREGATION_SERVICE)) {
+    // Currently the aggregation service only stores public keys and we don't
+    // have information on the page/context that uses the public key origin,
+    // therefore we don't check origins and instead just delete all rows in the
+    // given time range.
+    // TODO(crbug.com/1284971): Consider fine-grained deletion of public keys.
+    // TODO(crbug.com/1286173): Consider adding aggregation service origins to
+    // `CookiesTreeModel`.
+    aggregation_service->ClearData(
+        begin, end,
+        CreateTaskCompletionClosure(TracingDataType::kAggregationService));
   }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -2696,6 +2713,12 @@ void StoragePartitionImpl::OverrideSharedStorageWorkletHostManagerForTesting(
   DCHECK(initialized_);
   shared_storage_worklet_host_manager_ =
       std::move(shared_storage_worklet_host_manager);
+}
+
+void StoragePartitionImpl::OverrideAggregationServiceForTesting(
+    std::unique_ptr<AggregationServiceImpl> aggregation_service) {
+  DCHECK(initialized_);
+  aggregation_service_ = std::move(aggregation_service);
 }
 
 void StoragePartitionImpl::GetQuotaSettings(

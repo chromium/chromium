@@ -49,8 +49,6 @@ constexpr int kCompatibleVersionNumber = 1;
 // currently deprecated.
 constexpr int kDeprecatedVersionNumber = 0;
 
-constexpr size_t kDeleteStepSize = 100;
-
 bool UpgradeAggregationServiceStorageSqlSchema(sql::Database& db,
                                                sql::MetaTable& meta_table) {
   // Placeholder for database migration logic.
@@ -216,33 +214,22 @@ void AggregationServiceStorageSql::ClearPublicKeysFetchedBetween(
   if (!transaction.Begin())
     return;
 
-  static constexpr char kSelectOriginRangeSql[] =
-      "SELECT origin_id FROM origins WHERE fetch_time BETWEEN ? AND ? "
-      "    ORDER by fetch_time, origin_id";
-  sql::Statement select_origins_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSelectOriginRangeSql));
-  select_origins_statement.BindTime(0, delete_begin);
-  select_origins_statement.BindTime(1, delete_end);
+  static constexpr char kDeleteCandidateData[] =
+      "DELETE FROM origins WHERE fetch_time BETWEEN ? AND ? "
+      "RETURNING origin_id";
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteCandidateData));
+  statement.BindTime(0, delete_begin);
+  statement.BindTime(1, delete_end);
 
-  while (true) {  // Delete at most kDeleteStepSize origins at a time.
-    std::vector<int64_t> origin_ids_to_delete;
-    while (origin_ids_to_delete.size() < kDeleteStepSize &&
-           select_origins_statement.Step()) {
-      int64_t origin_id = select_origins_statement.ColumnInt64(0);
-      origin_ids_to_delete.push_back(origin_id);
-    }
-
-    // Don't proceed to delete partial results if one of the statements fails.
-    if (!select_origins_statement.Succeeded())
+  while (statement.Step()) {
+    if (!ClearPublicKeysByOriginId(/*origin_id=*/statement.ColumnInt64(0))) {
       return;
-
-    ClearPublicKeysByOriginIds(origin_ids_to_delete);
-
-    if (origin_ids_to_delete.size() < kDeleteStepSize)
-      break;
-
-    select_origins_statement.Reset(/*clear_bound_vars = */ false);
+    }
   }
+
+  if (!statement.Succeeded())
+    return;
 
   transaction.Commit();
 }
@@ -259,32 +246,22 @@ void AggregationServiceStorageSql::ClearPublicKeysExpiredBy(
   if (!transaction.Begin())
     return;
 
-  static constexpr char kSelectOriginRangeSql[] =
-      "SELECT origin_id FROM origins WHERE expiry_time <= ? "
-      "    ORDER BY expiry_time, origin_id";
-  sql::Statement select_origins_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSelectOriginRangeSql));
-  select_origins_statement.BindTime(0, delete_end);
+  static constexpr char kDeleteOriginRangeSql[] =
+      "DELETE FROM origins WHERE expiry_time <= ? "
+      "RETURNING origin_id";
+  sql::Statement delete_origins_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteOriginRangeSql));
+  delete_origins_statement.BindTime(0, delete_end);
 
-  while (true) {  // Delete at most kDeleteStepSize origins at a time.
-    std::vector<int64_t> origin_ids_to_delete;
-    while (origin_ids_to_delete.size() < kDeleteStepSize &&
-           select_origins_statement.Step()) {
-      int64_t origin_id = select_origins_statement.ColumnInt64(0);
-      origin_ids_to_delete.push_back(origin_id);
-    }
-
-    // Don't proceed to delete partial results if one of the statements fails.
-    if (!select_origins_statement.Succeeded())
+  while (delete_origins_statement.Step()) {
+    if (!ClearPublicKeysByOriginId(
+            /*origin_id=*/delete_origins_statement.ColumnInt64(0))) {
       return;
-
-    ClearPublicKeysByOriginIds(origin_ids_to_delete);
-
-    if (origin_ids_to_delete.size() < kDeleteStepSize)
-      break;
-
-    select_origins_statement.Reset(/*clear_bound_vars=*/false);
+    }
   }
+
+  if (!delete_origins_statement.Succeeded())
+    return;
 
   transaction.Commit();
 }
@@ -335,53 +312,35 @@ bool AggregationServiceStorageSql::ClearPublicKeysImpl(
     const url::Origin& origin) {
   DCHECK(db_.HasActiveTransactions());
 
-  static constexpr char kSelectOriginSql[] =
-      "SELECT origin_id FROM origins WHERE origin = ? ORDER BY origin_id";
-  sql::Statement select_origin_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSelectOriginSql));
-  select_origin_statement.BindString(0, origin.Serialize());
+  static constexpr char kDeleteOriginSql[] =
+      "DELETE FROM origins WHERE origin = ? "
+      "RETURNING origin_id";
+  sql::Statement delete_origin_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteOriginSql));
+  delete_origin_statement.BindString(0, origin.Serialize());
 
-  bool has_matched_origin = select_origin_statement.Step();
+  bool has_matched_origin = delete_origin_statement.Step();
 
-  if (!select_origin_statement.Succeeded())
+  if (!delete_origin_statement.Succeeded())
     return false;
 
   if (!has_matched_origin)
     return true;
 
-  int64_t origin_id = select_origin_statement.ColumnInt64(0);
-  return ClearPublicKeysByOriginIds({origin_id});
+  return ClearPublicKeysByOriginId(
+      /*origin_id=*/delete_origin_statement.ColumnInt64(0));
 }
 
-bool AggregationServiceStorageSql::ClearPublicKeysByOriginIds(
-    const std::vector<int64_t>& origin_ids) {
+bool AggregationServiceStorageSql::ClearPublicKeysByOriginId(
+    int64_t origin_id) {
   DCHECK(db_.HasActiveTransactions());
-
-  static constexpr char kDeleteOriginSql[] =
-      "DELETE FROM origins WHERE origin_id = ?";
-  sql::Statement delete_origin_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteOriginSql));
-
-  for (int64_t origin_id : origin_ids) {
-    delete_origin_statement.Reset(/*clear_bound_vars=*/true);
-    delete_origin_statement.BindInt64(0, origin_id);
-    if (!delete_origin_statement.Run())
-      return false;
-  }
 
   static constexpr char kDeleteKeysSql[] =
       "DELETE FROM keys WHERE origin_id = ?";
   sql::Statement delete_keys_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteKeysSql));
-
-  for (int64_t origin_id : origin_ids) {
-    delete_keys_statement.Reset(/*clear_bound_vars=*/true);
-    delete_keys_statement.BindInt64(0, origin_id);
-    if (!delete_keys_statement.Run())
-      return false;
-  }
-
-  return true;
+  delete_keys_statement.BindInt64(0, origin_id);
+  return delete_keys_statement.Run();
 }
 
 void AggregationServiceStorageSql::ClearAllPublicKeys() {

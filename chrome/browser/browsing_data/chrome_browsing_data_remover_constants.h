@@ -51,7 +51,8 @@ enum DataType : uint64_t {
       DATA_TYPE_SITE_USAGE_DATA | DATA_TYPE_DURABLE_PERMISSION |
       DATA_TYPE_EXTERNAL_PROTOCOL_DATA | DATA_TYPE_ISOLATED_ORIGINS |
       content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS |
-      content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS,
+      content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
+      content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE,
 
   // Datatypes protected by Important Sites.
   IMPORTANT_SITES_DATA_TYPES =

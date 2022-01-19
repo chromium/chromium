@@ -107,8 +107,8 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   bool ClearPublicKeysImpl(const url::Origin& origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Deletes all stored public keys for origins from database.
-  bool ClearPublicKeysByOriginIds(const std::vector<int64_t>& origin_ids)
+  // Deletes all stored public keys for `origin_id` from database.
+  bool ClearPublicKeysByOriginId(int64_t origin_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Clears all stored public keys.

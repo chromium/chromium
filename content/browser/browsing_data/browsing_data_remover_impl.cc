@@ -409,6 +409,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_CONVERSIONS;
   }
+  if (remove_mask & DATA_TYPE_AGGREGATION_SERVICE) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE;
+  }
 
   StoragePartition* storage_partition = GetStoragePartition();
 

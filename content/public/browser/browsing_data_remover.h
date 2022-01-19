@@ -111,8 +111,13 @@ class BrowsingDataRemover {
     // (https://github.com/WICG/conversion-measurement-api) persistent storage.
     DATA_TYPE_CONVERSIONS = 1 << 17,
 
+    // Aggregation Service
+    // (https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#data-processing-through-the-aggregation-service)
+    // persistent storage.
+    DATA_TYPE_AGGREGATION_SERVICE = 1 << 18,
+
     // Embedders can add more datatypes beyond this point.
-    DATA_TYPE_CONTENT_END = DATA_TYPE_CONVERSIONS,
+    DATA_TYPE_CONTENT_END = DATA_TYPE_AGGREGATION_SERVICE,
   };
 
   enum OriginType : uint64_t {

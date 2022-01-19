@@ -61,6 +61,9 @@ class CONTENT_EXPORT AggregationServiceImpl
   void SendReport(const GURL& url,
                   const base::Value& contents,
                   SendCallback callback) override;
+  void ClearData(base::Time delete_begin,
+                 base::Time delete_end,
+                 base::OnceClosure done) override;
 
   // AggregationServiceStorageContext:
   const base::SequenceBound<AggregationServiceKeyStorage>& GetKeyStorage()

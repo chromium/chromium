@@ -6,15 +6,18 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -26,11 +29,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "content/browser/aggregation_service/aggregation_service_impl.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
@@ -72,6 +78,8 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "storage/browser/file_system/async_file_util.h"
@@ -724,6 +732,21 @@ class MockDataRemovalObserver : public StoragePartition::DataRemovalObserver {
       observation_{this};
 };
 
+class MockAggregationService : public AggregationServiceImpl {
+ public:
+  explicit MockAggregationService(StoragePartitionImpl* partition)
+      : AggregationServiceImpl(/*run_in_memory=*/true,
+                               /*user_data_directory=*/base::FilePath(),
+                               partition) {}
+
+  MOCK_METHOD(void,
+              ClearData,
+              (base::Time delete_begin,
+               base::Time delete_end,
+               base::OnceClosure done),
+              (override));
+};
+
 bool IsWebSafeSchemeForTest(const std::string& scheme) {
   return scheme == url::kHttpScheme;
 }
@@ -885,8 +908,10 @@ class StoragePartitionImplTest : public testing::Test {
     // Configures the Conversion API to run in memory to speed up its
     // initialization and avoid timeouts. See https://crbug.com/1080764.
     AttributionManagerImpl::RunInMemoryForTesting();
-    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {blink::features::kInterestGroupStorage,
+         features::kPrivacySandboxAggregationService},
+        {});
   }
 
   StoragePartitionImplTest(const StoragePartitionImplTest&) = delete;
@@ -2291,6 +2316,66 @@ TEST_F(StoragePartitionImplTest, HandlesMissingTrustTokenFulfiller) {
   ASSERT_TRUE(received_answer);
   EXPECT_EQ(received_answer->status,
             network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound);
+}
+
+TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  auto aggregation_service =
+      std::make_unique<MockAggregationService>(partition);
+  auto* aggregation_service_ptr = aggregation_service.get();
+  partition->OverrideAggregationServiceForTesting(
+      std::move(aggregation_service));
+
+  const uint32_t kTestClearMask =
+      StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE;
+  const uint32_t kTestQuotaClearMask =
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL;
+  const auto kTestOrigin = GURL("https://example.com");
+  const auto kBeginTime = base::Time() + base::Hours(1);
+  const auto kEndTime = base::Time() + base::Hours(2);
+  const auto invoke_callback =
+      [](base::Time delete_begin, base::Time delete_end,
+         base::OnceClosure done) { std::move(done).Run(); };
+
+  // Verify that each of the StoragePartition interfaces for clearing origin
+  // based data calls aggregation service appropriately.
+
+  EXPECT_CALL(*aggregation_service_ptr,
+              ClearData(base::Time(), base::Time::Max(), testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  base::RunLoop run_loop;
+  partition->ClearDataForOrigin(kTestClearMask, kTestQuotaClearMask,
+                                kTestOrigin, run_loop.QuitClosure());
+  run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+
+  EXPECT_CALL(*aggregation_service_ptr,
+              ClearData(kBeginTime, kEndTime, testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  partition->ClearData(kTestClearMask, kTestQuotaClearMask, kTestOrigin,
+                       kBeginTime, kEndTime, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+
+  EXPECT_CALL(*aggregation_service_ptr,
+              ClearData(kBeginTime, kEndTime, testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  partition->ClearData(
+      kTestClearMask, kTestQuotaClearMask,
+      base::BindLambdaForTesting([&](const url::Origin& origin,
+                                     storage::SpecialStoragePolicy* policy) {
+        return origin == url::Origin::Create(kTestOrigin);
+      }),
+      /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
+      kBeginTime, kEndTime, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+
+  EXPECT_CALL(*aggregation_service_ptr,
+              ClearData(kBeginTime, kEndTime, testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  partition->ClearData(kTestClearMask, kTestQuotaClearMask, GURL(), kBeginTime,
+                       kEndTime, base::DoNothing());
 }
 
 }  // namespace content

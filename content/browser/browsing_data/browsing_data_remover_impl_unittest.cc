@@ -1326,6 +1326,15 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveConversions) {
             StoragePartition::REMOVE_DATA_MASK_CONVERSIONS);
 }
 
+TEST_F(BrowsingDataRemoverImplTest, RemoveAggregationServiceData) {
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE, false);
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(removal_data.remove_mask,
+            StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE);
+}
+
 class MultipleTasksObserver {
  public:
   // A simple implementation of BrowsingDataRemover::Observer.
