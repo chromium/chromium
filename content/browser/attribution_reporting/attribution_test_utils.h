@@ -210,33 +210,30 @@ class SourceBuilder {
   explicit SourceBuilder(base::Time time = base::Time::Now());
   ~SourceBuilder();
 
-  [[nodiscard]] SourceBuilder& SetExpiry(base::TimeDelta delta);
+  SourceBuilder& SetExpiry(base::TimeDelta delta);
 
-  [[nodiscard]] SourceBuilder& SetSourceEventId(uint64_t source_event_id);
+  SourceBuilder& SetSourceEventId(uint64_t source_event_id);
 
-  [[nodiscard]] SourceBuilder& SetImpressionOrigin(url::Origin origin);
+  SourceBuilder& SetImpressionOrigin(url::Origin origin);
 
-  [[nodiscard]] SourceBuilder& SetConversionOrigin(url::Origin domain);
+  SourceBuilder& SetConversionOrigin(url::Origin domain);
 
-  [[nodiscard]] SourceBuilder& SetReportingOrigin(url::Origin origin);
+  SourceBuilder& SetReportingOrigin(url::Origin origin);
 
-  [[nodiscard]] SourceBuilder& SetSourceType(
-      StorableSource::SourceType source_type);
+  SourceBuilder& SetSourceType(StorableSource::SourceType source_type);
 
-  [[nodiscard]] SourceBuilder& SetPriority(int64_t priority);
+  SourceBuilder& SetPriority(int64_t priority);
 
-  [[nodiscard]] SourceBuilder& SetAttributionLogic(
+  SourceBuilder& SetAttributionLogic(
       StorableSource::AttributionLogic attribution_logic);
 
-  [[nodiscard]] SourceBuilder& SetFakeTriggerData(
-      absl::optional<uint64_t> fake_trigger_data);
+  SourceBuilder& SetFakeTriggerData(absl::optional<uint64_t> fake_trigger_data);
 
-  [[nodiscard]] SourceBuilder& SetSourceId(
-      absl::optional<StorableSource::Id> source_id);
+  SourceBuilder& SetSourceId(absl::optional<StorableSource::Id> source_id);
 
-  [[nodiscard]] SourceBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys);
+  SourceBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys);
 
-  [[nodiscard]] StorableSource Build() const;
+  StorableSource Build() const;
 
  private:
   uint64_t source_event_id_ = 123;
@@ -257,7 +254,7 @@ class SourceBuilder {
 
 // Returns a StorableTrigger with default data which matches the default
 // impressions created by SourceBuilder.
-[[nodiscard]] StorableTrigger DefaultTrigger();
+StorableTrigger DefaultTrigger();
 
 // Helper class to construct a StorableTrigger for tests using default data.
 // StorableTrigger members are not mutable after construction requiring a
@@ -267,22 +264,20 @@ class TriggerBuilder {
   TriggerBuilder();
   ~TriggerBuilder();
 
-  [[nodiscard]] TriggerBuilder& SetTriggerData(uint64_t trigger_data);
+  TriggerBuilder& SetTriggerData(uint64_t trigger_data);
 
-  [[nodiscard]] TriggerBuilder& SetEventSourceTriggerData(
-      uint64_t event_source_trigger_data);
+  TriggerBuilder& SetEventSourceTriggerData(uint64_t event_source_trigger_data);
 
-  [[nodiscard]] TriggerBuilder& SetConversionDestination(
+  TriggerBuilder& SetConversionDestination(
       net::SchemefulSite conversion_destination);
 
-  [[nodiscard]] TriggerBuilder& SetReportingOrigin(
-      url::Origin reporting_origin);
+  TriggerBuilder& SetReportingOrigin(url::Origin reporting_origin);
 
-  [[nodiscard]] TriggerBuilder& SetPriority(int64_t priority);
+  TriggerBuilder& SetPriority(int64_t priority);
 
-  [[nodiscard]] TriggerBuilder& SetDedupKey(absl::optional<int64_t> dedup_key);
+  TriggerBuilder& SetDedupKey(absl::optional<int64_t> dedup_key);
 
-  [[nodiscard]] StorableTrigger Build() const;
+  StorableTrigger Build() const;
 
  private:
   uint64_t trigger_data_ = 111;
@@ -300,21 +295,19 @@ class ReportBuilder {
   explicit ReportBuilder(StorableSource source);
   ~ReportBuilder();
 
-  [[nodiscard]] ReportBuilder& SetTriggerData(uint64_t trigger_data);
+  ReportBuilder& SetTriggerData(uint64_t trigger_data);
 
-  [[nodiscard]] ReportBuilder& SetTriggerTime(base::Time time);
+  ReportBuilder& SetTriggerTime(base::Time time);
 
-  [[nodiscard]] ReportBuilder& SetReportTime(base::Time time);
+  ReportBuilder& SetReportTime(base::Time time);
 
-  [[nodiscard]] ReportBuilder& SetPriority(int64_t priority);
+  ReportBuilder& SetPriority(int64_t priority);
 
-  [[nodiscard]] ReportBuilder& SetExternalReportId(
-      base::GUID external_report_id);
+  ReportBuilder& SetExternalReportId(base::GUID external_report_id);
 
-  [[nodiscard]] ReportBuilder& SetReportId(
-      absl::optional<AttributionReport::Id> id);
+  ReportBuilder& SetReportId(absl::optional<AttributionReport::Id> id);
 
-  [[nodiscard]] AttributionReport Build() const;
+  AttributionReport Build() const;
 
  private:
   StorableSource source_;
@@ -364,7 +357,7 @@ std::ostream& operator<<(
     std::ostream& out,
     const AttributionStorage::DeactivatedSource& deactivated_source);
 
-[[nodiscard]] std::vector<AttributionReport> GetAttributionsToReportForTesting(
+std::vector<AttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time);
 

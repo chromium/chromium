@@ -97,8 +97,7 @@ class AttributionManager {
 
   // Returns the AttributionPolicy that is used to control API policies such
   // as noise.
-  [[nodiscard]] virtual const AttributionPolicy& GetAttributionPolicy()
-      const = 0;
+  virtual const AttributionPolicy& GetAttributionPolicy() const = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time.

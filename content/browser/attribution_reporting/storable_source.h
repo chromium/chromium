@@ -67,41 +67,31 @@ class CONTENT_EXPORT StorableSource {
   StorableSource& operator=(StorableSource&& other);
   ~StorableSource();
 
-  [[nodiscard]] uint64_t source_event_id() const { return source_event_id_; }
+  uint64_t source_event_id() const { return source_event_id_; }
 
-  [[nodiscard]] const url::Origin& impression_origin() const {
-    return impression_origin_;
-  }
+  const url::Origin& impression_origin() const { return impression_origin_; }
 
-  [[nodiscard]] const url::Origin& conversion_origin() const {
-    return conversion_origin_;
-  }
+  const url::Origin& conversion_origin() const { return conversion_origin_; }
 
-  [[nodiscard]] const url::Origin& reporting_origin() const {
-    return reporting_origin_;
-  }
+  const url::Origin& reporting_origin() const { return reporting_origin_; }
 
-  [[nodiscard]] base::Time impression_time() const { return impression_time_; }
+  base::Time impression_time() const { return impression_time_; }
 
-  [[nodiscard]] base::Time expiry_time() const { return expiry_time_; }
+  base::Time expiry_time() const { return expiry_time_; }
 
-  [[nodiscard]] absl::optional<Id> source_id() const { return source_id_; }
+  absl::optional<Id> source_id() const { return source_id_; }
 
-  [[nodiscard]] SourceType source_type() const { return source_type_; }
+  SourceType source_type() const { return source_type_; }
 
-  [[nodiscard]] int64_t priority() const { return priority_; }
+  int64_t priority() const { return priority_; }
 
-  [[nodiscard]] AttributionLogic attribution_logic() const {
-    return attribution_logic_;
-  }
+  AttributionLogic attribution_logic() const { return attribution_logic_; }
 
-  [[nodiscard]] absl::optional<uint64_t> fake_trigger_data() const {
+  absl::optional<uint64_t> fake_trigger_data() const {
     return fake_trigger_data_;
   }
 
-  [[nodiscard]] const std::vector<int64_t>& dedup_keys() const {
-    return dedup_keys_;
-  }
+  const std::vector<int64_t>& dedup_keys() const { return dedup_keys_; }
 
   void SetDedupKeys(std::vector<int64_t> dedup_keys) {
     dedup_keys_ = std::move(dedup_keys);
@@ -111,13 +101,13 @@ class CONTENT_EXPORT StorableSource {
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
   // that we avoid unnecessary copies of |conversion_origin_|.
-  [[nodiscard]] net::SchemefulSite ConversionDestination() const;
+  net::SchemefulSite ConversionDestination() const;
 
   // Returns the schemeful site of |impression_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
   // that we avoid unnecessary copies of |impression_origin_|.
-  [[nodiscard]] net::SchemefulSite ImpressionSite() const;
+  net::SchemefulSite ImpressionSite() const;
 
  private:
   uint64_t source_event_id_;

@@ -48,16 +48,15 @@ class AttributionStorage {
 
     // Returns the time a report should be sent for a given trigger time and
     // its corresponding source.
-    [[nodiscard]] virtual base::Time GetReportTime(
-        const StorableSource& source,
-        base::Time trigger_time) const = 0;
+    virtual base::Time GetReportTime(const StorableSource& source,
+                                     base::Time trigger_time) const = 0;
 
     // This limit is used to determine if a source is allowed to schedule
     // a new report. When a source reaches this limit it is
     // marked inactive and no new reports will be created for it.
     // Sources will be checked against this limit after they schedule a new
     // report.
-    [[nodiscard]] virtual int GetMaxAttributionsPerSource(
+    virtual int GetMaxAttributionsPerSource(
         StorableSource::SourceType source_type) const = 0;
 
     // These limits are designed solely to avoid excessive disk / memory usage.
@@ -67,20 +66,19 @@ class AttributionStorage {
     //
     // Returns the maximum number of sources that can be in storage at any
     // time for a source top-level origin.
-    [[nodiscard]] virtual int GetMaxSourcesPerOrigin() const = 0;
+    virtual int GetMaxSourcesPerOrigin() const = 0;
 
     // Returns the maximum number of reports that can be in storage at any
     // time for an attribution top-level origin. Note that since reporting
     // origins are the actual entities that invoke attribution registration, we
     // could consider changing this limit to be keyed by an <attribution origin,
     // reporting origin> tuple.
-    [[nodiscard]] virtual int GetMaxAttributionsPerOrigin() const = 0;
+    virtual int GetMaxAttributionsPerOrigin() const = 0;
 
     // Returns the maximum number of distinct attribution destinations that can
     // be in storage at any time for event sources with a given
     // reporting origin.
-    [[nodiscard]] virtual int GetMaxAttributionDestinationsPerEventSource()
-        const = 0;
+    virtual int GetMaxAttributionDestinationsPerEventSource() const = 0;
 
     struct RateLimitConfig {
       base::TimeDelta time_window;
@@ -88,21 +86,19 @@ class AttributionStorage {
     };
 
     // Returns the rate limits for capping contributions per window.
-    [[nodiscard]] virtual RateLimitConfig GetRateLimits(
+    virtual RateLimitConfig GetRateLimits(
         AttributionType attribution_type) const = 0;
 
     // Returns the maximum frequency at which to delete expired sources.
     // Must be positive.
-    [[nodiscard]] virtual base::TimeDelta GetDeleteExpiredSourcesFrequency()
-        const = 0;
+    virtual base::TimeDelta GetDeleteExpiredSourcesFrequency() const = 0;
 
     // Returns the maximum frequency at which to delete expired rate limits.
     // Must be positive.
-    [[nodiscard]] virtual base::TimeDelta GetDeleteExpiredRateLimitsFrequency()
-        const = 0;
+    virtual base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const = 0;
 
     // Returns a new report ID.
-    [[nodiscard]] virtual base::GUID NewReportID() const = 0;
+    virtual base::GUID NewReportID() const = 0;
   };
 
   struct CONTENT_EXPORT DeactivatedSource {
@@ -206,17 +202,16 @@ class AttributionStorage {
   // |max_report_time|. This call is logically const, and does not modify the
   // underlying storage. |limit| limits the number of reports to return; use
   // a negative number for no limit.
-  [[nodiscard]] virtual std::vector<AttributionReport> GetAttributionsToReport(
+  virtual std::vector<AttributionReport> GetAttributionsToReport(
       base::Time max_report_time,
       int limit = -1) = 0;
 
   // Returns the first report time strictly after `time`.
-  [[nodiscard]] virtual absl::optional<base::Time> GetNextReportTime(
-      base::Time time) = 0;
+  virtual absl::optional<base::Time> GetNextReportTime(base::Time time) = 0;
 
   // Returns the reports with the given IDs. This call is logically const, and
   // does not modify the underlying storage.
-  [[nodiscard]] virtual std::vector<AttributionReport> GetReports(
+  virtual std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::Id>& ids) = 0;
 
   // Returns all active sources in storage. Active sources are all
@@ -225,18 +220,19 @@ class AttributionStorage {
   // trigger and then superceded by a matching source should not be
   // returned. |limit| limits the number of sources to return; use
   // a negative number for no limit.
-  [[nodiscard]] virtual std::vector<StorableSource> GetActiveSources(
-      int limit = -1) = 0;
+  virtual std::vector<StorableSource> GetActiveSources(int limit = -1) = 0;
 
   // Deletes the report with the given |report_id|. Returns
   // false if an error occurred.
-  virtual bool DeleteReport(AttributionReport::Id report_id) = 0;
+  [[nodiscard]] virtual bool DeleteReport(AttributionReport::Id report_id) = 0;
 
   // Updates the number of failures associated with the given report, and sets
   // its report time to the given value. Should be called after a transient
-  // failure to send the report so that it is retried later.
-  virtual bool UpdateReportForSendFailure(AttributionReport::Id report_id,
-                                          base::Time new_report_time) = 0;
+  // failure to send the report so that it is retried later. Returns false on
+  // failure.
+  [[nodiscard]] virtual bool UpdateReportForSendFailure(
+      AttributionReport::Id report_id,
+      base::Time new_report_time) = 0;
 
   // Adjusts the report time of all reports that should have been sent while the
   // browser was offline by a random value between `min_delay` and `max_delay`,

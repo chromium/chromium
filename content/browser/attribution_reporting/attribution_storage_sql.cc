@@ -139,13 +139,12 @@ void RecordReportsDeleted(int count) {
                             count);
 }
 
-[[nodiscard]] int SerializeAttributionLogic(
-    StorableSource::AttributionLogic val) {
+int SerializeAttributionLogic(StorableSource::AttributionLogic val) {
   return static_cast<int>(val);
 }
 
-[[nodiscard]] absl::optional<StorableSource::AttributionLogic>
-DeserializeAttributionLogic(int val) {
+absl::optional<StorableSource::AttributionLogic> DeserializeAttributionLogic(
+    int val) {
   switch (val) {
     case static_cast<int>(StorableSource::AttributionLogic::kNever):
       return StorableSource::AttributionLogic::kNever;
@@ -158,12 +157,11 @@ DeserializeAttributionLogic(int val) {
   }
 }
 
-[[nodiscard]] int SerializeSourceType(StorableSource::SourceType val) {
+int SerializeSourceType(StorableSource::SourceType val) {
   return static_cast<int>(val);
 }
 
-[[nodiscard]] absl::optional<StorableSource::SourceType> DeserializeSourceType(
-    int val) {
+absl::optional<StorableSource::SourceType> DeserializeSourceType(int val) {
   switch (val) {
     case static_cast<int>(StorableSource::SourceType::kNavigation):
       return StorableSource::SourceType::kNavigation;
@@ -179,7 +177,7 @@ struct SourceToAttribute {
   int num_conversions;
 };
 
-[[nodiscard]] absl::optional<SourceToAttribute> ReadSourceToAttribute(
+absl::optional<SourceToAttribute> ReadSourceToAttribute(
     sql::Database* db,
     StorableSource::Id source_id,
     const url::Origin& reporting_origin) {

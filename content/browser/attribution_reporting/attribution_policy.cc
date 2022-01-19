@@ -19,8 +19,7 @@ namespace {
 using AttributionLogic = ::content::StorableSource::AttributionLogic;
 using AttributionMode = ::content::AttributionPolicy::AttributionMode;
 
-[[nodiscard]] uint64_t TriggerDataCardinality(
-    StorableSource::SourceType source_type) {
+uint64_t TriggerDataCardinality(StorableSource::SourceType source_type) {
   switch (source_type) {
     case StorableSource::SourceType::kNavigation:
       return 8;

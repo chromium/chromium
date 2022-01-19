@@ -31,17 +31,15 @@ class CONTENT_EXPORT AttributionPolicy {
   AttributionPolicy& operator=(AttributionPolicy&& other) = delete;
   virtual ~AttributionPolicy();
 
-  [[nodiscard]] uint64_t SanitizeTriggerData(
-      uint64_t trigger_data,
-      StorableSource::SourceType source_type) const;
+  uint64_t SanitizeTriggerData(uint64_t trigger_data,
+                               StorableSource::SourceType source_type) const;
 
-  [[nodiscard]] bool IsTriggerDataInRange(
-      uint64_t trigger_data,
-      StorableSource::SourceType source_type) const;
+  bool IsTriggerDataInRange(uint64_t trigger_data,
+                            StorableSource::SourceType source_type) const;
 
   // Returns the expiry time for an impression that is clamped to a maximum
   // value of 30 days from |impression_time|.
-  [[nodiscard]] base::Time GetExpiryTimeForImpression(
+  base::Time GetExpiryTimeForImpression(
       const absl::optional<base::TimeDelta>& declared_expiry,
       base::Time impression_time,
       StorableSource::SourceType source_type) const;
@@ -56,15 +54,15 @@ class CONTENT_EXPORT AttributionPolicy {
   // open, or internet being disconnected. This given them a noisy report time
   // to help disassociate them from other reports. Returns null if no delay
   // should be applied, e.g. because the policy is in debug mode.
-  [[nodiscard]] virtual absl::optional<OfflineReportDelayConfig>
-  GetOfflineReportDelayConfig() const;
+  virtual absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
+      const;
 
   // Gets the delay for a report that has failed to be sent
   // `failed_send_attempts` times.
   // Returns `absl::nullopt` to indicate that no more attempts should be made.
   // Otherwise, the return value must be positive. `failed_send_attempts` is
   // guaranteed to be positive.
-  [[nodiscard]] absl::optional<base::TimeDelta> GetFailedReportDelay(
+  absl::optional<base::TimeDelta> GetFailedReportDelay(
       int failed_send_attempts) const;
 
   class CONTENT_EXPORT AttributionMode {
@@ -81,12 +79,10 @@ class CONTENT_EXPORT AttributionPolicy {
     AttributionMode& operator=(const AttributionMode&);
     AttributionMode& operator=(AttributionMode&&);
 
-    [[nodiscard]] StorableSource::AttributionLogic logic() const {
-      return logic_;
-    }
+    StorableSource::AttributionLogic logic() const { return logic_; }
 
     // `absl::nullopt` when `logic()` is not `AttributionLogic::kFalsely`.
-    [[nodiscard]] absl::optional<uint64_t> fake_trigger_data() const {
+    absl::optional<uint64_t> fake_trigger_data() const {
       return fake_trigger_data_;
     }
 
@@ -97,13 +93,13 @@ class CONTENT_EXPORT AttributionPolicy {
 
   // Selects how to handle the given source type; may involve RNG or other
   // dynamic criteria.
-  [[nodiscard]] AttributionMode GetAttributionMode(
+  AttributionMode GetAttributionMode(
       StorableSource::SourceType source_type) const;
 
  protected:
-  [[nodiscard]] virtual bool ShouldNoiseTriggerData() const;
+  virtual bool ShouldNoiseTriggerData() const;
 
-  [[nodiscard]] virtual uint64_t MakeNoisedTriggerData(uint64_t max) const;
+  virtual uint64_t MakeNoisedTriggerData(uint64_t max) const;
 
  private:
   // Whether the API is running in debug mode. No noise or delay should be used.

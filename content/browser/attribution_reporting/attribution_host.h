@@ -57,7 +57,7 @@ class CONTENT_EXPORT AttributionHost
       const url::Origin& impression_origin,
       const blink::Impression& impression);
 
-  [[nodiscard]] static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
+  static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
       const blink::Impression& impression);
 
   // Overrides the target object to bind |receiver| to in BindReceiver().

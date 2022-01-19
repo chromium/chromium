@@ -42,10 +42,10 @@ class CONTENT_EXPORT AttributionReport {
   ~AttributionReport();
 
   // Returns the URL to which the report will be sent.
-  [[nodiscard]] GURL ReportURL() const;
+  GURL ReportURL() const;
 
   // Returns the JSON for the report body.
-  [[nodiscard]] std::string ReportBody(bool pretty_print = false) const;
+  std::string ReportBody(bool pretty_print = false) const;
 
   const StorableSource& source() const { return source_; }
 

@@ -43,7 +43,8 @@ namespace content {
 // generated above.
 
 // Upgrades |db| to the latest schema, and updates the version stored in
-// |meta_table| accordingly. Must be called with an open |db|.
+// |meta_table| accordingly. Must be called with an open |db|. Returns false on
+// failure.
 [[nodiscard]] bool UpgradeAttributionStorageSqlSchema(
     sql::Database* db,
     sql::MetaTable* meta_table,

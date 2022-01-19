@@ -125,8 +125,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool HasCapacityForStoringSource(
-      const std::string& serialized_origin)
+  bool HasCapacityForStoringSource(const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ReportAlreadyStoredStatus {
@@ -135,7 +134,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  [[nodiscard]] ReportAlreadyStoredStatus ReportAlreadyStored(
+  ReportAlreadyStoredStatus ReportAlreadyStored(
       StorableSource::Id source_id,
       absl::optional<int64_t> dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -146,7 +145,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  [[nodiscard]] ConversionCapacityStatus CapacityForStoringReport(
+  ConversionCapacityStatus CapacityForStoringReport(
       const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -165,21 +164,22 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       absl::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] absl::optional<AttributionReport> GetReport(
-      AttributionReport::Id report_id)
+  absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] absl::optional<std::vector<int64_t>> ReadDedupKeys(
+  absl::optional<std::vector<int64_t>> ReadDedupKeys(
       StorableSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // When storing an event source, deletes active event
   // sources in order by |impression_time| until there are sufficiently few
-  // unique conversion destinations for the same |impression_site|.
+  // unique conversion destinations for the same |impression_site|. Returns
+  // false on failure.
   [[nodiscard]] bool EnsureCapacityForPendingDestinationLimit(
       const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Stores |report| in the database, but uses |source_id| rather than
-  // |AttributionReport::source::source_id()|, which may be null.
+  // |AttributionReport::source::source_id()|, which may be null. Returns false
+  // on failure.
   [[nodiscard]] bool StoreReport(const AttributionReport& report,
                                  StorableSource::Id source_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -189,8 +189,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // it is not already.
   [[nodiscard]] bool LazyInit(DbCreationPolicy creation_policy)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Returns false on failure.
   [[nodiscard]] bool InitializeSchema(bool db_empty)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Returns false on failure.
   [[nodiscard]] bool CreateSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void HandleInitializationFailure(const InitStatus status)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

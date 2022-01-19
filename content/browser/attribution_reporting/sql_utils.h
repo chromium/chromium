@@ -32,13 +32,13 @@ class Origin;
 
 namespace content {
 
-[[nodiscard]] std::string SerializeOrigin(const url::Origin& origin);
+std::string SerializeOrigin(const url::Origin& origin);
 
-[[nodiscard]] url::Origin DeserializeOrigin(const std::string& origin);
+url::Origin DeserializeOrigin(const std::string& origin);
 
-[[nodiscard]] int64_t SerializeUint64(uint64_t data);
+int64_t SerializeUint64(uint64_t data);
 
-[[nodiscard]] uint64_t DeserializeUint64(int64_t data);
+uint64_t DeserializeUint64(int64_t data);
 
 // Prevent these functions from being called in the wrong direction.
 int64_t SerializeUint64(int64_t data) = delete;

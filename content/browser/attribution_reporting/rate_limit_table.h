@@ -63,24 +63,21 @@ class CONTENT_EXPORT RateLimitTable {
 
   // Checks if the given attribution is allowed according to the data in the
   // table and policy as specified by the delegate.
-  [[nodiscard]] AttributionAllowedStatus AttributionAllowed(
-      sql::Database* db,
-      const AttributionReport& report,
-      base::Time now);
+  AttributionAllowedStatus AttributionAllowed(sql::Database* db,
+                                              const AttributionReport& report,
+                                              base::Time now);
 
   // Attempts to add a set of histogram contributions to the rate limit. Returns
   // `kAllowed` if the contributions were added, `kNotAllowed` if the reports
   // would have exceeded the limit, and `kError` otherwise. This API will change
   // as we iterate on the aggregate API, so for now it is only available in
   // tests.
-  [[nodiscard]] AttributionAllowedStatus
-  AddAggregateHistogramContributionsForTesting(
+  AttributionAllowedStatus AddAggregateHistogramContributionsForTesting(
       sql::Database* db,
       const StorableSource& source,
       const std::vector<AggregateHistogramContribution>& contributions);
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
-  // Returns false on failure.
   // Returns false on failure.
   [[nodiscard]] bool ClearAllDataAllTime(sql::Database* db);
   // Returns false on failure.
@@ -89,6 +86,7 @@ class CONTENT_EXPORT RateLimitTable {
       base::Time delete_begin,
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter);
+  // Returns false on failure.
   [[nodiscard]] bool ClearDataForSourceIds(
       sql::Database* db,
       const std::vector<StorableSource::Id>& source_ids);
@@ -97,13 +95,13 @@ class CONTENT_EXPORT RateLimitTable {
   // Returns the capacity for the given `attribution_type`, `impression_site`,
   // `conversion_destination`, according to `delegate_->GetRateLimits()`.
   // Returns 0 if there is no capacity, -1 on error.
-  [[nodiscard]] int64_t GetCapacity(
-      sql::Database* db,
-      AttributionStorage::AttributionType attribution_type,
-      const std::string& serialized_impression_site,
-      const std::string& serialized_conversion_destination,
-      base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
+  int64_t GetCapacity(sql::Database* db,
+                      AttributionStorage::AttributionType attribution_type,
+                      const std::string& serialized_impression_site,
+                      const std::string& serialized_conversion_destination,
+                      base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Returns false on failure.
   [[nodiscard]] bool AddRow(
       sql::Database* db,
       AttributionStorage::AttributionType attribution_type,
@@ -116,6 +114,7 @@ class CONTENT_EXPORT RateLimitTable {
       const std::string& bucket,
       uint32_t value) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Returns false on failure.
   [[nodiscard]] bool ClearAllDataInRange(sql::Database* db,
                                          base::Time delete_begin,
                                          base::Time delete_end)

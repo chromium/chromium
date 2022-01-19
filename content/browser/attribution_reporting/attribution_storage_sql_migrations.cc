@@ -23,11 +23,11 @@ namespace content {
 
 namespace {
 
-[[nodiscard]] StorableSource::Id NextImpressionId(StorableSource::Id id) {
+StorableSource::Id NextImpressionId(StorableSource::Id id) {
   return StorableSource::Id(*id + 1);
 }
 
-[[nodiscard]] AttributionReport::Id NextConversionId(AttributionReport::Id id) {
+AttributionReport::Id NextConversionId(AttributionReport::Id id) {
   return AttributionReport::Id(*id + 1);
 }
 

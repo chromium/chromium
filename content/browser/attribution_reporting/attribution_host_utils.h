@@ -40,11 +40,11 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
                                       AttributionManager& attribution_manager,
                                       base::Time impression_time);
 
-[[nodiscard]] CONTENT_EXPORT absl::optional<blink::Impression>
-ParseImpressionFromApp(const std::string& attribution_source_event_id,
-                       const std::string& attribution_destination,
-                       const std::string& attribution_report_to,
-                       int64_t attribution_expiry);
+CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
+    const std::string& attribution_source_event_id,
+    const std::string& attribution_destination,
+    const std::string& attribution_report_to,
+    int64_t attribution_expiry);
 
 }  // namespace attribution_host_utils
 
