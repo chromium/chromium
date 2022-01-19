@@ -468,6 +468,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.PredictionService.PredictionSource"
+    enum="PermissionPredictionSource" expires_after="2022-06-30">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission is sent to the prediction service. Records
+    whether the request was sent to the local on-device prediction service or
+    the server side prediction service.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.PredictionService.Request" enum="BooleanSent"
     expires_after="2022-06-12">
   <owner>engedy@chromium.org</owner>

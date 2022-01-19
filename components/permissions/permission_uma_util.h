@@ -241,6 +241,17 @@ enum class AutoDSEPermissionRevertTransition {
   kMaxValue = INVALID_END_STATE,
 };
 
+// This enum backs up the 'PermissionPredictionSource` histogram enum. It
+// indicates whether the permission prediction was done by the local on device
+// model or by the server side model.
+enum class PermissionPredictionSource {
+  ON_DEVICE = 0,
+  SERVER_SIDE = 1,
+
+  // Always keep at the end.
+  kMaxValue = SERVER_SIDE,
+};
+
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
@@ -343,6 +354,9 @@ class PermissionUmaUtil {
 
   static void RecordDSEEffectiveSetting(ContentSettingsType permission_type,
                                         ContentSetting setting);
+
+  static void RecordPermissionPredictionSource(
+      PermissionPredictionSource prediction_type);
 
   static std::string GetPermissionActionString(
       PermissionAction permission_action);

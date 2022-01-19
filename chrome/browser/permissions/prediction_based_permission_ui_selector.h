@@ -26,6 +26,12 @@ class GeneratePredictionsResponse;
 class PredictionBasedPermissionUiSelector
     : public permissions::PermissionUiSelector {
  public:
+  enum class PredictionSource {
+    USE_SERVER_SIDE,
+    USE_ONDEVICE,
+    USE_ANY,
+    USE_NONE,
+  };
   using PredictionGrantLikelihood =
       permissions::PermissionUmaUtil::PredictionGrantLikelihood;
   // Constructs an instance in the context of the given |profile|.
@@ -57,7 +63,8 @@ class PredictionBasedPermissionUiSelector
       bool lookup_succesful,
       bool response_from_cache,
       const absl::optional<permissions::GeneratePredictionsResponse>& response);
-  bool IsAllowedToUseAssistedPrompts(permissions::RequestType request_type);
+  PredictionSource GetPredictionTypeToUse(
+      permissions::RequestType request_type);
 
   void set_likelihood_override(PredictionGrantLikelihood mock_likelihood) {
     likelihood_override_for_testing_ = mock_likelihood;

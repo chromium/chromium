@@ -50,7 +50,7 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionPredictionServiceUseUrlOverride;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::Feature kPermissionOnDevicePredictions;
+extern const base::Feature kPermissionOnDeviceNotificationPredictions;
 
 }  // namespace features
 namespace feature_params {

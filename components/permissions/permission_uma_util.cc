@@ -1053,6 +1053,13 @@ void PermissionUmaUtil::RecordDSEEffectiveSetting(
       CONTENT_SETTING_NUM_SETTINGS);
 }
 
+// static
+void PermissionUmaUtil::RecordPermissionPredictionSource(
+    PermissionPredictionSource prediction_source) {
+  base::UmaHistogramEnumeration("Permissions.PredictionService.PredictionType",
+                                prediction_source);
+}
+
 std::string PermissionUmaUtil::GetPermissionActionString(
     PermissionAction permission_action) {
   switch (permission_action) {

@@ -435,7 +435,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionOnDevicePredictions)) {
+          permissions::features::kPermissionOnDeviceNotificationPredictions)) {
     PredictionModelHandlerFactory::GetInstance();
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

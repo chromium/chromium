@@ -70025,6 +70025,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="REPEATED_IGNORES"/>
 </enum>
 
+<enum name="PermissionPredictionSource">
+  <int value="0" label="ON_DEVICE"/>
+  <int value="1" label="SERVER_SIDE"/>
+</enum>
+
 <enum name="PermissionPromptDispositionReason">
   <int value="0" label="User preference in settings"/>
   <int value="1" label="Safe Browsing verdict"/>
