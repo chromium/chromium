@@ -342,10 +342,10 @@
       'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest_no_lld',
       'lacros-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_lacros_rel_reclient',
-      'linux-annotator-rel': 'release_bot',
+      'linux-annotator-rel': 'release_bot_reclient',
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_minimal_symbols_tsan',
-      'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on',
+      'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient',
       'linux-blink-v8-oilpan': 'release_bot_enable_v8_oilpan_dcheck_always_on',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage',
       'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot_javascript_coverage',
@@ -2848,6 +2848,10 @@
       'release_bot',
     ],
 
+    'release_bot_reclient': [
+      'release_bot_reclient',
+    ],
+
     'release_bot_blink': [
       'release_bot_blink',
     ],
@@ -2878,8 +2882,8 @@
       'release_bot_blink', 'v8_enable_debugging_features',
     ],
 
-    'release_bot_enable_blink_heap_verification_dcheck_always_on': [
-      'release_bot_blink', 'enable_blink_heap_verification', 'dcheck_always_on',
+    'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient': [
+      'release_bot_blink_reclient', 'enable_blink_heap_verification', 'dcheck_always_on',
     ],
 
     'release_bot_enable_v8_oilpan_dcheck_always_on': [
