@@ -22,8 +22,6 @@ namespace full_restore {
 
 // LacrosSaveHandler is a helper class for FullRestoreSaveHandler to handle
 // Lacros windows special cases, e.g. Lacros window id, etc.
-// TODO(crbug.com/1239984):
-// 1. Use the browser session id as the window id.
 class COMPONENT_EXPORT(APP_RESTORE) LacrosSaveHandler {
  public:
   explicit LacrosSaveHandler(const base::FilePath& profile_path);

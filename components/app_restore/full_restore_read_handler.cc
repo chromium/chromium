@@ -15,9 +15,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/desk_template_read_handler.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_file_handler.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/lacros_read_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -33,6 +35,7 @@ namespace {
 //  apps.
 constexpr base::TimeDelta kFullRestoreEstimateDuration = base::Seconds(5);
 constexpr base::TimeDelta kFullRestoreARCEstimateDuration = base::Minutes(5);
+constexpr base::TimeDelta kFullRestoreLacrosEstimateDuration = base::Minutes(1);
 
 }  // namespace
 
@@ -137,6 +140,15 @@ void FullRestoreReadHandler::OnTaskCreated(const std::string& app_id,
 void FullRestoreReadHandler::OnTaskDestroyed(int32_t task_id) {
   if (arc_read_handler_)
     arc_read_handler_->OnTaskDestroyed(task_id);
+}
+
+void FullRestoreReadHandler::OnLacrosBrowserWindowAdded(
+    aura::Window* const window,
+    uint32_t restored_browser_session_id) {
+  if (lacros_read_handler_) {
+    lacros_read_handler_->OnLacrosBrowserWindowAdded(
+        window, restored_browser_session_id);
+  }
 }
 
 void FullRestoreReadHandler::SetActiveProfilePath(
@@ -307,11 +319,21 @@ bool FullRestoreReadHandler::IsFullRestoreRunning() const {
     return false;
 
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - it->second;
+
   // We estimate that full restore is still running if it has been less than
-  // five seconds since it started, or five minutes if there is at least one ARC
-  // app.
-  return arc_read_handler_ ? elapsed_time < kFullRestoreARCEstimateDuration
-                           : elapsed_time < kFullRestoreEstimateDuration;
+  // five minutes since it started, when there is at least one ARC app, since it
+  // might take long time to boot ARC.
+  if (arc_read_handler_)
+    return elapsed_time < kFullRestoreARCEstimateDuration;
+
+  // We estimate that full restore is still running if it has been less than
+  // one minute since it started, when Lacros is available.
+  if (lacros_read_handler_)
+    return elapsed_time < kFullRestoreLacrosEstimateDuration;
+
+  // We estimate that full restore is still running if it has been less than
+  // five seconds since it started.
+  return elapsed_time < kFullRestoreEstimateDuration;
 }
 
 void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
@@ -354,6 +376,11 @@ void FullRestoreReadHandler::OnGetRestoreData(
   if (restore_data) {
     profile_path_to_restore_data_[profile_path] = restore_data->Clone();
 
+    if (::full_restore::features::IsFullRestoreForLacrosEnabled()) {
+      lacros_read_handler_ =
+          std::make_unique<app_restore::LacrosReadHandler>(profile_path);
+    }
+
     for (auto it = restore_data->app_id_to_launch_list().begin();
          it != restore_data->app_id_to_launch_list().end(); it++) {
       const std::string& app_id = it->first;
@@ -370,6 +397,10 @@ void FullRestoreReadHandler::OnGetRestoreData(
         } else {
           window_id_to_app_restore_info_[window_id] =
               std::make_pair(profile_path, app_id);
+          // TODO(crbug.com/1239984): Remove restore data from
+          // `lacros_read_handler_` for ash browser apps.
+          if (lacros_read_handler_ && app_id != extension_misc::kChromeAppId)
+            lacros_read_handler_->AddRestoreData(app_id, window_id);
         }
       }
     }

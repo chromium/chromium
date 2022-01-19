@@ -209,10 +209,11 @@ void OnLacrosWindowAdded(aura::Window* const window,
     return;
   }
 
+  full_restore::FullRestoreReadHandler::GetInstance()
+      ->OnLacrosBrowserWindowAdded(window, restored_browser_session_id);
+
   full_restore::FullRestoreSaveHandler::GetInstance()
       ->OnLacrosBrowserWindowAdded(window, browser_session_id);
-
-  // TODO(https://crbug.com/1239984): Restore Lacros windows.
 }
 
 }  // namespace app_restore
