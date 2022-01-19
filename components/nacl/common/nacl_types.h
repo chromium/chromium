@@ -85,18 +85,6 @@ struct NaClStartParams {
   IPC::PlatformFileForTransit debug_stub_server_bound_socket;
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // These are for Non-SFI mode IPC channels.
-  // For security hardening, unlike in SFI mode, we cannot create socket pairs
-  // in a NaCl loader process. Thus, the browser process creates the
-  // ChannelHandle instances, and passes them to the NaCl loader process.
-  // SFI mode uses NaClProcessHostMsg_PpapiChannelsCreated instead.
-  IPC::ChannelHandle ppapi_browser_channel_handle;
-  IPC::ChannelHandle ppapi_renderer_channel_handle;
-  IPC::ChannelHandle trusted_service_channel_handle;
-  IPC::ChannelHandle manifest_service_channel_handle;
-#endif
-
   bool validation_cache_enabled;
   std::string validation_cache_key;
   // Chrome version string. Sending the version string over IPC avoids linkage

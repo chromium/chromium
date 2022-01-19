@@ -403,8 +403,6 @@ void ShellContentBrowserClient::AppendRendererSwitches(
                                  kSwitchNames, base::size(kSwitchNames));
 
 #if BUILDFLAG(ENABLE_NACL)
-  // NOTE: app_shell does not support non-SFI mode, so it does not pass through
-  // SFI switches either here or for the zygote process.
   static const char* const kNaclSwitchNames[] = {
       ::switches::kEnableNaClDebug,
   };

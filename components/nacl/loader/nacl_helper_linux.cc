@@ -359,9 +359,6 @@ static const char kNaClHelperRDebug[] = "r_debug";
 // dynamic linker's structure into the address provided by the option.
 // Hereafter, if someone attaches a debugger (or examines a core dump),
 // the debugger will find all the symbols in the normal way.
-//
-// Non-SFI mode does not use nacl_helper_bootstrap, so it doesn't need to
-// process the --r_debug option.
 static void CheckRDebug(char* argv0) {
   std::string r_debug_switch_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(

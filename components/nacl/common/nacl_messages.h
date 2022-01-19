@@ -4,6 +4,7 @@
 
 // Defines messages between the browser and NaCl process.
 
+// no-include-guard-because-multiply-included
 // Multiply-included message file, no traditional include guard.
 
 #include <stdint.h>
@@ -28,12 +29,6 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClStartParams)
   IPC_STRUCT_TRAITS_MEMBER(irt_handle)
 #if BUILDFLAG(IS_POSIX)
   IPC_STRUCT_TRAITS_MEMBER(debug_stub_server_bound_socket)
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  IPC_STRUCT_TRAITS_MEMBER(ppapi_browser_channel_handle)
-  IPC_STRUCT_TRAITS_MEMBER(ppapi_renderer_channel_handle)
-  IPC_STRUCT_TRAITS_MEMBER(trusted_service_channel_handle)
-  IPC_STRUCT_TRAITS_MEMBER(manifest_service_channel_handle)
 #endif
   IPC_STRUCT_TRAITS_MEMBER(validation_cache_enabled)
   IPC_STRUCT_TRAITS_MEMBER(validation_cache_key)
@@ -129,8 +124,6 @@ IPC_MESSAGE_CONTROL4(NaClProcessMsg_ResolveFileTokenReply,
 
 // Notify the browser process that the server side of the PPAPI channel was
 // created successfully.
-// This is used for SFI mode only. Non-SFI mode passes channel handles in
-// NaClStartParams instead.
 IPC_MESSAGE_CONTROL5(
     NaClProcessHostMsg_PpapiChannelsCreated,
     IPC::ChannelHandle, /* browser_channel_handle */

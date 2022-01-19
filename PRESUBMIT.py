@@ -1084,7 +1084,6 @@ _VALID_OS_MACROS = (
     'OS_LINUX',
     'OS_MAC',
     'OS_NACL',
-    'OS_NACL_NONSFI',
     'OS_NETBSD',
     'OS_OPENBSD',
     'OS_POSIX',

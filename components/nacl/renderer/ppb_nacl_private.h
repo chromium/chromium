@@ -219,8 +219,8 @@ class PPBNaClPrivate {
  public:
   /* Launches NaCl's sel_ldr process.  Returns PP_EXTERNAL_PLUGIN_OK on success.
    * Returns PP_EXTERNAL_PLUGIN_FAILED on failure.
-   * The |nexe_file_info| is currently used only in non-SFI mode. It is the
-   * file handle for the main nexe file, which should be initially loaded.
+   * The |nexe_file_info| is the file handle for the main nexe file, which
+   * should be initially loaded.
    * LaunchSelLdr takes the ownership of the file handle.
    * |translator_channel| is filled out when launching PNaCl translator
    * processes.

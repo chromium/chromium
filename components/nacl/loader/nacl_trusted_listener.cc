@@ -30,9 +30,8 @@ class NaClExitControlImpl : public nacl::mojom::NaClExitControl {
     // element was removed (perhaps implicitly if the tab was closed) or because
     // the renderer crashed.  The NaCl loader process should therefore exit.
     //
-    // For SFI NaCl, trusted code does this exit voluntarily, but untrusted
-    // code cannot disable it.  However, for Non-SFI NaCl, the following exit
-    // call could be disabled by untrusted code.
+    // Trusted code does this exit voluntarily, but untrusted code cannot
+    // disable it.
     NaClExit(0);
   }
 };
