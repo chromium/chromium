@@ -35,7 +35,7 @@ VERY_PERMISSIVE_SOBEL_ALGO = algo.SobelMatchingAlgorithm(
     ignored_border_thickness=1)
 
 
-class PixelTestPage(object):
+class PixelTestPage():
   """A wrapper class mimicking the functionality of the PixelTestsStorySet
   from the old-style GPU tests.
   """
@@ -53,7 +53,7 @@ class PixelTestPage(object):
       grace_period_end=None,
       expected_per_process_crashes=None,
       matching_algorithm=None):
-    super(PixelTestPage, self).__init__()
+    super().__init__()
     self.url = url
     self.name = name
     self.test_rect = test_rect
@@ -124,7 +124,7 @@ def GetMediaStreamTestBrowserArgs(media_stream_source_relpath):
   ]
 
 
-class PixelTestPages(object):
+class PixelTestPages():
   @staticmethod
   def DefaultPages(base_name):
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]

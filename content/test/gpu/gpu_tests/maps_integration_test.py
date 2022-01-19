@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
 
 import json
 import os
@@ -77,10 +76,10 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
     # sufficient to debugging the failure.
     yield ('Maps_maps', 'file://performance.html', ())
 
-  def RunActualGpuTest(self, url, *_):
+  def RunActualGpuTest(self, test_path, *args):
     tab = self.tab
     action_runner = tab.action_runner
-    action_runner.Navigate(url)
+    action_runner.Navigate(test_path)
     action_runner.WaitForJavaScriptCondition('window.startTest != undefined')
     action_runner.EvaluateJavaScript('window.startTest()')
     action_runner.WaitForJavaScriptCondition('window.testDone', timeout=320)
@@ -94,7 +93,7 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
     action_runner.WaitForJavaScriptCondition('window.testCompleted', timeout=30)
 
     expected = _ReadPixelExpectations('maps_pixel_expectations.json')
-    page = _GetMapsPageForUrl(url, expected)
+    page = _GetMapsPageForUrl(test_path, expected)
 
     # Special case some tests on Fuchsia that need to grab the entire contents
     # in the screenshot instead of just the visible portion due to small screen

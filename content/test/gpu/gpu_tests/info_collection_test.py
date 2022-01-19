@@ -12,7 +12,7 @@ import sys
 import six
 
 
-class InfoCollectionTestArgs(object):
+class InfoCollectionTestArgs():
   """Struct-like class for passing args to an InfoCollection test."""
 
   def __init__(self, expected_vendor_id_str=None, expected_device_id_strs=None):
@@ -147,6 +147,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     if isinstance(value, bool):
       return 'supported' if value else 'unsupported'
     assert False
+    return False
 
   @classmethod
   def ExpectationsFiles(cls):

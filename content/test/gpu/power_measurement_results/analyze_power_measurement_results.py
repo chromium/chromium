@@ -48,15 +48,14 @@ class RepeatStrategy(enum.Enum):
   def ToString(cls, strategy):
     if strategy == cls.COUNT_EACH:
       return "each"
-    elif strategy == cls.COUNT_MINIMUM:
+    if strategy == cls.COUNT_MINIMUM:
       return "minimum"
-    elif strategy == cls.COUNT_AVERAGE:
+    if strategy == cls.COUNT_AVERAGE:
       return "average"
-    elif strategy == cls.COUNT_MEDIAN:
+    if strategy == cls.COUNT_MEDIAN:
       return "median"
-    else:
-      assert strategy == cls.COUNT_MINIMUM_FIRST_TWO
-      return "minimum (first two)"
+    assert strategy == cls.COUNT_MINIMUM_FIRST_TWO
+    return "minimum (first two)"
 
 
 def LoadResultsJsonFiles():
@@ -72,21 +71,21 @@ def LoadResultsJsonFiles():
 def DetermineResultsFromMultipleRuns(measurements, repeat_strategy):
   if repeat_strategy == RepeatStrategy.COUNT_EACH:
     return measurements
-  elif repeat_strategy == RepeatStrategy.COUNT_MINIMUM:
+  if repeat_strategy == RepeatStrategy.COUNT_MINIMUM:
     measurements.sort()
     return [measurements[0]]
-  elif repeat_strategy == RepeatStrategy.COUNT_AVERAGE:
+  if repeat_strategy == RepeatStrategy.COUNT_AVERAGE:
     return [Mean(measurements)]
-  elif repeat_strategy == RepeatStrategy.COUNT_MEDIAN:
+  if repeat_strategy == RepeatStrategy.COUNT_MEDIAN:
     return [MedianLow(measurements)]
-  elif repeat_strategy == RepeatStrategy.COUNT_MINIMUM_FIRST_TWO:
+  if repeat_strategy == RepeatStrategy.COUNT_MINIMUM_FIRST_TWO:
     assert len(measurements) >= 2
     first_two = measurements[0:2]
     first_two.sort()
     return [first_two[0]]
-  else:
-    assert False
-    return []
+
+  assert False
+  return []
 
 
 def ProcessJsonData(jsons,

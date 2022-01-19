@@ -25,7 +25,7 @@ class LocalMinimaParameterOptimizer(
   MIN_MAX_DIFF_WEIGHT = MIN_DELTA_THRESHOLD_WEIGHT = 0
 
   def __init__(self, args, test_name):
-    super(LocalMinimaParameterOptimizer, self).__init__(args, test_name)
+    super().__init__(args, test_name)
     # These are (or will be) maps of ints to maps of ints to ints, i.e. a 2D
     # array containing ints, just using maps instead of lists. They hold the
     # most permissive value visited so far that resulted in a comparison failure
@@ -76,7 +76,7 @@ class LocalMinimaParameterOptimizer(
     return common_group, sobel_group, fuzzy_group
 
   def _VerifyArgs(self):
-    super(LocalMinimaParameterOptimizer, self)._VerifyArgs()
+    super()._VerifyArgs()
 
     assert self._args.edge_threshold_weight >= self.MIN_EDGE_THRESHOLD_WEIGHT
 
@@ -95,7 +95,7 @@ class LocalMinimaParameterOptimizer(
     # 2. They haven't been visited already.
     # 3. They are not guaranteed to fail based on previously tested parameters.
     # 4. The current parameters result in a successful comparison.
-    while len(to_visit):
+    while to_visit:
       current_parameters = None
       if self._args.use_bfs:
         current_parameters = to_visit.popleft()

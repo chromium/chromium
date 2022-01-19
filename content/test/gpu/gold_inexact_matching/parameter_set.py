@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
 
 
-class ParameterSet(object):
+class ParameterSet():
   """Struct-like object for holding parameters for an iteration."""
 
   # This parameter is not varied, so it is set statically once instead of being

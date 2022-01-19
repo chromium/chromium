@@ -112,7 +112,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @staticmethod
   def CameraCanShowFourColors(os_name):
-    return os_name != 'android' and os_name != 'chromeos'
+    return os_name not in ('android', 'chromeos')
 
   @classmethod
   def SetUpProcess(cls):

@@ -49,8 +49,7 @@ def _ParseANGLEGpuVendorString(device_string):
   match = re.search(r'ANGLE \((.*), .*, .*\)', device_string)
   if match:
     return match.group(1)
-  else:
-    return None
+  return None
 
 
 def _GetANGLEGpuDeviceId(device_string):
@@ -62,8 +61,7 @@ def _GetANGLEGpuDeviceId(device_string):
   match = re.search(r'ANGLE \(.*, (.*), .*\)', device_string)
   if match:
     return match.group(1)
-  else:
-    return None
+  return None
 
 
 def GetGpuVendorString(gpu_info, index):
@@ -76,13 +74,13 @@ def GetGpuVendorString(gpu_info, index):
       vendor_id = primary_gpu.vendor_id
       if vendor_id == 0x10DE:
         return 'nvidia'
-      elif vendor_id == 0x1002:
+      if vendor_id == 0x1002:
         return 'amd'
-      elif vendor_id == 0x8086:
+      if vendor_id == 0x8086:
         return 'intel'
-      elif angle_vendor_string:
+      if angle_vendor_string:
         return angle_vendor_string.lower()
-      elif vendor_string:
+      if vendor_string:
         return vendor_string.split(' ')[0].lower()
   return 'unknown_gpu'
 
@@ -181,18 +179,15 @@ def GetDisplayServer(browser_type):
   if sys.platform.startswith('linux'):
     if 'WAYLAND_DISPLAY' in os.environ:
       return 'display-server-wayland'
-    else:
-      return 'display-server-x'
-  else:
-    return None
+    return 'display-server-x'
+  return None
 
 
 def GetOOPCanvasStatus(gpu_feature_status):
   if gpu_feature_status and gpu_feature_status.get(
       'canvas_oop_rasterization') == 'enabled_on':
     return 'oop-c'
-  else:
-    return 'no-oop-c'
+  return 'no-oop-c'
 
 
 # TODO(rivr): Use GPU feature status for Dawn instead of command line.
@@ -255,6 +250,7 @@ def EvaluateVersionComparison(version,
     for i in range(0, len(ver)):
       if not ver[i].isdigit():
         return int(ver[:i]) if i > 0 else 0, ver[i:]
+    return None
 
   def versions_can_be_compared(ver_list1, ver_list2):
     # If either of the two versions doesn't match the Intel driver version
@@ -292,15 +288,15 @@ def EvaluateVersionComparison(version,
 
     if operation == 'eq':
       return False
-    elif operation == 'ne':
+    if operation == 'ne':
       return True
-    elif operation == 'ge' or operation == 'gt':
+    if operation in ('ge', 'gt'):
       return diff > 0
-    elif operation == 'le' or operation == 'lt':
+    if operation in ('le', 'lt'):
       return diff < 0
     raise Exception('Invalid operation: ' + operation)
 
-  return operation == 'eq' or operation == 'ge' or operation == 'le'
+  return operation in ('eq', 'ge', 'le')
 # pylint: enable=too-many-locals,too-many-branches
 
 

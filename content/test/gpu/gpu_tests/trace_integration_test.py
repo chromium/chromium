@@ -93,7 +93,7 @@ _PRESENT_MAIN_SWAP_CHAIN_EVENT_NAME =\
 _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS = [0x7340]
 
 
-class _TraceTestArguments(object):
+class _TraceTestArguments():
   """Struct-like object for passing trace test arguments instead of dicts."""
 
   def __init__(  # pylint: disable=too-many-arguments
@@ -412,8 +412,8 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     valid_entry_found = False
     for index in range(len(presentation_mode_history)):
       mode = presentation_mode_history[index]
-      if (mode == _SWAP_CHAIN_PRESENTATION_MODE_NONE
-          or mode == _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED):
+      if mode in (_SWAP_CHAIN_PRESENTATION_MODE_NONE,
+                  _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED):
         # Be more tolerant to avoid test flakiness
         continue
       if (TraceIntegrationTest._SwapChainPresentationModeToStr(mode) !=
@@ -510,7 +510,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
 
-class _VideoExpectations(object):
+class _VideoExpectations():
   """Struct-like object for passing around video test expectations."""
 
   def __init__(self):

@@ -3,10 +3,9 @@
 # found in the LICENSE file.
 """Classes related to the possible matching algorithms for Skia Gold."""
 
-from __future__ import print_function
 
 
-class Parameters(object):
+class Parameters():
   """Constants for Skia Gold algorithm parameters.
 
   These correspond to the constants defined in goldctl's
@@ -32,7 +31,7 @@ class Parameters(object):
   EDGE_THRESHOLD = 'sobel_edge_threshold'
 
 
-class SkiaGoldMatchingAlgorithm(object):
+class SkiaGoldMatchingAlgorithm():
   ALGORITHM_KEY = 'image_matching_algorithm'
   """Abstract base class for all algorithms."""
 
@@ -70,7 +69,7 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
                max_different_pixels,
                pixel_delta_threshold,
                ignored_border_thickness=0):
-    super(FuzzyMatchingAlgorithm, self).__init__()
+    super().__init__()
     assert int(max_different_pixels) >= 0
     assert int(pixel_delta_threshold) >= 0
     assert int(ignored_border_thickness) >= 0
@@ -79,7 +78,7 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
     self._ignored_border_thickness = ignored_border_thickness
 
   def GetCmdline(self):
-    retval = super(FuzzyMatchingAlgorithm, self).GetCmdline()
+    retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.MAX_DIFFERENT_PIXELS,
                              self._max_different_pixels))
@@ -106,9 +105,8 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
                pixel_delta_threshold,
                edge_threshold,
                ignored_border_thickness=0):
-    super(SobelMatchingAlgorithm,
-          self).__init__(max_different_pixels, pixel_delta_threshold,
-                         ignored_border_thickness)
+    super().__init__(max_different_pixels, pixel_delta_threshold,
+                     ignored_border_thickness)
     assert int(edge_threshold) >= 0
     assert int(edge_threshold) <= 255
     if edge_threshold == 255:
@@ -118,7 +116,7 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
     self._edge_threshold = edge_threshold
 
   def GetCmdline(self):
-    retval = super(SobelMatchingAlgorithm, self).GetCmdline()
+    retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.EDGE_THRESHOLD, self._edge_threshold))
     return retval

@@ -47,7 +47,6 @@ import subprocess
 #   https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto
 #
 # Original author: maruel@
-# pylint: enable=line-too-long
 QUERY_TEMPLATE = """\
 WITH cq_builds AS (
   SELECT
@@ -81,12 +80,13 @@ builds AS (
 
 SELECT * FROM builds ORDER BY patchset DESC, critical, builder, start_time
 """
+# pylint: enable=line-too-long
 
 GERRIT_URL_REGEX = re.compile(r'^\s*Reviewed-on: (?P<gerrit_url>.*)$',
                               re.MULTILINE)
 
 
-class ChangeList(object):
+class ChangeList():
   """Class for storing relevant information for a CL."""
 
   def __init__(self):

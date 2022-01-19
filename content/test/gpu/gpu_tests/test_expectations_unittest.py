@@ -80,7 +80,7 @@ _map_specific_to_generic['debug-x64'] = 'debug'
 _map_specific_to_generic['release-x64'] = 'release'
 
 _get_generic = lambda tags: set(
-    [_map_specific_to_generic.get(tag, tag) for tag in tags])
+    _map_specific_to_generic.get(tag, tag) for tag in tags)
 
 ResultType = json_results.ResultType
 
@@ -137,45 +137,42 @@ def _IsDriverTagDuplicated(driver_tag1, driver_tag2):
   operation2, version2 = tag2[1:]
   if operation1 == 'ne':
     return not (operation2 == 'eq' and version1 == version2)
-  elif operation2 == 'ne':
+  if operation2 == 'ne':
     return not (operation1 == 'eq' and version1 == version2)
-  elif operation1 == 'eq':
+  if operation1 == 'eq':
     return gpu_helper.EvaluateVersionComparison(version1, operation2, version2)
-  elif operation2 == 'eq':
+  if operation2 == 'eq':
     return gpu_helper.EvaluateVersionComparison(version2, operation1, version1)
 
-  if operation1 == 'ge' or operation1 == 'gt':
-    if operation2 == 'ge' or operation2 == 'gt':
-      return True
-  elif operation1 == 'le' or operation1 == 'lt':
-    if operation2 == 'le' or operation2 == 'lt':
-      return True
+  if operation1 in ('ge', 'gt') and operation2 in ('ge', 'gt'):
+    return True
+  if operation1 in ('le', 'lt') and operation2 in ('le', 'lt'):
+    return True
 
   if operation1 == 'ge':
     if operation2 == 'le':
       return not gpu_helper.EvaluateVersionComparison(version1, 'gt', version2)
-    elif operation2 == 'lt':
+    if operation2 == 'lt':
       return not gpu_helper.EvaluateVersionComparison(version1, 'ge', version2)
-  elif operation1 == 'gt':
+  if operation1 == 'gt':
     return not gpu_helper.EvaluateVersionComparison(version1, 'ge', version2)
-  elif operation1 == 'le':
+  if operation1 == 'le':
     if operation2 == 'ge':
       return not gpu_helper.EvaluateVersionComparison(version1, 'lt', version2)
-    elif operation2 == 'gt':
+    if operation2 == 'gt':
       return not gpu_helper.EvaluateVersionComparison(version1, 'le', version2)
-  elif operation1 == 'lt':
+  if operation1 == 'lt':
     return not gpu_helper.EvaluateVersionComparison(version1, 'le', version2)
-  else:
-    assert False
+  assert False
+  return False
 # pylint: enable=too-many-return-statements,too-many-branches
 
 
 def _DoTagsConflict(t1, t2):
   if gpu_helper.MatchDriverTag(t1):
     return not _IsDriverTagDuplicated(t1, t2)
-  else:
-    return (t1 != t2 and t1 != _map_specific_to_generic.get(t2, t2)
-            and t2 != _map_specific_to_generic.get(t1, t1))
+  return (t1 != t2 and t1 != _map_specific_to_generic.get(t2, t2)
+          and t2 != _map_specific_to_generic.get(t1, t1))
 
 
 def _ExtractUnitTestTestExpectations(file_name):
@@ -328,7 +325,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
 
         broken_expectations = expectations.check_for_broken_expectations(tests)
         msg = ''
-        for ununsed_pattern in set([e.test for e in broken_expectations]):
+        for ununsed_pattern in set(e.test for e in broken_expectations):
           msg += ("Expectations with pattern '{0}' in {1} do not apply to any "
                   "webgl version {2} extension tests\n".format(
                       ununsed_pattern, os.path.basename(f.name), webgl_version))

@@ -28,17 +28,18 @@ def CommonChecks(input_api, output_api):
   gpu_tests = [
       input_api.Command(
           name='run_content_test_gpu_unittests',
-          cmd=[input_api.python_executable, 'run_unittests.py', 'gpu_tests'],
+          cmd=[input_api.python3_executable, 'run_unittests.py', 'gpu_tests'],
           kwargs={'env': gpu_env},
-          message=output_api.PresubmitError),
+          message=output_api.PresubmitError,
+          python3=True),
       input_api.Command(name='validate_tag_consistency',
                         cmd=[
-                            input_api.python_executable,
-                            'validate_tag_consistency.py',
-                            'validate',
+                            input_api.python3_executable,
+                            'validate_tag_consistency.py', 'validate'
                         ],
                         kwargs={},
-                        message=output_api.PresubmitError),
+                        message=output_api.PresubmitError,
+                        python3=True),
   ]
   results.extend(input_api.RunTests(gpu_tests))
 
@@ -50,7 +51,8 @@ def CommonChecks(input_api, output_api):
                                  'unexpected_passes'), [r'^.+_unittest\.py$'],
           env=gpu_env,
           run_on_python2=False,
-          run_on_python3=True))
+          run_on_python3=True,
+          skip_shebang_check=True))
 
   results.extend(
       input_api.canned_checks.RunUnitTestsInDirectory(
@@ -60,9 +62,12 @@ def CommonChecks(input_api, output_api):
                                  'flake_suppressor'), [r'^.+_unittest\.py$'],
           env=gpu_env,
           run_on_python2=False,
-          run_on_python3=True))
+          run_on_python3=True,
+          skip_shebang_check=True))
 
-  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  pylint_checks = input_api.canned_checks.GetPylint(input_api,
+                                                    output_api,
+                                                    version='2.7')
   results.extend(input_api.RunTests(pylint_checks))
 
   results.extend(CheckForNewSkipExpectations(input_api, output_api))

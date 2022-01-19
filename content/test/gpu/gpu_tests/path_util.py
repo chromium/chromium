@@ -24,15 +24,17 @@ def GetCatapultDir():
       os.path.join(GetChromiumSrcDir(), 'third_party', 'catapult'))
 
 
+# pylint: disable=no-value-for-parameter
 def AddDirToPathIfNeeded(*path_parts):
   path = os.path.abspath(os.path.join(*path_parts))
   if os.path.isdir(path) and path not in sys.path:
     sys.path.append(path)
+# pylint: enable=no-value-for-parameter
 
 
 def SetupTelemetryPaths():
   SetupToolsPerfPath()
-  from core import path_util
+  from core import path_util  # pylint: disable=import-outside-toplevel
 
   AddDirToPathIfNeeded(path_util.GetTelemetryDir())
 

@@ -13,6 +13,6 @@ def CreateFile(test, *args, **kwargs):
     test.fs.CreateFile(*args, **kwargs)
 
 
-class FakeProcess(object):
+class FakeProcess():
   def __init__(self, stdout):
     self.stdout = stdout or ''

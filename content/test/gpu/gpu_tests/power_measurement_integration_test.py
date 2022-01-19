@@ -206,7 +206,7 @@ _VIDEO_TEST_SCRIPT = r"""
 """
 
 
-class _PowerMeasurementTestArguments(object):
+class _PowerMeasurementTestArguments():
   """Struct-like object for passing power measurement args instead of a dict."""
 
   def __init__(  # pylint: disable=too-many-arguments

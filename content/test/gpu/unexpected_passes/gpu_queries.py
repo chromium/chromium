@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """GPU-specific implementation of the unexpected passes' queries module."""
 
-from __future__ import print_function
 
 from unexpected_passes_common import constants
 from unexpected_passes_common import queries as queries_module
@@ -165,8 +164,7 @@ TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP = {
 
 class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
   def __init__(self, suite, project, num_samples, large_query_mode):
-    super(GpuBigQueryQuerier, self).__init__(suite, project, num_samples,
-                                             large_query_mode)
+    super().__init__(suite, project, num_samples, large_query_mode)
 
     self._check_webgl_version = None
     self._webgl_version_tag = None
@@ -177,14 +175,16 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     # expectation.
     # TODO(crbug.com/1140283): Remove this once WebGL expectations are merged
     # and there's no need to differentiate them.
-    if 'webgl_conformance' in self._suite:  # pylint: disable=access-member-before-definition
-      webgl_version = self._suite[-1]  # pylint: disable=access-member-before-definition
+    # pylint: disable=access-member-before-definition
+    if 'webgl_conformance' in self._suite:
+      webgl_version = self._suite[-1]
       self._suite = 'webgl_conformance'
       self._webgl_version_tag = 'webgl-version-%s' % webgl_version
       self._check_webgl_version =\
           lambda tags: self._webgl_version_tag in tags
     else:
       self._check_webgl_version = lambda tags: True
+    # pylint: enable=access-member-before-definition
 
     # Most test names are |suite|_integration_test, but there are several that
     # are not reported that way in typ, and by extension ResultDB, so adjust

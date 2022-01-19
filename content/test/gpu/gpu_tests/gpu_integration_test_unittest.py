@@ -5,7 +5,6 @@
 # It's reasonable for unittests to be messing with protected members.
 # pylint: disable=protected-access
 
-from __future__ import print_function
 
 import json
 import os
@@ -93,7 +92,7 @@ def _GenerateNvidiaExampleTagsForTestClassAndArgs(test_class, args):
   tags = None
   with mock.patch.object(
       test_class, 'ExpectationsFiles', return_value=['exp.txt']):
-    _ = [_ for _ in test_class.GenerateGpuTests(args)]
+    _ = list(test_class.GenerateGpuTests(args))
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -102,7 +101,7 @@ def _GenerateNvidiaExampleTagsForTestClassAndArgs(test_class, args):
   return tags
 
 
-class _IntegrationTestArgs(object):
+class _IntegrationTestArgs():
   """Struct-like object for defining an integration test."""
 
   def __init__(self, test_name):

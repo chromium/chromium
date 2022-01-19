@@ -140,8 +140,7 @@ def main():
   args = parser.parse_args()
   if args.function == 'apply':
     return Apply()
-  else:
-    return Validate()
+  return Validate()
 
 
 if __name__ == '__main__':

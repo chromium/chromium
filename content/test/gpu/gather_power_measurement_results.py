@@ -17,8 +17,12 @@ import json
 import logging
 import re
 import sys
-import urllib
 import urllib2
+
+try:
+  import urllib.parse as urllib
+except ImportError:
+  import urllib
 
 _TESTS = [
     'Basic', 'Video_720_MP4', 'Video_720_MP4_Fullscreen',
@@ -119,6 +123,10 @@ def FindStepLogURL(steps, step_name, log_name):
   return None
 
 
+# TODO(crbug.com/1285077): Once the issue with the //content/test/gpu/pylintrc
+# not being used has been resolved, move this disable there, since it doesn't
+# appear to be a useful warning.
+# pylint: disable=unsupported-assignment-operation
 def ProcessStepStdout(stdout_url, entry):
   url = urllib.unquote(stdout_url)
   number = entry['number']
@@ -174,6 +182,7 @@ def ProcessStepStdout(stdout_url, entry):
       break
   else:
     logging.warn('[BUILD %d] Fail to locate the bot name' % number)
+# pylint: enable=unsupported-assignment-operation
 
 
 def CollectBuildData(build, data_entries):

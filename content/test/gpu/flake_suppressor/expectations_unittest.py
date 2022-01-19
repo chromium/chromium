@@ -605,7 +605,7 @@ class FindBestInsertionLineForExpectationUnittest(
 
 
 class GetExpectationFilesFromOriginUnittest(unittest.TestCase):
-  class FakeRequestResult(object):
+  class FakeRequestResult():
     def __init__(self):
       self.text = ''
 

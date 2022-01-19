@@ -147,7 +147,7 @@ def ProcessResultsFromMultipleIPGRuns(logfiles,
       per_core_results[core] = results
 
       for key in results:
-        if key == 'samples' or key == 'log':
+        if key in ('samples', 'log'):
           continue
         metrics.setdefault(key, []).append(results[key])
     return per_core_results, metrics

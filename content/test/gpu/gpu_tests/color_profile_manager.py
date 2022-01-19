@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
 
 import atexit
 import sys
@@ -17,7 +16,9 @@ def ForceUntilExitSRGB(skip_restoring_color_profile=False):
     return
   ForceUntilExitSRGB.has_forced_srgb = True
 
+  # pylint: disable=import-outside-toplevel
   from gpu_tests import color_profile_manager_mac
+  # pylint: enable=import-outside-toplevel
   # Record the current color profiles.
   display_profile_url_map = \
       color_profile_manager_mac.GetDisplaysToProfileURLMap()

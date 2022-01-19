@@ -23,12 +23,12 @@ class ExpectedColorTest(
   Gold normally for the test.
   """
 
-  def RunActualGpuTest(self, options):
+  def RunActualGpuTest(self, test_path, *args):
     raise NotImplementedError(
         'RunActualGpuTest must be overridden in a subclass')
 
   def GetGoldJsonKeys(self, page):
-    keys = super(ExpectedColorTest, self).GetGoldJsonKeys(page)
+    keys = super().GetGoldJsonKeys(page)
     keys['expected_color_comment'] = (
         'This is an expected color test. Triaging in Gold will not affect test '
         'behavior.')
@@ -156,11 +156,12 @@ class ExpectedColorTest(
 class ExpectedColorPixelTestPage(pixel_test_pages.PixelTestPage):
   """Extension of PixelTestPage with expected color information."""
 
-  def __init__(self, expected_colors, tolerance=2, *args, **kwargs):
-    super(ExpectedColorPixelTestPage, self).__init__(*args, **kwargs)
+  def __init__(self, expected_colors, *args, **kwargs):
+    # The tolerance when comparing against the reference image.
+    self.tolerance = kwargs.pop('tolerance', 2)
+
+    super().__init__(*args, **kwargs)
     # The expected colors can be specified as a list of dictionaries. The format
     # is only defined by contract with _CompareScreenshotSamples in
     # expected_color_test.py.
     self.expected_colors = expected_colors
-    # The tolerance when comparing against the reference image.
-    self.tolerance = tolerance

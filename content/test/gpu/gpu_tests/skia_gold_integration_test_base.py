@@ -34,7 +34,7 @@ TEST_DATA_DIRS = [
 SKIA_GOLD_CORPUS = 'chrome-gpu'
 
 
-class _ImageParameters(object):
+class _ImageParameters():
   def __init__(self):
     # Parameters for cloud storage reference images.
     self.vendor_id = None
@@ -446,7 +446,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     del options
     return []
 
-  def RunActualGpuTest(self, options):
+  def RunActualGpuTest(self, test_path, *args):
     raise NotImplementedError(
         'RunActualGpuTest must be overridden in a subclass')
 

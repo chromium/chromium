@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
 
 import gold_inexact_matching.base_parameter_optimizer as base_optimizer
 
@@ -47,7 +46,7 @@ class IterativeParameterOptimizer(base_optimizer.BaseParameterOptimizer):
     return common_group, sobel_group, fuzzy_group
 
   def _VerifyArgs(self):
-    super(IterativeParameterOptimizer, self)._VerifyArgs()
+    super()._VerifyArgs()
 
     assert self._args.edge_threshold_step >= self.MIN_EDGE_THRESHOLD_STEP
     assert self._args.edge_threshold_step <= self.MAX_EDGE_THRESHOLD_STEP

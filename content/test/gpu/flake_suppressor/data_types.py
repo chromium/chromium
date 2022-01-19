@@ -22,7 +22,7 @@ class Expectation(unexpected_dt.Expectation):
     return (self._comp(result.test) and self.tags <= set(result.tags))
 
 
-class Result(object):
+class Result():
   """Container for a test result.
 
   Contains all the relevant information we get back from BigQuery for a result

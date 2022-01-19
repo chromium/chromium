@@ -21,7 +21,7 @@ sys.path.remove(TOOLS_PERF_DIR)
 
 class GpuBuilders(builders.Builders):
   def __init__(self, include_internal_builders):
-    super(GpuBuilders, self).__init__(include_internal_builders)
+    super().__init__(include_internal_builders)
     self._isolate_names = None
     self._fake_ci_builders = None
     self._non_chromium_builders = None

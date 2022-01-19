@@ -30,7 +30,7 @@ GOLDCTL_PATHS = [
 ]
 
 
-class BaseParameterOptimizer(object):
+class BaseParameterOptimizer():
   """Abstract base class for running a parameter optimization for a test."""
   MIN_EDGE_THRESHOLD = 0
   MAX_EDGE_THRESHOLD = 255
@@ -289,7 +289,7 @@ class BaseParameterOptimizer(object):
         if status == 'positive'
     ]
     if not positive_digests:
-      raise RuntimeError('Failed to find any positive digests for test %s',
+      raise RuntimeError('Failed to find any positive digests for test %s' %
                          self._test_name)
     for digest in positive_digests:
       content = self._DownloadImageWithDigest(digest)

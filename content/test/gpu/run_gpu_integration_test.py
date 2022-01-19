@@ -36,7 +36,7 @@ def FailIfScreenLockedOnMac():
   # tests.
   if not sys.platform.startswith('darwin'):
     return
-  import Quartz
+  import Quartz  # pylint: disable=import-outside-toplevel
   current_session = Quartz.CGSessionCopyCurrentDictionary()
   if not current_session:
     # Using the logging module doesn't seem to be guaranteed to show up in
@@ -59,6 +59,7 @@ def FindTestCase(test_name):
     for cl in modules_to_classes.values():
       if cl.Name() == test_name:
         return cl
+  return None
 
 
 def ProcessArgs(args, parser=None):

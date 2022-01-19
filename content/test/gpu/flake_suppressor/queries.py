@@ -163,7 +163,7 @@ GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
 """.format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY)
 
 
-class BigQueryQuerier(object):
+class BigQueryQuerier():
   def __init__(self, sample_period, billing_project):
     """Class for making calls to BigQuery.
 

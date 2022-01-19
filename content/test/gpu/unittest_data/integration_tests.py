@@ -25,6 +25,7 @@ import gpu_project_config
 from gpu_tests import gpu_integration_test
 
 
+# pylint: disable=abstract-method
 class _BaseSampleIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _test_state = {}
 
@@ -58,6 +59,7 @@ class _BaseSampleIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     with open(test_state_json_path, 'w') as f:
       json.dump(cls._test_state, f)
     super(_BaseSampleIntegrationTest, cls).TearDownProcess()
+# pylint: enable=abstract-method
 
 
 class SimpleTest(_BaseSampleIntegrationTest):
@@ -80,15 +82,15 @@ class SimpleTest(_BaseSampleIntegrationTest):
     super(SimpleTest, cls).StartBrowser()
     cls._test_state['num_browser_starts'] += 1
 
-  def RunActualGpuTest(self, file_path, *args):
-    logging.warn('Running ' + file_path)
-    if file_path == 'failure.html':
+  def RunActualGpuTest(self, test_path, *args):
+    logging.warn('Running ' + test_path)
+    if test_path == 'failure.html':
       self.fail('Expected failure')
-    elif file_path == 'flaky.html':
+    elif test_path == 'flaky.html':
       if self._test_state['num_flaky_runs_to_fail'] > 0:
         self._test_state['num_flaky_runs_to_fail'] -= 1
         self.fail('Expected flaky failure')
-    elif file_path == 'error.html':
+    elif test_path == 'error.html':
       raise Exception('Expected exception')
 
   @classmethod
@@ -137,7 +139,7 @@ class BrowserStartFailureTest(_BaseSampleIntegrationTest):
     # This test causes the browser to try and restart the browser 3 times.
     yield ('restart', 'restart.html', ())
 
-  def RunActualGpuTest(self, file_path, *args):
+  def RunActualGpuTest(self, test_path, *args):
     # The logic of this test is run when the browser starts, it fails twice
     # and then succeeds on the third time so we are just testing that this
     # is successful based on the parameters.
@@ -189,7 +191,7 @@ class BrowserCrashAfterStartTest(_BaseSampleIntegrationTest):
     # This test causes the browser to try and restart the browser 3 times.
     yield ('restart', 'restart.html', ())
 
-  def RunActualGpuTest(self, file_path, *args):
+  def RunActualGpuTest(self, test_path, *args):
     # The logic of this test is run when the browser starts, it fails twice
     # and then succeeds on the third time so we are just testing that this
     # is successful based on the parameters.
@@ -198,7 +200,7 @@ class BrowserCrashAfterStartTest(_BaseSampleIntegrationTest):
 
 class RunTestsWithExpectationsFiles(_BaseSampleIntegrationTest):
   def __init__(self, methodName):
-    super(RunTestsWithExpectationsFiles, self).__init__(methodName)
+    super().__init__(methodName)
     self._flaky_test_run = 0
 
   @classmethod
@@ -219,9 +221,9 @@ class RunTestsWithExpectationsFiles(_BaseSampleIntegrationTest):
     for test in tests:
       yield test
 
-  def RunActualGpuTest(self, file_path, *args):
-    if file_path == 'failure.html' or self._flaky_test_run < 3:
-      self._flaky_test_run += file_path == 'flaky.html'
+  def RunActualGpuTest(self, test_path, *args):
+    if test_path == 'failure.html' or self._flaky_test_run < 3:
+      self._flaky_test_run += test_path == 'flaky.html'
       self.fail()
 
   @classmethod
@@ -247,12 +249,12 @@ class TestRetryLimit(_BaseSampleIntegrationTest):
   def GenerateGpuTests(cls, options):
     yield ('unexpected_failure', 'failure.html', ())
 
-  def RunActualGpuTest(self, file_path, *args):
+  def RunActualGpuTest(self, test_path, *args):
     self._test_state['num_test_runs'] += 1
-    if file_path == 'failure.html':
+    if test_path == 'failure.html':
       self.fail('Expected failure')
     else:
-      raise Exception('Unexpected test name ' + file_path)
+      raise Exception('Unexpected test name ' + test_path)
 
 
 class TestRepeat(_BaseSampleIntegrationTest):
@@ -268,10 +270,10 @@ class TestRepeat(_BaseSampleIntegrationTest):
   def GenerateGpuTests(cls, options):
     yield ('success', 'success.html', ())
 
-  def RunActualGpuTest(self, file_path, *args):
+  def RunActualGpuTest(self, test_path, *args):
     self._test_state['num_test_runs'] += 1
-    if file_path != 'success.html':
-      raise Exception('Unexpected test name ' + file_path)
+    if test_path != 'success.html':
+      raise Exception('Unexpected test name ' + test_path)
 
 
 class TestAlsoRunDisabledTests(_BaseSampleIntegrationTest):
@@ -288,9 +290,9 @@ class TestAlsoRunDisabledTests(_BaseSampleIntegrationTest):
     for test in tests:
       yield test
 
-  def RunActualGpuTest(self, file_path, *args):
+  def RunActualGpuTest(self, test_path, *args):
     self._test_state['num_test_runs'] += 1
-    self._test_state['num_flaky_test_runs'] += file_path == 'flaky.html'
+    self._test_state['num_flaky_test_runs'] += test_path == 'flaky.html'
     raise Exception('Everything fails')
 
   @classmethod
