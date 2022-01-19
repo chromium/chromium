@@ -598,6 +598,7 @@ config("compiler") {
       cflags_cc += [ "-std=${standard_prefix}++17" ]
     }
   } else if (is_win) {
+    cflags_c += [ "/std:c11" ]
     cflags_cc += [ "/std:c++17" ]
   } else if (!is_nacl) {
     # TODO(mcgrathr) - the NaCl GCC toolchain doesn't support either gnu11/gnu++11
