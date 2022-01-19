@@ -306,8 +306,8 @@ class MessageMemoryDumpProvider : public base::trace_event::MemoryDumpProvider {
 };
 
 void EnsureMemoryDumpProviderExists() {
-  static base::NoDestructor<MessageMemoryDumpProvider> provider;
-  ALLOW_UNUSED_LOCAL(provider);
+  [[maybe_unused]] static base::NoDestructor<MessageMemoryDumpProvider>
+      provider;
 }
 
 }  // namespace

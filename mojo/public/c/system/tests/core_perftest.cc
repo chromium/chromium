@@ -128,8 +128,8 @@ class CorePerftest : public testing::Test {
 
   static void MessagePipe_CreateAndClose(void* closure) {
     CorePerftest* self = static_cast<CorePerftest*>(closure);
-    MojoResult result = MojoCreateMessagePipe(nullptr, &self->h0_, &self->h1_);
-    ALLOW_UNUSED_LOCAL(result);
+    [[maybe_unused]] MojoResult result =
+        MojoCreateMessagePipe(nullptr, &self->h0_, &self->h1_);
     assert(result == MOJO_RESULT_OK);
     result = MojoClose(self->h0_);
     assert(result == MOJO_RESULT_OK);
@@ -139,10 +139,9 @@ class CorePerftest : public testing::Test {
 
   static void MessagePipe_WriteAndRead(void* closure) {
     CorePerftest* self = static_cast<CorePerftest*>(closure);
-    MojoResult result = mojo::WriteMessageRaw(
+    [[maybe_unused]] MojoResult result = mojo::WriteMessageRaw(
         mojo::MessagePipeHandle(self->h0_), self->buffer_.data(),
         self->buffer_.size(), nullptr, 0, MOJO_WRITE_MESSAGE_FLAG_NONE);
-    ALLOW_UNUSED_LOCAL(result);
     assert(result == MOJO_RESULT_OK);
     result =
         mojo::ReadMessageRaw(mojo::MessagePipeHandle(self->h1_), &self->buffer_,
@@ -153,8 +152,8 @@ class CorePerftest : public testing::Test {
   static void MessagePipe_EmptyRead(void* closure) {
     CorePerftest* self = static_cast<CorePerftest*>(closure);
     MojoMessageHandle message;
-    MojoResult result = MojoReadMessage(self->h0_, nullptr, &message);
-    ALLOW_UNUSED_LOCAL(result);
+    [[maybe_unused]] MojoResult result =
+        MojoReadMessage(self->h0_, nullptr, &message);
     assert(result == MOJO_RESULT_SHOULD_WAIT);
   }
 
@@ -168,8 +167,8 @@ class CorePerftest : public testing::Test {
     assert(num_writers > 0);
     assert(num_readers > 0);
 
-    MojoResult result = MojoCreateMessagePipe(nullptr, &h0_, &h1_);
-    ALLOW_UNUSED_LOCAL(result);
+    [[maybe_unused]] MojoResult result =
+        MojoCreateMessagePipe(nullptr, &h0_, &h1_);
     assert(result == MOJO_RESULT_OK);
 
     std::vector<MessagePipeWriterThread*> writers;
@@ -248,8 +247,7 @@ class CorePerftest : public testing::Test {
         static_cast<time_t>(microseconds / 1000000),       // Seconds.
         static_cast<long>(microseconds % 1000000) * 1000L  // Nanoseconds.
     };
-    int rv = nanosleep(&req, nullptr);
-    ALLOW_UNUSED_LOCAL(rv);
+    [[maybe_unused]] int rv = nanosleep(&req, nullptr);
     assert(rv == 0);
   }
 #endif  // !defined(WIN32)
@@ -268,8 +266,8 @@ TEST_F(CorePerftest, MessagePipe_CreateAndClose) {
 }
 
 TEST_F(CorePerftest, MessagePipe_WriteAndRead) {
-  MojoResult result = MojoCreateMessagePipe(nullptr, &h0_, &h1_);
-  ALLOW_UNUSED_LOCAL(result);
+  [[maybe_unused]] MojoResult result =
+      MojoCreateMessagePipe(nullptr, &h0_, &h1_);
   assert(result == MOJO_RESULT_OK);
   buffer_.resize(10);
   mojo::test::IterateAndReportPerf("MessagePipe_WriteAndRead", "10bytes",
@@ -294,8 +292,8 @@ TEST_F(CorePerftest, MessagePipe_WriteAndRead) {
 }
 
 TEST_F(CorePerftest, MessagePipe_EmptyRead) {
-  MojoResult result = MojoCreateMessagePipe(nullptr, &h0_, &h1_);
-  ALLOW_UNUSED_LOCAL(result);
+  [[maybe_unused]] MojoResult result =
+      MojoCreateMessagePipe(nullptr, &h0_, &h1_);
   assert(result == MOJO_RESULT_OK);
   mojo::test::IterateAndReportPerf("MessagePipe_EmptyRead", nullptr,
                                    &CorePerftest::MessagePipe_EmptyRead, this);

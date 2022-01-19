@@ -39,8 +39,7 @@ class MessageHandle {
 
   void Close() {
     DCHECK(is_valid());
-    MojoResult result = MojoDestroyMessage(value_);
-    ALLOW_UNUSED_LOCAL(result);
+    [[maybe_unused]] MojoResult result = MojoDestroyMessage(value_);
     DCHECK_EQ(MOJO_RESULT_OK, result);
   }
 
