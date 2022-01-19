@@ -5,10 +5,14 @@
 #include <memory>
 
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,6 +61,31 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenTerminalProcessChecks) {
   // openTerminalProcess not defined.
   ExpectJsResult("typeof chrome.terminalPrivate.openTerminalProcess",
                  "undefined");
+}
+
+IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenCroshProcessChecks) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome-untrusted://crosh/html/crosh.html")));
+
+  const std::string script = R"(new Promise((resolve) => {
+    chrome.terminalPrivate.openTerminalProcess("crosh", [], () => {
+      const lastError = chrome.runtime.lastError;
+      resolve(lastError ? lastError.message : "success");
+    })
+    }))";
+
+  base::Value system_features(base::Value::Type::LIST);
+  system_features.Append(policy::SystemFeature::kCrosh);
+  g_browser_process->local_state()->Set(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      std::move(system_features));
+  // 'crosh not allowed' when crosh is not allowed.
+  ExpectJsResult(script, "crosh not allowed");
+
+  ListPrefUpdate update(g_browser_process->local_state(),
+                        policy::policy_prefs::kSystemFeaturesDisableList);
+  update->ClearList();
+  ExpectJsResult(script, "success");
 }
 
 }  // namespace extensions

@@ -30,9 +30,11 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/terminal_private.h"
 #include "chromeos/process_proxy/process_proxy_registry.h"
@@ -269,6 +271,12 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
             command_line->GetSwitchValueASCII(switches::kCroshCommand))));
 
   } else if (process_name == kCroshName) {
+    // Ensure crosh is allowed before starting terminal.
+    if (policy::SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
+            policy::SystemFeature::kCrosh, g_browser_process->local_state())) {
+      return RespondNow(Error("crosh not allowed"));
+    }
+
     // command=crosh: use '/usr/bin/crosh' on a device, 'cat' otherwise.
     if (base::SysInfo::IsRunningOnChromeOS()) {
       OpenProcess(user_id_hash,
@@ -277,7 +285,6 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
       OpenProcess(user_id_hash,
                   base::CommandLine(base::FilePath(kStubbedCroshCommand)));
     }
-
   } else if (process_name == kVmShellName) {
     // Ensure crostini is allowed before starting terminal.
     Profile* profile = Profile::FromBrowserContext(browser_context());
