@@ -248,7 +248,17 @@ void DesksTemplatesClient::SetPolicyPreconfiguredTemplate(
 
 void DesksTemplatesClient::RemovePolicyPreconfiguredTemplate(
     const AccountId& account_id) {
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (!IsSupportedProfile(profile))
+    return;
+
+  DCHECK(profile);
+
   preconfigured_desk_templates_json_.erase(account_id);
+
+  if (profile == active_profile_)
+    GetDeskModel()->RemovePolicyDeskTemplates();
 }
 
 void DesksTemplatesClient::MaybeCreateAppLaunchHandler() {

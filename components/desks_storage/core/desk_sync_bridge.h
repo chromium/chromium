@@ -86,7 +86,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   sync_pb::WorkspaceDeskSpecifics ToSyncProto(
       const ash::DeskTemplate* desk_template);
 
-  const ash::DeskTemplate* GetEntryByUUID(const base::GUID& uuid) const;
+  const ash::DeskTemplate* GetUserEntryByUUID(const base::GUID& uuid) const;
 
  private:
   using DeskEntries = std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
@@ -118,6 +118,9 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // Uploads data that only exists locally to Sync during MergeSyncData().
   void UploadLocalOnlyData(syncer::MetadataChangeList* metadata_change_list,
                            const syncer::EntityChangeList& entity_data);
+
+  // Returns true if `templates_` contains a desk template with `name`.
+  bool HasUserTemplateWithName(const std::u16string& name);
 
   // |entries_| is keyed by UUIDs.
   DeskEntries entries_;

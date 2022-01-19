@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -18,6 +19,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -50,6 +52,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -84,6 +87,12 @@ constexpr char kExampleUrl1[] = "https://examples1.com";
 constexpr char kExampleUrl2[] = "https://examples2.com";
 constexpr char kExampleUrl3[] = "https://examples3.com";
 constexpr char kYoutubeUrl[] = "https://www.youtube.com/";
+constexpr char kTestAdminTemplateUuid[] =
+    "1f4ec992-0fa9-415d-a136-4b7c292c39dc";
+constexpr char kTestAdminTemplateFormat[] =
+    "[{\"version\":1,\"uuid\":\"%s\",\"name\": \"test admin template\","
+    "\"created_time_usec\": \"1633535632\",\"updated_time_usec\": "
+    "\"1633535632\",\"desk\":{}}]";
 
 Browser* FindBrowser(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -120,6 +129,37 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate() {
           }));
   run_loop.Run();
   return desk_template;
+}
+
+std::vector<ash::DeskTemplate*> GetDeskTemplates() {
+  base::RunLoop run_loop;
+  std::vector<ash::DeskTemplate*> templates;
+
+  DesksTemplatesClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
+      [&](const std::vector<ash::DeskTemplate*>& desk_templates,
+          std::string error_string) {
+        templates = desk_templates;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  return templates;
+}
+
+// Search `desk_templates` for a template with `uuid` and returns true if found,
+// false if not.
+bool ContainUuidInTemplates(
+    const std::string& uuid,
+    const std::vector<ash::DeskTemplate*>& desk_templates) {
+  base::GUID guid = base::GUID::ParseCaseInsensitive(uuid);
+  DCHECK(guid.is_valid());
+
+  for (auto* desk_template : desk_templates) {
+    if (desk_template->uuid() == guid)
+      return true;
+  }
+
+  return false;
 }
 
 std::string GetTemplateJson(const std::string& uuid, Profile* profile) {
@@ -1396,25 +1436,35 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
   const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
+  EXPECT_EQ(1u, app_id_to_launch_list.size());
 
-  auto get_templates_size = []() {
-    base::RunLoop run_loop;
-    int templates_num = 0;
-    DesksTemplatesClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
-        [&](const std::vector<ash::DeskTemplate*>& desk_templates,
-            std::string error_string) {
-          templates_num = desk_templates.size();
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return templates_num;
-  };
-  EXPECT_EQ(get_templates_size(), 1);
+  EXPECT_EQ(1u, GetDeskTemplates().size());
 
   // Now switch to |account_id2_|. Test that the captured desk template can't
   // be accessed from |account_id2_|.
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
-  EXPECT_EQ(get_templates_size(), 0);
+  EXPECT_EQ(0u, GetDeskTemplates().size());
+}
+
+// Tests that admin templates policy can be set.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
+                       SetAndClearAdminTemplates) {
+  EXPECT_TRUE(DesksTemplatesClient::Get());
+
+  // Set an admin template policy.
+  DesksTemplatesClient::Get()->SetPolicyPreconfiguredTemplate(
+      account_id1_, std::make_unique<std::string>(base::StringPrintf(
+                        kTestAdminTemplateFormat, kTestAdminTemplateUuid)));
+
+  // Verify that the admin templates is present.
+  EXPECT_TRUE(
+      ContainUuidInTemplates(kTestAdminTemplateUuid, GetDeskTemplates()));
+
+  // Clear admin templates.
+  DesksTemplatesClient::Get()->RemovePolicyPreconfiguredTemplate(account_id1_);
+
+  // Verify that the admin templates is removed.
+  EXPECT_FALSE(
+      ContainUuidInTemplates(kTestAdminTemplateUuid, GetDeskTemplates()));
 }

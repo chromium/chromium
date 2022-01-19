@@ -88,15 +88,15 @@ class DeskModel {
   using GetEntryByUuidCallback =
       base::OnceCallback<void(GetEntryByUuidStatus status,
                               std::unique_ptr<ash::DeskTemplate> entry)>;
-  // Get a specific desk template by |uuid|. Actual storage backend does not
+  // Get a specific desk template by `uuid`. Actual storage backend does not
   // need to keep desk templates in memory. The storage backend could load the
-  // specified desk template into memory and then call the |callback| with a
+  // specified desk template into memory and then call the `callback` with a
   // unique_ptr to the loaded desk template.
-  // If the specified desk template does not exist, |callback| will be called
-  // with |kNotFound| and an empty unique_ptr. If the specified desk template
-  // exists, but could not be loaded/parsed, |callback| will be called with
-  // |kFailure| and an empty unique_ptr. An asynchronous |callback| is used here
-  // to accommodate storage backend that need to perform asynchronous I/O.
+  // If the specified desk template does not exist, `callback` will be called
+  // with `kNotFound` and a `nullptr`. If the specified desk template exists,
+  // but could not be loaded/parsed, `callback` will be called with `kFailure`
+  // and a nullptr. An asynchronous `callback` is used here to accommodate
+  // storage backend that need to perform asynchronous I/O.
   virtual void GetEntryByUUID(const std::string& uuid,
                               GetEntryByUuidCallback callback) = 0;
 
@@ -157,10 +157,18 @@ class DeskModel {
   void AddObserver(DeskModelObserver* observer);
   void RemoveObserver(DeskModelObserver* observer);
 
-  // Operations to update the preconfigured desk templates from policy
-  void SetPolicyDeskTemplates(const std::string& policyJson);
+  // Updates the preconfigured desk templates from policy.
+  void SetPolicyDeskTemplates(const std::string& policy_json);
+
+  // Removes the preconfigured desk templates from policy.
+  void RemovePolicyDeskTemplates();
 
  protected:
+  // Finds the admin desk template with the given `uuid`. Returns `nullptr` if
+  // none is found.
+  std::unique_ptr<ash::DeskTemplate> GetAdminDeskTemplateByUUID(
+      const std::string& uuid) const;
+
   // The observers.
   base::ObserverList<DeskModelObserver>::Unchecked observers_;
 

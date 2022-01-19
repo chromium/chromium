@@ -10,6 +10,8 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/guid.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +21,7 @@
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
+#include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/model/entity_change.h"
@@ -70,6 +73,8 @@ using testing::StrEq;
 constexpr char kTestPwaAppId[] = "test_pwa_app_id";
 constexpr char kTestChromeAppId[] = "test_chrome_app_id";
 constexpr char kUuidFormat[] = "9e186d5a-502e-49ce-9ee1-00000000000%d";
+constexpr char kAdminTemplateUuidFormat[] =
+    "59dbe2b8-671f-4fd0-92ec-11111111100%d";
 constexpr char kNameFormat[] = "template %d";
 constexpr char kTestUrlFormat[] = "https://www.testdomain%d.com/";
 constexpr int kDefaultTemplateIndex = 1;
@@ -82,6 +87,8 @@ const base::GUID kTestUuid8 =
     base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 8));
 const base::GUID kTestUuid9 =
     base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 9));
+const base::GUID kTestAdminTemplateUuid1 = base::GUID::ParseCaseInsensitive(
+    base::StringPrintf(kAdminTemplateUuidFormat, 1));
 
 const std::string kPolicyWithTwoTemplates =
     "[{\"version\":1,\"uuid\":\"" + base::StringPrintf(kUuidFormat, 8) +
@@ -433,6 +440,55 @@ class DeskSyncBridgeTest : public testing::Test {
     loop2.Run();
   }
 
+  void AddTwoTemplatesWithDuplicatedNames() {
+    // These two templates will have new UUIDs but with names that collides with
+    // "template 1"
+    auto desk_template1 =
+        DeskSyncBridge::FromSyncProto(ExampleWorkspaceDeskSpecifics(
+            kTestUuid8.AsLowercaseString(), "template 1", AdvanceAndGetTime()));
+    auto desk_template2 =
+        DeskSyncBridge::FromSyncProto(ExampleWorkspaceDeskSpecifics(
+            kTestUuid9.AsLowercaseString(), "template 1", AdvanceAndGetTime()));
+
+    base::RunLoop loop1;
+    bridge()->AddOrUpdateEntry(
+        std::move(desk_template1),
+        base::BindLambdaForTesting(
+            [&](DeskModel::AddOrUpdateEntryStatus status) {
+              EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
+              loop1.Quit();
+            }));
+    loop1.Run();
+
+    base::RunLoop loop2;
+    bridge()->AddOrUpdateEntry(
+        std::move(desk_template2),
+        base::BindLambdaForTesting(
+            [&](DeskModel::AddOrUpdateEntryStatus status) {
+              EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
+              loop2.Quit();
+            }));
+    loop2.Run();
+  }
+
+  void SetOneAdminTemplate() {
+    auto admin_template1 =
+        DeskSyncBridge::FromSyncProto(ExampleWorkspaceDeskSpecifics(
+            kTestAdminTemplateUuid1.AsLowercaseString(), "admin template 1",
+            AdvanceAndGetTime()));
+
+    std::string policy_json;
+    base::Value template_list(base::Value::Type::LIST);
+    template_list.Append(
+        desk_template_conversion::SerializeDeskTemplateAsPolicy(
+            admin_template1.get(), cache_.get()));
+    bool conversion_success =
+        base::JSONWriter::Write(template_list, &policy_json);
+    EXPECT_TRUE(conversion_success);
+
+    bridge()->SetPolicyDeskTemplates(policy_json);
+  }
+
   MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
 
   DeskSyncBridge* bridge() { return bridge_.get(); }
@@ -440,6 +496,8 @@ class DeskSyncBridgeTest : public testing::Test {
   MockDeskModelObserver* mock_observer() { return &mock_observer_; }
 
   base::SimpleTestClock* clock() { return &clock_; }
+
+  apps::AppRegistryCache* app_cache() { return cache_.get(); }
 
  private:
   base::SimpleTestClock clock_;
@@ -524,17 +582,17 @@ TEST_F(DeskSyncBridgeTest, InitializationWithLocalDataAndMetadata) {
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 
   // Verify both local specifics are loaded correctly.
-  EXPECT_EQ(bridge()
-                ->ToSyncProto(bridge()->GetEntryByUUID(
+  EXPECT_EQ(template1.SerializeAsString(),
+            bridge()
+                ->ToSyncProto(bridge()->GetUserEntryByUUID(
                     base::GUID::ParseCaseInsensitive(template1.uuid())))
-                .SerializeAsString(),
-            template1.SerializeAsString());
+                .SerializeAsString());
 
-  EXPECT_EQ(bridge()
-                ->ToSyncProto(bridge()->GetEntryByUUID(
+  EXPECT_EQ(template2.SerializeAsString(),
+            bridge()
+                ->ToSyncProto(bridge()->GetUserEntryByUUID(
                     base::GUID::ParseCaseInsensitive(template2.uuid())))
-                .SerializeAsString(),
-            template2.SerializeAsString());
+                .SerializeAsString());
 }
 
 TEST_F(DeskSyncBridgeTest, GetAllEntriesIncludesPolicyEntries) {
@@ -610,15 +668,15 @@ TEST_F(DeskSyncBridgeTest, AddEntriesLocally) {
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 
   // Verify the added desk template content.
-  EXPECT_EQ(bridge()
-                ->ToSyncProto(bridge()->GetEntryByUUID(kTestUuid1))
-                .SerializeAsString(),
-            specifics1.SerializeAsString());
+  EXPECT_EQ(specifics1.SerializeAsString(),
+            bridge()
+                ->ToSyncProto(bridge()->GetUserEntryByUUID(kTestUuid1))
+                .SerializeAsString());
 
-  EXPECT_EQ(bridge()
-                ->ToSyncProto(bridge()->GetEntryByUUID(kTestUuid2))
-                .SerializeAsString(),
-            specifics2.SerializeAsString());
+  EXPECT_EQ(specifics2.SerializeAsString(),
+            bridge()
+                ->ToSyncProto(bridge()->GetUserEntryByUUID(kTestUuid2))
+                .SerializeAsString());
 }
 
 TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenEntryIsTooLarge) {
@@ -690,6 +748,29 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenBridgeIsNotReady) {
   loop.Run();
 }
 
+TEST_F(DeskSyncBridgeTest, AppendsDuplicateMarkingsCorrectly) {
+  InitializeBridge();
+
+  AddTwoTemplates();
+
+  EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
+
+  AddTwoTemplatesWithDuplicatedNames();
+
+  // The two duplicated templates should be added.
+  EXPECT_EQ(4ul, bridge()->GetAllEntryUuids().size());
+
+  // Template 8 should be renamed to avoid name collision.
+  EXPECT_EQ("template 1 (1)",
+            base::UTF16ToUTF8(
+                bridge()->GetUserEntryByUUID(kTestUuid8)->template_name()));
+
+  // Template 9 should be renamed twice to avoid name collision.
+  EXPECT_EQ("template 1 (2)",
+            base::UTF16ToUTF8(
+                bridge()->GetUserEntryByUUID(kTestUuid9)->template_name()));
+}
+
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldSucceed) {
   InitializeBridge();
 
@@ -703,6 +784,28 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldSucceed) {
       base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
                                      std::unique_ptr<ash::DeskTemplate> entry) {
         EXPECT_EQ(status, DeskModel::GetEntryByUuidStatus::kOk);
+        EXPECT_TRUE(entry);
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
+TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldReturnAdminTemplate) {
+  InitializeBridge();
+
+  AddTwoTemplates();
+
+  SetOneAdminTemplate();
+
+  // There should be 3 templates: 2 user templates + 1 admin template.
+  EXPECT_EQ(3ul, bridge()->GetAllEntryUuids().size());
+
+  base::RunLoop loop;
+  bridge()->GetEntryByUUID(
+      kTestAdminTemplateUuid1.AsLowercaseString(),
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
         EXPECT_TRUE(entry);
         loop.Quit();
       }));
@@ -776,14 +879,14 @@ TEST_F(DeskSyncBridgeTest, UpdateEntryLocally) {
   // We should still have both templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
   // Template 1 should be updated.
-  EXPECT_EQ(
-      base::UTF16ToUTF8(bridge()->GetEntryByUUID(kTestUuid1)->template_name()),
-      "updated template 1");
+  EXPECT_EQ("updated template 1",
+            base::UTF16ToUTF8(
+                bridge()->GetUserEntryByUUID(kTestUuid1)->template_name()));
 
   // Template 2 should be unchanged.
-  EXPECT_EQ(
-      base::UTF16ToUTF8(bridge()->GetEntryByUUID(kTestUuid2)->template_name()),
-      "template 2");
+  EXPECT_EQ("template 2",
+            base::UTF16ToUTF8(
+                bridge()->GetUserEntryByUUID(kTestUuid2)->template_name()));
 }
 
 TEST_F(DeskSyncBridgeTest, DeleteEntryLocally) {
@@ -813,9 +916,9 @@ TEST_F(DeskSyncBridgeTest, DeleteEntryLocally) {
   // We should have only 1 template.
   EXPECT_EQ(1ul, bridge()->GetAllEntryUuids().size());
   // Template 2 should be unchanged.
-  EXPECT_EQ(
-      base::UTF16ToUTF8(bridge()->GetEntryByUUID(kTestUuid2)->template_name()),
-      "template 2");
+  EXPECT_EQ("template 2",
+            base::UTF16ToUTF8(
+                bridge()->GetUserEntryByUUID(kTestUuid2)->template_name()));
 }
 
 TEST_F(DeskSyncBridgeTest, DeleteAllEntriesLocally) {
@@ -898,16 +1001,16 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
   // We should still have both templates.
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
   // Template 1 should be updated to new content.
-  EXPECT_EQ(bridge()
-                ->ToSyncProto(bridge()->GetEntryByUUID(
+  EXPECT_EQ(updated_template1.SerializeAsString(),
+            bridge()
+                ->ToSyncProto(bridge()->GetUserEntryByUUID(
                     base::GUID::ParseCaseInsensitive(template1.uuid())))
-                .SerializeAsString(),
-            updated_template1.SerializeAsString());
-  EXPECT_EQ(bridge()
-                ->ToSyncProto(bridge()->GetEntryByUUID(
+                .SerializeAsString());
+  EXPECT_EQ(template2.SerializeAsString(),
+            bridge()
+                ->ToSyncProto(bridge()->GetUserEntryByUUID(
                     base::GUID::ParseCaseInsensitive(template2.uuid())))
-                .SerializeAsString(),
-            template2.SerializeAsString());
+                .SerializeAsString());
 }
 
 // Tests that remote desk template can be correctly removed.
@@ -934,11 +1037,11 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
 
   // Verify that we only have template 2.
   EXPECT_EQ(1ul, bridge()->GetAllEntryUuids().size());
-  EXPECT_EQ(bridge()
-                ->ToSyncProto(bridge()->GetEntryByUUID(
+  EXPECT_EQ(template2.SerializeAsString(),
+            bridge()
+                ->ToSyncProto(bridge()->GetUserEntryByUUID(
                     base::GUID::ParseCaseInsensitive(template2.uuid())))
-                .SerializeAsString(),
-            template2.SerializeAsString());
+                .SerializeAsString());
 }
 
 TEST_F(DeskSyncBridgeTest, ApplySyncChangesDeleteNonexistent) {
@@ -996,6 +1099,65 @@ TEST_F(DeskSyncBridgeTest, MergeSyncDataUploadsLocalOnlyEntries) {
 
   // Merged data should contain 3 templtes.
   EXPECT_EQ(3ul, bridge()->GetAllEntryUuids().size());
+}
+
+TEST_F(DeskSyncBridgeTest,
+       GetEntryCountShouldIncludeBothUserAndAdminTemplates) {
+  InitializeBridge();
+
+  AddTwoTemplates();
+
+  SetOneAdminTemplate();
+
+  // There should be 3 templates: 2 user templates + 1 admin template.
+  EXPECT_EQ(3ul, bridge()->GetEntryCount());
+}
+
+TEST_F(DeskSyncBridgeTest, GetMaxEntryCountShouldIncreaseWithAdminTemplates) {
+  InitializeBridge();
+
+  AddTwoTemplates();
+
+  std::size_t max_entry_count = bridge()->GetMaxEntryCount();
+
+  SetOneAdminTemplate();
+
+  // The max entry count should increase by 1 since we have set an admin
+  // template.
+  EXPECT_EQ(max_entry_count + 1ul, bridge()->GetMaxEntryCount());
+}
+
+TEST_F(DeskSyncBridgeTest, GetTemplateJsonShouldReturnList) {
+  InitializeBridge();
+
+  // Seed two templates.
+  // Seeded templates will be "template 1" and "template 2".
+  AddTwoTemplates();
+
+  // We should have seeded two templates.
+  EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
+
+  base::RunLoop loop;
+  bridge()->GetTemplateJson(
+      kTestUuid1.AsLowercaseString(), app_cache(),
+      base::BindLambdaForTesting([&](DeskModel::GetTemplateJsonStatus status,
+                                     const std::string& templates_json) {
+        EXPECT_EQ(DeskModel::GetTemplateJsonStatus::kOk, status);
+
+        EXPECT_TRUE(!templates_json.empty());
+
+        base::JSONReader::ValueWithError parsed_json =
+            base::JSONReader::ReadAndReturnValueWithError(
+                base::StringPiece(templates_json));
+
+        EXPECT_TRUE(parsed_json.value.has_value());
+        EXPECT_TRUE(parsed_json.value->is_list());
+
+        // Content of the conversion is tested in:
+        // components/desks_storage/core/desk_template_conversion_unittests.cc
+        loop.Quit();
+      }));
+  loop.Run();
 }
 
 }  // namespace

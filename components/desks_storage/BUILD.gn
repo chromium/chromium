@@ -15,6 +15,8 @@ static_library("desks_storage") {
     "core/desk_sync_service.h",
     "core/desk_template_conversion.cc",
     "core/desk_template_conversion.h",
+    "core/desk_template_util.cc",
+    "core/desk_template_util.h",
     "core/local_desk_data_manager.cc",
     "core/local_desk_data_manager.h",
   ]
@@ -40,6 +42,7 @@ source_set("unit_tests") {
   sources = [
     "core/desk_sync_bridge_unittest.cc",
     "core/desk_template_conversion_unittests.cc",
+    "core/desk_template_util_unittests.cc",
     "core/local_desks_data_manager_unittests.cc",
   ]
   deps = [

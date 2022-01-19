@@ -5,8 +5,10 @@
 #include "components/desks_storage/core/desk_model.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,23 +48,6 @@ void DeskModel::RemoveObserver(DeskModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void DeskModel::SetPolicyDeskTemplates(const std::string& policyJson) {
-  policy_entries_.clear();
-
-  base::StringPiece raw_json = base::StringPiece(policyJson);
-  base::JSONReader::ValueWithError parsed_list =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
-  if (!parsed_list.value || !parsed_list.value->is_list())
-    return;
-
-  for (auto& desk_template : parsed_list.value->GetList()) {
-    std::unique_ptr<ash::DeskTemplate> dt =
-        desk_template_conversion::ParseDeskTemplateFromPolicy(desk_template);
-    if (dt)
-      policy_entries_.push_back(std::move(dt));
-  }
-}
-
 void DeskModel::GetTemplateJson(const std::string& uuid,
                                 apps::AppRegistryCache* app_cache,
                                 GetTemplateJsonCallback callback) {
@@ -70,6 +55,49 @@ void DeskModel::GetTemplateJson(const std::string& uuid,
       uuid,
       base::BindOnce(&DeskModel::HandleTemplateConversionToPolicyJson,
                      base::Unretained(this), std::move(callback), app_cache));
+}
+
+void DeskModel::SetPolicyDeskTemplates(const std::string& policy_json) {
+  policy_entries_.clear();
+
+  base::StringPiece raw_json = base::StringPiece(policy_json);
+  base::JSONReader::ValueWithError parsed_list =
+      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  if (!parsed_list.value)
+    return;
+
+  if (!parsed_list.value->is_list()) {
+    LOG(WARNING) << "Expected JSON list in admin templates policy.";
+    return;
+  }
+
+  for (auto& desk_template : parsed_list.value->GetList()) {
+    std::unique_ptr<ash::DeskTemplate> dt =
+        desk_template_conversion::ParseDeskTemplateFromPolicy(desk_template);
+    if (dt) {
+      policy_entries_.push_back(std::move(dt));
+    } else {
+      LOG(WARNING) << "Failed to parse admin template from JSON: "
+                   << desk_template;
+    }
+  }
+}
+
+void DeskModel::RemovePolicyDeskTemplates() {
+  policy_entries_.clear();
+}
+
+std::unique_ptr<ash::DeskTemplate> DeskModel::GetAdminDeskTemplateByUUID(
+    const std::string& uuid_str) const {
+  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
+
+  for (const std::unique_ptr<ash::DeskTemplate>& policy_entry :
+       policy_entries_) {
+    if (policy_entry->uuid() == uuid)
+      return policy_entry->Clone();
+  }
+
+  return nullptr;
 }
 
 void DeskModel::HandleTemplateConversionToPolicyJson(
@@ -84,10 +112,12 @@ void DeskModel::HandleTemplateConversionToPolicyJson(
   }
 
   std::string raw_json;
-  bool conversion_success = base::JSONWriter::Write(
-      desk_template_conversion::SerializeDeskTemplateAsPolicy(entry.get(),
-                                                              app_cache),
-      &raw_json);
+  base::Value template_list(base::Value::Type::LIST);
+  template_list.Append(desk_template_conversion::SerializeDeskTemplateAsPolicy(
+      entry.get(), app_cache));
+
+  const bool conversion_success =
+      base::JSONWriter::Write(template_list, &raw_json);
 
   if (conversion_success)
     std::move(callback).Run(GetTemplateJsonStatus::kOk, raw_json);

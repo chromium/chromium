@@ -89,6 +89,7 @@ class LocalDeskDataManager : public DeskModel {
 
   // Wrapper method to call GetEntryByUuidCallback.
   void OnGetEntryByUuid(
+      const std::string& uuid_str,
       std::unique_ptr<DeskModel::GetEntryByUuidStatus> status_ptr,
       std::unique_ptr<ash::DeskTemplate*> entry_ptr_ptr,
       DeskModel::GetEntryByUuidCallback callback);
