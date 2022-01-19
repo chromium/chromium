@@ -116,25 +116,6 @@ bool PopulateItem(const base::Value& from,
   return true;
 }
 
-bool PopulateItem(const base::Value& from,
-                  std::unique_ptr<base::DictionaryValue>* out) {
-  const base::DictionaryValue* dict = nullptr;
-  if (!from.GetAsDictionary(&dict))
-    return false;
-  *out = dict->CreateDeepCopy();
-  return true;
-}
-
-bool PopulateItem(const base::Value& from,
-                  std::unique_ptr<base::DictionaryValue>* out,
-                  std::u16string* error) {
-  const base::DictionaryValue* dict = nullptr;
-  if (!from.GetAsDictionary(&dict))
-    return ReportError(from, base::Value::Type::DICTIONARY, error);
-  *out = dict->CreateDeepCopy();
-  return true;
-}
-
 void AddItemToList(const int from, base::ListValue* out) {
   out->Append(from);
 }
@@ -158,11 +139,6 @@ void AddItemToList(const std::vector<uint8_t>& from, base::ListValue* out) {
 void AddItemToList(const std::unique_ptr<base::Value>& from,
                    base::ListValue* out) {
   out->Append(from->Clone());
-}
-
-void AddItemToList(const std::unique_ptr<base::DictionaryValue>& from,
-                   base::ListValue* out) {
-  out->Append(from->CreateDeepCopy());
 }
 
 }  // namespace util
