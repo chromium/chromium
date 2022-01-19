@@ -209,8 +209,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<first_run::MasterPrefs> master_prefs_;
 #endif
 
-  raw_ptr<Profile> profile_ = nullptr;
-
   base::FilePath user_data_dir_;
 
   raw_ptr<StartupData> startup_data_;

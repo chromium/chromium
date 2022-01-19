@@ -1490,7 +1490,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   StartupProfileInfo profile_info = CreateInitialProfile(
       parameters_, /*cur_dir=*/base::FilePath(), parsed_command_line());
 
-  profile_ = profile_info.profile;
+  Profile* profile = profile_info.profile;
   if (profile_info.mode == StartupProfileMode::kError)
     return content::RESULT_CODE_NORMAL_EXIT;
 
@@ -1500,10 +1500,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // context menu for editable content.
   if (profile_info.mode == StartupProfileMode::kBrowserWindow &&
       spellcheck::UseBrowserSpellChecker() &&
-      profile_->GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
+      profile->GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
       !base::FeatureList::IsEnabled(
           spellcheck::kWinDelaySpellcheckServiceInit)) {
-    SpellcheckServiceFactory::GetForContext(profile_);
+    SpellcheckServiceFactory::GetForContext(profile);
   }
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
@@ -1547,7 +1547,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // TODO(stevenjb): Move WIN and MACOSX specific code to appropriate Parts.
   // (requires supporting early exit).
-  CallPostProfileInit(profile_);
+  CallPostProfileInit(profile);
   if (base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit)) {
     // Set up PostProfileInit triggering for profiles created later.
     profile_init_manager_ = std::make_unique<ProfileInitManager>(this);
@@ -1558,10 +1558,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // and preferences have been registered since some of the import code depends
   // on preferences.
   if (first_run::IsChromeFirstRun()) {
-    first_run::AutoImport(profile_, master_prefs_->import_bookmarks_path);
+    first_run::AutoImport(profile, master_prefs_->import_bookmarks_path);
 
     // Note: This can pop-up the first run consent dialog on Linux & Mac.
-    first_run::DoPostImportTasks(profile_,
+    first_run::DoPostImportTasks(profile,
                                  master_prefs_->make_chrome_default_for_user);
 
     // The first run dialog is modal, and spins a RunLoop, which could receive
@@ -1590,11 +1590,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // Verify that the profile is not on a network share and if so prepare to show
   // notification to the user.
-  if (NetworkProfileBubble::ShouldCheckNetworkProfile(profile_)) {
+  if (NetworkProfileBubble::ShouldCheckNetworkProfile(profile)) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&NetworkProfileBubble::CheckNetworkProfile,
-                       profile_->GetPath()));
+                       profile->GetPath()));
   }
 #endif  // defined(OS_WIN)
 
@@ -1602,8 +1602,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // Init the RLZ library. This just binds the dll and schedules a task on the
   // file thread to be run sometime later. If this is the first run we record
   // the installation event.
-  int ping_delay =
-      profile_->GetPrefs()->GetInteger(prefs::kRlzPingDelaySeconds);
+  int ping_delay = profile->GetPrefs()->GetInteger(prefs::kRlzPingDelaySeconds);
   // Negative ping delay means to send ping immediately after a first search is
   // recorded.
   rlz::RLZTracker::SetRlzDelegate(
@@ -1611,9 +1610,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   rlz::RLZTracker::InitRlzDelayed(
       first_run::IsChromeFirstRun(), ping_delay < 0,
       base::Seconds(abs(ping_delay)),
-      ChromeRLZTrackerDelegate::IsGoogleDefaultSearch(profile_),
-      ChromeRLZTrackerDelegate::IsGoogleHomepage(profile_),
-      ChromeRLZTrackerDelegate::IsGoogleInStartpages(profile_));
+      ChromeRLZTrackerDelegate::IsGoogleDefaultSearch(profile),
+      ChromeRLZTrackerDelegate::IsGoogleHomepage(profile),
+      ChromeRLZTrackerDelegate::IsGoogleInStartpages(profile));
 #endif  // BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Configure modules that need access to resources.
@@ -1651,15 +1650,15 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   HandleTestParameters(parsed_command_line());
 
   language::LanguageUsageMetrics::RecordAcceptLanguages(
-      profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
+      profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
   language::LanguageUsageMetrics::RecordApplicationLanguage(
       browser_process_->GetApplicationLocale());
   translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
-      ChromeTranslateClient::CreateTranslatePrefs(profile_->GetPrefs()));
+      ChromeTranslateClient::CreateTranslatePrefs(profile->GetPrefs()));
 // On ChromeOS results in a crash. https://crbug.com/1151558
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   language::LanguageUsageMetrics::RecordPageLanguages(
-      *UrlLanguageHistogramFactory::GetForBrowserContext(profile_));
+      *UrlLanguageHistogramFactory::GetForBrowserContext(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // On mobile, the need for a clean shutdown arises only when the application
@@ -1702,7 +1701,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     // Exclude Android: SODA is not supported.
     // Exclude ChromeOS: SODA is independent of Component Updater.
-    speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs(),
+    speech::SodaInstaller::GetInstance()->Init(profile->GetPrefs(),
                                                browser_process_->local_state());
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1724,7 +1723,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
-    speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs(),
+    speech::SodaInstaller::GetInstance()->Init(profile->GetPrefs(),
                                                browser_process_->local_state());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1737,7 +1736,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if defined(OS_ANDROID)
   // Just initialize the policy prefs service here. Variations seed fetching
   // will be initialized when the app enters foreground mode.
-  variations_service->set_policy_pref_service(profile_->GetPrefs());
+  variations_service->set_policy_pref_service(profile->GetPrefs());
 
 #else
   // We are in regular browser boot sequence. Open initial tabs and enter the
@@ -1845,7 +1844,8 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
 void ChromeBrowserMainParts::OnFirstIdle() {
   startup_metric_utils::RecordBrowserMainLoopFirstIdle(base::TimeTicks::Now());
 #if defined(OS_ANDROID)
-  sharing::ShareHistory::CreateForProfile(profile_);
+  sharing::ShareHistory::CreateForProfile(
+      ProfileManager::GetPrimaryUserProfile());
 #endif
 }
 
