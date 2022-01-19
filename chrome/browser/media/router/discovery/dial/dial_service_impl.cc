@@ -62,11 +62,12 @@ namespace media_router {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void PostSendNetworkList(
     base::WeakPtr<DialServiceImpl> impl,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     const absl::optional<net::NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DialServiceImpl::SendNetworkList,
-                                std::move(impl), networks));
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&DialServiceImpl::SendNetworkList,
+                                       std::move(impl), networks));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -166,20 +167,23 @@ net::IPAddressList GetBestBindAddressOnUIThread() {
 #else
 // This function and PostSendNetworkList together handle DialServiceImpl's use
 // of the network service, while keeping all of DialServiceImpl running on the
-// IO thread.  DialServiceImpl has a legacy threading model, where it was
-// designed to be called from the UI thread and run on the IO thread.  Although
-// a WeakPtr is desired for safety when posting tasks, they are not
-// thread/sequence-safe.  DialServiceImpl's simple use of the network service,
-// however, doesn't actually require that any of its state be accessed on the UI
-// thread.  Therefore, the UI thread functions can be free functions which just
-// pass-through an IO thread WeakPtr which will be used when passing the network
-// service result back to the IO thread.  This model will change when the
+// sequence associated with task_runner_ (currently the IO thread).
+// DialServiceImpl has a legacy threading model, where it was designed to be
+// called from the UI thread and run on a different thread.  Although a WeakPtr
+// is desired for safety when posting tasks, they are not thread/sequence-safe.
+// DialServiceImpl's simple use of the network service, however, doesn't
+// actually require that any of its state be accessed on the UI thread.
+// Therefore, the UI thread functions can be free functions which just
+// pass-through an thread WeakPtr which will be used when passing the network
+// service result back to the calling thread.  This model will change when the
 // network service is fully launched and this code is updated.
-void GetNetworkListOnUIThread(base::WeakPtr<DialServiceImpl> impl) {
+void GetNetworkListOnUIThread(
+    base::WeakPtr<DialServiceImpl> impl,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::GetNetworkService()->GetNetworkList(
       net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
-      base::BindOnce(&PostSendNetworkList, std::move(impl)));
+      base::BindOnce(&PostSendNetworkList, std::move(impl), task_runner));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -187,18 +191,17 @@ void GetNetworkListOnUIThread(base::WeakPtr<DialServiceImpl> impl) {
 
 DialServiceImpl::DialSocket::DialSocket(DialServiceImpl* dial_service)
     : is_writing_(false), is_reading_(false), dial_service_(dial_service) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(dial_service_);
 }
 
 DialServiceImpl::DialSocket::~DialSocket() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 bool DialServiceImpl::DialSocket::CreateAndBindSocket(
     const IPAddress& bind_ip_address,
     net::NetLog* net_log) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!socket_);
   DCHECK(bind_ip_address.IsIPv4());
 
@@ -243,13 +246,13 @@ void DialServiceImpl::DialSocket::SendOneRequest(
 }
 
 bool DialServiceImpl::DialSocket::IsClosed() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !socket_;
 }
 
 bool DialServiceImpl::DialSocket::CheckResult(const char* operation,
                                               int result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result < net::OK && result != net::ERR_IO_PENDING) {
     Close();
     std::string error_str(net::ErrorToString(result));
@@ -260,7 +263,7 @@ bool DialServiceImpl::DialSocket::CheckResult(const char* operation,
 }
 
 void DialServiceImpl::DialSocket::Close() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_reading_ = false;
   is_writing_ = false;
   socket_.reset();
@@ -268,7 +271,7 @@ void DialServiceImpl::DialSocket::Close() {
 
 void DialServiceImpl::DialSocket::OnSocketWrite(int send_buffer_size,
                                                 int result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_writing_ = false;
   if (!CheckResult("OnSocketWrite", result))
     return;
@@ -276,7 +279,7 @@ void DialServiceImpl::DialSocket::OnSocketWrite(int send_buffer_size,
 }
 
 bool DialServiceImpl::DialSocket::ReadSocket() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!socket_)
     return false;
 
@@ -303,7 +306,7 @@ bool DialServiceImpl::DialSocket::ReadSocket() {
 }
 
 void DialServiceImpl::DialSocket::OnSocketRead(int result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_reading_ = false;
   if (!CheckResult("OnSocketRead", result))
     return;
@@ -315,7 +318,7 @@ void DialServiceImpl::DialSocket::OnSocketRead(int result) {
 }
 
 void DialServiceImpl::DialSocket::HandleResponse(int bytes_read) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(bytes_read, 0);
   if (bytes_read > kDialRecvBufferSize) {
     return;
@@ -392,9 +395,12 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
   return true;
 }
 
-DialServiceImpl::DialServiceImpl(DialService::Client& client,
-                                 net::NetLog* net_log)
+DialServiceImpl::DialServiceImpl(
+    DialService::Client& client,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    net::NetLog* net_log)
     : client_(client),
+      task_runner_(task_runner),
       net_log_(net_log),
       discovery_active_(false),
       num_requests_sent_(0),
@@ -403,7 +409,6 @@ DialServiceImpl::DialServiceImpl(DialService::Client& client,
                                        kDialRequestIntervalMillis) +
                     base::Seconds(kDialResponseTimeoutSecs)),
       request_interval_(base::Milliseconds(kDialRequestIntervalMillis)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   IPAddress address;
   bool success = address.AssignFromIPLiteral(kDialRequestAddress);
   DCHECK(success);
@@ -412,11 +417,11 @@ DialServiceImpl::DialServiceImpl(DialService::Client& client,
 }
 
 DialServiceImpl::~DialServiceImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 bool DialServiceImpl::Discover() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (discovery_active_) {
     return false;
   }
@@ -427,7 +432,7 @@ bool DialServiceImpl::Discover() {
 }
 
 void DialServiceImpl::StartDiscovery() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(discovery_active_);
   if (HasOpenSockets()) {
     return;
@@ -441,15 +446,15 @@ void DialServiceImpl::StartDiscovery() {
       base::BindOnce(&DialServiceImpl::DiscoverOnAddresses,
                      weak_ptr_factory_.GetWeakPtr()));
 #else
-  ui_task_runner->PostTask(FROM_HERE,
-                           base::BindOnce(&GetNetworkListOnUIThread,
-                                          weak_ptr_factory_.GetWeakPtr()));
+  ui_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&GetNetworkListOnUIThread,
+                                weak_ptr_factory_.GetWeakPtr(), task_runner_));
 #endif
 }
 
 void DialServiceImpl::SendNetworkList(
     const absl::optional<NetworkInterfaceList>& networks) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   using InterfaceIndexAddressFamily = std::pair<uint32_t, net::AddressFamily>;
   std::set<InterfaceIndexAddressFamily> interface_index_addr_family_seen;
@@ -513,7 +518,7 @@ DialServiceImpl::CreateDialSocket() {
 }
 
 void DialServiceImpl::SendOneRequest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (num_requests_sent_ == max_requests_) {
     request_timer_.Stop();
     return;
@@ -526,7 +531,7 @@ void DialServiceImpl::SendOneRequest() {
 }
 
 void DialServiceImpl::NotifyOnDiscoveryRequest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If discovery is inactive, no reason to notify client.
   if (!discovery_active_) {
     return;
@@ -544,7 +549,7 @@ void DialServiceImpl::NotifyOnDiscoveryRequest() {
 
 void DialServiceImpl::NotifyOnDeviceDiscovered(
     const DialDeviceData& device_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!discovery_active_) {
     return;
   }
@@ -552,13 +557,13 @@ void DialServiceImpl::NotifyOnDeviceDiscovered(
 }
 
 void DialServiceImpl::NotifyOnError() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_.OnError(HasOpenSockets() ? DIAL_SERVICE_SOCKET_ERROR
                                    : DIAL_SERVICE_NO_INTERFACES);
 }
 
 void DialServiceImpl::FinishDiscovery() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(discovery_active_);
   // Close all open sockets.
   dial_sockets_.clear();

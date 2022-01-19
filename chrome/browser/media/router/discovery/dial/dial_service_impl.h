@@ -11,6 +11,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_service.h"
 #include "net/base/ip_address.h"
@@ -27,7 +30,9 @@ namespace media_router {
 // Implements DialService using net::UdpSocket.
 class DialServiceImpl : public DialService {
  public:
-  DialServiceImpl(DialService::Client& client, net::NetLog* net_log);
+  DialServiceImpl(DialService::Client& client,
+                  const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+                  net::NetLog* net_log);
 
   DialServiceImpl(const DialServiceImpl&) = delete;
   DialServiceImpl(DialServiceImpl&&) = delete;
@@ -42,10 +47,10 @@ class DialServiceImpl : public DialService {
  private:
   friend void PostSendNetworkList(
       base::WeakPtr<DialServiceImpl> impl,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       const absl::optional<net::NetworkInterfaceList>& networks);
 
   // Represents a socket binding to a single network interface.
-  // DialSocket lives on the IO thread.
   class DialSocket {
    public:
     explicit DialSocket(DialServiceImpl* dial_service);
@@ -120,6 +125,8 @@ class DialServiceImpl : public DialService {
 
     // Pointer to the DialServiceImpl that owns this socket.
     const raw_ptr<DialServiceImpl> dial_service_;
+
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
   // Starts the control flow for one discovery cycle.
@@ -164,6 +171,10 @@ class DialServiceImpl : public DialService {
   // Unowned reference to the DialService::Client.
   DialService::Client& client_;
 
+  // Task runner for the DialServiceImpl.  Currently must be bound to the IO
+  // thread because of socket use, but this may change in the future.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   // DialSockets for each network interface whose ip address was
   // successfully bound.
   std::vector<std::unique_ptr<DialSocket>> dial_sockets_;
@@ -200,7 +211,8 @@ class DialServiceImpl : public DialService {
   // requests.
   base::TimeDelta request_interval_;
 
-  // WeakPtrFactory for WeakPtrs that are invalidated on IO thread.
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<DialServiceImpl> weak_ptr_factory_{this};
 
   friend class DialServiceImplTest;

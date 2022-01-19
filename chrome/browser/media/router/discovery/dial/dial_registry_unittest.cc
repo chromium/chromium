@@ -11,6 +11,8 @@
 #include "chrome/browser/media/router/discovery/dial/dial_registry.h"
 #include "chrome/browser/media/router/discovery/dial/dial_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +57,7 @@ class MockDialService : public DialService {
 class MockDialRegistry : public DialRegistry {
  public:
   explicit MockDialRegistry(DialRegistry::Client& client)
-      : DialRegistry(client) {
+      : DialRegistry(client, content::GetIOThreadTaskRunner({})) {
     SetClockForTest(&clock_);
   }
 

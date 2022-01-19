@@ -14,6 +14,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -30,8 +33,8 @@ class NetLog;
 namespace media_router {
 
 // Keeps track of devices that have responded to discovery requests and notifies
-// the client with the current device list.
-// DialRegistry lives on the IO thread.
+// the client with the current device list.  All APIs should be called on the
+// sequence bound to |task_runner_|.
 class DialRegistry
     : public DialService::Client,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
@@ -47,7 +50,6 @@ class DialRegistry
     DIAL_UNKNOWN
   };
 
-  // Invoked on the IO thread.
   class Client {
    public:
     // Called when the list of DIAL devices has changed.  Will be called
@@ -60,7 +62,8 @@ class DialRegistry
     virtual ~Client() = default;
   };
 
-  explicit DialRegistry(DialRegistry::Client& client);
+  DialRegistry(DialRegistry::Client& client,
+               const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   DialRegistry(const DialRegistry&) = delete;
   DialRegistry(DialRegistry&&) = delete;
   DialRegistry& operator=(const DialRegistry&) = delete;
@@ -152,6 +155,12 @@ class DialRegistry
   // Returns the next label to use for a newly-seen device.
   std::string NextLabel();
 
+  // Unowned reference to the DialRegistry::Client.
+  Client& client_;
+
+  // Task runner for the DialRegistry.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   // Incremented each time we modify the registry of active devices.
   int registry_generation_;
 
@@ -174,20 +183,18 @@ class DialRegistry
   // construct the device list sent to API clients.
   DeviceByLabelMap device_by_label_map_;
 
-  // Timer used to manage periodic discovery requests. Timer is created and
-  // destroyed on IO thread.
+  // Timer used to manage periodic discovery requests.
   std::unique_ptr<base::RepeatingTimer> repeating_timer_;
 
-  // Unowned reference to the DialRegistry::Client.
-  Client& client_;
-
-  // Set just after construction, only used on the IO thread.
+  // Set just after construction.
   raw_ptr<net::NetLog> net_log_ = nullptr;
 
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
       nullptr;
 
   raw_ptr<base::Clock> clock_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   friend class DialMediaSinkServiceImplTest;
   friend class DialRegistryTest;

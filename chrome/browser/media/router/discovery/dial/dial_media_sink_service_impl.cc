@@ -97,7 +97,7 @@ void DialMediaSinkServiceImpl::Start() {
 
   StartTimer();
 
-  dial_registry_ = std::make_unique<DialRegistry>(*this);
+  dial_registry_ = std::make_unique<DialRegistry>(*this, task_runner_);
   dial_registry_->Start();
 }
 
