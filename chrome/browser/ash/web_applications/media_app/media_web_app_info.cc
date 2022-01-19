@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_media_app_resources.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
@@ -136,8 +137,20 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
           {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
       },
       *info);
-  info->theme_color = 0xff202124;
-  info->background_color = 0xff3c4043;
+
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    auto* color_provider = ash::AshColorProvider::Get();
+    info->theme_color =
+        color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/false);
+    info->dark_mode_theme_color =
+        color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/true);
+    info->background_color = info->theme_color;
+    info->dark_mode_background_color = info->dark_mode_theme_color;
+  } else {
+    info->theme_color = 0xff202124;
+    info->background_color = 0xff3c4043;
+  }
+
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 

@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
@@ -45,6 +46,7 @@
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/gfx/color_palette.h"
 
 using platform_util::OpenOperationResult;
 using web_app::SystemAppType;
@@ -121,6 +123,28 @@ class MediaAppIntegrationAudioDisabledTest : public MediaAppIntegrationTest {
  public:
   MediaAppIntegrationAudioDisabledTest() {
     feature_list_.InitAndDisableFeature(ash::features::kMediaAppHandlesAudio);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class MediaAppIntegrationDarkLightModeEnabledTest
+    : public MediaAppIntegrationTest {
+ public:
+  MediaAppIntegrationDarkLightModeEnabledTest() {
+    feature_list_.InitAndEnableFeature(chromeos::features::kDarkLightMode);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class MediaAppIntegrationDarkLightModeDisabledTest
+    : public MediaAppIntegrationTest {
+ public:
+  MediaAppIntegrationDarkLightModeDisabledTest() {
+    feature_list_.InitAndDisableFeature(chromeos::features::kDarkLightMode);
   }
 
  private:
@@ -901,6 +925,35 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromFileManager", 1);
 }
 
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeEnabledTest,
+                       HasCorrectThemeAndBackgroundColor) {
+  WaitForTestSystemAppInstall();
+  web_app::AppId app_id =
+      *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::MEDIA);
+
+  web_app::WebAppRegistrar& registrar =
+      web_app::WebAppProvider::GetForTest(profile())->registrar();
+
+  EXPECT_EQ(registrar.GetAppThemeColor(app_id), SK_ColorWHITE);
+  EXPECT_EQ(registrar.GetAppBackgroundColor(app_id), SK_ColorWHITE);
+  EXPECT_EQ(registrar.GetAppDarkModeThemeColor(app_id), gfx::kGoogleGrey900);
+  EXPECT_EQ(registrar.GetAppDarkModeBackgroundColor(app_id),
+            gfx::kGoogleGrey900);
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeDisabledTest,
+                       HasCorrectThemeAndBackgroundColor) {
+  WaitForTestSystemAppInstall();
+  web_app::AppId app_id =
+      *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::MEDIA);
+
+  web_app::WebAppRegistrar& registrar =
+      web_app::WebAppProvider::GetForTest(profile())->registrar();
+
+  EXPECT_EQ(registrar.GetAppThemeColor(app_id), gfx::kGoogleGrey900);
+  EXPECT_EQ(registrar.GetAppBackgroundColor(app_id), gfx::kGoogleGrey800);
+}
+
 // Ensures both the "audio" and "gallery" flavours of the MediaApp can be
 // launched at the same time when launched via the files app.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
@@ -1203,6 +1256,12 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationAudioDisabledTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    MediaAppIntegrationDarkLightModeEnabledTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    MediaAppIntegrationDarkLightModeDisabledTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationTest);
