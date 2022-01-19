@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   Browser* new_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(new_browser);
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlIncognitoShortcut) {
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      incognito->profile(), {}));
+      {incognito->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   Browser* new_browser = FindOneOtherBrowser(incognito);
   ASSERT_TRUE(new_browser);
@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   if (IsExpectedToAllowLaunch()) {
     // No pref was set, so the app should have opened in a tab in the existing
@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   if (IsExpectedToAllowLaunch()) {
     // Pref was set to open in a window, so the app should have opened in a
@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   if (IsExpectedToAllowLaunch()) {
     // When an app shortcut is open and the pref indicates a tab should open,
@@ -883,7 +883,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
   tab_waiter.Wait();
 
   // Policy force-installed app should be allowed regardless of Chrome App
@@ -940,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ValidNotificationLaunchId) {
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   // The launch delegates to the notification system and doesn't open any new
   // browser window.
@@ -954,7 +954,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, InvalidNotificationLaunchId) {
   StartupBrowserCreator browser_creator;
   ASSERT_FALSE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   // No new browser window is open.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -990,7 +990,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   StartupBrowserCreator browser_creator;
   browser_creator.Start(command_line, profile_manager->user_data_dir(),
-                        default_profile, last_opened_profiles);
+                        {default_profile, StartupProfileMode::kBrowserWindow},
+                        last_opened_profiles);
 
   // |browser()| is still around at this point, even though we've closed its
   // window. Thus the browser count for default_profile is 1.
@@ -1074,7 +1075,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsForTwoProfiles) {
   last_opened_profiles.push_back(default_profile);
   last_opened_profiles.push_back(other_profile);
   browser_creator.Start(dummy, profile_manager->user_data_dir(),
-                        default_profile, last_opened_profiles);
+                        {default_profile, StartupProfileMode::kBrowserWindow},
+                        last_opened_profiles);
 
   // urls1 were opened in a browser for default_profile, and urls2 were opened
   // in a browser for other_profile.
@@ -1211,7 +1213,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, UpdateWithTwoProfiles) {
 
   base::RunLoop run_loop;
   SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
-  browser_creator.Start(dummy, profile_manager->user_data_dir(), profile1,
+  browser_creator.Start(dummy, profile_manager->user_data_dir(),
+                        {profile1, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
   run_loop.Run();
 
@@ -1313,7 +1316,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   base::RunLoop run_loop;
   // Only profile_last should get its session restored.
   SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
-  browser_creator.Start(dummy, profile_manager->user_data_dir(), profile_home1,
+  browser_creator.Start(dummy, profile_manager->user_data_dir(),
+                        {profile_home1, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
   run_loop.Run();
 
@@ -1430,7 +1434,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   StartupBrowserCreator browser_creator;
   std::vector<Profile*> last_opened_profiles = {profile1, profile2};
   browser_creator.Start(dummy, profile_manager->user_data_dir(),
-                        default_profile, last_opened_profiles);
+                        {default_profile, StartupProfileMode::kBrowserWindow},
+                        last_opened_profiles);
 
   // TODO(davidbienvenu): Waiting for some sort of browser is started
   // notification would be better. But, we're not opening any browser
@@ -1445,8 +1450,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   base::RunLoop run_loop;
   SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
 
-  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(empty, {},
-                                                          dest_path1);
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      empty, {}, {dest_path1, StartupProfileMode::kBrowserWindow});
   run_loop.Run();
 
   // profile1 and profile2 browser windows should be opened.
@@ -1528,7 +1533,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   last_opened_profiles.push_back(profile_home);
   last_opened_profiles.push_back(profile_last);
   last_opened_profiles.push_back(profile_urls);
-  browser_creator.Start(dummy, profile_manager->user_data_dir(), profile_home,
+  browser_creator.Start(dummy, profile_manager->user_data_dir(),
+                        {profile_home, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
 
   // No profiles are getting restored, since they all display the crash info
@@ -1619,7 +1625,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   entry2->LockForceSigninProfile(false);
 
   browser_creator.Start(command_line, profile_manager->user_data_dir(),
-                        profile1, last_opened_profiles);
+                        {profile1, StartupProfileMode::kBrowserWindow},
+                        last_opened_profiles);
 
   ASSERT_EQ(0u, chrome::GetBrowserCount(profile1));
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile2));
@@ -1729,7 +1736,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForAllProfiles) {
   command_line.AppendSwitchPath(switches::kListApps, output_path);
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   CloseBrowserSynchronously(app_browser1);
   CloseBrowserSynchronously(app_browser2);
@@ -1830,7 +1837,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForGivenProfile) {
   command_line.AppendSwitchASCII(switches::kProfileBaseName, "New Profile 1");
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   CloseBrowserSynchronously(app_browser1);
   CloseBrowserSynchronously(app_browser2);
@@ -2751,9 +2758,10 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
 
     std::vector<Profile*> last_opened_profiles;
     StartupBrowserCreator browser_creator;
-    browser_creator.Start(command_line,
-                          g_browser_process->profile_manager()->user_data_dir(),
-                          browser()->profile(), last_opened_profiles);
+    browser_creator.Start(
+        command_line, g_browser_process->profile_manager()->user_data_dir(),
+        {browser()->profile(), StartupProfileMode::kBrowserWindow},
+        last_opened_profiles);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -4135,7 +4143,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
                             /*ignore_profile_picker=*/false);
   EXPECT_EQ(startup_profile_path_info.mode, StartupProfileMode::kProfilePicker);
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
-      command_line, current_dir, startup_profile_path_info.path);
+      command_line, current_dir, startup_profile_path_info);
   base::RunLoop().RunUntilIdle();
 
   // The picker is shown again if no profile was previously opened.

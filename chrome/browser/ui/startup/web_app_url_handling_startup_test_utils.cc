@@ -59,9 +59,10 @@ void StartupBrowserWebAppUrlHandlingTest::Start(
     const base::CommandLine& command_line) {
   std::vector<Profile*> last_opened_profiles;
   StartupBrowserCreator browser_creator;
-  browser_creator.Start(command_line,
-                        g_browser_process->profile_manager()->user_data_dir(),
-                        browser()->profile(), last_opened_profiles);
+  browser_creator.Start(
+      command_line, g_browser_process->profile_manager()->user_data_dir(),
+      {browser()->profile(), StartupProfileMode::kBrowserWindow},
+      last_opened_profiles);
 }
 
 void StartupBrowserWebAppUrlHandlingTest::SetUpCommandlineAndStart(

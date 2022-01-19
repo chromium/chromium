@@ -466,7 +466,7 @@ void ProcessSingletonNotificationCallbackImpl(
   DCHECK_NE(startup_profile_path_info.mode, StartupProfileMode::kError);
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
-      command_line, current_directory, startup_profile_path_info.path);
+      command_line, current_directory, startup_profile_path_info);
 
   // Record now as the last successful chrome start.
   if (ShouldRecordActiveUse(command_line))
@@ -1759,8 +1759,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // See the comment above for an explanation of |process_command_line|.
   const bool started =
       !process_command_line ||
-      browser_creator_->Start(parsed_command_line(), base::FilePath(), profile_,
-                              last_opened_profiles);
+      browser_creator_->Start(parsed_command_line(), base::FilePath(),
+                              profile_info, last_opened_profiles);
   if (started) {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, AppIdSwitch) {
 
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      browser()->profile(), {}));
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   tab_waiter.Wait();
 

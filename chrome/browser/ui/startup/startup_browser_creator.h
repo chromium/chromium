@@ -97,7 +97,7 @@ class StartupBrowserCreator {
   // called during actual process startup.
   bool Start(const base::CommandLine& cmd_line,
              const base::FilePath& cur_dir,
-             Profile* last_used_profile,
+             StartupProfileInfo profile_info,
              const Profiles& last_opened_profiles);
 
   // This function performs command-line handling and is invoked only after
@@ -105,12 +105,12 @@ class StartupBrowserCreator {
   // |command_line| holds the command line we need to process.
   // |cur_dir| is the current working directory that the original process was
   // invoked from.
-  // |startup_profile_dir| is the directory that contains the profile that the
-  // command line arguments will be executed under.
+  // |profile_path_info| contains the directory that contains the profile that
+  // the command line arguments will be executed under.
   static void ProcessCommandLineAlreadyRunning(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
-      const base::FilePath& startup_profile_dir);
+      const StartupProfilePathInfo& profile_path_info);
 
   // Opens the set of startup pages from the current session startup prefs.
   static void OpenStartupPages(
@@ -135,14 +135,14 @@ class StartupBrowserCreator {
                      chrome::startup::IsFirstRun is_first_run,
                      std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
-  // Launch browser for `last_opened_profiles` if it's not empty. Otherwise,
-  // launch browser for `last_used_profile`.
+  // Launches browser for `last_opened_profiles` if it's not empty. Otherwise,
+  // launches browser for `profile_info`.
   void LaunchBrowserForLastProfiles(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
       chrome::startup::IsFirstRun is_first_run,
-      Profile* last_used_profile,
+      StartupProfileInfo profile_info,
       const Profiles& last_opened_profiles);
 
   // If Incognito or Guest mode are requested by policy or command line returns
@@ -227,10 +227,10 @@ class StartupBrowserCreator {
   bool ProcessCmdLineImpl(const base::CommandLine& command_line,
                           const base::FilePath& cur_dir,
                           chrome::startup::IsProcessStartup process_startup,
-                          Profile* last_used_profile,
+                          StartupProfileInfo profile_info,
                           const Profiles& last_opened_profiles);
 
-  // Launch the |last_used_profile| with the full command line, and the other
+  // Launches the |last_used_profile| with the full command line, and the other
   // |last_opened_profiles| without the URLs to launch.
   void ProcessLastOpenedProfiles(
       const base::CommandLine& command_line,
@@ -254,6 +254,7 @@ class StartupBrowserCreator {
   static void ProcessCommandLineOnProfileCreated(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
+      StartupProfileMode mode,
       Profile* profile,
       Profile::CreateStatus status);
 

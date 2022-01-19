@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, MAYBE_Success) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   EXPECT_TRUE(
       g_browser_process->background_mode_manager()->IsBackgroundModeActive());
@@ -201,8 +201,9 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, UnsupportedByNativeHost) {
                                  ScopedTestNativeMessagingHost::kHostName);
   command_line.AppendSwitch(switches::kNoStartupWindow);
 
-  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(command_line, {},
-                                                          profile()->GetPath());
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      command_line, {},
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   if (!catcher.GetNextResult()) {
     FAIL() << catcher.message();
@@ -271,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Error) {
       base::Seconds(2));
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -293,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, InvalidConnectId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("\"connect id!\""), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -315,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, TooLongConnectId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine(std::string(21, 'a')), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -337,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, InvalidExtensionId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id", "abcd"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 

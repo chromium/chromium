@@ -79,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   last_opened_profiles.push_back(profile_2);
   last_opened_profiles.push_back(profile_3);
   last_opened_profiles.push_back(profile_4);
-  browser_creator.Start(dummy, profile_manager->user_data_dir(), profile_2,
+  browser_creator.Start(dummy, profile_manager->user_data_dir(),
+                        {profile_2, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
 
   while (!browser_creator.ActivatedProfile())

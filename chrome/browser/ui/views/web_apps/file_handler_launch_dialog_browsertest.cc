@@ -63,8 +63,9 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
     command_line.AppendSwitchASCII(switches::kAppId, app_id_);
     command_line.AppendArgPath(path);
 
-    browser_creator.Start(command_line, profile_manager->user_data_dir(),
-                          browser()->profile(), {});
+    browser_creator.Start(
+        command_line, profile_manager->user_data_dir(),
+        {browser()->profile(), StartupProfileMode::kBrowserWindow}, {});
   }
 
   void InstallTestWebApp() {
