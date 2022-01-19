@@ -1699,8 +1699,8 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   if (!desks_templates_grid_widget_) {
     desks_templates_grid_widget_ =
         DesksTemplatesGridView::CreateDesksTemplatesGridWidget(root_window_);
-    desks_templates_grid_view_ = desks_templates_grid_widget_->SetContentsView(
-        std::make_unique<DesksTemplatesGridView>());
+    desks_templates_grid_view_ = static_cast<DesksTemplatesGridView*>(
+        desks_templates_grid_widget_->GetContentsView());
   }
 
   for (auto& overview_mode_item : window_list_)
