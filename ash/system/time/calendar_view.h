@@ -97,10 +97,10 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // The header of each month view which shows the month's name. If the year of
   // this month is not the same as the current month, the year is also shown in
   // this view.
-  class MonthYearHeaderView;
+  class MonthHeaderLabelView;
 
-  // The types to create the `MonthYearHeaderView` which are in corresponding to
-  // the 3 months: `previous_month_`, `current_month_` and `next_month_`.
+  // The types to create the `MonthHeaderLabelView` which are in corresponding
+  // to the 3 months: `previous_month_`, `current_month_` and `next_month_`.
   enum LabelType { PREVIOUS, CURRENT, NEXT };
 
   friend class CalendarViewTest;

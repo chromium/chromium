@@ -118,10 +118,10 @@ class MonthHeaderView : public views::View {
 }  // namespace
 
 // The label for each month.
-class CalendarView::MonthYearHeaderView : public views::View {
+class CalendarView::MonthHeaderLabelView : public views::View {
  public:
-  MonthYearHeaderView(LabelType type,
-                      CalendarViewController* calendar_view_controller)
+  MonthHeaderLabelView(LabelType type,
+                       CalendarViewController* calendar_view_controller)
       : month_label_(AddChildView(std::make_unique<views::Label>())) {
     // The layer is required in animation.
     SetPaintToLayer();
@@ -148,28 +148,16 @@ class CalendarView::MonthYearHeaderView : public views::View {
     month_label_->SetBorder(views::CreateEmptyBorder(
         kLabelVerticalPadding, calendar_utils::kDateHorizontalPadding,
         kLabelVerticalPadding, 0));
-
-    if (calendar_utils::GetExplodedLocal(date_).year !=
-        calendar_utils::GetExplodedLocal(base::Time::Now()).year) {
-      year_label_ = AddChildView(std::make_unique<views::Label>());
-      year_label_->SetText(base::UTF8ToUTF16(
-          base::NumberToString(calendar_utils::GetExplodedLocal(date_).year)));
-      SetupLabel(year_label_);
-      year_label_->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets(kLabelVerticalPadding, kLabelTextInBetweenPadding)));
-    }
   }
-  MonthYearHeaderView(const MonthYearHeaderView&) = delete;
-  MonthYearHeaderView& operator=(const MonthYearHeaderView&) = delete;
-  ~MonthYearHeaderView() override = default;
+  MonthHeaderLabelView(const MonthHeaderLabelView&) = delete;
+  MonthHeaderLabelView& operator=(const MonthHeaderLabelView&) = delete;
+  ~MonthHeaderLabelView() override = default;
 
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
 
     month_label_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
-    if (year_label_)
-      year_label_->SetEnabledColor(calendar_utils::GetSecondaryTextColor());
   }
 
   void SetupLabel(views::Label* label) {
@@ -187,9 +175,6 @@ class CalendarView::MonthYearHeaderView : public views::View {
 
   // The month label in the view.
   views::Label* const month_label_ = nullptr;
-
-  // The year label in the view.
-  views::Label* year_label_ = nullptr;
 };
 
 CalendarHeaderView::CalendarHeaderView(const std::u16string& month,
@@ -265,10 +250,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   // Add the header.
   header_ = new CalendarHeaderView(
       calendar_view_controller_->GetOnScreenMonthName(),
-      base::UTF8ToUTF16(base::NumberToString(
-          calendar_utils::GetExplodedLocal(
-              calendar_view_controller_->GetOnScreenMonthFirstDayLocal())
-              .year)));
+      base::TimeFormatWithPattern(calendar_view_controller_->current_date(),
+                                  "YYYY"));
 
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
   tri_view->SetBorder(views::CreateEmptyBorder(kLabelVerticalPadding,
@@ -451,11 +434,10 @@ void CalendarView::ResetToToday() {
 }
 
 void CalendarView::UpdateHeaders() {
-  header_->UpdateHeaders(calendar_view_controller_->GetOnScreenMonthName(),
-                         base::UTF8ToUTF16(base::NumberToString(
-                             calendar_utils::GetExplodedLocal(
-                                 calendar_view_controller_->current_date())
-                                 .year)));
+  header_->UpdateHeaders(
+      calendar_view_controller_->GetOnScreenMonthName(),
+      base::TimeFormatWithPattern(calendar_view_controller_->current_date(),
+                                  "YYYY"));
 }
 
 void CalendarView::RestoreHeadersStatus() {
@@ -606,7 +588,7 @@ void CalendarView::OnViewFocused(View* observed_view) {
 }
 
 views::View* CalendarView::AddLabelWithId(LabelType type, bool add_at_front) {
-  auto label = std::make_unique<MonthYearHeaderView>(
+  auto label = std::make_unique<MonthHeaderLabelView>(
       type, calendar_view_controller_.get());
   if (add_at_front)
     return content_view_->AddChildViewAt(std::move(label), 0);

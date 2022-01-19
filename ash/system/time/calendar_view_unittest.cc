@@ -221,7 +221,7 @@ TEST_F(CalendarViewTest, InitDec) {
 
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
-  EXPECT_EQ(u"January2022", GetNextLabelText());
+  EXPECT_EQ(u"January", GetNextLabelText());
   EXPECT_EQ(u"December", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 
@@ -269,7 +269,7 @@ TEST_F(CalendarViewTest, Scroll) {
 
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
-  EXPECT_EQ(u"January2022", GetNextLabelText());
+  EXPECT_EQ(u"January", GetNextLabelText());
   EXPECT_EQ(u"December", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 
@@ -277,8 +277,8 @@ TEST_F(CalendarViewTest, Scroll) {
                                   NextMonthPosition());
 
   EXPECT_EQ(u"December", GetPreviousLabelText());
-  EXPECT_EQ(u"January2022", GetCurrentLabelText());
-  EXPECT_EQ(u"February2022", GetNextLabelText());
+  EXPECT_EQ(u"January", GetCurrentLabelText());
+  EXPECT_EQ(u"February", GetNextLabelText());
   EXPECT_EQ(u"January", month_header()->GetText());
   EXPECT_EQ(u"2022", header_year()->GetText());
 }
@@ -314,15 +314,15 @@ TEST_F(CalendarViewTest, ButtonFunctions) {
 
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
-  EXPECT_EQ(u"January2022", GetNextLabelText());
+  EXPECT_EQ(u"January", GetNextLabelText());
   EXPECT_EQ(u"December", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 
   ScrollDownOneMonth();
 
   EXPECT_EQ(u"December", GetPreviousLabelText());
-  EXPECT_EQ(u"January2022", GetCurrentLabelText());
-  EXPECT_EQ(u"February2022", GetNextLabelText());
+  EXPECT_EQ(u"January", GetCurrentLabelText());
+  EXPECT_EQ(u"February", GetNextLabelText());
   EXPECT_EQ(u"January", month_header()->GetText());
   EXPECT_EQ(u"2022", header_year()->GetText());
 
@@ -330,15 +330,15 @@ TEST_F(CalendarViewTest, ButtonFunctions) {
 
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
-  EXPECT_EQ(u"January2022", GetNextLabelText());
+  EXPECT_EQ(u"January", GetNextLabelText());
   EXPECT_EQ(u"December", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 
   ScrollDownOneMonth();
 
   EXPECT_EQ(u"December", GetPreviousLabelText());
-  EXPECT_EQ(u"January2022", GetCurrentLabelText());
-  EXPECT_EQ(u"February2022", GetNextLabelText());
+  EXPECT_EQ(u"January", GetCurrentLabelText());
+  EXPECT_EQ(u"February", GetNextLabelText());
   EXPECT_EQ(u"January", month_header()->GetText());
   EXPECT_EQ(u"2022", header_year()->GetText());
 
