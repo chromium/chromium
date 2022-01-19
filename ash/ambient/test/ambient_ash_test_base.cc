@@ -196,6 +196,11 @@ void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
   }
 }
 
+void AmbientAshTestBase::SetAmbientAnimationTheme(AmbientAnimationTheme theme) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      ambient::prefs::kAmbientAnimationTheme, static_cast<int>(theme));
+}
+
 void AmbientAshTestBase::ShowAmbientScreen() {
   // The widget will be destroyed in |AshTestBase::TearDown()|.
   ambient_controller()->ShowUi();

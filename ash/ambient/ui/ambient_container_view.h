@@ -10,9 +10,8 @@
 
 namespace ash {
 
-class AmbientAssistantContainerView;
+class AmbientAnimationStaticResources;
 class AmbientViewDelegate;
-class PhotoView;
 
 // Container view to display all Ambient Mode related views, i.e. photo frame,
 // weather info.
@@ -20,19 +19,16 @@ class ASH_EXPORT AmbientContainerView : public views::View {
  public:
   METADATA_HEADER(AmbientContainerView);
 
-  explicit AmbientContainerView(AmbientViewDelegate* delegate);
+  // |animation_static_resources| contains the Lottie animation file to render
+  // along with its accompanying static image assets. If null, that means the
+  // slideshow UI should be rendered instead.
+  AmbientContainerView(AmbientViewDelegate* delegate,
+                       std::unique_ptr<AmbientAnimationStaticResources>
+                           animation_static_resources);
   ~AmbientContainerView() override;
 
  private:
   friend class AmbientAshTestBase;
-
-  void Init();
-
-  AmbientViewDelegate* delegate_ = nullptr;
-
-  // Owned by view hierarchy.
-  PhotoView* photo_view_ = nullptr;
-  AmbientAssistantContainerView* ambient_assistant_container_view_ = nullptr;
 };
 
 }  // namespace ash

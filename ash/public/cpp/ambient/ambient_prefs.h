@@ -11,6 +11,10 @@ namespace ash {
 namespace ambient {
 namespace prefs {
 
+// Integer pref corresponding to the ambient mode theme that the user has
+// selected (see AmbientAnimationTheme enum).
+ASH_PUBLIC_EXPORT extern const char kAmbientAnimationTheme[];
+
 // A GUID for backdrop client.
 ASH_PUBLIC_EXPORT extern const char kAmbientBackdropClientId[];
 

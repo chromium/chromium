@@ -11,7 +11,9 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/ambient/test/ambient_test_util.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
@@ -38,6 +40,12 @@
 
 namespace ash {
 
+using ::testing::AnyOf;
+using ::testing::Contains;
+using ::testing::Eq;
+using ::testing::Not;
+using ::testing::SizeIs;
+
 namespace {
 class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
  public:
@@ -48,6 +56,11 @@ class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
   MOCK_METHOD(void, OnImageAdded, (), (override));
   MOCK_METHOD(void, OnImagesReady, (), (override));
 };
+
+MATCHER_P(BackedBySameImageAs, photo_with_details, "") {
+  return !arg.photo.isNull() && !photo_with_details.photo.isNull() &&
+         arg.photo.BackedBySameObjectAs(photo_with_details.photo);
+}
 
 }  // namespace
 
@@ -142,6 +155,17 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
                 quit_closure.Run();
             }));
     loop.Run();
+  }
+};
+
+class AmbientPhotoControllerAnimationTest : public AmbientPhotoControllerTest {
+ protected:
+  static constexpr int kNumDynamicAssets = 4;
+
+  void SetUp() override {
+    AmbientAshTestBase::SetUp();
+    photo_controller()->ambient_backend_model()->SetPhotoConfig(
+        GenerateAnimationConfigWithNAssets(kNumDynamicAssets));
   }
 };
 
@@ -602,6 +626,117 @@ TEST_F(AmbientPhotoControllerTest, ShouldStartToRefreshWeather) {
   FastForwardToRefreshWeather();
   EXPECT_FALSE(model->show_celsius());
   EXPECT_LT(info.temp_f, 0);
+}
+
+TEST_F(AmbientPhotoControllerTest, IsScreenUpdateActive) {
+  ASSERT_FALSE(photo_controller()->IsScreenUpdateActive());
+  photo_controller()->StartScreenUpdate();
+  EXPECT_TRUE(photo_controller()->IsScreenUpdateActive());
+  photo_controller()->StopScreenUpdate();
+  EXPECT_FALSE(photo_controller()->IsScreenUpdateActive());
+}
+
+TEST_F(AmbientPhotoControllerAnimationTest, AnimationPreparesInitialTopicSet) {
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+  EXPECT_THAT(photo_controller()->ambient_backend_model()->all_decoded_topics(),
+              SizeIs(kNumDynamicAssets));
+}
+
+TEST_F(AmbientPhotoControllerAnimationTest,
+       AnimationRefreshesTopicSetEachCycle) {
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+  base::circular_deque<PhotoWithDetails> old_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+
+  // Start rendering animation.
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  // Simulate cycle ending. This should trigger an image refresh.
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets);
+  base::circular_deque<PhotoWithDetails> new_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+  EXPECT_THAT(new_photos, SizeIs(kNumDynamicAssets));
+  ASSERT_THAT(old_photos.size(), Eq(new_photos.size()));
+
+  // Verify that the new set actually has different photos from the initial set.
+  EXPECT_THAT(new_photos,
+              Not(AnyOf(Contains(BackedBySameImageAs(old_photos[0])),
+                        Contains(BackedBySameImageAs(old_photos[1])),
+                        Contains(BackedBySameImageAs(old_photos[2])),
+                        Contains(BackedBySameImageAs(old_photos[3])))));
+  old_photos = new_photos;
+
+  // One more cycle.
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets);
+  new_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+  EXPECT_THAT(new_photos, SizeIs(kNumDynamicAssets));
+  ASSERT_THAT(old_photos.size(), Eq(new_photos.size()));
+  EXPECT_THAT(new_photos,
+              Not(AnyOf(Contains(BackedBySameImageAs(old_photos[0])),
+                        Contains(BackedBySameImageAs(old_photos[1])),
+                        Contains(BackedBySameImageAs(old_photos[2])),
+                        Contains(BackedBySameImageAs(old_photos[3])))));
+}
+
+TEST_F(AmbientPhotoControllerAnimationTest,
+       StopsRefreshingImagesAfterTargetAmountBuffered) {
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets);
+
+  // Fast forward time to make sure no more images are prepared after
+  // |kNumDynamicAssets| has been added.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  EXPECT_THAT(photo_controller()->ambient_backend_model()->all_decoded_topics(),
+              SizeIs(kNumDynamicAssets));
+}
+
+TEST_F(AmbientPhotoControllerAnimationTest,
+       AnimationRefreshesAfterIncompleteTopicSet) {
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+  base::circular_deque<PhotoWithDetails> old_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets / 2);
+  base::circular_deque<PhotoWithDetails> new_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+  EXPECT_THAT(new_photos, SizeIs(kNumDynamicAssets));
+  ASSERT_THAT(old_photos.size(), Eq(new_photos.size()));
+
+  EXPECT_THAT(new_photos[0], BackedBySameImageAs(old_photos[2]));
+  EXPECT_THAT(new_photos[1], BackedBySameImageAs(old_photos[3]));
+  EXPECT_THAT(old_photos, Not(Contains(BackedBySameImageAs(new_photos[2]))));
+  EXPECT_THAT(old_photos, Not(Contains(BackedBySameImageAs(new_photos[3]))));
+  old_photos = new_photos;
+
+  // Cycle ends when only half of target amount refreshed.
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets);
+  // Fast forward time to make sure no more images are prepared after
+  // |kNumDynamicAssets| has been added.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  new_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+  EXPECT_THAT(new_photos, SizeIs(kNumDynamicAssets));
+  ASSERT_THAT(old_photos.size(), Eq(new_photos.size()));
+  EXPECT_THAT(new_photos,
+              Not(AnyOf(Contains(BackedBySameImageAs(old_photos[0])),
+                        Contains(BackedBySameImageAs(old_photos[1])),
+                        Contains(BackedBySameImageAs(old_photos[2])),
+                        Contains(BackedBySameImageAs(old_photos[3])))));
 }
 
 }  // namespace ash

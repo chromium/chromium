@@ -3,7 +3,7 @@ specific_include_rules = {
     "+chromeos/assistant/internal/ambient/backdrop_client_config.h",
     "+chromeos/assistant/internal/proto/backdrop",
   ],
-  "ambient_controller.cc": [
+  "ambient_controller.*": [
     "+chromeos/assistant/buildflags.h",
   ],
   ".*test.cc": [

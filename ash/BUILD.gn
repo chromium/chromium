@@ -2771,6 +2771,7 @@ test("ash_unittests") {
     "//build:branding_buildflags",
     "//cc:test_support",
     "//chromeos:test_support",
+    "//chromeos/assistant:buildflags",
     "//chromeos/components/feature_usage",
     "//chromeos/components/sensors:sensors",
     "//chromeos/components/sensors:test_support",

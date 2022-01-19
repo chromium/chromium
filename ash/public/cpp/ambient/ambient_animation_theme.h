@@ -23,7 +23,11 @@ enum class ASH_PUBLIC_EXPORT AmbientAnimationTheme {
   // It is currently implemented entirely as a native UI view.
   kSlideshow = 0,
   kFeelTheBreeze = 1,
+  kMaxValue = kFeelTheBreeze,
 };
+
+static constexpr AmbientAnimationTheme kDefaultAmbientAnimationTheme =
+    AmbientAnimationTheme::kSlideshow;
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
                                            AmbientAnimationTheme theme);

@@ -20,6 +20,7 @@ enum AmbientViewID {
   kAmbientMediaStringView,
   kAmbientInfoView,
   kAmbientShieldView,
+  kAmbientAnimationView,
 };
 
 }  // namespace ash

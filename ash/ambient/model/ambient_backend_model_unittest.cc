@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -19,7 +19,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
 #include "base/scoped_observation.h"
-#include "cc/paint/skottie_resource_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -184,15 +183,8 @@ class AmbientBackendModelTestWithAnimationConfig
 
   void SetUp() override {
     AshTestBase::SetUp();
-    cc::SkottieResourceMetadataMap resource_metadata;
-    CHECK(resource_metadata.RegisterAsset(
-        "test-resource-path", "test-resource-name",
-        GenerateTestLottieDynamicAssetId(/*unique_id=*/0)));
-    CHECK(resource_metadata.RegisterAsset(
-        "test-resource-path", "test-resource-name",
-        GenerateTestLottieDynamicAssetId(/*unique_id=*/1)));
     ambient_backend_model_ = std::make_unique<AmbientBackendModel>(
-        CreateAmbientAnimationPhotoConfig(resource_metadata));
+        GenerateAnimationConfigWithNAssets(kNumAssetsInAnimation));
   }
 };
 
@@ -499,6 +491,31 @@ TEST_F(AmbientBackendModelTest, ShouldNotPairTwoLandscapeImagesInGeoCategory) {
   EXPECT_EQ(fetched_topics()[1 - index].topic_type, ::ambient::TopicType::kGeo);
   EXPECT_EQ(fetched_topics()[1 - index].related_image_url, "");
   EXPECT_EQ(fetched_topics()[1 - index].related_details, "");
+}
+
+TEST_F(AmbientBackendModelTest, SwitchesBetweenConfigs) {
+  // Initially in slideshow config (requires 2 images to be "ready").
+  AddNTestImages(1);
+  AddNTestImages(1);
+  ASSERT_TRUE(ambient_backend_model_->ImagesReady());
+
+  // Switch to animation config that requires 4 photos to be "ready" instead of
+  // 2.
+  ambient_backend_model_->SetPhotoConfig(GenerateAnimationConfigWithNAssets(4));
+  ASSERT_FALSE(ambient_backend_model_->ImagesReady());
+  AddNTestImages(1);
+  AddNTestImages(1);
+  ASSERT_FALSE(ambient_backend_model_->ImagesReady());
+  AddNTestImages(1);
+  AddNTestImages(1);
+  EXPECT_TRUE(ambient_backend_model_->ImagesReady());
+
+  // Switch back to slideshow again.
+  ambient_backend_model_->SetPhotoConfig(CreateAmbientSlideshowPhotoConfig());
+  ASSERT_FALSE(ambient_backend_model_->ImagesReady());
+  AddNTestImages(1);
+  AddNTestImages(1);
+  EXPECT_TRUE(ambient_backend_model_->ImagesReady());
 }
 
 TEST_F(AmbientBackendModelTestWithAnimationConfig, ImagesReady) {

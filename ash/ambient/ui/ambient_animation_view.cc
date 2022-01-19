@@ -12,6 +12,7 @@
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
+#include "ash/ambient/ui/ambient_view_ids.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -32,6 +33,7 @@ AmbientAnimationView::AmbientAnimationView(
     : event_handler_(event_handler),
       static_resources_(std::move(static_resources)),
       animation_photo_provider_(static_resources_.get(), model) {
+  SetID(AmbientViewID::kAmbientAnimationView);
   Init();
 }
 

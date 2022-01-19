@@ -86,6 +86,10 @@ class ASH_EXPORT AmbientBackendModel {
   // Clear local storage.
   void Clear();
 
+  // Sets the new AmbientPhotoConfig to use. This automatically |Clear()|s the
+  // model of any existing topics.
+  void SetPhotoConfig(AmbientPhotoConfig photo_config);
+
   // Returns all available decoded topics. The number of decoded topics in the
   // output will always be <= |AmbientPhotoConfig.num_decoded_topics_to_buffer|.
   //
@@ -139,7 +143,7 @@ class ASH_EXPORT AmbientBackendModel {
   void NotifyImagesReady();
   void NotifyWeatherInfoUpdated();
 
-  const AmbientPhotoConfig photo_config_;
+  AmbientPhotoConfig photo_config_;
   std::vector<AmbientModeTopic> topics_;
 
   // All available decoded topics. The size of the ring buffer is capped

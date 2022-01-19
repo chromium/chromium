@@ -126,6 +126,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver,
   // have different refreshing intervals.
   void StartScreenUpdate();
   void StopScreenUpdate();
+  bool IsScreenUpdateActive() const;
 
   AmbientBackendModel* ambient_backend_model() {
     return &ambient_backend_model_;

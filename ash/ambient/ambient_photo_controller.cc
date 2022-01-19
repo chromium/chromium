@@ -143,7 +143,6 @@ AmbientPhotoController::AmbientPhotoController(
           access_token_controller)),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
-  DCHECK(!ambient_backend_model_.photo_config().refresh_topic_markers.empty());
   ambient_backend_model_observation_.Observe(&ambient_backend_model_);
   ScheduleFetchBackupImages();
 }
@@ -188,6 +187,10 @@ void AmbientPhotoController::StopScreenUpdate() {
   resume_fetch_image_backoff_.Reset();
   ambient_backend_model_.Clear();
   weak_factory_.InvalidateWeakPtrs();
+}
+
+bool AmbientPhotoController::IsScreenUpdateActive() const {
+  return state_ != State::kInactive;
 }
 
 void AmbientPhotoController::OnMarkerHit(AmbientPhotoConfig::Marker marker) {

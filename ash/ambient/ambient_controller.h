@@ -41,6 +41,7 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class AmbientAnimationStaticResources;
 class AmbientBackendController;
 class AmbientContainerView;
 class AmbientPhotoController;
@@ -139,9 +140,10 @@ class ASH_EXPORT AmbientController
  private:
   friend class AmbientAshTestBase;
   friend class AmbientControllerTest;
-  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest,
+  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTestForAnyTheme,
                            BindsObserversWhenAmbientEnabled);
-  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest, BindsObserversWhenAmbientOn);
+  FRIEND_TEST_ALL_PREFIXES(AmbientControllerTestForAnyTheme,
+                           BindsObserversWhenAmbientOn);
 
   // Hide or close Ambient mode UI.
   void DismissUI();
@@ -156,6 +158,7 @@ class ASH_EXPORT AmbientController
 
   void StartRefreshingImages();
   void StopRefreshingImages();
+  AmbientPhotoConfig CreatePhotoConfigForCurrentTheme();
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.
@@ -230,6 +233,14 @@ class ASH_EXPORT AmbientController
   // Set to the off value in |ScreenIdleState| when ScreenIdleState() is
   // called. Used to prevent Ambient mode starting after screen is off.
   bool is_screen_off_ = false;
+
+  // Transient location to hold an animation's static resources while the
+  // model is being buffered with an initial set of topics. Once the animation
+  // is ready to be rendered, this gets transferred to an AmbientAnimationView.
+  //
+  // Null if the slideshow theme is active.
+  std::unique_ptr<AmbientAnimationStaticResources>
+      pending_animation_static_resources_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
 };

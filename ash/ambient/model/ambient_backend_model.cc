@@ -130,9 +130,8 @@ bool PhotoWithDetails::IsNull() const {
 }
 
 // AmbientBackendModel---------------------------------------------------------
-AmbientBackendModel::AmbientBackendModel(AmbientPhotoConfig photo_config)
-    : photo_config_(std::move(photo_config)) {
-  DCHECK_GT(photo_config_.GetNumDecodedTopicsToBuffer(), 0u);
+AmbientBackendModel::AmbientBackendModel(AmbientPhotoConfig photo_config) {
+  SetPhotoConfig(std::move(photo_config));
 }
 
 AmbientBackendModel::~AmbientBackendModel() = default;
@@ -233,6 +232,13 @@ base::TimeDelta AmbientBackendModel::GetPhotoRefreshInterval() const {
     return base::TimeDelta();
 
   return AmbientUiModel::Get()->photo_refresh_interval();
+}
+
+void AmbientBackendModel::SetPhotoConfig(AmbientPhotoConfig photo_config) {
+  photo_config_ = std::move(photo_config);
+  DCHECK_GT(photo_config_.GetNumDecodedTopicsToBuffer(), 0u);
+  DCHECK(!photo_config_.refresh_topic_markers.empty());
+  Clear();
 }
 
 void AmbientBackendModel::Clear() {

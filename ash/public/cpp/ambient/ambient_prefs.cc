@@ -10,6 +10,8 @@ namespace ash {
 namespace ambient {
 namespace prefs {
 
+constexpr char kAmbientAnimationTheme[] = "ash.ambient.animation_theme";
+
 constexpr char kAmbientBackdropClientId[] = "ash.ambient.backdrop.client.id";
 
 constexpr char kAmbientModeEnabled[] = "settings.ambient_mode.enabled";

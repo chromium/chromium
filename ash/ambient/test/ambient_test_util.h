@@ -9,9 +9,15 @@
 
 namespace ash {
 
+struct AmbientPhotoConfig;
+
 // Generates a dynamic asset id (see IsDynamicLottieAsset() in ambient_util.h)
 // that incorporates the |unique_id| in it.
 std::string GenerateTestLottieDynamicAssetId(int unique_id);
+
+// Returns an AmbientPhotoConfig for a lottie animation with the number of
+// assets specified by |num_assets|,
+AmbientPhotoConfig GenerateAnimationConfigWithNAssets(int num_assets);
 
 }  // namespace ash
 
