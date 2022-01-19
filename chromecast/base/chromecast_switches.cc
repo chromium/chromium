@@ -228,6 +228,10 @@ const char kDeferFeatureList[] = "defer-feature-list";
 // running in a different process from `cast_service`.
 const char kUseCastBrowserPrefConfig[] = "use-cast-browser-pref-config";
 
+// Creates the service broker inside of this process. Only one process should
+// host the service broker.
+const char kInProcessBroker[] = "in-process-broker";
+
 }  // namespace switches
 
 namespace chromecast {

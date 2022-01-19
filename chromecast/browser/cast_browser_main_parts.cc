@@ -60,6 +60,7 @@
 #include "chromecast/external_mojo/broker_service/broker_service.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/external_mojo/external_service_support/external_service.h"
+#include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/base/key_systems_common.h"
 #include "chromecast/media/base/video_plane_controller.h"
@@ -559,12 +560,17 @@ int CastBrowserMainParts::PreCreateThreads() {
 }
 
 void CastBrowserMainParts::PostCreateThreads() {
-  auto* service_manager_connector =
-      ServiceManagerConnection::GetForProcess()->GetConnector();
-  broker_service_ =
-      std::make_unique<external_mojo::BrokerService>(service_manager_connector);
-  connector_ = external_service_support::ExternalConnector::Create(
-      broker_service_->CreateConnector());
+  if (GetSwitchValueBoolean(switches::kInProcessBroker, true)) {
+    auto* service_manager_connector =
+        ServiceManagerConnection::GetForProcess()->GetConnector();
+    broker_service_ = std::make_unique<external_mojo::BrokerService>(
+        service_manager_connector);
+    connector_ = external_service_support::ExternalConnector::Create(
+        broker_service_->CreateConnector());
+  } else {
+    connector_ = external_service_support::ExternalConnector::Create(
+        external_mojo::GetBrokerPath());
+  }
   media_connector_ = connector_->Clone();
   browser_service_ =
       std::make_unique<external_service_support::ExternalService>();

@@ -234,6 +234,8 @@ cast_source_set("browser_base") {
     "//chromecast/common/media",
     "//chromecast/external_mojo/broker_service",
     "//chromecast/external_mojo/external_service_support:external_service",
+    "//chromecast/external_mojo/external_service_support:util",
+    "//chromecast/external_mojo/public/cpp:common",
     "//chromecast/graphics",
     "//chromecast/media",
     "//chromecast/media:libcast_media",

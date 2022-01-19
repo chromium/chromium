@@ -20,6 +20,7 @@
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/common/identification_settings_manager.h"
 #include "chromecast/common/mojom/identification_settings.mojom.h"
+#include "chromecast/external_mojo/external_service_support/reconnecting_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/origin.h"
 
@@ -69,6 +70,7 @@ class CastWebService : public mojom::CastWebService,
   LRURendererCache* overlay_renderer_cache() {
     return overlay_renderer_cache_.get();
   }
+  ReconnectingRemote<mojom::CastWebService>* proxy() { return &proxy_; }
 
   bool IsCastWebUIOrigin(const url::Origin& origin);
 
@@ -118,6 +120,12 @@ class CastWebService : public mojom::CastWebService,
   content::BrowserContext* const browser_context_;
   // This is used on Aura platforms.
   CastWindowManager* const window_manager_;
+
+  // This is injected into clients which live in the browser or in a remote
+  // process. This is temporary until the clients exclusively live in an
+  // external process.
+  ReconnectingRemote<mojom::CastWebService> proxy_{this};
+
   CastWebViewFactory default_web_view_factory_;
 
   CastWebViewFactory* override_web_view_factory_ = nullptr;

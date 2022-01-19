@@ -56,6 +56,8 @@ class ExternalConnectorImpl : public ExternalConnector {
                      mojo::ScopedMessagePipeHandle interface_pipe,
                      bool async = true) override;
   std::unique_ptr<ExternalConnector> Clone() override;
+  mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+  RequestConnector() override;
   void SendChromiumConnectorRequest(
       mojo::ScopedMessagePipeHandle request) override;
   void QueryServiceList(

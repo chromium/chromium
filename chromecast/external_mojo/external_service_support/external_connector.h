@@ -103,6 +103,11 @@ class ExternalConnector {
   // sequence.
   virtual std::unique_ptr<ExternalConnector> Clone() = 0;
 
+  // Requests a PendingRemote for an ExternalConnector which can be passed to a
+  // different process.
+  virtual mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+  RequestConnector() = 0;
+
   // Sends a request for a Chromium ServiceManager connector.
   virtual void SendChromiumConnectorRequest(
       mojo::ScopedMessagePipeHandle request) = 0;

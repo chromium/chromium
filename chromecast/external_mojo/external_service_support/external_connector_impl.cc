@@ -267,9 +267,16 @@ std::unique_ptr<ExternalConnector> ExternalConnectorImpl::Clone() {
   }
   // Bind to the current sequence since this is a public method.
   BindConnectorIfNecessary();
+  return std::make_unique<ExternalConnectorImpl>(RequestConnector());
+}
+
+mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+ExternalConnectorImpl::RequestConnector() {
+  // Bind to the current sequence since this is a public method.
+  BindConnectorIfNecessary();
   mojo::PendingRemote<external_mojo::mojom::ExternalConnector> remote;
   connector_->Clone(remote.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<ExternalConnectorImpl>(std::move(remote));
+  return remote;
 }
 
 void ExternalConnectorImpl::SendChromiumConnectorRequest(

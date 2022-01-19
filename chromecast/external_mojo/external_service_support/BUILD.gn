@@ -123,7 +123,9 @@ source_set("standalone_service_main") {
     ":process_setup",
     ":tracing_client",
     "//base",
+    "//chromecast/base:chromecast_switches",
     "//chromecast/external_mojo/public/cpp:common",
+    "//chromecast/external_mojo/public/cpp:external_mojo_broker",
     "//mojo/core/embedder",
   ]
   public_deps = [ ":service_process" ]
@@ -141,6 +143,15 @@ source_set("chromium_service") {
     "//mojo/public/cpp/bindings",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
+  ]
+}
+
+source_set("util") {
+  public = [ "reconnecting_remote.h" ]
+  public_deps = [
+    ":external_service",
+    "//base",
+    "//mojo/public/cpp/bindings",
   ]
 }
 
