@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -379,14 +380,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 }
 
 // Validate that OOPIFs receive presentation feedbacks.
-// TODO(crbug.com/1270981): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_PresentationFeedback DISABLED_PresentationFeedback
-#else
-#define MAYBE_PresentationFeedback PresentationFeedback
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       MAYBE_PresentationFeedback) {
+                       PresentationFeedback) {
   base::HistogramTester histogram_tester;
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -399,21 +394,26 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
-  auto* child_rwh_impl =
-      root->child_at(0)->current_frame_host()->GetRenderWidgetHost();
-  // Hide the frame and make it visible again, to force it to record the
-  // tab-switch time, which is generated from presentation-feedback.
-  child_rwh_impl->WasHidden();
-  child_rwh_impl->WasShown(blink::mojom::RecordContentToVisibleTimeRequest::New(
-      base::TimeTicks::Now(),
-      /* destination_is_loaded */ true,
-      /* show_reason_tab_switching */ true,
-      /* show_reason_unoccluded */ false,
-      /* show_reason_bfcache_restore */ false));
-  // Force the child to submit a new frame.
-  ASSERT_TRUE(ExecJs(root->child_at(0)->current_frame_host(),
-                     "document.write('Force a new frame.');"));
+  const auto trigger_subframe_tab_switch = [&root]() -> bool {
+    auto* child_rwh_impl =
+        root->child_at(0)->current_frame_host()->GetRenderWidgetHost();
+    // Hide the frame and make it visible again, to force it to record the
+    // tab-switch time, which is generated from presentation-feedback.
+    child_rwh_impl->WasHidden();
+    child_rwh_impl->WasShown(
+        blink::mojom::RecordContentToVisibleTimeRequest::New(
+            base::TimeTicks::Now(),
+            /* destination_is_loaded */ true,
+            /* show_reason_tab_switching */ true,
+            /* show_reason_unoccluded */ false,
+            /* show_reason_bfcache_restore */ false));
+    // Force the child to submit a new frame.
+    return ExecJs(root->child_at(0)->current_frame_host(),
+                  "document.write('Force a new frame.');");
+  };
+  ASSERT_TRUE(trigger_subframe_tab_switch());
 
+  bool got_incomplete_tab_switch = false;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   do {
     if (base::TimeTicks::Now() - start_time > TestTimeouts::action_timeout()) {
@@ -425,6 +425,40 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     }
     FetchHistogramsFromChildProcesses();
     GiveItSomeTime();
+
+    // Work around a race condition while loading the cross-site iframe.
+    //
+    // The NavigateToURLFromRenderer call above replaces the
+    // LocalFrame/LocalFrameView in renderer process A with a
+    // RemoteFrame/RemoteFrameView proxy for the frame which is now hosted in
+    // renderer process B. During initialization the RemoteFrameView sends a
+    // series of VisibilityChanged messages to the browser process, which cause
+    // CrossProcessFrameConnector to call WasHidden and then WasShown on
+    // `child_rwh_impl`. Depending on the timing these might arrive during the
+    // NavigateToURLFromRenderer call or the ExecJS call above, both of which
+    // pump the message loop. If CrossProcessFrameConnector calls WasHidden
+    // after the WasShown call above, it will cancel the simulated tab switch.
+    // This causes ContentToVisibleTimeReporter to log
+    // TotalIncompleteSwitchDuration, which is not based on
+    // PresentationFeedback, instead of TotalSwitchDuration. See
+    // crbug.com/1288560 for more details.
+    //
+    // The race condition can only cause a single incomplete tab switch, so
+    // only check for this once. If the second simulated tab switch is also
+    // cancelled something else is wrong, so the loop will time out and fail
+    // the test.
+    //
+    // TODO(crbug.com/1288560): Remove this once the race condition is
+    // fixed.
+    if (!got_incomplete_tab_switch &&
+        histogram_tester
+                .GetTotalCountsForPrefix(
+                    "Browser.Tabs.TotalIncompleteSwitchDuration")
+                .size() == 1) {
+      LOG(ERROR) << "Incomplete tab switch - try again.";
+      got_incomplete_tab_switch = true;
+      ASSERT_TRUE(trigger_subframe_tab_switch());
+    }
 
     // Once the tab switch completes the PresentationFeedback should cause a
     // single TotalSwitchDuration histogram to be logged.
