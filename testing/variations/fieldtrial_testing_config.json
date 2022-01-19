@@ -2772,24 +2772,6 @@
             ]
         }
     ],
-    "ContextualSearchMaintenanceMode": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Launch-candidate_20211129",
-                    "enable_features": [
-                        "ContextualSearchLongpressResolve"
-                    ],
-                    "disable_features": [
-                        "ContextualSearchLiteralSearchTap"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContinuousSearchNavigation": [
         {
             "platforms": [
