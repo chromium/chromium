@@ -47,11 +47,15 @@ class TestOutputs(object):
 
   def GetDevicePath(self, path):
     """Returns an absolute device-local variant of a path."""
-    return ''
+    raise NotImplementedError()
 
   def GetFile(self, glob, destination):
     """Places all files/directories matched by a glob into a destination."""
-    pass
+    raise NotImplementedError()
+
+  def GetCoverageProfiles(self, destination):
+    """Places all coverage files from the target into a destination."""
+    raise NotImplementedError()
 
 
 class TargetTestOutputs(TestOutputs):
@@ -77,10 +81,11 @@ class TargetTestOutputs(TestOutputs):
                          for_package=self._package_name,
                          for_realms=self._test_realms)
 
-  def GetFileGlobal(self, glob, destination):
-    """Places all files/directories located in the global filesystem matched by
-    a glob into a destination."""
-    self._target.GetFile(self.GetDevicePath(glob), destination, None, None)
+  def GetCoverageProfiles(self, destination):
+    # Copy all the files in the profile directory. /* is used instead of
+    # recursively copying due to permission issues for the latter.
+    self._target.GetFile(self.GetDevicePath(TEST_LLVM_PROFILE_DIR + '/*'),
+                         destination, None, None)
 
 
 class CustomArtifactsTestOutputs(TestOutputs):
@@ -117,6 +122,14 @@ class CustomArtifactsTestOutputs(TestOutputs):
     shutil.copy(
         os.path.join(self.GetOutputDirectory(), 'artifact-0', 'custom-0', glob),
         destination)
+
+  def GetCoverageProfiles(self, destination):
+    # Copy all the files in the profile directory.
+    # TODO(https://fxbug.dev/77634): Switch to ffx-based extraction once it is
+    # implemented.
+    self._target.GetFile(
+        '/tmp/test_manager:0/children/debug_data:0/data/' +
+        TEST_LLVM_PROFILE_DIR + '/*', destination)
 
 
 def MakeTestOutputs(component_version, target, package_name, test_realms):
@@ -233,16 +246,15 @@ def main():
 
   if args.component_version == "2":
     args.use_run_test_component = False
-    # TODO(crbug.com/1284141): Add code coverage support for v2 components.
-    assert not args.code_coverage
 
-  if args.code_coverage and not args.use_run_test_component:
+  if (args.code_coverage and args.component_version != "2"
+      and not args.use_run_test_component):
     if args.enable_test_server:
       # TODO(1254563): Tests that need access to the test server cannot be run
       # as test component under CFv1. Because code coverage requires it, force
       # the test to run as a test component. It is expected that test that tries
       # to use the external test server will fail.
-      args.use_run_test_component = False
+      args.use_run_test_component = True
     else:
       raise ValueError('Collecting code coverage info requires using '
                        'run-test-component.')
@@ -358,10 +370,7 @@ def main():
         test_server.Stop()
 
       if args.code_coverage:
-        # Copy all the files in the profile directory. /* is used instead
-        # of recursively copying due to permission issues for the latter.
-        test_outputs.GetFileGlobal(  # pylint: disable=no-member
-            TEST_LLVM_PROFILE_DIR + '/*', args.code_coverage_dir)
+        test_outputs.GetCoverageProfiles(args.code_coverage_dir)
 
       if args.test_launcher_summary_output:
         test_outputs.GetFile(TEST_RESULT_FILE,
