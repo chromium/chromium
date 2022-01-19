@@ -1041,6 +1041,9 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
 
   capture_mode_util::TriggerAccessibilityAlert(
       IDS_ASH_SCREEN_CAPTURE_ALERT_SCREENSHOT_CAPTURED);
+
+  delegate_->OnCaptureImageAttempted(capture_params.window,
+                                     capture_params.bounds);
 }
 
 void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {

@@ -130,6 +130,7 @@ void DlpContentManager::SetIsScreenShareWarningModeEnabledForTesting(
 DlpContentManager::DlpContentManager() = default;
 DlpContentManager::~DlpContentManager() = default;
 
+// static
 void DlpContentManager::ReportWarningProceededEvent(
     const GURL& url,
     DlpRulesManager::Restriction restriction,
@@ -146,6 +147,7 @@ void DlpContentManager::ReportWarningProceededEvent(
   }
 }
 
+// static
 bool DlpContentManager::MaybeReportWarningProceededEvent(
     GURL url,
     DlpRulesManager::Restriction restriction,

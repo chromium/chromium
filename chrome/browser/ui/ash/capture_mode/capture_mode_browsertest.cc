@@ -13,15 +13,22 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_constants.h"
@@ -31,10 +38,16 @@
 
 namespace {
 
+// Defines a report-level restriction type for screen captures.
+const policy::DlpContentRestrictionSet kScreenCaptureReported{
+    policy::DlpContentRestriction::kScreenshot,
+    policy::DlpRulesManager::Level::kReport};
 // Defines a warning-level restriction type for screen captures.
 const policy::DlpContentRestrictionSet kScreenCaptureWarned{
     policy::DlpContentRestriction::kScreenshot,
     policy::DlpRulesManager::Level::kWarn};
+
+constexpr char kSrcPattern[] = "example.com";
 
 // Returns the native window of the given `browser`.
 aura::Window* GetBrowserWindow(Browser* browser) {
@@ -123,11 +136,56 @@ void SendKeyEvent(Browser* browser,
   event_generator.PressAndReleaseKey(key_code, flags);
 }
 
+std::unique_ptr<KeyedService> SetDlpRulesManager(
+    content::BrowserContext* context) {
+  auto dlp_rules_manager =
+      std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+  ON_CALL(*dlp_rules_manager, GetSourceUrlPattern)
+      .WillByDefault(testing::Return(kSrcPattern));
+  return dlp_rules_manager;
+}
+
 }  // namespace
 
 // Testing class to test CrOS capture mode, which is a feature to take
 // screenshots and record video.
-using CaptureModeBrowserTest = InProcessBrowserTest;
+class CaptureModeBrowserTest : public InProcessBrowserTest {
+ public:
+  CaptureModeBrowserTest() = default;
+  ~CaptureModeBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    // Instantiate |DlpContentManagerAshTestHelper| after main thread has been
+    // set up because |DlpReportingManager| needs a sequenced task runner handle
+    // to set up the report queue.
+    helper_ = std::make_unique<policy::DlpContentManagerAshTestHelper>();
+    // TODO(https://crbug.com/1283065): Remove this.
+    // Currently, setting the notifier explicitly is needed since otherwise, due
+    // to a wrongly initialized notifier, calling the virtual
+    // ShowDlpWarningDialog() method causes a crash.
+    helper_->ResetWarnNotifierForTesting();
+  }
+
+  void TearDownOnMainThread() override { helper_.reset(); }
+
+  void SetupDlpReporting() {
+    SetupDlpRulesManager();
+    // Set up mock report queue.
+    SetReportQueueForReportingManager(helper_->GetReportingManager(), events_,
+                                      base::SequencedTaskRunnerHandle::Get());
+  }
+
+ protected:
+  // Sets up mock rules manager.
+  void SetupDlpRulesManager() {
+    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(), base::BindRepeating(&SetDlpRulesManager));
+    ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  }
+
+  std::unique_ptr<policy::DlpContentManagerAshTestHelper> helper_;
+  std::vector<DlpPolicyEvent> events_;
+};
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, ContextMenuStaysOpen) {
   // Right click the desktop to open a context menu.
@@ -144,6 +202,88 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, ContextMenuStaysOpen) {
 
   ash::CaptureModeTestApi().StartForWindow(/*for_video=*/false);
   EXPECT_TRUE(shell_test_api.IsContextMenuShown());
+}
+
+// Checks that video capture emits exactly one DLP reporting event.
+IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReporting) {
+  SetupDlpReporting();
+
+  // Set DLP restriction.
+  auto* dlp_content_observer = policy::DlpContentObserver::Get();
+  ASSERT_TRUE(dlp_content_observer);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  dlp_content_observer->OnConfidentialityChanged(web_contents,
+                                                 kScreenCaptureReported);
+
+  ash::CaptureModeTestApi test_api;
+
+  // Should emit the first reporting event.
+  StartVideoRecording();
+  ASSERT_TRUE(test_api.IsVideoRecordingInProgress());
+  // Set up a waiter to wait for the file to be saved.
+  {
+    base::RunLoop loop;
+    SetupLoopToWaitForCaptureFileToBeSaved(&loop);
+    test_api.StopVideoRecording();
+    loop.Run();
+  }
+  ASSERT_FALSE(test_api.IsVideoRecordingInProgress());
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kReport)));
+
+  // Repeat, should emit the second reporting event.
+  StartVideoRecording();
+  ASSERT_TRUE(test_api.IsVideoRecordingInProgress());
+  {
+    base::RunLoop loop;
+    SetupLoopToWaitForCaptureFileToBeSaved(&loop);
+    test_api.StopVideoRecording();
+    loop.Run();
+  }
+  ASSERT_FALSE(test_api.IsVideoRecordingInProgress());
+
+  ASSERT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kReport)));
+}
+
+// Tests DLP reporting without opening the capture bar.
+IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
+                       DlpReportingDialogOnFullscreenScreenCaptureShortcut) {
+  ASSERT_TRUE(browser());
+  SetupDlpReporting();
+
+  // Set DLP restriction.
+  auto* dlp_content_observer = policy::DlpContentObserver::Get();
+  ASSERT_TRUE(dlp_content_observer);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  dlp_content_observer->OnConfidentialityChanged(web_contents,
+                                                 kScreenCaptureReported);
+
+  // Set up a waiter to wait for the file to be saved.
+  base::RunLoop loop;
+  SetupLoopToWaitForCaptureFileToBeSaved(&loop);
+
+  SendKeyEvent(browser(), ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
+
+  // Wait for the file to be saved.
+  loop.Run();
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kReport)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,

@@ -120,6 +120,9 @@ void TestCaptureModeDelegate::StopObservingRestrictedContent(
   std::move(callback).Run(should_save_after_dlp_check_);
 }
 
+void TestCaptureModeDelegate::OnCaptureImageAttempted(aura::Window const*,
+                                                      gfx::Rect const&) {}
+
 mojo::Remote<recording::mojom::RecordingService>
 TestCaptureModeDelegate::LaunchRecordingService() {
   mojo::Remote<recording::mojom::RecordingService> service_remote;

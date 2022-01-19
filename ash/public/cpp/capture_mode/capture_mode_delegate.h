@@ -111,6 +111,11 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void StopObservingRestrictedContent(
       OnCaptureModeDlpRestrictionChecked callback) = 0;
 
+  // Notifies DLP that taking a screenshot was attempted. Called after checking
+  // DLP restrictions.
+  virtual void OnCaptureImageAttempted(const aura::Window* window,
+                                       const gfx::Rect& bounds) = 0;
+
   // Launches the Recording Service into a separate utility process.
   virtual mojo::Remote<recording::mojom::RecordingService>
   LaunchRecordingService() = 0;

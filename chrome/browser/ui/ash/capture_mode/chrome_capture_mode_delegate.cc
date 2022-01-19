@@ -171,6 +171,13 @@ void ChromeCaptureModeDelegate::StopObservingRestrictedContent(
       std::move(callback));
 }
 
+void ChromeCaptureModeDelegate::OnCaptureImageAttempted(
+    const aura::Window* window,
+    const gfx::Rect& bounds) {
+  policy::DlpContentManagerAsh::Get()->OnImageCapture(
+      ConvertToScreenshotArea(window, bounds));
+}
+
 mojo::Remote<recording::mojom::RecordingService>
 ChromeCaptureModeDelegate::LaunchRecordingService() {
   return content::ServiceProcessHost::Launch<

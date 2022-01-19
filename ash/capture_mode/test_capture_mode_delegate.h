@@ -82,6 +82,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       base::OnceClosure stop_callback) override;
   void StopObservingRestrictedContent(
       OnCaptureModeDlpRestrictionChecked callback) override;
+  void OnCaptureImageAttempted(aura::Window const*, gfx::Rect const&) override;
   mojo::Remote<recording::mojom::RecordingService> LaunchRecordingService()
       override;
   void BindAudioStreamFactory(

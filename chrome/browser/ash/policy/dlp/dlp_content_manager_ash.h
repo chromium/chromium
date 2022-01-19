@@ -101,6 +101,9 @@ class DlpContentManagerAsh : public DlpContentManager,
   void CheckStoppedVideoCapture(
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
+  // Called when screenshot is taken for |area|.
+  void OnImageCapture(const ScreenshotArea& area);
+
   // Checks whether initiation of capture mode is restricted or not advised
   // based on the currently visible content. Depending on the result, calls
   // |callback| and passes an indicator whether to proceed or not.
@@ -219,6 +222,9 @@ class DlpContentManagerAsh : public DlpContentManager,
 
     const ScreenshotArea area;
     DlpConfidentialContents confidential_contents;
+    // For a single video capture there should be sent at most one reporting
+    // event. This flag informs if we already sent an event for the report mode.
+    bool was_reported = false;
   };
 
   DlpContentManagerAsh();
