@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     histograms.ExpectUniqueSample(
         PreinstalledWebAppManager::
             kHistogramAppToReplaceStillDefaultInstalledCount,
-        1, 1);
+        0, 1);
 
     // Neither app has been added to the shelf.
     histograms.ExpectUniqueSample(

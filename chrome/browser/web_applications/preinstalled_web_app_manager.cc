@@ -675,7 +675,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 
         ++app_to_replace_still_installed_count;
 
-        if (!extensions::IsExtensionDefaultInstalled(profile_, replace_id))
+        if (extensions::IsExtensionDefaultInstalled(profile_, replace_id))
           ++app_to_replace_still_default_installed_count;
 
         if (ui_manager_->CanAddAppToQuickLaunchBar()) {
