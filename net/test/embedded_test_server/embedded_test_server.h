@@ -430,7 +430,7 @@ class EmbeddedTestServer {
                     const SSLServerConfig& ssl_config);
   void SetSSLConfig(const ServerCertificateConfig& cert_config);
 
-  // TODO(mattm): make this WARN_UNUSED_RESULT
+  // TODO(mattm): make this [[nodiscard]]
   bool ResetSSLConfig(ServerCertificate cert,
                       const SSLServerConfig& ssl_config);
 
