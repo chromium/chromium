@@ -32065,7 +32065,7 @@ should be able to be added at any place in this file.
 
 <action name="WindowDrag_Maximize">
   <owner>sammiequon@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
   <description>
     Tracks if a window has been snapped to maximized state by dragging the
     window to the top of the screen.
@@ -32074,7 +32074,7 @@ should be able to be added at any place in this file.
 
 <action name="WindowDrag_MaximizeLeft">
   <owner>sammiequon@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
   <description>
     Tracks if a window has been snapped to to the left by dragging the window to
     the left side of the screen.
@@ -32083,10 +32083,28 @@ should be able to be added at any place in this file.
 
 <action name="WindowDrag_MaximizeRight">
   <owner>sammiequon@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
   <description>
     Tracks if a window has been snapped to to the right by dragging the window
     to the right side of the screen.
+  </description>
+</action>
+
+<action name="WindowDrag_Unmaximize">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
+  <description>
+    Tracks if a window has been unmaximized by dragging down on the title bar of
+    a maximized window.
+  </description>
+</action>
+
+<action name="WindowDrag_Unsnap">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
+  <description>
+    Tracks if a window has been unsnapped by dragging down on the title bar of a
+    snapped window.
   </description>
 </action>
 

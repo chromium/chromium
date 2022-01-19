@@ -708,14 +708,19 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
     if (!did_move_or_resize_) {
       if (!details().restore_bounds_in_parent.IsEmpty()) {
         window_state()->ClearRestoreBounds();
-        if (window_state()->IsMaximized() &&
-            details().window_component == HTCAPTION) {
-          // Update the maximized window so that it looks like it has been
-          // restored (i.e. update the caption buttons and height of the browser
-          // frame).
-          window_state()->window()->SetProperty(kFrameRestoreLookKey, true);
-          CrossFadeAnimation(window_state()->window(), bounds,
-                             /*maximize=*/false);
+        if (details().window_component == HTCAPTION) {
+          if (window_state()->IsMaximized()) {
+            // Update the maximized window so that it looks like it has been
+            // restored (i.e. update the caption buttons and height of the
+            // browser frame).
+            window_state()->window()->SetProperty(kFrameRestoreLookKey, true);
+            CrossFadeAnimation(window_state()->window(), bounds,
+                               /*maximize=*/false);
+            base::RecordAction(
+                base::UserMetricsAction("WindowDrag_Unmaximize"));
+          } else if (window_state()->IsSnapped()) {
+            base::RecordAction(base::UserMetricsAction("WindowDrag_Unsnap"));
+          }
         }
       }
       RestackWindows();

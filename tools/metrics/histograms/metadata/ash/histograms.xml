@@ -1011,7 +1011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.AnimationSmoothness.DeskEndGesture" units="%"
-    expires_after="2022-08-03">
+    expires_after="2023-01-10">
   <owner>afakhry@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
@@ -1269,7 +1269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.PresentationTime.UpdateGesture" units="ms"
-    expires_after="2022-03-27">
+    expires_after="2023-01-10">
   <owner>afakhry@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
@@ -1283,7 +1283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.PresentationTime.UpdateGesture.MaxLatency"
-    units="ms" expires_after="2022-08-03">
+    units="ms" expires_after="2023-01-10">
   <owner>afakhry@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
@@ -1662,7 +1662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Homescreen.AnimationSmoothness" units="%"
-    expires_after="2020-08-01">
+    expires_after="2023-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -2316,7 +2316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Scroll.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2021-12-31">
+    units="ms" expires_after="2023-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -2326,7 +2326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Scroll.PresentationTime.TabletMode" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2023-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -3277,7 +3277,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.SplitViewResize.PresentationTime.MaxLatency{SplitViewResizeModes}"
-    units="ms" expires_after="2022-10-12">
+    units="ms" expires_after="2023-01-10">
   <owner>amusbach@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
@@ -3447,7 +3447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TabletMode.AnimationSmoothness.Enter" units="%"
-    expires_after="2022-04-17">
+    expires_after="2023-01-10">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -3458,7 +3458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TabletMode.AnimationSmoothness.Exit" units="%"
-    expires_after="2022-04-24">
+    expires_after="2023-01-10">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -3780,7 +3780,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade" units="%"
-    expires_after="2022-04-10">
+    expires_after="2023-01-10">
+  <owner>sammiequon@chromium.org</owner>
   <owner>wutao@chromium.org</owner>
   <summary>
     Relative smoothness of cross fade animation when setting window bounds. 100%
@@ -3792,34 +3793,37 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragMaximize"
-    units="%" expires_after="2022-05-10">
+    units="%" expires_after="2023-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     When dragging a maximized window, the window will shrink to restore bounds.
     Dragging the window back to the top of the screen will expand the window.
-    This histogram will be recorded to measure the smoothenss of the expand
-    animation. 100% represents ideally smooth 60 frames per second. 50%
-    represents when only 30 frames per second is achieved during the animations.
-    0% should not happen.
+    This histogram is fired only if the window is initially maximized. If we
+    drag a normal window to maximized state, the animation smoothness will be
+    recorded in the regular cross fade histogram above. This histogram will be
+    recorded to measure the smoothenss of the expand animation. 100% represents
+    ideally smooth 60 frames per second. 50% represents when only 30 frames per
+    second is achieved during the animations. 0% should not happen.
   </summary>
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragUnmaximize"
-    units="%" expires_after="2022-05-10">
+    units="%" expires_after="2023-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     When dragging a maximized window, the window will shrink to restore bounds.
-    This histogram will be recorded to measure the smoothness of the shrink
-    animation. 100% represents ideally smooth 60 frames per second. 50%
+    This histogram is fired everytime we drag a maximized window to normal
+    state. This histogram will be recorded to measure the smoothness of the
+    shrink animation. 100% represents ideally smooth 60 frames per second. 50%
     represents when only 30 frames per second is achieved during the animations.
     0% should not happen.
   </summary>
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.Hide" units="%"
-    expires_after="2022-07-25">
+    expires_after="2023-01-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -3832,7 +3836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.Snap" units="%"
-    expires_after="2022-07-01">
+    expires_after="2023-01-10">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
