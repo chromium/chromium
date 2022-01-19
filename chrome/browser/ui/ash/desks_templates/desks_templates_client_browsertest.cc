@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -1663,10 +1664,19 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ClickFirstTemplateItem();
 }
 
+// crbug.com/1288715: flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_NativeUILaunchMultipleDeskTemplates \
+  DISABLED_NativeUILaunchMultipleDeskTemplates
+#else
+#define MAYBE_NativeUILaunchMultipleDeskTemplates \
+  NativeUILaunchMultipleDeskTemplates
+#endif
+
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUILaunchMultipleDeskTemplates) {
+                       MAYBE_NativeUILaunchMultipleDeskTemplates) {
   const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
