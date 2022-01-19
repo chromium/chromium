@@ -186,6 +186,47 @@ TEST(PickleTest, BigSize) {
   EXPECT_FALSE(iter.ReadInt(&data));
 }
 
+// Tests that instances constructed with invalid parameter combinations can be
+// properly copied. Regression test for https://crbug.com/1271311.
+TEST(PickleTest, CopyWithInvalidHeader) {
+  // 1. Actual header size (calculated based on the input buffer) > passed in
+  // buffer size. Which results in Pickle's internal |header_| = null.
+  {
+    Pickle::Header header = {.payload_size = 100};
+    const char* data = reinterpret_cast<char*>(&header);
+    const Pickle pickle(data, sizeof(header));
+
+    EXPECT_EQ(0U, pickle.size());
+    EXPECT_FALSE(pickle.data());
+
+    Pickle copy_built_with_op = pickle;
+    EXPECT_EQ(0U, copy_built_with_op.size());
+    EXPECT_FALSE(copy_built_with_op.data());
+
+    Pickle copy_built_with_ctor(pickle);
+    EXPECT_EQ(0U, copy_built_with_ctor.size());
+    EXPECT_FALSE(copy_built_with_ctor.data());
+  }
+  // 2. Input buffer's size < sizeof(Pickle::Header). Which must also result in
+  // Pickle's internal |header_| = null.
+  {
+    const char data[2] = {0x00, 0x00};
+    const Pickle pickle(data, sizeof(data));
+    static_assert(sizeof(Pickle::Header) > sizeof(data));
+
+    EXPECT_EQ(0U, pickle.size());
+    EXPECT_FALSE(pickle.data());
+
+    Pickle copy_built_with_op = pickle;
+    EXPECT_EQ(0U, copy_built_with_op.size());
+    EXPECT_FALSE(copy_built_with_op.data());
+
+    Pickle copy_built_with_ctor(pickle);
+    EXPECT_EQ(0U, copy_built_with_ctor.size());
+    EXPECT_FALSE(copy_built_with_ctor.data());
+  }
+}
+
 TEST(PickleTest, UnalignedSize) {
   int buffer[] = { 10, 25, 40, 50 };
 
