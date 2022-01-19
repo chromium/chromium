@@ -45,8 +45,10 @@ export class AsyncWriter {
    */
   async seek(offset: number): Promise<void> {
     assert(!this.closed);
-    assert(this.seekable());
-    await this.queue.push(() => this.ops.seek(offset));
+    await this.queue.push(async () => {
+      assert(this.ops.seek !== null);
+      await this.ops.seek(offset);
+    });
   }
 
   /**
@@ -58,9 +60,11 @@ export class AsyncWriter {
       return;
     }
     this.closed = true;
-    if (this.ops.close !== null) {
-      this.queue.push(() => this.ops.close());
-    }
+    this.queue.push(async () => {
+      if (this.ops.close !== null) {
+        await this.ops.close();
+      }
+    });
     await this.queue.flush();
   }
 
@@ -70,12 +74,12 @@ export class AsyncWriter {
    * @return The combined writer.
    */
   static combine(...writers: AsyncWriter[]): AsyncWriter {
-    const write = async (blob) => {
+    const write = async (blob: Blob) => {
       await Promise.all(writers.map((writer) => writer.write(blob)));
     };
 
     const allSeekable = writers.every((writer) => writer.seekable());
-    const seekAll = async (offset) => {
+    const seekAll = async (offset: number) => {
       await Promise.all(writers.map((writer) => writer.seek(offset)));
     };
     const seek = allSeekable ? seekAll : null;
