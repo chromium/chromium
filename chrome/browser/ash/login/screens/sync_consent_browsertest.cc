@@ -198,8 +198,17 @@ class SyncConsentTest
 
   void LoginAndWaitForSyncConsentScreen() {
     login_manager_mixin_.LoginAsNewRegularUser();
-    // No need to explicitly show the screen as it is the first "stable" one
-    // after login. Screen may "skip", so OobeScreenWaiter will not stop. Use
+
+    // If the screen has already exited, don't try to show it again.
+    // Although, sync consent screen is not the first screen in the onboarding
+    // flow when OobeConsolidatedConsent feature is enabled, it can be reached
+    // and skipped after its predecessors are skipped.
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled() &&
+        !screen_exited_)
+      LoginDisplayHost::default_host()->StartWizard(
+          SyncConsentScreenView::kScreenId);
+
+    // Sync Consent screen may skip, so OobeScreenWaiter will not stop. Use
     // custom predicate instead.
     test::TestPredicateWaiter(
         base::BindRepeating(
@@ -218,13 +227,8 @@ class SyncConsentTest
         .Wait();
   }
 
-  void LoginAsNewRegularUser() {
-    login_manager_mixin_.LoginAsNewRegularUser();
-    OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
-  }
-
-  // Attempts to log in to sync consent screen if it is not to be skipped
-  void LoginToSyncConsentScreen() {
+  // Attempts to log in and show sync consent screen if it is not to be skipped.
+  void LoginAndShowSyncConsentScreenWithCapability() {
     LoginAndWaitForSyncConsentScreen();
     SetIsMinorUser(is_minor_user_);
     GetSyncConsentScreen()->SetProfileSyncEngineInitializedForTesting(true);
@@ -302,7 +306,7 @@ class SyncConsentTest
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedNotBrandedBuild) {
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
       false;
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);
@@ -315,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedSyncDisabledByPolicy) {
   // Set up screen and policy.
   SyncConsentScreen::SetProfileSyncDisabledByPolicyForTesting(true);
 
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);
@@ -325,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedSyncDisabledByPolicy) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, PRE_AbortedSetup) {
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
@@ -356,7 +360,7 @@ class SyncConsentRecorderTest : public SyncConsentTest {
 
 IN_PROC_BROWSER_TEST_F(SyncConsentRecorderTest, SyncConsentRecorder) {
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
   SyncConsentScreen* screen = GetSyncConsentScreen();
@@ -409,7 +413,7 @@ class SyncConsentTestWithParams
 IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams, SyncConsentTestWithLocale) {
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
   SwitchLanguage(GetParam());
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
   SyncConsentScreen* screen = GetSyncConsentScreen();
@@ -445,7 +449,7 @@ class SyncConsentPolicyDisabledTest : public SyncConsentTest,
 
 IN_PROC_BROWSER_TEST_P(SyncConsentPolicyDisabledTest,
                        SyncConsentPolicyDisabled) {
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
   SyncConsentScreen* screen = GetSyncConsentScreen();
@@ -521,7 +525,7 @@ class SyncConsentTimezoneOverride : public SyncConsentTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTimezoneOverride, MakesTimezoneRequest) {
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
   EXPECT_EQ("TimezeonPropagationTest",
             g_browser_process->local_state()->GetString(
                 ::prefs::kSigninScreenTimezone));
@@ -537,7 +541,7 @@ class SyncConsentMinorModeTest : public SyncConsentTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Accept) {
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
   SyncConsentScreen* screen = GetSyncConsentScreen();
@@ -595,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Accept) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Decline) {
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
   SyncConsentScreen* screen = GetSyncConsentScreen();
@@ -653,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Decline) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, PRE_AbortedSetup) {
-  LoginToSyncConsentScreen();
+  LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
@@ -699,13 +703,12 @@ class SyncConsentTimeoutTest : public SyncConsentTest {
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTimeoutTest,
                        SyncEngineInitializationTimeout) {
-  auto syncWaiter = test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent});
   auto overviewDialogWaiter =
       test::OobeJS().CreateVisibilityWaiter(true, {kOverviewDialog});
-  LoginAsNewRegularUser();
-  // No need to explicitly show the screen as it is the first one after login.
+
+  LoginAndWaitForSyncConsentScreen();
   WaitForScreenShown();
-  syncWaiter->Wait();
+
   overviewDialogWaiter->Wait();
 }
 
