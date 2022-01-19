@@ -14,15 +14,26 @@ namespace {
 // A non-working delegate that allows the testing of DelayedTaskHandle.
 class TestDelegate : public DelayedTaskHandle::Delegate {
  public:
-  TestDelegate() = default;
+  explicit TestDelegate(bool* was_cancel_task_called = nullptr)
+      : was_cancel_task_called_(was_cancel_task_called) {
+    DCHECK(!was_cancel_task_called_ || !*was_cancel_task_called_);
+  }
   ~TestDelegate() override = default;
 
   bool IsValid() const override { return is_valid_; }
-  void CancelTask() override { is_valid_ = false; }
+  void CancelTask() override {
+    is_valid_ = false;
+
+    if (was_cancel_task_called_)
+      *was_cancel_task_called_ = true;
+  }
 
  private:
   // Indicates if this delegate is currently valid.
   bool is_valid_ = true;
+
+  // Indicates if CancelTask() was invoked, if not null. Must outlives |this|.
+  bool* was_cancel_task_called_;
 };
 
 }  // namespace
@@ -49,17 +60,20 @@ TEST(DelayedTaskHandleTest, RequiresValidDelegateOnConstruction) {
 // Tests that calling CancelTask() on the handle will call CancelTask() on the
 // delegate and invalidate it.
 TEST(DelayedTaskHandleTest, CancelTask) {
-  auto delegate = std::make_unique<TestDelegate>();
+  bool was_cancel_task_called = false;
+  auto delegate = std::make_unique<TestDelegate>(&was_cancel_task_called);
+  EXPECT_FALSE(was_cancel_task_called);
   EXPECT_TRUE(delegate->IsValid());
 
   auto* delegate_ptr = delegate.get();
   DelayedTaskHandle delayed_task_handle(std::move(delegate));
+  EXPECT_FALSE(was_cancel_task_called);
   EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(delayed_task_handle.IsValid());
 
   delayed_task_handle.CancelTask();
 
-  EXPECT_FALSE(delegate_ptr->IsValid());
+  EXPECT_TRUE(was_cancel_task_called);
   EXPECT_FALSE(delayed_task_handle.IsValid());
 }
 
@@ -72,25 +86,33 @@ TEST(DelayedTaskHandleTest, CancelTaskNoDelegate) {
   EXPECT_FALSE(delayed_task_handle.IsValid());
 }
 
-// Tests that calling CancelTask() on a handle with an invalid delegate will
-// no-op.
+// Tests that calling CancelTask() on a handle with an invalid delegate doesn't
+// crash and keeps the handle invalid.
 TEST(DelayedTaskHandleTest, CancelTaskInvalidDelegate) {
-  auto delegate = std::make_unique<TestDelegate>();
+  bool was_cancel_task_called = false;
+  auto delegate = std::make_unique<TestDelegate>(&was_cancel_task_called);
+  EXPECT_FALSE(was_cancel_task_called);
   EXPECT_TRUE(delegate->IsValid());
 
   auto* delegate_ptr = delegate.get();
   DelayedTaskHandle delayed_task_handle(std::move(delegate));
+  EXPECT_FALSE(was_cancel_task_called);
   EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(delayed_task_handle.IsValid());
 
   delegate_ptr->CancelTask();
 
+  EXPECT_TRUE(was_cancel_task_called);
   EXPECT_FALSE(delegate_ptr->IsValid());
   EXPECT_FALSE(delayed_task_handle.IsValid());
 
+  // Reset |was_cancel_task_called| to ensure Delegate::CancelTask() is still
+  // invoked on an invalid delegate.
+  was_cancel_task_called = false;
+
   delayed_task_handle.CancelTask();
 
-  EXPECT_FALSE(delegate_ptr->IsValid());
+  EXPECT_TRUE(was_cancel_task_called);
   EXPECT_FALSE(delayed_task_handle.IsValid());
 }
 

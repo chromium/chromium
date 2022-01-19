@@ -41,6 +41,7 @@ void DelayedTaskHandle::CancelTask() {
   if (delegate_) {
     delegate_->CancelTask();
     DCHECK(!delegate_->IsValid());
+    delegate_.reset();
   }
 }
 
