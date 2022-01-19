@@ -3723,13 +3723,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SingleOrMultiProcess"
-    enum="AndroidWebViewSingleOrMultiProcess" expires_after="2022-01-22">
+    enum="AndroidWebViewSingleOrMultiProcess" expires_after="2022-07-22">
   <owner>alexmitra@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether WebView is being run in a single process or multi-process.
-    This is recorded when WebView starts.
+    This is recorded each time logs are uploaded.
   </summary>
 </histogram>
 
