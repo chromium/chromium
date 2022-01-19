@@ -1146,7 +1146,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R99-14447.0.0",
+        "cros_img": "octopus-release/R99-14455.0.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_DEV",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1168,7 +1168,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R97-14324.62.0",
+        "cros_img": "octopus-release/R97-14324.72.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_STABLE",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1189,7 +1189,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R99-14447.0.0",
+        "cros_img": "octopus-release/R99-14455.0.0",
         "name": "ozone_unittests_OCTOPUS_DEV",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1209,7 +1209,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R97-14324.62.0",
+        "cros_img": "octopus-release/R97-14324.72.0",
         "name": "ozone_unittests_OCTOPUS_STABLE",
         "swarming": {},
         "test": "ozone_unittests",
