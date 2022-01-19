@@ -200,6 +200,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kDawn2dCanvas;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebviewAccelerateSmallCanvases;
 
+BLINK_COMMON_EXPORT extern const base::Feature kSoftwareCanvas2DOnReadback;
+
 BLINK_COMMON_EXPORT extern const base::Feature kDiscardCodeCacheAfterFirstUse;
 
 BLINK_COMMON_EXPORT extern const base::Feature kCacheCodeOnIdle;

@@ -2009,7 +2009,8 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   // attribute that let the users indicate if a canvas will be read frequently
   // through getImageData, thus uses CPU rendering from the start in such cases.
   if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-          GetTopExecutionContext())) {
+          GetTopExecutionContext()) ||
+      base::FeatureList::IsEnabled(features::kSoftwareCanvas2DOnReadback)) {
     // GetImagedata is faster in Unaccelerated canvases.
     // In Desynchronized canvas disabling the acceleration will break
     // putImageData: crbug.com/1112060.
