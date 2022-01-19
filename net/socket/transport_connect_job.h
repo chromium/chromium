@@ -159,6 +159,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
     STATE_RESOLVE_HOST_COMPLETE,
     STATE_TRANSPORT_CONNECT,
     STATE_TRANSPORT_CONNECT_COMPLETE,
+    STATE_FALLBACK_CONNECT_COMPLETE,
     STATE_NONE,
   };
 
@@ -168,11 +169,11 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   int DoResolveHost();
   int DoResolveHostComplete(int result);
   int DoTransportConnect();
-  int DoTransportConnectComplete(int result);
+  int DoTransportConnectComplete(bool is_fallback, int result);
 
   // Not part of the state machine.
-  void DoIPv6FallbackTransportConnect();
-  void DoIPv6FallbackTransportConnectComplete(int result);
+  void OnIPv6FallbackTimerComplete();
+  void OnIPv6FallbackConnectComplete(int rv);
 
   // Begins the host resolution and the TCP connect.  Returns OK on success
   // and ERR_IO_PENDING if it cannot immediately service the request.
@@ -183,8 +184,6 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // resolver request.
   void ChangePriorityInternal(RequestPriority priority) override;
 
-  void CopyConnectionAttemptsFromSockets();
-
   scoped_refptr<TransportSocketParams> params_;
   std::unique_ptr<HostResolver::ResolveHostRequest> request_;
 
@@ -193,7 +192,6 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   std::unique_ptr<StreamSocket> transport_socket_;
 
   std::unique_ptr<StreamSocket> fallback_transport_socket_;
-  std::unique_ptr<AddressList> fallback_addresses_;
   base::TimeTicks fallback_connect_start_time_;
   base::OneShotTimer fallback_timer_;
 
@@ -206,7 +204,6 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // attempts are copied from the other socket, if one exists, into it before
   // it is returned.)
   ConnectionAttempts connection_attempts_;
-  ConnectionAttempts fallback_connection_attempts_;
 
   base::WeakPtrFactory<TransportConnectJob> weak_ptr_factory_{this};
 };

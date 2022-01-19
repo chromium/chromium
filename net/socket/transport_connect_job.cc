@@ -154,6 +154,7 @@ LoadState TransportConnectJob::GetLoadState() const {
       return LOAD_STATE_RESOLVING_HOST;
     case STATE_TRANSPORT_CONNECT:
     case STATE_TRANSPORT_CONNECT_COMPLETE:
+    case STATE_FALLBACK_CONNECT_COMPLETE:
       return LOAD_STATE_CONNECTING;
     case STATE_NONE:
       return LOAD_STATE_IDLE;
@@ -171,15 +172,11 @@ bool TransportConnectJob::HasEstablishedConnection() const {
 ConnectionAttempts TransportConnectJob::GetConnectionAttempts() const {
   // If hostname resolution failed, record an empty endpoint and the result.
   // Also record any attempts made on either of the sockets.
-  ConnectionAttempts attempts;
+  ConnectionAttempts attempts = connection_attempts_;
   if (resolve_result_ != OK) {
     DCHECK(!request_->GetAddressResults());
     attempts.push_back(ConnectionAttempt(IPEndPoint(), resolve_result_));
   }
-  attempts.insert(attempts.begin(), connection_attempts_.begin(),
-                  connection_attempts_.end());
-  attempts.insert(attempts.begin(), fallback_connection_attempts_.begin(),
-                  fallback_connection_attempts_.end());
   return attempts;
 }
 
@@ -275,7 +272,10 @@ int TransportConnectJob::DoLoop(int result) {
         rv = DoTransportConnect();
         break;
       case STATE_TRANSPORT_CONNECT_COMPLETE:
-        rv = DoTransportConnectComplete(rv);
+        rv = DoTransportConnectComplete(/*is_fallback=*/false, rv);
+        break;
+      case STATE_FALLBACK_CONNECT_COMPLETE:
+        rv = DoTransportConnectComplete(/*is_fallback=*/true, rv);
         break;
       default:
         NOTREACHED();
@@ -372,53 +372,64 @@ int TransportConnectJob::DoTransportConnect() {
   if (rv == ERR_IO_PENDING && try_ipv6_connect_with_ipv4_fallback) {
     fallback_timer_.Start(FROM_HERE, base::Milliseconds(kIPv6FallbackTimerInMs),
                           this,
-                          &TransportConnectJob::DoIPv6FallbackTransportConnect);
+                          &TransportConnectJob::OnIPv6FallbackTimerComplete);
   }
   return rv;
 }
 
-int TransportConnectJob::DoTransportConnectComplete(int result) {
-  if (result == OK) {
-    // Success will be returned via the main socket, so also include connection
-    // attempts made on the fallback socket up to this point. (Unfortunately,
-    // the only simple way to return information in the success case is through
-    // the successfully-connected socket.)
-    if (fallback_transport_socket_) {
-      ConnectionAttempts fallback_attempts;
-      fallback_transport_socket_->GetConnectionAttempts(&fallback_attempts);
-      transport_socket_->AddConnectionAttempts(fallback_attempts);
-    }
+int TransportConnectJob::DoTransportConnectComplete(bool is_fallback,
+                                                    int result) {
+  // Either the main socket or the fallback one completed.
+  std::unique_ptr<StreamSocket>& completed_socket =
+      is_fallback ? fallback_transport_socket_ : transport_socket_;
+  std::unique_ptr<StreamSocket>& other_socket =
+      is_fallback ? transport_socket_ : fallback_transport_socket_;
+  DCHECK(completed_socket);
+  if (other_socket) {
+    // Save the connection attempts from the other socket. (Unfortunately, the
+    // only simple way to return information in the success case is through the
+    // successfully-connected socket.)
+    ConnectionAttempts attempts;
+    other_socket->GetConnectionAttempts(&attempts);
+    completed_socket->AddConnectionAttempts(attempts);
+  }
+  if (is_fallback) {
+    connect_timing_.connect_start = fallback_connect_start_time_;
+  }
 
-    bool is_ipv4 = request_->GetAddressResults().value().front().GetFamily() ==
-                   ADDRESS_FAMILY_IPV4;
+  // Cancel any completion events from the callback timer and other socket.
+  fallback_timer_.Stop();
+  other_socket.reset();
+
+  if (result == OK) {
+    DCHECK(request_);
+    const AddressList& addresses = request_->GetAddressResults().value();
+    bool is_ipv4 = addresses.front().GetFamily() == ADDRESS_FAMILY_IPV4;
     RaceResult race_result = RACE_UNKNOWN;
-    if (is_ipv4)
+    if (is_fallback) {
+      race_result = RACE_IPV4_WINS;
+    } else if (is_ipv4) {
       race_result = RACE_IPV4_SOLO;
-    else if (AddressListOnlyContainsIPv6(request_->GetAddressResults().value()))
+    } else if (AddressListOnlyContainsIPv6(addresses)) {
       race_result = RACE_IPV6_SOLO;
-    else
+    } else {
       race_result = RACE_IPV6_WINS;
+    }
     HistogramDuration(connect_timing_, race_result);
 
-    DCHECK(request_);
-    SetSocket(std::move(transport_socket_),
+    SetSocket(std::move(completed_socket),
               base::OptionalFromPtr(request_->GetDnsAliasResults()));
   } else {
     // Failure will be returned via |GetAdditionalErrorState|, so save
-    // connection attempts from both sockets for use there.
-    CopyConnectionAttemptsFromSockets();
-
-    transport_socket_.reset();
+    // connection attempts from the socket for use there.
+    completed_socket->GetConnectionAttempts(&connection_attempts_);
+    completed_socket.reset();
   }
-
-  fallback_timer_.Stop();
-  fallback_transport_socket_.reset();
-  fallback_addresses_.reset();
 
   return result;
 }
 
-void TransportConnectJob::DoIPv6FallbackTransportConnect() {
+void TransportConnectJob::OnIPv6FallbackTimerComplete() {
   // The timer should only fire while we're waiting for the main connect to
   // succeed.
   if (next_state_ != STATE_TRANSPORT_CONNECT_COMPLETE) {
@@ -427,75 +438,39 @@ void TransportConnectJob::DoIPv6FallbackTransportConnect() {
   }
 
   DCHECK(!fallback_transport_socket_.get());
-  DCHECK(!fallback_addresses_.get());
 
-  fallback_addresses_ =
-      std::make_unique<AddressList>(request_->GetAddressResults().value());
-  MakeAddressListStartWithIPv4(fallback_addresses_.get());
+  AddressList fallback_addresses = request_->GetAddressResults().value();
+  MakeAddressListStartWithIPv4(&fallback_addresses);
 
   // Create a |SocketPerformanceWatcher|, and pass the ownership.
   std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher;
   if (socket_performance_watcher_factory()) {
     socket_performance_watcher =
         socket_performance_watcher_factory()->CreateSocketPerformanceWatcher(
-            SocketPerformanceWatcherFactory::PROTOCOL_TCP,
-            *fallback_addresses_);
+            SocketPerformanceWatcherFactory::PROTOCOL_TCP, fallback_addresses);
   }
 
   fallback_transport_socket_ =
       client_socket_factory()->CreateTransportClientSocket(
-          *fallback_addresses_, std::move(socket_performance_watcher),
+          fallback_addresses, std::move(socket_performance_watcher),
           network_quality_estimator(), net_log().net_log(), net_log().source());
   fallback_connect_start_time_ = base::TimeTicks::Now();
   int rv = fallback_transport_socket_->Connect(base::BindOnce(
-      &TransportConnectJob::DoIPv6FallbackTransportConnectComplete,
-      base::Unretained(this)));
+      base::BindOnce(&TransportConnectJob::OnIPv6FallbackConnectComplete,
+                     base::Unretained(this))));
   if (rv != ERR_IO_PENDING)
-    DoIPv6FallbackTransportConnectComplete(rv);
+    OnIPv6FallbackConnectComplete(rv);
 }
 
-void TransportConnectJob::DoIPv6FallbackTransportConnectComplete(int result) {
+void TransportConnectJob::OnIPv6FallbackConnectComplete(int result) {
   // This should only happen when we're waiting for the main connect to succeed.
   if (next_state_ != STATE_TRANSPORT_CONNECT_COMPLETE) {
     NOTREACHED();
     return;
   }
 
-  DCHECK_NE(ERR_IO_PENDING, result);
-  DCHECK(fallback_transport_socket_.get());
-  DCHECK(fallback_addresses_.get());
-
-  if (result == OK) {
-    DCHECK(!fallback_connect_start_time_.is_null());
-
-    // Success will be returned via the fallback socket, so also include
-    // connection attempts made on the main socket up to this point.
-    // (Unfortunately, the only simple way to return information in the success
-    // case is through the successfully-connected socket.)
-    if (transport_socket_) {
-      ConnectionAttempts attempts;
-      transport_socket_->GetConnectionAttempts(&attempts);
-      fallback_transport_socket_->AddConnectionAttempts(attempts);
-    }
-
-    connect_timing_.connect_start = fallback_connect_start_time_;
-    HistogramDuration(connect_timing_, RACE_IPV4_WINS);
-    DCHECK(request_);
-    SetSocket(std::move(fallback_transport_socket_),
-              base::OptionalFromPtr(request_->GetDnsAliasResults()));
-    next_state_ = STATE_NONE;
-  } else {
-    // Failure will be returned via |GetAdditionalErrorState|, so save
-    // connection attempts from both sockets for use there.
-    CopyConnectionAttemptsFromSockets();
-
-    fallback_transport_socket_.reset();
-    fallback_addresses_.reset();
-  }
-
-  transport_socket_.reset();
-
-  NotifyDelegateOfCompletion(result);  // Deletes |this|
+  next_state_ = STATE_FALLBACK_CONNECT_COMPLETE;
+  OnIOComplete(result);
 }
 
 int TransportConnectJob::ConnectInternal() {
@@ -508,15 +483,6 @@ void TransportConnectJob::ChangePriorityInternal(RequestPriority priority) {
     DCHECK(request_);
     // Change the request priority in the host resolver.
     request_->ChangeRequestPriority(priority);
-  }
-}
-
-void TransportConnectJob::CopyConnectionAttemptsFromSockets() {
-  if (transport_socket_)
-    transport_socket_->GetConnectionAttempts(&connection_attempts_);
-  if (fallback_transport_socket_) {
-    fallback_transport_socket_->GetConnectionAttempts(
-        &fallback_connection_attempts_);
   }
 }
 
