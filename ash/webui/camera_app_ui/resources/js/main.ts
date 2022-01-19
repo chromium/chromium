@@ -139,7 +139,7 @@ export class App {
         }
       });
 
-      const save = (element) => {
+      const save = (element: HTMLInputElement) => {
         if (element.dataset['key'] !== undefined) {
           localStorage.set(element.dataset['key'], element.checked);
         }
@@ -246,7 +246,7 @@ export class App {
     const cameraResourceInitialized = new WaitableEvent();
     const exploitUsage = async () => {
       if (cameraResourceInitialized.isSignaled()) {
-        await this.resume();
+        this.resume();
       } else {
         // CCA must get camera usage for completing its initialization when
         // first launched.
@@ -286,16 +286,17 @@ export class App {
     })();
 
     const preloadImages = (async () => {
-      const loadImage = (url) => new Promise<void>((resolve, reject) => {
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = 'image';
-        link.href = url;
-        link.onload = () => resolve();
-        link.onerror = () =>
-            reject(new Error(`Failed to preload image ${url}`));
-        document.head.appendChild(link);
-      });
+      const loadImage = (url: string) =>
+          new Promise<void>((resolve, reject) => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = url;
+            link.onload = () => resolve();
+            link.onerror = () =>
+                reject(new Error(`Failed to preload image ${url}`));
+            document.head.appendChild(link);
+          });
       const results = await Promise.allSettled(
           preloadImagesList.map((name) => loadImage(`/images/${name}`)));
       for (const result of results) {
