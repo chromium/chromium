@@ -81,6 +81,10 @@ float BookmarkRankingWeight();
 // visits within a cluster. Will always be greater than or equal to 0.
 float SearchResultsPageRankingWeight();
 
+// Returns the weight to use for visits that have page titles ranking visits
+// within a cluster. Will always be greater than or equal to 0.
+float HasPageTitleRankingWeight();
+
 // Returns true if content clustering should use the intersection similarity
 // score. Note, if this is used, the threshold used for clustering by content
 // score should be < .5 (see ContentClusteringSimilarityThreshold above) or the

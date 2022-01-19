@@ -229,5 +229,34 @@ TEST_F(RankingClusterFinalizerTest, ScoreSearchResultsPagesOneDuplicate) {
                   1, 1.0, {testing::VisitResult(2, 0.0, {}, true)}, true))));
 }
 
+TEST_F(RankingClusterFinalizerTest, ScoreVisitsOnHasPageTitle) {
+  history::ClusterVisit visit1 = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://foo.com/")),
+      GURL("https://foo.com/"));
+  visit1.annotated_visit.url_row.set_title(u"chocolate");
+
+  history::ClusterVisit visit2 = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")),
+      GURL("https://bar.com/"));
+  visit2.annotated_visit.url_row.set_title(std::u16string());
+
+  history::ClusterVisit visit3 = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(3, GURL("https://baz.com/")),
+      GURL("https://baz.com/"));
+  visit3.annotated_visit.url_row.set_title(u"vanilla");
+
+  history::Cluster cluster;
+  cluster.visits = {visit1, visit2, visit3};
+  FinalizeCluster(cluster);
+  EXPECT_THAT(testing::ToVisitResults({cluster}),
+              ElementsAre(ElementsAre(
+                  testing::VisitResult(/*visit_id=*/1, /*score=*/1.0,
+                                       /*duplicate_visits=*/{}),
+                  testing::VisitResult(/*visit_id=*/2, /*score=*/0.333333,
+                                       /*duplicate_visits=*/{}),
+                  testing::VisitResult(/*visit_id=*/3, /*score=*/1.0,
+                                       /*duplicate_visits=*/{}))));
+}
+
 }  // namespace
 }  // namespace history_clusters

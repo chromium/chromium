@@ -114,6 +114,12 @@ float SearchResultsPageRankingWeight() {
   return std::max(0.f, weight);
 }
 
+float HasPageTitleRankingWeight() {
+  float weight = GetFieldTrialParamByFeatureAsDouble(
+      kOnDeviceClustering, "has_page_title_ranking_weight", 2.0);
+  return std::max(0.f, weight);
+}
+
 bool ContentClusterOnIntersectionSimilarity() {
   return GetFieldTrialParamByFeatureAsBool(
       kOnDeviceClustering, "use_content_clustering_intersection_similarity",

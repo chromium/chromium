@@ -65,6 +65,10 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
       it->second.set_is_srp();
     }
 
+    if (!visit.annotated_visit.url_row.title().empty()) {
+      it->second.set_has_page_title();
+    }
+
     // Additional/future attribute checks go here.
   }
 }
