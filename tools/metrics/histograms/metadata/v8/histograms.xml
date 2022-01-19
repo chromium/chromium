@@ -381,19 +381,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.Execute" units="ms" expires_after="M94">
-  <obsolete>
-    Use V8.ExecuteMicroSeconds after M94, which correctly accounts nested timers
-    with nested V8.Execute blocks.
-  </obsolete>
-  <owner>cbruni@chromium.org</owner>
-  <owner>v8-runtime@google.com</owner>
-  <summary>
-    Time spent in JavaScript Execution, including runtime calls, callbacks, and
-    lazy compilation.
-  </summary>
-</histogram>
-
 <histogram name="V8.ExecuteMicroSeconds" units="microseconds"
     expires_after="2022-06-26">
   <owner>cbruni@chromium.org</owner>
@@ -697,71 +684,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Event.MainThread.Full.Atomic.Compact.Cpp" units="ms"
-    expires_after="M100">
-  <obsolete>
-    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Compact.Cpp.
-  </obsolete>
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Duration of individual compaction steps on the main thread during the atomic
-    pause of a garbage collection of the managed C++ heap.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Event.MainThread.Full.Atomic.Cpp" units="ms"
-    expires_after="M100">
-  <obsolete>
-    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Cpp.
-  </obsolete>
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Duration of individual steps on the main thread during the atomic pause of a
-    garbage collection of the managed C++ heap.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Event.MainThread.Full.Atomic.Mark.Cpp" units="ms"
-    expires_after="M100">
-  <obsolete>
-    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp.
-  </obsolete>
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Duration of individual marking steps on the main thread during the atomic
-    pause of a garbage collection of the managed C++ heap.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Event.MainThread.Full.Atomic.Sweep.Cpp" units="ms"
-    expires_after="M100">
-  <obsolete>
-    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Sweep.Cpp.
-  </obsolete>
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Duration of individual sweeping steps on the main thread during the atomic
-    pause of a garbage collection of the managed C++ heap.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Event.MainThread.Full.Atomic.Weak.Cpp" units="ms"
-    expires_after="M100">
-  <obsolete>
-    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Weak.Cpp.
-  </obsolete>
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Duration of individual weakness handling steps on the main thread during the
-    atomic pause of a garbage collection of the managed C++ heap.
-  </summary>
-</histogram>
-
 <histogram name="V8.GC.Event.MainThread.Full.Incremental.Cpp" units="ms"
     expires_after="M109">
   <owner>omerkatz@chromium.org</owner>
@@ -831,19 +753,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent in background tasks doing marking in one GC cycle. It is recorded
     after each GC.
-  </summary>
-</histogram>
-
-<histogram name="V8.GCBackgroundScavenger" units="ms"
-    expires_after="2021-12-19">
-  <obsolete>
-    Removed 11/2021. Superseded by V8.GC.Cycle.Young.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent in background tasks doing scavenging in one GC cycle. It is
-    recorded after each GC.
   </summary>
 </histogram>
 
@@ -1067,18 +976,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCMarkCompactor" units="ms" expires_after="2022-01-02">
-  <obsolete>
-    Unused as of 2022-01-02.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Sum of all durations of individual phases within one V8 mark-compact garbage
-    collection. Reported once per garbage collection.
-  </summary>
-</histogram>
-
 <histogram name="V8.GCMarkCompactReason" enum="GarbageCollectionReason"
     expires_after="2022-06-26">
   <owner>mlippautz@chromium.org</owner>
@@ -1166,26 +1063,6 @@ chromium-metrics-reviews@google.com.
     first unsupported feature in a function. The function is recompiled with
     TurboFan then. This histogram records the bailout reason (or success) per
     WebAssembly function compilation in Liftoff.
-  </summary>
-</histogram>
-
-<histogram name="V8.MaxArrayBufferCageReservationSize" units="GB"
-    expires_after="2022-06-30">
-  <obsolete>
-    Removed 09/2021. Superseded by V8.VirtualMemoryCageSizeGB.
-  </obsolete>
-  <owner>saelo@chromium.org</owner>
-  <owner>ishell@chromium.org</owner>
-  <summary>
-    Largest possible size of the virtual memory region for an ArrayBuffer cage.
-
-    Measured and reported at process startup, right before initializing V8, by
-    attempting to reserve memory regions with decreasing size until the
-    reservation succeeds, then immediately freeing it again.
-
-    This experiment is part of the V8 Heap Sandbox and the V8 ArrayBuffer Caging
-    proposal. Its goal is to estimate the maximum possible size of an
-    ArrayBuffer cage region.
   </summary>
 </histogram>
 
@@ -1297,29 +1174,6 @@ chromium-metrics-reviews@google.com.
     immediately after decompressing the snapshots (from Snapshot::Initialize()).
 
     This histogram only records metrics on machines with high-resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="V8.StopTheWorld" units="ms" expires_after="2021-10-01">
-  <obsolete>
-    Removed 02/2021. Renamed to V8.GC.TimeToSafepoint due to switch to
-    microseconds.
-  </obsolete>
-  <owner>dinfuehr@chromium.org</owner>
-  <owner>ulan@chromium.org</owner>
-  <summary>Time spent in stopping other threads before performing GC.</summary>
-</histogram>
-
-<histogram name="V8.TimeToCollection" units="ms" expires_after="2021-10-01">
-  <obsolete>
-    Removed 02/2021. Renamed to V8.GC.TimeToCollectionBackground due to switch
-    to microseconds.
-  </obsolete>
-  <owner>dinfuehr@chromium.org</owner>
-  <owner>ulan@chromium.org</owner>
-  <summary>
-    Time between requesting GC from background thread and actually starting
-    collection on main thread.
   </summary>
 </histogram>
 
@@ -1520,20 +1374,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmAddressSpaceUsageMiB" units="MB" expires_after="M98">
-  <obsolete>
-    Received no values since M79.
-  </obsolete>
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>ahaas@chromium.org</owner>
-  <summary>
-    The total amount of address space reserved by the backing stores of all live
-    WebAssembly.Memory backing stores in MiB. Recorded on each memory
-    reservation.
-  </summary>
-</histogram>
-
 <histogram name="V8.WasmCacheCount" units="count" expires_after="2022-06-30">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
@@ -1696,21 +1536,6 @@ chromium-metrics-reviews@google.com.
     but only if a high-resolution clock is available. Note that compilation
     speed is often limited by the network speed, which is also reflected in this
     metric.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmFunctionSizeBytes" units="bytes"
-    expires_after="2021-08-01">
-  <obsolete>
-    Removed 07/2021 in favor of V8.WasmHugeFunctionSizeBytes which gives a
-    better overview about critical functions.
-  </obsolete>
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>clemensb@chromium.org</owner>
-  <summary>
-    Size of a WebAssembly function in bytes. Recorded on each compilation of a
-    single function, either synchronous, asynchronous, or lazily.
   </summary>
 </histogram>
 
