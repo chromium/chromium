@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_OVERSCROLL_CONTROLLER_H_
 
 #include "cc/input/overscroll_behavior.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {

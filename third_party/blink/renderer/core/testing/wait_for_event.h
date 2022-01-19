@@ -7,6 +7,8 @@
 
 #include "base/run_loop.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

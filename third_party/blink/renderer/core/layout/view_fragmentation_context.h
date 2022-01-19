@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_VIEW_FRAGMENTATION_CONTEXT_H_
 
 #include "third_party/blink/renderer/core/layout/fragmentation_context.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

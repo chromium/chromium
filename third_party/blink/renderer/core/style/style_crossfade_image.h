@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_CROSSFADE_IMAGE_H_
 
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {

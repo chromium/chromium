@@ -30,6 +30,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/core/html/parser/nesting_level_incrementer.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 

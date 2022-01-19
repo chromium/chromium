@@ -35,6 +35,5 @@
 // IWYU for users of platform/heap.
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HANDLE_H_
