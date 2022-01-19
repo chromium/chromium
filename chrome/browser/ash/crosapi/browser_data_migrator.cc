@@ -173,6 +173,10 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
   // If the user is a new user, then there shouldn't be anything to migrate.
   // Also mark the user as migration completed.
   if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
+    crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
+                                         user_id_hash,
+                                         version_info::GetVersion());
+
     crosapi::browser_util::SetProfileMigrationCompletedForUser(
         g_browser_process->local_state(), user_id_hash);
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
