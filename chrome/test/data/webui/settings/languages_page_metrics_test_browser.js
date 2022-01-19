@@ -150,21 +150,22 @@ suite('LanguagesPageMetricsBrowser', function() {
     // Chooses the second language to change translate checkbox
     // as first language is the language used for translation.
     menuButtons[1].click();
+    flush();
     const actionMenu = languagesSubpage.shadowRoot.querySelector('#menu').get();
     assertTrue(actionMenu.open);
-    const menuItems = actionMenu.querySelectorAll('.dropdown-item');
-    for (const item of menuItems) {
-      if (item.id === 'offerTranslations') {
-        const checkedValue = item.checked;
-        item.click();
-        assertEquals(
-            LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE +
-                item.checked,
-            await languageSettingsMetricsProxy.whenCalled(
-                'recordSettingsMetric'));
-        return;
-      }
-    }
+    const item = actionMenu.querySelector('#offerTranslations');
+    assertTrue(!!item);
+
+    item.click();
+    assertEquals(
+        LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE,
+        await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
+
+    languageSettingsMetricsProxy.resetResolver('recordSettingsMetric');
+    item.click();
+    assertEquals(
+        LanguageSettingsActionType.ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE,
+        await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
   });
 
   test('records on language list reorder', async () => {
