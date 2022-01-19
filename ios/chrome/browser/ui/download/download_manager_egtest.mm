@@ -47,8 +47,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 }
 
 // Waits until Open in... button is shown.
-[[nodiscard]] bool WaitForOpenInButton();
-bool WaitForOpenInButton() {
+[[nodiscard]] bool WaitForOpenInButton() {
   // These downloads usually take longer and need a longer timeout.
   const NSTimeInterval kLongDownloadTimeout = 60;
   return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
@@ -61,8 +60,7 @@ bool WaitForOpenInButton() {
 }
 
 // Waits until Download button is shown.
-[[nodiscard]] bool WaitForDownloadButton();
-bool WaitForDownloadButton() {
+[[nodiscard]] bool WaitForDownloadButton() {
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForPageLoadTimeout, ^{
         NSError* error = nil;
@@ -74,8 +72,7 @@ bool WaitForDownloadButton() {
 }
 
 // Waits until Open in Downloads button is shown.
-[[nodiscard]] bool WaitForOpenInDownloadsButton();
-bool WaitForOpenInDownloadsButton() {
+[[nodiscard]] bool WaitForOpenInDownloadsButton() {
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
         NSError* error = nil;

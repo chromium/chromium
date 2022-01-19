@@ -24,8 +24,7 @@ namespace {
 
 // Makes sure that the DataStore is created, otherwise cookies can't be set in
 // some cases.
-[[nodiscard]] bool FetchCookieStore();
-bool FetchCookieStore() {
+[[nodiscard]] bool FetchCookieStore() {
   __block bool fetch_done = false;
 
   NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
@@ -41,8 +40,7 @@ bool FetchCookieStore() {
 
 // Adds cookies to the default data store. Returns whether it succeed to add
 // cookies. Declare the function to have the "WARN_UNUSED_RESULT".
-[[nodiscard]] bool AddCookie();
-bool AddCookie() {
+[[nodiscard]] bool AddCookie() {
   NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:@{
     NSHTTPCookiePath : @"path",
     NSHTTPCookieName : @"cookieName",
@@ -63,8 +61,7 @@ bool AddCookie() {
 
 // Checks that the cookies data store has cookies or not, depending on
 // |should_have_cookies|. Declare the function to have the "WARN_UNUSED_RESULT".
-[[nodiscard]] bool HasCookies(bool should_have_cookies);
-bool HasCookies(bool should_have_cookies) {
+[[nodiscard]] bool HasCookies(bool should_have_cookies) {
   __block bool has_cookies = false;
   __block bool completion_called = false;
 
@@ -85,9 +82,7 @@ bool HasCookies(bool should_have_cookies) {
 // Returns whether the completion block of the clear browsing data has been
 // called. Declare the function to have the "WARN_UNUSED_RESULT".
 [[nodiscard]] bool RemoveCookies(web::BrowserState* browser_state,
-                                 web::ClearBrowsingDataMask types);
-bool RemoveCookies(web::BrowserState* browser_state,
-                   web::ClearBrowsingDataMask types) {
+                                 web::ClearBrowsingDataMask types) {
   web::BrowsingDataRemover* remover =
       web::BrowsingDataRemover::FromBrowserState(browser_state);
   __block bool closure_called = false;

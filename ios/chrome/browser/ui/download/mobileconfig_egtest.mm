@@ -45,8 +45,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 }
 
 // Waits until the warning alert is shown.
-[[nodiscard]] bool WaitForWarningAlert();
-bool WaitForWarningAlert() {
+[[nodiscard]] bool WaitForWarningAlert() {
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForPageLoadTimeout, ^{
         NSError* error = nil;
