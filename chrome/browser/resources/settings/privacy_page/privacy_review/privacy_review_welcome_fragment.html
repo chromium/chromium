@@ -5,11 +5,9 @@
     min-height: calc(432px - var(--privacy-guide-footer-total-height));
   }
 
-  .header {
-    flex: 1;
-    flex-direction: column;
-    padding: 36px 116px var(--cr-section-padding) 116px;
-    text-align: center;
+  .headline-container {
+    padding: 48px 116px var(--cr-section-padding) 116px;
+    row-gap: 12px;
   }
 
   .footer {
@@ -22,7 +20,7 @@
     width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
   }
 </style>
-<div class="header" focus-element tabindex="-1">
+<div class="headline-container" focus-element tabindex="-1">
   <picture>
     <source
         srcset="./images/privacy_review/welcome_banner_dark.svg"

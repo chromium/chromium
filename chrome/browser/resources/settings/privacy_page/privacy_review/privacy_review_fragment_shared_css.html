@@ -6,6 +6,21 @@
       padding: 0 24px;
     }
 
+    .headline-container {
+      align-items: center;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+    }
+
+    .headline {
+      color: var(--google-grey-800);
+      font-size: 22px;
+      line-height: 1.15;
+    }
+
     .description-column {
       width: 50%;
     }
@@ -51,12 +66,6 @@
     .header-label {
       flex: 1;
       font-size: 123%;  /* Should be 16px when 100% is 13px. */
-    }
-
-    .headline {
-      color: var(--google-grey-800);
-      font-size: 22px;
-      line-height: 1.15;
     }
 
     @media (prefers-color-scheme: dark) {
