@@ -350,6 +350,27 @@ chromium-metrics-reviews@google.com.
   <token key="Action" variants="DownloadWarningAction"/>
 </histogram>
 
+<histogram name="SBClientPhishing.ApplyTfliteTime.{Operation}" units="ms"
+    expires_after="2022-03-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the duration of {Operation}, which is one step in applying the
+    TfLite model for phishing detection. This model is applied roughly once per
+    navigation.
+  </summary>
+  <token key="Operation">
+    <variant name="Classify" summary="running the TfLite classification"/>
+    <variant name="CreateClassifier"
+        summary="creating a TfLite classifier from the model data"/>
+    <variant name="GetModelInput"
+        summary="extracting the model input data from the page screenshot"/>
+    <variant name="ModelCopy"
+        summary="copying the model data into a separate string for the TfLite
+                 runtime"/>
+  </token>
+</histogram>
+
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
     enum="BooleanReady" expires_after="2022-03-08">
   <owner>drubery@chromium.org</owner>
