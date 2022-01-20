@@ -38,6 +38,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
   FRIEND_TEST_ALL_PREFIXES(RecentAppButtonsViewTest,
                            MultipleRecentAppButtonsView);
 
+  class PlaceholderView;
+
   class RecentAppButtonsView : public views::View {
    public:
     RecentAppButtonsView();
@@ -61,6 +63,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
   std::vector<std::unique_ptr<views::View>> recent_app_button_list_;
   phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler_ =
       nullptr;
+  PlaceholderView* placeholder_view_ = nullptr;
 };
 
 }  // namespace ash

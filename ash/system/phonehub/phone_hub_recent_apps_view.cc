@@ -64,7 +64,9 @@ class HeaderView : public views::Label {
   const char* GetClassName() const override { return "HeaderView"; }
 };
 
-class PlaceholderView : public views::Label {
+}  // namespace
+
+class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
  public:
   PlaceholderView() {
     SetText(
@@ -86,8 +88,6 @@ class PlaceholderView : public views::Label {
   const char* GetClassName() const override { return "ContentView"; }
 };
 
-}  // namespace
-
 PhoneHubRecentAppsView::PhoneHubRecentAppsView(
     phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler)
     : recent_apps_interaction_handler_(recent_apps_interaction_handler) {
@@ -99,6 +99,7 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView(
   AddChildView(std::make_unique<HeaderView>());
   recent_app_buttons_view_ =
       AddChildView(std::make_unique<RecentAppButtonsView>());
+  placeholder_view_ = AddChildView(std::make_unique<PlaceholderView>());
 
   Update();
   recent_apps_interaction_handler_->AddObserver(this);
@@ -186,11 +187,12 @@ void PhoneHubRecentAppsView::Update() {
 
   switch (current_ui_state) {
     case RecentAppsUiState::HIDDEN:
+      placeholder_view_->SetVisible(false);
       SetVisible(false);
       break;
     case RecentAppsUiState::PLACEHOLDER_VIEW:
       recent_app_buttons_view_->SetVisible(false);
-      AddChildView(std::make_unique<PlaceholderView>());
+      placeholder_view_->SetVisible(true);
       SetVisible(true);
       break;
     case RecentAppsUiState::ITEMS_VISIBLE:
@@ -209,6 +211,7 @@ void PhoneHubRecentAppsView::Update() {
             recent_app_button_list_.back().get());
       }
       recent_app_buttons_view_->SetVisible(true);
+      placeholder_view_->SetVisible(false);
       SetVisible(true);
       break;
   }
