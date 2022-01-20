@@ -1681,8 +1681,8 @@ Output = class {
         (this.contextOrder_ === OutputContextOrder.DIRECTED && !isForward);
     const preferStartOrEndAncestry =
         this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST;
-    let cursor = cursors.Cursor.fromNode(range.start.node);
     let prevNode = prevRange.start.node;
+    let node = range.start.node;
 
     const formatNodeAndAncestors = function(node, prevNode) {
       const buff = [];
@@ -1714,17 +1714,57 @@ Output = class {
       prevNode = lca || prevNode;
     }
 
-    const unit = range.isInlineText() ? cursors.Unit.TEXT : cursors.Unit.NODE;
-    while (cursor.node && range.end.node &&
-           AutomationUtil.getDirection(cursor.node, range.end.node) ===
-               Dir.FORWARD) {
-      const node = cursor.node;
-      rangeBuff.push.apply(rangeBuff, formatNodeAndAncestors(node, prevNode));
+    // Do some bookkeeping to see whether this range partially covers node(s) at
+    // its endpoints.
+    let hasPartialNodeStart = false;
+    let hasPartialNodeEnd = false;
+    if (AutomationPredicate.selectableText(range.start.node) &&
+        range.start.index > 0) {
+      hasPartialNodeStart = true;
+    }
+
+    if (AutomationPredicate.selectableText(range.end.node) &&
+        range.end.index >= 0 && range.end.index < range.end.node.name.length) {
+      hasPartialNodeEnd = true;
+    }
+
+    let pred;
+    if (range.isInlineText()) {
+      pred = AutomationPredicate.leaf;
+    } else if (hasPartialNodeStart || hasPartialNodeEnd) {
+      pred = AutomationPredicate.selectableText;
+    } else {
+      pred = AutomationPredicate.object;
+    }
+
+    // Computes output for nodes (including partial subnodes) between endpoints
+    // of |range|.
+    while (node && range.end.node &&
+           AutomationUtil.getDirection(node, range.end.node) === Dir.FORWARD) {
+      if (hasPartialNodeStart && node === range.start.node) {
+        if (range.start.index !== range.start.node.name.length) {
+          const partialRange = new cursors.Range(
+              new cursors.Cursor(node, range.start.index),
+              new cursors.Cursor(
+                  node, node.name.length, {preferNodeStartEquivalent: true}));
+          this.subNode_(partialRange, prevRange, type, rangeBuff, ruleStr);
+        }
+      } else if (hasPartialNodeEnd && node === range.end.node) {
+        if (range.end.index !== 0) {
+          const partialRange = new cursors.Range(
+              new cursors.Cursor(node, 0),
+              new cursors.Cursor(node, range.end.index));
+          this.subNode_(partialRange, prevRange, type, rangeBuff, ruleStr);
+        }
+      } else {
+        rangeBuff.push.apply(rangeBuff, formatNodeAndAncestors(node, prevNode));
+      }
+
       prevNode = node;
-      cursor = cursor.move(unit, cursors.Movement.DIRECTIONAL, Dir.FORWARD);
+      node = AutomationUtil.findNextNode(node, Dir.FORWARD, pred) || prevNode;
 
       // Reached a boundary.
-      if (cursor.node === prevNode) {
+      if (node === prevNode) {
         break;
       }
     }

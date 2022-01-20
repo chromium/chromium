@@ -319,8 +319,10 @@ ChromeVoxEditableTextBase = class {
     if (evt.start === evt.end) {
       // It's currently a cursor.
       if (this.start !== this.end) {
-        // It was previously a selection, so just announce 'unselected'.
-        this.speak(Msgs.getMsg('Unselected'), evt.triggeredByUser);
+        // It was previously a selection.
+        this.speak(
+            this.value.substring(this.start, this.end), evt.triggeredByUser);
+        this.speak(Msgs.getMsg('removed_from_selection'));
       } else if (
           this.getLineIndex(this.start) !== this.getLineIndex(evt.start)) {
         // Moved to a different line; read it.

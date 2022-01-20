@@ -916,4 +916,14 @@ AutomationPredicate.menuItem = AutomationPredicate.roles(
  */
 AutomationPredicate.text = AutomationPredicate.roles(
     [Role.STATIC_TEXT, Role.INLINE_TEXT_BOX, Role.LINE_BREAK]);
+
+/**
+ * Matches against selecteable text like nodes.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.selectableText = AutomationPredicate.roles([
+  Role.STATIC_TEXT, Role.INLINE_TEXT_BOX, Role.LINE_BREAK, Role.LIST_MARKER
+]);
+
 });  // goog.scope

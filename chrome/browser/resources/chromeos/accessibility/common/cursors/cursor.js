@@ -83,12 +83,18 @@ cursors.Cursor = class {
    * accessible name. An index of |cursors.NODE_INDEX| means the node as a
    * whole is pointed to and covers the case where the accessible text is
    * empty.
-   * @param {{wrapped: (boolean|undefined)}} args
+   * @param {{wrapped: (boolean|undefined),
+   *            preferNodeStartEquivalent: (boolean|undefined)}} args
+   *     wrapped: determines whether this cursor wraps when moved beyond a
+   * document boundary.
+   *     preferNodeStartEquivalent: When true,moves this cursor to the start of
+   * the next node when it points to the end of the current node.
    */
   constructor(node, index, args = {}) {
     // Compensate for specific issues in Blink.
     // TODO(dtseng): Pass through affinity; if upstream, skip below.
-    if (node.role === RoleType.STATIC_TEXT && node.name.length === index) {
+    if (node.role === RoleType.STATIC_TEXT && node.name.length === index &&
+        !args.preferNodeStartEquivalent) {
       // Re-interpret this case as the beginning of the next node.
       const nextNode = AutomationUtil.findNextNode(
           node, Dir.FORWARD, AutomationPredicate.leafOrStaticText);

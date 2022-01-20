@@ -462,7 +462,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     this.handleSpeech_(
         cur, prev, startLine, endLine, prevStartLine, prevEndLine,
         baseLineOnStart, intents);
-    this.handleBraille_();
+    this.handleBraille_(baseLineOnStart);
   }
 
   /**
@@ -601,27 +601,26 @@ const AutomationRichEditableText = class extends AutomationEditableText {
 
       // Speech requires many more states than braille.
       const curExtent = baseLineOnStart ? startLine : endLine;
-      let text = '';
       let suffixMsg = '';
       if (curBase.isBeforeLine(curExtent)) {
         // Forward selection.
         if (prev.isBeforeLine(curBase)) {
           // Wrapped across the baseline. Read out the new selection.
           suffixMsg = 'selected';
-          text = this.getTextSelection_(
+          this.speakTextSelection_(
               curBase.startContainer, curBase.localStartOffset,
               curExtent.endContainer, curExtent.localEndOffset);
         } else {
           if (prev.isBeforeLine(curExtent)) {
             // Grew.
             suffixMsg = 'selected';
-            text = this.getTextSelection_(
+            this.speakTextSelection_(
                 prev.endContainer, prev.localEndOffset, curExtent.endContainer,
                 curExtent.localEndOffset);
           } else {
             // Shrank.
             suffixMsg = 'unselected';
-            text = this.getTextSelection_(
+            this.speakTextSelection_(
                 curExtent.endContainer, curExtent.localEndOffset,
                 prev.endContainer, prev.localEndOffset);
           }
@@ -631,35 +630,33 @@ const AutomationRichEditableText = class extends AutomationEditableText {
         if (curBase.isBeforeLine(prev)) {
           // Wrapped across the baseline. Read out the new selection.
           suffixMsg = 'selected';
-          text = this.getTextSelection_(
+          this.speakTextSelection_(
               curExtent.startContainer, curExtent.localStartOffset,
               curBase.endContainer, curBase.localEndOffset);
         } else {
           if (curExtent.isBeforeLine(prev)) {
             // Grew.
             suffixMsg = 'selected';
-            text = this.getTextSelection_(
+            this.speakTextSelection_(
                 curExtent.startContainer, curExtent.localStartOffset,
                 prev.startContainer, prev.localStartOffset);
           } else {
             // Shrank.
             suffixMsg = 'unselected';
-            text = this.getTextSelection_(
+            this.speakTextSelection_(
                 prev.startContainer, prev.localStartOffset,
                 curExtent.startContainer, curExtent.localStartOffset);
           }
         }
       }
 
-      ChromeVox.tts.speak(text, QueueMode.CATEGORY_FLUSH);
       ChromeVox.tts.speak(Msgs.getMsg(suffixMsg), QueueMode.QUEUE);
     } else if (!cur.hasCollapsedSelection()) {
       // Without any other information, try describing the selection. This state
       // catches things like select all.
-      const text = this.getTextSelection_(
+      this.speakTextSelection_(
           cur.startContainer, cur.localStartOffset, cur.endContainer,
           cur.localEndOffset);
-      ChromeVox.tts.speak(text, QueueMode.CATEGORY_FLUSH);
       ChromeVox.tts.speak(Msgs.getMsg('selected'), QueueMode.QUEUE);
     } else {
       // A catch-all for any other transitions.
@@ -673,8 +670,13 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     this.updateIntraLineState_(cur);
   }
 
-  /** @private */
-  handleBraille_() {
+  /**
+   * @param {boolean} baseLineOnStart When true, the brailled line will show
+   *     ancestry context based on the start of the selection. When false, it
+   *     will use the end of the selection.
+   * @private
+   */
+  handleBraille_(baseLineOnStart) {
     const isFirstLine = this.isSelectionOnFirstLine();
     const cur = this.line_;
     if (cur.value === null) {
@@ -713,7 +715,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     });
 
     // Provide context for the current selection.
-    const context = cur.startContainer;
+    const context = baseLineOnStart ? cur.startContainer : cur.endContainer;
     if (context && context.role !== RoleType.TEXT_FIELD) {
       const output = new Output().suppress('name').withBraille(
           Range.fromNode(context), Range.fromNode(this.node_),
@@ -751,37 +753,19 @@ const AutomationRichEditableText = class extends AutomationEditableText {
    * @param {number} startOffset
    * @param {AutomationNode|undefined} endNode
    * @param {number} endOffset
-   * @return {string}
    */
-  getTextSelection_(startNode, startOffset, endNode, endOffset) {
+  speakTextSelection_(startNode, startOffset, endNode, endOffset) {
     if (!startNode || !endNode) {
-      return '';
+      return;
     }
 
-    if (startNode === endNode) {
-      return startNode.name ? startNode.name.substring(startOffset, endOffset) :
-                              '';
-    }
+    const selectedRange = new Range(
+        new Cursor(startNode, startOffset), new Cursor(endNode, endOffset));
 
-    let text = '';
-    if (startNode.name) {
-      text = startNode.name.substring(startOffset);
-    }
-
-    for (let node = startNode;
-         (node = AutomationUtil.findNextNode(
-              node, Dir.FORWARD, AutomationPredicate.leafOrStaticText)) &&
-         node !== endNode;) {
-      // Padding needs to get added to break up speech utterances.
-      if (node.name) {
-        text += ' ' + node.name;
-      }
-    }
-
-    if (endNode.name) {
-      text += ' ' + endNode.name.substring(0, endOffset);
-    }
-    return text;
+    new Output()
+        .withRichSpeech(
+            selectedRange, Range.fromNode(this.node_), OutputEventType.NAVIGATE)
+        .go();
   }
 
   /**

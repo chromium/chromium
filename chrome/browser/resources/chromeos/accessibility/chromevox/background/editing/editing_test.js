@@ -210,7 +210,7 @@ TEST_F('ChromeVoxEditingTest', 'RichTextMoveByCharacter', function() {
         if (char == 0) {
           dir = 'forward';
         }
-        if (line == 16) {
+        if (char == 16) {
           dir = 'backward';
         }
       }, true);
@@ -724,23 +724,19 @@ TEST_F('ChromeVoxEditingTest', 'RichTextSelectByLine', function() {
             .expectSpeech('1', 'added to selection')
             .expectBraille('11111 line\nmled', {startIndex: 0, endIndex: 2})
 
-            // Forward selection.
-
-            // Growing.
-
-            // By line (notice the partial selections from the first and
-            // second lines).
+            // Forward selection by line (notice the partial selections from the
+            // first and second lines).
             .call(move)
-            .expectSpeech('111 line \n 22', 'selected')
+            .expectSpeech('111 line', '22', 'selected')
             .expectBraille('22222 line\n', {startIndex: 0, endIndex: 2})
 
             .call(move)
-            .expectSpeech('222 line \n 33', 'selected')
+            .expectSpeech('222 line', '33', 'selected')
             .expectBraille('33333 line\n', {startIndex: 0, endIndex: 2})
 
-            // Shrinking.
+            // Backward selection by line.
             .call(move)
-            .expectSpeech('222 line \n 33', 'unselected')
+            .expectSpeech('222 line', '33', 'unselected')
             .expectBraille('22222 line\n', {startIndex: 0, endIndex: 2})
 
             .call(move)
@@ -749,8 +745,7 @@ TEST_F('ChromeVoxEditingTest', 'RichTextSelectByLine', function() {
 
             // Document boundary.
             .call(move)
-            .expectSpeech(
-                '111 line \n 22222 line \n 33333 line \n \n', 'selected')
+            .expectSpeech('111 line', '22222 line', '33333 line', 'selected')
             .expectBraille('33333 line\n', {startIndex: 0, endIndex: 10})
 
             // The script repositions the caret to the 'n' of the third line.
@@ -768,17 +763,127 @@ TEST_F('ChromeVoxEditingTest', 'RichTextSelectByLine', function() {
 
             // Growing.
             .call(move)
-            .expectSpeech('ne \n 33333 li', 'selected')
+            .expectSpeech('ne', '33333 li', 'selected')
             .expectBraille('22222 line\n', {startIndex: 8, endIndex: 11})
 
             .call(move)
-            .expectSpeech('ne \n 22222 li', 'selected')
+            .expectSpeech('ne', '22222 li', 'selected')
             .expectBraille('11111 line\n', {startIndex: 8, endIndex: 11})
 
             // Shrinking.
             .call(move)
-            .expectSpeech('ne \n 22222 li', 'unselected')
+            .expectSpeech('ne', '22222 li', 'unselected')
             .expectBraille('22222 line\n', {startIndex: 8, endIndex: 11})
+
+            .replay();
+      });
+});
+
+TEST_F('ChromeVoxEditingTest', 'RichTextSelectComplexStructure', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
+    <div>
+      <button id="go">Go</button>
+    </div>
+    <div contenteditable role=textbox>
+      <h1>11111 line</h1>
+      <a href=#>22222 line</a>
+      <ol><li>33333 line</li></ol>
+    </p>
+    <script>
+      let commands = [
+        ['extend', 'forward', 'character'],
+        ['extend', 'forward', 'character'],
+
+        ['extend', 'forward', 'line'],
+        ['extend', 'forward', 'line'],
+
+        ['extend', 'backward', 'line'],
+        ['extend', 'backward', 'line'],
+
+        ['extend', 'forward', 'documentBoundary'],
+
+        ['move', 'forward', 'character'],
+        ['move', 'backward', 'character'],
+        ['move', 'backward', 'character'],
+
+        ['extend', 'backward', 'line'],
+        ['extend', 'backward', 'line'],
+
+        ['extend', 'forward', 'line'],
+      ];
+      document.getElementById('go').addEventListener('click', function() {
+        let sel = getSelection();
+        sel.modify.apply(sel, commands.shift());
+      }, true);
+    </script>
+  `,
+      async function(root) {
+        await this.focusFirstTextField(root, {role: RoleType.TEXT_FIELD});
+
+        const go = root.find({role: RoleType.BUTTON});
+        const move = go.doDefault.bind(go);
+
+        // By character.
+        mockFeedback.call(move)
+            .expectSpeech('1', 'selected')
+            .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 1})
+            .call(move)
+            .expectSpeech('1', 'added to selection')
+            .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 2})
+
+            // Forward selection by line (notice the partial selections from the
+            // first and second lines).
+            .call(move)
+            .expectSpeech('111 line', 'Heading 1', '222', 'Link', 'selected')
+            .expectBraille('22222 line lnk', {startIndex: 0, endIndex: 3})
+
+            .call(move)
+            .expectSpeech('22 line', 'Link', 'selected')
+            .expectBraille(
+                '33333 line 1. lstitm lst +1', {startIndex: 0, endIndex: 0})
+
+            // Shrinking.
+            .call(move)
+            .expectSpeech('22 line', 'Link', 'unselected')
+            .expectBraille('22222 line lnk', {startIndex: 0, endIndex: 3})
+
+            .call(move)
+            .expectSpeech('11', 'Heading 1', 'selected')
+            .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 2})
+
+            // Document boundary.
+            .call(move)
+            .expectSpeech(
+                '111 line', 'Heading 1', '22222 line', 'Link', '33333 line',
+                'List item', 'selected')
+            .expectBraille(
+                '33333 line 1. lstitm lst +1', {startIndex: 0, endIndex: 10})
+
+            // The script repositions the caret to the end of the last line.
+            .call(move)
+            .expectSpeech('End of text')
+            .expectBraille(
+                '33333 line 1. lstitm lst +1', {startIndex: 10, endIndex: 10})
+            .call(move)
+            .expectSpeech('e')
+            .expectBraille(
+                '33333 line 1. lstitm lst +1', {startIndex: 9, endIndex: 9})
+            .call(move)
+            .expectSpeech('n')
+            .expectBraille(
+                '33333 line 1. lstitm lst +1', {startIndex: 8, endIndex: 8})
+
+            // Backward selection.
+            // Some bugs exist in Blink where we don't get all selection events
+            // in this complex structure via extending selection, so we do it
+            // twice.
+            .call(move)
+            .call(move)
+            .expectSpeech('ine', 'Link')
+            .expectSpeech('33333 li', 'List item', 'selected')
+            .expectBraille('11111 line h1', {startIndex: 7, endIndex: 10})
 
             .replay();
       });
@@ -1314,15 +1419,15 @@ TEST_F('ChromeVoxEditingTest', 'SelectAll', function() {
         mockFeedback.call(this.press(KeyCode.END, {ctrl: true}))
             .expectSpeech('third line')
             .call(this.press(KeyCode.A, {ctrl: true}))
-            .expectSpeech('first line second line third line', 'selected')
+            .expectSpeech('first line', 'second line', 'third line', 'selected')
             .call(this.press(KeyCode.UP))
             .expectSpeech('second line')
             .call(this.press(KeyCode.A, {ctrl: true}))
-            .expectSpeech('first line second line third line', 'selected')
+            .expectSpeech('first line', 'second line', 'third line', 'selected')
             .call(this.press(KeyCode.HOME, {ctrl: true}))
             .expectSpeech('first line')
             .call(this.press(KeyCode.A, {ctrl: true}))
-            .expectSpeech('first line second line third line', 'selected')
+            .expectSpeech('first line', 'second line', 'third line', 'selected')
             .replay();
       });
 });
