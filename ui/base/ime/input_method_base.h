@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur() override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                 NativeEventResult* result) override;
   void OnInputLocaleChanged() override;

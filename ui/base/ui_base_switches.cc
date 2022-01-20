@@ -4,9 +4,11 @@
 
 #include "ui/base/ui_base_switches.h"
 
+#include "build/build_config.h"
+
 namespace switches {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Disable overscroll edge effects like those found in Android views.
 const char kDisableOverscrollEdgeEffect[] = "disable-overscroll-edge-effect";
 
@@ -14,7 +16,7 @@ const char kDisableOverscrollEdgeEffect[] = "disable-overscroll-edge-effect";
 const char kDisablePullToRefreshEffect[] = "disable-pull-to-refresh-effect";
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Disable animations for showing and hiding modal dialogs.
 const char kDisableModalAnimations[] = "disable-modal-animations";
 

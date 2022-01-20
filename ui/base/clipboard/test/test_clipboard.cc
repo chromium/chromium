@@ -73,13 +73,13 @@ bool TestClipboard::IsFormatAvailable(
   if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
           buffer, GetStore(buffer).data_src.get(), data_dst))
     return false;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The linux clipboard treats the presence of text on the clipboard
   // as the url format being available.
   if (format == ClipboardFormatType::UrlType())
     return IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                              data_dst);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const DataStore& store = GetStore(buffer);
   if (format == ClipboardFormatType::FilenamesType())
     return !store.filenames.empty();
@@ -314,7 +314,7 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
 void TestClipboard::WriteText(const char* text_data, size_t text_len) {
   std::string text(text_data, text_len);
   GetDefaultStore().data[ClipboardFormatType::PlainTextType()] = text;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a dummy entry.
   GetDefaultStore().data[ClipboardFormatType::PlainTextAType()];
 #endif
@@ -357,7 +357,7 @@ void TestClipboard::WriteBookmark(const char* title_data,
                                   size_t url_len) {
   GetDefaultStore().data[ClipboardFormatType::UrlType()] =
       std::string(url_data, url_len);
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   GetDefaultStore().url_title = std::string(title_data, title_len);
 #endif
 }

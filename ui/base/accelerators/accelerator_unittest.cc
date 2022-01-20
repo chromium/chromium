@@ -39,7 +39,7 @@ TEST(AcceleratorTest, TimeStamp) {
 }
 
 // Crash on Android builders. https://crbug.com/980267
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_GetShortcutText DISABLED_GetShortcutText
 #else
 #define MAYBE_GetShortcutText GetShortcutText
@@ -55,7 +55,7 @@ TEST(AcceleratorTest, MAYBE_GetShortcutText) {
     {VKEY_A, EF_ALT_DOWN | EF_SHIFT_DOWN, u"Alt+Shift+A", u"⌥⇧A"},
     // Regression test for https://crbug.com/867732:
     {VKEY_OEM_COMMA, EF_CONTROL_DOWN, u"Ctrl+Comma", u"⌃,"},
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {VKEY_T, EF_COMMAND_DOWN | EF_CONTROL_DOWN, nullptr, u"⌃⌘T"},
 #endif
   };
@@ -63,7 +63,7 @@ TEST(AcceleratorTest, MAYBE_GetShortcutText) {
   for (const auto& key : keys) {
     std::u16string text =
         Accelerator(key.code, key.modifiers).GetShortcutText();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     EXPECT_EQ(text, key.expected_short);
 #else
     EXPECT_EQ(text, key.expected_long);
@@ -87,7 +87,7 @@ TEST(AcceleratorTest, ConversionFromKeyEvent) {
             ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class AcceleratorTestMac : public testing::Test {
  public:
   AcceleratorTestMac() = default;

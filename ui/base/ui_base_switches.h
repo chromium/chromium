@@ -12,12 +12,12 @@
 
 namespace switches {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableOverscrollEdgeEffect[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDisablePullToRefreshEffect[];
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableModalAnimations[];
 COMPONENT_EXPORT(UI_BASE) extern const char kShowMacOverlayBorders[];
 #endif

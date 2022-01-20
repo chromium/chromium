@@ -10,17 +10,17 @@
 #include "build/chromeos_buildflags.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA) && \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/check.h"
 #include "ui/base/ime/linux/fake_input_method_context_factory.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/win/tsf_bridge.h"
 #endif
 
 namespace {
 
-#if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 const ui::LinuxInputMethodContextFactory*
     g_linux_input_method_context_factory_for_testing;
 #endif
@@ -30,20 +30,20 @@ const ui::LinuxInputMethodContextFactory*
 namespace ui {
 
 void InitializeInputMethod() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(IS_WIN)
   TSFBridge::Initialize();
 #endif
 }
 
 void ShutdownInputMethod() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(IS_WIN)
   TSFBridge::Shutdown();
 #endif
 }
 
 void InitializeInputMethodForTesting() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA) && \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   if (!g_linux_input_method_context_factory_for_testing)
     g_linux_input_method_context_factory_for_testing =
         new FakeInputMethodContextFactory();
@@ -54,14 +54,14 @@ void InitializeInputMethodForTesting() {
       << "else.";
   LinuxInputMethodContextFactory::SetInstance(
       g_linux_input_method_context_factory_for_testing);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   TSFBridge::InitializeForTesting();
 #endif
 }
 
 void ShutdownInputMethodForTesting() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA) && \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   const LinuxInputMethodContextFactory* factory =
       LinuxInputMethodContextFactory::instance();
   CHECK(!factory || factory == g_linux_input_method_context_factory_for_testing)
@@ -69,7 +69,7 @@ void ShutdownInputMethodForTesting() {
   LinuxInputMethodContextFactory::SetInstance(nullptr);
   delete g_linux_input_method_context_factory_for_testing;
   g_linux_input_method_context_factory_for_testing = nullptr;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   TSFBridge::Shutdown();
 #endif
 }

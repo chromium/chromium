@@ -45,7 +45,7 @@ void InputMethodBase::OnBlur() {
 
 void InputMethodBase::OnTouch(ui::EventPointerType pointerType) {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool InputMethodBase::OnUntranslatedIMEMessage(
     const CHROME_MSG event,
     InputMethod::NativeEventResult* result) {

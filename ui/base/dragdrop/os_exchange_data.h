@@ -142,7 +142,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   bool GetFileContents(base::FilePath* filename,
                        std::string* file_contents) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Methods used to query and retrieve file data from a drag source
   // IDataObject implementation packaging the data with the
   // CFSTR_FILEDESCRIPTOR/CFSTR_FILECONTENTS clipboard formats instead of the

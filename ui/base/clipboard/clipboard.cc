@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -26,11 +27,11 @@ bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
   // Use lambda instead of local helper function in order to access private
   // member IsSelectionBufferAvailable().
   static auto IsSupportedSelectionClipboard = []() -> bool {
-#if defined(USE_OZONE) && !defined(OS_CHROMEOS)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS)
     ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
     CHECK(clipboard);
     return clipboard->IsSelectionBufferAvailable();
-#elif !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_CHROMEOS)
+#elif !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
     return true;
 #else
     return false;

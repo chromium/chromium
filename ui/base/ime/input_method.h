@@ -49,7 +49,7 @@ class TextInputClient;
 // ui::InputMethod and owns it.
 class InputMethod {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef LRESULT NativeEventResult;
 #else
   typedef int32_t NativeEventResult;
@@ -70,7 +70,7 @@ class InputMethod {
   // Called when the top-level system window loses keyboard focus.
   virtual void OnBlur() = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Called when the focused window receives native IME messages that are not
   // translated into other predefined event callbacks. Currently this method is
   // used only for IME functionalities specific to Windows.

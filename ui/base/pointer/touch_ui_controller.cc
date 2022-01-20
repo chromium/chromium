@@ -13,9 +13,10 @@
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "ui/gfx/win/singleton_hwnd.h"
@@ -26,14 +27,14 @@ namespace ui {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 bool IsTabletMode() {
   return base::win::IsWindows10OrGreaterTabletMode(
       gfx::SingletonHwnd::GetInstance()->hwnd());
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void RecordEnteredTouchMode() {
   base::RecordAction(base::UserMetricsAction("TouchMode.EnteredTouchMode"));
@@ -77,7 +78,7 @@ TouchUiController* TouchUiController::Get() {
 
 TouchUiController::TouchUiController(TouchUiState touch_ui_state)
     : touch_ui_state_(touch_ui_state) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::CurrentUIThread::IsSet() &&
       base::win::GetVersion() >= base::win::Version::WIN10) {
     singleton_hwnd_observer_ =

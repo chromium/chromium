@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
@@ -138,13 +139,13 @@ const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
   return *type;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 const ClipboardFormatType& ClipboardFormatType::DataTransferEndpointDataType() {
   static base::NoDestructor<ClipboardFormatType> type(
       kMimeTypeDataTransferEndpoint);
   return *type;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

@@ -28,14 +28,14 @@ constexpr char kUrlOriginKey[] = "url_origin";
 constexpr char kDefaultString[] = "default";
 constexpr char kUrlString[] = "url";
 constexpr char kClipboardHistoryString[] = "clipboard_history";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kUnknownVmString[] = "unknown_vm";
 constexpr char kArcString[] = "arc";
 constexpr char kBorealisString[] = "borealis";
 constexpr char kCrostiniString[] = "crostini";
 constexpr char kPluginVmString[] = "plugin_vm";
 constexpr char kLacrosString[] = "lacros";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string EndpointTypeToString(EndpointType type) {
   // N.B. If a new EndpointType is added here, please add the relevant entry
@@ -47,7 +47,7 @@ std::string EndpointTypeToString(EndpointType type) {
       return kUrlString;
     case EndpointType::kClipboardHistory:
       return kClipboardHistoryString;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     case EndpointType::kUnknownVm:
       return kUnknownVmString;
     case EndpointType::kArc:
@@ -60,7 +60,7 @@ std::string EndpointTypeToString(EndpointType type) {
       return kPluginVmString;
     case EndpointType::kLacros:
       return kLacrosString;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 }
 
@@ -68,17 +68,17 @@ std::optional<EndpointType> EndpointStringToType(
     const std::string& endpoint_string) {
   static constexpr auto kEndpointStringToTypeMap =
       base::MakeFixedFlatMap<base::StringPiece, ui::EndpointType>({
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
         {kUnknownVmString, EndpointType::kUnknownVm},
         {kArcString, EndpointType::kArc},
         {kBorealisString, EndpointType::kBorealis},
         {kCrostiniString, EndpointType::kCrostini},
         {kPluginVmString, EndpointType::kPluginVm},
         {kLacrosString, EndpointType::kLacros},
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         {kDefaultString, EndpointType::kDefault},
         {kUrlString, EndpointType::kUrl},
-        {kClipboardHistoryString, EndpointType::kClipboardHistory}
+        {kClipboardHistoryString, EndpointType::kClipboardHistory},
       });
 
   auto* it = kEndpointStringToTypeMap.find(endpoint_string);

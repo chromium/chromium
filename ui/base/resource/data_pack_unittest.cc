@@ -333,7 +333,7 @@ TEST_P(DataPackTest, WriteWithAliases) {
   EXPECT_EQ(2U, pack.GetAliasTableSizeForTesting());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST(DataPackTest, ModifiedWhileUsed) {
   base::ScopedTempDir dir;
   ASSERT_TRUE(dir.CreateUniqueTempDir());

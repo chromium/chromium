@@ -52,7 +52,7 @@
 #include "ui/strings/grit/app_locale_settings.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
@@ -61,7 +61,7 @@
 #include "ui/gfx/platform_font_skia.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 
 // To avoid conflicts with the macro from the Windows SDK...
@@ -78,7 +78,7 @@ const size_t kPngChunkMetadataSize = 12;  // length, type, crc32
 const unsigned char kPngScaleChunkType[4] = { 'c', 's', 'C', 'l' };
 const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 const char kPakFileExtension[] = ".pak";
 #endif
 
@@ -101,11 +101,11 @@ base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
     return path.AppendASCII(pak_name.c_str());
 
   // Return just the name of the pak file.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(base::ASCIIToWide(pak_name));
 #else
   return base::FilePath(pak_name.c_str());
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 SkBitmap CreateEmptyBitmap() {
@@ -211,7 +211,7 @@ class ResourceBundle::BitmapImageSource : public gfx::ImageSkiaSource {
     bool found = rb_->LoadBitmap(resource_id_, &scale_factor,
                                  &image, &fell_back_to_1x);
     if (!found) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // TODO(oshima): Android unit_tests runs at DSF=3 with 100P assets.
       return gfx::ImageSkiaRep();
 #else
@@ -363,13 +363,13 @@ void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
   secondary_locale_resources_data_ = std::move(data_pack);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // static
 bool ResourceBundle::LocaleDataPakExists(const std::string& locale) {
   const auto path = GetLocaleFilePath(locale);
   return !path.empty() && base::PathExists(path);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ResourceBundle::AddDataPackFromPath(const base::FilePath& path,
                                          ResourceScaleFactor scale_factor) {
@@ -405,7 +405,7 @@ void ResourceBundle::AddDataPackFromFileRegion(
   }
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 // static
 base::FilePath ResourceBundle::GetLocaleFilePath(
     const std::string& app_locale) {
@@ -433,7 +433,7 @@ base::FilePath ResourceBundle::GetLocaleFilePath(
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
                                                 bool crash_on_failure) {
   DCHECK(!locale_resources_data_.get()) << "locale.pak already loaded";
@@ -452,14 +452,14 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   if (!data_pack->LoadFromPath(locale_file_path) && crash_on_failure) {
     // https://crbug.com/1076423: Chrome can't start when the locale file cannot
     // be loaded. Crash early and gather some data.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     const auto last_error = ::GetLastError();
     base::debug::Alias(&last_error);
     wchar_t path_copy[MAX_PATH];
     base::wcslcpy(path_copy, locale_file_path.value().c_str(),
                   base::size(path_copy));
     base::debug::Alias(path_copy);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     CHECK(false);
   }
 
@@ -467,7 +467,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   loaded_locale_ = pref_locale;
   return app_locale;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ResourceBundle::LoadTestResources(const base::FilePath& path,
                                        const base::FilePath& locale_path) {
@@ -849,7 +849,7 @@ void ResourceBundle::ReloadFonts() {
 }
 
 ResourceScaleFactor ResourceBundle::GetMaxResourceScaleFactor() const {
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return max_scale_factor_;
 #else
   return GetSupportedResourceScaleFactors().back();
@@ -887,7 +887,7 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
   DCHECK(g_shared_instance_ == nullptr) << "ResourceBundle initialized twice";
   g_shared_instance_ = new ResourceBundle(delegate);
   std::vector<ResourceScaleFactor> supported_scale_factors;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   if (display.device_scale_factor() > 2.0) {
     DCHECK_EQ(3.0, display.device_scale_factor());
@@ -994,7 +994,7 @@ gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
                           rep_from_lottie.pixel_size());
   }
   const ResourceScaleFactor scale_factor_to_load = GetMaxResourceScaleFactor();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   const ResourceScaleFactor scale_factor_to_load =
       display::win::GetDPIScale() > 1.25 ? GetMaxResourceScaleFactor()
                                          : ui::k100Percent;
@@ -1023,7 +1023,7 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
   if (DecodePNG(memory->front(), memory->size(), bitmap, fell_back_to_1x))
     return true;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // iOS does not compile or use the JPEG codec.  On other platforms,
   // 99% of our assets are PNGs, however fallback to JPEG.
   std::unique_ptr<SkBitmap> jpeg_bitmap(

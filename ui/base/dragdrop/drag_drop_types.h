@@ -26,12 +26,12 @@ class COMPONENT_EXPORT(UI_BASE_DRAGDROP_TYPES) DragDropTypes {
     DRAG_MOVE = 16,
   };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static uint32_t DragOperationToDropEffect(int drag_operation);
   static int DropEffectToDragOperation(uint32_t effect);
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   static uint64_t DragOperationToNSDragOperation(int drag_operation);
   static int NSDragOperationToDragOperation(uint64_t ns_drag_operation);
 #endif

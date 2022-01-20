@@ -16,12 +16,12 @@ namespace ui {
 enum {
   PATH_START = 3000,
 
-  DIR_LOCALES,              // Directory where locale resources are stored.
+  DIR_LOCALES,  // Directory where locale resources are stored.
 
   // Valid only in development environment; TODO(darin): move this
-  UI_DIR_TEST_DATA,            // Directory where unit test data resides.
+  UI_DIR_TEST_DATA,  // Directory where unit test data resides.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DIR_RESOURCE_PAKS_ANDROID,
 #endif
 

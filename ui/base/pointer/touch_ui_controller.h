@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace gfx {
 class SingletonHwndObserver;
 }
@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
   bool tablet_mode_ = false;
   TouchUiState touch_ui_state_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 #endif
 

@@ -21,7 +21,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/keycodes/dom/dom_code.h"
 #endif
 
@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
               KeyState key_state = KeyState::PRESSED,
               base::TimeTicks time_stamp = base::TimeTicks());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Additional constructor that takes a |DomCode| in order to implement
   // layout independent fixed position shortcuts. This is only used for
   // shortcuts in Chrome OS. One such example is Alt ']'. In the US layout ']'
@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
 
   KeyboardCode key_code() const { return key_code_; }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   DomCode code() const { return code_; }
   void reset_code() { code_ = DomCode::NONE; }
 #endif
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   // Returns a string with the localized shortcut if any.
   std::u16string GetShortcutText() const;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::u16string KeyCodeToMacSymbol() const;
 #endif
   std::u16string KeyCodeToName() const;
@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   // The keycode (VK_...).
   KeyboardCode key_code_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // The DomCode representing a key's physical position.
   DomCode code_ = DomCode::NONE;
 #endif

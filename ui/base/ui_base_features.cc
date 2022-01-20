@@ -6,13 +6,14 @@
 
 #include <stdlib.h>
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -22,7 +23,7 @@
 
 namespace features {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // If enabled, the occluded region of the HWND is supplied to WindowTracker.
 const base::Feature kApplyNativeOccludedRegionToWindowTracker{
     "ApplyNativeOccludedRegionToWindowTracker",
@@ -52,7 +53,7 @@ const base::Feature kScreenPowerListenerForNativeWinOcclusion{
     "ScreenPowerListenerForNativeWinOcclusion",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Integrate input method specific settings to Chrome OS settings page.
@@ -111,8 +112,8 @@ const base::Feature kSystemKeyboardLock{"SystemKeyboardLock",
 
 // Enables GPU rasterization for all UI drawing (where not blocklisted).
 const base::Feature kUiGpuRasterization = {"UiGpuRasterization",
-#if defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_FUCHSIA) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
                                            base::FEATURE_ENABLED_BY_DEFAULT
 #else
                                            base::FEATURE_DISABLED_BY_DEFAULT
@@ -127,7 +128,7 @@ bool IsUiGpuRasterizationEnabled() {
 const base::Feature kUiCompositorScrollWithLayers = {
     "UiCompositorScrollWithLayers",
 // TODO(https://crbug.com/615948): Use composited scrolling on all platforms.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     base::FEATURE_ENABLED_BY_DEFAULT
 #else
     base::FEATURE_DISABLED_BY_DEFAULT
@@ -145,36 +146,37 @@ const base::Feature kExperimentalFlingAnimation {
   "ExperimentalFlingAnimation",
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-                        !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) ||                                   \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+     !BUILDFLAG(IS_CHROMEOS_LACROS))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
 
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 // Cached in Java as well, make sure defaults are updated together.
 const base::Feature kElasticOverscroll = {"ElasticOverscroll",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                                           base::FEATURE_ENABLED_BY_DEFAULT
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
                                           base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
-#endif  // defined(OS_WIN) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kElasticOverscrollType[] = "type";
 const char kElasticOverscrollTypeFilter[] = "filter";
 const char kElasticOverscrollTypeTransform[] = "transform";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables focus follow follow cursor (sloppyfocus).
 const base::Feature kFocusFollowsCursor = {"FocusFollowsCursor",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Enables InputPane API for controlling on screen keyboard.
 const base::Feature kInputPaneOnScreenKeyboard = {
     "InputPaneOnScreenKeyboard", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -191,9 +193,9 @@ bool IsUsingWMPointerForTouch() {
          base::FeatureList::IsEnabled(kPointerEventsForTouch);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // This feature supercedes kNewShortcutMapping.
 const base::Feature kImprovedKeyboardShortcuts = {
     "ImprovedKeyboardShortcuts", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -225,7 +227,7 @@ const base::Feature kDeprecateAltBasedSixPack = {
 bool IsDeprecateAltBasedSixPackEnabled() {
   return base::FeatureList::IsEnabled(kDeprecateAltBasedSixPack);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Enables forced colors mode for web content.
 const base::Feature kForcedColors{"ForcedColors",
@@ -242,7 +244,7 @@ bool IsForcedColorsEnabled() {
 // milestones.
 const base::Feature kEyeDropper {
   "EyeDropper",
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -310,7 +312,7 @@ const base::Feature kUIDebugTools{"ui-debug-tools",
 
 bool IsSwipeToMoveCursorEnabled() {
   static const bool enabled =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_R;
 #else
