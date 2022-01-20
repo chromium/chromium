@@ -14,7 +14,7 @@ namespace webgpu {
 namespace {
 
 class ReadHandleImpl
-    : public dawn_wire::server::MemoryTransferService::ReadHandle {
+    : public dawn::wire::server::MemoryTransferService::ReadHandle {
  public:
   ReadHandleImpl(void* ptr, uint32_t size)
       : ReadHandle(), ptr_(ptr), size_(size) {}
@@ -43,7 +43,7 @@ class ReadHandleImpl
 };
 
 class WriteHandleImpl
-    : public dawn_wire::server::MemoryTransferService::WriteHandle {
+    : public dawn::wire::server::MemoryTransferService::WriteHandle {
  public:
   WriteHandleImpl(const void* ptr, uint32_t size)
       : WriteHandle(), ptr_(ptr), size_(size) {}
@@ -78,7 +78,7 @@ class WriteHandleImpl
 
 DawnServiceMemoryTransferService::DawnServiceMemoryTransferService(
     CommonDecoder* decoder)
-    : dawn_wire::server::MemoryTransferService(), decoder_(decoder) {}
+    : dawn::wire::server::MemoryTransferService(), decoder_(decoder) {}
 
 DawnServiceMemoryTransferService::~DawnServiceMemoryTransferService() = default;
 

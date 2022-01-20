@@ -47,11 +47,11 @@ SharedImageRepresentationDawnD3D::SharedImageRepresentationDawnD3D(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    dawn_native::d3d12::ExternalImageDXGI* external_image)
+    dawn::native::d3d12::ExternalImageDXGI* external_image)
     : SharedImageRepresentationDawn(manager, backing, tracker),
       device_(device),
       external_image_(external_image),
-      dawn_procs_(dawn_native::GetProcs()) {
+      dawn_procs_(dawn::native::GetProcs()) {
   DCHECK(device_);
   DCHECK(external_image_);
 
@@ -73,7 +73,7 @@ WGPUTexture SharedImageRepresentationDawnD3D::BeginAccess(
   if (!d3d_image_backing->BeginAccessD3D12())
     return nullptr;
 
-  dawn_native::d3d12::ExternalImageAccessDescriptorDXGIKeyedMutex descriptor;
+  dawn::native::d3d12::ExternalImageAccessDescriptorDXGIKeyedMutex descriptor;
   descriptor.isInitialized = IsCleared();
   descriptor.acquireMutexKey = kDXGIKeyedMutexAcquireKey;
   descriptor.releaseMutexKey = kDXGIKeyedMutexAcquireKey;
@@ -99,7 +99,7 @@ void SharedImageRepresentationDawnD3D::EndAccess() {
   SharedImageBackingD3D* d3d_image_backing =
       static_cast<SharedImageBackingD3D*>(backing());
 
-  if (dawn_native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
+  if (dawn::native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
     SetCleared();
   }
 

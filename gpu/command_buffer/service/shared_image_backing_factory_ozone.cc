@@ -42,7 +42,7 @@ SharedImageBackingFactoryOzone::SharedImageBackingFactoryOzone(
     : shared_context_state_(shared_context_state) {
 #if BUILDFLAG(USE_DAWN)
   dawn_procs_ = base::MakeRefCounted<base::RefCountedData<DawnProcTable>>(
-      dawn_native::GetProcs());
+      dawn::native::GetProcs());
 #endif  // BUILDFLAG(USE_DAWN)
 }
 

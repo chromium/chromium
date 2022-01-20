@@ -51,20 +51,20 @@ DawnContextProvider::~DawnContextProvider() = default;
 
 wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
   instance_.DiscoverDefaultAdapters();
-  DawnProcTable backend_procs = dawn_native::GetProcs();
+  DawnProcTable backend_procs = dawn::native::GetProcs();
   dawnProcSetProcs(&backend_procs);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
 
   // Disable validation in non-DCHECK builds.
-  dawn_native::DawnDeviceDescriptor descriptor;
+  dawn::native::DawnDeviceDescriptor descriptor;
 #if !DCHECK_IS_ON()
   descriptor.forceEnabledToggles = {"skip_validation"};
 #endif
 
-  std::vector<dawn_native::Adapter> adapters = instance_.GetAdapters();
-  for (dawn_native::Adapter adapter : adapters) {
+  std::vector<dawn::native::Adapter> adapters = instance_.GetAdapters();
+  for (dawn::native::Adapter adapter : adapters) {
     wgpu::AdapterProperties properties;
     adapter.GetProperties(&properties);
     if (properties.backendType == type)

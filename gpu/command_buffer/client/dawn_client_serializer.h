@@ -22,7 +22,7 @@ class DawnClientMemoryTransferService;
 class WebGPUCmdHelper;
 class WebGPUImplementation;
 
-class DawnClientSerializer : public dawn_wire::CommandSerializer {
+class DawnClientSerializer : public dawn::wire::CommandSerializer {
  public:
   DawnClientSerializer(WebGPUImplementation* client,
                        WebGPUCmdHelper* helper,
@@ -30,7 +30,7 @@ class DawnClientSerializer : public dawn_wire::CommandSerializer {
                        std::unique_ptr<TransferBuffer> transfer_buffer);
   ~DawnClientSerializer() override;
 
-  // dawn_wire::CommandSerializer implementation
+  // dawn::wire::CommandSerializer implementation
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
 
@@ -52,7 +52,7 @@ class DawnClientSerializer : public dawn_wire::CommandSerializer {
   void Commit();
 
  private:
-  // dawn_wire::CommandSerializer implementation
+  // dawn::wire::CommandSerializer implementation
   bool Flush() final;
 
   raw_ptr<WebGPUImplementation> client_;

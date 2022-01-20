@@ -24,7 +24,7 @@ SharedImageRepresentationDawnEGLImage::SharedImageRepresentationDawnEGLImage(
       device_(device),
       image_(image),
       texture_descriptor_(texture_descriptor),
-      dawn_procs_(dawn_native::GetProcs()) {
+      dawn_procs_(dawn::native::GetProcs()) {
   DCHECK(device_);
   DCHECK(image_);
 
@@ -48,12 +48,12 @@ WGPUTexture SharedImageRepresentationDawnEGLImage::BeginAccess(
   // to avoid this cast.
   static_cast<SharedImageBackingD3D*>(backing())->BeginAccessD3D11();
 #endif
-  dawn_native::opengl::ExternalImageDescriptorEGLImage externalImageDesc;
+  dawn::native::opengl::ExternalImageDescriptorEGLImage externalImageDesc;
   externalImageDesc.cTextureDescriptor = &texture_descriptor_;
   externalImageDesc.image = image_;
   externalImageDesc.isInitialized = true;
   texture_ =
-      dawn_native::opengl::WrapExternalEGLImage(device_, &externalImageDesc);
+      dawn::native::opengl::WrapExternalEGLImage(device_, &externalImageDesc);
   return texture_;
 }
 
@@ -61,7 +61,7 @@ void SharedImageRepresentationDawnEGLImage::EndAccess() {
   if (!texture_) {
     return;
   }
-  if (dawn_native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
+  if (dawn::native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
     SetCleared();
   }
 #if BUILDFLAG(IS_WIN)

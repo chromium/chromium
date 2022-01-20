@@ -20,7 +20,7 @@ namespace webgpu {
 struct MemoryTransferHandle;
 
 class DawnClientMemoryTransferService
-    : public dawn_wire::client::MemoryTransferService {
+    : public dawn::wire::client::MemoryTransferService {
  public:
   DawnClientMemoryTransferService(MappedMemoryManager* mapped_memory);
   ~DawnClientMemoryTransferService() override;

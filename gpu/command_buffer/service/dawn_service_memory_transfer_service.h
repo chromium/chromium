@@ -16,7 +16,7 @@ class CommonDecoder;
 namespace webgpu {
 
 class DawnServiceMemoryTransferService final
-    : public dawn_wire::server::MemoryTransferService {
+    : public dawn::wire::server::MemoryTransferService {
  public:
   DawnServiceMemoryTransferService(CommonDecoder* decoder);
   ~DawnServiceMemoryTransferService() override;

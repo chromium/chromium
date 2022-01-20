@@ -639,12 +639,12 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
     const HANDLE shared_handle = dxgi_shared_handle_state_->GetSharedHandle();
     DCHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
 
-    dawn_native::d3d12::ExternalImageDescriptorDXGISharedHandle
+    dawn::native::d3d12::ExternalImageDescriptorDXGISharedHandle
         externalImageDesc;
     externalImageDesc.cTextureDescriptor = &texture_descriptor;
     externalImageDesc.sharedHandle = shared_handle;
 
-    external_image_ = dawn_native::d3d12::ExternalImageDXGI::Create(
+    external_image_ = dawn::native::d3d12::ExternalImageDXGI::Create(
         device, &externalImageDesc);
 
     if (!external_image_) {

@@ -306,10 +306,10 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(
   DCHECK_LE(static_cast<uint64_t>(data_length), v8::TypedArray::kMaxLength);
 
   // GPUBuffer::GetMappedRange returns ArrayBuffers that point to memory owned
-  // by handle_, which is a dawn_wire::client::Buffer. It is possible that the
+  // by handle_, which is a dawn::wire::client::Buffer. It is possible that the
   // GPUBuffer gets garbage collected before the ArrayBuffer. When that happens
-  // the dawn_wire::client::Buffer must be kept alive, otherwise the ArrayBuffer
-  // will point to freed memory.
+  // the dawn::wire::client::Buffer must be kept alive, otherwise the
+  // ArrayBuffer will point to freed memory.
   //
   // To prevent this issue we make the ArrayBuffer keep a reference to the
   // WGPUBuffer, by referencing the buffer and then have a custom deleter for

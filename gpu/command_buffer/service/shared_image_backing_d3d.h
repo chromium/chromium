@@ -199,7 +199,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   // If external_image_ exists, it means Dawn produced the D3D12 side of the
   // D3D11 texture created by ID3D12Device::OpenSharedHandle.
 #if BUILDFLAG(USE_DAWN)
-  std::unique_ptr<dawn_native::d3d12::ExternalImageDXGI> external_image_;
+  std::unique_ptr<dawn::native::d3d12::ExternalImageDXGI> external_image_;
 #endif  // BUILDFLAG(USE_DAWN)
 
   // Staging texture used for copy to/from shared memory GMB.

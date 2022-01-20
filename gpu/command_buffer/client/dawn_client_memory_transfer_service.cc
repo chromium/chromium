@@ -13,7 +13,7 @@ namespace gpu {
 namespace webgpu {
 
 class DawnClientMemoryTransferService::ReadHandleImpl
-    : public dawn_wire::client::MemoryTransferService::ReadHandle {
+    : public dawn::wire::client::MemoryTransferService::ReadHandle {
  public:
   ReadHandleImpl(void* ptr,
                  MemoryTransferHandle handle,
@@ -53,7 +53,7 @@ class DawnClientMemoryTransferService::ReadHandleImpl
 };
 
 class DawnClientMemoryTransferService::WriteHandleImpl
-    : public dawn_wire::client::MemoryTransferService::WriteHandle {
+    : public dawn::wire::client::MemoryTransferService::WriteHandle {
  public:
   WriteHandleImpl(void* ptr,
                   MemoryTransferHandle handle,
@@ -96,12 +96,12 @@ class DawnClientMemoryTransferService::WriteHandleImpl
 
 DawnClientMemoryTransferService::DawnClientMemoryTransferService(
     MappedMemoryManager* mapped_memory)
-    : dawn_wire::client::MemoryTransferService(),
+    : dawn::wire::client::MemoryTransferService(),
       mapped_memory_(mapped_memory) {}
 
 DawnClientMemoryTransferService::~DawnClientMemoryTransferService() = default;
 
-dawn_wire::client::MemoryTransferService::ReadHandle*
+dawn::wire::client::MemoryTransferService::ReadHandle*
 DawnClientMemoryTransferService::CreateReadHandle(size_t size) {
   MemoryTransferHandle handle = {};
   void* ptr = AllocateHandle(size, &handle);
@@ -111,7 +111,7 @@ DawnClientMemoryTransferService::CreateReadHandle(size_t size) {
   return new ReadHandleImpl(ptr, handle, this);
 }
 
-dawn_wire::client::MemoryTransferService::WriteHandle*
+dawn::wire::client::MemoryTransferService::WriteHandle*
 DawnClientMemoryTransferService::CreateWriteHandle(size_t size) {
   MemoryTransferHandle handle = {};
   void* ptr = AllocateHandle(size, &handle);

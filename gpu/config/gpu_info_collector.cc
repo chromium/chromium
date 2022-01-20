@@ -179,11 +179,11 @@ std::string GetDawnBackendTypeString(wgpu::BackendType type) {
   }
 }
 
-void AddTogglesToDawnInfoList(dawn_native::Instance* instance,
+void AddTogglesToDawnInfoList(dawn::native::Instance* instance,
                               const std::vector<const char*>& toggle_names,
                               std::vector<std::string>* dawn_info_list) {
   for (auto* name : toggle_names) {
-    const dawn_native::ToggleInfo* info = instance->GetToggleInfo(name);
+    const dawn::native::ToggleInfo* info = instance->GetToggleInfo(name);
     dawn_info_list->push_back(info->name);
     dawn_info_list->push_back(info->url);
     dawn_info_list->push_back(info->description);
@@ -604,14 +604,14 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
                      std::vector<std::string>* dawn_info_list) {
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-  DawnProcTable procs = dawn_native::GetProcs();
+  DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
-  auto instance = std::make_unique<dawn_native::Instance>();
+  auto instance = std::make_unique<dawn::native::Instance>();
   instance->DiscoverDefaultAdapters();
-  std::vector<dawn_native::Adapter> adapters = instance->GetAdapters();
+  std::vector<dawn::native::Adapter> adapters = instance->GetAdapters();
 
-  for (dawn_native::Adapter& adapter : adapters) {
+  for (dawn::native::Adapter& adapter : adapters) {
     wgpu::AdapterProperties properties;
     adapter.GetProperties(&properties);
     wgpu::BackendType backend_type = properties.backendType;
@@ -636,7 +636,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
           // Get the list of enabled toggles on the device
           dawn_info_list->push_back("[Default Toggle Names]");
           std::vector<const char*> toggle_names =
-              dawn_native::GetTogglesUsed(device);
+              dawn::native::GetTogglesUsed(device);
           AddTogglesToDawnInfoList(instance.get(), toggle_names,
                                    dawn_info_list);
           procs.deviceRelease(device);

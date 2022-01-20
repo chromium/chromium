@@ -595,26 +595,26 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_SkiaGL) {
     return;
 
   // Create a Dawn D3D12 device
-  dawn_native::Instance instance;
+  dawn::native::Instance instance;
   instance.DiscoverDefaultAdapters();
 
-  std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
+  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
-      adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
+      adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
         wgpu::AdapterProperties properties;
         adapter.GetProperties(&properties);
         return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DawnDeviceDescriptor device_descriptor;
+  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn_native::GetProcs();
+  DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
   // Create a backing using mailbox.
@@ -740,26 +740,26 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
   }
 
   // Create a Dawn D3D12 device
-  dawn_native::Instance instance;
+  dawn::native::Instance instance;
   instance.DiscoverDefaultAdapters();
 
-  std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
+  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
-      adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
+      adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
         wgpu::AdapterProperties properties;
         adapter.GetProperties(&properties);
         return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DawnDeviceDescriptor device_descriptor;
+  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn_native::GetProcs();
+  DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
   {
     auto dawn_representation =
@@ -832,26 +832,26 @@ TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
                                      memory_type_tracker_.get());
 
   // Create dawn device
-  dawn_native::Instance instance;
+  dawn::native::Instance instance;
   instance.DiscoverDefaultAdapters();
 
-  std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
+  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
-      adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
+      adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
         wgpu::AdapterProperties properties;
         adapter.GetProperties(&properties);
         return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DawnDeviceDescriptor device_descriptor;
+  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn_native::GetProcs();
+  DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
   {
     auto dawn_representation =
@@ -1104,26 +1104,26 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
                                      memory_type_tracker_.get());
 
   // Create a Dawn D3D12 device
-  dawn_native::Instance instance;
+  dawn::native::Instance instance;
   instance.DiscoverDefaultAdapters();
 
-  std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
+  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
-      adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
+      adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
         wgpu::AdapterProperties properties;
         adapter.GetProperties(&properties);
         return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DawnDeviceDescriptor device_descriptor;
+  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn_native::GetProcs();
+  DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
   const WGPUTextureUsage texture_usage = WGPUTextureUsage_RenderAttachment;
@@ -1234,26 +1234,26 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_HasLastRef) {
                                      memory_type_tracker_.get());
 
   // Create a Dawn D3D12 device
-  dawn_native::Instance instance;
+  dawn::native::Instance instance;
   instance.DiscoverDefaultAdapters();
 
-  std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
+  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
-      adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
+      adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
         wgpu::AdapterProperties properties;
         adapter.GetProperties(&properties);
         return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DawnDeviceDescriptor device_descriptor;
+  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn_native::GetProcs();
+  DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
   auto dawn_representation = shared_image_representation_factory_->ProduceDawn(

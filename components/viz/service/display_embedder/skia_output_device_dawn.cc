@@ -139,7 +139,7 @@ void SkiaOutputDeviceDawn::EndPaint() {
 }
 
 void SkiaOutputDeviceDawn::CreateSwapChainImplementation() {
-  swap_chain_implementation_ = dawn_native::d3d12::CreateNativeSwapChainImpl(
+  swap_chain_implementation_ = dawn::native::d3d12::CreateNativeSwapChainImpl(
       context_provider_->GetDevice().Get(), child_window_.window());
 }
 
