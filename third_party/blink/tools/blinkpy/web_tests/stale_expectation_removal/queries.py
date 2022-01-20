@@ -192,7 +192,7 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
 
     def _ShouldSkipOverResult(self, result):
         # WebGPU web tests are currently unsupported for various reasons.
-        return 'webgpu/cts.html' in result['test_id']
+        return 'webgpu/' in result['test_id']
 
     def _GetQueryGeneratorForBuilder(self, builder, builder_type):
         # Look for all tests.
