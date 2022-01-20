@@ -30,6 +30,22 @@ enum class ArcBinaryTranslationType {
   NDK_TRANSLATION,
 };
 
+// The maximum size of VM memory when crosvm is a 32-bit process.
+//
+// A 32-bit process has 4GB address space, and some parts are not usable for
+// various reasons including address space layout randomization (ASLR).
+// In 32-bit crosvm address space, only ~3370MB is usable:
+// - 256MB is not usable because of executable load bias ASLR.
+// - 4MB is used for crosvm executable.
+// - 32MB it not usable because of heap ASLR.
+// - 16MB is used for mapped shared libraries.
+// - 256MB is not usable because of mmap base address ASLR.
+// - 132MB is used for gaps in the memory layout.
+// - 30MB is used for other allocations.
+//
+// 3328 is chosen because it's a rounded number (i.e. 3328 % 256 == 0).
+constexpr size_t k32bitVmRamMaxMib = 3328;
+
 // For better unit-testing.
 class ArcVmClientAdapterDelegate {
  public:
@@ -39,6 +55,9 @@ class ArcVmClientAdapterDelegate {
       delete;
   virtual ~ArcVmClientAdapterDelegate() = default;
   virtual bool GetSystemMemoryInfo(base::SystemMemoryInfoKB* info);
+
+  // Returns if crosvm is a 32-bit process.
+  virtual bool IsCrosvm32bit();
 };
 
 // Returns an adapter for arcvm.
