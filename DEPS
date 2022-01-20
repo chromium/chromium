@@ -4748,7 +4748,6 @@ recursedeps = [
   # Dawn and Tint's revision are linked
   'src/third_party/dawn',
   'src/third_party/openscreen/src',
-  'src/third_party/devtools-frontend/src',
   'src/third_party/vulkan-deps',
   # src-internal has its own DEPS file to pull additional internal repos
   'src-internal',

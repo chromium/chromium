@@ -65,7 +65,6 @@
       "third_party/mocha/.*(css|html|js)",
       "third_party/openscreen/src/DEPS",
       "third_party/polymer/v1_0/components-chromium/.*(css|html|js)",
-      "third_party/devtools-frontend/src/DEPS",
       "third_party/vulkan-deps/DEPS",
       "third_party/web-animations-js/.*(css|html|js)",
       "third_party/zlib/google/test/data/.*",
