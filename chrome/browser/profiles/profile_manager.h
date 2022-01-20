@@ -82,16 +82,28 @@ class ProfileManager : public Profile::Delegate {
   // loaded. Does not block.
   static Profile* GetLastUsedProfileIfLoaded();
 
-  // Same as GetLastUsedProfile() but returns the incognito Profile if
-  // incognito mode is forced. This should be used if the last used Profile
+  // Same as `GetLastUsedProfile()` but returns the incognito `Profile` if
+  // incognito mode is forced. This should be used if the last used `Profile`
   // will be used to open new browser windows.
-  // WARNING: if the profile does not exist, this function creates it
-  // synchronously, causing blocking file I/O.
+  // WARNING: if the `Profile` does not exist, this function creates it
+  // synchronously, causing blocking file I/O. Use
+  // `LoadLastUsedProfileAllowedByPolicy()` instead.
   static Profile* GetLastUsedProfileAllowedByPolicy();
 
-  // Helper function that returns true if OffTheRecord mode is forced for
-  // |profile| (normal mode is not available for browsing).
-  static bool IsOffTheRecordModeForced(Profile* profile);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Same as `GetLastUsedProfileAllowedByPolicy()`, but asynchronously loads the
+  // `Profile` if it's not already loaded.
+  // TODO(https://crbug.com/1176734): Implement on Ash. Requires handling the
+  // cases where the user is not logged in, and implementing an asynchronous
+  // version of `GetActiveUserOrOffTheRecordProfile()`.
+  static void LoadLastUsedProfileAllowedByPolicy(
+      ProfileLoadedCallback callback);
+#endif
+
+  // Helper function that returns the OffTheRecord profile if it is forced for
+  // `profile` (normal mode is not available for browsing).
+  // Returns nullptr if `profile` is nullptr.
+  static Profile* MaybeForceOffTheRecordMode(Profile* profile);
 
   // Get the Profiles which are currently open, i.e. have open browsers or were
   // open the last time Chrome was running. Profiles that fail to initialize are

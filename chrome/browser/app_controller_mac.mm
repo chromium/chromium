@@ -1599,11 +1599,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (IsProfileSignedOut(profile))
     return nullptr;  // Profile is locked.
 
-  // When opening a Guest session or if incognito is forced.
-  if (ProfileManager::IsOffTheRecordModeForced(profile))
-    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-
-  return profile;
+  return ProfileManager::MaybeForceOffTheRecordMode(profile);
 }
 
 - (void)getUrl:(NSAppleEventDescriptor*)event

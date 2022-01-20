@@ -63,6 +63,26 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
 
   void OpenUrlImpl(Profile* profile, const GURL& url, OpenUrlCallback callback);
 
+  // These *WithProfile() methods are called asynchronously by the corresponding
+  // profile-less function, after loading the profile.
+  void NewWindowWithProfile(bool incognito,
+                            bool should_trigger_session_restore,
+                            NewWindowCallback callback,
+                            Profile* profile);
+  void NewFullscreenWindowWithProfile(const GURL& url,
+                                      NewFullscreenWindowCallback callback,
+                                      Profile* profile);
+  void NewWindowForDetachingTabWithProfile(
+      const std::u16string& tab_id,
+      const std::u16string& group_id,
+      NewWindowForDetachingTabCallback callback,
+      Profile* profile);
+  void NewTabWithProfile(NewTabCallback callback, Profile* profile);
+  void OpenUrlWithProfile(const GURL& url,
+                          OpenUrlCallback callback,
+                          Profile* profile);
+  void RestoreTabWithProfile(RestoreTabCallback callback, Profile* profile);
+
   // Called when a session is restored.
   void OnSessionRestored(Profile* profile, int num_tabs_restored);
 

@@ -611,19 +611,37 @@ Profile* ProfileManager::GetLastUsedProfileIfLoaded() {
 
 // static
 Profile* ProfileManager::GetLastUsedProfileAllowedByPolicy() {
-  Profile* profile = GetLastUsedProfile();
-  if (!profile)
-    return nullptr;
-  if (IsOffTheRecordModeForced(profile))
-    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  return profile;
+  return MaybeForceOffTheRecordMode(GetLastUsedProfile());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // static
-bool ProfileManager::IsOffTheRecordModeForced(Profile* profile) {
-  return profile->IsGuestSession() || profile->IsSystemProfile() ||
-         IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
-             IncognitoModePrefs::Availability::kForced;
+void ProfileManager::LoadLastUsedProfileAllowedByPolicy(
+    ProfileLoadedCallback callback) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileLoadedCallback callback_with_incognito =
+      base::BindOnce(&ProfileManager::MaybeForceOffTheRecordMode)
+          .Then(std::move(callback));
+  profile_manager->CreateProfileAsync(
+      profile_manager->GetLastUsedProfileDir(),
+      base::BindRepeating(&OnProfileLoaded,
+                          // OnProfileLoaded may be called multiple times, but
+                          // |callback_with_incognito| will be called only once.
+                          base::OwnedRef(std::move(callback_with_incognito)),
+                          /*incognito=*/false));
+}
+#endif
+
+// static
+Profile* ProfileManager::MaybeForceOffTheRecordMode(Profile* profile) {
+  if (!profile)
+    return nullptr;
+  if (profile->IsGuestSession() || profile->IsSystemProfile() ||
+      IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
+          IncognitoModePrefs::Availability::kForced) {
+    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
+  return profile;
 }
 
 // static
