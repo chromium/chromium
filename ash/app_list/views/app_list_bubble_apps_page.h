@@ -73,6 +73,9 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // Starts the animation for hiding the apps page, going to another page.
   void AnimateHidePage();
 
+  // Resets the scroll position to the top.
+  void ResetScrollPosition();
+
   // Aborts all layer animations, which invokes their cleanup callbacks.
   void AbortAllAnimations();
 

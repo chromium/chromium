@@ -354,6 +354,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       NOTREACHED();
       break;
     case AppListBubblePage::kApps:
+      apps_page_->ResetScrollPosition();
       if (previous_page == AppListBubblePage::kSearch)
         apps_page_->AnimateShowPage();
       else

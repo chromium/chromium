@@ -123,5 +123,25 @@ TEST_F(AppListBubbleAppsPageTest, GradientMaskCreatedWhenAnimationsDisabled) {
   EXPECT_TRUE(apps_page->scroll_view()->layer()->layer_mask_layer());
 }
 
+TEST_F(AppListBubbleAppsPageTest, ScrollPositionResetOnShow) {
+  // Show an app list with enough apps to allow scrolling.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(50);
+  helper->ShowAppList();
+
+  // Press the up arrow, which will scroll the view to select an app in the
+  // last row.
+  PressAndReleaseKey(ui::VKEY_UP);
+  auto* apps_page = helper->GetBubbleAppsPage();
+  ASSERT_GT(apps_page->scroll_view()->vertical_scroll_bar()->GetPosition(), 0);
+
+  // Hide the launcher, then show it again.
+  helper->Dismiss();
+  helper->ShowAppList();
+
+  // Scroll position is reset to top.
+  EXPECT_EQ(apps_page->scroll_view()->vertical_scroll_bar()->GetPosition(), 0);
+}
+
 }  // namespace
 }  // namespace ash

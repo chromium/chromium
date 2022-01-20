@@ -330,6 +330,10 @@ void AppListBubbleAppsPage::AnimateHidePage() {
       .SetTransform(scroll_contents, translate_down);
 }
 
+void AppListBubbleAppsPage::ResetScrollPosition() {
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), 0);
+}
+
 void AppListBubbleAppsPage::AbortAllAnimations() {
   auto abort_animations = [](views::View* view) {
     if (view->layer())
