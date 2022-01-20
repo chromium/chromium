@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,7 +110,7 @@ class SafeTemplateURLParser {
       const SearchTermsData* search_terms_data,
       const TemplateURLParser::ParameterFilter& parameter_filter,
       TemplateURLParser::ParseCallback callback)
-      : search_terms_data_(search_terms_data),
+      : search_terms_data_(SearchTermsData::MakeSnapshot(search_terms_data)),
         parameter_filter_(parameter_filter),
         callback_(std::move(callback)) {}
 
@@ -158,7 +157,10 @@ class SafeTemplateURLParser {
   // at least one element, if only the empty string.
   std::vector<std::string> namespaces_;
 
-  raw_ptr<const SearchTermsData> search_terms_data_;
+  // We have to own our own snapshot, because the parse request may outlive the
+  // originally provided SearchTermsData lifetime.
+  std::unique_ptr<SearchTermsData> search_terms_data_;
+
   TemplateURLParser::ParameterFilter parameter_filter_;
   TemplateURLParser::ParseCallback callback_;
 };

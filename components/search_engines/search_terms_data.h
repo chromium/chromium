@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_SEARCH_TERMS_DATA_H_
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_TERMS_DATA_H_
 
+#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -13,6 +14,12 @@
 // only be accessed on the UI thread.
 class SearchTermsData {
  public:
+  // Utility function that takes a snapshot of a different SearchTermsData
+  // instance. This is used to access SearchTermsData off the UI thread, or to
+  // copy the SearchTermsData for lifetime reasons.
+  static std::unique_ptr<SearchTermsData> MakeSnapshot(
+      const SearchTermsData* original_data);
+
   SearchTermsData();
 
   SearchTermsData(const SearchTermsData&) = delete;
