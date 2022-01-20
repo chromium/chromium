@@ -47,7 +47,7 @@ void AutofillAssistantAgent::GetSemanticNodes(
 
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   if (!frame) {
-    std::move(callback).Run(nodes);
+    std::move(callback).Run(false, nodes);
     return;
   }
 
@@ -63,7 +63,7 @@ void AutofillAssistantAgent::GetSemanticNodes(
     nodes.push_back(node_data);
   }
 
-  std::move(callback).Run(nodes);
+  std::move(callback).Run(true, nodes);
 }
 
 void AutofillAssistantAgent::GetAnnotateDomModel(

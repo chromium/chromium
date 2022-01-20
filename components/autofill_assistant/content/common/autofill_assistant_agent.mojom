@@ -12,5 +12,5 @@ interface AutofillAssistantAgent {
   // Evaluates all input, textarea and select nodes in the frame's document and
   // returns all that match the given semantic role and objective.
   GetSemanticNodes(int32 role, int32 objective)
-      => (array<autofill_assistant.mojom.NodeData> nodes);
+      => (bool success, array<autofill_assistant.mojom.NodeData> nodes);
 };
