@@ -287,22 +287,6 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
         'settings.a11y.switch_access.auto_scan.enabled', setPrefData[1].key);
     assertEquals(false, setPrefData[1].value);
 
-    // Check that navigating backwards does not disable auto-scan if it was
-    // enabled before setup was started.
-    dialog.currentPageId_ = /*Auto-scan enabled=*/2;
-    dialog.autoScanPreviouslyEnabled_ = true;
-    setPrefData = [];
-
-    dialog.onPreviousClick_();
-    assertNotEquals(dialog.currentPageId_, /*Auto-scan enabled=*/2);
-
-    // At no point should auto_scan be set to false.
-    for (const data of setPrefData) {
-      if (data.key === 'settings.a11y.switch_access.auto_scan.enabled') {
-        assertTrue(data.value);
-      }
-    }
-
     // Confirm that auto-scan is disabled upon reaching the "Next" assignment
     // page.
     setPrefData = [];

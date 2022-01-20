@@ -24,7 +24,7 @@ import {routes} from '../os_route.m.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
-import {actionToPref, AssignmentContext, AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {actionToPref, AssignmentContext, AUTO_SCAN_ENABLED_PREF, AUTO_SCAN_KEYBOARD_SPEED_PREF, AUTO_SCAN_SPEED_PREF, AUTO_SCAN_SPEED_RANGE_MS, DEFAULT_AUTO_SCAN_SPEED_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
 /**
@@ -149,9 +149,6 @@ Polymer({
       notify: true,
     },
 
-    /** @private */
-    autoScanPreviouslyEnabled_: {type: Boolean, value: false},
-
     /** @private {!Array<!SliderTick>} */
     autoScanSpeedRangeMs_: {
       type: Array,
@@ -244,6 +241,13 @@ Polymer({
     for (const pref of Object.values(actionToPref)) {
       chrome.settingsPrivate.setPref(pref, {});
     }
+
+    // Reset auto-scan.
+    chrome.settingsPrivate.setPref(
+        AUTO_SCAN_SPEED_PREF, DEFAULT_AUTO_SCAN_SPEED_MS);
+    chrome.settingsPrivate.setPref(
+        AUTO_SCAN_KEYBOARD_SPEED_PREF, DEFAULT_AUTO_SCAN_SPEED_MS);
+    chrome.settingsPrivate.setPref(AUTO_SCAN_ENABLED_PREF, false);
   },
 
   /**
@@ -395,15 +399,12 @@ Polymer({
 
     // Enable auto-scan when we reach that page of the setup guide.
     if (this.currentPageId_ === SASetupPageId.AUTO_SCAN_ENABLED) {
-      this.autoScanPreviouslyEnabled_ = /** @type {boolean} */ (
-          this.getPref('settings.a11y.switch_access.auto_scan.enabled').value);
-      chrome.settingsPrivate.setPref(
-          'settings.a11y.switch_access.auto_scan.enabled', true);
+      chrome.settingsPrivate.setPref(AUTO_SCAN_ENABLED_PREF, true);
     }
 
+    // Disable auto-scan once the user has selected two or more switches.
     if (this.currentPageId_ === SASetupPageId.ASSIGN_NEXT) {
-      chrome.settingsPrivate.setPref(
-          'settings.a11y.switch_access.auto_scan.enabled', false);
+      chrome.settingsPrivate.setPref(AUTO_SCAN_ENABLED_PREF, false);
     }
 
     if (this.currentPageId_ === SASetupPageId.CLOSING) {
@@ -416,11 +417,9 @@ Polymer({
 
   /** @private */
   onPreviousClick_() {
-    // Disable auto-scan, if we enabled it as part of the setup guide.
-    if (this.currentPageId_ === SASetupPageId.AUTO_SCAN_ENABLED &&
-        !this.autoScanPreviouslyEnabled_) {
-      chrome.settingsPrivate.setPref(
-          'settings.a11y.switch_access.auto_scan.enabled', false);
+    // Disable auto-scan when the user reverses to before it was enabled.
+    if (this.currentPageId_ === SASetupPageId.AUTO_SCAN_ENABLED) {
+      chrome.settingsPrivate.setPref(AUTO_SCAN_ENABLED_PREF, false);
     }
 
     this.loadPage_(this.getPreviousPageId_());
@@ -433,30 +432,36 @@ Polymer({
 
   /** @private */
   onAutoScanSpeedFaster_() {
-    const currentValue = /** @type {number} */ (
-        this.getPref('settings.a11y.switch_access.auto_scan.speed_ms').value);
+    const currentValue =
+        /** @type {number} */ (this.getPref(AUTO_SCAN_SPEED_PREF).value);
+    // Find the first element in the array that is equal to, or smaller than,
+    // the current value. Since AUTO_SCAN_SPEED_RANGE_MS is sorted largest to
+    // smallest, this gives us a guarantee that we are within one step (100ms)
+    // of the value at the provided index.
     const index =
         AUTO_SCAN_SPEED_RANGE_MS.findIndex(elem => elem <= currentValue);
     if (index === -1 || index === AUTO_SCAN_SPEED_RANGE_MS.length - 1) {
       return;
     }
     chrome.settingsPrivate.setPref(
-        'settings.a11y.switch_access.auto_scan.speed_ms',
-        AUTO_SCAN_SPEED_RANGE_MS[index + 1]);
+        AUTO_SCAN_SPEED_PREF, AUTO_SCAN_SPEED_RANGE_MS[index + 1]);
   },
 
   /** @private */
   onAutoScanSpeedSlower_() {
-    const currentValue = /** @type {number} */ (
-        this.getPref('settings.a11y.switch_access.auto_scan.speed_ms').value);
+    const currentValue =
+        /** @type {number} */ (this.getPref(AUTO_SCAN_SPEED_PREF).value);
+    // Find the first element in the array that is equal to, or smaller than,
+    // the current value. Since AUTO_SCAN_SPEED_RANGE_MS is sorted largest to
+    // smallest, this gives us a guarantee that we are within one step (100ms)
+    // of the value at the provided index.
     const index =
         AUTO_SCAN_SPEED_RANGE_MS.findIndex(elem => elem <= currentValue);
     if (index <= 0) {
       return;
     }
     chrome.settingsPrivate.setPref(
-        'settings.a11y.switch_access.auto_scan.speed_ms',
-        AUTO_SCAN_SPEED_RANGE_MS[index - 1]);
+        AUTO_SCAN_SPEED_PREF, AUTO_SCAN_SPEED_RANGE_MS[index - 1]);
   },
 
   /** @private */

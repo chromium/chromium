@@ -1348,7 +1348,7 @@ Press an assigned switch or key to remove assignment.
     Start Switch Access setup?
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_WARNING_DIALOG_MESSAGE" desc="The message explaining that re-running the setup guide will clear all switch assignments. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Your currently assigned switches will be cleared
+    Your current scanning setup will be reset, including any assigned switches and auto-scan speed preferences.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_TITLE" desc="The title for the first page of the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Switch Access setup guide
