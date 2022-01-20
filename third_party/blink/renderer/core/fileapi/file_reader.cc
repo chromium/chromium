@@ -408,7 +408,7 @@ void FileReader::DidFinishLoading() {
     return;
   DCHECK_EQ(loading_state_, kLoadingStateLoading);
 
-  // TODO(jochen): When we set m_state to DONE below, we still need to fire
+  // When we set m_state to DONE below, we still need to fire
   // the load and loadend events. To avoid GC to collect this FileReader, we
   // use this separate variable to keep the wrapper of this FileReader alive.
   // An alternative would be to keep any ActiveScriptWrappables alive that is on
