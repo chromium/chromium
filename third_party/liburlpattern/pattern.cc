@@ -144,7 +144,7 @@ std::string Pattern::GeneratePatternString() const {
     //       output `{:foo}bar` and not `:foobar`.
     const Part* next_part =
         (i + 1) < part_list_.size() ? &part_list_[i + 1] : nullptr;
-    if (!needs_grouping && part.prefix.empty() && custom_name &&
+    if (!needs_grouping && custom_name &&
         part.type == PartType::kSegmentWildcard &&
         part.modifier == Modifier::kNone && next_part &&
         next_part->prefix.empty() && next_part->suffix.empty()) {

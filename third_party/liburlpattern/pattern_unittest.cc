@@ -439,6 +439,10 @@ TEST(
   RunPatternStringTest("*{}**?", "*(.*)?");
 }
 
+TEST(PatternStringTest, CaseFromFuzzer) {
+  RunPatternStringTest(".:bax\\a*{}**", "{.:bax}a*(.*)");
+}
+
 struct DirectMatchCase {
   absl::string_view input;
   bool expected_match = true;
