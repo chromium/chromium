@@ -4205,8 +4205,16 @@ NavigationRequest* RenderFrameHostImpl::GetSameDocumentNavigationRequest(
 }
 
 void RenderFrameHostImpl::ResetNavigationRequests() {
-  navigation_requests_.clear();
-  same_document_navigation_requests_.clear();
+  // Move the NavigationRequests to new maps first before deleting them. This
+  // avoids issues if a re-entrant call is made when a NavigationRequest is
+  // being deleted (e.g., if the process goes away as the tab is closing).
+  std::map<NavigationRequest*, std::unique_ptr<NavigationRequest>>
+      navigation_requests;
+  navigation_requests_.swap(navigation_requests);
+
+  base::flat_map<base::UnguessableToken, std::unique_ptr<NavigationRequest>>
+      same_document_navigation_requests;
+  same_document_navigation_requests_.swap(same_document_navigation_requests);
 }
 
 void RenderFrameHostImpl::SetNavigationRequest(
