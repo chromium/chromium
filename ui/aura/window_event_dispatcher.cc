@@ -449,7 +449,7 @@ void WindowEventDispatcher::OnOtherRootGotCapture() {
   // root window, in which case this function will get called whenever those
   // windows grab mouse capture. Sending mouse exit messages in these cases
   // causes subtle bugs like (crbug.com/394672).
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   if (mouse_moved_handler_) {
     // Dispatch a mouse exit to reset any state associated with hover. This is
     // important when going from no window having capture to a window having

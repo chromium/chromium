@@ -84,7 +84,7 @@ class WindowOcclusionTrackerTest : public test::AuraTestBase {
   WindowOcclusionTrackerTest& operator=(const WindowOcclusionTrackerTest&) =
       delete;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SetUp() override {
     // Native Window Occlusion calculation runs in the background and can
     // interfere with the expectations of these tests, so, disable it.

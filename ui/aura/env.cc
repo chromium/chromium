@@ -24,7 +24,7 @@
 #include "ui/events/gestures/gesture_recognizer_impl.h"
 #include "ui/events/platform/platform_event_source.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/win_cursor_factory.h"
 #endif
 
@@ -206,7 +206,7 @@ Env::Env()
     : env_controller_(std::make_unique<EnvInputStateController>(this)),
       gesture_recognizer_(std::make_unique<ui::GestureRecognizerImpl>()),
       input_state_lookup_(InputStateLookup::Create()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   cursor_factory_ = std::make_unique<ui::WinCursorFactory>();
 #endif
 }

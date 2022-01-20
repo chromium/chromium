@@ -14,7 +14,7 @@
 
 namespace aura {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr uint8_t kDefaultThrottleFps = 1;
 #else
 constexpr uint8_t kDefaultThrottleFps = 20;

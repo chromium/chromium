@@ -699,7 +699,7 @@ std::string EventTypesToString(const EventFilterRecorder::Events& events) {
 
 }  // namespace
 
-#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 #define MAYBE(x) DISABLED_##x
 #else
 #define MAYBE(x) x
@@ -1234,7 +1234,7 @@ TEST_F(WindowEventDispatcherTest, DoNotDispatchInShutdown) {
   window->RemovePreTargetHandler(&recorder);
 }
 
-#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 #define MAYBE(x) DISABLED_##x
 #else
 #define MAYBE(x) x

@@ -26,7 +26,7 @@
 #include "ui/events/test/test_event_rewriter.h"
 #include "ui/platform_window/stub/stub_window.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/native_window_occlusion_tracker_win.h"
 #endif
 
@@ -197,7 +197,7 @@ class TestWindowTreeHost : public WindowTreeHostPlatform {
 };
 
 TEST_F(WindowTreeHostTest, LostCaptureDuringTearDown) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kApplyNativeOcclusionToCompositor);
@@ -205,7 +205,7 @@ TEST_F(WindowTreeHostTest, LostCaptureDuringTearDown) {
   TestWindowTreeHost host;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class WindowTreeHostWithReleaseTest : public test::AuraTestBase {
  public:
   // AuraTestBase:

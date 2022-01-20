@@ -17,7 +17,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/resources/grit/ui_resources.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/cursor/cursor_loader.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/gfx/icon_util.h"
@@ -330,7 +330,7 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
 }
 
 SkBitmap GetDefaultBitmap(const ui::Cursor& cursor) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::Cursor cursor_copy = cursor;
   aura::CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
@@ -351,7 +351,7 @@ SkBitmap GetDefaultBitmap(const ui::Cursor& cursor) {
 }
 
 gfx::Point GetDefaultHotspot(const ui::Cursor& cursor) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::Cursor cursor_copy = cursor;
   aura::CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);

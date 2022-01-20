@@ -39,7 +39,7 @@ class AURA_EXPORT NativeWindowOcclusionTracker {
   friend class WindowTreeHostWithReleaseTest;
   friend class WindowTreeHostWithThrottleTest;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static void SetHeadlessCheckEnabled(bool enabled);
 #endif
 };

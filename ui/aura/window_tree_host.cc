@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -503,8 +504,8 @@ WindowTreeHost::WindowTreeHost(std::unique_ptr<Window> window)
     window_ = new Window(nullptr);
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
   device_scale_factor_ = display.device_scale_factor();
-#if defined(OS_WIN)
-  // The feature state is neccessary but not sufficient for checking if
+#if BUILDFLAG(IS_WIN)
+  // The feature state is necessary but not sufficient for checking if
   // occlusion is enabled. It may be disabled by other means (e.g., policy).
   native_window_occlusion_enabled_ =
       !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless) &&
@@ -774,7 +775,7 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
 }
 
 bool WindowTreeHost::ShouldReleaseResourcesWhenHidden() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
       !IsNativeWindowOcclusionEnabled()) {
@@ -791,7 +792,7 @@ bool WindowTreeHost::ShouldReleaseResourcesWhenHidden() const {
 }
 
 bool WindowTreeHost::ShouldThrottleWhenOccluded() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
       !IsNativeWindowOcclusionEnabled()) {
