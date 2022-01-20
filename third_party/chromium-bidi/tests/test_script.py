@@ -409,3 +409,39 @@ async def test_script_evaluateWithNode_resultReceived(websocket, context_id):
     assert result == {
         "type": "string",
         "value": "!!@@##, test"}
+
+
+@pytest.mark.asyncio
+async def test_script_callFunctionWithBindingAndCallBinding_bindingCalled(
+      websocket, context_id):
+    # Send command.
+    command_id = get_next_command_id()
+
+    await send_JSON_command(websocket, {
+        "id": command_id,
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "(callback) => {callback('CALLBACK_ARGUMENT'); return 'SOME_RESULT';}",
+            "args": [{
+                "type": "PROTO.binding",
+                "id": "BINDING_NAME"}],
+            "target": {"context": context_id}
+        }})
+
+    # Assert callback is called.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "PROTO.script.called",
+        "params": {
+            "arguments": [{
+                "type": "string",
+                "value": "CALLBACK_ARGUMENT"}],
+            "id": "BINDING_NAME"}}
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": command_id,
+        "result": {
+            "type": "string",
+            "value": "SOME_RESULT"}}

@@ -35,6 +35,8 @@ export class Context {
   private _evaluateStacktraceLineOffset = 1;
   private _callFunctionStacktraceLineOffset = 1;
 
+  private _callbackName = '__cdpBindingCallback';
+
   private constructor(
     private _contextId: string,
     private _cdpClient: CdpClient,
@@ -72,6 +74,22 @@ export class Context {
 
   private _initializeEventListeners() {
     this._initializePageLifecycleEventListener();
+    this._handleBindingCalledEvent();
+  }
+
+  private _handleBindingCalledEvent() {
+    this._cdpClient.Runtime.on('bindingCalled', async (params) => {
+      if (params.name === this._callbackName) {
+        const payload = JSON.parse(params.payload);
+        await this._bidiServer.sendMessage({
+          method: 'PROTO.script.called',
+          params: {
+            arguments: payload.arguments,
+            id: payload.id,
+          },
+        });
+      }
+    });
   }
 
   private _initializePageLifecycleEventListener() {
@@ -108,10 +126,13 @@ export class Context {
     });
   }
 
+  // TODO sadym: Add binding only once.
   // TODO sadym: `dummyContextObject` needed for the running context.
   // Use the proper `executionContextId` instead:
   // https://github.com/GoogleChromeLabs/chromium-bidi/issues/52
   private async _getDummyContextId(): Promise<string> {
+    await this._cdpClient.Runtime.addBinding({ name: this._callbackName });
+
     const dummyContextObject = await this._cdpClient.Runtime.evaluate({
       expression: '(()=>{return {}})()',
     });

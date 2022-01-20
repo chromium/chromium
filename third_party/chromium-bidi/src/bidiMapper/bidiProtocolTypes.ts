@@ -16,7 +16,7 @@ export namespace Message {
     | Script.CommandResult
     | Session.CommandResult;
 
-  export type Event = BrowsingContext.Event;
+  export type Event = BrowsingContext.Event | Script.Event;
 
   export type Error = {
     id?: number;
@@ -250,6 +250,7 @@ export namespace CommonDataTypes {
 export namespace Script {
   export type Command = EvaluateCommand | CallFunctionCommand;
   export type CommandResult = EvaluateResult | CallFunctionResult;
+  export type Event = PROTO.CalledEvent;
 
   export type RealmTarget = {
     // TODO sadym: implement.
@@ -306,6 +307,18 @@ export namespace Script {
   export type ArgumentValue =
     | CommonDataTypes.RemoteReference
     | CommonDataTypes.LocalValue;
+
+  export namespace PROTO {
+    export type CalledEvent = {
+      method: 'PROTO.script.called';
+      params: CalledEventParams;
+    };
+
+    export type CalledEventParams = {
+      id: string;
+      arguments: CommonDataTypes.RemoteValue[];
+    };
+  }
 }
 
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext

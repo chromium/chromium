@@ -29,6 +29,10 @@
     return globalThis.__webdriver_objectCache;
   }
 
+  function getCdpBinding() {
+    return globalThis.__cdpBindingCallback;
+  }
+
   const objectCache = getObjectCache();
 
   function serialize(value, maxDepth = 1) {
@@ -152,6 +156,8 @@
     }
 
     switch (serializedValue.type) {
+      // Primitive Protocol Value
+      // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
       case 'undefined': {
         return undefined;
       }
@@ -177,12 +183,27 @@
       case 'boolean': {
         return serializedValue.value;
       }
+      case 'bigint': {
+        // TODO: implement.
+        throw new Error(`Deserialization of type ${serializedValue.type} is not yet implemented.`);
+      }
+
+      // Local Value
+      // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-LocalValue
       case 'array': {
         const result = [];
         for (let val of serializedValue.value) {
           result.push(deserialize(val));
         }
         return result;
+      }
+      case 'date': {
+        // TODO: implement.
+        throw new Error(`Deserialization of type ${serializedValue.type} is not yet implemented.`);
+      }
+      case 'map': {
+        // TODO: implement.
+        throw new Error(`Deserialization of type ${serializedValue.type} is not yet implemented.`);
       }
       case 'object': {
         const result = {};
@@ -192,11 +213,27 @@
         }
         return result;
       }
-      case 'promise':
-      case 'function':
-        throw new Error(`type ${serializedValue.type} cannot be deserialized`);
+      case 'regexp': {
+        // TODO: implement.
+        throw new Error(`Deserialization of type ${serializedValue.type} is not yet implemented.`);
+      }
+      case 'set': {
+        // TODO: implement.
+        throw new Error(`Deserialization of type ${serializedValue.type} is not yet implemented.`);
+      }
+      case 'PROTO.binding': {
+        return (...args)=>{
+          const serializedArgs = args.map(a => serialize(a));
+          const callbackPayload = JSON.stringify({
+            arguments: serializedArgs,
+            id: serializedValue.id
+          });
+          getCdpBinding()(callbackPayload);
+        }
+      }
+
       default:
-        throw new Error(`deserialization of ${serializedValue.type} is not yet implemented`);
+        throw new Error(`Type ${serializedValue.type} is not deserializable.`);
 
     }
   }
