@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_
-#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_IMPL_H_
+#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_IMPL_H_
 
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 
@@ -54,18 +54,18 @@ class Profile;
 
 // Implemented in //chrome because this relies on chrome |wallpaper_handlers|
 // code.
-class ChromePersonalizationAppWallpaperProvider
+class PersonalizationAppWallpaperProviderImpl
     : public ash::PersonalizationAppWallpaperProvider,
       ash::WallpaperControllerObserver {
  public:
-  explicit ChromePersonalizationAppWallpaperProvider(content::WebUI* web_ui);
+  explicit PersonalizationAppWallpaperProviderImpl(content::WebUI* web_ui);
 
-  ChromePersonalizationAppWallpaperProvider(
-      const ChromePersonalizationAppWallpaperProvider&) = delete;
-  ChromePersonalizationAppWallpaperProvider& operator=(
-      const ChromePersonalizationAppWallpaperProvider&) = delete;
+  PersonalizationAppWallpaperProviderImpl(
+      const PersonalizationAppWallpaperProviderImpl&) = delete;
+  PersonalizationAppWallpaperProviderImpl& operator=(
+      const PersonalizationAppWallpaperProviderImpl&) = delete;
 
-  ~ChromePersonalizationAppWallpaperProvider() override;
+  ~PersonalizationAppWallpaperProviderImpl() override;
 
   // PersonalizationAppWallpaperProvider:
   // |BindInterface| may be called multiple times, for example if the user
@@ -143,7 +143,7 @@ class ChromePersonalizationAppWallpaperProvider
       std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher> fetcher);
 
  private:
-  friend class ChromePersonalizationAppWallpaperProviderTest;
+  friend class PersonalizationAppWallpaperProviderImplTest;
 
   void OnFetchCollections(bool success,
                           const std::vector<backdrop::Collection>& collections);
@@ -273,16 +273,16 @@ class ChromePersonalizationAppWallpaperProvider
       wallpaper_observer_remote_;
 
   // Used for interacting with local filesystem.
-  base::WeakPtrFactory<ChromePersonalizationAppWallpaperProvider>
+  base::WeakPtrFactory<PersonalizationAppWallpaperProviderImpl>
       backend_weak_ptr_factory_{this};
 
   // Used for fetching online image attribution.
-  base::WeakPtrFactory<ChromePersonalizationAppWallpaperProvider>
+  base::WeakPtrFactory<PersonalizationAppWallpaperProviderImpl>
       attribution_weak_ptr_factory_{this};
 
   // General use other than the specific cases above.
-  base::WeakPtrFactory<ChromePersonalizationAppWallpaperProvider>
+  base::WeakPtrFactory<PersonalizationAppWallpaperProviderImpl>
       weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_IMPL_H_

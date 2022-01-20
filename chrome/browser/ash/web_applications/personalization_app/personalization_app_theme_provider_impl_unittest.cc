@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/web_applications/personalization_app/chrome_personalization_app_theme_provider.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_theme_provider_impl.h"
 
 #include <memory>
 
@@ -54,16 +54,16 @@ class TestThemeObserver
 
 }  // namespace
 
-class ChromePersonalizationAppThemeProviderTest : public ChromeAshTestBase {
+class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
  public:
-  ChromePersonalizationAppThemeProviderTest()
+  PersonalizationAppThemeProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-  ChromePersonalizationAppThemeProviderTest(
-      const ChromePersonalizationAppThemeProviderTest&) = delete;
-  ChromePersonalizationAppThemeProviderTest& operator=(
-      const ChromePersonalizationAppThemeProviderTest&) = delete;
-  ~ChromePersonalizationAppThemeProviderTest() override = default;
+  PersonalizationAppThemeProviderImplTest(
+      const PersonalizationAppThemeProviderImplTest&) = delete;
+  PersonalizationAppThemeProviderImplTest& operator=(
+      const PersonalizationAppThemeProviderImplTest&) = delete;
+  ~PersonalizationAppThemeProviderImplTest() override = default;
 
  protected:
   // testing::Test:
@@ -83,7 +83,7 @@ class ChromePersonalizationAppThemeProviderTest : public ChromeAshTestBase {
     web_ui_.set_web_contents(web_contents_.get());
 
     theme_provider_ =
-        std::make_unique<ChromePersonalizationAppThemeProvider>(&web_ui_);
+        std::make_unique<PersonalizationAppThemeProviderImpl>(&web_ui_);
     theme_provider_->BindInterface(
         theme_provider_remote_.BindNewPipeAndPassReceiver());
   }
@@ -100,7 +100,7 @@ class ChromePersonalizationAppThemeProviderTest : public ChromeAshTestBase {
     return &theme_provider_remote_;
   }
 
-  ChromePersonalizationAppThemeProvider* theme_provider() {
+  PersonalizationAppThemeProviderImpl* theme_provider() {
     return theme_provider_.get();
   }
 
@@ -123,11 +123,11 @@ class ChromePersonalizationAppThemeProviderTest : public ChromeAshTestBase {
   mojo::Remote<ash::personalization_app::mojom::ThemeProvider>
       theme_provider_remote_;
   TestThemeObserver test_theme_observer_;
-  std::unique_ptr<ChromePersonalizationAppThemeProvider> theme_provider_;
+  std::unique_ptr<PersonalizationAppThemeProviderImpl> theme_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromePersonalizationAppThemeProviderTest, SetColorModePref) {
+TEST_F(PersonalizationAppThemeProviderImplTest, SetColorModePref) {
   SetThemeObserver();
   theme_provider()->SetColorModePref(/*dark_mode_enabled=*/false);
   EXPECT_FALSE(is_dark_mode_enabled().value());
@@ -136,7 +136,7 @@ TEST_F(ChromePersonalizationAppThemeProviderTest, SetColorModePref) {
   EXPECT_TRUE(is_dark_mode_enabled().value());
 }
 
-TEST_F(ChromePersonalizationAppThemeProviderTest, OnColorModeChanged) {
+TEST_F(PersonalizationAppThemeProviderImplTest, OnColorModeChanged) {
   SetThemeObserver();
 
   bool dark_mode_enabled = ash::AshColorProvider::Get()->IsDarkModeEnabled();

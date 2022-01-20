@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_THEME_PROVIDER_H_
-#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_THEME_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_THEME_PROVIDER_IMPL_H_
+#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_THEME_PROVIDER_IMPL_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -18,18 +18,18 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-class ChromePersonalizationAppThemeProvider
+class PersonalizationAppThemeProviderImpl
     : public ash::PersonalizationAppThemeProvider,
       ash::ColorModeObserver {
  public:
-  explicit ChromePersonalizationAppThemeProvider(content::WebUI* web_ui);
+  explicit PersonalizationAppThemeProviderImpl(content::WebUI* web_ui);
 
-  ChromePersonalizationAppThemeProvider(
-      const ChromePersonalizationAppThemeProvider&) = delete;
-  ChromePersonalizationAppThemeProvider& operator=(
-      const ChromePersonalizationAppThemeProvider&) = delete;
+  PersonalizationAppThemeProviderImpl(
+      const PersonalizationAppThemeProviderImpl&) = delete;
+  PersonalizationAppThemeProviderImpl& operator=(
+      const PersonalizationAppThemeProviderImpl&) = delete;
 
-  ~ChromePersonalizationAppThemeProvider() override;
+  ~PersonalizationAppThemeProviderImpl() override;
 
   // PersonalizationAppThemeProvider:
   void BindInterface(
@@ -62,4 +62,4 @@ class ChromePersonalizationAppThemeProvider
       theme_observer_remote_;
 };
 
-#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_THEME_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_THEME_PROVIDER_IMPL_H_

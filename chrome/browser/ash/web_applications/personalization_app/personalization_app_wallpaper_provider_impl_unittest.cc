@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/web_applications/personalization_app/chrome_personalization_app_wallpaper_provider.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_wallpaper_provider_impl.h"
 
 #include <memory>
 
@@ -112,16 +112,16 @@ class TestWallpaperObserver
 
 }  // namespace
 
-class ChromePersonalizationAppWallpaperProviderTest : public testing::Test {
+class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
  public:
-  ChromePersonalizationAppWallpaperProviderTest()
+  PersonalizationAppWallpaperProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-  ChromePersonalizationAppWallpaperProviderTest(
-      const ChromePersonalizationAppWallpaperProviderTest&) = delete;
-  ChromePersonalizationAppWallpaperProviderTest& operator=(
-      const ChromePersonalizationAppWallpaperProviderTest&) = delete;
-  ~ChromePersonalizationAppWallpaperProviderTest() override = default;
+  PersonalizationAppWallpaperProviderImplTest(
+      const PersonalizationAppWallpaperProviderImplTest&) = delete;
+  PersonalizationAppWallpaperProviderImplTest& operator=(
+      const PersonalizationAppWallpaperProviderImplTest&) = delete;
+  ~PersonalizationAppWallpaperProviderImplTest() override = default;
 
  protected:
   // testing::Test:
@@ -142,7 +142,7 @@ class ChromePersonalizationAppWallpaperProviderTest : public testing::Test {
     web_ui_.set_web_contents(web_contents_.get());
 
     wallpaper_provider_ =
-        std::make_unique<ChromePersonalizationAppWallpaperProvider>(&web_ui_);
+        std::make_unique<PersonalizationAppWallpaperProviderImpl>(&web_ui_);
 
     wallpaper_provider_->BindInterface(
         wallpaper_provider_remote_.BindNewPipeAndPassReceiver());
@@ -150,7 +150,7 @@ class ChromePersonalizationAppWallpaperProviderTest : public testing::Test {
 
   void AddWallpaperImage(
       uint64_t asset_id,
-      const ChromePersonalizationAppWallpaperProvider::ImageInfo& image_info) {
+      const PersonalizationAppWallpaperProviderImpl::ImageInfo& image_info) {
     wallpaper_provider_->image_asset_id_map_.insert({asset_id, image_info});
   }
 
@@ -165,7 +165,7 @@ class ChromePersonalizationAppWallpaperProviderTest : public testing::Test {
     return &wallpaper_provider_remote_;
   }
 
-  ChromePersonalizationAppWallpaperProvider* delegate() {
+  PersonalizationAppWallpaperProviderImpl* delegate() {
     return wallpaper_provider_.get();
   }
 
@@ -201,12 +201,11 @@ class ChromePersonalizationAppWallpaperProviderTest : public testing::Test {
   mojo::Remote<ash::personalization_app::mojom::WallpaperProvider>
       wallpaper_provider_remote_;
   TestWallpaperObserver test_wallpaper_observer_;
-  std::unique_ptr<ChromePersonalizationAppWallpaperProvider>
-      wallpaper_provider_;
+  std::unique_ptr<PersonalizationAppWallpaperProviderImpl> wallpaper_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromePersonalizationAppWallpaperProviderTest, SelectWallpaper) {
+TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
   const uint64_t asset_id = 1;
@@ -239,7 +238,7 @@ TEST_F(ChromePersonalizationAppWallpaperProviderTest, SelectWallpaper) {
             test_wallpaper_controller()->wallpaper_info().value());
 }
 
-TEST_F(ChromePersonalizationAppWallpaperProviderTest, PreviewWallpaper) {
+TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
   const uint64_t asset_id = 1;
@@ -272,7 +271,7 @@ TEST_F(ChromePersonalizationAppWallpaperProviderTest, PreviewWallpaper) {
             test_wallpaper_controller()->wallpaper_info().value());
 }
 
-TEST_F(ChromePersonalizationAppWallpaperProviderTest,
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
        ObserveWallpaperFiresWhenBound) {
   // This will create the data url referenced below in expectation.
   test_wallpaper_controller()->ShowWallpaperImage(
@@ -318,8 +317,8 @@ TEST_F(ChromePersonalizationAppWallpaperProviderTest,
             current->url);
 }
 
-class ChromePersonalizationAppWallpaperProviderGooglePhotosTest
-    : public ChromePersonalizationAppWallpaperProviderTest,
+class PersonalizationAppWallpaperProviderImplGooglePhotosTest
+    : public PersonalizationAppWallpaperProviderImplTest,
       public testing::WithParamInterface<bool /* google_photos_enabled */> {
  public:
   // Returns true if the test should run with the Google Photos Wallpaper
@@ -330,9 +329,9 @@ class ChromePersonalizationAppWallpaperProviderGooglePhotosTest
   // The number of times to start each idempotent API query.
   static constexpr size_t kNumFetches = 2;
 
-  // ChromePersonalizationAppWallpaperProviderTest:
+  // PersonalizationAppWallpaperProviderImplTest:
   void SetUp() override {
-    ChromePersonalizationAppWallpaperProviderTest::SetUp();
+    PersonalizationAppWallpaperProviderImplTest::SetUp();
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kWallpaperGooglePhotosIntegration,
         GooglePhotosEnabled());
@@ -344,10 +343,10 @@ class ChromePersonalizationAppWallpaperProviderGooglePhotosTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ChromePersonalizationAppWallpaperProviderGooglePhotosTest,
+    PersonalizationAppWallpaperProviderImplGooglePhotosTest,
     /*google_photos_enabled=*/::testing::Bool());
 
-TEST_P(ChromePersonalizationAppWallpaperProviderGooglePhotosTest, FetchAlbums) {
+TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
   // Mock a fetcher for the albums query.
   auto* const google_photos_albums_fetcher = static_cast<
       wallpaper_handlers::MockGooglePhotosAlbumsFetcher*>(
@@ -372,7 +371,7 @@ TEST_P(ChromePersonalizationAppWallpaperProviderGooglePhotosTest, FetchAlbums) {
   wallpaper_provider_remote()->FlushForTesting();
 }
 
-TEST_P(ChromePersonalizationAppWallpaperProviderGooglePhotosTest, FetchCount) {
+TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchCount) {
   // Mock a fetcher for the photos count query.
   auto* const google_photos_count_fetcher = static_cast<
       wallpaper_handlers::MockGooglePhotosCountFetcher*>(

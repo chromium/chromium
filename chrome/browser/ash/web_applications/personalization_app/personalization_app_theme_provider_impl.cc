@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/web_applications/personalization_app/chrome_personalization_app_theme_provider.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_theme_provider_impl.h"
 
 #include "ash/style/ash_color_provider.h"
 #include "chrome/browser/profiles/profile.h"
 
-ChromePersonalizationAppThemeProvider::ChromePersonalizationAppThemeProvider(
+PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
     : web_ui_(web_ui), profile_(Profile::FromWebUI(web_ui_)) {}
 
-ChromePersonalizationAppThemeProvider::
-    ~ChromePersonalizationAppThemeProvider() = default;
+PersonalizationAppThemeProviderImpl::~PersonalizationAppThemeProviderImpl() =
+    default;
 
-void ChromePersonalizationAppThemeProvider::BindInterface(
+void PersonalizationAppThemeProviderImpl::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::ThemeProvider>
         receiver) {
   theme_receiver_.reset();
   theme_receiver_.Bind(std::move(receiver));
 }
 
-void ChromePersonalizationAppThemeProvider::SetThemeObserver(
+void PersonalizationAppThemeProviderImpl::SetThemeObserver(
     mojo::PendingRemote<ash::personalization_app::mojom::ThemeObserver>
         observer) {
   // May already be bound if user refreshes page.
@@ -33,13 +33,13 @@ void ChromePersonalizationAppThemeProvider::SetThemeObserver(
   OnColorModeChanged(ash::ColorProvider::Get()->IsDarkModeEnabled());
 }
 
-void ChromePersonalizationAppThemeProvider::OnColorModeChanged(
+void PersonalizationAppThemeProviderImpl::OnColorModeChanged(
     bool dark_mode_enabled) {
   DCHECK(theme_observer_remote_.is_bound());
   theme_observer_remote_->OnColorModeChanged(dark_mode_enabled);
 }
 
-void ChromePersonalizationAppThemeProvider::SetColorModePref(
+void PersonalizationAppThemeProviderImpl::SetColorModePref(
     bool dark_mode_enabled) {
   auto* color_provider = ash::AshColorProvider::Get();
   if (color_provider->IsDarkModeEnabled() != dark_mode_enabled)
