@@ -49,13 +49,13 @@ const SkScalar kScrollRadius =
 ////////////////////////////////////////////////////////////////////////////////
 // NativeTheme:
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 // static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
   return NativeThemeAura::web_instance();
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // static
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   static base::NoDestructor<NativeThemeAura> s_native_theme(false, false);
@@ -66,8 +66,8 @@ NativeTheme* NativeTheme::GetInstanceForDarkUI() {
   static base::NoDestructor<NativeThemeAura> s_native_theme(false, true);
   return s_native_theme.get();
 }
-#endif  // !OS_WIN
-#endif  // !OS_APPLE
+#endif  // !BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_APPLE)
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeThemeAura:
@@ -103,13 +103,13 @@ NativeThemeAura* NativeThemeAura::web_instance() {
 }
 
 SkColor NativeThemeAura::FocusRingColorForBaseColor(SkColor base_color) const {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On Mac OSX, the system Accent Color setting is darkened a bit
   // for better contrast.
   return SkColorSetA(base_color, 166);
 #else
   return base_color;
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 void NativeThemeAura::PaintMenuPopupBackground(

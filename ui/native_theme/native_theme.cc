@@ -40,7 +40,7 @@ NativeTheme::ExtraParams::ExtraParams(const ExtraParams& other) {
   memcpy(this, &other, sizeof(*this));
 }
 
-#if !defined(OS_WIN) && !defined(OS_APPLE)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 // static
 bool NativeTheme::SystemDarkModeSupported() {
   return false;

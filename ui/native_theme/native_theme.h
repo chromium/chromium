@@ -57,13 +57,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kCheckbox,
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     kFrameTopArea,
 #endif
     kInnerSpinButton,
     kMenuList,
     kMenuPopupBackground,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     kMenuCheck,
     kMenuCheckBackground,
     kMenuPopupArrow,
@@ -257,7 +257,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     ScrollbarOverlayColorTheme scrollbar_theme;
   };
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   enum ScrollbarOrientation {
     // Vertical scrollbar on the right side of content.
     kVerticalOnRight,
@@ -320,7 +320,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     MenuBackgroundExtraParams menu_background;
     ProgressBarExtraParams progress_bar;
     ScrollbarArrowExtraParams scrollbar_arrow;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     ScrollbarExtraParams scrollbar_extra;
 #endif
     ScrollbarTrackExtraParams scrollbar_track;
