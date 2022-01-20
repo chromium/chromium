@@ -317,13 +317,13 @@ TEST_F(DataSourceTest, PreferredMimeTypeRTF) {
   CheckMimeTypesReceived(&data_source, "", "text/rtf", "", "", "", {});
 }
 
-TEST_F(DataSourceTest, PreferredMimeTypeBitmapToPNG) {
+TEST_F(DataSourceTest, PreferredMimeTypePNGtoBitmap) {
   TestDataSourceDelegate delegate;
   DataSource data_source(&delegate);
   data_source.Offer("image/bmp");
   data_source.Offer("image/png");
 
-  CheckMimeTypesReceived(&data_source, "", "", "", "image/bmp", "", {});
+  CheckMimeTypesReceived(&data_source, "", "", "", "image/png", "", {});
 }
 
 TEST_F(DataSourceTest, PreferredMimeTypePNGToJPEG) {
@@ -334,6 +334,16 @@ TEST_F(DataSourceTest, PreferredMimeTypePNGToJPEG) {
   data_source.Offer("image/jpg");
 
   CheckMimeTypesReceived(&data_source, "", "", "", "image/png", "", {});
+}
+
+TEST_F(DataSourceTest, PreferredMimeTypeBitmaptoJPEG) {
+  TestDataSourceDelegate delegate;
+  DataSource data_source(&delegate);
+  data_source.Offer("image/bmp");
+  data_source.Offer("image/jpeg");
+  data_source.Offer("image/jpg");
+
+  CheckMimeTypesReceived(&data_source, "", "", "", "image/bmp", "", {});
 }
 
 TEST_F(DataSourceTest, PreferredMimeTypeTextUriList) {
