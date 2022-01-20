@@ -2304,6 +2304,50 @@ scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
   return initial_data_;
 }
 
+void StyleEngine::RecalcStyleForContainer(Element& container,
+                                          StyleRecalcChange change) {
+  // The container node must not need recalc at this point.
+  DCHECK(!StyleRecalcChange().ShouldRecalcStyleFor(container));
+
+  // If the container itself depends on an outer container, then its
+  // DependsOnContainerQueries flag will be set, and we would recalc its
+  // style (due to ForceRecalcContainer/ForceRecalcDescendantContainers).
+  // This is not necessary, hence we suppress recalc for this element.
+  change = change.SuppressRecalc();
+
+  // The StyleRecalcRoot invariants requires the root to be dirty/child-dirty
+  container.SetChildNeedsStyleRecalc();
+  style_recalc_root_.Update(nullptr, &container);
+
+  // TODO(crbug.com/1145970): Consider use a caching mechanism for FromAncestors
+  // as we typically will call it for all containers on the first style/layout
+  // pass.
+  RecalcStyle(change, StyleRecalcContext::FromAncestors(container));
+}
+
+void StyleEngine::RecalcStyleForContainerDescendantsInLegacyLayoutTree(
+    Element& container) {
+  if (!RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
+    return;
+
+  // This method is called from AttachLayoutTree() when we are forced to use
+  // legacy layout for a query container. At the time of RecalcStyle, it is not
+  // necessarily known that some sibling tree may enforce us to have legacy
+  // layout, which means we may have skipped style recalc for the container
+  // subtree. Style recalc will not be resumed during layout for legacy layout.
+  // Instead, finish recalc for the subtree when it is discovered that the
+  // container is in legacy layout.
+
+  auto* cq_data = container.GetContainerQueryData();
+  if (!cq_data)
+    return;
+
+  if (cq_data->SkippedStyleRecalc())
+    RecalcStyleForContainer(container, {});
+
+  cq_data->SetContainerQueryEvaluator(nullptr);
+}
+
 void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     Element& container,
     const LogicalSize& logical_size,
@@ -2345,24 +2389,9 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       break;
   }
 
-  // The container node must not need recalc at this point.
-  DCHECK(!StyleRecalcChange().ShouldRecalcStyleFor(container));
-
-  // If the container itself depends on an outer container, then its
-  // DependsOnContainerQueries flag will be set, and we would recalc its
-  // style (due to ForceRecalcContainer/ForceRecalcDescendantContainers).
-  // This is not necessary, hence we suppress recalc for this element.
-  change = change.SuppressRecalc();
-
   NthIndexCache nth_index_cache(GetDocument());
-  // The StyleRecalcRoot invariants requires the root to be dirty/child-dirty
-  container.SetChildNeedsStyleRecalc();
-  style_recalc_root_.Update(nullptr, &container);
 
-  // TODO(crbug.com/1145970): Consider use a caching mechanism for FromAncestors
-  // as we typically will call it for all containers on the first style/layout
-  // pass.
-  RecalcStyle(change, StyleRecalcContext::FromAncestors(container));
+  RecalcStyleForContainer(container, change);
 
   if (UNLIKELY(container.NeedsReattachLayoutTree())) {
     // Generally, the container itself should not be marked for re-attachment.

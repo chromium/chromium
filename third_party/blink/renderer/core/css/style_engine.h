@@ -481,6 +481,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleAndLayoutTreeForContainer(Element& container,
                                             const LogicalSize&,
                                             LogicalAxes contained_axes);
+  void RecalcStyleForContainerDescendantsInLegacyLayoutTree(Element& container);
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);
@@ -658,6 +659,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void PropagateWritingModeAndDirectionToHTMLRoot();
 
   void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
+  void RecalcStyleForContainer(Element& container, StyleRecalcChange change);
+
   void RecalcTransitionPseudoStyle();
 
   // We may need to update whitespaces in the layout tree after a flat tree
