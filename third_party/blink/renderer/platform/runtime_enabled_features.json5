@@ -1140,6 +1140,10 @@
       name: "ForceOverlayFullscreenVideo",
     },
     {
+      // https://github.com/flackr/reduce-motion/blob/main/explainer.md
+      name: "ForceReduceMotion",
+    },
+    {
       name: "ForceSynchronousHTMLParsing",
     },
     {

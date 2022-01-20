@@ -41,6 +41,8 @@
 #include "cc/trees/transform_node.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
@@ -58,6 +60,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -78,6 +81,7 @@
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
@@ -1003,6 +1007,85 @@ TEST_P(AnimationCompositorAnimationsTest,
                                               animation, *animation_effect) &
               (CompositorAnimations::kTargetHasInvalidCompositingState |
                CompositorAnimations::kEffectHasUnsupportedTimingParameters));
+}
+
+TEST_P(AnimationCompositorAnimationsTest, ForceReduceMotion) {
+  ScopedForceReduceMotionForTest force_reduce_motion(true);
+  GetDocument().GetSettings()->SetPrefersReducedMotion(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes slide {
+        0% { transform: translateX(100px); }
+        50% { transform: translateX(200px); }
+        100% { transform: translateX(300px); }
+      }
+      html, body {
+        margin: 0;
+      }
+    </style>
+    <div id='test' style='animation: slide 2s linear'></div>
+  )HTML");
+  element_ = GetDocument().getElementById("test");
+  Animation* animation = element_->getAnimations()[0];
+
+  // The effect should snap between keyframes at the halfway points.
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(450),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 100.0, 0.001);
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(550),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 200.0, 0.001);
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(1450),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 200.0, 0.001);
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(1550),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 300.0, 0.001);
+}
+
+TEST_P(AnimationCompositorAnimationsTest, ForceReduceMotionPageSupportsReduce) {
+  ScopedForceReduceMotionForTest force_reduce_motion(true);
+  GetDocument().GetSettings()->SetPrefersReducedMotion(true);
+  SetBodyInnerHTML(R"HTML(
+    <meta name='supports-reduced-motion' content='reduce'>
+    <style>
+      @keyframes slide {
+        0% { transform: translateX(100px); }
+        100% { transform: translateX(200px); }
+      }
+      html, body {
+        margin: 0;
+      }
+    </style>
+    <div id='test' style='animation: slide 1s linear'></div>
+  )HTML");
+  element_ = GetDocument().getElementById("test");
+  Animation* animation = element_->getAnimations()[0];
+
+  // The effect should snap between keyframes at the halfway points.
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(500),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 150.0, 0.001);
+}
+
+TEST_P(AnimationCompositorAnimationsTest, CheckCanStartForceReduceMotion) {
+  ScopedForceReduceMotionForTest force_reduce_motion(true);
+  GetDocument().GetSettings()->SetPrefersReducedMotion(true);
+  StringKeyframeEffectModel* effect = CreateKeyframeEffectModel(
+      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "translateX(100px)"),
+      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "translateX(200px)",
+                              1));
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(2);
+  auto* keyframe_effect =
+      MakeGarbageCollected<KeyframeEffect>(element_, effect, timing);
+  Animation* animation = timeline_->Play(keyframe_effect);
+  // The animation should not run on the compositor since we are forcing reduced
+  // motion.
+  EXPECT_NE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(), animation,
+                                            *effect),
+            CompositorAnimations::kNoFailure);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

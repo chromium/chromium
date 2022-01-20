@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
 
 namespace blink {
@@ -61,7 +62,7 @@ namespace blink {
 CSSInterpolationTypesMap::CSSInterpolationTypesMap(
     const PropertyRegistry* registry,
     const Document& document)
-    : registry_(registry) {
+    : document_(document), registry_(registry) {
   allow_all_animations_ = document.GetExecutionContext()->IsFeatureEnabled(
       blink::mojom::blink::DocumentPolicyFeature::kLayoutAnimations);
 }
@@ -112,11 +113,15 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   // equivalents when interpolating.
   PropertyHandle used_property =
       property.IsCSSProperty() ? property : PropertyHandle(css_property);
+
+  bool reduce_motion = document_.ShouldForceReduceMotion();
+
   // TODO(crbug.com/838263): Support site-defined list of acceptable properties
   // through permissions policy declarations.
   bool property_maybe_blocked_by_permissions_policy =
       LayoutAnimationsPolicy::AffectedCSSProperties().Contains(&css_property);
-  if (allow_all_animations_ || !property_maybe_blocked_by_permissions_policy) {
+  if (!reduce_motion && (allow_all_animations_ ||
+                         !property_maybe_blocked_by_permissions_policy)) {
     switch (css_property.PropertyID()) {
       case CSSPropertyID::kBaselineShift:
       case CSSPropertyID::kBorderBottomWidth:

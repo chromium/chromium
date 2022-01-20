@@ -6824,6 +6824,38 @@ void Document::BatterySavingsMetaChanged() {
   GetPage()->GetChromeClient().BatterySavingsChanged(*GetFrame(), savings);
 }
 
+void Document::SupportsReducedMotionMetaChanged() {
+  if (!IsInMainFrame())
+    return;
+
+  auto* root_element = documentElement();
+  if (!root_element)
+    return;
+
+  bool supports_reduced_motion = false;
+  for (HTMLMetaElement& meta_element :
+       Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
+    if (EqualIgnoringASCIICase(meta_element.GetName(),
+                               "supports-reduced-motion")) {
+      SpaceSplitString split_content(
+          AtomicString(meta_element.Content().GetString().LowerASCII()));
+      if (split_content.Contains("reduce"))
+        supports_reduced_motion = true;
+      break;
+    }
+  }
+  // TODO(crbug.com/1287263): Recreate existing interpolations.
+  supports_reduced_motion_ = supports_reduced_motion;
+}
+
+bool Document::ShouldForceReduceMotion() const {
+  if (!RuntimeEnabledFeatures::ForceReduceMotionEnabled(GetExecutionContext()))
+    return false;
+
+  return GetFrame()->GetSettings()->GetPrefersReducedMotion() &&
+         !supports_reduced_motion_;
+}
+
 static HTMLLinkElement* GetLinkElement(const Document* doc,
                                        bool (*match_fn)(HTMLLinkElement&)) {
   HTMLHeadElement* head = doc->head();

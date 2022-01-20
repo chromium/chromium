@@ -1650,6 +1650,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // Re-collect the META values that apply and pass to LayerTreeHost.
   void BatterySavingsMetaChanged();
 
+  // A META element with name=supports-reduced-motion was added, removed, or
+  // modified. Re-collect the META values.
+  void SupportsReducedMotionMetaChanged();
+
   // Use counter related functions.
   void CountUse(mojom::WebFeature feature) final;
   void CountDeprecation(mojom::WebFeature feature) final;
@@ -1758,6 +1762,16 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void ObserveForIntrinsicSize(Element* element);
   void UnobserveForIntrinsicSize(Element* element);
+
+  // Returns true if motion should be forcibly reduced in animations on this
+  // document. This returns true if all of the following conditions are true:
+  // 1. The user prefers reduced motion.
+  // 2. The document does not contain a meta tag indicating it supports and uses
+  //    prefers-reduced-motion media queries.
+  // 3. The ForceReduceMotion feature is enabled.
+  // For more details and explanation, see
+  // https://github.com/flackr/reduce-motion/blob/main/explainer.md
+  bool ShouldForceReduceMotion() const;
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
@@ -2346,6 +2360,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // flag that auto rejects the promise without the need for an IPC
   // call or potential user prompt.
   bool expressly_denied_storage_access_ = false;
+
+  // True if the developer supplied a media query indicating that
+  // the site has support for reduced motion.
+  bool supports_reduced_motion_ = false;
 
   Member<FontPreloadManager> font_preload_manager_;
 

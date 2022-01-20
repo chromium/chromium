@@ -517,6 +517,10 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
     const EffectModel& model) {
   FailureReasons reasons = kNoFailure;
 
+  // TODO(crbug.com/1287221): Add a more specific reason.
+  if (target_element.GetDocument().ShouldForceReduceMotion())
+    reasons |= kAcceleratedAnimationsDisabled;
+
   // Both of these checks are required. It is legal to enable the compositor
   // thread but disable threaded animations, and there are situations where
   // threaded animations are enabled globally but this particular LocalFrame
