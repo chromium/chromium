@@ -691,7 +691,7 @@ void DistributeExcessBlockSizeToRows(
     const wtf_size_t start_row_index,
     const wtf_size_t row_count,
     LayoutUnit desired_block_size,
-    bool desired_block_size_is_rowspan,
+    bool is_rowspan_distribution,
     LayoutUnit border_block_spacing,
     LayoutUnit percentage_resolution_block_size,
     NGTableTypes::Rows* rows) {
@@ -703,8 +703,6 @@ void DistributeExcessBlockSizeToRows(
 
   const wtf_size_t end_row_index = start_row_index + row_count;
   DCHECK_LE(end_row_index, rows->size());
-  NGTableTypes::Row* start_row = std::next(rows->begin(), start_row_index);
-  NGTableTypes::Row* end_row = std::next(rows->begin(), end_row_index);
 
   auto RowBlockSizeDeficit = [&percentage_resolution_block_size](
                                  const NGTableTypes::Row& row) {
@@ -732,7 +730,7 @@ void DistributeExcessBlockSizeToRows(
     total_block_size += row.block_size;
 
     // Rowspans are treated specially only during rowspan distribution.
-    bool is_row_with_originating_rowspan = desired_block_size_is_rowspan &&
+    bool is_row_with_originating_rowspan = is_rowspan_distribution &&
                                            index != start_row_index &&
                                            row.has_rowspan_start;
     if (is_row_with_originating_rowspan)
@@ -842,23 +840,15 @@ void DistributeExcessBlockSizeToRows(
   // Step 4: Empty row distribution
   // At this point all rows are empty and/or constrained.
   if (!empty_rows.IsEmpty()) {
-    if (desired_block_size_is_rowspan) {
-      NGTableTypes::Row* last_row = nullptr;
-      NGTableTypes::Row* row = start_row;
-      // Rowspan distribution skips initial empty row if possible,
-      // and distributes everything to the last empty row.
-      if (empty_rows.size() != row_count)
-        ++row;
-      for (; row != end_row; ++row) {
-        if (row->block_size != LayoutUnit())
-          continue;
-        last_row = row;
-      }
-      if (last_row) {
-        last_row->block_size = distributable_block_size;
+    const bool has_only_empty_rows = empty_rows.size() == row_count;
+    if (is_rowspan_distribution) {
+      // If we are doing a rowspan distribution, *and* only have empty rows,
+      // distribute everything to the last empty row.
+      if (has_only_empty_rows) {
+        rows->at(empty_rows.back()).block_size += distributable_block_size;
         return;
       }
-    } else if (empty_rows.size() == row_count ||
+    } else if (has_only_empty_rows ||
                (empty_rows.size() + constrained_non_empty_row_count ==
                 row_count)) {
       // Grow empty rows if either of these is true:
@@ -1040,7 +1030,7 @@ void NGTableAlgorithmHelpers::DistributeRowspanCellToRows(
   DCHECK_GE(rowspan_cell.span, 0u);
   DistributeExcessBlockSizeToRows(rowspan_cell.start_row, rowspan_cell.span,
                                   rowspan_cell.min_block_size,
-                                  /* desired_block_size_is_rowspan */ true,
+                                  /* is_rowspan_distribution */ true,
                                   border_block_spacing, kIndefiniteSize, rows);
 }
 
@@ -1053,7 +1043,7 @@ void NGTableAlgorithmHelpers::DistributeSectionFixedBlockSizeToRows(
     LayoutUnit percentage_resolution_block_size,
     NGTableTypes::Rows* rows) {
   DistributeExcessBlockSizeToRows(start_row, rowspan, section_fixed_block_size,
-                                  /* desired_block_size_is_rowspan */ false,
+                                  /* is_rowspan_distribution */ false,
                                   border_block_spacing,
                                   percentage_resolution_block_size, rows);
 }
@@ -1287,7 +1277,7 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
       continue;
     DistributeExcessBlockSizeToRows(
         section.start_row, section.row_count, section.block_size,
-        /* desired_block_size_is_rowspan */ false, border_block_spacing,
+        /* is_rowspan_distribution */ false, border_block_spacing,
         section.block_size, rows);
   }
 }

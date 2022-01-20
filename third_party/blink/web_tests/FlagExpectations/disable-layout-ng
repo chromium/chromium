@@ -1264,6 +1264,7 @@ crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-colspan-002.htm
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-row-004.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-rowcol-001.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-rowcol-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-tables/width-distribution/computing-column-measure-1.html [ Failure ]
 
 ### external/wpt/css/css-tables/height-distribution/
 crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-001.html [ Failure ]
@@ -1319,6 +1320,7 @@ crbug.com/958381 fast/table/colspanMinWidth.html [ Failure ]
 crbug.com/958381 fast/table/colspanMinWidth-vertical.html [ Failure ]
 crbug.com/958381 fast/table/large-col-span-crash.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/column-track-merging.html [ Failure ]
+crbug.com/958381 paint/invalidation/table/table-extra-bottom-grow.html [ Failure ]
 
 # TablesNG end
 
