@@ -11,8 +11,7 @@ function loadCommonComponents() {
 
 // <include src="../recommend_apps.js">
 // <include src="../oobe_screen_assistant_optin_flow.js">
-// <include src="../multidevice_setup_first_run.js">
-// <include src="../screen_multidevice_setup.js">
+// <include src="../multidevice_setup_screen.js">
 
 // <include src="components_[OOBE].js">
 // TODO(crbug.com/1111387) - Remove excessive logging.

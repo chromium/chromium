@@ -504,7 +504,7 @@ js_type_check("closure_compile_module_local") {
 js_type_check("closure_compile_local") {
   uses_legacy_modules = true
   deps = [
-    ":multidevice_setup_first_run",
+    ":multidevice_setup_screen",
     ":oobe_screen_assistant_optin_flow",
     ":recommend_apps",
   ]
@@ -516,7 +516,7 @@ js_type_check("closure_compile_local") {
 js_library("login_ui_tools") {
 }
 
-js_library("multidevice_setup_first_run") {
+js_library("multidevice_setup_screen") {
   deps = [
     "components/behaviors:oobe_i18n_behavior",
     "components/buttons:oobe_next_button",

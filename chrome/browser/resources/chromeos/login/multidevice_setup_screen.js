@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview MultiDevice setup flow Polymer element to be used in the first
- *     run (i.e., after OOBE or during the user's first login on this
- *     Chromebook).
+ * @fileoverview MultiDevice setup screen for login/OOBE.
  */
 
 cr.define('multidevice_setup', function() {
@@ -50,10 +48,10 @@ cr.define('multidevice_setup', function() {
     }
   }
 
-  const MultiDeviceSetupFirstRun = Polymer({
-    is: 'multidevice-setup-first-run',
+  const MultiDeviceSetupScreen = Polymer({
+    is: 'multidevice-setup-element',
 
-    behaviors: [OobeI18nBehavior, WebUIListenerBehavior],
+    behaviors: [OobeI18nBehavior, LoginScreenBehavior, WebUIListenerBehavior],
 
     properties: {
       /** @private {!multidevice_setup.MultiDeviceSetupDelegate} */
@@ -121,6 +119,7 @@ cr.define('multidevice_setup', function() {
 
     /** @override */
     ready() {
+      this.initializeLoginScreen('MultiDeviceSetupScreen', {});
       this.updateLocalizedContent();
     },
 
@@ -164,6 +163,6 @@ cr.define('multidevice_setup', function() {
   });
 
   return {
-    MultiDeviceSetupFirstRun: MultiDeviceSetupFirstRun,
+    MultiDeviceSetupScreen: MultiDeviceSetupScreen,
   };
 });

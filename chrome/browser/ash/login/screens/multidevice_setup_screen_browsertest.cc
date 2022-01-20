@@ -28,7 +28,7 @@ namespace mojom = ::chromeos::multidevice_setup::mojom;
 }
 
 constexpr test::UIPath kMultideviceSetupPath = {"multidevice-setup-screen",
-                                                "impl", "multideviceSetup"};
+                                                "multideviceSetup"};
 
 class MultiDeviceSetupScreenTest : public OobeBaseTest {
  public:

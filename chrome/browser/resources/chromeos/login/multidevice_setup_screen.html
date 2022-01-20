@@ -11,27 +11,27 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 
+<link rel="import" href="/components/behaviors/login_screen_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
 <link rel="import" href="/components/buttons/oobe_next_button.html">
 <link rel="import" href="/components/buttons/oobe_text_button.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
 <link rel="import" href="/components/common_styles/common_styles.html">
 <link rel="import" href="/components/throbber_notice.html">
 
 <!--
-  UI for the MultiDevice setup flow when displayed after OOBE or during the
-  user's first login on this Chromebook. Note that this flow is
-  slightly different from the post-login flow in 3 ways:
-    (1) In the first run, the user has just entered their password, so we do not
-        prompt the user to enter a password before continuing.
-    (2) In the first run, once the user selects a host device, we continue to
-        the next OOBE/login task; in the post-login mode, there is a "success"
+  OOBE screen that wraps MultiDevice setup flow when displayed during the
+  user's onboarding on this Chromebook. Note that this flow is slightly
+  different from the post-OOBE flow ( `c/b/r/chromeos/multidevice_setup/` )
+  in 3 ways:
+    (1) During onboarding, the user has just entered their password, so we
+        do not prompt the user to enter a password before continuing.
+    (2) During onboarding, once the user selects a host device, we continue to
+        the next OOBE/login task; in the post-OOBE mode, there is a "success"
         screen.
-    (3) In the first run, buttons are styled with custom OOBE buttons.
-
-  Example:
-      <multidevice-setup-first-run></multidevice-setup-first-run>
+    (3) During onboarding, buttons are styled with custom OOBE buttons.
 -->
-<dom-module id="multidevice-setup-first-run">
+
+<dom-module id="multidevice-setup-element">
   <template>
     <link rel="stylesheet" href="oobe_popup_overlay.css">
     <style include="multidevice-setup-shared oobe-common-styles">
