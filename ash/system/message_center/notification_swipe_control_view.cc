@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 
 #include "ash/system/message_center/notification_swipe_control_view.h"
+#include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/style/icon_button.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -30,13 +34,20 @@ const char NotificationSwipeControlView::kViewClassName[] =
 NotificationSwipeControlView::NotificationSwipeControlView(
     message_center::MessageView* message_view)
     : message_view_(message_view) {
+  gfx::Insets padding =
+      features::IsNotificationsRefreshEnabled()
+          ? kNotificationSwipeControlPadding
+          : gfx::Insets(
+                message_center_style::kSwipeControlButtonVerticalMargin,
+                message_center_style::kSwipeControlButtonHorizontalMargin);
+
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(message_center_style::kSwipeControlButtonVerticalMargin,
-                  message_center_style::kSwipeControlButtonHorizontalMargin),
+      views::BoxLayout::Orientation::kHorizontal, padding,
       message_center_style::kSwipeControlButtonHorizontalMargin));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
+      features::IsNotificationsRefreshEnabled()
+          ? views::BoxLayout::CrossAxisAlignment::kCenter
+          : views::BoxLayout::CrossAxisAlignment::kStart);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
   // Draw on its own layer to round corners
@@ -86,6 +97,14 @@ void NotificationSwipeControlView::UpdateButtonsVisibility() {
   bool has_snooze_button = buttons->snooze_button();
   ShowButtons(button_position, has_settings_button, has_snooze_button);
 
+  if (features::IsNotificationsRefreshEnabled()) {
+    message_view_->SetSlideButtonWidth(
+        settings_button_ ? kNotificationSwipeControlPadding.width() +
+                               settings_button_->width()
+                         : 0);
+    return;
+  }
+
   int control_button_count =
       (has_settings_button ? 1 : 0) + (has_snooze_button ? 1 : 0);
   int control_button_width =
@@ -122,32 +141,42 @@ void NotificationSwipeControlView::UpdateCornerRadius(int top_radius,
 
 void NotificationSwipeControlView::ShowSettingsButton(bool show) {
   if (show && !settings_button_) {
-    settings_button_ = new views::ImageButton(
-        base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
-                            base::Unretained(this), ButtonId::kSettings));
-    settings_button_->SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            message_center::kNotificationSettingsButtonIcon,
-            message_center_style::kSwipeControlButtonImageSize,
-            gfx::kChromeIconGrey));
-    settings_button_->SetImageHorizontalAlignment(
+    std::unique_ptr<views::ImageButton> settings_button;
+    if (features::IsNotificationsRefreshEnabled()) {
+      settings_button = std::make_unique<IconButton>(
+          base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
+                              base::Unretained(this), ButtonId::kSettings),
+          IconButton::Type::kSmall, &vector_icons::kSettingsOutlineIcon,
+          IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME);
+    } else {
+      settings_button = std::make_unique<views::ImageButton>(
+          base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
+                              base::Unretained(this), ButtonId::kSettings));
+      settings_button->SetImage(
+          views::Button::STATE_NORMAL,
+          gfx::CreateVectorIcon(
+              message_center::kNotificationSettingsButtonIcon,
+              message_center_style::kSwipeControlButtonImageSize,
+              gfx::kChromeIconGrey));
+      settings_button->SetPreferredSize(
+          gfx::Size(message_center_style::kSwipeControlButtonSize,
+                    message_center_style::kSwipeControlButtonSize));
+
+      settings_button->SetAccessibleName(l10n_util::GetStringUTF16(
+          IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
+      settings_button->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
+      settings_button->SetBackground(
+          views::CreateSolidBackground(SK_ColorTRANSPARENT));
+      settings_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    }
+
+    settings_button->SetImageHorizontalAlignment(
         views::ImageButton::ALIGN_CENTER);
-    settings_button_->SetImageVerticalAlignment(
+    settings_button->SetImageVerticalAlignment(
         views::ImageButton::ALIGN_MIDDLE);
-    settings_button_->SetPreferredSize(
-        gfx::Size(message_center_style::kSwipeControlButtonSize,
-                  message_center_style::kSwipeControlButtonSize));
 
-    settings_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-        IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
-    settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
-    settings_button_->SetBackground(
-        views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    settings_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-
-    AddChildView(settings_button_);
+    settings_button_ = AddChildView(std::move(settings_button));
     Layout();
   } else if (!show && settings_button_) {
     DCHECK(Contains(settings_button_));
@@ -157,6 +186,10 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
 }
 
 void NotificationSwipeControlView::ShowSnoozeButton(bool show) {
+  // We don't show the snooze button in the new feature.
+  if (features::IsNotificationsRefreshEnabled())
+    return;
+
   if (show && !snooze_button_) {
     snooze_button_ = new views::ImageButton(
         base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,

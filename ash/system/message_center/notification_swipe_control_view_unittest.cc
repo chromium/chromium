@@ -121,7 +121,10 @@ TEST_P(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   // First click will do nothing, expect that to work.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*has_settings_button=*/true, /*has_snooze_button=*/true);
+      /*has_settings=*/true, /*has_snooze=*/true);
+  if (features::IsNotificationsRefreshEnabled())
+    swipe_control_view->settings_button_->SetHasInkDropActionOnClick(false);
+
   views::test::ButtonTestApi(swipe_control_view->settings_button_)
       .NotifyClick(press);
   EXPECT_TRUE(swipe_control_view);
@@ -129,13 +132,20 @@ TEST_P(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   // Second click deletes |swipe_control_view| in the handler.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*has_settings_button=*/true, /*has_snooze_button=*/true);
+      /*has_settings=*/true, /*has_snooze=*/true);
+  if (features::IsNotificationsRefreshEnabled())
+    swipe_control_view->settings_button_->SetHasInkDropActionOnClick(false);
+
   views::test::ButtonTestApi(swipe_control_view->settings_button_)
       .NotifyClick(press);
   EXPECT_FALSE(swipe_control_view);
 }
 
 TEST_P(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
+  // There's no snooze button in the new feature, return early.
+  if (features::IsNotificationsRefreshEnabled())
+    return;
+
   auto swipe_control_view =
       std::make_unique<NotificationSwipeControlView>(message_view());
 
@@ -151,7 +161,7 @@ TEST_P(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
   // First click will do nothing, expect that to work.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*has_settings_button=*/true, /*has_snooze_button=*/true);
+      /*has_settings=*/true, /*has_snooze=*/true);
   views::test::ButtonTestApi(swipe_control_view->snooze_button_)
       .NotifyClick(press);
   EXPECT_TRUE(swipe_control_view);
@@ -159,7 +169,7 @@ TEST_P(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
   // Second click deletes |swipe_control_view| in the handler.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*has_settings_button=*/true, /*has_snooze_button=*/true);
+      /*has_settings=*/true, /*has_snooze=*/true);
   views::test::ButtonTestApi(swipe_control_view->snooze_button_)
       .NotifyClick(press);
   EXPECT_FALSE(swipe_control_view);
