@@ -56,11 +56,12 @@ class TestCleanExitBeacon : public CleanExitBeacon {
  public:
   explicit TestCleanExitBeacon(
       PrefService* local_state,
-      const base::FilePath& user_data_dir = base::FilePath())
+      const base::FilePath& user_data_dir = base::FilePath(),
+      version_info::Channel channel = version_info::Channel::UNKNOWN)
       : CleanExitBeacon(kDummyWindowsRegistryKey,
                         user_data_dir,
                         local_state,
-                        version_info::Channel::UNKNOWN) {
+                        channel) {
     Initialize();
   }
 
@@ -83,9 +84,6 @@ class CleanExitBeaconTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-class BeaconFileTest : public testing::WithParamInterface<std::string>,
-                       public CleanExitBeaconTest {};
-
 struct BadBeaconTestParams {
   const std::string test_name;
   bool beacon_file_exists;
@@ -97,6 +95,12 @@ struct BadBeaconTestParams {
 class BadBeaconFileTest
     : public testing::WithParamInterface<BadBeaconTestParams>,
       public CleanExitBeaconTest {};
+
+#if BUILDFLAG(IS_ANDROID)
+class IgnoredBeaconFileTest
+    : public testing::WithParamInterface<version_info::Channel>,
+      public CleanExitBeaconTest {};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 struct BeaconConsistencyTestParams {
   // Inputs:
@@ -281,9 +285,6 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
       params.beacon_file_state, 1);
 }
 
-// TODO(crbug/1248239): Enable these tests on Android when the Extended
-// Variations Safe Mode experiment is fully enabled on Android Chrome.
-#if !BUILDFLAG(IS_ANDROID)
 // Verify that successfully reading the beacon file's contents results in
 // correctly (a) setting the |did_previous_session_exit_cleanly_| field and (b)
 // recording metrics when the last session exited cleanly.
@@ -332,7 +333,6 @@ TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        updated_num_crashes, 1);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // The below CleanExitBeaconTest.BeaconState*ExtendedSafeMode tests verify that
 // the logic for recording UMA.CleanExitBeacon.BeaconFileConsistency is correct
@@ -419,10 +419,18 @@ TEST_P(BeaconFileConsistencyTest, BeaconConsistency) {
 
 #if BUILDFLAG(IS_ANDROID)
 // TODO(crbug/1248239): Remove this test once the Extended Variations Safe Mode
-// experiment is fully enabled on Android Chrome.
+// experiment is fully enabled on Android Chrome. Until then, update the
+// channels as necessary.
+INSTANTIATE_TEST_SUITE_P(All,
+                         IgnoredBeaconFileTest,
+                         ::testing::Values(version_info::Channel::DEV,
+                                           version_info::Channel::BETA,
+                                           version_info::Channel::STABLE));
 
 // Verify that the beacon file, if any, is ignored on Android.
-TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnAndroid) {
+TEST_P(IgnoredBeaconFileTest, FileIgnoredOnAndroid) {
+  SetUpExtendedSafeModeExperiment(variations::kSignalAndWriteViaFileUtilGroup);
+
   // Set up the beacon file such that the previous session did not exit cleanly
   // and the running crash streak is 2. The file (and thus these values) are
   // expected to be ignored.
@@ -439,12 +447,14 @@ TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnAndroid) {
   // Set up the PrefService such that the previous session exited cleanly and
   // the running crash streak is 0. The PrefService (and thus these values) are
   // expected to be used.
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_,
+                                                       /*exited_cleanly=*/true);
   const int expected_num_crashes = 0;
   prefs_.SetInteger(variations::prefs::kVariationsCrashStreak,
                     expected_num_crashes);
 
-  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path,
+                                        GetParam());
 
   // Verify that the Local State beacon was used (not the beacon file beacon).
   EXPECT_TRUE(clean_exit_beacon.exited_cleanly());
