@@ -6,10 +6,6 @@
 
 #include <algorithm>
 
-#if defined(OS_WIN)
-#include <vector>
-#endif
-
 #include "base/i18n/case_conversion.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
@@ -20,6 +16,10 @@
 #include "ui/views/controls/prefix_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <vector>
+#endif
 
 namespace views {
 
@@ -171,7 +171,7 @@ bool PrefixSelector::ShouldDoLearning() {
   return false;
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool PrefixSelector::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
@@ -199,14 +199,14 @@ bool PrefixSelector::SetAutocorrectRange(const gfx::Range& range) {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrefixSelector::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
     const std::u16string& active_composition_text,
     bool is_composition_committed) {}
 #endif
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void PrefixSelector::GetActiveTextInputControlLayoutBounds(
     absl::optional<gfx::Rect>* control_bounds,
     absl::optional<gfx::Rect>* selection_bounds) {}

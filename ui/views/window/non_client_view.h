@@ -73,7 +73,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // used.
   virtual bool GetClientMask(const gfx::Size& size, SkPath* mask) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the point in screen physical coordinates at which the system menu
   // should be opened.
   virtual gfx::Point GetSystemMenuScreenPixelLocation() const;
@@ -109,7 +109,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   virtual void InsertClientView(ClientView* client_view);
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the y coordinate, in local coordinates, at which the system menu
   // should be opened.  Since this is in DIP, it does not include the 1 px
   // offset into the caption area; the caller will take care of this.

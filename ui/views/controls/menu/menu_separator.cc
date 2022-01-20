@@ -13,7 +13,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -45,7 +45,7 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
   else if (menu_config.use_outer_border)
     paint_rect.Inset(1, 0);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Hack to get the separator to display correctly on Windows where we may
   // have fractional scales. We move the separator 1 pixel down to ensure that
   // it falls within the clipping rect which is scaled up.

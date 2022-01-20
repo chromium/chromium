@@ -503,7 +503,7 @@ TEST_F(MenuButtonTest, DraggableMenuButtonDoesNotActivateOnDrag) {
 #endif  // USE_AURA
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !defined(OS_MAC) || defined(USE_AURA)
+#if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 // Tests if the callback is notified correctly when a gesture tap happens on a
 // MenuButton that has a callback.
@@ -550,7 +550,7 @@ TEST_F(MenuButtonTest, TouchFeedbackDuringTapCancel) {
   EXPECT_FALSE(button()->clicked());
 }
 
-#endif  // !defined(OS_MAC) || defined(USE_AURA)
+#endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 TEST_F(MenuButtonTest, InkDropHoverWhenShowingMenu) {
   ConfigureMenuButton(std::make_unique<PressStateButton>(false));

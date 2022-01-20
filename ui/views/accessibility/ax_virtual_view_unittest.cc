@@ -26,7 +26,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -742,14 +742,14 @@ TEST_F(AXVirtualViewTest, HitTesting) {
 }
 
 // Test for GetTargetForNativeAccessibilityEvent().
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(AXVirtualViewTest, GetTargetForEvents) {
   EXPECT_EQ(button_, virtual_label_->GetOwnerView());
   EXPECT_NE(nullptr, HWNDForView(virtual_label_->GetOwnerView()));
   EXPECT_EQ(HWNDForView(button_),
             virtual_label_->GetTargetForNativeAccessibilityEvent());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace test
 }  // namespace views

@@ -164,7 +164,7 @@ TEST_F(MenuRunnerTest, MAYBE_LatinMnemonic) {
   EXPECT_NE(nullptr, delegate->on_menu_closed_menu());
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // Tests that a key press on a non-US keyboard layout activates the correct menu
 // item. Disabled on Windows because a WM_CHAR event does not activate an item.
 TEST_F(MenuRunnerTest, NonLatinMnemonic) {
@@ -188,7 +188,7 @@ TEST_F(MenuRunnerTest, NonLatinMnemonic) {
   EXPECT_EQ(1, delegate->on_menu_closed_called());
   EXPECT_NE(nullptr, delegate->on_menu_closed_menu());
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST_F(MenuRunnerTest, MenuItemViewShowsMnemonics) {
   if (!MenuSupportsMnemonics())
@@ -268,7 +268,7 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
 
 // This test is Mac-specific: Mac is the only platform where VKEY_SPACE
 // activates menu items.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(MenuRunnerTest, SpaceActivatesItem) {
   if (!MenuConfig::instance().all_menus_use_prefix_selection)
     return;
@@ -293,7 +293,7 @@ TEST_F(MenuRunnerTest, SpaceActivatesItem) {
   EXPECT_EQ(1, delegate->on_menu_closed_called());
   EXPECT_NE(nullptr, delegate->on_menu_closed_menu());
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 // Tests that attempting to nest a menu within a drag-and-drop menu does not
 // cause a crash. Instead the drag and drop action should be canceled, and the

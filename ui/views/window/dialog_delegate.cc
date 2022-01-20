@@ -30,7 +30,7 @@
 #include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_observer.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -78,12 +78,12 @@ Widget* DialogDelegate::CreateDialogWidget(
 
 // static
 bool DialogDelegate::CanSupportCustomFrame(gfx::NativeView parent) {
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)
   // The new style doesn't support unparented dialogs on Linux desktop.
   return parent != nullptr;
 #else
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The new style doesn't support unparented dialogs on Windows Classic themes.
   if (!ui::win::IsAeroGlassEnabled())
     return parent != nullptr;
@@ -109,7 +109,7 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   if (!dialog || dialog->use_custom_frame()) {
     params.opacity = Widget::InitParams::WindowOpacity::kTranslucent;
     params.remove_standard_frame = true;
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // Except on Mac, the bubble frame includes its own shadow; remove any
     // native shadowing. On Mac, the window server provides the shadow.
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
@@ -117,7 +117,7 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   }
   params.context = context;
   params.parent = parent;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // Web-modal (ui::MODAL_TYPE_CHILD) dialogs with parents are marked as child
   // widgets to prevent top-level window behavior (independent movement, etc).
   // On Mac, however, the parent may be a native window (not a views::Widget),
@@ -447,7 +447,7 @@ ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() {
 }
 
 int DialogDelegate::GetCornerRadius() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1116680): On Mac MODAL_TYPE_WINDOW is implemented using
   // sheets which causes visual artifacts when corner radius is increased for
   // modal types. Remove this after this issue has been addressed.

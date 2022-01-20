@@ -3157,7 +3157,7 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged), 2);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This test exercises a Mac-specific behavior, by which hotkeys using modifiers
 // cause menus to close and the hotkeys to be handled by the browser window.
 // This specific test case tries using cmd-ctrl-f, which normally means

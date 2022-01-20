@@ -23,7 +23,7 @@
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 

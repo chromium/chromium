@@ -516,7 +516,7 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuWithMenuButton) {
   });
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Because Mac does not use Aura, mouse event delivery to Views menus on Mac
 // doesn't work the same as on other platforms. We still test that activation of
 // Mac menus is correctly communicated through ui::ElementTracker in the
@@ -570,7 +570,7 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndActivateMenuItem) {
   });
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(InteractionSequenceViewsTest, TransitionOnKeyboardMenuActivation) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);

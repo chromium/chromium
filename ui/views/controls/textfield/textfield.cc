@@ -67,13 +67,13 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #endif
@@ -83,7 +83,7 @@
 #include "ui/wm/core/ime_util_chromeos.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/cocoa/defaults_utils.h"
 #include "ui/base/cocoa/secure_password_input.h"
 #endif
@@ -166,7 +166,7 @@ bool IsControlKeyModifier(int flags) {
 // Control-modified key combination, but we cannot extend it to other platforms
 // as Control has different meanings and behaviors.
 // https://crrev.com/2580483002/#msg46
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return flags & ui::EF_CONTROL_DOWN;
 #else
   return false;
@@ -194,13 +194,13 @@ bool CanUseTransparentBackgroundForDragImage() {
 
 // static
 base::TimeDelta Textfield::GetCaretBlinkInterval() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const size_t system_value = ::GetCaretBlinkTime();
   if (system_value != 0) {
     return (system_value == INFINITE) ? base::TimeDelta()
                                       : base::Milliseconds(system_value);
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::TimeDelta system_value;
   if (ui::TextInsertionCaretBlinkPeriod(&system_value))
     return system_value;
@@ -230,7 +230,7 @@ Textfield::Textfield()
 
   FocusRing::Install(this);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Do not map accelerators on Mac. E.g. They might not reflect custom
   // keybindings that a user has set. But also on Mac, these commands dispatch
   // via the "responder chain" when the OS searches through menu items in the
@@ -655,7 +655,7 @@ bool Textfield::OnMousePressed(const ui::MouseEvent& event) {
       (event.IsOnlyLeftMouseButton() || event.IsOnlyRightMouseButton())) {
     if (!had_focus)
       RequestFocusWithPointer(ui::EventPointerType::kMouse);
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     ShowVirtualKeyboardIfEnabled();
 #endif
   }
@@ -713,7 +713,7 @@ bool Textfield::OnKeyPressed(const ui::KeyEvent& event) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ui::TextEditKeyBindingsDelegateAuraLinux* delegate =
       ui::GetTextEditKeyBindingsDelegate();
   std::vector<ui::TextEditCommandAuraLinux> commands;
@@ -859,7 +859,7 @@ void Textfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
 bool Textfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Skip any accelerator handling that conflicts with custom keybindings.
   ui::TextEditKeyBindingsDelegateAuraLinux* delegate =
       ui::GetTextEditKeyBindingsDelegate();
@@ -1038,11 +1038,11 @@ void Textfield::OnFocus() {
   if (focus_reason_ == ui::TextInputClient::FOCUS_REASON_NONE)
     focus_reason_ = ui::TextInputClient::FOCUS_REASON_OTHER;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD)
     password_input_enabler_ =
         std::make_unique<ui::ScopedPasswordInputEnabler>();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   GetRenderText()->set_focused(true);
   if (GetInputMethod())
@@ -1072,9 +1072,9 @@ void Textfield::OnBlur() {
   SchedulePaint();
   View::OnBlur();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   password_input_enabler_.reset();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 gfx::Point Textfield::GetKeyboardContextMenuLocation() {
@@ -1687,7 +1687,7 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::SCROLL_PAGE_UP:
 // On Mac, the textfield should respond to Up/Down arrows keys and
 // PageUp/PageDown.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       return true;
 #else
       return GetRenderText()->multiline();
@@ -1722,7 +1722,7 @@ bool Textfield::ShouldDoLearning() {
   return false;
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // TODO(https://crbug.com/952355): Implement this method to support Korean IME
 // reconversion feature on native text fields (e.g. find bar).
 bool Textfield::SetCompositionFromExistingText(
@@ -1779,7 +1779,7 @@ bool Textfield::SetAutocorrectRange(const gfx::Range& range) {
 }
 #endif
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void Textfield::GetActiveTextInputControlLayoutBounds(
     absl::optional<gfx::Rect>* control_bounds,
     absl::optional<gfx::Rect>* selection_bounds) {
@@ -1789,7 +1789,7 @@ void Textfield::GetActiveTextInputControlLayoutBounds(
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/952355): Implement this method once TSF supports
 // reconversion features on native text fields.
 void Textfield::SetActiveCompositionForAccessibility(
@@ -2091,7 +2091,7 @@ void Textfield::RequestFocusWithPointer(ui::EventPointerType pointer_type) {
 
 void Textfield::RequestFocusForGesture(const ui::GestureEventDetails& details) {
   bool show_virtual_keyboard = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   show_virtual_keyboard =
       details.primary_pointer_type() == ui::EventPointerType::kTouch ||
       details.primary_pointer_type() == ui::EventPointerType::kPen;
@@ -2118,7 +2118,7 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
     return ui::TextEditCommand::INVALID_COMMAND;
 
   const bool shift = event.IsShiftDown();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool command = event.IsCommandDown();
 #endif
   const bool control = event.IsControlDown() || event.IsCommandDown();
@@ -2169,7 +2169,7 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
         return ui::TextEditCommand::
             MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION;
       }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       return ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT;
 #else
       return ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE;
@@ -2177,13 +2177,13 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
     case ui::VKEY_END:
       if (shift)
         return ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       return ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT;
 #else
       return ui::TextEditCommand::MOVE_TO_END_OF_LINE;
 #endif
     case ui::VKEY_UP:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       if (control && shift) {
         return ui::TextEditCommand::
             MOVE_PARAGRAPH_BACKWARD_AND_MODIFY_SELECTION;
@@ -2199,7 +2199,7 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
                    : ui::TextEditCommand::INVALID_COMMAND;
 #endif
     case ui::VKEY_DOWN:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       if (control && shift) {
         return ui::TextEditCommand::MOVE_PARAGRAPH_FORWARD_AND_MODIFY_SELECTION;
       }
@@ -2215,20 +2215,20 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
 #endif
     case ui::VKEY_BACK:
       if (!control) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         if (alt)
           return shift ? ui::TextEditCommand::REDO : ui::TextEditCommand::UNDO;
 #endif
         return ui::TextEditCommand::DELETE_BACKWARD;
       }
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // Only erase by line break on Linux and ChromeOS.
       if (shift)
         return ui::TextEditCommand::DELETE_TO_BEGINNING_OF_LINE;
 #endif
       return ui::TextEditCommand::DELETE_WORD_BACKWARD;
     case ui::VKEY_DELETE:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // Only erase by line break on Linux and ChromeOS.
       if (shift && control)
         return ui::TextEditCommand::DELETE_TO_END_OF_LINE;

@@ -98,11 +98,11 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
   void ButtonPressed(const ui::Event& event) {
     std::string json;
     base::ScopedAllowBlockingForTesting allow_blocking;
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::FilePath path(base::UTF16ToUTF8(file_chooser_->GetText()));
 #else
     base::FilePath path(base::UTF16ToWide(file_chooser_->GetText()));
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
     if (base::ReadFileToString(path, &json)) {
       auto skottie = cc::SkottieWrapper::CreateSerializable(
           std::vector<uint8_t>(json.begin(), json.end()));

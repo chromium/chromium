@@ -15,7 +15,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #endif
@@ -52,7 +52,7 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
   return false;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 struct FindAllWindowsData {
   std::vector<aura::Window*>* windows;
@@ -66,14 +66,14 @@ BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {
   return TRUE;
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 std::vector<aura::Window*> GetAllTopLevelWindows() {
   std::vector<aura::Window*> roots;
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)
   roots = DesktopWindowTreeHostLinux::GetAllOpenWindows();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   {
     FindAllWindowsData data = {&roots};
     EnumThreadWindows(GetCurrentThreadId(), FindAllWindowsCallback,
@@ -122,13 +122,13 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
   // the window manager is interested in knowing the size constraints. On
   // ChromeOS, it's handled internally. Elsewhere, the size constraints need to
   // be pushed to the window server when they change.
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
-#endif  // OS_LINUX && !OS_CHROMEOS
+#endif
   NOTREACHED();
   return gfx::Size();
 }

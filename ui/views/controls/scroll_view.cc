@@ -509,7 +509,7 @@ void ScrollView::Layout() {
   // if its OverlapsContent matches other bar's.
   if (horizontal_scroll_bar_mode_ == ScrollBarMode::kEnabled &&
       vertical_scroll_bar_mode_ == ScrollBarMode::kEnabled) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac, scrollbars may update their style one at a time, so they may
     // temporarily be of different types. Refuse to lay out at this point.
     if (horiz_sb_->OverlapsContent() != vert_sb_->OverlapsContent())

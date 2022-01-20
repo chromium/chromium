@@ -21,7 +21,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #endif
 
@@ -425,7 +425,7 @@ TEST_F(DialogTest, InitialFocusWithDeactivatedWidget) {
 // If the initially focused View provided is unfocusable, check the next
 // available focusable View is focused.
 TEST_F(DialogTest, UnfocusableInitialFocus) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, make all buttons unfocusable by turning off full keyboard access.
   // This is the more common configuration, and if a dialog has a focusable
   // textfield, tree or table, that should obtain focus instead.
@@ -438,7 +438,7 @@ TEST_F(DialogTest, UnfocusableInitialFocus) {
   dialog->AddChildView(textfield);
   Widget* dialog_widget = CreateDialogWidget(dialog);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // For non-Mac, turn off focusability on all the dialog's buttons manually.
   // This achieves the same effect as disabling full keyboard access.
   dialog->GetOkButton()->SetFocusBehavior(View::FocusBehavior::NEVER);

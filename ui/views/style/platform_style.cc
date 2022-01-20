@@ -23,13 +23,13 @@
 
 namespace views {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const bool PlatformStyle::kIsOkButtonLeading = true;
 #else
 const bool PlatformStyle::kIsOkButtonLeading = false;
 #endif
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 const int PlatformStyle::kMinLabelButtonWidth = 70;
 const int PlatformStyle::kMinLabelButtonHeight = 33;
@@ -52,7 +52,7 @@ const View::FocusBehavior PlatformStyle::kDefaultFocusBehavior =
 const bool PlatformStyle::kAdjustBubbleIfOffscreen =
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     false;
 #else
     true;
@@ -79,10 +79,10 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
   return gfx::Range(cursor_position, previous_grapheme_index);
 }
 
-#endif  // OS_MAC
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || \
-    (!defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (!BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS))
 // static
 std::unique_ptr<Border> PlatformStyle::CreateThemedLabelButtonBorder(
     LabelButton* button) {

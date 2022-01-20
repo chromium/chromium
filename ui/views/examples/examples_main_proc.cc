@@ -61,7 +61,7 @@
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #include "ui/views/examples/examples_skia_gold_pixel_diff.h"
 #endif
@@ -77,7 +77,7 @@ base::LazyInstance<base::TestDiscardableMemoryAllocator>::DestructorAtExit
     g_discardable_memory_allocator = LAZY_INSTANCE_INITIALIZER;
 
 ExamplesExitCode ExamplesMainProc(bool under_test) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer;
 #endif
 
@@ -174,7 +174,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
 
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ExamplesSkiaGoldPixelDiff pixel_diff;
     views::AnyWidgetObserver widget_observer{
         views::test::AnyWidgetTestPasskey()};
@@ -199,7 +199,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
 
     run_loop.Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     compare_result = pixel_diff.get_result();
 #endif
 

@@ -156,7 +156,7 @@ View* DropHelper::CalculateTargetViewImpl(const gfx::Point& root_view_location,
     // TODO(sky): for the time being these are separate. Once I port chrome menu
     // I can switch to the #else implementation and nuke the OS_WIN
     // implementation.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // View under mouse changed, which means a new view may want the drop.
   // Walk the tree, stopping at target_view_ as we know it'll accept the
   // drop.

@@ -218,7 +218,7 @@ void EditableComboboxTest::InitWidget() {
   container->AddChildView(dummy_focusable_view_.get());
   widget_->Show();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The event loop needs to be flushed here, otherwise in various tests:
   // 1. The actual showing of the native window backing the widget gets delayed
   //    until a spin of the event loop.
@@ -290,7 +290,7 @@ void EditableComboboxTest::SendKeyEvent(ui::KeyboardCode key_code,
                                         const bool alt,
                                         const bool shift,
                                         const bool ctrl_cmd) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool command = ctrl_cmd;
   bool control = false;
 #else
@@ -396,7 +396,7 @@ TEST_F(EditableComboboxTest, LeftOrRightKeysMoveInTextfield) {
   EXPECT_EQ(u"abcde", combobox_->GetText());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky on Windows. https://crbug.com/965601
 #define MAYBE_UpOrDownKeysMoveInMenu DISABLED_UpOrDownKeysMoveInMenu
 #else
@@ -431,7 +431,7 @@ TEST_F(EditableComboboxTest, EndOrHomeMovesToBeginningOrEndOfText) {
   EXPECT_EQ(u"xabcy", combobox_->GetText());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_F(EditableComboboxTest, AltLeftOrRightMovesToNextWords) {
   InitEditableCombobox();
@@ -497,7 +497,7 @@ TEST_F(EditableComboboxTest, CtrlLeftOrRightMovesToNextWords) {
   SendKeyEvent(ui::VKEY_RIGHT, /*alt=*/false, /*shift=*/false,
                /*ctrl_cmd=*/true);
   SendKeyEvent(ui::VKEY_Y);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Matches Windows-specific logic in
   // RenderTextHarfBuzz::AdjacentWordSelectionModel.
   EXPECT_EQ(u"foo xbar yfoobar", combobox_->GetText());
@@ -538,7 +538,7 @@ TEST_F(EditableComboboxTest, EnterClosesMenuWhileSelectingHighlightedMenuItem) {
   EXPECT_EQ(u"item[0]", combobox_->GetText());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky on Windows. https://crbug.com/965601
 #define MAYBE_F4ClosesMenuWhileSelectingHighlightedMenuItem \
   DISABLED_F4ClosesMenuWhileSelectingHighlightedMenuItem
@@ -605,7 +605,7 @@ TEST_F(EditableComboboxTest, SpaceIsReflectedInTextfield) {
   EXPECT_EQ(u"a  b", combobox_->GetText());
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // Flaky on Windows and Linux. https://crbug.com/965601
 #define MAYBE_MenuCanAdaptToContentChange DISABLED_MenuCanAdaptToContentChange
 #else
@@ -641,7 +641,7 @@ TEST_F(EditableComboboxTest, MAYBE_MenuCanAdaptToContentChange) {
   EXPECT_EQ(menu_runner1, menu_runner2);
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // Flaky on Linux. https://crbug.com/1204584
 #define MAYBE_RefocusingReopensMenuBasedOnLatestContent \
     DISABLED_RefocusingReopensMenuBasedOnLatestContent

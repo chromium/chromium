@@ -198,7 +198,7 @@ TEST_F(InkDropHostViewTest,
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(InkDropHostViewTest, NoInkDropOnTouchOrGestureEvents) {
   host_view_.SetSize(gfx::Size(20, 20));
 

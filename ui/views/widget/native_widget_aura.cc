@@ -64,12 +64,12 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #endif
 
@@ -1151,7 +1151,7 @@ void NativeWidgetAura::SetInitialFocus(ui::WindowShowState show_state) {
 
 namespace {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 void CloseWindow(aura::Window* window) {
   if (window) {
     Widget* widget = Widget::GetWidgetForNativeView(window);
@@ -1165,7 +1165,7 @@ void CloseWindow(aura::Window* window) {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BOOL CALLBACK WindowCallbackProc(HWND hwnd, LPARAM lParam) {
   aura::Window* root_window =
       DesktopWindowTreeHostWin::GetContentWindowForHWND(hwnd);
@@ -1177,12 +1177,12 @@ BOOL CALLBACK WindowCallbackProc(HWND hwnd, LPARAM lParam) {
 
 // static
 void Widget::CloseAllSecondaryWidgets() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EnumThreadWindows(GetCurrentThreadId(), WindowCallbackProc, 0);
 #endif
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   DesktopWindowTreeHostLinux::CleanUpWindowList(CloseWindow);
 #endif
 }

@@ -837,7 +837,7 @@ TEST_F(BubbleFrameViewTest, GetMinimumSize) {
 TEST_F(BubbleFrameViewTest, GetMaximumSize) {
   TestBubbleFrameView frame(this);
   gfx::Rect maximum_rect(frame.GetMaximumSize());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, GetMaximumSize causes problems with DWM, so it should just be 0
   // (unlimited). See http://crbug.com/506206.
   EXPECT_EQ(gfx::Size(), maximum_rect.size());

@@ -36,11 +36,11 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/views/widget/widget_utils_mac.h"
 #else
 #include "ui/aura/window.h"
@@ -133,7 +133,7 @@ class BubbleDialogFrameView : public BubbleFrameView {
 };
 
 bool CustomShadowsSupported() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ui::win::IsAeroGlassEnabled();
 #else
   return true;
@@ -175,7 +175,7 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   bubble->OnBeforeBubbleWidgetInit(&bubble_params, bubble_widget);
   DCHECK(bubble_params.parent || !bubble->has_parent());
   bubble_widget->Init(std::move(bubble_params));
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // On Mac, having a parent window creates a permanent stacking order, so
   // there's no need to do this. Also, calling StackAbove() on Mac shows the
   // bubble implicitly, for which the bubble is currently not ready.
@@ -253,7 +253,7 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
 
 // This class is responsible for observing events on a BubbleDialogDelegate's
 // anchor widget and notifying the BubbleDialogDelegate of them.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver {
 #else
 class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
@@ -264,7 +264,7 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
   AnchorWidgetObserver(BubbleDialogDelegate* owner, Widget* widget)
       : owner_(owner) {
     widget_observation_.Observe(widget);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     window_observation_.Observe(widget->GetNativeWindow());
 #endif
   }
@@ -272,7 +272,7 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
 
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     DCHECK(window_observation_.IsObservingSource(widget->GetNativeWindow()));
     window_observation_.Reset();
 #endif
@@ -290,7 +290,7 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
     owner_->OnAnchorBoundsChanged();
   }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // aura::WindowObserver:
   void OnWindowTransformed(aura::Window* window,
                            ui::PropertyChangeReason reason) override {
@@ -310,7 +310,7 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
   raw_ptr<BubbleDialogDelegate> owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
 #endif
@@ -539,7 +539,7 @@ void BubbleDialogDelegate::OnAnchorWidgetDestroying() {
 }
 
 void BubbleDialogDelegate::OnBubbleWidgetActivationChanged(bool active) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Install |mac_bubble_closer_| the first time the widget becomes active.
   if (active && !mac_bubble_closer_) {
     mac_bubble_closer_ = std::make_unique<ui::BubbleCloser>(
@@ -611,7 +611,7 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
 
   anchor_rect_ = GetAnchorView()->GetAnchorBoundsInScreen();
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // GetAnchorBoundsInScreen returns values that take anchor widget's
   // translation into account, so undo that here. Without this, features which
   // apply transforms on windows such as ChromeOS overview mode will see bubbles
@@ -806,7 +806,7 @@ void BubbleDialogDelegate::SetAnchorRect(const gfx::Rect& rect) {
 
 void BubbleDialogDelegate::SizeToContents() {
   gfx::Rect bubble_bounds = GetBubbleBounds();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // GetBubbleBounds() doesn't take the Mac NativeWindow's style mask into
   // account, so we need to adjust the size.
   gfx::Size actual_size =

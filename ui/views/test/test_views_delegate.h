@@ -36,11 +36,11 @@ class TestViewsDelegate : public ViewsDelegate {
 // When running on ChromeOS, NativeWidgetAura requires the parent and/or context
 // to be non-null. Some test views provide neither, so we do it here. Normally
 // this is done by the browser-specific ViewsDelegate.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   void set_context(gfx::NativeWindow context) { context_ = context; }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Allows tests to provide a ContextFactory via the ViewsDelegate interface.
   void set_context_factory(ui::ContextFactory* context_factory) {
     context_factory_ = context_factory;
@@ -55,24 +55,24 @@ class TestViewsDelegate : public ViewsDelegate {
   }
 
   // ViewsDelegate:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HICON GetSmallWindowIcon() const override;
 #endif
   void OnBeforeWidgetInit(Widget::InitParams* params,
                           internal::NativeWidgetDelegate* delegate) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::ContextFactory* GetContextFactory() override;
 #endif
 
  private:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::ContextFactory* context_factory_ = nullptr;
 #endif
   bool use_desktop_native_widgets_ = false;
   bool use_transparent_windows_ = false;
   std::unique_ptr<LayoutProvider> layout_provider_ =
       std::make_unique<LayoutProvider>();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   gfx::NativeWindow context_ = nullptr;
 #endif
 };

@@ -21,7 +21,7 @@ namespace corewm {
 namespace {
 
 constexpr auto kDelayForTooltipUpdate = base::Milliseconds(500);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Drawing a long word in tooltip is very slow on Windows. crbug.com/513693
 constexpr size_t kMaxTooltipLength = 1024;
 #else

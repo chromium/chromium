@@ -10,7 +10,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/views/controls/menu/menu_closure_animation_mac.h"
 #endif
 
@@ -96,13 +96,13 @@ void MenuControllerTestApi::SetShowing(bool showing) {
 }
 
 void DisableMenuClosureAnimations() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   MenuClosureAnimationMac::DisableAnimationsForTesting();
 #endif
 }
 
 void WaitForMenuClosureAnimation() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(https://crbug.com/982815): Replace this with Quit+Run.
   base::RunLoop().RunUntilIdle();
 #endif

@@ -17,7 +17,7 @@ bool DesktopWindowTreeHost::IsMoveLoopSupported() const {
 }
 
 void DesktopWindowTreeHost::SetBoundsInDIP(const gfx::Rect& bounds) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The window parameter is intentionally passed as nullptr on Windows because
   // a non-null window parameter causes errors when restoring windows to saved
   // positions in variable-DPI situations. See https://crbug.com/1224715 for

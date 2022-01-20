@@ -16,7 +16,7 @@ namespace views {
 
 FocusSearch::FocusSearch(View* root, bool cycle, bool accessibility_mode)
     : root_(root), cycle_(cycle), accessibility_mode_(accessibility_mode) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, only the keyboard accessibility mode defined in FocusManager is
   // used. No special accessibility mode should be applicable for a
   // FocusTraversable.

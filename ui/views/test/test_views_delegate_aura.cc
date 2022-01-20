@@ -18,7 +18,7 @@ TestViewsDelegate::TestViewsDelegate() = default;
 
 TestViewsDelegate::~TestViewsDelegate() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 HICON TestViewsDelegate::GetSmallWindowIcon() const {
   return nullptr;
 }
@@ -27,7 +27,7 @@ HICON TestViewsDelegate::GetSmallWindowIcon() const {
 void TestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,
     internal::NativeWidgetDelegate* delegate) {
-#if defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!params->parent && !params->context)
     params->context = context_;
 #endif

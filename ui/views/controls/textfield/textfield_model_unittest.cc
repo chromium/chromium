@@ -176,7 +176,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
 // TODO(xji): temporarily disable in platform Win since the complex script
 // characters turned into empty square due to font regression. So, not able
 // to test 2 characters belong to the same grapheme.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(u"\x0915\x093f\x0061\x0062\x0915\x094d\x092e\x094d", model.text());
 #endif
   EXPECT_EQ(4U, model.GetCursorPosition());
@@ -186,7 +186,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   // TODO(xji): temporarily disable in platform Win since the complex script
   // characters turned into empty square due to font regression. So, not able
   // to test 2 characters belong to the same grapheme.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(model.Delete());
   EXPECT_EQ(u"\x0061\x0062\x0915\x094d\x092e\x094d", model.text());
   model.MoveCursorTo(model.text().length());
@@ -207,7 +207,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
 
   // TODO(asvitkine): Temporarily disable the following check on Windows. It
   // seems Windows treats "\x0D38\x0D4D\x0D15" as a single grapheme.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   model.MoveCursorTo(2);
   EXPECT_EQ(3U, model.GetCursorPosition());
   EXPECT_TRUE(model.Backspace());
@@ -234,7 +234,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   model.SetText(u"ABC\xFF80\xFF9E", 0);
   model.MoveCursorTo(model.text().length());
   model.Backspace();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, the entire cluster should be deleted to match
   // NSTextField behavior.
   EXPECT_EQ(u"ABC", model.text());
@@ -249,7 +249,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   model.SetText(u"\U0001F466\U0001F3FE", 0);
   model.MoveCursorTo(model.text().length());
   model.Backspace();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, the entire emoji should be deleted to match NSTextField
   // behavior.
   EXPECT_EQ(u"", model.text());
@@ -355,7 +355,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
   // TODO(xji): temporarily disable in platform Win since the complex script
   // characters turned into empty square due to font regression. So, not able
   // to test 2 characters belong to the same grapheme.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   model.Append(
       u"abc\x05E9\x05BC\x05C1\x05B8\x05E0\x05B8"
       u"def");
@@ -556,7 +556,7 @@ TEST_F(TextfieldModelTest, SelectionAndEdit_WithSecondarySelection) {
 TEST_F(TextfieldModelTest, Word) {
   TextfieldModel model(nullptr);
   model.Append(u"The answer to Life, the Universe, and Everything");
-#if defined(OS_WIN)  // Move right by word includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Move right by word includes space/punctuation.
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_NONE);
   EXPECT_EQ(4U, model.GetCursorPosition());
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_NONE);
@@ -941,7 +941,7 @@ TEST_F(TextfieldModelTest, SelectWordTest) {
 // TODO(xji): temporarily disable in platform Win since the complex script
 // characters and Chinese characters are turned into empty square due to font
 // regression.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(TextfieldModelTest, SelectWordTest_MixScripts) {
   TextfieldModel model(nullptr);
   std::vector<WordAndCursor> word_and_cursor;
@@ -984,7 +984,7 @@ TEST_F(TextfieldModelTest, RangeTest) {
   EXPECT_EQ(0U, range.start());
   EXPECT_EQ(0U, range.end());
 
-#if defined(OS_WIN)  // Move/select right by word includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Move/select right by word includes space/punctuation.
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_RETAIN);
   range = model.render_text()->selection();
   EXPECT_FALSE(range.is_empty());
@@ -1157,7 +1157,7 @@ TEST_F(TextfieldModelTest, SelectionTest) {
   gfx::Range selection = model.render_text()->selection();
   EXPECT_EQ(gfx::Range(0), selection);
 
-#if defined(OS_WIN)  // Select word right includes trailing space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Select word right includes trailing space/punctuation.
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_RETAIN);
   selection = model.render_text()->selection();
   EXPECT_EQ(gfx::Range(0, 6), selection);

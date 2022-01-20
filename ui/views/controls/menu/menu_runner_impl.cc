@@ -18,7 +18,7 @@
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/events/win/system_event_state_lookup.h"
 #endif
 
@@ -61,7 +61,7 @@ bool IsAltPressed() {
 
 namespace internal {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
     ui::MenuModel* menu_model,
     int32_t run_types,
@@ -254,11 +254,11 @@ MenuRunnerImpl::~MenuRunnerImpl() {
 bool MenuRunnerImpl::ShouldShowMnemonics(int32_t run_types) {
   bool show_mnemonics = run_types & MenuRunner::SHOULD_SHOW_MNEMONICS;
   // Show mnemonics if the button has focus or alt is pressed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   show_mnemonics |= ui::win::IsAltPressed();
 #elif defined(USE_OZONE)
   show_mnemonics |= IsAltPressed();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   show_mnemonics = false;
 #endif
   return show_mnemonics;

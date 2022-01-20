@@ -101,7 +101,7 @@ class LabelButtonTest : public test::WidgetTest {
     // ColorProvider and use a hardcoded black or (on Mac) have a ColorProvider
     // that reliably returns black.
     styled_normal_text_color_ = SK_ColorBLACK;
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)
     // The Linux theme provides a non-black highlight text color, but it's not
     // used for styled buttons.
@@ -904,7 +904,7 @@ TEST_F(LabelButtonVisualStateTest, ChildWidget) {
   EXPECT_EQ(child_button->GetVisualState(), style_of_inactive_widget_);
 
   child_widget->Show();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Child widget is in a key window and it will lock its parent.
   // See crrev.com/c/2048144.
   EXPECT_EQ(button_->GetVisualState(), Button::STATE_NORMAL);

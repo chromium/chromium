@@ -79,7 +79,7 @@ void Tab::SetSelected(bool selected) {
   contents_->SetVisible(selected);
   contents_->parent()->InvalidateLayout();
   SetState(selected ? State::kActive : State::kInactive);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetFocusBehavior(selected ? FocusBehavior::ACCESSIBLE_ONLY
                             : FocusBehavior::NEVER);
 #else
@@ -203,7 +203,7 @@ void Tab::OnStateChanged() {
 
   // Tab design spec dictates special handling of font weight for the windows
   // platform when dealing with border style tabs.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::Font::Weight font_weight = gfx::Font::Weight::BOLD;
 #else
   gfx::Font::Weight font_weight = gfx::Font::Weight::MEDIUM;

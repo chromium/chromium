@@ -13,11 +13,11 @@
 #include "ui/views/examples/examples_window_with_content.h"
 #include "ui/views_content_client/views_content_client.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -56,7 +56,7 @@ void ShowContentExampleWindow(ui::ViewsContentClient* views_content_client,
 
 }  // namespace
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
@@ -70,7 +70,7 @@ int main(int argc, const char** argv) {
   if (views::examples::CheckCommandLineUsage())
     return 0;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // ViewsContentClient expects a const char** argv and
   // CreateFromArgumentsResult expects a regular char** argv. Given this is a

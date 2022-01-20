@@ -158,7 +158,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   if (init_params.parent == nullptr)
     params.activatable = Widget::InitParams::Activatable::kYes;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows use the software compositor to ensure that we don't block
   // the UI thread blocking issue during command buffer creation. We can
   // revert this change once http://crbug.com/125248 is fixed.

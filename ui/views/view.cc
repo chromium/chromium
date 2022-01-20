@@ -71,7 +71,7 @@
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_gdi_object.h"
 #include "ui/native_theme/native_theme_win.h"
 #endif
@@ -80,7 +80,7 @@ namespace views {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr bool kContextMenuOnMousePress = false;
 #else
 constexpr bool kContextMenuOnMousePress = true;

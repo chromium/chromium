@@ -34,7 +34,7 @@ InkDropEventHandler::~InkDropEventHandler() = default;
 
 void InkDropEventHandler::AnimateToState(InkDropState state,
                                          const ui::LocatedEvent* event) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, don't initiate ink-drops for touch/gesture events.
   // Additionally, certain event states should dismiss existing ink-drop
   // animations. If the state is already other than HIDDEN, presumably from

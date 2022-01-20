@@ -11,7 +11,7 @@ namespace views {
 namespace examples {
 
 // TODO(crbug.com/1221012): Disabled the test on windows due to its flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestViewsExamplesLaunches DISABLED_TestViewsExamplesLaunches
 #else
 #define MAYBE_TestViewsExamplesLaunches TestViewsExamplesLaunches

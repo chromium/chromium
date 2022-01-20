@@ -18,7 +18,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "skia/ext/skia_utils_win.h"
 #endif
 

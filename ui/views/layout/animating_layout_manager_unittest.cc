@@ -5021,7 +5021,7 @@ TEST_F(AnimatingLayoutManagerRealtimeTest,
 // TODO(dfried): figure out why these tests absolutely do not animate properly
 // on Mac. Whatever magic makes the compositor animation runner go doesn't seem
 // to want to work on Mac in non-browsertests :(
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 // Test fixture for testing sequences of the following four actions:
 // * animating layout manager configured on host view
@@ -5220,6 +5220,6 @@ TEST_F(AnimatingLayoutManagerSequenceTest,
   ExpectResetToLayout();
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace views

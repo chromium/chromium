@@ -55,7 +55,7 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   bool IsAccessibilityEnabled() const override;
   gfx::NativeViewAccessible GetNativeObject() const override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void AnnounceText(const std::u16string& text) override;
 #endif
 

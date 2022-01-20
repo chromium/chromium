@@ -46,7 +46,7 @@
 #include "ui/views/examples/vector_example.h"
 #include "ui/views/examples/widget_example.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
 #include "ui/views/examples/color_chooser_example.h"
 #endif
 
@@ -64,7 +64,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<ButtonExample>());
   examples.push_back(std::make_unique<ButtonStickerSheet>());
   examples.push_back(std::make_unique<CheckboxExample>());
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
   examples.push_back(std::make_unique<ColorChooserExample>());
 #endif
   examples.push_back(std::make_unique<ColoredDialogExample>());

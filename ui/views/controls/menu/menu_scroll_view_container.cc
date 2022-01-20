@@ -301,7 +301,7 @@ void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // allow VoiceOver to recognize this as a menu and to read aloud the total
   // number of items inside it, we ignore the MenuScrollViewContainer (which
   // holds the menu itself: the SubmenuView).
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   node_data->role = ax::mojom::Role::kNone;
 #else
   node_data->role = ax::mojom::Role::kMenuBar;

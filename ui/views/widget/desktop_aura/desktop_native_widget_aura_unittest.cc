@@ -37,7 +37,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "ui/base/view_prop.h"
@@ -70,7 +70,7 @@ TEST_F(DesktopNativeWidgetAuraTest, DesktopAuraWindowSizeTest) {
 
   // On Linux we test this with popup windows because the WM may ignore the size
   // suggestion for normal windows.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
 #else
   Widget::InitParams init_params =
@@ -123,7 +123,7 @@ TEST_F(DesktopNativeWidgetAuraTest, NativeViewNoActivate) {
                          ->GetFocusedWindow());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Verifies that if the DesktopWindowTreeHost is already shown, the native view
 // still reports not visible as we haven't shown the content window.
 TEST_F(DesktopNativeWidgetAuraTest, WidgetNotVisibleOnlyWindowTreeHostShown) {
@@ -151,7 +151,7 @@ TEST_F(DesktopNativeWidgetAuraTest, DesktopAuraWindowShowFrameless) {
   widget.DebugToggleFrameType();
   widget.Show();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows also make sure that handling WM_SYSCOMMAND doesn't crash with
   // custom frame. Frame type needs to be toggled again if Aero Glass is
   // disabled.
@@ -159,7 +159,7 @@ TEST_F(DesktopNativeWidgetAuraTest, DesktopAuraWindowShowFrameless) {
     widget.DebugToggleFrameType();
   SendMessage(widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
               WM_SYSCOMMAND, SC_RESTORE, 0);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -372,7 +372,7 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
 
 using DesktopAuraWidgetTest = DesktopWidgetTest;
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1236997): Under Fuchsia pop-up and fullscreen windows are not
 // reparented to be top-level, so the following tests are not valid.
 
@@ -548,7 +548,7 @@ TEST_F(DesktopAuraWidgetTest, TopLevelOwnedPopupRepositionTest) {
   ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
 }
 
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // The following code verifies we can correctly destroy a Widget from a mouse
 // enter/exit. We could test move/drag/enter/exit but in general we don't run
@@ -694,7 +694,7 @@ TEST_F(DesktopWidgetTest, MAYBE_WindowMouseModalityTest) {
   top_level_widget.CloseNow();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Tests whether we can activate the top level widget when a modal dialog is
 // active.
 TEST_F(DesktopWidgetTest, WindowModalityActivationTest) {
@@ -752,7 +752,7 @@ TEST_F(DesktopWidgetTest, CharMessagesAsKeyboardMessagesDoesNotCrash) {
   widget.CloseNow();
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace test
 }  // namespace views

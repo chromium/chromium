@@ -36,7 +36,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -374,7 +374,7 @@ TEST_F(BubbleDialogDelegateViewTest,
 
 TEST_F(BubbleDialogDelegateViewTest, NoParentWidget) {
   test_views_delegate()->set_use_desktop_native_widgets(true);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   test_views_delegate()->set_context(GetContext());
 #endif
   BubbleDialogDelegateView* bubble_delegate =
@@ -408,7 +408,7 @@ TEST_F(BubbleDialogDelegateViewTest, NonClientHitTest) {
   BubbleDialogDelegateView::CreateBubble(bubble_delegate);
   BubbleFrameView* frame = bubble_delegate->GetBubbleFrameView();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool is_aero_glass_enabled = ui::win::IsAeroGlassEnabled();
 #endif
 
@@ -416,7 +416,7 @@ TEST_F(BubbleDialogDelegateViewTest, NonClientHitTest) {
     const int point;
     const int hit;
   } kTestCases[] = {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {0, is_aero_glass_enabled ? HTTRANSPARENT : HTNOWHERE},
 #else
     {0, HTTRANSPARENT},

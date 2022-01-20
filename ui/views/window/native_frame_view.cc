@@ -9,7 +9,7 @@
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -31,7 +31,7 @@ gfx::Rect NativeFrameView::GetBoundsForClientView() const {
 
 gfx::Rect NativeFrameView::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return views::GetWindowBoundsForClientBounds(
       static_cast<View*>(const_cast<NativeFrameView*>(this)), client_bounds);
 #else
@@ -71,7 +71,7 @@ void NativeFrameView::SizeConstraintsChanged() {
 
 gfx::Size NativeFrameView::CalculatePreferredSize() const {
   gfx::Size client_preferred_size = frame_->client_view()->GetPreferredSize();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the client size. On Windows, this is the expected behavior for
   // native frames (see |NativeWidgetWin::WidgetSizeIsClientSize()|), while
   // other platforms currently always return client bounds from

@@ -211,7 +211,7 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   EXPECT_EQ(0, scrollbar_->GetPosition());
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST_F(ScrollBarViewsTest, RightClickOpensMenu) {
   EXPECT_EQ(nullptr, scrollbar_->menu_model_);
   EXPECT_EQ(nullptr, scrollbar_->menu_runner_);

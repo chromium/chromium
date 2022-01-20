@@ -18,7 +18,7 @@
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
@@ -163,7 +163,7 @@ class ViewsTestBase : public PlatformTest {
   bool teardown_called_ = false;
   bool has_compositing_manager_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 };

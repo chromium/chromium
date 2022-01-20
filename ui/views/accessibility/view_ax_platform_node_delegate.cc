@@ -14,6 +14,7 @@
 #include "base/containers/adapters.h"
 #include "base/lazy_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -262,11 +263,11 @@ void ViewAXPlatformNodeDelegate::NotifyAccessibilityEvent(
   ax_platform_node_->NotifyAccessibilityEvent(event_type);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void ViewAXPlatformNodeDelegate::AnnounceText(const std::u16string& text) {
   ax_platform_node_->AnnounceText(text);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // Clear the data, then populate it.

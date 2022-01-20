@@ -51,7 +51,7 @@ namespace views {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const int kControlCommandModifier = ui::EF_COMMAND_DOWN;
 #else
 const int kControlCommandModifier = ui::EF_CONTROL_DOWN;
@@ -248,7 +248,7 @@ TEST_F(LabelTest, Metadata) {
 }
 
 TEST_F(LabelTest, FontPropertySymbol) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On linux, the fonts are mocked with a custom FontConfig. The "Courier New"
   // family name is mapped to Cousine-Regular.ttf (see: $build/test_fonts/*).
   std::string font_name("Courier New");
@@ -748,7 +748,7 @@ TEST_F(LabelTest, MultiLineSizing) {
   // SizeToFit with limited width.
   label()->SizeToFit(required_width - 1);
   int constrained_width = label()->GetLocalBounds().width();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Canvas::SizeStringInt (in ui/gfx/canvas_linux.cc)
   // has to be fixed to return the size that fits to given width/height.
   EXPECT_LT(constrained_width, required_width);
@@ -764,7 +764,7 @@ TEST_F(LabelTest, MultiLineSizing) {
   EXPECT_GT(required_height, kMinTextDimension);
   int height_for_constrained_width =
       label()->GetHeightForWidth(constrained_width);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Canvas::SizeStringInt (in ui/gfx/canvas_linux.cc)
   // has to be fixed to return the size that fits to given width/height.
   EXPECT_GT(height_for_constrained_width, required_height);
@@ -793,7 +793,7 @@ TEST_F(LabelTest, MultiLineSizing) {
   // calculation.  If it is, then the height will grow when width
   // is shrunk.
   int height1 = label()->GetHeightForWidth(required_width_with_border - 1);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Canvas::SizeStringInt (in ui/gfx/canvas_linux.cc)
   // has to be fixed to return the size that fits to given width/height.
   EXPECT_GT(height1, required_height_with_border);
@@ -809,8 +809,8 @@ TEST_F(LabelTest, MultiLineSizing) {
             required_size.width() + border.width());
 }
 
-#if !defined(OS_MAC)
-// TODO(warx): Remove !defined(OS_MAC) once SetMaxLines() is applied to MAC
+#if !BUILDFLAG(IS_MAC)
+// TODO(warx): Remove !BUILDFLAG(IS_MAC) once SetMaxLines() is applied to MAC
 // (crbug.com/758720).
 TEST_F(LabelTest, MultiLineSetMaxLines) {
   // Ensure SetMaxLines clamps the line count of a string with returns.
@@ -1470,7 +1470,7 @@ TEST_F(LabelSelectionTest, MouseDragWord) {
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Verify selection clipboard behavior on text selection.
 TEST_F(LabelSelectionTest, MAYBE_SelectionClipboard) {
   label()->SetText(u"Label selection clipboard");

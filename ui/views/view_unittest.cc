@@ -2290,7 +2290,7 @@ TEST_F(ViewTest, HandleAccelerator) {
 // TODO(themblsha): Bring this up on non-Mac platforms. It currently fails
 // because TestView::AcceleratorPressed() is not called. See
 // http://crbug.com/667757.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Test that BridgedContentView correctly handles Accelerator key events when
 // subject to OS event dispatch.
 TEST_F(ViewTest, ActivateAcceleratorOnMac) {
@@ -2333,11 +2333,11 @@ TEST_F(ViewTest, ActivateAcceleratorOnMac) {
                              key_down_accelerator.modifiers());
   EXPECT_EQ(view->accelerator_count_map_[key_down_accelerator], 1);
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/667757): these tests were initially commented out when getting
 // aura to run. Figure out if still valuable and either nuke or fix.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(ViewTest, ActivateAccelerator) {
   ui::Accelerator return_accelerator(ui::VKEY_RETURN, ui::EF_NONE);
   TestViewWidget test_widget(CreateParams(Widget::InitParams::TYPE_POPUP),
@@ -2419,7 +2419,7 @@ TEST_F(ViewTest, ViewInHiddenWidgetWithAccelerator) {
   EXPECT_FALSE(focus_manager->ProcessAccelerator(return_accelerator));
   EXPECT_EQ(1, view->accelerator_count_map_[return_accelerator]);
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Native view hierachy

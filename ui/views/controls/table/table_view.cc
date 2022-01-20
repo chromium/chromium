@@ -91,7 +91,7 @@ ui::ColorId selected_text_color_id(bool has_focus) {
 
 // Whether the platform "command" key is down.
 bool IsCmdOrCtrl(const ui::Event& event) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return event.IsCommandDown();
 #else
   return event.IsControlDown();
@@ -528,7 +528,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
       return true;
 
     case ui::VKEY_UP:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       if (event.IsAltDown()) {
         if (GetRowCount())
           SelectByViewIndex(0);
@@ -541,7 +541,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
       return true;
 
     case ui::VKEY_DOWN:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       if (event.IsAltDown()) {
         if (GetRowCount())
           SelectByViewIndex(GetRowCount() - 1);

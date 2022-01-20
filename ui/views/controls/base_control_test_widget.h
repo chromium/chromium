@@ -12,7 +12,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <memory>
 
 namespace display {
@@ -45,7 +45,7 @@ class BaseControlTestWidget : public ViewsTestBase {
  private:
   UniqueWidgetPtr widget_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Need a test screen to work with the event generator to correctly track
   // cursor locations. See https://crbug.com/1071633. Consider moving this
   // into ViewsTestHelperMac in the future.

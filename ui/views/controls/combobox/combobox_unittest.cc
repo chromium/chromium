@@ -292,7 +292,7 @@ class ComboboxTest : public ViewsTestBase {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Tests whether the various Mac specific keyboard shortcuts invoke the dropdown
 // menu or not.
 TEST_F(ComboboxTest, KeyTestMac) {
@@ -366,7 +366,7 @@ TEST_F(ComboboxTest, DisabilityTest) {
 
 // On Mac, key events can't change the currently selected index directly for a
 // combobox.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 // Tests the behavior of various keyboard shortcuts on the currently selected
 // index.
@@ -511,7 +511,7 @@ TEST_F(ComboboxTest, SkipMultipleSeparatorsAtEnd) {
   PressKey(ui::VKEY_END);
   EXPECT_EQ(6, combobox_->GetSelectedIndex());
 }
-#endif  // !OS_MAC
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(ComboboxTest, GetTextForRowTest) {
   std::set<int> separators;
@@ -846,7 +846,7 @@ TEST_F(ComboboxTest, MenuModel) {
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
             menu_model->GetTypeAt(kSeparatorIndex));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Comboboxes on Mac should have checkmarks, with the selected item checked,
   EXPECT_EQ(ui::MenuModel::TYPE_CHECK, menu_model->GetTypeAt(0));
   EXPECT_EQ(ui::MenuModel::TYPE_CHECK, menu_model->GetTypeAt(1));

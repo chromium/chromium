@@ -74,7 +74,7 @@
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -111,7 +111,7 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
     init_params.type = full_screen ? Widget::InitParams::TYPE_WINDOW
                                    : is_menu ? Widget::InitParams::TYPE_MENU
                                              : Widget::InitParams::TYPE_POPUP;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // For menus, on Windows versions that support drop shadow remove
     // the standard frame in order to keep just the shadow.
     if (init_params.type == Widget::InitParams::TYPE_MENU)
@@ -229,7 +229,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
                                  const gfx::Rect& bounds) override {
     // TODO(crbug.com/1236997): Re-enable this logic once Fuchsia's windowing
     // APIs provide the required functionality.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     bool is_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
                          ui::SHOW_STATE_FULLSCREEN;
     bool is_menu = window->GetType() == aura::client::WINDOW_TYPE_MENU;
@@ -245,7 +245,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
           window, root_window_ /* context */, bounds, is_fullscreen, is_menu,
           root_z_order);
     }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
     return root_window_;
   }
 
