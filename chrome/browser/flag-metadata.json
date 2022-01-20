@@ -5275,7 +5275,7 @@
   {
     "name": "subframe-shutdown-delay",
     "owners": [ "jessemckenna@google.com", "olivierli" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 102
   },
   {
     "name": "swap-android-share-hub-rows",
