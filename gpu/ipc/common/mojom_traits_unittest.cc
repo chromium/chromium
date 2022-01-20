@@ -450,8 +450,6 @@ TEST_F(StructTraitsTest, GpuFeatureInfo) {
       gpu::kGpuFeatureStatusUndefined;
   input.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       gpu::kGpuFeatureStatusDisabled;
-  input.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-      gpu::kGpuFeatureStatusDisabled;
 
   GpuFeatureInfo output;
   ASSERT_TRUE(mojom::GpuFeatureInfo::Deserialize(

@@ -585,8 +585,7 @@ RendererBlinkPlatformImpl::SharedMainThreadContextProvider() {
 
 scoped_refptr<viz::RasterContextProvider>
 RendererBlinkPlatformImpl::SharedCompositorWorkerContextProvider() {
-  return RenderThreadImpl::current()->SharedCompositorWorkerContextProvider(
-      /*try_gpu_rasterization=*/true);
+  return RenderThreadImpl::current()->SharedCompositorWorkerContextProvider();
 }
 
 scoped_refptr<gpu::GpuChannelHost>

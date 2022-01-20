@@ -68,7 +68,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.texture_target_exception_list,
             right.texture_target_exception_list);
   EXPECT_EQ(left.ignore_gpu_blocklist, right.ignore_gpu_blocklist);
-  EXPECT_EQ(left.disable_oop_rasterization, right.disable_oop_rasterization);
   EXPECT_EQ(left.watchdog_starts_backgrounded,
             right.watchdog_starts_backgrounded);
   EXPECT_EQ(left.gr_context_type, right.gr_context_type);
@@ -167,7 +166,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(disable_biplanar_gpu_memory_buffers_for_video_frames,
                           true)
     GPU_PREFERENCES_FIELD(ignore_gpu_blocklist, true)
-    GPU_PREFERENCES_FIELD(disable_oop_rasterization, true)
     GPU_PREFERENCES_FIELD(watchdog_starts_backgrounded, true)
     GPU_PREFERENCES_FIELD_ENUM(gr_context_type, GrContextType::kVulkan,
                                mojom::GrContextType::kVulkan)
@@ -265,7 +263,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
     PRINT_INT(texture_target_exception_list[i].format);
   }
   PRINT_BOOL(ignore_gpu_blocklist);
-  PRINT_BOOL(disable_oop_rasterization);
   PRINT_BOOL(watchdog_starts_backgrounded);
   PRINT_INT(gr_context_type);
   PRINT_INT(use_vulkan);

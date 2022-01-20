@@ -1824,8 +1824,7 @@ base::TaskRunner* RenderThreadImpl::GetWorkerTaskRunner() {
 }
 
 scoped_refptr<viz::RasterContextProvider>
-RenderThreadImpl::SharedCompositorWorkerContextProvider(
-    bool try_gpu_rasterization) {
+RenderThreadImpl::SharedCompositorWorkerContextProvider() {
   DCHECK(IsMainThread());
   // Try to reuse existing shared worker context provider.
   if (shared_worker_context_provider_) {
@@ -1844,26 +1843,22 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
   }
 
   bool support_locking = true;
-  bool support_oop_rasterization =
-      gpu_channel_host->gpu_feature_info()
-          .status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-      gpu::kGpuFeatureStatusEnabled;
   bool support_gpu_rasterization =
-      try_gpu_rasterization && !support_oop_rasterization &&
       gpu_channel_host->gpu_feature_info()
-              .status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled;
-  bool support_gles2_interface = support_gpu_rasterization;
+          .status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+      gpu::kGpuFeatureStatusEnabled;
+
+  bool support_gles2_interface = false;
   bool support_raster_interface = true;
-  bool support_grcontext = support_gpu_rasterization;
+  bool support_grcontext = false;
   bool automatic_flushes = false;
   auto shared_memory_limits =
-      support_oop_rasterization ? gpu::SharedMemoryLimits::ForOOPRasterContext()
+      support_gpu_rasterization ? gpu::SharedMemoryLimits::ForOOPRasterContext()
                                 : gpu::SharedMemoryLimits();
   shared_worker_context_provider_ = CreateOffscreenContext(
       std::move(gpu_channel_host), GetGpuMemoryBufferManager(),
       shared_memory_limits, support_locking, support_gles2_interface,
-      support_raster_interface, support_oop_rasterization, support_grcontext,
+      support_raster_interface, support_gpu_rasterization, support_grcontext,
       automatic_flushes,
       viz::command_buffer_metrics::ContextType::RENDER_WORKER,
       kGpuStreamIdWorker, kGpuStreamPriorityWorker);
@@ -1873,31 +1868,6 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
     return nullptr;
   }
 
-  // Check if we really have support for GPU rasterization.
-  if (support_gpu_rasterization) {
-    bool really_support_gpu_rasterization = false;
-    {
-      viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-          shared_worker_context_provider_.get());
-      if (shared_worker_context_provider_->ContextCapabilities()
-              .gpu_rasterization &&
-          shared_worker_context_provider_->ContextSupport()
-              ->HasGrContextSupport()) {
-        // Do not check GrContext above. It is lazy-created, and we only want to
-        // create it if it might be used.
-        GrDirectContext* gr_context =
-            shared_worker_context_provider_->GrContext();
-        really_support_gpu_rasterization = !!gr_context;
-      }
-    }
-
-    // If not really supported, recreate context with different attributes.
-    if (!really_support_gpu_rasterization) {
-      shared_worker_context_provider_ = nullptr;
-      return SharedCompositorWorkerContextProvider(
-          /*try_gpu_rasterization=*/false);
-    }
-  }
   return shared_worker_context_provider_;
 }
 

@@ -390,11 +390,7 @@ GpuServiceImpl::GpuServiceImpl(
         vulkan_implementation_, gpu_preferences_.vulkan_heap_memory_limit,
         gpu_preferences_.vulkan_sync_cpu_memory_limit,
         (is_native_vulkan && is_native_gl) ? &gpu_info : nullptr);
-    if (vulkan_context_provider_) {
-      // If Vulkan is supported, then OOP-R is supported.
-      gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-          gpu::kGpuFeatureStatusEnabled;
-    } else {
+    if (!vulkan_context_provider_) {
       DLOG(ERROR) << "Failed to create Vulkan context provider.";
     }
   }
@@ -403,10 +399,7 @@ GpuServiceImpl::GpuServiceImpl(
 #if BUILDFLAG(SKIA_USE_DAWN)
   if (gpu_preferences_.gr_context_type == gpu::GrContextType::kDawn) {
     dawn_context_provider_ = DawnContextProvider::Create();
-    if (dawn_context_provider_) {
-      gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-          gpu::kGpuFeatureStatusEnabled;
-    } else {
+    if (!dawn_context_provider_) {
       DLOG(ERROR) << "Failed to create Dawn context provider.";
     }
   }

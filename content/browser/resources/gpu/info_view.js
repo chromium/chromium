@@ -266,7 +266,6 @@ export function makeInfoView(browserBridge) {
         'texture_sharing': 'Texture Sharing',
         'video_decode': 'Video Decode',
         'rasterization': 'Rasterization',
-        'oop_rasterization': 'Out-of-process Rasterization',
         'opengl': 'OpenGL',
         'metal': 'Metal',
         'vulkan': 'Vulkan',

@@ -63,7 +63,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
     bool supports_gles2_interface,
     bool supports_raster_interface,
     bool supports_grcontext,
-    bool supports_oop_rasterization,
+    bool supports_gpu_rasterization,
     viz::command_buffer_metrics::ContextType type) {
   constexpr bool kAutomaticFlushes = false;
 
@@ -78,7 +78,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   attributes.buffer_preserved = false;
   attributes.enable_gles2_interface = supports_gles2_interface;
   attributes.enable_raster_interface = supports_raster_interface;
-  attributes.enable_oop_rasterization = supports_oop_rasterization;
+  attributes.enable_oop_rasterization = supports_gpu_rasterization;
 
   gpu::SharedMemoryLimits memory_limits =
       gpu::SharedMemoryLimits::ForDisplayCompositor();
@@ -469,24 +469,18 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
       IsWorkerContextLost(worker_context_provider_.get()))
     worker_context_provider_.reset();
 
-  bool enable_oop_rasterization =
-      features::IsUiGpuRasterizationEnabled() &&
-      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled;
   bool enable_gpu_rasterization =
       features::IsUiGpuRasterizationEnabled() &&
       gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled &&
-      !enable_oop_rasterization;
+          gpu::kGpuFeatureStatusEnabled;
 
   if (!worker_context_provider_) {
     worker_context_provider_ = CreateContextProvider(
         gpu_channel_host, GetGpuMemoryBufferManager(),
         /*supports_locking=*/true,
-        /*supports_gles2=*/enable_gpu_rasterization,
-        /*supports_raster=*/true,
-        /*supports_grcontext=*/enable_gpu_rasterization,
-        /*supports_oopr=*/enable_oop_rasterization,
+        /*supports_gles2_interface=*/false,
+        /*supports_raster_interface=*/true,
+        /*supports_grcontext=*/false, enable_gpu_rasterization,
         viz::command_buffer_metrics::ContextType::BROWSER_WORKER);
 
     // Don't observer context loss on |worker_context_provider_| here, that is

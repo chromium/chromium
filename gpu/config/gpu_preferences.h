@@ -197,9 +197,6 @@ struct GPU_EXPORT GpuPreferences {
   // Ignores GPU blocklist.
   bool ignore_gpu_blocklist = false;
 
-  // Oop rasterization preferences in the GPU process.
-  bool disable_oop_rasterization = false;
-
   bool enable_oop_rasterization_ddl = false;
 
   // Start the watchdog suspended, as the app is already backgrounded and won't

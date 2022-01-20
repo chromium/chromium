@@ -33,8 +33,6 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
     auto* gpu_feature_info = gpu_thread_holder_.GetGpuFeatureInfo();
     gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
-    gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-        gpu::kGpuFeatureStatusEnabled;
   }
 
   std::unique_ptr<RasterInProcessContext> CreateRasterInProcessContext() {

@@ -189,7 +189,6 @@ struct GPU_EXPORT
     }
 
     out->ignore_gpu_blocklist = prefs.ignore_gpu_blocklist();
-    out->disable_oop_rasterization = prefs.disable_oop_rasterization();
     out->enable_oop_rasterization_ddl = prefs.enable_oop_rasterization_ddl();
     out->watchdog_starts_backgrounded = prefs.watchdog_starts_backgrounded();
     if (!prefs.ReadGrContextType(&out->gr_context_type))
@@ -350,9 +349,6 @@ struct GPU_EXPORT
   }
   static bool ignore_gpu_blocklist(const gpu::GpuPreferences& prefs) {
     return prefs.ignore_gpu_blocklist;
-  }
-  static bool disable_oop_rasterization(const gpu::GpuPreferences& prefs) {
-    return prefs.disable_oop_rasterization;
   }
   static bool enable_oop_rasterization_ddl(const gpu::GpuPreferences& prefs) {
     return prefs.enable_oop_rasterization_ddl;

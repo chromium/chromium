@@ -140,7 +140,6 @@ CONTENT_EXPORT extern const char kEnableWebGLImageChromium[];
 CONTENT_EXPORT extern const char kEnableWebVR[];
 CONTENT_EXPORT extern const char kFileUrlPathAlias[];
 CONTENT_EXPORT extern const char kForceDisplayList2dCanvas[];
-CONTENT_EXPORT extern const char kDisableOopRasterization[];
 CONTENT_EXPORT extern const char kForceMajorVersionToMinorPosition[];
 CONTENT_EXPORT extern const char kForceMajorVersionTo100[];
 CONTENT_EXPORT extern const char kForceMinorVersionTo100[];

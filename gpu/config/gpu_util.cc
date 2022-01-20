@@ -193,24 +193,6 @@ GpuFeatureStatus GetGpuRasterizationFeatureStatus(
   return kGpuFeatureStatusEnabled;
 }
 
-GpuFeatureStatus GetOopRasterizationFeatureStatus(
-    const std::set<int>& blocklisted_features,
-    const base::CommandLine& command_line,
-    const GpuPreferences& gpu_preferences,
-    const GPUInfo& gpu_info) {
-  // OOP rasterization requires GPU rasterization, so if blocklisted or
-  // disabled, report the same.
-  auto status =
-      GetGpuRasterizationFeatureStatus(blocklisted_features, command_line);
-  if (status != kGpuFeatureStatusEnabled)
-    return status;
-
-  if (gpu_preferences.disable_oop_rasterization)
-    return kGpuFeatureStatusDisabled;
-
-  return kGpuFeatureStatusEnabled;
-}
-
 GpuFeatureStatus GetWebGLFeatureStatus(
     const std::set<int>& blocklisted_features,
     bool use_swift_shader) {
@@ -247,12 +229,10 @@ GpuFeatureStatus Get2DCanvasFeatureStatus(
 GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     const std::set<int>& blocklisted_features,
     const base::CommandLine& command_line,
-    const GpuPreferences& gpu_preferences,
-    const GPUInfo& gpu_info) {
-  // Requires OOP rasterization
-  if (GetOopRasterizationFeatureStatus(blocklisted_features, command_line,
-                                       gpu_preferences,
-                                       gpu_info) != kGpuFeatureStatusEnabled) {
+    const GpuPreferences& gpu_preferences) {
+  // Requires GPU rasterization
+  if (GetGpuRasterizationFeatureStatus(blocklisted_features, command_line) !=
+      kGpuFeatureStatusEnabled) {
     return kGpuFeatureStatusDisabled;
   }
 
@@ -433,8 +413,6 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithHardwareAccelerationDisabled() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusSoftware;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
@@ -466,8 +444,6 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
       kGpuFeatureStatusDisabled;
@@ -501,8 +477,6 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusSoftware;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
@@ -581,17 +555,14 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
       Get2DCanvasFeatureStatus(blocklisted_features, use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
-      GetCanvasOopRasterizationFeatureStatus(
-          blocklisted_features, *command_line, gpu_preferences, gpu_info);
+      GetCanvasOopRasterizationFeatureStatus(blocklisted_features,
+                                             *command_line, gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
       GetAcceleratedVideoDecodeFeatureStatus(blocklisted_features,
                                              use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] =
       GetAcceleratedVideoEncodeFeatureStatus(blocklisted_features,
                                              use_swift_shader);
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-      GetOopRasterizationFeatureStatus(blocklisted_features, *command_line,
-                                       gpu_preferences, gpu_info);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
       GetAndroidSurfaceControlFeatureStatus(blocklisted_features,
                                             gpu_preferences);

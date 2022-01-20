@@ -362,7 +362,7 @@ GpuChannelManager::GpuChannelManager(
 
   const bool using_skia_renderer = features::IsUsingSkiaRenderer();
   const bool enable_gr_shader_cache =
-      (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
+      (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
        gpu::kGpuFeatureStatusEnabled) ||
       using_skia_renderer;
   const bool disable_disk_cache =

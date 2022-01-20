@@ -26,8 +26,6 @@ void VrGlTestSuite::Initialize() {
   auto* gpu_feature_info = gpu::GetTestGpuThreadHolder()->GetGpuFeatureInfo();
   gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;
-  gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-      gpu::kGpuFeatureStatusEnabled;
   gles2::Initialize();
 #endif  // defined(VR_USE_COMMAND_BUFFER)
 }

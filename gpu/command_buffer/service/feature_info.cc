@@ -191,7 +191,7 @@ FeatureInfo::FeatureInfo(
                            ? base::CommandLine::ForCurrentProcess()
                            : nullptr);
   feature_flags_.chromium_raster_transport =
-      gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
+      gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
       gpu::kGpuFeatureStatusEnabled;
   feature_flags_.android_surface_control =
       gpu_feature_info
