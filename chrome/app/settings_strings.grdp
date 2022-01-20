@@ -1358,13 +1358,13 @@
 
   <!-- Privacy Review -->
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the privacy review.">
-    Privacy guide
+    Privacy Guide
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL" desc="Sublabel of the row in the Chrome privacy and security of Chrome settings that leads to the privacy review.">
     Review key privacy and security controls
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_HEADER" desc="Text of a button on a card in the settings page that starts the privacy review feature.">
-    Take the privacy guide
+    Take the Privacy Guide
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_START_BUTTON" desc="Text of a button on a card in the settings page that starts the privacy review feature.">
     Get started
