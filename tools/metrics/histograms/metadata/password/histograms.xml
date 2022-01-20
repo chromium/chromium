@@ -2494,6 +2494,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.{Store}TimesPasswordUsed" units="PasswordUses"
     expires_after="2022-05-31">
+  <obsolete>
+    Removed in M99. This was never reported, but existed as a base name for
+    histograms using suffixes.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -2555,6 +2559,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.{Store}{Metric}" units="units"
     expires_after="2022-04-24">
+  <obsolete>
+    Removed in M99. This was never reported, but existed as a base name for
+    histograms using suffixes.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
