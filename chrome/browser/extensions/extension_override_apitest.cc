@@ -355,9 +355,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
   }
 
   {
-    DictionaryPrefUpdateDeprecated update(
-        browser()->profile()->GetPrefs(),
-        ExtensionWebUI::kExtensionURLOverrides);
+    DictionaryPrefUpdate update(browser()->profile()->GetPrefs(),
+                                ExtensionWebUI::kExtensionURLOverrides);
     update.Get()->SetKey("history", std::move(list));
   }
 

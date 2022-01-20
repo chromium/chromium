@@ -723,13 +723,11 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
                const std::string& pref_path,
                std::unique_ptr<base::Value> value,
                const std::string& msg) {
-    DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                          pref_names::kExtensions);
-    base::DictionaryValue* dict = update.Get();
+    DictionaryPrefUpdate update(profile()->GetPrefs(), pref_names::kExtensions);
+    base::Value* dict = update.Get();
     ASSERT_TRUE(dict) << msg;
-    base::DictionaryValue* pref = nullptr;
-    ASSERT_TRUE(dict->GetDictionary(extension_id, &pref)) << msg;
-    EXPECT_TRUE(pref) << msg;
+    base::Value* pref = dict->FindDictKey(extension_id);
+    ASSERT_TRUE(pref) << msg;
     pref->SetPath(pref_path, base::Value::FromUniquePtrValue(std::move(value)));
   }
 
@@ -762,13 +760,11 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     std::string msg = " while clearing: ";
     msg += extension_id + " " + pref_path;
 
-    DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
-                                          pref_names::kExtensions);
-    base::DictionaryValue* dict = update.Get();
+    DictionaryPrefUpdate update(profile()->GetPrefs(), pref_names::kExtensions);
+    base::Value* dict = update.Get();
     ASSERT_TRUE(dict) << msg;
-    base::DictionaryValue* pref = nullptr;
-    ASSERT_TRUE(dict->GetDictionary(extension_id, &pref)) << msg;
-    EXPECT_TRUE(pref) << msg;
+    base::Value* pref = dict->FindDictKey(extension_id);
+    ASSERT_TRUE(pref) << msg;
     pref->RemovePath(pref_path);
   }
 

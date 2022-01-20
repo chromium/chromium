@@ -16,7 +16,7 @@ template <typename T> struct DefaultSingletonTraits;
 class PrefRegistrySimple;
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace extensions {
@@ -125,7 +125,7 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
   // Clean shared extension with given |id|.
   static bool CleanUpExtension(
       const std::string& id,
-      base::DictionaryValue* extension_info,
+      base::Value* extension_info,
       std::multimap<std::string, base::FilePath>* live_extension_paths);
 };
 

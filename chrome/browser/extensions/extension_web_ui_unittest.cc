@@ -184,9 +184,8 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   PrefService* prefs = profile_->GetPrefs();
   {
     // Add multiple entries for the same extension.
-    DictionaryPrefUpdateDeprecated update(
-        prefs, ExtensionWebUI::kExtensionURLOverrides);
-    base::DictionaryValue* all_overrides = update.Get();
+    DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
+    base::Value* all_overrides = update.Get();
     base::Value newtab_list(base::Value::Type::LIST);
     {
       base::Value newtab(base::Value::Type::DICTIONARY);
