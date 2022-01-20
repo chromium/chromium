@@ -3431,6 +3431,8 @@ enum WebFeature {
   kHTMLParamElementURLParameterInUsePdf = 4110,
   kHTMLParamElementURLParameterInUseNonPdf = 4111,
   kWebTransportServerCertificateHashes = 4112,
+  kHiddenAttribute = 4113,
+  kHiddenUntilFoundAttribute = 4114,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

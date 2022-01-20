@@ -36784,6 +36784,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4110" label="HTMLParamElementURLParameterInUsePdf"/>
   <int value="4111" label="HTMLParamElementURLParameterInUseNonPdf"/>
   <int value="4112" label="WebTransportServerCertificateHashes"/>
+  <int value="4113" label="HiddenAttribute"/>
+  <int value="4114" label="HiddenUntilFoundAttribute"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
