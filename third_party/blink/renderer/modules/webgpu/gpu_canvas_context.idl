@@ -5,8 +5,9 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    ActiveScriptWrappable,
-    Exposed(Window WebGPU, Worker WebGPU)
+    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    SecureContext,
+    ActiveScriptWrappable
 ] interface GPUCanvasContext {
     [ImplementedAs=getHTMLOrOffscreenCanvas] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
 

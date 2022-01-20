@@ -5,7 +5,8 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, Worker WebGPU)
+    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    SecureContext
 ] interface GPUShaderModule {
     [CallWith=ScriptState] Promise<GPUCompilationInfo> compilationInfo();
 };

@@ -5,7 +5,8 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, Worker WebGPU)
+    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    SecureContext
 ] interface GPUSupportedLimits {
     readonly attribute unsigned long maxTextureDimension1D;
     readonly attribute unsigned long maxTextureDimension2D;
