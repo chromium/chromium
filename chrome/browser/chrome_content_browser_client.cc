@@ -148,6 +148,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/buildflags.h"
@@ -2074,18 +2075,8 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     content::BrowserContext* browser_context,
     const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // For short-term testing, also use kDirectSockets to enable isolated
-  // application level. DirectSocket WPT and browser tests require application
-  // isolation level.
-  //
-  // TODO(crbug.com/1206150): Figure out a better way to enable isolated
-  // application level in tests.
-  PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
-  bool is_isolated_storage_enabled = base::FeatureList::IsEnabled(
-      blink::features::kWebAppEnableIsolatedStorage);
-  return base::FeatureList::IsEnabled(features::kDirectSockets) ||
-         (is_isolated_storage_enabled &&
-          web_app::GetStorageIsolationKey(prefs, url::Origin::Create(url)));
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return web_app::IsUrlInIsolatedAppScope(profile->GetPrefs(), url);
 #else
   return false;
 #endif

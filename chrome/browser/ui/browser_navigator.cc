@@ -75,6 +75,8 @@
 using content::GlobalRequestID;
 using content::NavigationController;
 using content::WebContents;
+using WebExposedIsolationLevel =
+    content::RenderFrameHost::WebExposedIsolationLevel;
 
 class BrowserNavigatorWebContentsAdoption {
  public:
@@ -164,17 +166,40 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     absl::optional<web_app::AppId> app_id =
         web_app::FindInstalledAppWithUrlInScope(profile, params.url,
                                                 /*window_only=*/true);
+    if (!app_id && params.force_open_pwa_window) {
+      // In theory |force_open_pwa_window| should only be set if we know a
+      // matching PWA is installed. However, we can reach here if
+      // WebAppRegistrary hasn't finished loading yet, which can happen if
+      // Chrome is launched with the URL of an isolated app as an argument.
+      // This isn't a supported way to launch isolated apps, so we can cancel
+      // the navigation, but if we want to support it in the future we'll need
+      // to block until WebAppRegistrar is loaded.
+      return {nullptr, -1};
+    }
     if (app_id) {
-      std::string app_name = web_app::GenerateApplicationNameFromAppId(*app_id);
-      Browser* browser = nullptr;
-      if (Browser::GetCreationStatusForProfile(profile) ==
-          Browser::CreationStatus::kOk) {
-        browser = Browser::Create(Browser::CreateParams::CreateForApp(
-            app_name,
-            true,  // trusted_source. Installed PWAs are considered trusted.
-            params.window_bounds, profile, params.user_gesture));
+      // Reuse the existing browser for in-app same window navigations.
+      bool navigating_same_app =
+          params.browser &&
+          web_app::AppBrowserController::IsForWebApp(params.browser, *app_id);
+      if (navigating_same_app &&
+          params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+        return {params.browser, -1};
       }
-      return {browser, -1};
+      // App popups are handled in the switch statement below.
+      if (params.disposition != WindowOpenDisposition::NEW_POPUP) {
+        // Open a new app window.
+        std::string app_name =
+            web_app::GenerateApplicationNameFromAppId(*app_id);
+        Browser* browser = nullptr;
+        if (Browser::GetCreationStatusForProfile(profile) ==
+            Browser::CreationStatus::kOk) {
+          browser = Browser::Create(Browser::CreateParams::CreateForApp(
+              app_name,
+              true,  // trusted_source. Installed PWAs are considered trusted.
+              params.window_bounds, profile, params.user_gesture));
+        }
+        return {browser, -1};
+      }
     }
   }
 
@@ -514,6 +539,13 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
+#if !defined(OS_ANDROID)
+  // Force isolated PWAs to open in an app window.
+  params->force_open_pwa_window = web_app::IsUrlInIsolatedAppScope(
+      params->initiating_profile->GetPrefs(), params->url);
+  params->open_pwa_window_if_possible |= params->force_open_pwa_window;
+#endif
+
   if (!AdjustNavigateParamsForURL(params))
     return nullptr;
 
@@ -558,6 +590,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     params->disposition = WindowOpenDisposition::SINGLETON_TAB;
     ShowSingletonTabOverwritingNTP(params->browser, params);
     return nullptr;
+  }
+  if (params->force_open_pwa_window) {
+    CHECK(web_app::AppBrowserController::IsWebApp(params->browser));
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_browser && source_browser != params->browser) {

@@ -15,11 +15,14 @@
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
@@ -190,6 +193,31 @@ class IsolatedAppBrowserTest : public WebAppControllerBrowserTest {
     return test::InstallPwaForCurrentUrl(browser());
   }
 
+  content::RenderFrameHost* OpenApp(const AppId& app_id) {
+    WebAppRegistrar& registrar =
+        WebAppProvider::GetForWebApps(profile())->registrar();
+    const WebApp* app = registrar.GetAppById(app_id);
+    EXPECT_TRUE(app);
+    Browser* app_window = Browser::Create(Browser::CreateParams::CreateForApp(
+        GenerateApplicationNameFromAppId(app->app_id()),
+        /*trusted_source=*/true, gfx::Rect(), profile(),
+        /*user_gesture=*/true));
+    return NavigateToURLInNewTab(app_window, app->start_url());
+  }
+
+  content::RenderFrameHost* NavigateToURLInNewTab(
+      Browser* window,
+      const GURL& url,
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB) {
+    auto new_contents = content::WebContents::Create(
+        content::WebContents::CreateParams(browser()->profile()));
+    window->tab_strip_model()->AppendWebContents(std::move(new_contents),
+                                                 /*foreground=*/true);
+    return ui_test_utils::NavigateToURLWithDisposition(
+        window, url, disposition,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
   content::StoragePartition* default_storage_partition() {
     return browser()->profile()->GetDefaultStoragePartition();
   }
@@ -198,31 +226,55 @@ class IsolatedAppBrowserTest : public WebAppControllerBrowserTest {
     return browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
   }
 
+  Browser* GetBrowserFromFrame(content::RenderFrameHost* frame) {
+    Browser* browser = chrome::FindBrowserWithWebContents(
+        content::WebContents::FromRenderFrameHost(frame));
+    EXPECT_TRUE(browser);
+    return browser;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, AppsPartitioned) {
-  InstallIsolatedApp(kAppHost);
-  InstallIsolatedApp(kApp2Host);
+  AppId app1_id = InstallIsolatedApp(kAppHost);
+  AppId app2_id = InstallIsolatedApp(kApp2Host);
 
   auto* non_app_frame = ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/banners/isolated/simple.html"));
   EXPECT_TRUE(non_app_frame);
   EXPECT_EQ(default_storage_partition(), non_app_frame->GetStoragePartition());
 
-  auto* app_window = NavigateInNewWindowAndAwaitInstallabilityCheck(
-      https_server()->GetURL(kAppHost, "/banners/isolated/simple.html"));
-  auto* app_frame = GetMainFrame(app_window);
+  auto* app_frame = OpenApp(app1_id);
   EXPECT_NE(default_storage_partition(), app_frame->GetStoragePartition());
 
-  auto* app2_window = NavigateInNewWindowAndAwaitInstallabilityCheck(
-      https_server()->GetURL(kApp2Host, "/banners/isolated/simple.html"));
-  auto* app2_frame = GetMainFrame(app2_window);
+  auto* app2_frame = OpenApp(app2_id);
   EXPECT_NE(default_storage_partition(), app2_frame->GetStoragePartition());
 
   EXPECT_NE(app_frame->GetStoragePartition(),
             app2_frame->GetStoragePartition());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest,
+                       OmniboxNavigationOpensNewPwaWindow) {
+  AppId app_id = InstallIsolatedApp(kAppHost);
+
+  GURL app_url =
+      https_server()->GetURL(kAppHost, "/banners/isolated/simple.html");
+  auto* app_frame =
+      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
+
+  // The browser shouldn't have opened the app's page.
+  EXPECT_EQ(GetMainFrame(browser())->GetLastCommittedURL(), GURL());
+
+  // The app's frame should belong to an isolated PWA browser window.
+  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  EXPECT_NE(app_browser, browser());
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+  EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
+                kMaybeIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
 }
 
 class IsolatedAppBrowserCookieTest : public IsolatedAppBrowserTest {
@@ -258,14 +310,6 @@ class IsolatedAppBrowserCookieTest : public IsolatedAppBrowserTest {
                                                        iframe_id, url)));
   }
 
-  content::RenderFrameHost* NavigateToURLInNewTab(const GURL& url) {
-    auto new_contents = content::WebContents::Create(
-        content::WebContents::CreateParams(browser()->profile()));
-    browser()->tab_strip_model()->AppendWebContents(std::move(new_contents),
-                                                    /*foreground=*/true);
-    return ui_test_utils::NavigateToURL(browser(), url);
-  }
-
  private:
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     // Replace the host in |request.GetURL()| with the value from the Host
@@ -290,16 +334,18 @@ class IsolatedAppBrowserCookieTest : public IsolatedAppBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
-  InstallIsolatedApp(kAppHost);
+  AppId app_id = InstallIsolatedApp(kAppHost);
+
+  GURL app_url =
+      https_server()->GetURL(kAppHost, "/banners/isolated/cookie.html");
+  GURL non_app_url =
+      https_server()->GetURL(kNonAppHost, "/banners/isolated/cookie.html");
 
   // Load a page that sets a cookie, then create a cross-origin iframe that
   // loads the same page.
-  GURL app_url =
-      https_server()->GetURL(kAppHost, "/banners/isolated/cookie.html");
-  auto* app_window = NavigateInNewWindowAndAwaitInstallabilityCheck(app_url);
-  auto* app_frame = GetMainFrame(app_window);
-  GURL non_app_url =
-      https_server()->GetURL(kNonAppHost, "/banners/isolated/cookie.html");
+  auto* app_frame = OpenApp(app_id);
+  auto* app_browser = GetBrowserFromFrame(app_frame);
+  app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
   CreateIframe(app_frame, "child", non_app_url);
 
   const auto& app_cookies = GetCookieHeadersForUrl(app_url);
@@ -310,8 +356,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
   EXPECT_TRUE(non_app_cookies[0].empty());
 
   // Load the pages again. Both frames should send the cookie in their requests.
-  auto* app_window2 = NavigateInNewWindowAndAwaitInstallabilityCheck(app_url);
-  auto* app_frame2 = GetMainFrame(app_window2);
+  auto* app_frame2 = OpenApp(app_id);
+  auto* app_browser2 = GetBrowserFromFrame(app_frame2);
+  app_frame2 = ui_test_utils::NavigateToURL(app_browser2, app_url);
   CreateIframe(app_frame2, "child", non_app_url);
 
   EXPECT_EQ(2u, app_cookies.size());
@@ -322,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
   // Load the cross-origin's iframe as a top-level page. Because this page was
   // previously loaded in an isolated app, it shouldn't have cookies set when
   // loaded in a main frame here.
-  ASSERT_TRUE(NavigateToURLInNewTab(non_app_url));
+  ASSERT_TRUE(NavigateToURLInNewTab(browser(), non_app_url));
 
   EXPECT_EQ(3u, non_app_cookies.size());
   EXPECT_TRUE(non_app_cookies[2].empty());
@@ -338,11 +385,13 @@ class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
   }
 
   int64_t InstallIsolatedAppAndWaitForServiceWorker() {
-    InstallIsolatedApp(app_url_);
+    AppId app_id = InstallIsolatedApp(app_url_);
 
-    app_window_ = NavigateInNewWindowAndAwaitInstallabilityCheck(app_url_);
-    app_web_contents_ = app_window_->tab_strip_model()->GetActiveWebContents();
-    app_frame_ = app_web_contents_->GetMainFrame();
+    auto* original_frame = OpenApp(app_id);
+    app_web_contents_ =
+        content::WebContents::FromRenderFrameHost(original_frame);
+    app_window_ = chrome::FindBrowserWithWebContents(app_web_contents_);
+    app_frame_ = ui_test_utils::NavigateToURL(app_window_, app_url_);
     storage_partition_ = app_frame_->GetStoragePartition();
     EXPECT_NE(default_storage_partition(), storage_partition_);
 

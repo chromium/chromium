@@ -5,15 +5,22 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/crx_file/id_util.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/common/content_features.h"
 #include "crypto/sha2.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -112,6 +119,20 @@ absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
   return provider ? provider->registrar().FindInstalledAppWithUrlInScope(
                         url, window_only)
                   : absl::nullopt;
+}
+
+bool IsUrlInIsolatedAppScope(PrefService* prefs, const GURL& url) {
+  // For short-term testing, also use kDirectSockets to enable isolated
+  // application level. DirectSocket WPT and browser tests require application
+  // isolation level.
+  //
+  // TODO(https://crbug.com/1206150): Figure out a better way to enable isolated
+  // application level in tests.
+  bool is_isolated_storage_enabled = base::FeatureList::IsEnabled(
+      blink::features::kWebAppEnableIsolatedStorage);
+  return base::FeatureList::IsEnabled(features::kDirectSockets) ||
+         (is_isolated_storage_enabled &&
+          web_app::GetStorageIsolationKey(prefs, url::Origin::Create(url)));
 }
 
 }  // namespace web_app
