@@ -1340,19 +1340,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioOutputStreamProxy.StreamFormat"
-    enum="AudioOutputProxyStreamFormat" expires_after="2021-01-01">
+    enum="AudioOutputProxyStreamFormat" expires_after="2023-01-21">
   <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
   <summary>
     Records format used by AudioManager to create audio output stream proxy. If
-    a fake stream is created it results in muted audio playback.
-
-    On Windows, the failure reasons that can lead to fake stream creation are
-    tracked with the following histograms:
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.CreateDeviceEnumeratorResult
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.CreateDeviceResult
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.CreateClientResult
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.GetMixFormatResult
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.GetDevicePeriodResult
+    a fake stream is created it results in muted audio playback. Warning: this
+    histogram was expired from 2021-01-01 to 2022-01-21; data may be missing.
   </summary>
 </histogram>
 
