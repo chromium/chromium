@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">מדינה</translation>
 <translation id="5142961317498132443">אימות</translation>
 <translation id="5154917547274118687">זיכרון</translation>
+<translation id="5160857336552977725">יש להיכנס אל ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">ההגדרות של התשובות המהירות</translation>
 <translation id="5168185087976003268">תקינות הסוללה</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
@@ -422,6 +423,7 @@
 <translation id="6911383237894364323">לא ניתן להתחבר לשרתי מדיה</translation>
 <translation id="6957231940976260713">שם שירות</translation>
 <translation id="6961170852793647506">כדי להתחיל, מניחים את המסמך על הסורק</translation>
+<translation id="6965382102122355670">אישור</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
 <translation id="6992266763844448459">צריך לבחור באפשרות הזו אם הבעלות על המכשיר לא משתנה. לדוגמה: המכשיר מועבר למשתמש אחר באותו ארגון.</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>

@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">시/도</translation>
 <translation id="5142961317498132443">인증</translation>
 <translation id="5154917547274118687">메모리</translation>
+<translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
 <translation id="5166918508782100047">빠른 답변 설정</translation>
 <translation id="5168185087976003268">배터리 상태</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
@@ -422,6 +423,7 @@
 <translation id="6911383237894364323">미디어 서버에 연결할 수 없음</translation>
 <translation id="6957231940976260713">서비스 이름</translation>
 <translation id="6961170852793647506">시작하려면 스캐너에 문서를 올리세요.</translation>
+<translation id="6965382102122355670">확인</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
 <translation id="6992266763844448459">기기 소유자가 변경되지 않으면 이 옵션을 선택하세요. 예를 들어 기기가 조직 내 다른 사용자에게 이전되는 경우입니다.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>

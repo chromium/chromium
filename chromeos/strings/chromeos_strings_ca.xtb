@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Estat</translation>
 <translation id="5142961317498132443">Autenticació</translation>
 <translation id="5154917547274118687">Memòria</translation>
+<translation id="5160857336552977725">Inicieu la sessió al vostre dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5166918508782100047">Configuració de Respostes ràpides</translation>
 <translation id="5168185087976003268">Estat de la bateria</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
@@ -422,6 +423,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6911383237894364323">No es pot connectar als servidors multimèdia</translation>
 <translation id="6957231940976260713">Nom del servei</translation>
 <translation id="6961170852793647506">Per començar, col·loca el document a l'escàner</translation>
+<translation id="6965382102122355670">D'acord</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
 <translation id="6992266763844448459">Selecciona aquesta opció si la propietat del dispositiu no canvia. Per exemple, si el dispositiu s'està transferint a una altra persona dins d'una organització.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>

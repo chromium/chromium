@@ -739,7 +739,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="597121107011153418">{COUNT,plural, =1{# అంశంతో}other{# అంశాలతో}}</translation>
 <translation id="5981446804259161541">లేత నీలి ఆకుపచ్చ రంగు</translation>
 <translation id="5983179082906765664">నావిగేషన్ గ్రాన్యులారిటీని పెంచండి</translation>
-<translation id="5992285135956208197">గ్రాఫిక్స్ పత్రం</translation>
+<translation id="5992285135956208197">గ్రాఫిక్స్ డాక్యుమెంట్‌</translation>
 <translation id="5999630716831179808">వాయిస్‌లు</translation>
 <translation id="6006050241733874051">ఫారమ్</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{బ్యాక్‌స్లాష్ గుర్తు}other{# బ్యాక్‌స్లాష్ గుర్తులు}}</translation>
@@ -815,7 +815,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">ప్రోగ్రెస్ పట్టీ</translation>
 <translation id="6660819301598582123">దేశ భాషలందు తెలుగు లెస్స</translation>
-<translation id="667999046851023355">పత్రం</translation>
+<translation id="667999046851023355">డాక్యుమెంట్‌</translation>
 <translation id="6688209025607531203">నమూనా యేతర హెచ్చరిక</translation>
 <translation id="6689672606256159458">ముదురు గులాబీ నారింజ రంగు</translation>
 <translation id="669617842401078250"><ph name="FILE_NAME" /> డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>

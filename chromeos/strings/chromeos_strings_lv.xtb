@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Štats</translation>
 <translation id="5142961317498132443">Autentifikācija</translation>
 <translation id="5154917547274118687">Atmiņa</translation>
+<translation id="5160857336552977725">Pierakstieties ierīcē <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Ātro atbilžu iestatījumi</translation>
 <translation id="5168185087976003268">Akumulatora stāvoklis</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
@@ -422,6 +423,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6911383237894364323">Nevar izveidot savienojumu ar multivides satura serveriem.</translation>
 <translation id="6957231940976260713">Pakalpojuma nosaukums</translation>
 <translation id="6961170852793647506">Lai sāktu darbu, novietojiet dokumentu uz skenera.</translation>
+<translation id="6965382102122355670">Labi</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
 <translation id="6992266763844448459">Atlasiet šo opciju, ja ierīces īpašumtiesības netiek mainītas, piemēram, ja ierīce tiek nodota citai personai tajā pašā organizācijā.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>

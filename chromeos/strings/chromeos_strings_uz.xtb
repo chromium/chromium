@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Shtat</translation>
 <translation id="5142961317498132443">Autentifikatsiya</translation>
 <translation id="5154917547274118687">Operativ xotira</translation>
+<translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> hisobingizga kiring</translation>
 <translation id="5166918508782100047">Tezkor javoblar sozlamalari</translation>
 <translation id="5168185087976003268">Quvvat darajasi</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
@@ -422,6 +423,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6911383237894364323">Media serverlarga ulana olmadi</translation>
 <translation id="6957231940976260713">Xizmat nomi</translation>
 <translation id="6961170852793647506">Boshlash uchun hujjatni skanerga joylang</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Mikrodastur versiyasi</translation>
 <translation id="6992266763844448459">Qurilma egasi oʻzgarmasa, shu parametrni tanlang. Masalan, qurilma tashkilotning boshqa xodimiga berilayotgan boʻlsa.</translation>
 <translation id="7028979494427204405">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="MANAGER" /> domenida boshqariladi.</translation>

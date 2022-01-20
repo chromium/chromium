@@ -112,7 +112,6 @@
 <translation id="1307966114820526988">មុខងារ​ដែលបាន​បញ្ឈប់</translation>
 <translation id="1308113895091915999">មាន​ការផ្ដល់ជូន</translation>
 <translation id="1312803275555673949">តើមាន​ភស្តុតាងអ្វី​សម្រាប់គាំទ្រវា?</translation>
-<translation id="131405271941274527"><ph name="URL" /> ចង់ផ្ញើ និង​ទទួលព័ត៌មាន នៅពេល​អ្នកចុច​ទូរសព្ទ​របស់អ្នក នៅលើ​ឧបករណ៍ NFC</translation>
 <translation id="1314311879718644478">មើលខ្លឹមសារ AR</translation>
 <translation id="1314509827145471431">ភ្ជាប់​ខាងស្ដាំ</translation>
 <translation id="1318023360584041678">បានរក្សាទុក​នៅក្នុង​ក្រុមផ្ទាំង</translation>
@@ -210,6 +209,7 @@
 <translation id="1559572115229829303">&lt;p&gt;ការតភ្ជាប់ជាលក្ខណៈឯកជនទៅ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> មិនអាចធ្វើឡើងបានទេ ពីព្រោះកាលបរិច្ឆេទ និងម៉ោងឧបករណ៍របស់អ្នក (<ph name="DATE_AND_TIME" />) មិនត្រឹមត្រូវ។&lt;/p&gt;
 
       &lt;p&gt;សូមកែសម្រួលកាលបរិច្ឆេទ និងម៉ោងចេញពីផ្នែក&lt;strong&gt;ទូទៅ&lt;/strong&gt;នៃកម្មវិធី&lt;strong&gt;ការកំណត់&lt;/strong&gt;។&lt;/p&gt;</translation>
+<translation id="156703335097561114">ព័ត៌មានបណ្ដាញដូចជា អាសយដ្ឋាន ការកំណត់រចនាសម្ព័ន្ធផ្ទៃ និងគុណភាព​នៃការតភ្ជាប់ជាដើម</translation>
 <translation id="1567040042588613346">គោលការណ៍នេះ​កំពុងដំណើរការ​ដូចការរំពឹងទុក ប៉ុន្តែ​តម្លៃដូចគ្នា​ត្រូវបាន​កំណត់នៅ​កន្លែងផ្សេង និង​ត្រូវបាន​ជំនួសដោយ​គោលការណ៍នេះ។</translation>
 <translation id="1569487616857761740">បញ្ចូលកាល​បរិច្ឆេទ​ផុត​កំណត់</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -708,6 +708,7 @@
 <translation id="3234666976984236645">តែងតែចាប់យកមាតិកាសំខាន់ជានិច្ចនៅលើគេហទំព័រនេះ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច tab រួចចុច Enter ដើម្បីប្ដូរ​រូបរាងនៃ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក​តាមបំណង</translation>
 <translation id="3240791268468473923">សន្លឹក​ព័ត៌មានផ្ទៀងផ្ទាត់​ការបង់ប្រាក់​មានសុវត្ថិភាព ដែលគ្មានព័ត៌មានផ្ទៀងផ្ទាត់​ត្រូវគ្នា​ត្រូវបានបើក</translation>
+<translation id="324180406144491771">តំណ “<ph name="HOST_NAME" />” ត្រូវបាន​ទប់ស្កាត់</translation>
 <translation id="3249845759089040423">ទាន់​សម័យ</translation>
 <translation id="3252266817569339921">ភាសាបារាំង</translation>
 <translation id="3257954757204451555">តើនរណា​នៅពីក្រោយ​ព័ត៌មាននេះ?</translation>

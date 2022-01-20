@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">എന്റെ ഫയലുകൾ</translation>
 <translation id="189358972401248634">മറ്റ് ഭാഷകൾ</translation>
 <translation id="1894023287452300670">ഇവിടെ നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
+<translation id="1900260903084164610">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />സേവന നിബന്ധനകൾ<ph name="END_TOS_LINK" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="1905320231301365059">നിങ്ങൾ അദൃശ്യ മോഡിൽ ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകൾ ഈ ഉപകരണം ഉപയോഗിക്കുന്ന എല്ലാവർക്കും തുടർന്നും ദൃശ്യമാകും.</translation>
 <translation id="1910950723001426294">പങ്കിടൽ ഓപ്ഷനുകളുടെ ലിസ്റ്റ് അടച്ചു.</translation>
 <translation id="1918175104945982129">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI പകുതി ഉയരത്തിൽ തുറന്നിരിക്കുന്നു</translation>
@@ -723,6 +724,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് പരാജയപ്പെട്ടു.}other{# ഡൗൺലോഡുകൾ പരാജയപ്പെട്ടു.}}</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="5171045022955879922">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
+<translation id="517734441743343109">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />സേവന നിബന്ധനകൾ<ph name="END_TOS_LINK" />, <ph name="BEGIN_PRIVACY_LINK" />സ്വകാര്യതാ\u00A0നയം<ph name="END_PRIVACY_LINK" /> എന്നിവ അംഗീകരിക്കുന്നു.</translation>
 <translation id="5184329579814168207">Chrome-ൽ തുറക്കുക</translation>
 <translation id="5188992787241350004">നിങ്ങളുടെ ശബ്‌ദം ഉപയോഗിച്ച് തിരയൂ</translation>
 <translation id="5191251636205085390">മൂന്നാം കക്ഷി കുക്കികൾക്ക് പകരം നിലവിൽ വരാൻ പോകുന്ന പുതിയ സാങ്കേതികവിദ്യകളെക്കുറിച്ച് അറിയുകയും അവയെ നിയന്ത്രിക്കുകയും ചെയ്യുക</translation>
@@ -1000,6 +1002,7 @@
 <translation id="6633067410344541938">അദൃശ്യ മോഡ് അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="6636623428211296678">ചുവടെ കൂടുതൽ ക്രമീകരണം അടുത്തറിയുകയോ ഇപ്പോൾ പൂർത്തിയാക്കുകയോ ചെയ്യുക</translation>
 <translation id="663674369910034433">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK1" />സമന്വയവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google സേവനങ്ങളും<ph name="END_LINK2" /> കാണുക</translation>
+<translation id="6637100877383020115">ആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന് Chrome, ഉപയോഗ ഡാറ്റയും ക്രാഷ് ഡാറ്റയും Google-ന് അയയ്ക്കുന്നു. <ph name="BEGIN_UMA_LINK" />മാനേജ് ചെയ്യുക<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">എല്ലാ സമയത്തും ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6643649862576733715">സംരക്ഷിച്ച ഡാറ്റയുടെ അളവിനനുസരിച്ച് അടുക്കുക</translation>

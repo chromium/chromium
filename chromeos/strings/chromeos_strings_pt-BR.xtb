@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Autenticação</translation>
 <translation id="5154917547274118687">Memória</translation>
+<translation id="5160857336552977725">Faça login no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Configurações das Respostas rápidas</translation>
 <translation id="5168185087976003268">Integridade da bateria</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
@@ -422,6 +423,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6911383237894364323">Não foi possível se conectar aos servidores de mídia</translation>
 <translation id="6957231940976260713">Nome do serviço</translation>
 <translation id="6961170852793647506">Para começar, coloque o documento no scanner</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revisão do firmware</translation>
 <translation id="6992266763844448459">Selecione esta opção caso a propriedade do dispositivo continue a mesma. Por exemplo, caso o dispositivo esteja sendo transferido para uma pessoa diferente dentro da organização.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>

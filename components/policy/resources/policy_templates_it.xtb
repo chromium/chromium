@@ -4162,12 +4162,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Per <ph name="MS_WIN_NAME" /> o <ph name="MAC_OS_NAME" /> questo criterio ha un solo effetto se è selezionato anche <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" />.</translation>
 <translation id="5929855945144989709">Consente ai dispositivi di eseguire macchine virtuali su Chrome OS</translation>
 <translation id="5932767795525445337">Questa policy può essere utilizzata anche per bloccare app per Android.</translation>
-<translation id="5934763632608026594">La configurazione del criterio consente di stabilire le impostazioni di gestione delle app web relative a <ph name="PRODUCT_NAME" />.
-
-      Questo criterio consente a un amministratore di specificare le impostazioni per le app web installate tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />. È possibile impostare una configurazione predefinita usando l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le app web senza una configurazione personalizzata in questo criterio.
-
-      Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se è possibile o meno eseguire un'app web durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
-      </translation>
 <translation id="5945312246863177268">Non consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5946082169633555022">Canale Beta</translation>
 <translation id="5946329690214660966">Imposta una pianificazione personalizzata per verificare la presenza di aggiornamenti</translation>

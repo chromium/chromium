@@ -4507,10 +4507,6 @@
 <translation id="5642508497713047">CRL हस्ताक्षरकर्ता</translation>
 <translation id="5643321261065707929">सीमित डेटा वाला नेटवर्क</translation>
 <translation id="5643620609347735571">साफ़ करें और जारी रखें</translation>
-<translation id="5644722238761632789"><ph name="BEGIN_PARAGRAPH1" />Chrome और ChromeOS से जुड़ी गड़बड़ी की जानकारी, इनकी क्रैश रिपोर्ट, और इनके इस्तेमाल से जुड़ा डेटा, Google को अपने-आप भेजने की सुविधा को चालू करें. इससे, इनकी सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद मिलती है.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ChromeOS की डिवाइस सेटिंग में जाकर, किसी भी समय इन रिपोर्ट को भेजने की अनुमति को चालू या बंद किया जा सकता है. डोमेन एडमिन, Admin console में जाकर इस सेटिंग को बदल सकता है.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />इस सुविधा को बंद करने के बाद भी आपका डिवाइस, सिस्टम अपडेट और सुरक्षा जैसी ज़रूरी सेवाओं के लिए अहम जानकारी भेज सकेगा.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />अगर आपके खाते की वेब और ऐप्लिकेशन गतिविधि की सेटिंग चालू है, तो आपके Android डिवाइस का डेटा आपके Google खाते में सेव हो सकता है. account.google.com पर जाकर, अपने डेटा की जानकारी को देखने, मिटाने, और खाते की सेटिंग में बदलाव करने की सुविधा का फ़ायदा उठाया जा सकता है.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5646376287012673985">स्थान</translation>
 <translation id="5646558797914161501">व्यवसायी</translation>
 <translation id="5648166631817621825">पिछले 7 दिन</translation>

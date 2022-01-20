@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Osavaltio/alue</translation>
 <translation id="5142961317498132443">Todennus</translation>
 <translation id="5154917547274118687">Muisti</translation>
+<translation id="5160857336552977725">Kirjaudu sisään <ph name="DEVICE_TYPE" />-laitteeseesi.</translation>
 <translation id="5166918508782100047">Pikainfon asetukset</translation>
 <translation id="5168185087976003268">Akun toiminta</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
@@ -422,6 +423,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6911383237894364323">Mediapalvelimiin ei saada yhteyttä</translation>
 <translation id="6957231940976260713">Palvelun nimi</translation>
 <translation id="6961170852793647506">Aloita asettamalla dokumentti skanneriin</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
 <translation id="6992266763844448459">Valitse tämä vaihtoehto, jos laitteen omistajuus ei vaihdu, esimerkiksi jos laite siirretään toiselle henkilölle organisaation sisällä.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>

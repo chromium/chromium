@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Eyalet</translation>
 <translation id="5142961317498132443">Kimlik Doğrulama</translation>
 <translation id="5154917547274118687">Bellek</translation>
+<translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> cihazınızda oturum açın</translation>
 <translation id="5166918508782100047">Bil bakalım ayarları</translation>
 <translation id="5168185087976003268">Pil sağlığı</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
@@ -422,6 +423,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6911383237894364323">Medya sunucularına bağlanılamadı</translation>
 <translation id="6957231940976260713">Hizmet adı</translation>
 <translation id="6961170852793647506">Başlamak için dokümanınızı tarayıcıya yerleştirin</translation>
+<translation id="6965382102122355670">Tamam</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
 <translation id="6992266763844448459">Cihazın sahibi değişmiyorsa, örneğin cihaz aynı kuruluştaki başka bir kişiye devrediliyorsa bu seçeneği belirleyin.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>

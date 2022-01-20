@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Država:</translation>
 <translation id="5142961317498132443">Preverjanje pristnosti</translation>
 <translation id="5154917547274118687">Pomnilnik</translation>
+<translation id="5160857336552977725">Prijavite se v napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Nastavitve hitrih odgovorov</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
@@ -422,6 +423,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6911383237894364323">Povezave s strežniki za predstavnost ni bilo mogoče vzpostaviti.</translation>
 <translation id="6957231940976260713">Ime storitve</translation>
 <translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
+<translation id="6965382102122355670">V redu</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
 <translation id="6992266763844448459">Izberite to možnost, če se lastništvo naprave ne spreminja. Ta naprava se na primer prenaša na drugo osebo v organizaciji.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>

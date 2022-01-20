@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Pag-authenticate</translation>
 <translation id="5154917547274118687">Memorya</translation>
+<translation id="5160857336552977725">Mag-sign in sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Mga setting ng instant na impormasyon</translation>
 <translation id="5168185087976003268">Tagal ng baterya</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
@@ -422,6 +423,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6911383237894364323">Hindi makakonekta sa mga media server</translation>
 <translation id="6957231940976260713">Pangalan ng serbisyo</translation>
 <translation id="6961170852793647506">Para magsimula, ilagay ang iyong dokumento sa scanner</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
 <translation id="6992266763844448459">Piliin ang opsyong ito kung hindi magbabago ang pagmamay-ari ng device. Halimbawa, inililipat ang device sa ibang tao sa loob ng isang organisasyon.</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>

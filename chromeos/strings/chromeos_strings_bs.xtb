@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Država</translation>
 <translation id="5142961317498132443">Autentifikacija</translation>
 <translation id="5154917547274118687">Memorija</translation>
+<translation id="5160857336552977725">Prijavite se na uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Postavke brzih odgovora</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
@@ -422,6 +423,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6911383237894364323">Povezivanje s medijskim serverima nije uspjelo</translation>
 <translation id="6957231940976260713">Ime usluge</translation>
 <translation id="6961170852793647506">Da započnete, stavite dokument na skener</translation>
+<translation id="6965382102122355670">Uredu</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
 <translation id="6992266763844448459">Izaberite ovu opciju ako se vlasništvo nad uređajem ne mijenja. Naprimjer, uređaj se preusmjerava na drugu osobu unutar organizacije.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>

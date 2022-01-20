@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Ríki</translation>
 <translation id="5142961317498132443">Auðkenning</translation>
 <translation id="5154917547274118687">Minni</translation>
+<translation id="5160857336552977725">Skráðu þig inn í <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Stillingar skjótra svara</translation>
 <translation id="5168185087976003268">Ástand rafhlöðu</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
@@ -422,6 +423,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6911383237894364323">Ekki er hægt að tengjast efnisþjónum</translation>
 <translation id="6957231940976260713">Heiti þjónustu</translation>
 <translation id="6961170852793647506">Settu skjalið á skannann til að hefjast handa</translation>
+<translation id="6965382102122355670">Í lagi</translation>
 <translation id="6977381486153291903">Útgáfa fastbúnaðar</translation>
 <translation id="6992266763844448459">Veldu þennan valkost ef eignarhald tækisins breytist ekki. Þegar tækið er t.d. flutt yfir til annars notanda innan sama fyrirtækis.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hefur umsjón með þessu tæki og hefur aðgang að allri notendavirkni, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>

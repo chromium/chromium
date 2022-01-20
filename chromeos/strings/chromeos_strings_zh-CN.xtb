@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5142961317498132443">身份验证</translation>
 <translation id="5154917547274118687">内存</translation>
+<translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">快速解答设置</translation>
 <translation id="5168185087976003268">电池寿命</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
@@ -422,6 +423,7 @@
 <translation id="6911383237894364323">无法连接到媒体服务器</translation>
 <translation id="6957231940976260713">服务名称</translation>
 <translation id="6961170852793647506">首先，将您的文件放置在扫描仪上</translation>
+<translation id="6965382102122355670">确定</translation>
 <translation id="6977381486153291903">固件版本</translation>
 <translation id="6992266763844448459">如果设备的所有权未变，请选择此选项。例如，将这部设备转给同一单位内的另一个人。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>

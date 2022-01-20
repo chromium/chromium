@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">État</translation>
 <translation id="5142961317498132443">Authentification</translation>
 <translation id="5154917547274118687">Mémoire</translation>
+<translation id="5160857336552977725">Connectez-vous à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5166918508782100047">Paramètres des Réponses rapides</translation>
 <translation id="5168185087976003268">État de la batterie</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
@@ -422,6 +423,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
 <translation id="6957231940976260713">Nom du service</translation>
 <translation id="6961170852793647506">Pour commencer, placez votre document sur le scanner</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="6992266763844448459">Sélectionnez cette option si l'appareil ne change pas de propriétaire, par exemple s'il est transféré à une autre personne d'une même organisation.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités des utilisateurs, y compris les pages Web consultées, les mots de passe et la messagerie.</translation>

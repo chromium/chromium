@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Dövlət</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
 <translation id="5154917547274118687">Yaddaş</translation>
+<translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> cihazınıza daxil olun</translation>
 <translation id="5166918508782100047">Cəld cavab ayarları</translation>
 <translation id="5168185087976003268">Enerji statusu</translation>
 <translation id="5170568018924773124">Qovluqda göstərin</translation>
@@ -421,6 +422,7 @@
 <translation id="6911383237894364323">Media serverlərinə qoşulmaq olmur</translation>
 <translation id="6957231940976260713">Xidmət adı</translation>
 <translation id="6961170852793647506">Başlamaq üçün sənədinizi skanerə yerləşdirin</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
 <translation id="6992266763844448459">Cihazın mülkiyyəti dəyişmirsə, bu seçimi edin. Məsələn, cihaz təşkilat daxilində başqa bir şəxsə ötürüldükdə.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>

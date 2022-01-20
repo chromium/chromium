@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">รัฐ</translation>
 <translation id="5142961317498132443">การตรวจสอบสิทธิ์</translation>
 <translation id="5154917547274118687">หน่วยความจำ</translation>
+<translation id="5160857336552977725">ลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">การตั้งค่าคำตอบด่วน</translation>
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
@@ -422,6 +423,7 @@
 <translation id="6911383237894364323">เชื่อมต่อเซิร์ฟเวอร์สื่อไม่ได้</translation>
 <translation id="6957231940976260713">ชื่อบริการ</translation>
 <translation id="6961170852793647506">วางเอกสารบนเครื่องสแกนเพื่อเริ่มต้นใช้งาน</translation>
+<translation id="6965382102122355670">ตกลง</translation>
 <translation id="6977381486153291903">การแก้ไขเฟิร์มแวร์</translation>
 <translation id="6992266763844448459">เลือกตัวเลือกนี้หากไม่ได้เปลี่ยนแปลงการเป็นเจ้าของอุปกรณ์ เช่น โอนอุปกรณ์ไปให้บุคคลอื่นภายในองค์กร</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>

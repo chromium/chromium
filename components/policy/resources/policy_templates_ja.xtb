@@ -4038,12 +4038,6 @@
       <ph name="MS_WIN_NAME" /> または <ph name="MAC_OS_NAME" /> では、このポリシーが効果を持つのは、<ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> も有効になっている場合に限られます。</translation>
 <translation id="5929855945144989709">Chrome OS での仮想マシンの実行をデバイスに許可する</translation>
 <translation id="5932767795525445337">このポリシーを使って Android アプリを固定することもできます。</translation>
-<translation id="5934763632608026594">このポリシーでは、<ph name="PRODUCT_NAME" /> のウェブアプリ管理設定を管理できます。
-
-      このポリシーを使用して、管理者は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> を介してインストールされたウェブアプリの設定を指定できます。また、「<ph name="DEFAULT_SCOPE" />」という特別な ID でデフォルトの設定を指定できます。デフォルトの設定は、このポリシーでカスタムの設定が指定されていないすべてのウェブアプリに適用されます。
-
-      <ph name="RUN_ON_OS_LOGIN_FIELD" /> フィールドでは、OS へのログイン中にウェブアプリを実行できるかどうかを指定します。このフィールドを <ph name="BLOCKED" /> に設定した場合、OS へのログイン中にウェブアプリは実行されず、ユーザーが後から有効にすることもできません。このフィールドを <ph name="RUN_WINDOWED" /> に設定した場合、OS へのログイン中にウェブアプリが実行され、ユーザーは後から無効にできません。このフィールドを <ph name="ALLOWED" /> に設定した場合、ユーザーは OS へのログイン時にウェブアプリを実行するよう設定できます。デフォルトの設定では、<ph name="ALLOWED" /> と <ph name="BLOCKED" /> の値のみが許可されています。
-      </translation>
 <translation id="5945312246863177268">ユーザーがスマートフォン ハブの通知をクリックして Eche アプリを起動することを許可しません。</translation>
 <translation id="5946082169633555022">Beta チャンネル</translation>
 <translation id="5946329690214660966">アップデート確認のカスタム スケジュールを設定する</translation>

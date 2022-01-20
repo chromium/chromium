@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Autenticación</translation>
 <translation id="5154917547274118687">Memoria</translation>
+<translation id="5160857336552977725">Inicia sesión no teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Configuración de Respostas rápidas</translation>
 <translation id="5168185087976003268">Estado da batería</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
@@ -422,6 +423,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6911383237894364323">Non se puido establecer conexión cos servidores multimedia</translation>
 <translation id="6957231940976260713">Nome do servizo</translation>
 <translation id="6961170852793647506">Para comezar, coloca o documento no escáner</translation>
+<translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
 <translation id="6992266763844448459">Selecciona esta opción se non vai cambiar a propiedade do dispositivo (por exemplo, se o dispositivo se vai transferir a unha persoa diferente dentro da mesma organización).</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>

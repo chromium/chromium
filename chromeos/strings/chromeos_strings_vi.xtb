@@ -291,6 +291,7 @@
 <translation id="5089810972385038852">Tỉnh</translation>
 <translation id="5142961317498132443">Xác thực</translation>
 <translation id="5154917547274118687">Bộ nhớ</translation>
+<translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="5166918508782100047">Chế độ cài đặt tính năng Thông tin nhanh</translation>
 <translation id="5168185087976003268">Tình trạng pin</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
@@ -422,6 +423,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6911383237894364323">Không thể kết nối với máy chủ phương tiện</translation>
 <translation id="6957231940976260713">Tên dịch vụ</translation>
 <translation id="6961170852793647506">Hãy đặt tài liệu của bạn lên máy quét để bắt đầu</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Hiệu chỉnh chương trình cơ sở</translation>
 <translation id="6992266763844448459">Chọn lựa chọn này nếu quyền sở hữu thiết bị không thay đổi. Ví dụ: thiết bị đang được chuyển cho một người khác trong cùng một tổ chức.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
