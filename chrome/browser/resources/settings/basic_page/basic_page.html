@@ -55,7 +55,8 @@
         <template is="dom-if" if="[[showPrivacyReviewPromo_]]" restamp>
           <settings-section page-title="" nest-under-section="privacy"
               no-search>
-            <settings-privacy-review-promo id="privacyReviewPromo">
+            <settings-privacy-review-promo id="privacyReviewPromo"
+                prefs="{{prefs}}">
             </settings-privacy-review-promo>
           </settings-section>
         </template>

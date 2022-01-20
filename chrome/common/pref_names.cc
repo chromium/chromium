@@ -3368,7 +3368,10 @@ const char kLensRegionSearchEnabled[] = "policy.lens_region_search_enabled";
 // A boolean indicating whether the Privacy Review Welcome Card should be shown.
 const char kPrivacyReviewShowWelcomeCard[] = "privacy_review.show_welcome_card";
 
-// A boolean indicating whether the Privacy guide feature has been viewed.
+// A boolean indicating whether the Privacy guide feature has been viewed. This
+// is set to true if the user has done any of the following: (1) opened the
+// privacy guide, (2) dismissed the privacy guide promo, (3) seen the privacy
+// guide promo a certain number of times.
 const char kPrivacyGuideViewed[] = "privacy_guide.viewed";
 
 // A boolean indicating support of "CORS non-wildcard request header name".

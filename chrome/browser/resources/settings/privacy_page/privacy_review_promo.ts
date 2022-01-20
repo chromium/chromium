@@ -10,10 +10,13 @@
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-export class PrivacyReviewPromoElement extends PolymerElement {
+const PrivacyReviewPromoElementBase = PrefsMixin(PolymerElement);
+
+export class PrivacyReviewPromoElement extends PrivacyReviewPromoElementBase {
   static get is() {
     return 'settings-privacy-review-promo';
   }
@@ -22,10 +25,26 @@ export class PrivacyReviewPromoElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  private onPrivacyReviewClick_() {
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+    };
+  }
+
+  private onPrivacyReviewStartClick_() {
     MetricsBrowserProxyImpl.getInstance().recordAction(
         'Settings.PrivacyGuide.StartPromo');
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
+  }
+
+  private onNoThanksButtonClick_() {
+    this.setPrefValue('privacy_guide.viewed', true);
   }
 }
 

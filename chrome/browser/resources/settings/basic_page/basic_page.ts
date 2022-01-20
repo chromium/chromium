@@ -39,9 +39,7 @@ import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {SyncStatus} from '../people_page/sync_browser_proxy.js';
-// <if expr="chromeos_ash or chromeos_lacros">
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
-// </if>
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';
@@ -68,7 +66,6 @@ const CrosSettingsOsBannerInteraction = {
 // TypeScript.
 type Constructor<T> = new (...args: any[]) => T;
 
-// <if expr="chromeos_ash or chromeos_lacros">
 const SettingsBasicPageElementBase =
     PrefsMixin(MainPageMixin(
         RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as unknown as
@@ -76,16 +73,6 @@ const SettingsBasicPageElementBase =
       new (): PolymerElement & WebUIListenerMixinInterface &
       PrefsMixinInterface & RouteObserverMixinInterface & MainPageMixinInterface
     };
-// </if>
-// <if expr="not chromeos and not lacros">
-const SettingsBasicPageElementBase =
-    MainPageMixin(
-        RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as unknown as
-        Constructor<PolymerElement>) as {
-      new (): PolymerElement & WebUIListenerMixinInterface &
-      RouteObserverMixinInterface & MainPageMixinInterface
-    };
-// </if>
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   static get is() {
@@ -157,7 +144,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
        */
       showPrivacyReviewPromo_: {
         type: Boolean,
-        computed: 'computeShowPrivacyReviewPromo_(isManaged_, isChildUser_)',
+        computed:
+            'computeShowPrivacyReviewPromo_(isManaged_, isChildUser_, prefs.privacy_guide.viewed.value)',
       },
 
       isManaged_: {
@@ -265,10 +253,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   private computeShowPrivacyReviewPromo_(): boolean {
-    // TODO(crbug/1215630): Only show on the first look at the privacy page.
     return this.pageVisibility.privacy !== false &&
         loadTimeData.getBoolean('privacyReviewEnabled') && !this.isManaged_ &&
-        !this.isChildUser_;
+        !this.isChildUser_ && this.prefs !== undefined &&
+        !this.getPref('privacy_guide.viewed').value;
   }
 
   private onIsManagedChanged_(isManaged: boolean) {

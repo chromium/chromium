@@ -11,7 +11,7 @@ import 'chrome://settings/lazy_load.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {pageVisibility, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, pageVisibility, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -219,11 +219,18 @@ suite('SettingsBasicPage', () => {
 
 suite('PrivacyReviewPromo', () => {
   let page: SettingsBasicPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(async function() {
     assertTrue(loadTimeData.getBoolean('privacyReviewEnabled'));
     document.body.innerHTML = '';
     page = document.createElement('settings-basic-page');
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     page.scroller = document.body;
 
@@ -300,6 +307,26 @@ suite('PrivacyReviewPromo', () => {
     // The user is no longer managed. This doesn't show the promo.
     webUIListenerCallback('is-managed-changed', false);
     flush();
+    assertFalse(isChildVisible(page, '#privacyReviewPromo'));
+  });
+
+  test('privacyReviewPromoNoThanksTest', function() {
+    // Make sure the pref is set and that privacy guide has never been seen
+    // before.
+    page.prefs.privacy_guide.viewed.value = false;
+    flush();
+
+    assertTrue(isChildVisible(page, '#privacyReviewPromo'));
+
+    // Click the no thanks button.
+    const privacyReviewPromo =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyReviewPromo')!;
+    privacyReviewPromo.shadowRoot!
+        .querySelector<HTMLElement>('#noThanksButton')!.click();
+    flush();
+
+    // The privacy guide should be marked as seen and the promo no longer
+    // visible.
     assertFalse(isChildVisible(page, '#privacyReviewPromo'));
   });
 });

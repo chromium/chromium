@@ -32,10 +32,13 @@
     </div>
     <cr-button class="action-button" id="startButton" role="button"
         aria-labelledby="title" aria-describedby="bodyText"
-        on-click="onPrivacyReviewClick_">
+        on-click="onPrivacyReviewStartClick_">
       $i18n{privacyReviewPromoStartButton}
     </cr-button>
-    <cr-button role="button">$i18n{noThanks}</cr-button>
+    <cr-button id="noThanksButton" role="button"
+        on-click="onNoThanksButtonClick_">
+      $i18n{noThanks}
+    </cr-button>
   </div>
   <picture>
     <source class="banner"
