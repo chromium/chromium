@@ -108,6 +108,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
+// Lacros processes active.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        LaunchApp) {
   ExtensionTestMessageListener listener1("app_launched", false);
@@ -123,6 +126,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -172,6 +176,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
+// Lacros processes active.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        LaunchAppFromBackground) {
   ExtensionTestMessageListener listener1("success", false);
@@ -182,6 +189,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
       test_data_dir_.AppendASCII("management/launch_app_from_background")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
+#endif
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        SelfUninstall) {

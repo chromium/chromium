@@ -46,6 +46,7 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Find a browser other than |browser|.
 Browser* FindOtherBrowser(Browser* browser) {
   Browser* found = NULL;
@@ -56,6 +57,7 @@ Browser* FindOtherBrowser(Browser* browser) {
   }
   return found;
 }
+#endif
 
 }  // namespace
 
@@ -352,12 +354,16 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, NotInstallableWebApp) {
           kBackground, true /* from_webstore */);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
+// Lacros processes active.
 IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, InstallableWebApp) {
   static constexpr char kGoodWebAppURL[] =
       "/management/install_replacement_web_app/acceptable_web_app/index.html";
 
   RunInstallableWebAppTest(kManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class InstallReplacementWebAppWithLacrosWebAppsApiTest
@@ -395,6 +401,10 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppWithLacrosWebAppsApiTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
+// Lacros processes active.
+
 // Check that web app still installs and launches correctly when start_url does
 // not match replacement_web_app_url.
 IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
@@ -418,6 +428,7 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
 
   RunInstallableWebAppTest(kAppManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
+#endif
 
 // Tests actions on extensions when no management policy is in place.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
@@ -462,6 +473,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyProhibited) {
                                {.custom_arg = "runProhibitedTests"}));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
+// Lacros processes active.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   // Load an extension that calls launchApp() on any app that gets
   // installed.
@@ -558,6 +572,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   Browser* app_browser = FindOtherBrowser(browser());
   ASSERT_TRUE(app_browser->is_type_app());
 }
+#endif
 
 // Flaky on MacOS: crbug.com/915339
 #if BUILDFLAG(IS_MAC)
