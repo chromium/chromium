@@ -44,6 +44,8 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
                                 std::string* version,
                                 std::string* channel) override;
   base::FilePath GetReporterLogFilename() override;
+
+  bool GetShouldDumpLargerDumps() override;
 #endif
 
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;

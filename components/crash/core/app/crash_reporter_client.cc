@@ -78,12 +78,14 @@ bool CrashReporterClient::GetIsPerUserInstall() {
   return true;
 }
 
-bool CrashReporterClient::GetShouldDumpLargerDumps() {
-  return false;
-}
-
 int CrashReporterClient::GetResultCodeRespawnFailed() {
   return 0;
+}
+#endif
+
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC))
+bool CrashReporterClient::GetShouldDumpLargerDumps() {
+  return false;
 }
 #endif
 

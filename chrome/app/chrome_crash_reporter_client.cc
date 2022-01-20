@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include "components/upload_list/crash_upload_list.h"
+#include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
 #endif
 
@@ -39,8 +40,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "chrome/common/channel_info.h"
-#include "components/version_info/version_info.h"
 #endif
 
 void ChromeCrashReporterClient::Create() {
@@ -135,7 +134,11 @@ void ChromeCrashReporterClient::GetProductNameAndVersion(
 base::FilePath ChromeCrashReporterClient::GetReporterLogFilename() {
   return base::FilePath(CrashUploadList::kReporterLogFilename);
 }
-#endif
+
+bool ChromeCrashReporterClient::GetShouldDumpLargerDumps() {
+  return chrome::GetChannel() != version_info::Channel::STABLE;
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 bool ChromeCrashReporterClient::GetCrashDumpLocation(
     base::FilePath* crash_dir) {

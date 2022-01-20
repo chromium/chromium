@@ -25,6 +25,7 @@
 #include "content/public/common/content_descriptors.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
+#include "third_party/crashpad/crashpad/client/crashpad_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/build_time.h"
@@ -110,8 +111,8 @@ bool PlatformCrashpadInitialization(
   }
 #endif
 
+  CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
   if (initial_client) {
-    CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
     base::FilePath metrics_path;
     crash_reporter_client->GetCrashDumpLocation(database_path);
     crash_reporter_client->GetCrashMetricsLocation(&metrics_path);
@@ -205,28 +206,35 @@ bool PlatformCrashpadInitialization(
                             annotations, arguments, false, false);
     DCHECK(result);
 
-    pthread_atfork(nullptr, nullptr, SetPtracerAtFork);
-    return true;
+  } else {
+    int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
+
+    pid_t pid = 0;
+    if (!sandbox::NamespaceSandbox::InNewUserNamespace()) {
+      std::string pid_string =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kCrashpadHandlerPid);
+      bool parsed = base::StringToInt(pid_string, &pid);
+      DCHECK(parsed);
+    }
+
+    // SIGSYS handling is reserved for the sandbox.
+    client.SetUnhandledSignals({SIGSYS});
+
+    client.SetHandlerSocket(crashpad::ScopedFileHandle(fd), pid);
+
+    *database_path = base::FilePath();
   }
-
-  int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
-
-  pid_t pid = 0;
-  if (!sandbox::NamespaceSandbox::InNewUserNamespace()) {
-    std::string pid_string =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kCrashpadHandlerPid);
-    bool parsed = base::StringToInt(pid_string, &pid);
-    DCHECK(parsed);
-  }
-
-  // SIGSYS handling is reserved for the sandbox.
-  client.SetUnhandledSignals({SIGSYS});
-
-  client.SetHandlerSocket(crashpad::ScopedFileHandle(fd), pid);
 
   pthread_atfork(nullptr, nullptr, SetPtracerAtFork);
-  *database_path = base::FilePath();
+
+  if (crash_reporter_client->GetShouldDumpLargerDumps()) {
+    const uint32_t kIndirectMemoryLimit = 4 * 1024 * 1024;
+    crashpad::CrashpadInfo::GetCrashpadInfo()
+        ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
+                                                  kIndirectMemoryLimit);
+  }
+
   return true;
 }
 

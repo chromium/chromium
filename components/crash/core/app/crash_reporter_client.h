@@ -79,12 +79,14 @@ class CrashReporterClient {
   // Returns true if the running binary is a per-user installation.
   virtual bool GetIsPerUserInstall();
 
-  // Returns true if larger crash dumps should be dumped.
-  virtual bool GetShouldDumpLargerDumps();
-
   // Returns the result code to return when breakpad failed to respawn a
   // crashed process.
   virtual int GetResultCodeRespawnFailed();
+#endif
+
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC))
+  // Returns true if larger crash dumps should be dumped.
+  virtual bool GetShouldDumpLargerDumps();
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
