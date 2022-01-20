@@ -16,6 +16,8 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <linux/futex.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <sys/mman.h>
@@ -25,6 +27,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+#include <atomic>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -137,10 +141,14 @@ class SignalHandler {
   // handler has been installed.
   static SignalHandler* Get() { return handler_; }
 
-  // Disables any installed Crashpad signal handler for the calling thread. If a
-  // crash signal is received, any previously installed (non-Crashpad) signal
-  // handler will be restored and the signal reraised.
-  static void DisableForThread() { disabled_for_thread_ = true; }
+  // Disables any installed Crashpad signal handler. If a crash signal is
+  // received, any previously installed (non-Crashpad) signal handler will be
+  // restored and the signal reraised.
+  static void Disable() {
+    if (!handler_->disabled_.test_and_set()) {
+      handler_->WakeThreads();
+    }
+  }
 
   void SetFirstChanceHandler(CrashpadClient::FirstChanceHandler handler) {
     first_chance_handler_ = handler;
@@ -148,17 +156,7 @@ class SignalHandler {
 
   // The base implementation for all signal handlers, suitable for calling
   // directly to simulate signal delivery.
-  bool HandleCrash(int signo, siginfo_t* siginfo, void* context) {
-    if (disabled_for_thread_) {
-      return false;
-    }
-
-    if (first_chance_handler_ &&
-        first_chance_handler_(
-            signo, siginfo, static_cast<ucontext_t*>(context))) {
-      return true;
-    }
-
+  void HandleCrash(int signo, siginfo_t* siginfo, void* context) {
     exception_information_.siginfo_address =
         FromPointerCast<decltype(exception_information_.siginfo_address)>(
             siginfo);
@@ -169,7 +167,6 @@ class SignalHandler {
 
     ScopedPrSetDumpable set_dumpable(false);
     HandleCrashImpl();
-    return false;
   }
 
  protected:
@@ -194,27 +191,73 @@ class SignalHandler {
   virtual void HandleCrashImpl() = 0;
 
  private:
+  static constexpr int32_t kDumpNotDone = 0;
+  static constexpr int32_t kDumpDone = 1;
+
   // The signal handler installed at OS-level.
   static void HandleOrReraiseSignal(int signo,
                                     siginfo_t* siginfo,
                                     void* context) {
-    if (handler_->HandleCrash(signo, siginfo, context)) {
+    if (handler_->first_chance_handler_ &&
+        handler_->first_chance_handler_(
+            signo, siginfo, static_cast<ucontext_t*>(context))) {
       return;
     }
+
+    // Only handle the first fatal signal observed. If another thread receives a
+    // crash signal, it waits for the first dump to complete instead of
+    // requesting another.
+    if (!handler_->disabled_.test_and_set()) {
+      handler_->HandleCrash(signo, siginfo, context);
+      handler_->WakeThreads();
+    } else {
+      // Processes on Android normally have several chained signal handlers that
+      // co-operate to report crashes. e.g. WebView will have this signal
+      // handler installed, the app embedding WebView may have a signal handler
+      // installed, and Bionic will have a signal handler. Each signal handler
+      // runs in succession, possibly managed by libsigchain. This wait is
+      // intended to avoid ill-effects from multiple signal handlers from
+      // different layers (possibly all trying to use ptrace()) from running
+      // simultaneously. It does not block forever so that in most conditions,
+      // those signal handlers will still have a chance to run and ensures
+      // process termination in case the first crashing thread crashes again in
+      // its signal handler. Though less typical, this situation also occurs on
+      // other Linuxes, e.g. to produce in-process stack traces for debug
+      // builds.
+      handler_->WaitForDumpDone();
+    }
+
     Signals::RestoreHandlerAndReraiseSignalOnReturn(
         siginfo, handler_->old_actions_.ActionForSignal(signo));
+  }
+
+  void WaitForDumpDone() {
+    kernel_timespec timeout;
+    timeout.tv_sec = 5;
+    timeout.tv_nsec = 0;
+    sys_futex(&dump_done_futex_,
+              FUTEX_WAIT_PRIVATE,
+              kDumpNotDone,
+              &timeout,
+              nullptr,
+              0);
+  }
+
+  void WakeThreads() {
+    dump_done_futex_ = kDumpDone;
+    sys_futex(
+        &dump_done_futex_, FUTEX_WAKE_PRIVATE, INT_MAX, nullptr, nullptr, 0);
   }
 
   Signals::OldActions old_actions_ = {};
   ExceptionInformation exception_information_ = {};
   CrashpadClient::FirstChanceHandler first_chance_handler_ = nullptr;
+  int32_t dump_done_futex_ = kDumpNotDone;
+  std::atomic_flag disabled_ = ATOMIC_FLAG_INIT;
 
   static SignalHandler* handler_;
-
-  static thread_local bool disabled_for_thread_;
 };
 SignalHandler* SignalHandler::handler_ = nullptr;
-thread_local bool SignalHandler::disabled_for_thread_ = false;
 
 // Launches a single use handler to snapshot this process.
 class LaunchAtCrashHandler : public SignalHandler {
@@ -668,7 +711,7 @@ void CrashpadClient::DumpWithoutCrash(NativeCPUContext* context) {
 
 // static
 void CrashpadClient::CrashWithoutDump(const std::string& message) {
-  SignalHandler::DisableForThread();
+  SignalHandler::Disable();
   LOG(FATAL) << message;
 }
 

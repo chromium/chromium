@@ -17,8 +17,6 @@
 
 #include <time.h>
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "base/scoped_generic.h"
 #include "build/build_config.h"

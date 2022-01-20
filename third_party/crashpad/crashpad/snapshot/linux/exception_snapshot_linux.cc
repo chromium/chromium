@@ -24,6 +24,7 @@
 #include "util/linux/traits.h"
 #include "util/misc/reinterpret_bytes.h"
 #include "util/numeric/safe_assignment.h"
+#include "util/posix/signals.h"
 
 namespace crashpad {
 namespace internal {
@@ -443,6 +444,9 @@ bool ExceptionSnapshotLinux::ReadSiginfo(ProcessReaderLinux* reader,
       PUSH_CODE(siginfo.pid);
       PUSH_CODE(siginfo.uid);
       PUSH_CODE(siginfo.sigval.sigval);
+      break;
+
+    case Signals::kSimulatedSigno:
       break;
 
     default:

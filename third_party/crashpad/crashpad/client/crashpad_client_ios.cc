@@ -106,13 +106,22 @@ class CrashHandler : public Thread,
 
   void DumpWithoutCrash(NativeCPUContext* context, bool process_dump) {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-    internal::InProcessHandler::ScopedAlternateWriter scoper(
-        &in_process_handler_);
-    if (scoper.Open()) {
-      DumpWithContext(context);
-      if (process_dump) {
-        in_process_handler_.ProcessIntermediateDump(scoper.path());
+    base::FilePath path;
+    {
+      // Ensure ScopedAlternateWriter's destructor is invoked before processing
+      // the dump, or else any crashes handled during dump processing cannot be
+      // written.
+      internal::InProcessHandler::ScopedAlternateWriter scoper(
+          &in_process_handler_);
+      if (!scoper.Open()) {
+        LOG(ERROR) << "Could not open writer, ignoring dump request.";
+        return;
       }
+      DumpWithContext(context);
+      path = scoper.path();
+    }
+    if (process_dump) {
+      in_process_handler_.ProcessIntermediateDump(path);
     }
   }
 

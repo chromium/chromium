@@ -24,6 +24,7 @@
 #include "minidump/minidump_file_writer.h"
 #include "util/file/directory_reader.h"
 #include "util/file/filesystem.h"
+#include "util/ios/raw_logging.h"
 
 namespace {
 
@@ -116,6 +117,10 @@ void InProcessHandler::DumpExceptionFromSignal(
     siginfo_t* siginfo,
     ucontext_t* context) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  if (!writer_) {
+    CRASHPAD_RAW_LOG("Cannot DumpExceptionFromSignal without writer_");
+    return;
+  }
   {
     ScopedReport report(writer_.get(), system_data, annotations_);
     InProcessIntermediateDumpHandler::WriteExceptionFromSignal(
@@ -135,6 +140,10 @@ void InProcessHandler::DumpExceptionFromMachException(
     ConstThreadState old_state,
     mach_msg_type_number_t old_state_count) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  if (!writer_) {
+    CRASHPAD_RAW_LOG("Cannot DumpExceptionFromMachException without writer_");
+    return;
+  }
   {
     ScopedReport report(writer_.get(), system_data, annotations_);
     InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
@@ -155,6 +164,12 @@ void InProcessHandler::DumpExceptionFromNSExceptionFrames(
     const IOSSystemDataCollector& system_data,
     const uint64_t* frames,
     const size_t num_frames) {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  if (!writer_) {
+    CRASHPAD_RAW_LOG(
+        "Cannot DumpExceptionFromNSExceptionFrames without writer_");
+    return;
+  }
   {
     ScopedReport report(
         writer_.get(), system_data, annotations_, frames, num_frames);
@@ -318,6 +333,7 @@ InProcessHandler::ScopedReport::ScopedReport(
       frames_(frames),
       num_frames_(num_frames),
       rootMap_(writer) {
+  DCHECK(writer);
   InProcessIntermediateDumpHandler::WriteHeader(writer);
   InProcessIntermediateDumpHandler::WriteProcessInfo(writer, annotations);
   InProcessIntermediateDumpHandler::WriteSystemInfo(writer, system_data);

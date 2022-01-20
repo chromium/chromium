@@ -15,6 +15,7 @@
 #include "client/crashpad_client.h"
 
 #include <dlfcn.h>
+#include <setjmp.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/syscall.h>
@@ -107,10 +108,6 @@ class StartHandlerForSelfTest
  private:
   StartHandlerForSelfTestOptions options_;
 };
-
-bool HandleCrashSuccessfully(int, siginfo_t*, ucontext_t*) {
-  return true;
-}
 
 bool InstallHandler(CrashpadClient* client,
                     bool start_at_crash,
@@ -222,13 +219,24 @@ int RecurseInfinitely(int* ptr) {
 }
 #pragma clang diagnostic pop
 
+sigjmp_buf do_crash_sigjmp_env;
+
+bool HandleCrashSuccessfully(int, siginfo_t*, ucontext_t*) {
+  siglongjmp(do_crash_sigjmp_env, 1);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code-return"
+  return true;
+#pragma clang diagnostic pop
+}
+
 void DoCrash(const StartHandlerForSelfTestOptions& options,
              CrashpadClient* client) {
+  if (sigsetjmp(do_crash_sigjmp_env, 1) != 0) {
+    return;
+  }
+
   switch (options.crash_type) {
     case CrashType::kSimulated:
-      if (options.set_first_chance_handler) {
-        client->SetFirstChanceExceptionHandler(HandleCrashSuccessfully);
-      }
       CRASHPAD_SIMULATE_CRASH();
       break;
 
@@ -364,6 +372,10 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
     return EXIT_FAILURE;
   }
 
+  if (options.set_first_chance_handler) {
+    client.SetFirstChanceExceptionHandler(HandleCrashSuccessfully);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (android_set_abort_message) {
     android_set_abort_message(kTestAbortMessage);
@@ -386,17 +398,19 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
   StartHandlerForSelfInChildTest(const StartHandlerForSelfTestOptions& options)
       : MultiprocessExec(), options_(options) {
     SetChildTestMainFunction("StartHandlerForSelfTestChild");
-    switch (options.crash_type) {
-      case CrashType::kSimulated:
-        // kTerminationNormal, EXIT_SUCCESS
-        break;
-      case CrashType::kBuiltinTrap:
-        SetExpectedChildTerminationBuiltinTrap();
-        break;
-      case CrashType::kInfiniteRecursion:
-        SetExpectedChildTermination(TerminationReason::kTerminationSignal,
-                                    SIGSEGV);
-        break;
+    if (!options.set_first_chance_handler) {
+      switch (options.crash_type) {
+        case CrashType::kSimulated:
+          // kTerminationNormal, EXIT_SUCCESS
+          break;
+        case CrashType::kBuiltinTrap:
+          SetExpectedChildTerminationBuiltinTrap();
+          break;
+        case CrashType::kInfiniteRecursion:
+          SetExpectedChildTermination(TerminationReason::kTerminationSignal,
+                                      SIGSEGV);
+          break;
+      }
     }
   }
 
@@ -447,9 +461,12 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
     reports.clear();
     ASSERT_EQ(database->GetPendingReports(&reports),
               CrashReportDatabase::kNoError);
-    ASSERT_EQ(reports.size(), options_.set_first_chance_handler ? 0u : 1u);
 
-    if (options_.set_first_chance_handler) {
+    bool report_expected = !options_.set_first_chance_handler ||
+                           options_.crash_type == CrashType::kSimulated;
+    ASSERT_EQ(reports.size(), report_expected ? 1u : 0u);
+
+    if (!report_expected) {
       return;
     }
 
@@ -463,11 +480,6 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
 };
 
 TEST_P(StartHandlerForSelfTest, StartHandlerInChild) {
-  if (Options().set_first_chance_handler &&
-      Options().crash_type != CrashType::kSimulated) {
-    // TODO(jperaza): test first chance handlers with real crashes.
-    return;
-  }
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(UNDEFINED_SANITIZER)
   if (Options().crash_type == CrashType::kInfiniteRecursion) {

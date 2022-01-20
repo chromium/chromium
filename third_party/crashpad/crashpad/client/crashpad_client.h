@@ -421,7 +421,7 @@ class CrashpadClient {
   //!     CaptureContext() or similar.
   static void DumpWithoutCrash(NativeCPUContext* context);
 
-  //! \brief Disables any installed crash handler, including any
+  //! \brief Disables any installed crash handler, not including any
   //!     FirstChanceHandler and crashes the current process.
   //!
   //! \param[in] message A message to be logged before crashing.
