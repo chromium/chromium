@@ -442,19 +442,21 @@ class EncryptedMediaSupportedTypesExternalClearKeyTest
   EncryptedMediaSupportedTypesExternalClearKeyTest& operator=(
       const EncryptedMediaSupportedTypesExternalClearKeyTest&) = delete;
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
  protected:
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   EncryptedMediaSupportedTypesExternalClearKeyTest() {
     enabled_features_.push_back(media::kExternalClearKeyForTesting);
   }
-
-  ~EncryptedMediaSupportedTypesExternalClearKeyTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);
     RegisterClearKeyCdm(command_line);
   }
+#else
+  EncryptedMediaSupportedTypesExternalClearKeyTest() = default;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+  ~EncryptedMediaSupportedTypesExternalClearKeyTest() override = default;
 };
 
 // By default, the External Clear Key (ECK) key system is not supported even if
