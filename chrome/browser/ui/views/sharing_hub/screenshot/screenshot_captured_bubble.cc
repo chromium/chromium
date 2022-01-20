@@ -119,7 +119,8 @@ void ScreenshotCapturedBubble::Init() {
                           .SetBackground(views::CreateRoundedRectBackground(
                               SK_ColorWHITE, border_radius))
                           .SetImage(image_.ToImageSkia())
-                          .SetVisible(true)));
+                          .SetVisible(true)
+                          .CopyAddressTo(&image_view_)));
   auto edit_button =
       views::Builder<views::MdTextButton>()
           .SetCallback(

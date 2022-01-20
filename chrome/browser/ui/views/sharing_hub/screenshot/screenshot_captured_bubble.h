@@ -70,7 +70,7 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   base::OnceCallback<void(NavigateParams*)> edit_callback_;
 
   // Pointers to view widgets; weak.
-  raw_ptr<views::ImageView> image_view_ = nullptr;
+  views::ImageView* image_view_ = nullptr;
   views::MdTextButton* download_button_ = nullptr;
   views::LabelButton* edit_button_ = nullptr;
 };
