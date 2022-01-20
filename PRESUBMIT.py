@@ -1067,32 +1067,6 @@ _KNOWN_TEST_DATA_AND_INVALID_JSON_FILE_PATTERNS = [
     r'^third_party[\\/]blink[\\/]web_tests[\\/]external[\\/]wpt[\\/]',
 ]
 
-
-_VALID_OS_MACROS = (
-    # Please keep sorted.
-    'OS_AIX',
-    'OS_ANDROID',
-    'OS_APPLE',
-    'OS_ASMJS',
-    'OS_BSD',
-    'OS_CAT',       # For testing.
-    'OS_CHROMEOS',
-    'OS_CYGWIN',    # third_party code.
-    'OS_FREEBSD',
-    'OS_FUCHSIA',
-    'OS_IOS',
-    'OS_LINUX',
-    'OS_MAC',
-    'OS_NACL',
-    'OS_NETBSD',
-    'OS_OPENBSD',
-    'OS_POSIX',
-    'OS_QNX',
-    'OS_SOLARIS',
-    'OS_WIN',
-)
-
-
 # These are not checked on the public chromium-presubmit trybot.
 # Add files here that rely on .py files that exists only for target_os="android"
 # checkouts.
@@ -4453,8 +4427,8 @@ def CheckPatchFiles(input_api, output_api):
 
 def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
   # Excludes OS_CHROMEOS, which is not defined in build_config.h.
-  macro_re = input_api.re.compile(r'^\s*#(el)?if.*\bdefined\(((OS_(?!CHROMEOS)|'
-                                  'COMPILER_|ARCH_CPU_|WCHAR_T_IS_)[^)]*)')
+  macro_re = input_api.re.compile(
+      r'^\s*#(el)?if.*\bdefined\(((COMPILER_|ARCH_CPU_|WCHAR_T_IS_)[^)]*)')
   include_re = input_api.re.compile(
       r'^#include\s+"build/build_config.h"', input_api.re.MULTILINE)
   extension_re = input_api.re.compile(r'\.[a-z]+$')
@@ -4542,55 +4516,33 @@ def CheckForSuperfluousStlIncludesInHeaders(input_api, output_api):
   return []
 
 
-def _DidYouMeanOSMacro(bad_macro):
-  try:
-    return {'A': 'OS_ANDROID',
-            'B': 'OS_BSD',
-            'C': 'OS_CHROMEOS',
-            'F': 'OS_FREEBSD',
-            'I': 'OS_IOS',
-            'L': 'OS_LINUX',
-            'M': 'OS_MAC',
-            'N': 'OS_NACL',
-            'O': 'OS_OPENBSD',
-            'P': 'OS_POSIX',
-            'S': 'OS_SOLARIS',
-            'W': 'OS_WIN'}[bad_macro[3].upper()]
-  except KeyError:
-    return ''
-
-
-def _CheckForInvalidOSMacrosInFile(input_api, f):
+def _CheckForDeprecatedOSMacrosInFile(input_api, f):
   """Check for sensible looking, totally invalid OS macros."""
   preprocessor_statement = input_api.re.compile(r'^\s*#')
-  os_macro = input_api.re.compile(r'defined\((OS_[^)]+)\)')
+  os_macro = input_api.re.compile(r'defined\(OS_([^)]+)\)')
   results = []
   for lnum, line in f.ChangedContents():
     if preprocessor_statement.search(line):
       for match in os_macro.finditer(line):
-        if not match.group(1) in _VALID_OS_MACROS:
-          good = _DidYouMeanOSMacro(match.group(1))
-          did_you_mean = ' (did you mean %s?)' % good if good else ''
-          results.append('    %s:%d %s%s' % (f.LocalPath(),
-                                             lnum,
-                                             match.group(1),
-                                             did_you_mean))
+        results.append('  %s:%d: %s' % (f.LocalPath(), lnum, 'defined(OS_' +
+                       match.group(1) + ') -> BUILDFLAG(IS_' + match.group(1) +
+                       ')'))
   return results
 
 
-def CheckForInvalidOSMacros(input_api, output_api):
+def CheckForDeprecatedOSMacros(input_api, output_api):
   """Check all affected files for invalid OS macros."""
   bad_macros = []
   for f in input_api.AffectedSourceFiles(None):
     if not f.LocalPath().endswith(('.py', '.js', '.html', '.css', '.md')):
-      bad_macros.extend(_CheckForInvalidOSMacrosInFile(input_api, f))
+      bad_macros.extend(_CheckForDeprecatedOSMacrosInFile(input_api, f))
 
   if not bad_macros:
     return []
 
   return [output_api.PresubmitError(
-      'Possibly invalid OS macro[s] found. Please fix your code\n'
-      'or add your macro to src/PRESUBMIT.py.', bad_macros)]
+      'OS macros have been deprecated. Please use BUILDFLAGs instead (still '
+      'defined in build_config.h):', bad_macros)]
 
 
 def _CheckForInvalidIfDefinedMacrosInFile(input_api, f):
