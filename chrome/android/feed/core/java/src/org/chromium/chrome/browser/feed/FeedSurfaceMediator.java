@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SigninPromoController;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
@@ -95,6 +96,7 @@ public class FeedSurfaceMediator
                         ViewVisibility.VISIBLE);
             }
             if (!mSettingUpStreams) {
+                logSwitchedFeeds(newStream);
                 bindStream(newStream);
             }
         }
@@ -1081,6 +1083,21 @@ public class FeedSurfaceMediator
         FeedLaunchReliabilityLogger logger = mCoordinator.getLaunchReliabilityLogger();
         if (!logger.isLaunchInProgress()) return;
         logger.logLaunchFinished(System.nanoTime(), result.getNumber());
+    }
+
+    private @StreamType int getStreamType(Stream stream) {
+        switch (stream.getSectionType()) {
+            case SectionType.FOR_YOU_FEED:
+                return StreamType.FOR_YOU;
+            case SectionType.WEB_FEED:
+                return StreamType.WEB_FEED;
+        }
+        return StreamType.UNSPECIFIED;
+    }
+
+    private void logSwitchedFeeds(Stream switchedToStream) {
+        mCoordinator.getLaunchReliabilityLogger().logSwitchedFeeds(
+                getStreamType(switchedToStream), System.nanoTime());
     }
 
     private boolean isSuggestionsVisible() {

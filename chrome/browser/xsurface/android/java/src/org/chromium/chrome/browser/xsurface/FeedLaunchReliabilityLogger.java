@@ -83,6 +83,13 @@ public interface FeedLaunchReliabilityLogger {
     default void logFeedLaunchOtherStart(long timestamp) {}
 
     /**
+     * Log when the user switches to another feed tab.
+     * @param toStreamType New feed type.
+     * @param timestamp Event time.
+     */
+    default void logSwitchedFeeds(@StreamType int toStreamType, long timestamp) {}
+
+    /**
      * Log when cached feed content is about to be read.
      * @param timestamp Event time.
      */
