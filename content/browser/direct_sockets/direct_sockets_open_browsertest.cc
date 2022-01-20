@@ -490,17 +490,17 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
-// TODO(https://crbug.com/1282060): This test is flaky.
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       DISABLED_OpenTcp_TransientActivation) {
+                       OpenTcp_TransientActivation) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
   MockNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
-  const std::string script =
-      "openTcp({remoteAddress: '::1', remotePort: 993});\
-       openTcp({remoteAddress: '::1', remotePort: 993})";
+  // The first call consumes the transient activation. The second fails.
+  const std::string open =
+      "openTcp({remoteAddress: '127.0.0.1', remotePort: 993})";
+  const std::string script = open + ".then(() => " + open + ")";
 
   EXPECT_EQ(
       "openTcp failed: NotAllowedError: Failed to execute 'openTCPSocket' on "
