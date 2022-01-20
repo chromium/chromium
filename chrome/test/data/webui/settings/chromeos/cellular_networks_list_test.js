@@ -331,7 +331,7 @@ suite('CellularNetworksList', function() {
       });
 
   test(
-      'Fire show toast event if download profile clicked without' +
+      'Fire show toast event if download profile clicked without ' +
           'non-cellular connection.',
       async () => {
         eSimManagerRemote.addEuiccForTest(1);
@@ -358,6 +358,48 @@ suite('CellularNetworksList', function() {
         assertEquals(
             showErrorToastEvent.detail,
             cellularNetworkList.i18n('eSimNoConnectionErrorToast'));
+      });
+
+  test(
+      'Hide download eSIM link when installing new profile or restrict ' +
+          'cellular network',
+      async () => {
+        eSimManagerRemote.addEuiccForTest(0);
+        init();
+        cellularNetworkList.deviceState = {
+          type: mojom.NetworkType.kCellular,
+          deviceState: mojom.DeviceStateType.kEnabled,
+          inhibitReason: mojom.InhibitReason.kNotInhibited
+        };
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: true,
+        };
+        addESimSlot();
+        await flushAsync();
+        const esimLocalizedLink = cellularNetworkList.$$('#eSimNoNetworkFound')
+                                      .querySelector('localized-link');
+        const noESimFoundMessage =
+            cellularNetworkList.$$('#eSimNoNetworkFound').querySelector('div');
+        assertTrue(!!esimLocalizedLink);
+        assertTrue(!!noESimFoundMessage);
+        assertTrue(esimLocalizedLink.hidden);
+        assertFalse(noESimFoundMessage.hidden);
+
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: false,
+        };
+        await flushAsync();
+        assertFalse(esimLocalizedLink.hidden);
+        assertTrue(noESimFoundMessage.hidden);
+
+        cellularNetworkList.cellularDeviceState = {
+          type: mojom.NetworkType.kCellular,
+          deviceState: mojom.DeviceStateType.kEnabled,
+          inhibitReason: mojom.InhibitReason.kInstallingProfile
+        };
+        addESimSlot();
+        await flushAsync();
+        assertFalse(!!cellularNetworkList.$$('#eSimNoNetworkFound'));
       });
 
   test('Fire show cellular setup event on add cellular clicked', async () => {
@@ -452,7 +494,7 @@ suite('CellularNetworksList', function() {
     cellularNetworkList.cellularDeviceState = {
       type: mojom.NetworkType.kCellular,
       deviceState: mojom.DeviceStateType.kEnabled,
-      inhibitReason: mojom.InhibitReason.kInstallingProfile
+      inhibitReason: mojom.InhibitReason.kRefreshingProfileList,
     };
     addESimSlot();
     await flushAsync();

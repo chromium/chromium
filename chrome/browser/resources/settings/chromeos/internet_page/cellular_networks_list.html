@@ -144,14 +144,23 @@
       </network-list>
     </div>
   </template>
-  <template is="dom-if" if="[[!shouldShowNetworkSublist_(eSimNetworks_,
+  <template is="dom-if" if="[[shouldShowNoESimMessageOrDownloadLink_(
+      cellularDeviceState.inhibitReason, eSimNetworks_,
       eSimPendingProfileItems_)]]" restamp>
     <div id="eSimNoNetworkFound"
-        class="cellular-network-content cellular-not-setup">
+        class="cellular-network-content cellular-not-setup flex">
+      <div hidden="[[!shouldShowNoESimSubtextMessage_(
+               globalPolicy.allowOnlyPolicyCellularNetworks,
+               isESimPolicyEnabled_)]]">
+        $i18n{eSimNetworkNotSetup}
+      </div>
       <localized-link
           link-disabled = "[[isDeviceInhibited_]]"
           on-link-clicked="onEsimLearnMoreClicked_"
-          localized-string="$i18n{eSimNetworkNotSetup}">
+          localized-string="$i18n{eSimNetworkNotSetupWithDownloadLink}"
+          hidden="[[shouldShowNoESimSubtextMessage_(
+              globalPolicy.allowOnlyPolicyCellularNetworks,
+              isESimPolicyEnabled_)]]">
       </localized-link>
     </div>
   </template>
