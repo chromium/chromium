@@ -429,7 +429,7 @@ bool DialogsAreSuppressed() {
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp) {
   base::Time::Exploded time_deets;
-  timestamp.LocalExplode(&time_deets);
+  timestamp.UTCExplode(&time_deets);
   std::string suffix = base::StringPrintf("_%02d%02d%02d-%02d%02d%02d",
                                           time_deets.year,
                                           time_deets.month,
