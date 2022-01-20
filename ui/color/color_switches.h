@@ -10,7 +10,7 @@
 
 namespace switches {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 COMPONENT_EXPORT(COLOR_SWITCHES)
 extern const char kPervasiveSystemAccentColor[];
 #endif

@@ -8,7 +8,7 @@
 
 namespace switches {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Use the system accent color as the Chrome UI accent color.
 const char kPervasiveSystemAccentColor[] = "pervasive-system-accent-color";
 #endif

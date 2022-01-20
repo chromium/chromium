@@ -125,7 +125,7 @@ ColorTransform PickGoogleColor(ColorTransform color,
                                ColorTransform background_color,
                                float min_contrast = 0.0f);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 COMPONENT_EXPORT(COLOR)
 ColorTransform ApplySystemControlTintIfNeeded();
 #endif

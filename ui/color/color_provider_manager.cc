@@ -15,7 +15,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "ui/color/color_mixers.h"
 #endif
 
@@ -75,10 +75,10 @@ ColorProviderManager& ColorProviderManager::Get() {
   absl::optional<GlobalManager>& manager = GetGlobalManager();
   if (!manager.has_value()) {
     manager.emplace();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     manager.value().AppendColorProviderInitializer(
         base::BindRepeating(AddColorMixers));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   return manager.value();

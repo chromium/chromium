@@ -174,7 +174,7 @@
   E_CPONLY(kColorTreeNodeForegroundSelectedUnfocused) \
   E(kColorWindowBackground, NativeTheme::kColorId_WindowBackground)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define WIN_COLOR_IDS \
   /* Windows native colors */ \
   E(kColorNative3dDkShadow, COLOR_3DDKSHADOW) \
@@ -209,7 +209,7 @@
   E(kColorNativeWindowText, COLOR_WINDOWTEXT)
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define COLOR_IDS \
   CROSS_PLATFORM_COLOR_IDS \
   WIN_COLOR_IDS
