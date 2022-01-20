@@ -83,9 +83,10 @@ class BrowserImpl : public Browser {
   void RestoreStateIfNecessary(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_persistence_id,
-      const base::android::JavaParamRef<jbyteArray>& j_persistence_crypto_key,
-      const base::android::JavaParamRef<jbyteArray>&
-          j_minimal_persistence_state);
+      const base::android::JavaParamRef<jbyteArray>& j_persistence_crypto_key);
+  void RestoreMinimalState(JNIEnv* env,
+                           const base::android::JavaParamRef<jbyteArray>&
+                               j_minimal_persistence_state);
   void WebPreferencesChanged(JNIEnv* env);
   void OnFragmentStart(JNIEnv* env);
   void OnFragmentResume(JNIEnv* env);

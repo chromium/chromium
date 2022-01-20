@@ -4,9 +4,13 @@
 
 package org.chromium.weblayer.test;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.test.runner.lifecycle.ActivityLifecycleCallback;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -95,6 +99,71 @@ public class BrowserFragmentLifecycleTest {
         mActivityTestRule.recreateActivity();
 
         waitForTabToFinishRestore(getTab(), url);
+    }
+
+    /**
+     * Helper class used to ensure that during recreation the following are called:
+     * . TabListCallback#onTabAdded().
+     * . NavigationCallback#onNavigationStarted().
+     */
+    private static final class RecreateCallbackTracker {
+        private final ActivityLifecycleCallback mStateListener;
+        private boolean mGotCreate;
+        private boolean mGotOnTabAdded;
+        private boolean mGotOnNavigationStarted;
+
+        RecreateCallbackTracker(Browser browser) {
+            mStateListener = (Activity newActivity, Stage newStage) -> {
+                if (newStage == Stage.CREATED && !mGotCreate) {
+                    mGotCreate = true;
+                    Browser newBrowser = ((InstrumentationActivity) newActivity).getBrowser();
+                    Assert.assertTrue(newBrowser.getTabs().isEmpty());
+                    Assert.assertNotEquals(newBrowser, browser);
+                    newBrowser.registerTabListCallback(new TabListCallback() {
+                        @Override
+                        public void onTabAdded(@NonNull Tab tab) {
+                            mGotOnTabAdded = true;
+                            tab.getNavigationController().registerNavigationCallback(
+                                    new NavigationCallback() {
+                                        @Override
+                                        public void onNavigationStarted(
+                                                @NonNull Navigation navigation) {
+                                            mGotOnNavigationStarted = true;
+                                        }
+                                    });
+                        }
+                    });
+                    // This is needed to ensure the callback added above runs first. Without it the
+                    // tab is made active onTabAdded(), resulting in onNavigationStarted() never
+                    // being called (because the navigation starts from setActiveTab(), before the
+                    // callback is added).
+                    ((InstrumentationActivity) newActivity).reregisterTabListCallback();
+                }
+            };
+            ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(mStateListener);
+        }
+
+        public void runAssertsAfterRecreate() {
+            Assert.assertTrue(mGotCreate);
+            Assert.assertTrue(mGotOnTabAdded);
+            Assert.assertTrue(mGotOnNavigationStarted);
+            ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(mStateListener);
+        }
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(99)
+    public void restoreAfterRecreateCallsTabAndNavigationCallbacks() throws Throwable {
+        mActivityTestRule.launchShellWithUrl("about:blank");
+        String url = "data:text,foo";
+        mActivityTestRule.navigateAndWait(getTab(), url, false);
+        final RecreateCallbackTracker tracker = new RecreateCallbackTracker(getBrowser());
+
+        mActivityTestRule.recreateActivity();
+
+        waitForTabToFinishRestore(getTab(), url);
+        tracker.runAssertsAfterRecreate();
     }
 
     @Test
@@ -199,6 +268,24 @@ public class BrowserFragmentLifecycleTest {
         if (getSupportedMajorVersion() >= 88) {
             Assert.assertFalse(isRestoringPreviousState());
         }
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(99)
+    public void restoresPreviousSessionAndNotifiesCallbacks() throws Throwable {
+        Bundle extras = new Bundle();
+        extras.putString(InstrumentationActivity.EXTRA_PERSISTENCE_ID, "x");
+        final String url = mActivityTestRule.getTestDataURL("simple_page.html");
+        mActivityTestRule.launchShellWithUrl(url, extras);
+        final RecreateCallbackTracker tracker = new RecreateCallbackTracker(getBrowser());
+
+        mActivityTestRule.recreateActivity();
+
+        Tab tab = getTab();
+        Assert.assertNotNull(tab);
+        waitForTabToFinishRestore(tab, url);
+        tracker.runAssertsAfterRecreate();
     }
 
     @Test

@@ -360,8 +360,8 @@ std::vector<uint8_t> PersistMinimalState(BrowserImpl* browser,
   return builder.ToByteArray();
 }
 
-void RestoreMinimalState(BrowserImpl* browser,
-                         const std::vector<uint8_t>& value) {
+void RestoreMinimalStateForBrowser(BrowserImpl* browser,
+                                   const std::vector<uint8_t>& value) {
   MinimalRestorer restorer(value);
   RestoreBrowserState(browser, restorer.RestoreCommands());
 }

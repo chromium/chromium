@@ -369,6 +369,15 @@ public class InstrumentationActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Removes and adds back the TabListCallback. This is useful for tests that
+     * need to ensure their callback is run first.
+     */
+    public void reregisterTabListCallback() {
+        mBrowser.unregisterTabListCallback(mTabListCallback);
+        mBrowser.registerTabListCallback(mTabListCallback);
+    }
+
     private void setTabCallbacks(Tab tab) {
         tab.registerTabCallback(mRendererCrashListener);
 

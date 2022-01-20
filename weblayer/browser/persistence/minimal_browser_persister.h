@@ -26,8 +26,8 @@ std::vector<uint8_t> PersistMinimalState(BrowserImpl* browser,
 
 // Restores the state previously created via PersistMinimalState(). When
 // done this ensures |browser| has at least one tab.
-void RestoreMinimalState(BrowserImpl* browser,
-                         const std::vector<uint8_t>& value);
+void RestoreMinimalStateForBrowser(BrowserImpl* browser,
+                                   const std::vector<uint8_t>& value);
 
 }  // namespace weblayer
 

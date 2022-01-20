@@ -11,6 +11,7 @@
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "weblayer/browser/browser_impl.h"
+#include "weblayer/browser/persistence/minimal_browser_persister.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation.h"
@@ -49,14 +50,15 @@ class MinimalBrowserPersisterTest : public WebLayerBrowserTest {
   // Persists the current state, then recreates the browser. See
   // BrowserImpl::GetMinimalPersistenceState() for details on
   // |max_size_in_bytes|, 0 means use the default value.
-  void RecreateBrowserFromCurrentState(
+  void RecreateBrowserUsingMinimalState(
       int max_number_of_navigations_per_tab = 0,
       int max_size_in_bytes = 0) {
-    Browser::PersistenceInfo persistence_info;
-    persistence_info.minimal_state = browser_impl()->GetMinimalPersistenceState(
-        max_number_of_navigations_per_tab, max_size_in_bytes);
+    std::vector<uint8_t> minimal_state =
+        browser_impl()->GetMinimalPersistenceState(
+            max_number_of_navigations_per_tab, max_size_in_bytes);
     tab_ = nullptr;
-    browser_ = Browser::Create(GetProfile(), &persistence_info);
+    browser_ = Browser::Create(GetProfile(), nullptr);
+    RestoreMinimalStateForBrowser(browser_impl(), minimal_state);
     // There is always at least one tab created (even if restore fails).
     ASSERT_GE(browser_->GetTabs().size(), 1u);
     tab_ = static_cast<TabImpl*>(browser_->GetTabs()[0]);
@@ -74,7 +76,7 @@ class MinimalBrowserPersisterTest : public WebLayerBrowserTest {
 IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, SingleTab) {
   NavigateAndWaitForCompletion(url1(), tab_);
 
-  ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState());
+  ASSERT_NO_FATAL_FAILURE(RecreateBrowserUsingMinimalState());
 
   EXPECT_EQ(tab_, browser_->GetActiveTab());
   TestNavigationObserver observer(
@@ -94,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, TwoTabs) {
   // Shutdown the service and run the assertions twice to ensure we handle
   // correctly storing state of tabs that need to be reloaded.
   for (int i = 0; i < 2; ++i) {
-    ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState());
+    ASSERT_NO_FATAL_FAILURE(RecreateBrowserUsingMinimalState());
     tab2 = nullptr;
 
     ASSERT_EQ(2u, browser_->GetTabs().size()) << "iteration " << i;
@@ -115,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, PendingSkipped) {
 
   tab_->GetNavigationController()->Navigate(url2());
 
-  ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState());
+  ASSERT_NO_FATAL_FAILURE(RecreateBrowserUsingMinimalState());
 
   EXPECT_EQ(tab_, browser_->GetActiveTab());
   TestNavigationObserver observer(
@@ -130,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, TwoNavs) {
 
   NavigateAndWaitForCompletion(url2(), tab_);
 
-  ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState());
+  ASSERT_NO_FATAL_FAILURE(RecreateBrowserUsingMinimalState());
 
   TabImpl* restored_tab = tab_;
   EXPECT_EQ(restored_tab, browser_->GetActiveTab());
@@ -155,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, NavigationOverflow) {
   const GURL url4 = embedded_test_server()->GetURL("/simple_page4.html");
   NavigateAndWaitForCompletion(url4, tab_);
 
-  ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState(3));
+  ASSERT_NO_FATAL_FAILURE(RecreateBrowserUsingMinimalState(3));
 
   // As a max of 3 navigations was specified, only the last three navigations
   // should be restored.
@@ -186,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, MAYBE_Overflow) {
   url_string.replace(0, data.size(), data);
   NavigateAndWaitForCompletion(GURL(url_string), tab_);
 
-  ASSERT_NO_FATAL_FAILURE(RecreateBrowserFromCurrentState(0, 2048));
+  ASSERT_NO_FATAL_FAILURE(RecreateBrowserUsingMinimalState(0, 2048));
 
   TabImpl* restored_tab = tab_;
   EXPECT_EQ(restored_tab, browser_->GetActiveTab());

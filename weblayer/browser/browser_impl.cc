@@ -168,29 +168,34 @@ ScopedJavaLocalRef<jbyteArray> BrowserImpl::GetMinimalPersistenceState(
 void BrowserImpl::RestoreStateIfNecessary(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_persistence_id,
-    const JavaParamRef<jbyteArray>& j_persistence_crypto_key,
-    const JavaParamRef<jbyteArray>& j_minimal_persistence_state) {
-  Browser::PersistenceInfo persistence_info;
-  Browser::PersistenceInfo* persistence_info_ptr = nullptr;
+    const JavaParamRef<jbyteArray>& j_persistence_crypto_key) {
+  if (!j_persistence_id.obj())
+    return;
 
-  if (j_persistence_id.obj()) {
-    const std::string persistence_id =
-        base::android::ConvertJavaStringToUTF8(j_persistence_id);
-    if (!persistence_id.empty()) {
-      persistence_info.id = persistence_id;
-      if (j_persistence_crypto_key.obj()) {
-        base::android::JavaByteArrayToByteVector(
-            env, j_persistence_crypto_key, &(persistence_info.last_crypto_key));
-      }
-      persistence_info_ptr = &persistence_info;
-    }
-  } else if (j_minimal_persistence_state.obj()) {
-    base::android::JavaByteArrayToByteVector(env, j_minimal_persistence_state,
-                                             &(persistence_info.minimal_state));
-    persistence_info_ptr = &persistence_info;
+  Browser::PersistenceInfo persistence_info;
+  persistence_info.id =
+      base::android::ConvertJavaStringToUTF8(j_persistence_id);
+  if (persistence_info.id.empty())
+    return;
+
+  if (j_persistence_crypto_key.obj()) {
+    base::android::JavaByteArrayToByteVector(
+        env, j_persistence_crypto_key, &(persistence_info.last_crypto_key));
   }
-  if (persistence_info_ptr)
-    RestoreStateIfNecessary(*persistence_info_ptr);
+  RestoreStateIfNecessary(persistence_info);
+}
+
+void BrowserImpl::RestoreMinimalState(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jbyteArray>&
+        j_minimal_persistence_state) {
+  if (!j_minimal_persistence_state.obj())
+    return;
+
+  std::vector<uint8_t> minimal_state;
+  base::android::JavaByteArrayToByteVector(env, j_minimal_persistence_state,
+                                           &minimal_state);
+  RestoreMinimalStateForBrowser(this, minimal_state);
 }
 
 void BrowserImpl::WebPreferencesChanged(JNIEnv* env) {
@@ -390,8 +395,6 @@ void BrowserImpl::RestoreStateIfNecessary(
   if (!persistence_id_.empty()) {
     browser_persister_ = std::make_unique<BrowserPersister>(
         GetBrowserPersisterDataPath(), this, persistence_info.last_crypto_key);
-  } else if (!persistence_info.minimal_state.empty()) {
-    RestoreMinimalState(this, persistence_info.minimal_state);
   }
 }
 
