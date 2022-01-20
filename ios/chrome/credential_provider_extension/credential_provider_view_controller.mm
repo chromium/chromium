@@ -35,9 +35,7 @@
 
 namespace {
 UIColor* BackgroundColor() {
-  return IsPasswordCreationEnabled()
-             ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
-             : [UIColor colorNamed:kBackgroundColor];
+  return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 }
 
@@ -199,18 +197,13 @@ UIColor* BackgroundColor() {
         [[ArchivableCredentialStore alloc]
             initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
 
-    if (IsPasswordCreationEnabled()) {
-      NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
-      UserDefaultsCredentialStore* defaultsStore =
-          [[UserDefaultsCredentialStore alloc]
-              initWithUserDefaults:app_group::GetGroupUserDefaults()
-                               key:key];
-      _credentialStore = [[MultiStoreCredentialStore alloc]
-          initWithStores:@[ defaultsStore, archivableStore ]];
-
-    } else {
-      _credentialStore = archivableStore;
-    }
+    NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
+    UserDefaultsCredentialStore* defaultsStore =
+        [[UserDefaultsCredentialStore alloc]
+            initWithUserDefaults:app_group::GetGroupUserDefaults()
+                             key:key];
+    _credentialStore = [[MultiStoreCredentialStore alloc]
+        initWithStores:@[ defaultsStore, archivableStore ]];
   }
   return _credentialStore;
 }
@@ -339,8 +332,7 @@ UIColor* BackgroundColor() {
   // base::i18n::IsRTL(), which checks some values from the command line.
   // Initialize the command line for the process running this extension here
   // before that.
-  if (IsPasswordCreationEnabled() &&
-      !base::CommandLine::InitializedForCurrentProcess()) {
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
     base::CommandLine::Init(0, nullptr);
   }
   self.listCoordinator = [[CredentialListCoordinator alloc]

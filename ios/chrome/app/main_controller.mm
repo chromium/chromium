@@ -68,7 +68,6 @@
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #include "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
-#import "ios/chrome/browser/credential_provider/feature_flags.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/external_files/external_file_remover_factory.h"
 #import "ios/chrome/browser/external_files/external_file_remover_impl.h"
@@ -991,11 +990,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
-  NSNumber* passwordCreationValue = [NSNumber
-      numberWithBool:base::FeatureList::IsEnabled(kPasswordCreationEnabled)];
-  NSNumber* passwordCreationVersion =
-      [NSNumber numberWithInt:kPasswordCreationFeatureVersion];
-
   NSNumber* credentialProviderExtensionPromoValue =
       [NSNumber numberWithBool:base::FeatureList::IsEnabled(
                                    kCredentialProviderExtensionPromo)];
@@ -1016,10 +1010,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   //   }
   // }
   NSDictionary* fieldTrialValues = @{
-    base::SysUTF8ToNSString(kPasswordCreationEnabled.name) : @{
-      kFieldTrialValueKey : passwordCreationValue,
-      kFieldTrialVersionKey : passwordCreationVersion,
-    },
     base::SysUTF8ToNSString(kCredentialProviderExtensionPromo.name) : @{
       kFieldTrialValueKey : credentialProviderExtensionPromoValue,
       kFieldTrialVersionKey : credentialProviderExtensionPromoVersion,

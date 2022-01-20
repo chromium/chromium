@@ -7,9 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// Whether the entire password creation feature is enabled.
-BOOL IsPasswordCreationEnabled();
-
 // Whether password creation is enabled for this user by preference.
 BOOL IsPasswordCreationUserRestricted();
 

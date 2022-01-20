@@ -12,17 +12,6 @@
 #error "This file requires ARC support."
 #endif
 
-BOOL IsPasswordCreationEnabled() {
-  NSDictionary* allFeatures = [app_group::GetGroupUserDefaults()
-      objectForKey:app_group::kChromeExtensionFieldTrialPreference];
-  NSDictionary* featureData = allFeatures[@"PasswordCreationEnabled"];
-  if (!featureData || kPasswordCreationFeatureVersion !=
-                          [featureData[kFieldTrialVersionKey] intValue]) {
-    return NO;
-  }
-  return [featureData[kFieldTrialValueKey] boolValue];
-}
-
 BOOL IsPasswordCreationUserRestricted() {
   return [[app_group::GetGroupUserDefaults()
       objectForKey:

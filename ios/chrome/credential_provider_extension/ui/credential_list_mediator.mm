@@ -63,14 +63,8 @@
 }
 
 - (void)fetchCredentials {
-  if (IsPasswordCreationEnabled()) {
-    [self.consumer
-        setTopPrompt:PromptForServiceIdentifiers(self.serviceIdentifiers)];
-  } else {
-    NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
-    NSURL* promptURL = identifier ? [NSURL URLWithString:identifier] : nil;
-    [self.consumer setTopPrompt:promptURL.host];
-  }
+  [self.consumer
+      setTopPrompt:PromptForServiceIdentifiers(self.serviceIdentifiers)];
 
   dispatch_queue_t priorityQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
@@ -102,8 +96,7 @@
     self.suggestedCredentials = suggestions;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      BOOL canCreatePassword =
-          IsPasswordCreationEnabled() && IsPasswordCreationUserRestricted();
+      BOOL canCreatePassword = IsPasswordCreationUserRestricted();
       if (!canCreatePassword && !self.allCredentials.count) {
         [self.UIHandler showEmptyCredentials];
         return;
@@ -131,8 +124,8 @@
 }
 
 - (void)updateResultsWithFilter:(NSString*)filter {
-  BOOL showNewPasswordOption = !filter.length && IsPasswordCreationEnabled() &&
-                               IsPasswordCreationUserRestricted();
+  BOOL showNewPasswordOption =
+      !filter.length && IsPasswordCreationUserRestricted();
   if (!filter.length) {
     [self.consumer presentSuggestedPasswords:self.suggestedCredentials
                                 allPasswords:self.allCredentials
