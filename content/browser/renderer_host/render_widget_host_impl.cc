@@ -2810,12 +2810,21 @@ void RenderWidgetHostImpl::StartDragging(
   storage::FileSystemContext* file_system_context =
       GetProcess()->GetStoragePartition()->GetFileSystemContext();
   filtered_data.file_system_files.clear();
-  // TODO(https://crbug.com/1221308): determine whether StorageKey should be
-  // replaced with a non-first-party value
+
   for (const auto& file_system_file : drop_data.file_system_files) {
-    storage::FileSystemURL file_system_url = file_system_context->CrackURL(
-        file_system_file.url,
-        blink::StorageKey(url::Origin::Create(file_system_file.url)));
+    storage::FileSystemURL file_system_url =
+        file_system_context->CrackURLInFirstPartyContext(file_system_file.url);
+
+    // Sandboxed filesystem files should never be handled via this path, so
+    // skip any that are sent from the renderer. In all other cases, it should
+    // be safe to use the FileSystemURL returned from calling
+    // CrackURLInFirstPartyContext as long as CanReadFileSystemFile only
+    // performs checks on the origin and doesn't use more of the StorageKey.
+    if (file_system_url.type() == storage::kFileSystemTypePersistent ||
+        file_system_url.type() == storage::kFileSystemTypeTemporary) {
+      continue;
+    }
+
     if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url))
       filtered_data.file_system_files.push_back(file_system_file);
   }

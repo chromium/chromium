@@ -208,11 +208,14 @@ void PrepareDropDataForChildProcess(
   DCHECK(isolated_context);
 
   for (auto& file_system_file : drop_data->file_system_files) {
-    // TODO(https://crbug.com/1221308): determine whether StorageKey should be
-    // replaced with a more meaningful value
-    storage::FileSystemURL file_system_url = file_system_context->CrackURL(
-        file_system_file.url,
-        blink::StorageKey(url::Origin::Create(file_system_file.url)));
+    storage::FileSystemURL file_system_url =
+        file_system_context->CrackURLInFirstPartyContext(file_system_file.url);
+
+    // Sandboxed filesystem files should never be handled via this path, so
+    // assert that none are sent from the renderer (wrapping these won't work
+    // anyway).
+    DCHECK(file_system_url.type() != storage::kFileSystemTypePersistent);
+    DCHECK(file_system_url.type() != storage::kFileSystemTypeTemporary);
 
     std::string register_name;
     storage::IsolatedContext::ScopedFSHandle filesystem =
