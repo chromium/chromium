@@ -6,6 +6,7 @@
 import unittest
 
 from blinkpy.web_tests.stale_expectation_removal import builders
+from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 
 
@@ -53,10 +54,13 @@ class GetFakeCiBuildersUnittest(unittest.TestCase):
         """Tests that the easier-to-read strings get converted to BuilderEntry."""
         instance = builders.WebTestBuilders(False)
         fake_builders = instance.GetFakeCiBuilders()
-        ci_builder = data_types.BuilderEntry('linux-blink-rel-dummy', False)
+        ci_builder = data_types.BuilderEntry('linux-blink-rel-dummy',
+                                             constants.BuilderTypes.CI, False)
         expected_try = set([
-            data_types.BuilderEntry('linux-blink-rel', False),
-            data_types.BuilderEntry('v8_linux_blink_rel', False)
+            data_types.BuilderEntry('linux-blink-rel',
+                                    constants.BuilderTypes.TRY, False),
+            data_types.BuilderEntry('v8_linux_blink_rel',
+                                    constants.BuilderTypes.TRY, False)
         ])
         self.assertEqual(fake_builders[ci_builder], expected_try)
 
@@ -65,7 +69,8 @@ class GetNonChromiumBuildersUnittest(unittest.TestCase):
     def testStringsConvertedToBuilderEntries(self):
         """Tests that the easier-to-read strings get converted to BuilderEntry."""
         instance = builders.WebTestBuilders(False)
-        builder = data_types.BuilderEntry('ToTMacOfficial', False)
+        builder = data_types.BuilderEntry('ToTMacOfficial',
+                                          constants.BuilderTypes.CI, False)
         self.assertIn(builder, instance.GetNonChromiumBuilders())
 
 

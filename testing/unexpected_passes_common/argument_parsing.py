@@ -72,6 +72,7 @@ def AddCommonArguments(parser):
   internal_group.add_argument('--include-internal-builders',
                               action='store_true',
                               dest='include_internal_builders',
+                              default=None,
                               help=('Includes builders that are defined in '
                                     'src-internal in addition to the public '
                                     'ones. If left unset, will be '
@@ -80,6 +81,7 @@ def AddCommonArguments(parser):
   internal_group.add_argument('--no-include-internal-builders',
                               action='store_false',
                               dest='include_internal_builders',
+                              default=None,
                               help=('Does not include builders that are '
                                     'defined in src-internal. If left unset, '
                                     'will be automatically determined by the '
@@ -126,8 +128,6 @@ def SetInternalBuilderInclusion(args):
     return
 
   if os.path.isdir(constants.SRC_INTERNAL_DIR):
-    # TODO(crbug.com/1280379): Switch this to "True" once internal builders are
-    # actually supported.
-    args.include_internal_builders = False
+    args.include_internal_builders = True
   else:
     args.include_internal_builders = False

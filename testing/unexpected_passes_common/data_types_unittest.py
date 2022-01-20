@@ -14,6 +14,7 @@ if sys.version_info[0] == 2:
 else:
   import unittest.mock as mock
 
+from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import unittest_utils as uu
 
@@ -1299,31 +1300,39 @@ class TestExpectationMapFilterOutUnusedExpectationsUnittest(unittest.TestCase):
 class BuilderEntryUnittest(unittest.TestCase):
   def testProject(self):
     """Tests that the project property functions as expected."""
-    be = data_types.BuilderEntry('', False)
+    be = data_types.BuilderEntry('', constants.BuilderTypes.CI, False)
     self.assertEqual(be.project, 'chromium')
-    be = data_types.BuilderEntry('', True)
+    be = data_types.BuilderEntry('', constants.BuilderTypes.CI, True)
     self.assertEqual(be.project, 'chrome')
 
   def testEquality(self):
     """Tests equality between two BuilderEntry instances."""
-    be = data_types.BuilderEntry('builder', False)
-    other = data_types.BuilderEntry('builder', False)
+    be = data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False)
+    other = data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False)
     self.assertEqual(be, other)
-    other = data_types.BuilderEntry('builder', True)
+    other = data_types.BuilderEntry('builder', constants.BuilderTypes.TRY,
+                                    False)
     self.assertNotEqual(be, other)
-    other = data_types.BuilderEntry('not_builder', False)
+    other = data_types.BuilderEntry('builder', constants.BuilderTypes.CI, True)
+    self.assertNotEqual(be, other)
+    other = data_types.BuilderEntry('not_builder', constants.BuilderTypes.CI,
+                                    False)
     self.assertNotEqual(be, other)
     self.assertNotEqual(be, 'builder')
 
   def testHashability(self):
     """Tests the hashability of the BuilderEntry class."""
-    be = data_types.BuilderEntry('builder', False)
+    be = data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False)
     _ = {be}
-    other = data_types.BuilderEntry('builder', False)
+    other = data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False)
     self.assertEqual(be.__hash__(), other.__hash__())
-    other = data_types.BuilderEntry('builder', True)
+    other = data_types.BuilderEntry('builder', constants.BuilderTypes.TRY,
+                                    False)
     self.assertNotEqual(be.__hash__(), other.__hash__())
-    other = data_types.BuilderEntry('not_builder', False)
+    other = data_types.BuilderEntry('builder', constants.BuilderTypes.CI, True)
+    self.assertNotEqual(be.__hash__(), other.__hash__())
+    other = data_types.BuilderEntry('not_builder', constants.BuilderTypes.CI,
+                                    False)
     self.assertNotEqual(be.__hash__(), other.__hash__())
 
 

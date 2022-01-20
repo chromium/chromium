@@ -39,7 +39,7 @@ RESULTS_SUBQUERY = """\
         FROM tr.tags
         WHERE key = "web_tests_used_expectations_file") as expectation_files
     FROM
-      `chrome-luci-data.chromium.blink_web_tests_{builder_type}_test_results` tr,
+      `chrome-luci-data.{{builder_project}}.blink_web_tests_{builder_type}_test_results` tr,
       builds b
     WHERE
       exported.id = build_inv_id
@@ -65,9 +65,9 @@ WITH
       DISTINCT exported.id build_inv_id,
       partition_time
     FROM
-      `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
+      `chrome-luci-data.{{builder_project}}.blink_web_tests_ci_test_results` tr
     WHERE
-      exported.realm = "chromium:ci"
+      exported.realm = "{{builder_project}}:ci"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT @num_builds
@@ -88,10 +88,10 @@ WITH
       DISTINCT exported.id build_inv_id,
       partition_time
     FROM
-      `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr,
+      `chrome-luci-data.{{builder_project}}.blink_web_tests_try_test_results` tr,
       submitted_builds sb
     WHERE
-      exported.realm = "chromium:try"
+      exported.realm = "{{builder_project}}:try"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
       AND exported.id = sb.id
     ORDER BY partition_time DESC
@@ -113,9 +113,9 @@ WITH
       DISTINCT exported.id build_inv_id,
       partition_time
     FROM
-      `chrome-luci-data.chromium.blink_web_tests_{builder_type}_test_results` tr
+      `chrome-luci-data.{builder_project}.blink_web_tests_{builder_type}_test_results` tr
     WHERE
-      exported.realm = "chromium:{builder_type}"
+      exported.realm = "{builder_project}:{builder_type}"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT 50
@@ -129,7 +129,7 @@ WITH
         FROM tr.tags
         WHERE key = "raw_typ_expectation") as typ_expectations
     FROM
-      `chrome-luci-data.chromium.blink_web_tests_{builder_type}_test_results` tr,
+      `chrome-luci-data.{builder_project}.blink_web_tests_{builder_type}_test_results` tr,
       builds b
     WHERE
       exported.id = build_inv_id
@@ -143,20 +143,29 @@ WHERE
   OR "Timeout" IN UNNEST(typ_expectations)
 """
 
-ACTIVE_BUILDER_QUERY_TEMPLATE = """\
-WITH
-  builders AS (
+ALL_BUILDERS_FROM_TABLE_SUBQUERY = """\
     SELECT
       (
         SELECT value
         FROM tr.variant
         WHERE key = "builder") as builder_name
     FROM
-      `chrome-luci-data.chromium.blink_web_tests_{builder_type}_test_results` tr
+      `chrome-luci-data.{builder_project}.blink_web_tests_{builder_type}_test_results` tr"""
+
+ACTIVE_BUILDER_QUERY_TEMPLATE = """\
+WITH
+  builders AS (
+{all_builders_from_table_subquery}
+{{active_internal_builder_subquery}}
   )
 SELECT DISTINCT builder_name
 FROM builders
-"""
+""".format(all_builders_from_table_subquery=ALL_BUILDERS_FROM_TABLE_SUBQUERY)
+
+ACTIVE_INTERNAL_BUILDER_SUBQUERY = """\
+    UNION ALL
+{all_builders_from_table_subquery}""".format(
+    all_builders_from_table_subquery=ALL_BUILDERS_FROM_TABLE_SUBQUERY)
 
 KNOWN_TEST_ID_PREFIXES = [
     'ninja://:blink_web_tests/',
@@ -194,12 +203,14 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
         # WebGPU web tests are currently unsupported for various reasons.
         return 'webgpu/' in result['test_id']
 
-    def _GetQueryGeneratorForBuilder(self, builder, builder_type):
+    def _GetQueryGeneratorForBuilder(self, builder):
+        builder_type = builder.builder_type
         # Look for all tests.
         if not self._large_query_mode:
             return WebTestFixedQueryGenerator(builder_type, '')
 
-        query = TEST_FILTER_QUERY_TEMPLATE.format(builder_type=builder_type)
+        query = TEST_FILTER_QUERY_TEMPLATE.format(
+            builder_project=builder.project, builder_type=builder.builder_type)
         query_results = self._RunBigQueryCommandsForJsonOutput(
             query, {'': {
                 'builder_name': builder.name
@@ -227,29 +238,39 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
                 return test_id.replace(prefix, '')
         raise RuntimeError('Unable to strip prefix from test ID %s' % test_id)
 
-    def _GetActiveBuilderQuery(self, builder_type):
-        return ACTIVE_BUILDER_QUERY_TEMPLATE.format(builder_type=builder_type)
+    def _GetActiveBuilderQuery(self, builder_type, include_internal_builders):
+        if include_internal_builders:
+            subquery = ACTIVE_INTERNAL_BUILDER_SUBQUERY.format(
+                builder_project='chrome', builder_type=builder_type)
+        else:
+            subquery = ''
+        return ACTIVE_BUILDER_QUERY_TEMPLATE.format(
+            builder_project='chromium',
+            builder_type=builder_type,
+            active_internal_builder_subquery=subquery)
 
 
 class WebTestFixedQueryGenerator(queries_module.FixedQueryGenerator):
     def GetQueries(self):
-        return QueryGeneratorImpl(self.GetClauses(), self._builder_type)
+        return QueryGeneratorImpl(self.GetClauses(), self._builder)
 
 
 class WebTestSplitQueryGenerator(queries_module.SplitQueryGenerator):
     def GetQueries(self):
-        return QueryGeneratorImpl(self.GetClauses(), self._builder_type)
+        return QueryGeneratorImpl(self.GetClauses(), self._builder)
 
 
-def QueryGeneratorImpl(test_filter_clauses, builder_type):
+def QueryGeneratorImpl(test_filter_clauses, builder):
     queries = []
     query_template = None
-    if builder_type == common_constants.BuilderTypes.CI:
+    if builder.builder_type == common_constants.BuilderTypes.CI:
         query_template = CI_BQ_QUERY_TEMPLATE
-    elif builder_type == common_constants.BuilderTypes.TRY:
+    elif builder.builder_type == common_constants.BuilderTypes.TRY:
         query_template = TRY_BQ_QUERY_TEMPLATE
     else:
-        raise RuntimeError('Unknown builder type %s' % builder_type)
+        raise RuntimeError('Unknown builder type %s' % builder.builder_type)
     for tfc in test_filter_clauses:
-        queries.append(query_template.format(test_filter_clause=tfc))
+        queries.append(
+            query_template.format(builder_project=builder.project,
+                                  test_filter_clause=tfc))
     return queries

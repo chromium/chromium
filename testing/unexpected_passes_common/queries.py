@@ -79,26 +79,7 @@ class BigQueryQuerier(object):
 
     assert self._num_samples > 0
 
-  def FillExpectationMapForCiBuilders(self, expectation_map, builders):
-    """Fills |expectation_map| for CI builders.
-
-    See _FillExpectationMapForBuilders() for more information.
-    """
-    logging.info('Filling test expectation map with CI results')
-    return self._FillExpectationMapForBuilders(expectation_map, builders,
-                                               constants.BuilderTypes.CI)
-
-  def FillExpectationMapForTryBuilders(self, expectation_map, builders):
-    """Fills |expectation_map| for try builders.
-
-    See _FillExpectationMapForBuilders() for more information.
-    """
-    logging.info('Filling test expectation map with try results')
-    return self._FillExpectationMapForBuilders(expectation_map, builders,
-                                               constants.BuilderTypes.TRY)
-
-  def _FillExpectationMapForBuilders(self, expectation_map, builders,
-                                     builder_type):
+  def FillExpectationMapForBuilders(self, expectation_map, builders):
     """Fills |expectation_map| with results from |builders|.
 
     Args:
@@ -106,8 +87,6 @@ class BigQueryQuerier(object):
           in-place.
       builders: An iterable of data_types.BuilderEntry containing the builders
           to query.
-      builder_type: A string containing the type of builder to query, either
-          "ci" or "try".
 
     Returns:
       A dict containing any results that were retrieved that did not have a
@@ -121,6 +100,15 @@ class BigQueryQuerier(object):
       }
     """
     assert isinstance(expectation_map, data_types.TestExpectationMap)
+    # Ensure that all the builders are of the same type since we make some
+    # assumptions about that later on.
+    assert builders
+    builder_type = None
+    for b in builders:
+      if builder_type is None:
+        builder_type = b.builder_type
+      else:
+        assert b.builder_type == builder_type
 
     # Filter out any builders that we can easily determine do not currently
     # produce data we care about.
@@ -133,7 +121,7 @@ class BigQueryQuerier(object):
     # crbug.com/1182459 for more information on performance considerations.
     process_pool = multiprocessing_utils.GetProcessPool(nodes=len(builders))
 
-    args = [(b, builder_type, expectation_map) for b in builders]
+    args = [(b, expectation_map) for b in builders]
 
     results = process_pool.map(self._QueryAddCombined, args)
 
@@ -167,7 +155,9 @@ class BigQueryQuerier(object):
     Returns:
       A copy of |builders| with any inactive builders removed.
     """
-    query = self._GetActiveBuilderQuery(builder_type).encode('utf-8')
+    include_internal_builders = any([b.is_internal_builder for b in builders])
+    query = self._GetActiveBuilderQuery(
+        builder_type, include_internal_builders).encode('utf-8')
     cmd = _GenerateBigQueryCommand(self._project, {}, batch=False)
     with open(os.devnull, 'w') as devnull:
       p = subprocess.Popen(cmd,
@@ -196,15 +186,15 @@ class BigQueryQuerier(object):
     Args:
       inputs: An iterable of inputs for QueryBuilder() and
           data_types.TestExpectationMap.AddResultList(). Should be in the order:
-          builder builder_type expectation_map
+          builder expectation_map
 
     Returns:
       The output of data_types.TestExpectationMap.AddResultList().
     """
-    builder, builder_type, expectation_map = inputs
-    results, expectation_files = self.QueryBuilder(builder, builder_type)
+    builder, expectation_map = inputs
+    results, expectation_files = self.QueryBuilder(builder)
 
-    prefixed_builder_name = '%s/%s:%s' % (builder.project, builder_type,
+    prefixed_builder_name = '%s/%s:%s' % (builder.project, builder.builder_type,
                                           builder.name)
     unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
                                                       results,
@@ -212,13 +202,11 @@ class BigQueryQuerier(object):
 
     return unmatched_results, prefixed_builder_name, expectation_map
 
-  def QueryBuilder(self, builder, builder_type):
+  def QueryBuilder(self, builder):
     """Queries ResultDB for results from |builder|.
 
     Args:
       builder: A data_types.BuilderEntry containing the builder to query.
-      builder_type: A string containing the type of builder to query, either
-          "ci" or "try".
 
     Returns:
       A tuple (results, expectation_files). |results| is the results returned by
@@ -227,7 +215,7 @@ class BigQueryQuerier(object):
       are relevant to |results|, or None if all should be used.
     """
 
-    query_generator = self._GetQueryGeneratorForBuilder(builder, builder_type)
+    query_generator = self._GetQueryGeneratorForBuilder(builder)
     if not query_generator:
       # No affected tests on this builder, so early return.
       return [], None
@@ -257,7 +245,7 @@ class BigQueryQuerier(object):
     results = []
     if not query_results:
       # Don't bother logging if we know this is a fake CI builder.
-      if not (builder_type == constants.BuilderTypes.CI
+      if not (builder.builder_type == constants.BuilderTypes.CI
               and builder in builders_module.GetInstance().GetFakeCiBuilders()):
         logging.warning(
             'Did not get results for "%s", but this may be because its '
@@ -291,7 +279,7 @@ class BigQueryQuerier(object):
         continue
       results.append(self._ConvertJsonResultToResultObject(r))
     logging.debug('Got %d results for %s builder %s', len(results),
-                  builder_type, builder.name)
+                  builder.builder_type, builder.name)
     return results, expectation_files
 
   def _ConvertJsonResultToResultObject(self, json_result):
@@ -336,13 +324,11 @@ class BigQueryQuerier(object):
     del result
     return False
 
-  def _GetQueryGeneratorForBuilder(self, builder, builder_type):
+  def _GetQueryGeneratorForBuilder(self, builder):
     """Returns a _BaseQueryGenerator instance to only include relevant tests.
 
     Args:
       builder: A data_types.BuilderEntry containing the builder to query.
-      builder_type: A string containing the type of builder to query, either
-          "ci" or "try".
 
     Returns:
       None if the query returned no results. Otherwise, some instance of a
@@ -457,12 +443,14 @@ class BigQueryQuerier(object):
     """
     raise NotImplementedError()
 
-  def _GetActiveBuilderQuery(self, builder_type):
+  def _GetActiveBuilderQuery(self, builder_type, include_internal_builders):
     """Gets the SQL query for determining which builders actually produce data.
 
     Args:
       builder_type: A string containing the type of builders to query, either
           "ci" or "try".
+      include_internal_builders: A boolean indicating whether internal builders
+          should be included in the data that the query will access.
 
     Returns:
       A string containing a SQL query that will get all the names of all
@@ -474,8 +462,8 @@ class BigQueryQuerier(object):
 class _BaseQueryGenerator(object):
   """Abstract base class for query generators."""
 
-  def __init__(self, builder_type):
-    self._builder_type = builder_type
+  def __init__(self, builder):
+    self._builder = builder
 
   def SplitQuery(self):
     """Splits the query into more clauses/queries."""
@@ -503,12 +491,12 @@ class _BaseQueryGenerator(object):
 class FixedQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-method
   """Concrete test filter that cannot be split."""
 
-  def __init__(self, builder_type, test_filter):
+  def __init__(self, builder, test_filter):
     """
     Args:
       test_filter: A string containing the test filter SQL clause to use.
     """
-    super(FixedQueryGenerator, self).__init__(builder_type)
+    super(FixedQueryGenerator, self).__init__(builder)
     self._test_filter = test_filter
 
   def SplitQuery(self):
@@ -522,7 +510,7 @@ class FixedQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-meth
 class SplitQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-method
   """Concrete test filter that can be split to a desired size."""
 
-  def __init__(self, builder_type, test_ids, target_num_samples):
+  def __init__(self, builder, test_ids, target_num_samples):
     """
     Args:
       test_ids: A list of strings containing the test IDs to use in the test
@@ -530,7 +518,7 @@ class SplitQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-meth
       target_num_samples: The target/max number of samples to get from each
           query that uses clauses from this test filter.
     """
-    super(SplitQueryGenerator, self).__init__(builder_type)
+    super(SplitQueryGenerator, self).__init__(builder)
     self._test_id_lists = []
     self._target_num_samples = target_num_samples
     self._clauses = []

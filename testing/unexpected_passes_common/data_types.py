@@ -635,14 +635,17 @@ class StepBuildStatsMap(BaseTypedMap):
 class BuilderEntry(object):
   """Simple container for defining a builder."""
 
-  def __init__(self, name, is_internal_builder):
+  def __init__(self, name, builder_type, is_internal_builder):
     """
     Args:
       name: A string containing the name of the builder.
+      builder_type: A string containing the type of builder this is, either
+          "ci" or "try".
       is_internal_builder: A boolean denoting whether the builder is internal or
           not.
     """
     self.name = name
+    self.builder_type = builder_type
     self.is_internal_builder = is_internal_builder
 
   @property
@@ -651,13 +654,14 @@ class BuilderEntry(object):
 
   def __eq__(self, other):
     return (isinstance(other, BuilderEntry) and self.name == other.name
+            and self.builder_type == other.builder_type
             and self.is_internal_builder == other.is_internal_builder)
 
   def __ne__(self, other):
     return not self.__eq__(other)
 
   def __hash__(self):
-    return hash((self.name, self.is_internal_builder))
+    return hash((self.name, self.builder_type, self.is_internal_builder))
 
 
 def IsStringType(s):

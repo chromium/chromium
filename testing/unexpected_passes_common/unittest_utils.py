@@ -42,10 +42,10 @@ class SimpleSplitQueryGenerator(queries_module.SplitQueryGenerator):
 
 
 class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
-  def _GetQueryGeneratorForBuilder(self, _, builder_type):
+  def _GetQueryGeneratorForBuilder(self, builder):
     if not self._large_query_mode:
-      return SimpleFixedQueryGenerator(builder_type, 'AND True')
-    return SimpleSplitQueryGenerator(builder_type, ['test_id'], 200)
+      return SimpleFixedQueryGenerator(builder.builder_type, 'AND True')
+    return SimpleSplitQueryGenerator(builder.builder_type, ['test_id'], 200)
 
   def _GetRelevantExpectationFilesForQueryResult(self, _):
     return None
@@ -53,7 +53,7 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
   def _StripPrefixFromTestId(self, test_id):
     return test_id.split('.')[-1]
 
-  def _GetActiveBuilderQuery(self, _):
+  def _GetActiveBuilderQuery(self, _, __):
     return ''
 
 

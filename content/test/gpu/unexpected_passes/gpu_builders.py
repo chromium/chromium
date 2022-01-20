@@ -83,8 +83,10 @@ class GpuBuilders(builders.Builders):
       for try_builder, ci_builder_list in fake_try_builders.items():
         for ci in ci_builder_list:
           self._fake_ci_builders.setdefault(
-              data_types.BuilderEntry(ci, False),
-              set()).add(data_types.BuilderEntry(try_builder, False))
+              data_types.BuilderEntry(ci, constants.BuilderTypes.CI, False),
+              set()).add(
+                  data_types.BuilderEntry(try_builder,
+                                          constants.BuilderTypes.TRY, False))
 
     return self._fake_ci_builders
 
@@ -98,7 +100,7 @@ class GpuBuilders(builders.Builders):
           'Android V8 FYI Release (Nexus 5X)',
       }
       self._non_chromium_builders = {
-          data_types.BuilderEntry(b, False)
+          data_types.BuilderEntry(b, constants.BuilderTypes.CI, False)
           for b in str_builders
       }
     return self._non_chromium_builders

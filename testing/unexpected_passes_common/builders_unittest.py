@@ -18,6 +18,7 @@ else:
 from pyfakefs import fake_filesystem_unittest
 
 from unexpected_passes_common import builders
+from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import multiprocessing_utils
 from unexpected_passes_common import unittest_utils
@@ -83,11 +84,14 @@ class GetCiBuildersUnittest(fake_filesystem_unittest.TestCase):
     self.assertEqual(
         gpu_builders,
         set([
-            data_types.BuilderEntry('Android Release (Nexus 5X)', False),
+            data_types.BuilderEntry('Android Release (Nexus 5X)',
+                                    constants.BuilderTypes.CI, False),
             data_types.BuilderEntry('ANGLE GPU Android Release (Nexus 5X)',
-                                    False),
-            data_types.BuilderEntry('GPU Linux Builder', False),
-            data_types.BuilderEntry('GPU FYI Linux Builder', False),
+                                    constants.BuilderTypes.CI, False),
+            data_types.BuilderEntry('GPU Linux Builder',
+                                    constants.BuilderTypes.CI, False),
+            data_types.BuilderEntry('GPU FYI Linux Builder',
+                                    constants.BuilderTypes.CI, False),
         ]))
 
   def testFilterBySuite(self):
@@ -144,8 +148,12 @@ class GetCiBuildersUnittest(fake_filesystem_unittest.TestCase):
                            '_BuilderRunsTestOfInterest',
                            side_effect=SideEffect):
       gpu_builders = self._builders_instance.GetCiBuilders('bar_conformance')
-    self.assertEqual(gpu_builders,
-                     set([data_types.BuilderEntry('Windows Tester', False)]))
+    self.assertEqual(
+        gpu_builders,
+        set([
+            data_types.BuilderEntry('Windows Tester', constants.BuilderTypes.CI,
+                                    False)
+        ]))
 
   def testRealContentCanBeLoaded(self):
     """Tests that *something* from the real JSON files can be loaded."""
@@ -179,21 +187,27 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
   def testFakeCiBuilder(self):
     """Tests that a fake CI builder gets properly mapped."""
     self._fake_ci_mock.return_value = {
-        data_types.BuilderEntry('foo_ci', False):
-        {data_types.BuilderEntry('foo_try', False)}
+        data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI, False):
+        {data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY, False)}
     }
     try_builder, found_mirror = (
         self._builders_instance._GetMirroredBuildersForCiBuilder(
-            data_types.BuilderEntry('foo_ci', False)))
+            data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI,
+                                    False)))
     self.assertTrue(found_mirror)
-    self.assertEqual(try_builder,
-                     set([data_types.BuilderEntry('foo_try', False)]))
+    self.assertEqual(
+        try_builder,
+        set([
+            data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY,
+                                    False)
+        ]))
     self._bb_mock.assert_not_called()
 
   def testNoBuildbucketOutput(self):
     """Tests that a failure to get Buildbucket output is surfaced."""
     self._bb_mock.return_value = ''
-    builder_entry = data_types.BuilderEntry('nonexistent', False)
+    builder_entry = data_types.BuilderEntry('nonexistent',
+                                            constants.BuilderTypes.CI, False)
     try_builder, found_mirror = (
         self._builders_instance._GetMirroredBuildersForCiBuilder(builder_entry))
     self.assertFalse(found_mirror)
@@ -213,13 +227,16 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
     })
     try_builders, found_mirror = (
         self._builders_instance._GetMirroredBuildersForCiBuilder(
-            data_types.BuilderEntry('foo_ci', False)))
+            data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI,
+                                    False)))
     self.assertTrue(found_mirror)
     self.assertEqual(
         try_builders,
         set([
-            data_types.BuilderEntry('foo_try', False),
-            data_types.BuilderEntry('bar_try', False)
+            data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY,
+                                    False),
+            data_types.BuilderEntry('bar_try', constants.BuilderTypes.TRY,
+                                    False)
         ]))
 
   def testBuildbucketOutputInternal(self):
@@ -236,13 +253,14 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
     })
     try_builders, found_mirror = (
         self._builders_instance._GetMirroredBuildersForCiBuilder(
-            data_types.BuilderEntry('foo_ci', True)))
+            data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI, True)))
     self.assertTrue(found_mirror)
     self.assertEqual(
         try_builders,
         set([
-            data_types.BuilderEntry('foo_try', True),
-            data_types.BuilderEntry('bar_try', True)
+            data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY,
+                                    True),
+            data_types.BuilderEntry('bar_try', constants.BuilderTypes.TRY, True)
         ]))
 
 

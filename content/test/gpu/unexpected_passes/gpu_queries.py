@@ -26,7 +26,7 @@ RESULTS_SUBQUERY = """\
         FROM tr.tags
         WHERE key = "raw_typ_expectation") as typ_expectations
     FROM
-      `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr,
+      `chrome-luci-data.{{builder_project}}.gpu_{builder_type}_test_results` tr,
       builds b
     WHERE
       exported.id = build_inv_id
@@ -52,9 +52,9 @@ WITH
       DISTINCT exported.id build_inv_id,
       partition_time
     FROM
-      `chrome-luci-data.chromium.gpu_ci_test_results` tr
+      `chrome-luci-data.{{builder_project}}.gpu_ci_test_results` tr
     WHERE
-      exported.realm = "chromium:ci"
+      exported.realm = "{{builder_project}}:ci"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT @num_builds
@@ -75,10 +75,10 @@ WITH
       DISTINCT exported.id build_inv_id,
       partition_time
     FROM
-      `chrome-luci-data.chromium.gpu_try_test_results` tr,
+      `chrome-luci-data.{{builder_project}}.gpu_try_test_results` tr,
       submitted_builds sb
     WHERE
-      exported.realm = "chromium:try"
+      exported.realm = "{{builder_project}}:try"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
       AND exported.id = sb.id
     ORDER BY partition_time DESC
@@ -99,9 +99,9 @@ WITH
     SELECT
       DISTINCT exported.id build_inv_id,
       partition_time
-    FROM `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
+    FROM `chrome-luci-data.{builder_project}.gpu_{builder_type}_test_results` tr
     WHERE
-      exported.realm = "chromium:{builder_type}"
+      exported.realm = "{builder_project}:{builder_type}"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT 50
@@ -119,7 +119,7 @@ WITH
         FROM tr.tags
         WHERE key = "raw_typ_expectation") as typ_expectations
     FROM
-      `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr,
+      `chrome-luci-data.{builder_project}.gpu_{builder_type}_test_results` tr,
       builds b
     WHERE
       exported.id = build_inv_id
@@ -137,20 +137,29 @@ WHERE
   {suite_filter_clause}
 """
 
-ACTIVE_BUILDER_QUERY_TEMPLATE = """\
-WITH
-  builders AS (
+ALL_BUILDERS_FROM_TABLE_SUBQUERY = """\
     SELECT
       (
         SELECT value
         FROM tr.variant
         WHERE key = "builder") as builder_name
     FROM
-      `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
+      `chrome-luci-data.{builder_project}.gpu_{builder_type}_test_results` tr"""
+
+ACTIVE_BUILDER_QUERY_TEMPLATE = """\
+WITH
+  builders AS (
+{all_builders_from_table_subquery}
+{{active_internal_builder_subquery}}
   )
 SELECT DISTINCT builder_name
 FROM builders
-"""
+""".format(all_builders_from_table_subquery=ALL_BUILDERS_FROM_TABLE_SUBQUERY)
+
+ACTIVE_INTERNAL_BUILDER_SUBQUERY = """\
+    UNION ALL
+{all_builders_from_table_subquery}""".format(
+    all_builders_from_table_subquery=ALL_BUILDERS_FROM_TABLE_SUBQUERY)
 
 # The suite reported to Telemetry for selecting which suite to run is not
 # necessarily the same one that is reported to typ/ResultDB, so map any special
@@ -197,17 +206,18 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     # looking for.
     return not self._check_webgl_version(result['typ_tags'])
 
-  def _GetQueryGeneratorForBuilder(self, builder, builder_type):
+  def _GetQueryGeneratorForBuilder(self, builder):
     if not self._large_query_mode:
       # Look for all tests that match the given suite.
       return GpuFixedQueryGenerator(
-          builder_type, """\
+          builder, """\
         AND REGEXP_CONTAINS(
           test_id,
           r"gpu_tests\.%s\.")""" % self._suite)
 
     query = TEST_FILTER_QUERY_TEMPLATE.format(
-        builder_type=builder_type,
+        builder_project=builder.project,
+        builder_type=builder.builder_type,
         suite=self._suite,
         suite_filter_clause=self._GetSuiteFilterClause())
     query_results = self._RunBigQueryCommandsForJsonOutput(
@@ -222,7 +232,8 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     # Only consider specific test cases that were found to have active
     # expectations in the above query. Also perform any initial query splitting.
     target_num_ids = queries_module.TARGET_RESULTS_PER_QUERY / self._num_samples
-    return GpuSplitQueryGenerator(builder_type, test_ids, target_num_ids)
+    return GpuSplitQueryGenerator(builder.builder_type, test_ids,
+                                  target_num_ids)
 
   def _GetRelevantExpectationFilesForQueryResult(self, _):
     # Only one expectation file is ever used for the GPU tests, so just use
@@ -254,30 +265,40 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     assert len(split_id) == 4
     return split_id[-1]
 
-  def _GetActiveBuilderQuery(self, builder_type):
-    return ACTIVE_BUILDER_QUERY_TEMPLATE.format(builder_type=builder_type)
+  def _GetActiveBuilderQuery(self, builder_type, include_internal_builders):
+    if include_internal_builders:
+      subquery = ACTIVE_INTERNAL_BUILDER_SUBQUERY.format(
+          builder_project='chrome', builder_type=builder_type)
+    else:
+      subquery = ''
+    return ACTIVE_BUILDER_QUERY_TEMPLATE.format(
+        builder_project='chromium',
+        builder_type=builder_type,
+        active_internal_builder_subquery=subquery)
 
 
 class GpuFixedQueryGenerator(queries_module.FixedQueryGenerator):
   def GetQueries(self):
-    return QueryGeneratorImpl(self.GetClauses(), self._builder_type)
+    return QueryGeneratorImpl(self.GetClauses(), self._builder)
 
 
 class GpuSplitQueryGenerator(queries_module.SplitQueryGenerator):
   def GetQueries(self):
-    return QueryGeneratorImpl(self.GetClauses(), self._builder_type)
+    return QueryGeneratorImpl(self.GetClauses(), self._builder)
 
 
-def QueryGeneratorImpl(test_filter_clauses, builder_type):
+def QueryGeneratorImpl(test_filter_clauses, builder):
   queries = []
   query_template = None
-  if builder_type == constants.BuilderTypes.CI:
+  if builder.builder_type == constants.BuilderTypes.CI:
     query_template = GPU_CI_BQ_QUERY_TEMPLATE
-  elif builder_type == constants.BuilderTypes.TRY:
+  elif builder.builder_type == constants.BuilderTypes.TRY:
     query_template = GPU_TRY_BQ_QUERY_TEMPLATE
   else:
-    raise RuntimeError('Unknown builder type %s' % builder_type)
+    raise RuntimeError('Unknown builder type %s' % builder.builder_type)
   for tfc in test_filter_clauses:
-    queries.append(query_template.format(test_filter_clause=tfc))
+    queries.append(
+        query_template.format(builder_project=builder.project,
+                              test_filter_clause=tfc))
 
   return queries

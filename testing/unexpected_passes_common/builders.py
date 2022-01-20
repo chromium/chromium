@@ -75,7 +75,9 @@ class Builders(object):
           # Filter out any builders that don't run the suite in question.
           if not self._BuilderRunsTestOfInterest(test_map, suite):
             continue
-          ci_builders.add(data_types.BuilderEntry(builder, are_internal_files))
+          ci_builders.add(
+              data_types.BuilderEntry(builder, constants.BuilderTypes.CI,
+                                      are_internal_files))
 
     logging.info('Getting CI builders')
     ProcessJsonFiles([
@@ -185,7 +187,8 @@ class Builders(object):
       logging.debug('Got mirrored builder for %s: %s', ci_builder.name,
                     split[1])
       mirrored_builders.add(
-          data_types.BuilderEntry(split[1], ci_builder.is_internal_builder))
+          data_types.BuilderEntry(split[1], constants.BuilderTypes.TRY,
+                                  ci_builder.is_internal_builder))
     return mirrored_builders, True
 
   def _GetBuildbucketOutputForCiBuilder(self, ci_builder):
