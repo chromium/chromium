@@ -262,7 +262,8 @@ test(t => {
 
   let scaledFrame = new VideoFrame(image,
     { visibleRect : {x: 0, y: 0, width: 2, height: 2},
-      displayWidth: 10, displayHeight: 20
+      displayWidth: 10, displayHeight: 20,
+      timestamp: 0
     });
   assert_equals(scaledFrame.codedWidth, 32);
   assert_equals(scaledFrame.codedHeight, 16);
@@ -279,7 +280,8 @@ test(t => {
 
   let scaledFrame = new VideoFrame(image,
     {
-      displayWidth: 10, displayHeight: 20
+      displayWidth: 10, displayHeight: 20,
+      timestamp: 0
     });
   assert_equals(scaledFrame.codedWidth, 32);
   assert_equals(scaledFrame.codedHeight, 16);
@@ -545,7 +547,7 @@ test(t => {
 
 test(t => {
   let canvas = makeOffscreenCanvas(16, 16);
-  let frame = new VideoFrame(canvas);
+  let frame = new VideoFrame(canvas, {timestamp: 0});
   assert_equals(frame.displayWidth, 16);
   assert_equals(frame.displayHeight, 16);
   frame.close();
@@ -609,14 +611,14 @@ test(t => {
 
 test(t => {
   let canvas = makeOffscreenCanvas(16, 16, {alpha: true});
-  let frame = new VideoFrame(canvas);
+  let frame = new VideoFrame(canvas, {timestamp: 0});
   assert_true(
       frame.format == 'RGBA' || frame.format == 'BGRA' ||
           frame.format == 'I420A',
       'plane format should have alpha: ' + frame.format);
   frame.close();
 
-  frame = new VideoFrame(canvas, {alpha: 'discard'});
+  frame = new VideoFrame(canvas, {alpha: 'discard', timestamp: 0});
   assert_true(
       frame.format == 'RGBX' || frame.format == 'BGRX' ||
           frame.format == 'I420',

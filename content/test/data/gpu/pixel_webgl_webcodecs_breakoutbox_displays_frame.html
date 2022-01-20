@@ -36,7 +36,7 @@ function runTest() {
   gl.viewport(0, 0, 300, 300);
   drawTriangle(gl);
 
-  let frame = new VideoFrame(canvas);
+  let frame = new VideoFrame(canvas, {timestamp: 0});
   let video = document.querySelector('video');
   video.requestVideoFrameCallback(async _ => {
     // Wait for several vsyncs before taking a snapshot, this deflakes the test.

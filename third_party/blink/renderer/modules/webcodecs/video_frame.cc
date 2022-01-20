@@ -59,7 +59,7 @@
 namespace blink {
 
 const base::Feature kRemoveWebCodecsSpecViolations{
-    "RemoveWebCodecsSpecViolations", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RemoveWebCodecsSpecViolations", base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
