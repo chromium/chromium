@@ -550,4 +550,24 @@ TEST_F(ElementTest, ParentComputedStyleForDocumentElement) {
   EXPECT_FALSE(document_element->ParentComputedStyle());
 }
 
+TEST_F(ElementTest, IsFocusableForInertInContentVisibility) {
+  InsertStyleElement("div { content-visibility: auto; margin-top: -999px }");
+  SetBodyContent("<div><p id='target' tabindex='-1'></p></div>");
+
+  // IsFocusable() lays out the element to provide the correct answer.
+  Element* target = GetElementById("target");
+  ASSERT_EQ(target->GetLayoutObject(), nullptr);
+  ASSERT_TRUE(target->IsFocusable());
+  ASSERT_NE(target->GetLayoutObject(), nullptr);
+
+  // Mark the element as inert. Due to content-visibility, the LayoutObject
+  // will still think that it's not inert.
+  target->SetBooleanAttribute(html_names::kInertAttr, true);
+  ASSERT_FALSE(target->GetLayoutObject()->Style()->IsInert());
+
+  // IsFocusable() should update the LayoutObject and notice that it's inert.
+  ASSERT_FALSE(target->IsFocusable());
+  ASSERT_TRUE(target->GetLayoutObject()->Style()->IsInert());
+}
+
 }  // namespace blink
