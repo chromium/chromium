@@ -404,6 +404,8 @@ ProtectedBufferManager::GetProtectedSharedMemoryRegionFor(
     base::ScopedFD dummy_fd) {
   uint32_t id = 0;
   auto pixmap = ImportDummyFd(std::move(dummy_fd), &id);
+  if (!pixmap)
+    return {};
 
   base::AutoLock lock(buffer_map_lock_);
   const auto& iter = buffer_map_.find(id);
@@ -418,6 +420,8 @@ ProtectedBufferManager::GetProtectedNativePixmapHandleFor(
     base::ScopedFD dummy_fd) {
   uint32_t id = 0;
   auto pixmap = ImportDummyFd(std::move(dummy_fd), &id);
+  if (!pixmap)
+    return gfx::NativePixmapHandle();
 
   base::AutoLock lock(buffer_map_lock_);
   const auto& iter = buffer_map_.find(id);
@@ -451,6 +455,8 @@ ProtectedBufferManager::GetProtectedNativePixmapFor(
   base::ScopedFD dummy_fd(HANDLE_EINTR(dup(handle.planes[0].fd.get())));
   uint32_t id = 0;
   auto pixmap = ImportDummyFd(std::move(dummy_fd), &id);
+  if (!pixmap)
+    return nullptr;
 
   base::AutoLock lock(buffer_map_lock_);
   const auto& iter = buffer_map_.find(id);
@@ -477,6 +483,8 @@ scoped_refptr<gfx::NativePixmap> ProtectedBufferManager::ImportDummyFd(
     uint32_t* id) const {
   // 0 is an invalid handle id.
   *id = 0;
+  if (!dummy_fd.is_valid())
+    return nullptr;
 
   // Import dummy_fd to acquire its unique id.
   // CreateNativePixmapFromHandle() takes ownership and will close the handle
