@@ -3506,7 +3506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.CorsPreflightMethodAllowed"
-    enum="NetworkServiceCorsPreflightMethodAllowed" expires_after="M97">
+    enum="NetworkServiceCorsPreflightMethodAllowed" expires_after="M100">
   <owner>hiroshige@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <summary>
