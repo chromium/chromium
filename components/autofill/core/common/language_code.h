@@ -27,7 +27,7 @@ class LanguageCode
   using BaseClass = base::StrongAlias<LanguageCodeTag, std::string>;
 
  public:
-  constexpr LanguageCode() = default;
+  LanguageCode() = default;
   explicit LanguageCode(const char* s) : BaseClass(s) { Check(); }
   explicit LanguageCode(std::string&& s) : BaseClass(std::move(s)) { Check(); }
   explicit LanguageCode(const std::string& s) : BaseClass(s) { Check(); }
