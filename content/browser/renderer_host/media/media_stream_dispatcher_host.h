@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/common/content_export.h"
@@ -59,6 +60,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   }
 
  private:
+  friend class MediaStreamDispatcherHostTest;
   friend class MockMediaStreamDispatcherHost;
 
   struct PendingAccessRequest;
@@ -133,6 +135,13 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       std::unique_ptr<MediaStreamWebContentsObserver,
                       BrowserThread::DeleteOnUIThread> web_contents_observer);
 
+  void ReceivedBadMessage(int render_process_id,
+                          bad_message::BadMessageReason reason);
+
+  void SetBadMessageCallbackForTesting(
+      base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+          callback);
+
   static int next_requester_id_;
 
   const int render_process_id_;
@@ -146,6 +155,9 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   std::unique_ptr<MediaStreamWebContentsObserver,
                   BrowserThread::DeleteOnUIThread>
       web_contents_observer_;
+
+  base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+      bad_message_callback_for_testing_;
 
   base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};
 };

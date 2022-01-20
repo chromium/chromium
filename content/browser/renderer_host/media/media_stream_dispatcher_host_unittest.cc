@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -106,6 +108,16 @@ class MockMediaStreamDispatcherHost
 
   // Accessor to private functions.
   void CancelAllRequests() { MediaStreamDispatcherHost::CancelAllRequests(); }
+
+  void OnGenerateStream(int page_request_id,
+                        const blink::StreamControls& controls) {
+    MediaStreamDispatcherHost::GenerateStream(
+        page_request_id, controls, false,
+        blink::mojom::StreamSelectionInfo::New(
+            blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
+            absl::nullopt),
+        base::DoNothing());
+  }
 
   void OnGenerateStream(int page_request_id,
                         const blink::StreamControls& controls,
@@ -280,6 +292,9 @@ class MediaStreamDispatcherHostTest : public testing::Test {
                             base::Unretained(this)));
     host_->SetMediaStreamDeviceObserverForTesting(
         host_->BindNewPipeAndPassRemote());
+    host_->SetBadMessageCallbackForTesting(
+        base::BindRepeating(&MediaStreamDispatcherHostTest::MockOnBadMessage,
+                            base::Unretained(this)));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::CrasAudioClient::InitializeFake();
@@ -336,6 +351,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
                                     "fake_group_id_salt", origin_, focus_,
                                     background_);
   }
+
+  MOCK_METHOD2(MockOnBadMessage, void(int, bad_message::BadMessageReason));
 
  protected:
   std::unique_ptr<FakeMediaStreamUIProxy> CreateMockUI(bool expect_started) {
@@ -486,6 +503,59 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithAudioOnly) {
   EXPECT_EQ(host_->audio_devices_.size(), 1u);
   EXPECT_EQ(host_->video_devices_.size(), 0u);
 }
+
+class MediaStreamDispatcherHostStreamTypeCombinationTest
+    : public MediaStreamDispatcherHostTest,
+      public ::testing::WithParamInterface<std::tuple<int, int>> {};
+
+TEST_P(MediaStreamDispatcherHostStreamTypeCombinationTest,
+       GenerateStreamWithStreamTypeCombination) {
+  using blink::mojom::MediaStreamType;
+  std::set<std::tuple<MediaStreamType, MediaStreamType>> kValidCombinations = {
+      {MediaStreamType::NO_SERVICE, MediaStreamType::NO_SERVICE},
+      {MediaStreamType::NO_SERVICE, MediaStreamType::DEVICE_VIDEO_CAPTURE},
+      {MediaStreamType::NO_SERVICE, MediaStreamType::GUM_TAB_VIDEO_CAPTURE},
+      {MediaStreamType::NO_SERVICE, MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE},
+      {MediaStreamType::NO_SERVICE, MediaStreamType::DISPLAY_VIDEO_CAPTURE},
+      {MediaStreamType::NO_SERVICE,
+       MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB},
+      {MediaStreamType::DEVICE_AUDIO_CAPTURE, MediaStreamType::NO_SERVICE},
+      {MediaStreamType::DEVICE_AUDIO_CAPTURE,
+       MediaStreamType::DEVICE_VIDEO_CAPTURE},
+      {MediaStreamType::GUM_TAB_AUDIO_CAPTURE, MediaStreamType::NO_SERVICE},
+      {MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
+       MediaStreamType::GUM_TAB_VIDEO_CAPTURE},
+      {MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE,
+       MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE},
+      {MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+       MediaStreamType::DISPLAY_VIDEO_CAPTURE},
+      {MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+       MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB}};
+  blink::StreamControls controls;
+  controls.audio.stream_type =
+      static_cast<MediaStreamType>(std::get<0>(GetParam()));
+  controls.video.stream_type =
+      static_cast<MediaStreamType>(std::get<1>(GetParam()));
+
+  SetupFakeUI(true);
+  EXPECT_CALL(
+      *this, MockOnBadMessage(
+                 kProcessId, bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION))
+      .Times(!kValidCombinations.count(std::make_tuple(
+          controls.audio.stream_type, controls.video.stream_type)));
+  host_->OnGenerateStream(kPageRequestId, controls);
+}
+
+INSTANTIATE_TEST_CASE_P(
+    ,
+    MediaStreamDispatcherHostStreamTypeCombinationTest,
+    ::testing::Combine(
+        ::testing::Range(
+            static_cast<int>(blink::mojom::MediaStreamType::NO_SERVICE),
+            static_cast<int>(blink::mojom::MediaStreamType::NUM_MEDIA_TYPES)),
+        ::testing::Range(
+            static_cast<int>(blink::mojom::MediaStreamType::NO_SERVICE),
+            static_cast<int>(blink::mojom::MediaStreamType::NUM_MEDIA_TYPES))));
 
 // This test simulates a shutdown scenario: we don't setup a fake UI proxy for
 // MediaStreamManager, so it will create an ordinary one which will not find

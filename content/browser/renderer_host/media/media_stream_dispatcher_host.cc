@@ -14,7 +14,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "build/build_config.h"
-#include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -103,6 +102,42 @@ bool IsCropTargetValid(int render_process_id,
   return crop_id.is_zero() || helper->IsAssociatedWithCropId(crop_id);
 }
 #endif
+
+bool AllowedStreamTypeCombination(
+    blink::mojom::MediaStreamType audio_stream_type,
+    blink::mojom::MediaStreamType video_stream_type) {
+  switch (audio_stream_type) {
+    // TODO(crbug.com/1288237): Disallow video_stream_type == NO_SERVICE when
+    // {video=false} is no longer allowed.
+    case blink::mojom::MediaStreamType::NO_SERVICE:
+      return blink::IsVideoInputMediaType(video_stream_type) ||
+             video_stream_type == blink::mojom::MediaStreamType::NO_SERVICE;
+    case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
+      return video_stream_type ==
+                 blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
+             video_stream_type == blink::mojom::MediaStreamType::NO_SERVICE;
+    case blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+      return video_stream_type ==
+                 blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE ||
+             video_stream_type == blink::mojom::MediaStreamType::NO_SERVICE;
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+      return video_stream_type ==
+             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
+    case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+      return video_stream_type ==
+                 blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+             video_stream_type ==
+                 blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+    case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
+      return false;
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -298,12 +333,19 @@ void MediaStreamDispatcherHost::GenerateStream(
     GenerateStreamCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  if (!AllowedStreamTypeCombination(controls.audio.stream_type,
+                                    controls.video.stream_type)) {
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION);
+    return;
+  }
+
   if (audio_stream_selection_info_ptr->strategy ==
           blink::mojom::StreamSelectionStrategy::SEARCH_BY_SESSION_ID &&
       (!audio_stream_selection_info_ptr->session_id.has_value() ||
        audio_stream_selection_info_ptr->session_id->is_empty())) {
-    bad_message::ReceivedBadMessage(
-        render_process_id_, bad_message::MDDH_INVALID_STREAM_SELECTION_INFO);
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_INVALID_STREAM_SELECTION_INFO);
     return;
   }
 
@@ -395,8 +437,8 @@ void MediaStreamDispatcherHost::OpenDevice(int32_t page_request_id,
   // OpenDevice is only supported for microphone or webcam capture.
   if (type != blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
       type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-    bad_message::ReceivedBadMessage(
-        render_process_id_, bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
     return;
   }
 
@@ -498,5 +540,25 @@ void MediaStreamDispatcherHost::OnCropValidationComplete(
                                                        std::move(callback));
 }
 #endif
+
+void MediaStreamDispatcherHost::ReceivedBadMessage(
+    int render_process_id,
+    bad_message::BadMessageReason reason) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (bad_message_callback_for_testing_) {
+    bad_message_callback_for_testing_.Run(render_process_id, reason);
+  }
+
+  bad_message::ReceivedBadMessage(render_process_id, reason);
+}
+
+void MediaStreamDispatcherHost::SetBadMessageCallbackForTesting(
+    base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+        callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(!bad_message_callback_for_testing_);
+  bad_message_callback_for_testing_ = std::move(callback);
+}
 
 }  // namespace content

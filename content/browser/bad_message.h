@@ -287,6 +287,7 @@ enum BadMessageReason {
   PMM_UNSUBSCRIBE_INVALID_ORIGIN = 260,
   PMM_GET_SUBSCRIPTION_INVALID_ORIGIN = 261,
   RFH_INACTIVE_CHECK_FROM_PENDING_COMMIT_RFH = 262,
+  MSDH_INVALID_STREAM_TYPE_COMBINATION = 263,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

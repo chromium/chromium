@@ -567,7 +567,7 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfigCallbackForTesting(
         void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!capture_handle_config_callback_for_testing_);
-  capture_handle_config_callback_for_testing_ = callback;
+  capture_handle_config_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace content
