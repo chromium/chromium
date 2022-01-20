@@ -19,7 +19,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
@@ -90,7 +90,7 @@ void MessagePopupView::UpdateContents(const Notification& notification) {
   }
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 float MessagePopupView::GetOpacity() const {
   if (!IsWidgetValid())
     return 0.f;
@@ -123,7 +123,7 @@ void MessagePopupView::Show() {
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Make the widget explicitly activatable as TYPE_POPUP is not activatable by
   // default but we need focus for the inline reply textarea.
   params.activatable = views::Widget::InitParams::Activatable::kYes;
@@ -136,7 +136,7 @@ void MessagePopupView::Show() {
   popup_collection_->ConfigureWidgetInitParamsForContainer(widget, &params);
   widget->set_focus_on_creation(false);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We want to ensure that this toast always goes to the native desktop,
   // not the Ash desktop (since there is already another toast contents view
   // there.

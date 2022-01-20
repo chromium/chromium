@@ -100,7 +100,7 @@ const int kButtonIconToTitlePadding = 16;  // In DIPs.
 
 // Progress bar.
 const int kProgressBarTopPadding = 16;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 const int kProgressBarThickness = 5;
 const int kProgressBarCornerRadius = 3;
 #endif

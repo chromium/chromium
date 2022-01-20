@@ -86,7 +86,7 @@ gfx::FontList GetHeaderTextFontList() {
 }
 
 gfx::Insets CalculateTopPadding(int font_list_height) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the fonts can have slightly different metrics reported,
   // depending on where the code runs. In Chrome, DirectWrite is on, which means
   // font metrics are reported from Skia, which rounds from float using ceil.

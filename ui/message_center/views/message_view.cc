@@ -34,7 +34,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -68,7 +68,7 @@ std::u16string CreateAccessibleName(const Notification& notification) {
 }
 
 bool ShouldShowAeroShadowBorder() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ui::win::IsAeroGlassEnabled();
 #else
   return false;
