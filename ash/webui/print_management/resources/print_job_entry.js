@@ -32,6 +32,24 @@ import {getMetadataProvider} from './mojo_interface_provider.js';
 const GENERIC_FILE_EXTENSION_ICON = 'print-management:file-generic';
 
 /**
+ * Lookup table maps icons to the correct display class.
+ * @private {Map<string, string>}
+ */
+const ICON_CLASS_MAP = new Map([
+  ['print-management:file-gdoc', 'file-icon-blue'],
+  ['print-management:file-word', 'file-icon-blue'],
+  ['print-management:file-generic', 'file-icon-gray'],
+  ['print-management:file-excel', 'file-icon-green'],
+  ['print-management:file-gform', 'file-icon-green'],
+  ['print-management:file-gsheet', 'file-icon-green'],
+  ['print-management:file-image', 'file-icon-red'],
+  ['print-management:file-gdraw', 'file-icon-red'],
+  ['print-management:file-gslide', 'file-icon-yellow'],
+  ['print-management:file-pdf', 'file-icon-red'],
+  ['print-management:file-ppt', 'file-icon-red'],
+]);
+
+/**
  * Converts a mojo time to a JS time.
  * @param {!mojoBase.mojom.Time} mojoTime
  * @return {!Date}
@@ -233,6 +251,12 @@ Polymer({
     fileIcon_: {
       type: String,
       computed: 'computeFileIcon_(jobTitle_)',
+    },
+
+    /** @private {string} */
+    fileIconClass_: {
+      type: String,
+      computed: 'computeFileIconClass_(fileIcon_)',
     },
   },
 
@@ -469,6 +493,16 @@ Polymer({
     }
 
     return GENERIC_FILE_EXTENSION_ICON;
+  },
+
+  /**
+   * Uses file-icon SVG id to determine correct class to apply for file icon.
+   * @return {string}
+   * @private
+   */
+  computeFileIconClass_() {
+    const iconClass = ICON_CLASS_MAP.get(this.fileIcon_);
+    return `flex-center ${iconClass}`;
   },
 
   /**

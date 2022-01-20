@@ -1178,4 +1178,61 @@ suite('PrintJobEntryTest', () => {
         'print-management:file-generic',
         jobEntryTestElement.$$('#fileIcon').icon);
   });
+
+  test('ensureFileIconClassMatchesFileIcon', () => {
+    jobEntryTestElement.jobEntry = createJobEntry(
+        /*id=*/ '1', /*fileName=*/ '.test',
+        /*date=*/ convertToMojoTime(new Date('February 5, 2020 03:24:00')),
+        PrinterErrorCode.NO_ERROR, /*completedInfo=*/ null,
+        createOngoingPrintJobInfo(
+            /*printedPages=*/ 1,
+            /*printerError=*/ ActivePrintJobState.kStarted));
+    flush();
+    assertEquals(
+        jobEntryTestElement.fileIconClass_, 'flex-center file-icon-gray');
+
+    jobEntryTestElement.jobEntry = createJobEntry(
+        /*id=*/ '1', /*fileName=*/ '.doc',
+        /*date=*/ convertToMojoTime(new Date('February 5, 2020 03:24:00')),
+        PrinterErrorCode.NO_ERROR, /*completedInfo=*/ null,
+        createOngoingPrintJobInfo(
+            /*printedPages=*/ 1,
+            /*printerError=*/ ActivePrintJobState.kStarted));
+    flush();
+    assertEquals(
+        jobEntryTestElement.fileIconClass_, 'flex-center file-icon-blue');
+
+    jobEntryTestElement.jobEntry = createJobEntry(
+        /*id=*/ '1', /*fileName=*/ ' - Google Drawings',
+        /*date=*/ convertToMojoTime(new Date('February 5, 2020 03:24:00')),
+        PrinterErrorCode.NO_ERROR, /*completedInfo=*/ null,
+        createOngoingPrintJobInfo(
+            /*printedPages=*/ 1,
+            /*printerError=*/ ActivePrintJobState.kStarted));
+    flush();
+    assertEquals(
+        jobEntryTestElement.fileIconClass_, 'flex-center file-icon-red');
+
+    jobEntryTestElement.jobEntry = createJobEntry(
+        /*id=*/ '1', /*fileName=*/ '.xlsx',
+        /*date=*/ convertToMojoTime(new Date('February 5, 2020 03:24:00')),
+        PrinterErrorCode.NO_ERROR, /*completedInfo=*/ null,
+        createOngoingPrintJobInfo(
+            /*printedPages=*/ 1,
+            /*printerError=*/ ActivePrintJobState.kStarted));
+    flush();
+    assertEquals(
+        jobEntryTestElement.fileIconClass_, 'flex-center file-icon-green');
+
+    jobEntryTestElement.jobEntry = createJobEntry(
+        /*id=*/ '1', /*fileName=*/ ' - Google Slides',
+        /*date=*/ convertToMojoTime(new Date('February 5, 2020 03:24:00')),
+        PrinterErrorCode.NO_ERROR, /*completedInfo=*/ null,
+        createOngoingPrintJobInfo(
+            /*printedPages=*/ 1,
+            /*printerError=*/ ActivePrintJobState.kStarted));
+    flush();
+    assertEquals(
+        jobEntryTestElement.fileIconClass_, 'flex-center file-icon-yellow');
+  });
 });

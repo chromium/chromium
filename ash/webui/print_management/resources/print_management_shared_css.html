@@ -13,6 +13,48 @@
       display: flex;
     }
 
+    .file-icon-blue {
+      --iron-icon-fill-color: var(--google-blue-600);
+    }
+
+    .file-icon-gray {
+      --iron-icon-fill-color: var(--google-grey-700);
+    }
+
+    .file-icon-green {
+      --iron-icon-fill-color: var(--google-green-600);
+    }
+
+    .file-icon-red {
+      --iron-icon-fill-color: var(--google-red-600);
+    }
+
+    .file-icon-yellow {
+      --iron-icon-fill-color: var(--google-yellow-600);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .file-icon-blue {
+        --iron-icon-fill-color: var(--google-blue-300);
+      }
+
+      .file-icon-gray {
+        --iron-icon-fill-color: var(--google-grey-300);
+      }
+
+      .file-icon-green {
+        --iron-icon-fill-color: var(--google-green-300);
+      }
+
+      .file-icon-red {
+        --iron-icon-fill-color: var(--google-red-300);
+      }
+
+      .file-icon-yellow {
+        --iron-icon-fill-color: var(--google-yellow-300);
+      }
+    }
+
     .overflow-ellipsis {
       overflow: hidden;
       text-overflow: ellipsis;
