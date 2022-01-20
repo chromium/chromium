@@ -28,11 +28,6 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-// TODO(kbr): remove: http://crbug.com/222296
-#if defined(OS_MAC)
-#import "base/mac/mac_util.h"
-#endif
-
 using content::NavigationController;
 
 namespace {
