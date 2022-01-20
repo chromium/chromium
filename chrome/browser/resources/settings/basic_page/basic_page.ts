@@ -32,11 +32,13 @@ import '../default_browser_page/default_browser_page.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
+import {SyncStatus} from '../people_page/sync_browser_proxy.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 // </if>
@@ -69,19 +71,20 @@ type Constructor<T> = new (...args: any[]) => T;
 // <if expr="chromeos_ash or chromeos_lacros">
 const SettingsBasicPageElementBase =
     PrefsMixin(MainPageMixin(
-        RouteObserverMixin(PolymerElement) as unknown as
+        RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as unknown as
         Constructor<PolymerElement>)) as unknown as {
-      new (): PolymerElement & PrefsMixinInterface &
-      RouteObserverMixinInterface & MainPageMixinInterface
+      new (): PolymerElement & WebUIListenerMixinInterface &
+      PrefsMixinInterface & RouteObserverMixinInterface & MainPageMixinInterface
     };
 // </if>
 // <if expr="not chromeos and not lacros">
-const SettingsBasicPageElementBase = MainPageMixin(
-                                         RouteObserverMixin(PolymerElement) as
-                                         unknown as
-                                         Constructor<PolymerElement>) as {
-  new (): PolymerElement & RouteObserverMixinInterface & MainPageMixinInterface
-};
+const SettingsBasicPageElementBase =
+    MainPageMixin(
+        RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as unknown as
+        Constructor<PolymerElement>) as {
+      new (): PolymerElement & WebUIListenerMixinInterface &
+      RouteObserverMixinInterface & MainPageMixinInterface
+    };
 // </if>
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
@@ -148,6 +151,25 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         },
       },
 
+      /**
+       * True if the basic page should currently display the privacy review
+       * promo.
+       */
+      showPrivacyReviewPromo_: {
+        type: Boolean,
+        computed: 'computeShowPrivacyReviewPromo_(isManaged_, isChildUser_)',
+      },
+
+      isManaged_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isChildUser_: {
+        type: Boolean,
+        value: false,
+      },
+
       // <if expr="chromeos_ash or chromeos_lacros">
       showOSSettingsBanner_: {
         type: Boolean,
@@ -183,6 +205,9 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private currentRoute_: Route;
   private advancedTogglingInProgress_: boolean;
 
+  private isManaged_: boolean;
+  private isChildUser_: boolean;
+
   ready() {
     super.ready();
 
@@ -193,6 +218,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   connectedCallback() {
     super.connectedCallback();
+    this.addWebUIListener(
+        'is-managed-changed', this.onIsManagedChanged_.bind(this));
+    this.addWebUIListener(
+        'sync-status-changed', this.onSyncStatusChanged_.bind(this));
 
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
   }
@@ -235,10 +264,29 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         .get();
   }
 
-  private showPrivacyReviewPromo_(visibility: boolean|undefined): boolean {
+  private computeShowPrivacyReviewPromo_(): boolean {
     // TODO(crbug/1215630): Only show on the first look at the privacy page.
-    return this.showPage_(visibility) &&
-        loadTimeData.getBoolean('privacyReviewEnabled');
+    return this.pageVisibility.privacy !== false &&
+        loadTimeData.getBoolean('privacyReviewEnabled') && !this.isManaged_ &&
+        !this.isChildUser_;
+  }
+
+  private onIsManagedChanged_(isManaged: boolean) {
+    // If the user became managed, then update the variable to trigger a change
+    // to privacy review promo's visibility. However, if the user was managed
+    // before and is no longer now, then keep the managed state as true, because
+    // the Settings route for privacy review would still be unavailable until
+    // the page is reloaded.
+    this.isManaged_ = this.isManaged_ || isManaged;
+  }
+
+  private onSyncStatusChanged_(syncStatus: SyncStatus) {
+    // If the user signed in to a child user account, then update the variable
+    // to trigger a change to privacy review promo's visibility. However, if the
+    // user was a child user before and is no longer now then keep the childUser
+    // state as true, because the Settings route for privacy review would still
+    // be unavailable until the page is reloaded.
+    this.isChildUser_ = this.isChildUser_ || !!syncStatus.childUser;
   }
 
   /**

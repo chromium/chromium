@@ -76,10 +76,19 @@ var CrSettingsBasicPageTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js&host=webui-test';
   }
+
+  /** @override */
+  get featureListInternal() {
+    return {enabled: ['features::kPrivacyReview']};
+  }
 };
 
-TEST_F('CrSettingsBasicPageTest', 'All', function() {
+TEST_F('CrSettingsBasicPageTest', 'BasicPage', function() {
   runMochaSuite('SettingsBasicPage');
+});
+
+TEST_F('CrSettingsBasicPageTest', 'PrivacyReviewPromo', function() {
+  runMochaSuite('PrivacyReviewPromo');
 });
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
