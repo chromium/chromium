@@ -14,6 +14,12 @@ struct DevToolsMessage {
   mojo_base.mojom.BigBuffer data;
 };
 
+enum DevToolsExecutionContextType {
+  kDedicatedWorker,
+  // kWorklet includes all types of worklets (animation, paint and audio).
+  kWorklet,
+};
+
 // Debugging interactions are defined in Remote Debugging Protocol.
 // See https://chromedevtools.github.io/devtools-protocol/ for more
 // information on the protocol itself.
@@ -96,25 +102,27 @@ interface DevToolsAgent {
   // Instructs agent to start/stop reporting child workers to the host.
   // |wait_for_debugger| controls whether the worker should be paused
   // on start waiting for debugger to connect.
-  // See ChildWorkerCreated in DevToolsAgentHost for details.
-  ReportChildWorkers(bool report, bool wait_for_debugger) => ();
+  // See ChildTargetCreated in DevToolsAgentHost for details.
+  ReportChildTargets(bool report, bool wait_for_debugger) => ();
 };
 
 // This interface is implemented in the browser and is notified by
-// DevToolsAgent when a new child worker is available for future debugging.
+// DevToolsAgent when a new child dedicated worker or a worklet is available for
+// future debugging.
 interface DevToolsAgentHost {
   // Informs the host about the new child worker and gives its DevToolsAgent
   // for debugging.
   // |devtools_worker_token| is a unique token identifying this worker.
   // |waiting_for_debugger| is true if worker was paused on startup and
   // should be resumed by debugger to actually start.
-  ChildWorkerCreated(
+  ChildTargetCreated(
       pending_remote<DevToolsAgent> worker_devtools_agent,
       pending_receiver<DevToolsAgentHost> worker_devtools_agent_host,
       url.mojom.Url url,
       string name,
       mojo_base.mojom.UnguessableToken devtools_worker_token,
-      bool waiting_for_debugger);
+      bool waiting_for_debugger,
+      DevToolsExecutionContextType context_type);
 };
 
 // Represents an attached session which exposes remote debugging protocol.

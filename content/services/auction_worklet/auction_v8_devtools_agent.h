@@ -106,9 +106,9 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
       bool client_expects_binary_responses,
       const std::string& session_id) override;
   void InspectElement(const ::gfx::Point& point) override;
-  void ReportChildWorkers(bool report,
+  void ReportChildTargets(bool report,
                           bool wait_for_debugger,
-                          ReportChildWorkersCallback callback) override;
+                          ReportChildTargetsCallback callback) override;
 
   // V8InspectorClient implementation.
   // TODO(morlovich): Implement consoleAPIMessage and currentTimeMS and replace

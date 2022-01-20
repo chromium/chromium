@@ -59,30 +59,31 @@ class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
   void InspectElement(const gfx::Point& point);
   void ForceDetachWorkerSessions();
 
-  using ChildWorkerCreatedCallback =
+  using ChildTargetCreatedCallback =
       base::RepeatingCallback<void(DevToolsAgentHostImpl*,
                                    bool waiting_for_debugger)>;
-  void SetReportChildWorkers(ChildWorkerCreatedCallback report_callback,
+  void SetReportChildTargets(ChildTargetCreatedCallback report_callback,
                              bool wait_for_debugger,
                              base::OnceClosure completion_callback);
 
  private:
   // blink::mojom::DevToolsAgentHost implementation.
-  void ChildWorkerCreated(
+  void ChildTargetCreated(
       mojo::PendingRemote<blink::mojom::DevToolsAgent> worker_devtools_agent,
       mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver,
       const GURL& url,
       const std::string& name,
       const base::UnguessableToken& devtools_worker_token,
-      bool waiting_for_debugger) override;
-  void ChildWorkerDestroyed(DevToolsAgentHostImpl*);
+      bool waiting_for_debugger,
+      blink::mojom::DevToolsExecutionContextType context_type) override;
+  void ChildTargetDestroyed(DevToolsAgentHostImpl*);
 
   void CleanupConnection();
   void SetRendererInternal(blink::mojom::DevToolsAgent* agent,
                            int process_id,
                            RenderFrameHostImpl* frame_host,
                            bool force_using_io);
-  void ReportChildWorkersCallback();
+  void ReportChildTargetsCallback();
 
   DevToolsAgentHostImpl* owner_;
   mojo::Receiver<blink::mojom::DevToolsAgentHost> receiver_{this};
@@ -92,8 +93,8 @@ class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> associated_agent_remote_;
   int process_id_;
   RenderFrameHostImpl* frame_host_ = nullptr;
-  base::flat_set<WorkerDevToolsAgentHost*> child_workers_;
-  ChildWorkerCreatedCallback child_worker_created_callback_;
+  base::flat_set<WorkerDevToolsAgentHost*> child_targets_;
+  ChildTargetCreatedCallback child_target_created_callback_;
   bool wait_for_debugger_ = false;
   base::OnceClosure set_report_completion_callback_;
   base::WeakPtrFactory<DevToolsRendererChannel> weak_factory_{this};
