@@ -5,12 +5,16 @@
 #include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
+#include "ash/quick_pair/proto/fastpair_data.pb.h"
+#include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "ash/shell.h"
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace quick_pair {
@@ -26,30 +30,58 @@ void DeviceImageStore::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDeviceImageStorePref);
 }
 
-DeviceImageStore::DeviceImageStore() = default;
+DeviceImageStore::DeviceImageStore(FastPairImageDecoder* image_decoder)
+    : image_decoder_(image_decoder) {}
 
 DeviceImageStore::~DeviceImageStore() = default;
 
-void DeviceImageStore::SaveDeviceImages(
+void DeviceImageStore::FetchDeviceImages(
     const std::string& model_id,
     DeviceMetadata* device_metadata,
-    SaveDeviceImagesCallback on_images_saved_callback) {
+    FetchDeviceImagesCallback on_images_saved_callback) {
   DCHECK(device_metadata);
   DeviceImageInfo& images = model_id_to_images_[model_id];
 
   if (images.default_image().empty() && !device_metadata->image().IsEmpty()) {
     SaveImageAsBase64(model_id, DeviceImageType::kDefault,
-                      std::move(on_images_saved_callback),
-                      device_metadata->image());
+                      on_images_saved_callback, device_metadata->image());
   } else {
-    QP_LOG(WARNING) << __func__ << ": No default device image to save.";
-    std::move(on_images_saved_callback).Run(SaveDeviceImagesResult::kFailure);
+    on_images_saved_callback.Run(std::make_pair(
+        DeviceImageType::kDefault, FetchDeviceImagesResult::kSkipped));
+  }
+
+  nearby::fastpair::TrueWirelessHeadsetImages true_wireless_images =
+      device_metadata->GetDetails().true_wireless_images();
+
+  if (images.left_bud_image().empty() &&
+      true_wireless_images.has_left_bud_url()) {
+    DecodeImage(model_id, DeviceImageType::kLeftBud,
+                true_wireless_images.left_bud_url(), on_images_saved_callback);
+  } else {
+    on_images_saved_callback.Run(std::make_pair(
+        DeviceImageType::kLeftBud, FetchDeviceImagesResult::kSkipped));
+  }
+
+  if (images.right_bud_image().empty() &&
+      true_wireless_images.has_right_bud_url()) {
+    DecodeImage(model_id, DeviceImageType::kRightBud,
+                true_wireless_images.right_bud_url(), on_images_saved_callback);
+  } else {
+    on_images_saved_callback.Run(std::make_pair(
+        DeviceImageType::kRightBud, FetchDeviceImagesResult::kSkipped));
+  }
+
+  if (images.case_image().empty() && true_wireless_images.has_case_url()) {
+    DecodeImage(model_id, DeviceImageType::kCase,
+                true_wireless_images.case_url(), on_images_saved_callback);
+  } else {
+    on_images_saved_callback.Run(std::make_pair(
+        DeviceImageType::kCase, FetchDeviceImagesResult::kSkipped));
   }
 }
 
 bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
-  chromeos::bluetooth_config::DeviceImageInfo& images =
-      model_id_to_images_[model_id];
+  DeviceImageInfo& images = model_id_to_images_[model_id];
 
   if (!DeviceImageInfoHasImages(images)) {
     QP_LOG(WARNING)
@@ -99,8 +131,7 @@ DeviceImageStore::GetImagesForDeviceModel(const std::string& model_id) {
     LoadPersistedImagesFromPrefs();
   }
 
-  chromeos::bluetooth_config::DeviceImageInfo& images =
-      model_id_to_images_[model_id];
+  DeviceImageInfo& images = model_id_to_images_[model_id];
 
   if (!DeviceImageInfoHasImages(images)) {
     return absl::nullopt;
@@ -118,9 +149,8 @@ void DeviceImageStore::LoadPersistedImagesFromPrefs() {
       local_state->GetDictionary(kDeviceImageStorePref);
   for (std::pair<const std::string&, const base::Value&> record :
        device_image_store->DictItems()) {
-    absl::optional<chromeos::bluetooth_config::DeviceImageInfo> images =
-        chromeos::bluetooth_config::DeviceImageInfo::FromDictionaryValue(
-            record.second);
+    absl::optional<DeviceImageInfo> images =
+        DeviceImageInfo::FromDictionaryValue(record.second);
     if (!images) {
       QP_LOG(WARNING) << __func__
                       << ": Failed to load persisted images from prefs.";
@@ -136,26 +166,55 @@ bool DeviceImageStore::DeviceImageInfoHasImages(
          !images.right_bud_image_.empty() || !images.case_image_.empty();
 }
 
+void DeviceImageStore::DecodeImage(
+    const std::string& model_id,
+    DeviceImageType image_type,
+    const std::string& image_url,
+    FetchDeviceImagesCallback on_images_saved_callback) {
+  DCHECK(image_decoder_);
+  image_decoder_->DecodeImageFromUrl(
+      GURL(image_url), /*resize_to_notification_size=*/true,
+      base::BindOnce(&DeviceImageStore::SaveImageAsBase64,
+                     weak_ptr_factory_.GetWeakPtr(), model_id, image_type,
+                     std::move(on_images_saved_callback)));
+}
+
 void DeviceImageStore::SaveImageAsBase64(
     const std::string& model_id,
     DeviceImageType image_type,
-    SaveDeviceImagesCallback on_images_saved_callback,
+    FetchDeviceImagesCallback on_images_saved_callback,
     gfx::Image image) {
+  if (image.IsEmpty()) {
+    QP_LOG(WARNING) << __func__ << ": Failed to fetch device image.";
+    std::move(on_images_saved_callback)
+        .Run(std::make_pair(image_type, FetchDeviceImagesResult::kFailure));
+    return;
+  }
+
   // Encode the image as a base64 data URL.
   std::string encoded_image = webui::GetBitmapDataUrl(image.AsBitmap());
 
   // Save the image in the correct path.
   if (image_type == DeviceImageType::kDefault) {
     model_id_to_images_[model_id].default_image_ = encoded_image;
+  } else if (image_type == DeviceImageType::kLeftBud) {
+    model_id_to_images_[model_id].left_bud_image_ = encoded_image;
+  } else if (image_type == DeviceImageType::kRightBud) {
+    model_id_to_images_[model_id].right_bud_image_ = encoded_image;
+  } else if (image_type == DeviceImageType::kCase) {
+    model_id_to_images_[model_id].case_image_ = encoded_image;
   } else {
     QP_LOG(WARNING) << __func__
                     << ": Can't save device image to invalid image field.";
-    std::move(on_images_saved_callback).Run(SaveDeviceImagesResult::kFailure);
+    std::move(on_images_saved_callback)
+        .Run(std::make_pair(DeviceImageType::kNotSupportedType,
+                            FetchDeviceImagesResult::kFailure));
     return;
   }
 
   // Once successfully saved, return success.
-  std::move(on_images_saved_callback).Run(SaveDeviceImagesResult::kSuccess);
+  std::move(on_images_saved_callback)
+      .Run(std::make_pair(image_type, FetchDeviceImagesResult::kSuccess));
 }
 
 }  // namespace quick_pair
