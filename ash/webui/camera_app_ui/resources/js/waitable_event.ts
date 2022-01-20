@@ -7,11 +7,12 @@
  */
 export class WaitableEvent<T = void> {
   private isSignaledInternal = false;
-  private resolve: (val: T) => void;
+  // The field is definitely assigned in the constructor since the argument to
+  // the Promise constructor is called immediately, but TypeScript can't
+  // recognize that. Disable the check by adding "!" to the property name.
+  private resolve!: (val: T) => void;
   private promise: Promise<T>;
-  /**
-   * @public
-   */
+
   constructor() {
     this.promise = new Promise((resolve) => {
       this.resolve = resolve;
@@ -28,7 +29,7 @@ export class WaitableEvent<T = void> {
   /**
    * Signals the event.
    */
-  signal(value: T|undefined): void {
+  signal(value: T): void {
     if (this.isSignaledInternal) {
       return;
     }
