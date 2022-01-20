@@ -86,15 +86,15 @@
       'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-bfcache-rel': 'android_release_bot_minimal_symbols',
       'android-binary-size-generator': 'android_binary_size',
-      'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon',
-      'android-cronet-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
-      'android-cronet-arm64-dbg': 'android_cronet_debug_static_bot_arm64',
-      'android-cronet-arm64-rel': 'android_cronet_release_bot_minimal_symbols_arm64',
-      'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan',
+      'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon_reclient',
+      'android-cronet-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_reclient',
+      'android-cronet-arm64-dbg': 'android_cronet_debug_static_bot_arm64_reclient',
+      'android-cronet-arm64-rel': 'android_cronet_release_bot_minimal_symbols_arm64_reclient',
+      'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan_reclient',
       'android-cronet-marshmallow-arm64-perf-rel': 'android_cronet_release_bot_minimal_symbols_arm64',
-      'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86',
-      'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86',
-      'android-incremental-dbg': 'android_incremental_debug_bot',
+      'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
+      'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
+      'android-incremental-dbg': 'android_incremental_debug_bot_reclient',
 
       # This bot must use the gpu_tests mixin to match 'Android FYI Release (Nexus 5X)'
       # on the chromium.gpu waterfall, which it mirrors via trybots.pyl.
@@ -787,7 +787,7 @@
       'android-asan': 'android_clang_asan_release_trybot',
       'android-bfcache-rel': 'android_release_trybot',
       'android-opus-arm-rel': 'android_release_trybot',
-      'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan',
+      'android-cronet-asan-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan_reclient',
       # TODO(crbug/597596): Switch this back to debug_trybot when cronet's
       # shared library loading is fixed.
       'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon',
@@ -796,8 +796,8 @@
       'android-cronet-kitkat-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
       'android-cronet-lollipop-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
       'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
-      'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86',
-      'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86',
+      'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
+      'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-cronet-x86-dbg-10-tests': 'android_cronet_debug_static_bot_x86',
       'android-cronet-x86-dbg-11-tests': 'android_cronet_debug_static_bot_x86',
       'android-cronet-x86-dbg-oreo-tests': 'android_cronet_debug_static_bot_x86',
@@ -864,7 +864,7 @@
       'linux_android_dbg_ng': 'android_debug_bot',
       'try-nougat-phone-tester': 'android_debug_trybot_arm64',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64',
-      'android-pie-arm64-dbg': 'android_debug_trybot_arm64',
+      'android-pie-arm64-dbg': 'android_debug_trybot_arm64_reclient',
     },
 
     # TODO(jmadill/ynovikov): Migrate these to angle waterfall. http://anglebug.com/4483
@@ -1324,16 +1324,33 @@
       'android', 'cronet_android', 'debug_static_bot', 'arm_no_neon', 'release_java',
     ],
 
+    'android_cronet_debug_static_bot_arm_no_neon_reclient': [
+      'android', 'cronet_android', 'debug_static_bot_reclient', 'arm_no_neon', 'release_java',
+    ],
+
     'android_cronet_debug_static_bot_x86': [
       'android', 'cronet_android', 'debug_static_bot', 'x86',
+    ],
+
+    'android_cronet_debug_static_bot_x86_reclient': [
+      'android', 'cronet_android', 'debug_static_bot_reclient', 'x86',
     ],
 
     'android_cronet_debug_static_bot_arm64': [
       'android', 'cronet_android', 'debug_static_bot', 'arm64',
     ],
 
+    'android_cronet_debug_static_bot_arm64_reclient': [
+      'android', 'cronet_android', 'debug_static_bot_reclient', 'arm64',
+    ],
+
     'android_cronet_release_bot_minimal_symbols_arm64': [
       'android', 'cronet_android', 'official_optimize', 'release_bot', 'minimal_symbols', 'arm64',
+      'strip_debug_info',
+    ],
+
+    'android_cronet_release_bot_minimal_symbols_arm64_reclient': [
+      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'arm64',
       'strip_debug_info',
     ],
 
@@ -1342,13 +1359,18 @@
       'strip_debug_info',
     ],
 
-    'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan': [
-      'android', 'cronet_android', 'release_bot', 'minimal_symbols', 'arm_no_neon', 'clang', 'asan',
+    'android_cronet_release_bot_minimal_symbols_arm_no_neon_reclient': [
+      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'arm_no_neon',
       'strip_debug_info',
     ],
 
-    'android_cronet_release_bot_minimal_symbols_x86': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot', 'minimal_symbols', 'x86',
+    'android_cronet_release_bot_minimal_symbols_arm_no_neon_clang_asan_reclient': [
+      'android', 'cronet_android', 'release_bot_reclient', 'minimal_symbols', 'arm_no_neon', 'clang', 'asan',
+      'strip_debug_info',
+    ],
+
+    'android_cronet_release_bot_minimal_symbols_x86_reclient': [
+      'android', 'cronet_android', 'official_optimize', 'release_bot_reclient', 'minimal_symbols', 'x86',
       'strip_debug_info',
     ],
 
@@ -1389,6 +1411,10 @@
       'android', 'debug_bot', 'arm64',
     ],
 
+    'android_debug_trybot_arm64_reclient': [
+      'android', 'debug_bot_reclient', 'arm64',
+    ],
+
     'android_debug_trybot_compile_only': [
       'android', 'debug_bot', 'compile_only',
     ],
@@ -1409,8 +1435,8 @@
       'android', 'debug_bot', 'use_java_coverage', 'strip_debug_info',
     ],
 
-    'android_incremental_debug_bot': [
-      'android', 'incremental', 'debug_bot',
+    'android_incremental_debug_bot_reclient': [
+      'android', 'incremental', 'debug_bot_reclient',
     ],
 
     'android_official_optimize_goma': [

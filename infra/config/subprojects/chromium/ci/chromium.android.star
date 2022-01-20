@@ -287,6 +287,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     notifies = ["cronet"],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -298,6 +301,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     notifies = ["cronet"],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -307,6 +313,9 @@ ci.builder(
         short_name = "dbg",
     ),
     notifies = ["cronet"],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -316,6 +325,9 @@ ci.builder(
         short_name = "rel",
     ),
     notifies = ["cronet"],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -324,6 +336,9 @@ ci.builder(
         category = "cronet|asan",
     ),
     notifies = ["cronet"],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -381,6 +396,9 @@ ci.builder(
         short_name = "dbg",
     ),
     notifies = ["cronet"],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -430,6 +448,9 @@ ci.builder(
         short_name = "rel",
     ),
     notifies = ["cronet"],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -437,6 +458,9 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "tester|incremental",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -482,6 +506,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 # TODO(crbug/1182468) Remove android coverage bots after coverage is
