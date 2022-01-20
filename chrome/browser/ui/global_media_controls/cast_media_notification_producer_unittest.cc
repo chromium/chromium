@@ -60,21 +60,6 @@ class CastMediaNotificationProducerTest : public testing::Test {
   NiceMock<MockClosure> items_changed_callback_;
 };
 
-// TODO(b/185139027): Remove this class once
-// |media_router::kGlobalMediaControlsCastStartStop| is enabled by default.
-class CastMediaNotificationProducerCastStartStopTest
-    : public CastMediaNotificationProducerTest {
- public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
-    CastMediaNotificationProducerTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 TEST_F(CastMediaNotificationProducerTest, AddAndRemoveRoute) {
   const std::string route_id = "route-id-1";
   MediaRoute route = CreateRoute(route_id);
@@ -115,17 +100,6 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
   notification_producer_->OnRoutesUpdated({route});
 }
 
-TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
-  // These routes should not have notification items created for them.
-  MediaRoute no_controller_route = CreateRoute("route-1");
-  no_controller_route.set_controller_type(RouteControllerType::kNone);
-  MediaRoute multizone_member_route = CreateRoute("route-2", "cast:705D30C6");
-
-  notification_producer_->OnRoutesUpdated(
-      {no_controller_route, multizone_member_route});
-  EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
-}
-
 TEST_F(CastMediaNotificationProducerTest, DismissNotification) {
   const std::string route_id1 = "route-id-1";
   const std::string route_id2 = "route-id-2";
@@ -142,8 +116,7 @@ TEST_F(CastMediaNotificationProducerTest, DismissNotification) {
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 }
 
-TEST_F(CastMediaNotificationProducerCastStartStopTest,
-       RoutesWithoutNotifications) {
+TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
   // These routes should not have notification items created for them.
   MediaRoute mirroring_route =
       CreateRoute("route-1", "urn:x-org.chromium.media:source:tab:*");

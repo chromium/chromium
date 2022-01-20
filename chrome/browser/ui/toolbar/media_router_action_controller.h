@@ -95,7 +95,7 @@ class MediaRouterActionController : public media_router::IssuesObserver,
  private:
   friend class MediaRouterActionControllerUnitTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterActionControllerUnitTest,
-                           EphemeralIconForRoutesAndIssues);
+                           EphemeralIconForIssues);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterActionControllerUnitTest,
                            EphemeralIconForDialog);
 

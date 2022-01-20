@@ -33,7 +33,7 @@ const base::Feature kMediaRouter{"MediaRouter",
 const base::Feature kCastAllowAllIPsFeature{"CastAllowAllIPs",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kGlobalMediaControlsCastStartStop{
-    "GlobalMediaControlsCastStartStop", base::FEATURE_DISABLED_BY_DEFAULT};
+    "GlobalMediaControlsCastStartStop", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kAllowAllSitesToInitiateMirroring{
     "AllowAllSitesToInitiateMirroring", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
