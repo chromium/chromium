@@ -1056,4 +1056,37 @@ void ExpectSyncConsentHistogram(
   [ChromeEarlGrey waitForWebStateContainingText:kManagedText];
 }
 
+// Tests that the sign-in promo disappear when sync is disabled and reappears
+// when sync is enabled again.
+// Related to crbug.com/1287465.
+- (void)testTurnOffSyncDisablePolicy {
+  // Disable sync by policy.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                            grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
+  // Open other device tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Check that the sign-in promo is not visible.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  // Add an identity to generate a SSO identity update notification.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Enable sync.
+  policy_test_utils::SetPolicy(false, policy::key::kSyncDisabled);
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Check that the sign-in promo is visible.
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
+                           closeButton:NO];
+}
+
 @end

@@ -1354,11 +1354,15 @@ const int kRecentlyClosedTabsSectionIndex = 0;
                              identityChanged:(BOOL)identityChanged {
   DCHECK(self.signinPromoViewMediator);
   if (![self.tableViewModel
-          hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
+          hasSectionForSectionIdentifier:SectionIdentifierOtherDevices] ||
+      ![self.tableViewModel hasItemForItemType:ItemTypeOtherDevicesSigninPromo
+                             sectionIdentifier:SectionIdentifierOtherDevices]) {
     // Need to remove the sign-in promo view mediator when the section doesn't
     // exist anymore. The mediator should not be removed each time the section
     // is removed since the section is replaced at each reload.
     // Metrics would be recorded too often.
+    // The other device section can be present even without the sync promo. This
+    // happens when sync is disabled.
     [self.signinPromoViewMediator disconnect];
     self.signinPromoViewMediator = nil;
     return;
