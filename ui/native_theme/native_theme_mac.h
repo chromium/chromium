@@ -49,6 +49,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
 
   // NativeThemeBase:
   void Paint(cc::PaintCanvas* canvas,
+             const ColorProvider* color_provider,
              Part part,
              State state,
              const gfx::Rect& rect,

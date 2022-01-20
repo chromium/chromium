@@ -102,7 +102,7 @@ class MenuScrollButton : public View {
     // The background.
     gfx::Rect item_bounds(0, 0, width(), height());
     ui::NativeTheme::ExtraParams extra;
-    GetNativeTheme()->Paint(canvas->sk_canvas(),
+    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                             ui::NativeTheme::kMenuItemBackground,
                             ui::NativeTheme::kNormal, item_bounds, extra);
 
@@ -288,7 +288,7 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
   const MenuConfig& menu_config = MenuConfig::instance();
   extra.menu_background.corner_radius = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
-  GetNativeTheme()->Paint(canvas->sk_canvas(),
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           ui::NativeTheme::kMenuPopupBackground,
                           ui::NativeTheme::kNormal, bounds, extra);
 }

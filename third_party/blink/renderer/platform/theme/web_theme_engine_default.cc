@@ -202,8 +202,9 @@ void WebThemeEngineDefault::Paint(
   GetNativeThemeExtraParams(part, state, extra_params,
                             &native_theme_extra_params);
   ui::NativeTheme::GetInstanceForWeb()->Paint(
-      canvas, NativeThemePart(part), NativeThemeState(state), rect,
-      native_theme_extra_params, NativeColorScheme(color_scheme), accent_color);
+      canvas, GetColorProviderForPainting(color_scheme), NativeThemePart(part),
+      NativeThemeState(state), rect, native_theme_extra_params,
+      NativeColorScheme(color_scheme), accent_color);
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
@@ -336,6 +337,12 @@ bool WebThemeEngineDefault::UpdateColorProviders(
   dark_color_provider_ =
       ui::CreateColorProviderFromRendererColorMap(dark_colors);
   return true;
+}
+
+const ui::ColorProvider* WebThemeEngineDefault::GetColorProviderForPainting(
+    mojom::ColorScheme color_scheme) const {
+  return color_scheme == mojom::ColorScheme::kLight ? &light_color_provider_
+                                                    : &dark_color_provider_;
 }
 
 }  // namespace blink

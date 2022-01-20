@@ -15,6 +15,7 @@ class Canvas;
 }
 
 namespace ui {
+class ColorProvider;
 class NativeTheme;
 }
 
@@ -90,6 +91,7 @@ class VIEWS_EXPORT FrameBackground {
 
   void PaintMaximized(gfx::Canvas* canvas,
                       const ui::NativeTheme* native_theme,
+                      const ui::ColorProvider* color_provider,
                       int x,
                       int y,
                       int width) const;

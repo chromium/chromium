@@ -17,8 +17,8 @@ void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               mojom::ColorScheme color_scheme,
                               const absl::optional<SkColor>& accent_color) {
   if (IsScrollbarPart(part)) {
-    PaintMacScrollBarParts(canvas, part, state, rect, extra_params,
-                           color_scheme);
+    PaintMacScrollBarParts(canvas, GetColorProviderForPainting(color_scheme),
+                           part, state, rect, extra_params, color_scheme);
     return;
   }
 
@@ -41,6 +41,7 @@ bool WebThemeEngineMac::IsScrollbarPart(WebThemeEngine::Part part) {
 
 void WebThemeEngineMac::PaintMacScrollBarParts(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     WebThemeEngine::Part part,
     WebThemeEngine::State state,
     const gfx::Rect& rect,
@@ -69,8 +70,8 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
   }
 
   ui::NativeTheme::GetInstanceForNativeUi()->Paint(
-      canvas, NativeThemePart(part), NativeThemeState(state), rect,
-      native_theme_extra_params, NativeColorScheme(color_scheme));
+      canvas, color_provider, NativeThemePart(part), NativeThemeState(state),
+      rect, native_theme_extra_params, NativeColorScheme(color_scheme));
 }
 
 }  // namespace blink

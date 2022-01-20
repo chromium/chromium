@@ -16,6 +16,7 @@ gfx::Size TestNativeTheme::GetPartSize(Part part,
 }
 
 void TestNativeTheme::Paint(cc::PaintCanvas* canvas,
+                            const ui::ColorProvider* color_provider,
                             Part part,
                             State state,
                             const gfx::Rect& rect,

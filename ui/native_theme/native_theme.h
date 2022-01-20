@@ -344,6 +344,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   // Paint the part to the canvas.
   virtual void Paint(cc::PaintCanvas* canvas,
+                     const ui::ColorProvider* color_provider,
                      Part part,
                      State state,
                      const gfx::Rect& rect,

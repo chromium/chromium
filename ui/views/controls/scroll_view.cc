@@ -63,9 +63,10 @@ class ScrollCornerView : public View {
 
   void OnPaint(gfx::Canvas* canvas) override {
     ui::NativeTheme::ExtraParams ignored;
-    GetNativeTheme()->Paint(
-        canvas->sk_canvas(), ui::NativeTheme::kScrollbarCorner,
-        ui::NativeTheme::kNormal, GetLocalBounds(), ignored);
+    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
+                            ui::NativeTheme::kScrollbarCorner,
+                            ui::NativeTheme::kNormal, GetLocalBounds(),
+                            ignored);
   }
 };
 

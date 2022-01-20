@@ -24,6 +24,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
   static bool IsScrollbarPart(WebThemeEngine::Part part);
   static void PaintMacScrollBarParts(
       cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
       WebThemeEngine::Part part,
       WebThemeEngine::State state,
       const gfx::Rect& rect,

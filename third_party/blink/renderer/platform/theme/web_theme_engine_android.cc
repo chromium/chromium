@@ -166,9 +166,13 @@ void WebThemeEngineAndroid::Paint(
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(part, state, extra_params,
                             &native_theme_extra_params);
+  // ColorProviders are not supported on android and there are no controls that
+  // require ColorProvider colors on the platform.
+  const ui::ColorProvider* color_provider = nullptr;
   ui::NativeTheme::GetInstanceForWeb()->Paint(
-      canvas, NativeThemePart(part), NativeThemeState(state), rect,
-      native_theme_extra_params, NativeColorScheme(color_scheme), accent_color);
+      canvas, color_provider, NativeThemePart(part), NativeThemeState(state),
+      rect, native_theme_extra_params, NativeColorScheme(color_scheme),
+      accent_color);
 }
 
 ForcedColors WebThemeEngineAndroid::GetForcedColors() const {

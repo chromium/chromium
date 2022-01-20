@@ -1096,9 +1096,10 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
     }
     AdjustBoundsForRTLUI(&item_bounds);
 
-    GetNativeTheme()->Paint(
-        canvas->sk_canvas(), ui::NativeTheme::kMenuItemBackground,
-        ui::NativeTheme::kHovered, item_bounds, ui::NativeTheme::ExtraParams());
+    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
+                            ui::NativeTheme::kMenuItemBackground,
+                            ui::NativeTheme::kHovered, item_bounds,
+                            ui::NativeTheme::ExtraParams());
   }
 }
 

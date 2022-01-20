@@ -161,8 +161,9 @@ class InMenuButtonBackground : public views::Background {
       params.menu_separator.paint_rect = &separator_bounds;
       params.menu_separator.type = ui::VERTICAL_SEPARATOR;
       view->GetNativeTheme()->Paint(
-          canvas->sk_canvas(), ui::NativeTheme::kMenuPopupSeparator,
-          ui::NativeTheme::kNormal, separator_bounds, params);
+          canvas->sk_canvas(), view->GetColorProvider(),
+          ui::NativeTheme::kMenuPopupSeparator, ui::NativeTheme::kNormal,
+          separator_bounds, params);
       bounds.Inset(
           gfx::Insets(0, MenuConfig::instance().separator_thickness, 0, 0));
     }
@@ -187,6 +188,7 @@ class InMenuButtonBackground : public views::Background {
         params.menu_item.corner_radius = kBackgroundCornerRadius;
       }
       view->GetNativeTheme()->Paint(canvas->sk_canvas(),
+                                    view->GetColorProvider(),
                                     ui::NativeTheme::kMenuItemBackground,
                                     ui::NativeTheme::kHovered, bounds, params);
     }

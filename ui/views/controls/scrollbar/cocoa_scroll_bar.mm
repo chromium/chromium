@@ -107,7 +107,7 @@ void CocoaScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
               ui::NativeTheme::ScrollbarOrientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalThumb
           : ui::NativeTheme::kScrollbarVerticalThumb;
-  GetNativeTheme()->Paint(canvas->sk_canvas(), thumb_part,
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), thumb_part,
                           ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }
 
@@ -220,7 +220,7 @@ void CocoaScrollBar::OnPaint(gfx::Canvas* canvas) {
               ui::NativeTheme::ScrollbarOrientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalTrack
           : ui::NativeTheme::kScrollbarVerticalTrack;
-  GetNativeTheme()->Paint(canvas->sk_canvas(), track_part,
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), track_part,
                           ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }
 

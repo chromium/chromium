@@ -61,6 +61,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
                         State state,
                         const ExtraParams& extra) const override;
   void Paint(cc::PaintCanvas* canvas,
+             const ui::ColorProvider* color_provider,
              Part part,
              State state,
              const gfx::Rect& rect,

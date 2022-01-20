@@ -241,6 +241,7 @@ float NativeThemeBase::GetBorderRadiusForPart(Part part,
 }
 
 void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
+                            const ui::ColorProvider* color_provider,
                             Part part,
                             State state,
                             const gfx::Rect& rect,

@@ -197,6 +197,7 @@ NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
 }
 
 void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
+                           const ColorProvider* color_provider,
                            Part part,
                            State state,
                            const gfx::Rect& rect,
@@ -226,8 +227,8 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                                      rect, color_scheme_updated, true);
       break;
     default:
-      NativeThemeBase::Paint(canvas, part, state, rect, extra, color_scheme,
-                             accent_color);
+      NativeThemeBase::Paint(canvas, color_provider, part, state, rect, extra,
+                             color_scheme, accent_color);
       break;
   }
 }

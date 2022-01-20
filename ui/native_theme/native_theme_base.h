@@ -30,6 +30,7 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
                                float width,
                                float height) const override;
   void Paint(cc::PaintCanvas* canvas,
+             const ui::ColorProvider* color_provider,
              Part part,
              State state,
              const gfx::Rect& rect,

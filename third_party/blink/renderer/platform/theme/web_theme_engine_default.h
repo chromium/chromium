@@ -51,6 +51,10 @@ class WebThemeEngineDefault : public WebThemeEngine {
   bool UpdateColorProviders(const ui::RendererColorMap& light_colors,
                             const ui::RendererColorMap& dark_colors) override;
 
+ protected:
+  const ui::ColorProvider* GetColorProviderForPainting(
+      mojom::ColorScheme color_scheme) const;
+
  private:
   // These providers are kept in sync with ColorProviders in the browser and
   // will be updated when the theme changes.
