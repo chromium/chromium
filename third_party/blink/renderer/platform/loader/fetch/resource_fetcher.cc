@@ -1464,7 +1464,9 @@ ResourceFetcher::DetermineRevalidationPolicy(
     const FetchParameters& fetch_params,
     const Resource& existing_resource,
     bool is_static_data) const {
-  auto [policy, reason] = DetermineRevalidationPolicyInternal(
+  RevalidationPolicy policy;
+  const char* reason;
+  std::tie(policy, reason) = DetermineRevalidationPolicyInternal(
       type, fetch_params, existing_resource, is_static_data);
   DCHECK(reason);
 

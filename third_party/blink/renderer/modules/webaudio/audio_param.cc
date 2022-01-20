@@ -169,7 +169,9 @@ float AudioParamHandler::Value() {
   // Update value for timeline.
   float v = IntrinsicValue();
   if (GetDeferredTaskHandler().IsAudioThread()) {
-    auto [has_value, timeline_value] = timeline_.ValueForContextTime(
+    bool has_value;
+    float timeline_value;
+    std::tie(has_value, timeline_value) = timeline_.ValueForContextTime(
         DestinationHandler(), v, MinValue(), MaxValue(),
         GetDeferredTaskHandler().RenderQuantumFrames());
 
@@ -198,7 +200,9 @@ float AudioParamHandler::SmoothedValue() {
 bool AudioParamHandler::Smooth() {
   // If values have been explicitly scheduled on the timeline, then use the
   // exact value.  Smoothing effectively is performed by the timeline.
-  auto [use_timeline_value, value] = timeline_.ValueForContextTime(
+  bool use_timeline_value = false;
+  float value;
+  std::tie(use_timeline_value, value) = timeline_.ValueForContextTime(
       DestinationHandler(), IntrinsicValue(), MinValue(), MaxValue(),
       GetDeferredTaskHandler().RenderQuantumFrames());
 
@@ -304,8 +308,10 @@ void AudioParamHandler::CalculateFinalValues(float* values,
     CalculateTimelineValues(values, number_of_values);
   } else {
     // Calculate control-rate (k-rate) intrinsic value.
+    bool has_value;
     float value = IntrinsicValue();
-    auto [has_value, timeline_value] = timeline_.ValueForContextTime(
+    float timeline_value;
+    std::tie(has_value, timeline_value) = timeline_.ValueForContextTime(
         DestinationHandler(), value, MinValue(), MaxValue(),
         GetDeferredTaskHandler().RenderQuantumFrames());
 

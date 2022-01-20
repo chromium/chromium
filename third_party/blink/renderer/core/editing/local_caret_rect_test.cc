@@ -919,7 +919,8 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterLineBreakInPreBlockLTRLineLTR) {
   InsertStyleElement("pre{ font: 10px/10px Ahem; width: 300px }");
   const Position& caret =
       SetCaretTextToBody("<pre dir='ltr'>foo\n|<bdo dir='ltr'>abc</bdo></pre>");
-  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
+  PhysicalRect position_rect, visible_position_rect;
+  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(0, 10, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(0, 10, 1, 10), visible_position_rect);
 }
@@ -929,7 +930,8 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterLineBreakInPreBlockLTRLineRTL) {
   InsertStyleElement("pre{ font: 10px/10px Ahem; width: 300px }");
   const Position& caret =
       SetCaretTextToBody("<pre dir='ltr'>foo\n|<bdo dir='rtl'>abc</bdo></pre>");
-  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
+  PhysicalRect position_rect, visible_position_rect;
+  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(0, 10, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(0, 10, 1, 10), visible_position_rect);
 }
@@ -939,7 +941,8 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterLineBreakInPreBlockRTLLineLTR) {
   InsertStyleElement("pre{ font: 10px/10px Ahem; width: 300px }");
   const Position& caret =
       SetCaretTextToBody("<pre dir='rtl'>foo\n|<bdo dir='ltr'>abc</bdo></pre>");
-  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
+  PhysicalRect position_rect, visible_position_rect;
+  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(299, 10, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(299, 10, 1, 10), visible_position_rect);
 }
@@ -949,7 +952,8 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterLineBreakInPreBlockRTLLineRTL) {
   InsertStyleElement("pre{ font: 10px/10px Ahem; width: 300px }");
   const Position& caret =
       SetCaretTextToBody("<pre dir='rtl'>foo\n|<bdo dir='rtl'>abc</bdo></pre>");
-  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
+  PhysicalRect position_rect, visible_position_rect;
+  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(299, 10, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(299, 10, 1, 10), visible_position_rect);
 }
@@ -959,7 +963,8 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterTrimedLineBreak) {
   LoadAhem();
   InsertStyleElement("body { font: 10px/10px Ahem; width: 300px }");
   const Position& caret = SetCaretTextToBody("<div>foo\n|</div>");
-  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
+  PhysicalRect position_rect, visible_position_rect;
+  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(30, 0, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(30, 0, 1, 10), visible_position_rect);
 }

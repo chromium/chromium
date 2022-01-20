@@ -970,11 +970,14 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(
   }
 
   // Maintain a running time (frame) and index for writing the values buffer.
+  size_t current_frame = start_frame;
+  unsigned write_index = 0;
+
   // If first event is after startFrame then fill initial part of values buffer
   // with defaultValue until we reach the first event time.
-  auto [current_frame, write_index] =
+  std::tie(current_frame, write_index) =
       HandleFirstEvent(values, default_value, number_of_values, start_frame,
-                       end_frame, sample_rate, start_frame, 0);
+                       end_frame, sample_rate, current_frame, write_index);
 
   float value = default_value;
 
@@ -997,19 +1000,23 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(
     }
 
     // If there's no next event, set nextEventType to LastType to indicate that.
-    ProcessSetTargetFollowedByRamp(
-        i, event,
+    ParamEvent::Type next_event_type =
         next_event ? static_cast<ParamEvent::Type>(next_event->GetType())
-                   : ParamEvent::kLastType,
-        current_frame, sample_rate, control_rate, value);
+                   : ParamEvent::kLastType;
+
+    ProcessSetTargetFollowedByRamp(i, event, next_event_type, current_frame,
+                                   sample_rate, control_rate, value);
 
     float value1 = event->Value();
     double time1 = event->Time();
 
+    float value2 = next_event ? next_event->Value() : value1;
+    double time2 =
+        next_event ? next_event->Time() : end_frame / sample_rate + 1;
+
     // Check to see if an event was cancelled.
-    auto [value2, time2, next_event_type] = HandleCancelValues(
-        event, next_event, next_event ? next_event->Value() : value1,
-        next_event ? next_event->Time() : end_frame / sample_rate + 1);
+    std::tie(value2, time2, next_event_type) =
+        HandleCancelValues(event, next_event, value2, time2);
 
     DCHECK(!std::isnan(value1));
     DCHECK(!std::isnan(value2));
