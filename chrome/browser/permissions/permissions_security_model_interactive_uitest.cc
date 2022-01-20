@@ -510,6 +510,24 @@ class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
     }
   }
 
+  void VerifyPermissionsAllPermissions(
+      content::WebContents* opener_or_embedder_contents,
+      content::RenderFrameHost* test_rfh) {
+    const struct {
+      std::string check_permission;
+      std::string request_permission;
+    } kTests[] = {
+        {kCheckNotifications, kRequestNotifications},
+        {kCheckCamera, kRequestCamera},
+        {kCheckGeolocation, kRequestGeolocation},
+    };
+
+    for (const auto& test : kTests) {
+      VerifyPermission(opener_or_embedder_contents, test_rfh,
+                       test.request_permission, test.check_permission);
+    }
+  }
+
   void VerifyPermissionsForFile(content::RenderFrameHost* rfh,
                                 bool expect_granted) {
     const struct {
@@ -561,9 +579,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                                                    "about_blank_iframe"));
   ASSERT_TRUE(about_blank_iframe);
 
-  VerifyPermissionsExceptGetUserMedia(embedder_contents, about_blank_iframe);
-  VerifyPermission(embedder_contents, about_blank_iframe, kRequestCamera,
-                   kCheckCamera);
+  VerifyPermissionsAllPermissions(embedder_contents, about_blank_iframe);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
@@ -602,9 +618,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
       base::BindRepeating(&content::FrameMatchesName, "srcdoc_iframe"));
   ASSERT_TRUE(srcdoc_iframe);
 
-  VerifyPermissionsExceptGetUserMedia(embedder_contents, srcdoc_iframe);
-  VerifyPermission(embedder_contents, srcdoc_iframe, kRequestCamera,
-                   kCheckCamera);
+  VerifyPermissionsAllPermissions(embedder_contents, srcdoc_iframe);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
@@ -625,9 +639,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(blob_iframe_rfh);
   EXPECT_TRUE(blob_iframe_rfh->GetLastCommittedURL().SchemeIsBlob());
 
-  VerifyPermissionsExceptGetUserMedia(embedder_contents, blob_iframe_rfh);
-  VerifyPermission(embedder_contents, blob_iframe_rfh, kRequestCamera,
-                   kCheckCamera);
+  VerifyPermissionsAllPermissions(embedder_contents, blob_iframe_rfh);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
@@ -855,8 +867,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
     std::string check_permission;
     std::string request_permission;
   } kTests[] = {
-      // TODO(crbug.com/1242048): Add back the camera access tests when they are
-      // no longer flaky on Linux and Mac.
+      {kCheckCamera, kRequestCamera},
       {kCheckGeolocation, kRequestGeolocation},
   };
 
@@ -1088,7 +1099,8 @@ class PermissionRequestWithPortalTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PermissionRequestWithPortalTest, PortalActivation) {
+IN_PROC_BROWSER_TEST_F(PermissionRequestWithPortalTest,
+                       PermissionsRequestedFromPortalTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/activate.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
