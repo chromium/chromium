@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-12-09T15:54:35.527Z",
+  "time_generated": "2022-01-19T19:04:26.377Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -10,7 +10,7 @@
       "enabled": true,
       "url": "",
       "description": "Clear browsing data\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT\nIDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA",
-      "tags": "android"
+      "tags": "desktop,android,ios"
     },
     {
       "id": 2,
@@ -18,7 +18,7 @@
       "enabled": true,
       "url": "",
       "description": "Manage passwords in settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS",
-      "tags": "android"
+      "tags": "desktop,android,ios"
     },
     {
       "id": 3,
@@ -26,7 +26,7 @@
       "enabled": true,
       "url": "",
       "description": "Update payment information in settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT\nIDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD",
-      "tags": "android"
+      "tags": "desktop,android,ios"
     },
     {
       "id": 4,
@@ -34,7 +34,7 @@
       "enabled": true,
       "url": "",
       "description": "Launch an incognito browser window\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT\nIDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO",
-      "tags": "android"
+      "tags": "desktop,android,ios"
     },
     {
       "id": 5,
@@ -42,7 +42,7 @@
       "enabled": true,
       "url": "",
       "description": "Translate the current page\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_TRANSLATE_HINT\nIDS_OMNIBOX_PEDAL_TRANSLATE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_TRANSLATE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_TRANSLATE",
-      "tags": ""
+      "tags": "desktop,ios"
     },
     {
       "id": 6,
@@ -50,7 +50,7 @@
       "enabled": true,
       "url": "",
       "description": "Update Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT\nIDS_OMNIBOX_PEDAL_UPDATE_CHROME_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME",
-      "tags": ""
+      "tags": "desktop"
     },
     {
       "id": 7,
@@ -58,7 +58,7 @@
       "enabled": true,
       "url": "chrome://settings/safetyCheck?activateSafetyCheck",
       "description": "Run a Safety Check in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT\nIDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK",
-      "tags": "android"
+      "tags": "desktop,android"
     },
     {
       "id": 8,
@@ -66,7 +66,7 @@
       "enabled": true,
       "url": "chrome://settings/security",
       "description": "Manage your Safe Browsing and more in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS",
-      "tags": ""
+      "tags": "desktop"
     },
     {
       "id": 9,
@@ -74,7 +74,7 @@
       "enabled": true,
       "url": "chrome://settings/cookies",
       "description": "Manage your cookie preferences in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_COOKIES_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_COOKIES_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES",
-      "tags": ""
+      "tags": "desktop"
     },
     {
       "id": 10,
@@ -82,7 +82,7 @@
       "enabled": true,
       "url": "chrome://settings/addresses",
       "description": "Add and manage addresses in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_ADDRESSES_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES",
-      "tags": ""
+      "tags": "desktop"
     },
     {
       "id": 11,
@@ -90,7 +90,7 @@
       "enabled": true,
       "url": "chrome://settings/syncSetup/advanced",
       "description": "Manage what info you sync in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC",
-      "tags": ""
+      "tags": "desktop"
     },
     {
       "id": 12,
@@ -98,7 +98,7 @@
       "enabled": true,
       "url": "chrome://settings/content",
       "description": "Manage permissions and data stored across sites in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS",
-      "tags": "android"
+      "tags": "desktop,android"
     },
     {
       "id": 13,
@@ -106,7 +106,7 @@
       "enabled": true,
       "url": "https://docs.google.com/document/u/0/create?usp=chrome_actions",
       "description": "Create a new Google Doc quickly (like doc.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 14,
@@ -114,7 +114,7 @@
       "enabled": true,
       "url": "https://docs.google.com/spreadsheets/u/0/create?usp=chrome_actions",
       "description": "Create a new Google Sheet quickly (like sheet.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 15,
@@ -122,7 +122,7 @@
       "enabled": true,
       "url": "https://docs.google.com/presentation/u/0/create?usp=chrome_actions",
       "description": "Create new Google Slides quickly (like slide.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 16,
@@ -130,7 +130,7 @@
       "enabled": true,
       "url": "https://calendar.google.com/calendar/u/0/r/eventedit?usp=chrome_actions",
       "description": "Create a new Google Calendar event quickly (like cal.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 17,
@@ -138,7 +138,7 @@
       "enabled": true,
       "url": "https://sites.google.com/u/0/create?usp=chrome_actions",
       "description": "Create a new Google Site quickly (like site.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 18,
@@ -146,7 +146,7 @@
       "enabled": true,
       "url": "https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE",
       "description": "Create a new Google Keep note quickly (like keep.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 19,
@@ -154,7 +154,7 @@
       "enabled": true,
       "url": "https://docs.google.com/forms/u/0/create?usp=chrome_actions",
       "description": "Create a new Google Form quickly (like form.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 20,
@@ -162,7 +162,7 @@
       "enabled": false,
       "url": "https://mail.google.com/mail/u/0/?usp=dot_new#inbox?compose=new",
       "description": "Create an email in Gmail quickly (like mail.new)",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 21,
@@ -170,7 +170,7 @@
       "enabled": true,
       "url": "https://www.google.com/chrome/tips/",
       "description": "Learn about new Chrome features\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_SEE_CHROME_TIPS_HINT\nIDS_OMNIBOX_PEDAL_SEE_CHROME_TIPS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_SEE_CHROME_TIPS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_SEE_CHROME_TIPS",
-      "tags": ""
+      "tags": "desktop"
     },
     {
       "id": 22,
@@ -178,7 +178,7 @@
       "enabled": true,
       "url": "https://myaccount.google.com/?utm_source=ga-chrome-actions&utm_medium=manageGA",
       "description": "Manage your Google Account\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 23,
@@ -186,7 +186,7 @@
       "enabled": false,
       "url": "",
       "description": "Clear your YouTube history in My Activity",
-      "tags": ""
+      "tags": "desktop"
     },
     {
       "id": 24,
@@ -194,7 +194,7 @@
       "enabled": true,
       "url": "https://myaccount.google.com/signinoptions/password?utm_source=ga-chrome-actions&utm_medium=changePW",
       "description": "Change the password for your Google Account\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_HINT\nIDS_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD",
-      "tags": "google"
+      "tags": "desktop,google"
     },
     {
       "id": 25,
@@ -202,7 +202,7 @@
       "enabled": false,
       "url": "",
       "description": "This is a metrics-only Pedal spoofed by CLEAR_BROWSING_DATA when incognito is active.",
-      "tags": "no_test,metrics"
+      "tags": "desktop,no_test,metrics"
     },
     {
       "id": 26,
@@ -210,7 +210,7 @@
       "enabled": true,
       "url": "",
       "description": "Close incognito browser windows\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_HINT\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS",
-      "tags": "no_test,incognito,batch3"
+      "tags": "desktop,no_test,incognito,batch3"
     },
     {
       "id": 27,
@@ -218,7 +218,7 @@
       "enabled": true,
       "url": "chrome://dino",
       "description": "Play the Dino Run game in Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_HINT\nIDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME",
-      "tags": "batch3,android"
+      "tags": "desktop,batch3,android"
     },
     {
       "id": 28,
@@ -226,7 +226,7 @@
       "enabled": true,
       "url": "https://myaccount.google.com/find-your-phone?utm_source=ga-chrome-actions&utm_medium=findYourPhone",
       "description": "Locate a lost device\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_FIND_MY_PHONE_HINT\nIDS_OMNIBOX_PEDAL_FIND_MY_PHONE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE\n",
-      "tags": "batch3"
+      "tags": "desktop,batch3"
     },
     {
       "id": 29,
@@ -234,7 +234,7 @@
       "enabled": true,
       "url": "https://myaccount.google.com/data-and-privacy?utm_source=ga-chrome-actions&utm_medium=managePrivacy",
       "description": "Manage Google privacy (control the use of their data)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY",
-      "tags": "batch3"
+      "tags": "desktop,batch3"
     },
     {
       "id": 30,
@@ -242,7 +242,7 @@
       "enabled": false,
       "url": "https://adssettings.google.com/authenticated?hl=en",
       "description": "Control ad personalization\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS\n",
-      "tags": "batch3"
+      "tags": "desktop,batch3"
     },
     {
       "id": 31,
@@ -250,7 +250,7 @@
       "enabled": true,
       "url": "chrome://settings",
       "description": "Get to Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS",
-      "tags": "batch3,android"
+      "tags": "desktop,batch3,android"
     },
     {
       "id": 32,
@@ -258,7 +258,7 @@
       "enabled": true,
       "url": "chrome://downloads",
       "description": "Access downloaded files in Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS",
-      "tags": "batch3"
+      "tags": "desktop,batch3"
     },
     {
       "id": 33,
@@ -266,7 +266,7 @@
       "enabled": true,
       "url": "chrome://history",
       "description": "See the full Chrome history page\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_HINT\nIDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY",
-      "tags": "batch3,android"
+      "tags": "desktop,batch3,android"
     },
     {
       "id": 34,
@@ -274,7 +274,7 @@
       "enabled": true,
       "url": "",
       "description": "Learn about and use the Sharing Hub\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_SHARE_THIS_PAGE_HINT\nIDS_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE",
-      "tags": "batch3,no_test,not_chromeos"
+      "tags": "desktop,batch3,no_test,not_chromeos"
     },
     {
       "id": 35,
@@ -282,7 +282,7 @@
       "enabled": true,
       "url": "chrome://settings/accessibility",
       "description": "Personalize Chrome based on abilities and preferences for assistive technology\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY\n",
-      "tags": "batch3,no_test,not_chromeos,android"
+      "tags": "desktop,batch3,no_test,not_chromeos,android"
     },
     {
       "id": 36,
@@ -290,7 +290,7 @@
       "enabled": true,
       "url": "chrome://settings/fonts",
       "description": "Adjust font sizes and font types in Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_HINT\nIDS_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS\n",
-      "tags": "batch3"
+      "tags": "desktop,batch3"
     },
     {
       "id": 37,
@@ -298,7 +298,7 @@
       "enabled": true,
       "url": "chrome://new-tab-page/?customize=backgrounds",
       "description": "Change themes in Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES\n",
-      "tags": "batch3"
+      "tags": "desktop,batch3"
     },
     {
       "id": 38,
@@ -306,7 +306,7 @@
       "enabled": true,
       "url": "chrome://settings/searchEngines",
       "description": "Manage search engines in Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_HINT\nIDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES",
-      "tags": "batch3"
+      "tags": "desktop,batch3,ios"
     },
     {
       "id": 39,
@@ -314,7 +314,7 @@
       "enabled": true,
       "url": "chrome://os-settings/manageAccessibility",
       "description": "Manage accessibility settings in ChromeOS settings\n\nFor metrics, marketing, etc., this is the same as pedal #35 MANAGE_CHROME_ACCESSIBILITY -- #39 specifies the different UX details for ChromeOS.\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY",
-      "tags": "batch3,no_test,chromeos"
+      "tags": "desktop,batch3,no_test,chromeos"
     }
   ],
   "locales": [

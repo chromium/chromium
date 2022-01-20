@@ -1,7 +1,12 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+//       _____                           _                 _  _  _
+//      |  __ \                         | |               | |(_)| |
+//      | |  | |  ___      _ __    ___  | |_      ___   __| | _ | |_
+//      | |  | | / _ \    | '_ \  / _ \ | __|    / _ \ / _` || || __|
+//      | |__| || (_) |   | | | || (_) || |_    |  __/| (_| || || |_  _
+//      |_____/  \___/    |_| |_| \___/  \__|    \___| \__,_||_| \__|(_)
 // DO NOT EDIT. This file is tool-generated using pedal_processor.
 
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_CONCEPTS_H_
@@ -10,7 +15,7 @@
 // This value is generated during Pedal concept data processing, and written
 // to all data files as well as the source code here to ensure synchrony.
 // The runtime loaded data must match this version exactly or it won't load.
-constexpr int OMNIBOX_PEDAL_CONCEPTS_DATA_VERSION = 16163558;
+constexpr int OMNIBOX_PEDAL_CONCEPTS_DATA_VERSION = 16221611;
 
 // Unique identifiers for Pedals, used to bind loaded data to implementations.
 // Also used in the Omnibox.SuggestionUsed.Pedal histogram. Do not remove or
