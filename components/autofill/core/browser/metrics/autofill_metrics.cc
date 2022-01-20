@@ -2300,6 +2300,11 @@ void AutofillMetrics::LogAddressSuggestionsCount(size_t num_suggestions) {
 }
 
 // static
+void AutofillMetrics::LogSuggestionClick(SuggestionClickResult value) {
+  base::UmaHistogramEnumeration("Autofill.SuggestionClick", value);
+}
+
+// static
 void AutofillMetrics::LogAutofillSuggestionAcceptedIndex(int index,
                                                          PopupType popup_type,
                                                          bool off_the_record) {

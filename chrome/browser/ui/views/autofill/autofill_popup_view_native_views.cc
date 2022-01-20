@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -417,6 +418,10 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
   bool mouse_observed_outside_item_bounds_ = false;
 
+  // TODO(crbug/1279268): Remove when AutofillIgnoreEarlyClicksOnPopup is
+  // launched.
+  bool clicked_too_early_ = false;
+
   const int frontend_id_;
 
   // All the labels inside this view.
@@ -666,8 +671,16 @@ void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
           features::kAutofillIgnoreEarlyClicksOnPopup) &&
       popup_view()->time_delta_since_popup_shown() <=
           features::kAutofillIgnoreEarlyClicksOnPopupDuration.Get()) {
+    clicked_too_early_ = true;
+    AutofillMetrics::LogSuggestionClick(
+        AutofillMetrics::SuggestionClickResult::kIgnored);
     return;
   }
+
+  AutofillMetrics::LogSuggestionClick(
+      !clicked_too_early_
+          ? AutofillMetrics::SuggestionClickResult::kAccepted
+          : AutofillMetrics::SuggestionClickResult::kAcceptedAfterIgnored);
 
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();

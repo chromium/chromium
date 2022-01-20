@@ -3179,6 +3179,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.SuggestionClick" enum="AutofillSuggestionClick"
+    expires_after="2022-12-12">
+  <owner>schwering@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether a click was ignored (because it came too early after the
+    popup was shown) or accepted. An accepted click was either normally accepted
+    or followed an ignored click. Every click falls into one of the three
+    categories. Recorded on each click on an Autofill popup suggestion.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SuggestionShown.OffTheRecord" units="units"
     expires_after="2022-07-03">
   <owner>rhalavati@chromium.org</owner>

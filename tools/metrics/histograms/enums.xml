@@ -7244,6 +7244,12 @@ others/histograms.xml -->
   <int value="3" label="Expiration date did not match, masked server card"/>
 </enum>
 
+<enum name="AutofillSuggestionClick">
+  <int value="0" label="Accepted click, without prior ignored click"/>
+  <int value="1" label="Ignored click"/>
+  <int value="2" label="Accepted click, followed an ignored click"/>
+</enum>
+
 <enum name="AutofillSyncState">
   <int value="0" label="Signed Out"/>
   <int value="1" label="Signed In"/>
