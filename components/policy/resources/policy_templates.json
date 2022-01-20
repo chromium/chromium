@@ -21930,7 +21930,7 @@
     {
       'id': 493,
       'name': 'CloudReportingEnabled',
-      'owners': ['zmin@chromium.org', 'pastarmovj@chromium.org'],
+      'owners': ['zmin@chromium.org', 'file://components/enterprise/browser/reporting/OWNERS'],
       'type': 'main',
       'schema': {'type': 'boolean' },
       'tags': ['admin-sharing', 'google-sharing'],
@@ -21939,6 +21939,16 @@
         'per_profile': False,
         'cloud_only': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable managed browser cloud reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable managed browser cloud reporting',
+        },
+      ],
       'supported_on': [
         'chrome.*:72-',
         'chrome_os:81-',
@@ -21947,13 +21957,51 @@
       ],
       'caption': '''Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting''',
       'example_value': True,
-      'desc': '''This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting which uploads information about the browser operation to Google Admin console.
+      'default': False,
+      'desc': '''This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting which uploads information about the browser operation to <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
-      When this policy is left unset or set to False, there is no data collected or uploaded.
-      When this policy is set to True, the data is collected and uploaded to Google Admin console.
+      When this policy is left unset or set to Disabled, there is no data collected or uploaded.
+      When this policy is set to Enabled, the data is collected and uploaded to <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
       For <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, this policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph>.
       For <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>, this policy is always effective.'''
+    },
+    {
+      'id': 942,
+      'name': 'CloudProfileReportingEnabled',
+      'owners': ['zmin@chromium.org', 'file://components/enterprise/browser/reporting/OWNERS'],
+      'type': 'main',
+      'schema': {'type': 'boolean'},
+      'tags': ['admin-sharing', 'google-sharing'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+        'cloud_only': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable managed profile cloud reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable managed profile cloud reporting',
+        },
+      ],
+      'future_on': [ 'chrome.*', 'chrome_os', 'android' ],
+      'caption': '''Enable <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting for managed profile''',
+      'example_value': True,
+      'default': False,
+      'desc': '''
+      This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting for a particular managed profile.
+
+      When this policy is left unset or set to Disabled, there is no data collected or uploaded.
+      When this policy is set to Enabled, the data is collected and uploaded to <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
+
+      The report contains profile state and usage information, including but not limited to OS version, browser version, installed extensions and applied policies.
+
+      This policy can only be set as cloud user policy.
+      '''
     },
     {
       'name': 'EnterpriseHardwarePlatformAPIEnabled',
@@ -30145,6 +30193,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'ReportExtensionsAndPluginsData',
         'CloudExtensionRequestEnabled',
         'CloudReportingEnabled',
+        'CloudProfileReportingEnabled',
       ],
     },
     {
@@ -30337,6 +30386,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 941,
+  'highest_id_currently_used': 942,
   'highest_atomic_group_id_currently_used': 41
 }

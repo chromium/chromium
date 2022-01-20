@@ -11,6 +11,11 @@ namespace enterprise_reporting {
 const char kCloudReportingEnabled[] =
     "enterprise_reporting.chrome_cloud_reporting";
 
+// Boolean that indicates whether Chrome enterprise profile cloud reporting is
+// enabled or not.
+const char kCloudProfileReportingEnabled[] =
+    "enterprise_reporting.chrome_profile_cloud_reporting";
+
 // The timestamp of the last enterprise report upload.
 const char kLastUploadTimestamp[] =
     "enterprise_reporting.last_upload_timestamp";
