@@ -3142,7 +3142,7 @@ TEST_F(GestureProviderTest, NoMinOrMaxGestureBoundsLengthWithStylusOrMouse) {
             GetMostRecentGestureEvent().details.bounding_box_f().height());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222659
 #define MAYBE_BoundingBoxForShowPressAndTapGesture \
   DISABLED_BoundingBoxForShowPressAndTapGesture

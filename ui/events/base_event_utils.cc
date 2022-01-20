@@ -20,12 +20,12 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const int kSystemKeyModifierMask = EF_ALT_DOWN | EF_COMMAND_DOWN;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 // Alt modifier is used to input extended characters on Mac.
 const int kSystemKeyModifierMask = EF_COMMAND_DOWN;
 #else
 const int kSystemKeyModifierMask = EF_ALT_DOWN;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_APPLE)
+#endif
 
 }  // namespace
 

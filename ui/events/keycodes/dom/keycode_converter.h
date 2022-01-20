@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #endif
 
@@ -63,7 +63,7 @@ class KeycodeConverter {
   // Convert a DomCode into a native keycode.
   static int DomCodeToNativeKeycode(DomCode code);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Convert a XKB keycode into a DomCode.
   static DomCode XkbKeycodeToDomCode(uint32_t xkb_keycode);
 
@@ -77,7 +77,7 @@ class KeycodeConverter {
   static int DomCodeToEvdevCode(DomCode code);
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // If |key_code| is one of the keys (plus, minus, brackets, period, comma),
   // that are treated positionally for keyboard shortcuts, this returns the
   // DomCode of that key in the US layout. Any other key returns

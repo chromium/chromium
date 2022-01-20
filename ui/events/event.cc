@@ -38,7 +38,7 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"  // nogncheck
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/events/keycodes/platform_key_map_win.h"
 #endif
 
@@ -452,7 +452,7 @@ std::string LocatedEvent::ToString() const {
 MouseEvent::MouseEvent(const PlatformEvent& native_event)
     : LocatedEvent(native_event),
       changed_button_flags_(GetChangedMouseButtonFlagsFromNative(native_event)),
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
       movement_(GetMouseMovementFromNative(native_event)),
 #endif
       pointer_details_(GetMousePointerDetailsFromNative(native_event)) {
@@ -699,7 +699,7 @@ MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
 
 MouseWheelEvent::~MouseWheelEvent() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This value matches windows WHEEL_DELTA.
 // static
 const int MouseWheelEvent::kWheelDelta = 120;
@@ -934,9 +934,9 @@ void KeyEvent::InitializeNative() {
   if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent()))
     set_flags(flags() | EF_IS_REPEAT);
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   NormalizeFlags();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Only Windows has native character events.
   if (is_char_) {
     key_ = DomKey::FromCharacter(static_cast<int32_t>(native_event().wParam));
@@ -974,7 +974,7 @@ void KeyEvent::ApplyLayout() const {
   }
 #endif
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Native Windows character events always have is_char_ == true,
   // so this is a synthetic or native keystroke event.
   // Therefore, perform only the fallback action.
@@ -1017,7 +1017,7 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
   DCHECK(last);
   bool is_repeat = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (HasNativeEvent()) {
     // Bit 30 of lParam represents the "previous key state". If set, the key
     // was already down, therefore this is an auto-repeat.
@@ -1109,7 +1109,7 @@ char16_t KeyEvent::GetUnmodifiedText() const {
 }
 
 bool KeyEvent::IsUnicodeKeyCode() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!IsAltDown())
     return false;
   const int key = key_code();

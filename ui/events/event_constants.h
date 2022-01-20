@@ -49,7 +49,7 @@ enum EventFlags {
 // An artificial value used to bridge platform differences.
 // Many commands on Mac as Cmd+Key are the counterparts of
 // Ctrl+Key on other platforms.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   EF_PLATFORM_ACCELERATOR = EF_COMMAND_DOWN,
 #else
   EF_PLATFORM_ACCELERATOR = EF_CONTROL_DOWN,

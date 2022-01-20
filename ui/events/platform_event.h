@@ -7,9 +7,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #if defined(__OBJC__)
 @class NSEvent;
 #else   // __OBJC__
@@ -26,9 +26,9 @@ namespace ui {
 // Cross platform typedefs for native event types.
 #if defined(USE_OZONE)
 using PlatformEvent = ui::Event*;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 using PlatformEvent = CHROME_MSG;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 using PlatformEvent = NSEvent*;
 #else
 using PlatformEvent = void*;

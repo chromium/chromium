@@ -88,7 +88,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEventWindowsKeyCode) {
     blink::WebKeyboardEvent webkit_event = MakeWebKeyboardEvent(event);
     EXPECT_EQ(VKEY_CONTROL, webkit_event.windows_key_code);
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(yusukes): Add tests for win_aura once keyboardEvent() in
 // third_party/WebKit/Source/web/win/WebInputEventFactory.cpp is modified
 // to return VKEY_[LR]XXX instead of VKEY_XXX.
@@ -380,7 +380,7 @@ TEST(WebInputEventTest, TestMakeWebMouseWheelEvent) {
   }
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST(WebInputEventTest, TestPercentMouseWheelScroll) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPercentBasedScrolling);
@@ -477,7 +477,7 @@ TEST(WebInputEventTest, MousePointerEvent) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(WebInputEventTest, MouseLeaveScreenCoordinate) {
   CHROME_MSG msg_event = {nullptr, WM_MOUSELEAVE, 0, MAKELPARAM(300, 200)};
   ::SetCursorPos(250, 350);

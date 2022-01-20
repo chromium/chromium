@@ -96,7 +96,7 @@ inline const blink::WebGestureEvent& ToWebGestureEvent(
 blink::WebGestureEvent ScrollBeginFromScrollUpdate(
     const blink::WebGestureEvent& scroll_update);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Convenience method that converts an instance to blink event.
 std::unique_ptr<blink::WebGestureEvent>
 CreateWebGestureEventFromGestureEventAndroid(const GestureEventAndroid& event);

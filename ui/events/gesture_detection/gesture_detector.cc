@@ -59,7 +59,7 @@ GestureDetector::Config::Config()
 #else
       stylus_button_accelerated_longpress_enabled(false),
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       deep_press_accelerated_longpress_enabled(true),
 #else
       deep_press_accelerated_longpress_enabled(false),

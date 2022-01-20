@@ -754,7 +754,7 @@ blink::WebGestureEvent ScrollBeginFromScrollUpdate(
   return scroll_begin;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
     const GestureEventAndroid& event) {
   WebInputEvent::Type event_type = WebInputEvent::Type::kUndefined;

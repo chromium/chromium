@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 
 #if defined(USE_OZONE)
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"  // nogncheck
@@ -19,7 +20,7 @@ ScopedKeyboardLayout::ScopedKeyboardLayout(KeyboardLayout layout) {
   auto keyboard_layout_engine = std::make_unique<StubKeyboardLayoutEngine>();
   scoped_keyboard_layout_engine_ = std::make_unique<ScopedKeyboardLayoutEngine>(
       std::move(keyboard_layout_engine));
-#elif defined(OS_WIN) || defined(OS_MAC)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   original_layout_ = GetActiveLayout();
   ActivateLayout(GetPlatformKeyboardLayout(layout));
 #else
@@ -28,7 +29,7 @@ ScopedKeyboardLayout::ScopedKeyboardLayout(KeyboardLayout layout) {
 }
 
 ScopedKeyboardLayout::~ScopedKeyboardLayout() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ActivateLayout(original_layout_);
 #endif
 }
