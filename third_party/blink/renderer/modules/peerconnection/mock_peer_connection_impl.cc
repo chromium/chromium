@@ -385,11 +385,15 @@ MockPeerConnectionImpl::AddTrack(
   return rtc::scoped_refptr<webrtc::RtpSenderInterface>(sender);
 }
 
-bool MockPeerConnectionImpl::RemoveTrack(webrtc::RtpSenderInterface* s) {
-  rtc::scoped_refptr<FakeRtpSender> sender(static_cast<FakeRtpSender*>(s));
+webrtc::RTCError MockPeerConnectionImpl::RemoveTrackOrError(
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> s) {
+  rtc::scoped_refptr<FakeRtpSender> sender(
+      static_cast<FakeRtpSender*>(s.get()));
   auto it = std::find(senders_.begin(), senders_.end(), sender);
-  if (it == senders_.end())
-    return false;
+  if (it == senders_.end()) {
+    return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER,
+                            "Mock: sender not found in senders");
+  }
   senders_.erase(it);
   auto track = sender->track();
 
@@ -399,7 +403,7 @@ bool MockPeerConnectionImpl::RemoveTrack(webrtc::RtpSenderInterface* s) {
     if (local_stream_it != local_stream_ids_.end())
       local_stream_ids_.erase(local_stream_it);
   }
-  return true;
+  return webrtc::RTCError::OK();
 }
 
 std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface>>

@@ -224,7 +224,8 @@ class MockPeerConnectionImpl : public webrtc::PeerConnectionInterface {
   webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>> AddTrack(
       rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
       const std::vector<std::string>& stream_ids) override;
-  bool RemoveTrack(webrtc::RtpSenderInterface* sender) override;
+  webrtc::RTCError RemoveTrackOrError(
+      rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) override;
   std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface>> GetSenders()
       const override;
   std::vector<rtc::scoped_refptr<webrtc::RtpReceiverInterface>> GetReceivers()

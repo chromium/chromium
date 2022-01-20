@@ -2074,7 +2074,8 @@ void RTCPeerConnectionHandler::RemoveTrackUnifiedPlanOnSignalingThread(
     webrtc::RtpSenderInterface* sender,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer,
     CancellableBooleanOperationResult* result) {
-  bool is_successful = native_peer_connection_->RemoveTrack(sender);
+  // TODO(bugs.webrtc.org/9534): Rewrite to return correct error
+  auto is_successful = native_peer_connection_->RemoveTrackOrError(sender).ok();
   *result = is_successful ? CancellableBooleanOperationResult::kSuccess
                           : CancellableBooleanOperationResult::kFailure;
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;

@@ -313,7 +313,8 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
 
   bool RemoveFromPeerConnection(webrtc::PeerConnectionInterface* pc) {
     DCHECK(main_task_runner_->BelongsToCurrentThread());
-    if (!pc->RemoveTrack(webrtc_sender_.get()))
+    // TODO(bugs.webrtc.org/9534): Return proper error code
+    if (!pc->RemoveTrackOrError(webrtc_sender_.get()).ok())
       return false;
     // TODO(hbos): Removing the track should null the sender's track, or we
     // should do |webrtc_sender_->SetTrack(null)| but that is not allowed on a
