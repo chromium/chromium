@@ -1168,6 +1168,10 @@ PasswordFormManager* PasswordManager::GetSubmittedManager() const {
   return nullptr;
 }
 
+bool PasswordManager::HasSubmittedManager() const {
+  return GetSubmittedManager() != nullptr;
+}
+
 void PasswordManager::SaveSubmittedManager() {
   PasswordFormManager* submitted_manager = GetSubmittedManager();
   DCHECK(submitted_manager);

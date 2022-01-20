@@ -500,7 +500,7 @@ void WebsiteLoginManagerImpl::ResetPendingCredentials() {
 }
 
 bool WebsiteLoginManagerImpl::ReadyToCommitSubmittedPassword() {
-  return client_->GetPasswordManager()->IsFormManagerPendingPasswordUpdate();
+  return client_->GetPasswordManager()->HasSubmittedManager();
 }
 
 bool WebsiteLoginManagerImpl::SaveSubmittedPassword() {

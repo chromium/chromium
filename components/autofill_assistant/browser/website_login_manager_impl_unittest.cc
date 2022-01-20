@@ -83,6 +83,30 @@ FormData MakeFormDataWithPasswordField() {
   return form_data;
 }
 
+FormData MakeFormDataWithUsernameAndPasswordField() {
+  FormData form_data;
+  form_data.url = GURL(kFakeUrl);
+  form_data.action = GURL(kFakeUrl);
+  form_data.name = kFormDataName;
+
+  FormFieldData field;
+  field.name = kUsernameElement;
+  field.id_attribute = field.name;
+  field.name_attribute = field.name;
+  field.value = kFakeUsername16;
+  field.form_control_type = "text";
+  form_data.fields.push_back(field);
+
+  field.name = kPasswordElement;
+  field.id_attribute = field.name;
+  field.name_attribute = field.name;
+  field.value = kFakePassword;
+  field.form_control_type = "password";
+  form_data.fields.push_back(field);
+
+  return form_data;
+}
+
 PasswordForm MakeSimplePasswordForm() {
   PasswordForm form;
   form.url = GURL(kFakeUrl);
@@ -110,6 +134,12 @@ PasswordForm MakeSimplePasswordFormWithoutUsername() {
 PasswordForm MakeSimplePasswordFormWithFormData() {
   PasswordForm form = MakeSimplePasswordForm();
   form.form_data = MakeFormDataWithPasswordField();
+  return form;
+}
+
+PasswordForm MakeSimpleLoginFormWithFormData() {
+  PasswordForm form = MakeSimplePasswordForm();
+  form.form_data = MakeFormDataWithUsernameAndPasswordField();
   return form;
 }
 
@@ -179,6 +209,11 @@ MATCHER_P(FormMatches, form, "") {
          form.username_value == arg.username_value &&
          form.password_element == arg.password_element &&
          form.password_value == arg.password_value;
+}
+
+ACTION_P(InvokeEmptyConsumerWithForms, store) {
+  arg0->OnGetPasswordStoreResultsFrom(
+      store, std::vector<std::unique_ptr<PasswordForm>>());
 }
 
 TEST_F(WebsiteLoginManagerImplTest, SaveGeneratedPassword) {
@@ -284,25 +319,25 @@ TEST_F(WebsiteLoginManagerImplTest, ResetPendingCredentials) {
 
   PasswordForm form = MakeSimplePasswordFormWithFormData();
   password_manager_->OnPasswordFormsParsed(&driver_, {form.form_data});
-  EXPECT_FALSE(password_manager_->IsFormManagerPendingPasswordUpdate());
+  EXPECT_FALSE(password_manager_->HasSubmittedManager());
 
   password_manager_->OnInformAboutUserInput(&driver_, form.form_data);
   password_manager_->OnPasswordFormSubmitted(&driver_, form.form_data);
-  EXPECT_TRUE(password_manager_->IsFormManagerPendingPasswordUpdate());
+  EXPECT_TRUE(password_manager_->HasSubmittedManager());
   EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
 
   manager_->ResetPendingCredentials();
-  EXPECT_FALSE(password_manager_->IsFormManagerPendingPasswordUpdate());
+  EXPECT_FALSE(password_manager_->HasSubmittedManager());
   EXPECT_FALSE(password_manager_->GetSubmittedManagerForTest());
 }
 
-TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPassword) {
+TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordUpdate) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
 
   PasswordForm form(MakeSimplePasswordFormWithFormData());
   password_manager_->OnPasswordFormsParsed(&driver_, {form.form_data});
 
-  // The user updates the password.
+  // The user updates the password of a stored credential.
   FormData updated_data(form.form_data);
   updated_data.fields[0].value = u"updated_password";
   password_manager_->OnInformAboutUserInput(&driver_, updated_data);
@@ -314,6 +349,46 @@ TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPassword) {
   // The expected form with a new password.
   expected_form.password_value = updated_data.fields[0].value;
   EXPECT_CALL(*store(), UpdateLogin(FormMatches(expected_form)));
+  EXPECT_TRUE(manager_->SaveSubmittedPassword());
+}
+
+TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordEqualPassword) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  PasswordForm form(MakeSimplePasswordFormWithFormData());
+  password_manager_->OnPasswordFormsParsed(&driver_, {form.form_data});
+
+  // The user submits an existing credential.
+  FormData non_updated_data(form.form_data);
+  non_updated_data.fields[0].value = kFakePassword;
+  password_manager_->OnInformAboutUserInput(&driver_, non_updated_data);
+  password_manager_->OnPasswordFormSubmitted(&driver_, non_updated_data);
+  EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
+  EXPECT_TRUE(manager_->ReadyToCommitSubmittedPassword());
+
+  // The expected form with a the same password.
+  PasswordForm expected_form(form);
+  expected_form.password_value = non_updated_data.fields[0].value;
+  EXPECT_CALL(*store(), UpdateLogin(FormMatches(expected_form)));
+  EXPECT_TRUE(manager_->SaveSubmittedPassword());
+}
+
+TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordNewLogin) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  PasswordForm form(MakeSimpleLoginFormWithFormData());
+
+  EXPECT_CALL(*store(), GetLogins(_, _))
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store())));
+
+  // The user submits the an entirely new credential.
+  password_manager_->OnPasswordFormsParsed(&driver_, {form.form_data});
+  password_manager_->OnPasswordFormsRendered(&driver_, {form.form_data}, true);
+  password_manager_->OnPasswordFormSubmitted(&driver_, form.form_data);
+  EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
+  EXPECT_TRUE(manager_->ReadyToCommitSubmittedPassword());
+
+  // Expect the password to get saved.
+  EXPECT_CALL(*store(), AddLogin(FormMatches(form)));
   EXPECT_TRUE(manager_->SaveSubmittedPassword());
 }
 
