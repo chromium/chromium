@@ -310,22 +310,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdate"
-    enum="OptimizationGuideHintsFetcherRequestStatus" expires_after="M106">
-  <obsolete>
-    Obsolete as of 12/2021.
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>sophiechang@chromium.org</owner>
-  <summary>
-    The status of making a Batch Update context request of the OptmizationGuide
-    HintsFetcher. This includes whether a network request was actually sent or
-    not.
-  </summary>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdate.{RequestContext}"
+<histogram name="OptimizationGuide.HintsFetcher.RequestStatus.{RequestContext}"
     enum="OptimizationGuideHintsFetcherRequestStatus" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
@@ -335,20 +320,6 @@ chromium-metrics-reviews@google.com.
     actually sent or not.
   </summary>
   <token key="RequestContext" variants="RequestContext"/>
-</histogram>
-
-<histogram name="OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation"
-    enum="OptimizationGuideHintsFetcherRequestStatus" expires_after="M106">
-  <obsolete>
-    Obsolete as of 12/2021.
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>sophiechang@chromium.org</owner>
-  <summary>
-    The status of making a Page Navigation context request of the
-    OptmizationGuide HintsFetcher. This includes whether a network request was
-    actually sent or not.
-  </summary>
 </histogram>
 
 <histogram
