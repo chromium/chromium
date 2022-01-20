@@ -24,7 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
+#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "components/prefs/pref_service.h"
 
 using file_manager::file_tasks::FileTasksObserver;
@@ -37,10 +37,12 @@ namespace {
 constexpr char kFileChipSchema[] = "file_chip://";
 constexpr char kZeroStateFileSchema[] = "zero_state_file://";
 
-constexpr int kMaxLocalFiles = 10;
+constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
 
-// Given the output of RecurrenceRanker::RankTopN, partition files by whether
-// they exist or not on disk. Returns a pair of vectors: <valid, invalid>.
+constexpr size_t kMaxLocalFiles = 10u;
+
+// Given the output of MrfuCache::GetAll, partition files by whether or not they
+// exist on disk. Returns a pair of vectors: <valid, invalid>.
 internal::ValidAndInvalidResults ValidateFiles(
     const std::vector<std::pair<std::string, float>>& ranker_results) {
   internal::ScoredResults valid;
@@ -87,18 +89,26 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
   if (notifier) {
     file_tasks_observer_.Observe(notifier);
 
-    RecurrenceRankerConfigProto config;
-    config.set_min_seconds_between_saves(3u);
-    config.set_condition_limit(1u);
-    config.set_condition_decay(0.5f);
-    config.set_target_limit(200);
-    config.set_target_decay(0.9f);
-    config.mutable_predictor()->mutable_default_predictor();
-    files_ranker_ = std::make_unique<RecurrenceRanker>(
-        "ZeroStateLocalFiles",
-        profile->GetPath().AppendASCII("zero_state_local_files.pb"), config,
-        ash::ProfileHelper::IsEphemeralUserProfile(profile));
+    MrfuCache::Params params;
+    // 5 consecutive clicks to get a new file to a score of 2/3, and 10 clicks
+    // on other files to reduce its score by half.
+    params.half_life = 10.0f;
+    params.boost_factor = 5.0f;
+    MrfuCache::Proto proto(
+        RankerStateDirectory(profile).AppendASCII("zero_state_local_files.pb"),
+        kSaveDelay);
+    proto.RegisterOnRead(base::BindOnce(
+        &ZeroStateFileProvider::OnProtoInitialized, base::Unretained(this)));
+    files_ranker_ = std::make_unique<MrfuCache>(std::move(proto), params);
   }
+}
+
+void ZeroStateFileProvider::OnProtoInitialized(ReadStatus status) {
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&ValidateFiles, files_ranker_->GetAll()),
+      base::BindOnce(&ZeroStateFileProvider::SetSearchResults,
+                     weak_factory_.GetWeakPtr()));
 }
 
 ZeroStateFileProvider::~ZeroStateFileProvider() = default;
@@ -114,25 +124,30 @@ bool ZeroStateFileProvider::ShouldBlockZeroState() const {
 void ZeroStateFileProvider::StartZeroState() {
   query_start_time_ = base::TimeTicks::Now();
   ClearResultsSilently();
-  if (!files_ranker_)
+  if (!files_ranker_) {
     return;
+  }
 
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ValidateFiles, files_ranker_->RankTopN(kMaxLocalFiles)),
+      base::BindOnce(&ValidateFiles, files_ranker_->GetAll()),
       base::BindOnce(&ZeroStateFileProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }
 
 void ZeroStateFileProvider::SetSearchResults(
-    const internal::ValidAndInvalidResults& results) {
-  // Delete invalid results from the model.
-  for (const auto& path : results.second)
-    files_ranker_->RemoveTarget(path.value());
+    internal::ValidAndInvalidResults results) {
+  // TODO(crbug.com/1258415): Re-add deletion of invalid results from the model.
+
+  // Sort valid results high-to-low by score.
+  auto& valid_results = results.first;
+  std::sort(valid_results.begin(), valid_results.end(),
+            [](const auto& a, const auto& b) { return a.second > b.second; });
 
   // Use valid results for search results.
   SearchProvider::Results new_results;
-  for (const auto& filepath_score : results.first) {
+  for (size_t i = 0; i < std::min(valid_results.size(), kMaxLocalFiles); ++i) {
+    const auto& filepath_score = valid_results[i];
     double score = filepath_score.second;
     auto result = std::make_unique<FileResult>(
         kZeroStateFileSchema, filepath_score.first,
@@ -146,7 +161,7 @@ void ZeroStateFileProvider::SetSearchResults(
     }
     new_results.push_back(std::move(result));
 
-    // Add suggestion chip file results
+    // Add suggestion chip file results.
     // TODO(crbug.com/1258415): This can be removed once the new launcher is
     // launched.
     if (app_list_features::IsSuggestedLocalFilesEnabled() &&
@@ -178,7 +193,7 @@ void ZeroStateFileProvider::OnFilesOpened(
   const auto& profile_path = profile_->GetPath();
   for (const auto& file_open : file_opens) {
     if (profile_path.AppendRelativePath(file_open.path, nullptr))
-      files_ranker_->Record(file_open.path.value());
+      files_ranker_->Use(file_open.path.value());
   }
 }
 
