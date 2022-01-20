@@ -1,0 +1,31 @@
+<body>
+<img src="/images/green-16x16.png" id=image>
+<script>
+const image = document.getElementById("image");
+const mouseover = size => {
+  return () => {
+    let zoom;
+    if (location.search.includes("replace")) {
+      zoom = document.getElementById("image");
+    } else {
+      zoom = new Image();
+    }
+    zoom.src=`/images/green-${size}.png`;
+    document.body.appendChild(zoom);
+  }
+};
+image.addEventListener("mouseover", mouseover("100x50"));
+document.body.addEventListener("mouseover", mouseover("256x256"));
+const run_test = async entries_expected => {
+  await new Promise(resolve => {
+    let entries_seen = 0;
+    new PerformanceObserver(list => {
+      entries_seen += list.getEntries().length;
+      if (entries_seen >= entries_expected) {
+        resolve()
+      }
+    }).observe({type: "largest-contentful-paint", buffered: true});
+  });
+};
+</script>
+</body>

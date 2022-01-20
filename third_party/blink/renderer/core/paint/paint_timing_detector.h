@@ -28,6 +28,7 @@ class LocalFrameView;
 class PropertyTreeStateOrAlias;
 class StyleFetchedImage;
 class TextPaintTimingDetector;
+class ImageRecord;
 
 // |PaintTimingCallbackManager| is an interface between
 // |ImagePaintTimingDetector|/|TextPaintTimingDetector| and |ChromeClient|.
@@ -142,7 +143,7 @@ class CORE_EXPORT PaintTimingDetector
   // The returned value indicates whether the candidates have changed.
   bool NotifyIfChangedLargestImagePaint(base::TimeTicks image_paint_time,
                                         uint64_t image_size,
-                                        bool is_animated,
+                                        ImageRecord* image_record,
                                         double image_bpp);
   bool NotifyIfChangedLargestTextPaint(base::TimeTicks, uint64_t size);
 

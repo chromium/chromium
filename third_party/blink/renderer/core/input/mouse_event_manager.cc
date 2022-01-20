@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
@@ -202,6 +204,15 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchOut(
 void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchOver(
     EventTarget* target,
     EventTarget* related_target) {
+  if (target) {
+    HTMLImageElement* image_element =
+        DynamicTo<HTMLImageElement>(target->ToNode());
+    if (image_element && image_element->IsLCPElement()) {
+      PaintTiming& paint_timing =
+          PaintTiming::From(image_element->GetDocument());
+      paint_timing.SetLCPMouseoverDispatched();
+    }
+  }
   Dispatch(target, related_target, event_type_names::kMouseover,
            *web_mouse_event_, false);
 }

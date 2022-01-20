@@ -17,6 +17,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
+#include "ui/events/test/event_generator.h"
 
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -233,3 +237,98 @@ IN_PROC_BROWSER_TEST_F(
                    blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
                    /*expected=*/false);
 }
+
+// On MacOS, the functionality required for testing mouse moves is not
+// implemented:
+// https://chromium-review.googlesource.com/c/chromium/src/+/2971065
+// Hence, we're only testing this in Aura capable platforms.
+// FWIW, the test is passing on MacOS when the mouse is manually moved.
+#if defined(USE_AURA)
+class MouseoverLCPTest : public MetricIntegrationTest {
+ public:
+  void test_mouseover(const char* html_name,
+                      uint32_t flag_set,
+                      std::string entries,
+                      int x1,
+                      int y1,
+                      int x2,
+                      int y2,
+                      bool expected) {
+    auto waiter =
+        std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+            web_contents());
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLargestContentfulPaint);
+    waiter->AddMinimumCompleteResourcesExpectation(2);
+    Start();
+    Load(html_name);
+    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(), "run_test(1)").error, "");
+
+    gfx::NativeView view = web_contents()->GetNativeView();
+    ui::test::EventGenerator event_generator(view->GetRootWindow());
+    // On MacOS, the code below is how one would get a hold of the
+    // EventGenerator. ui::test::EventGenerator event_generator(
+    //     GetRootWindow(views::Widget::GetWidgetForNativeView(view)));
+    gfx::Rect offset = web_contents()->GetContainerBounds();
+    gfx::Point point(x1 + offset.x(), y1 + offset.y());
+    event_generator.MoveMouseTo(point);
+
+    gfx::Point point2(x2 + offset.x(), y2 + offset.y());
+    event_generator.MoveMouseTo(point2);
+
+    // Wait for second image to load and for LCP entry to be there
+    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(),
+                     "run_test(/*entries_expected= */" + entries + ")")
+                  .error,
+              "");
+
+    // Need to navigate away from the test html page to force metrics to get
+    // flushed/synced.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+    waiter->Wait();
+    ExpectUKMPageLoadMetricFlagSet(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName, flag_set,
+        expected);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+                       LargestContentfulPaint_MouseoverOverLCPImage) {
+  test_mouseover("/mouseover.html",
+                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 /*entries=*/"2",
+                 /*x1=*/10, /*y1=*/10,
+                 /*x2=*/10, /*y2=*/10,
+                 /*expected=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+                       LargestContentfulPaint_MouseoverOverLCPImageReplace) {
+  test_mouseover("/mouseover.html?replace",
+                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 /*entries=*/"2",
+                 /*x1=*/10, /*y1=*/10,
+                 /*x2=*/10, /*y2=*/10,
+                 /*expected=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+                       LargestContentfulPaint_MouseoverOverBody) {
+  test_mouseover("/mouseover.html",
+                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 /*entries=*/"2",
+                 /*x1=*/200, /*y1=*/200,
+                 /*x2=*/200, /*y2=*/200,
+                 /*expected=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+                       LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
+  test_mouseover("/mouseover.html",
+                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 /*entries=*/"2",
+                 /*x1=*/10, /*y1=*/10,
+                 /*x2=*/200, /*y2=*/200,
+                 /*expected=*/false);
+}
+#endif
