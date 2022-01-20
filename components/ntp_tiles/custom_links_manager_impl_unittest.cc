@@ -15,6 +15,7 @@
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using Link = ntp_tiles::CustomLinksManager::Link;
@@ -51,9 +52,11 @@ const char kTestTitle[] = "Test";
 const char16_t kTestTitle16[] = u"Test";
 const char kTestUrl[] = "http://test.com/";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 const char16_t kTestGmail16[] = u"Gmail";
 const char kTestGmailURL[] =
     "chrome-extension://pjkljhegncpnkpknbcohdijeoejaedia/index.html";
+#endif
 
 base::Value::ListStorage FillTestListStorage(const char* url,
                                              const char* title,
@@ -321,6 +324,9 @@ TEST_F(CustomLinksManagerImplTest, DeleteLink) {
   EXPECT_TRUE(custom_links_->GetLinks().empty());
 }
 
+// The following tests include a default chrome app; these tests are only
+// relevant if extensions and apps are enabled.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(CustomLinksManagerImplTest, MigratedDefaultAppDeletedSingle) {
   NTPTilesVector initial_tiles;
   AddTile(&initial_tiles, kTestGmailURL, kTestGmail16);
@@ -348,6 +354,7 @@ TEST_F(CustomLinksManagerImplTest, DeletedMigratedDefaultAppMultiLink) {
                  Link{GURL(kTestCase2[1].url), kTestCase2[1].title, true}}),
             custom_links_test_->GetLinks());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(CustomLinksManagerImplTest, DeleteLinkWhenUrlDoesNotExist) {
   // Initialize.

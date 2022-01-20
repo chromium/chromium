@@ -38,6 +38,7 @@
 #include "components/ntp_tiles/switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -658,6 +659,9 @@ TEST_P(MostVisitedSitesTest, ShouldHaveHomepageFirstInListWhenFull) {
   EXPECT_THAT(tiles[0], MatchesTile(u"", kHomepageUrl, TileSource::HOMEPAGE));
 }
 
+// The following test exercises behavior with a preinstalled chrome app; this
+// is only relevant if extensions and apps are enabled.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_P(MostVisitedSitesTest, ShouldNotContainDefaultPreinstalledApp) {
   const char kTestUrl[] = "http://site1/";
   const char16_t kTestTitle[] = u"Site 1";
@@ -684,6 +688,7 @@ TEST_P(MostVisitedSitesTest, ShouldNotContainDefaultPreinstalledApp) {
                     Contains(MatchesTile(kTestTitle, kTestUrl,
                                          TileSource::TOP_SITES))));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_P(MostVisitedSitesTest, ShouldHaveHomepageFirstInListWhenNotFull) {
   FakeHomepageClient* homepage_client = RegisterNewHomepageClient();
