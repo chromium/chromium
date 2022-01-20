@@ -60,7 +60,7 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryTriggers) {
   provider_->OnFileSystemMounted();
   ExpectHistogramCountAndWait(1);
 
-  provider_->AppListShown();
+  provider_->ViewClosing();
   ExpectHistogramCountAndWait(2);
 
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
@@ -79,7 +79,7 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
   histogram_tester_.ExpectTotalCount(kHypotheticalQueryHistogram, 0);
 
   provider_->AppListShown();
-  provider_->AppListShown();
+  provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
       ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 1);
@@ -95,7 +95,7 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
 
   FastForwardByMinutes(5);
   provider_->AppListShown();
-  provider_->AppListShown();
+  provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
       ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 2);
@@ -111,7 +111,7 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
 
   FastForwardByMinutes(5);
   provider_->AppListShown();
-  provider_->AppListShown();
+  provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
       ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 3);
@@ -127,7 +127,7 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
 
   FastForwardByMinutes(5);
   provider_->AppListShown();
-  provider_->AppListShown();
+  provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
       ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 4);
@@ -143,7 +143,7 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
 
   FastForwardByMinutes(15);
   provider_->AppListShown();
-  provider_->AppListShown();
+  provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
       ZeroStateDriveProvider::ThrottleInterval::kFiveMinutes, 5);

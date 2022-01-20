@@ -43,6 +43,10 @@ using ThrottleInterval = ZeroStateDriveProvider::ThrottleInterval;
 constexpr char kListSchema[] = "zero_state_drive://";
 constexpr char kChipSchema[] = "drive_chip://";
 
+// How long to wait before making the first request for results from the
+// ItemSuggestCache.
+constexpr base::TimeDelta kFirstUpdateDelay = base::Seconds(10);
+
 // Outcome of a call to DriverZeroStateProvider::StartZeroState. These values
 // persist to logs. Entries should not be renumbered and numeric values should
 // never be reused.
@@ -117,8 +121,14 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
       session_manager_(session_manager::SessionManager::Get()),
-      item_suggest_cache_(profile, std::move(url_loader_factory)),
-      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled()) {
+      construction_time_(base::Time::Now()),
+      item_suggest_cache_(
+          profile,
+          std::move(url_loader_factory),
+          base::BindRepeating(&ZeroStateDriveProvider::OnCacheUpdated,
+                              base::Unretained(this))),
+      suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled() ||
+                               ash::features::IsProductivityLauncherEnabled()) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -160,13 +170,20 @@ void ZeroStateDriveProvider::OnFileSystemMounted() {
   const bool gate_on_use = base::GetFieldTrialParamByFeatureAsBool(
       app_list_features::kEnableSuggestedFiles, "gate_warm_on_launcher_use",
       true);
-  const bool should_warm = !gate_on_use || launcher_used;
+  const bool productivity_launcher =
+      ash::features::IsProductivityLauncherEnabled();
+  const bool should_warm =
+      !gate_on_use || launcher_used || productivity_launcher;
   LogShouldWarm(should_warm);
 
   if (have_warmed_up_cache_ || !suggested_files_enabled_ || !should_warm)
     return;
   have_warmed_up_cache_ = true;
-  item_suggest_cache_.UpdateCache();
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
+                     weak_factory_.GetWeakPtr()),
+      kFirstUpdateDelay);
 }
 
 void ZeroStateDriveProvider::OnSessionStateChanged() {
@@ -186,10 +203,10 @@ void ZeroStateDriveProvider::ScreenIdleStateChanged(
   screen_off_ = proto.off();
 }
 
-void ZeroStateDriveProvider::AppListShown() {
+void ZeroStateDriveProvider::ViewClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MaybeLogHypotheticalQuery();
-  item_suggest_cache_.UpdateCache();
+  MaybeUpdateCache();
 }
 
 ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() const {
@@ -307,6 +324,16 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(
       ash::AppListSearchResultType::kDriveChip,
       ash::SearchResultDisplayType::kChip, relevance, std::u16string(),
       FileResult::Type::kFile, profile_);
+}
+
+void ZeroStateDriveProvider::OnCacheUpdated() {
+  StartZeroState();
+}
+
+void ZeroStateDriveProvider::MaybeUpdateCache() {
+  if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
+    item_suggest_cache_.UpdateCache();
+  }
 }
 
 void ZeroStateDriveProvider::MaybeLogHypotheticalQuery() {

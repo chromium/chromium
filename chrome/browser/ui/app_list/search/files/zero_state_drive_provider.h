@@ -54,7 +54,7 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   // SearchProvider:
   void StartZeroState() override;
-  void AppListShown() override;
+  void ViewClosing() override;
   ash::AppListSearchResultType ResultType() const override;
   bool ShouldBlockZeroState() const override;
 
@@ -86,6 +86,15 @@ class ZeroStateDriveProvider : public SearchProvider,
   std::unique_ptr<FileResult> MakeChipResult(const base::FilePath& filepath,
                                              const float relevance);
 
+  // Callback for when the ItemSuggestCache updates its results.
+  void OnCacheUpdated();
+
+  // Requests an update from the ItemSuggestCache, but only if the call is long
+  // enough after the provider was constructed. This helps ease resource
+  // contention at login, and prevents the call from failing because Google auth
+  // tokens haven't been set up yet.
+  void MaybeUpdateCache();
+
   // We are intending to change the triggers of queries to ItemSuggest, but
   // first want to know the QPS impact of the change. This method records
   // metrics to track how many queries we will send under the proposed new
@@ -99,6 +108,8 @@ class ZeroStateDriveProvider : public SearchProvider,
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
   session_manager::SessionManager* session_manager_;
+
+  const base::Time construction_time_;
 
   ItemSuggestCache item_suggest_cache_;
 
