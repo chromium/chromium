@@ -60,7 +60,22 @@ viewAnimations.set('fade-out', element => {
 
   return whenFinished(animation);
 });
-viewAnimations.set('slide-in-fade-in', element => {
+viewAnimations.set('slide-in-fade-in-ltr', element => {
+  const animation = element.animate(
+      [
+        {transform: 'translateX(-8px)', opacity: 0},
+        {transform: 'translateX(0)', opacity: 1}
+      ],
+      /** @type {!KeyframeAnimationOptions} */ ({
+        duration: 300,
+        easing: 'cubic-bezier(0.0, 0.0, 0.2, 1)',
+        fill: 'forwards',
+        iterations: 1,
+      }));
+
+  return whenFinished(animation);
+});
+viewAnimations.set('slide-in-fade-in-rtl', element => {
   const animation = element.animate(
       [
         {transform: 'translateX(8px)', opacity: 0},
