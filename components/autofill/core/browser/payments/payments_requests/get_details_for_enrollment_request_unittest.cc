@@ -27,7 +27,7 @@ class GetDetailsForEnrollmentRequestTest : public testing::Test {
     request_details.app_locale = "en";
     request_details.billing_customer_number = 55667788;
     request_details.risk_data = "fake risk data";
-    request_details.type = VirtualCardEnrollmentSource::kUpstream;
+    request_details.source = VirtualCardEnrollmentSource::kUpstream;
     request_ = std::make_unique<GetDetailsForEnrollmentRequest>(
         request_details, base::DoNothing());
   }

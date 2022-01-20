@@ -350,7 +350,7 @@ class PaymentsClient {
     ~GetDetailsForEnrollmentRequestDetails();
 
     // The type of the enrollment this request is for.
-    VirtualCardEnrollmentSource type = VirtualCardEnrollmentSource::kNone;
+    VirtualCardEnrollmentSource source = VirtualCardEnrollmentSource::kNone;
 
     // |instrument_id| is used by the server to identify a specific card to get
     // details for.
@@ -476,6 +476,16 @@ class PaymentsClient {
       const SelectChallengeOptionRequestDetails& details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::string&)> callback);
+
+  // Retrieve information necessary for the enrollment from the server. This is
+  // invoked before we show the bubble to request user consent for the
+  // enrollment.
+  virtual void GetVirtualCardEnrollmentDetails(
+      const GetDetailsForEnrollmentRequestDetails& request_details,
+      base::OnceCallback<void(
+          AutofillClient::PaymentsRpcResult,
+          payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
+          callback);
 
   // The user has chosen to change the virtual-card enrollment of a credit card.
   // Send the necessary information for the server to identify the credit card

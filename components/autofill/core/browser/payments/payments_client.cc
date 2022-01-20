@@ -1118,6 +1118,17 @@ void PaymentsClient::SelectChallengeOption(
                /*authenticate=*/true);
 }
 
+void PaymentsClient::GetVirtualCardEnrollmentDetails(
+    const GetDetailsForEnrollmentRequestDetails& request_details,
+    base::OnceCallback<
+        void(AutofillClient::PaymentsRpcResult,
+             payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
+        callback) {
+  IssueRequest(std::make_unique<GetDetailsForEnrollmentRequest>(
+                   request_details, std::move(callback)),
+               /*authenticate=*/false);
+}
+
 void PaymentsClient::UpdateVirtualCardEnrollment(
     const UpdateVirtualCardEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {

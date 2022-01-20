@@ -14,8 +14,8 @@ namespace {
 const char kGetDetailsForEnrollmentRequestPath[] =
     "payments/apis/virtualcardservice/getdetailsforenroll";
 
-// The billable service number for the request if the enrollment happens after a
-// local card upload.
+// The billable service number for the request if the enrollment happens after
+// a local card upload.
 const int kUpstreamEnrollBillableServiceNumber =
     kUploadCardBillableServiceNumber;
 
@@ -27,7 +27,8 @@ const int kDownstreamEnrollBillableServiceNumber =
 }  // namespace
 
 GetDetailsForEnrollmentRequest::GetDetailsForEnrollmentRequest(
-    PaymentsClient::GetDetailsForEnrollmentRequestDetails request_details,
+    const PaymentsClient::GetDetailsForEnrollmentRequestDetails&
+        request_details,
     base::OnceCallback<
         void(AutofillClient::PaymentsRpcResult,
              PaymentsClient::GetDetailsForEnrollmentResponseDetails&)> callback)
@@ -49,7 +50,7 @@ std::string GetDetailsForEnrollmentRequest::GetRequestContent() {
   base::Value context(base::Value::Type::DICTIONARY);
   context.SetKey("language_code", base::Value(request_details_.app_locale));
   int billable_service_number = 0;
-  switch (request_details_.type) {
+  switch (request_details_.source) {
     case VirtualCardEnrollmentSource::kUpstream:
       billable_service_number = kUpstreamEnrollBillableServiceNumber;
       break;

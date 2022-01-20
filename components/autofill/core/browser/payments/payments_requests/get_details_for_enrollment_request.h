@@ -15,7 +15,8 @@ namespace autofill::payments {
 class GetDetailsForEnrollmentRequest : public PaymentsRequest {
  public:
   GetDetailsForEnrollmentRequest(
-      PaymentsClient::GetDetailsForEnrollmentRequestDetails request_details,
+      const PaymentsClient::GetDetailsForEnrollmentRequestDetails&
+          request_details,
       base::OnceCallback<void(
           AutofillClient::PaymentsRpcResult,
           PaymentsClient::GetDetailsForEnrollmentResponseDetails&)> callback);
