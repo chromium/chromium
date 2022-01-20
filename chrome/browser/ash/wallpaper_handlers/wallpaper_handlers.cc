@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 
+#include <map>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -565,6 +566,20 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
   if (resume_token && !resume_token->empty())
     parsed_response->resume_token = *resume_token;
 
+  // The photos listed under "item" are the albums' cover photos.
+  const base::Value* response_photos = response->FindListPath("item");
+  if (!response_photos)
+    return parsed_response;
+
+  // Populate the ID -> URL mapping for the each album's cover photo.
+  std::map<std::string, std::string> cover_photo_urls_by_id;
+  for (const auto& response_photo : response_photos->GetList()) {
+    const std::string* id = response_photo.FindStringPath("itemId.mediaKey");
+    const std::string* url = response_photo.FindStringPath("photo.servingUrl");
+    if (id && url)
+      cover_photo_urls_by_id.emplace(*id, *url);
+  }
+
   const base::Value* response_albums = response->FindListPath("collection");
   if (!response_albums)
     return parsed_response;
@@ -572,34 +587,31 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
   parsed_response->albums =
       std::vector<ash::personalization_app::mojom::GooglePhotosAlbumPtr>();
   for (const auto& response_album : response_albums->GetList()) {
-    const base::Value* id_wrapper = response_album.FindDictPath("collectionId");
-    const std::string* id =
-        id_wrapper ? id_wrapper->FindStringPath("mediaKey") : nullptr;
+    const std::string* album_id =
+        response_album.FindStringPath("collectionId.mediaKey");
     const std::string* title = response_album.FindStringPath("name");
     const std::string* num_photos_string =
         response_album.FindStringPath("numPhotos");
 
-    // Temporarily use a hard-coded URL from the solid colors backdrop
-    // collection since the backdrop server is already allowlisted with the
-    // untrusted iframe's content security policy.
-    // TODO(b/214577469): Get `cover_photo_url` from `response_album`.
-    std::string placeholder_photo =
-        "https://lh6.googleusercontent.com/proxy/"
-        "5ftru2Wt8g3R7r4TzRAOhJD7jMpLWOiqKxgql3vd_s26EnV51M5WfJe-"
-        "ZJZkrMnqbOQ4uB1iBycwwGziEVYCwMeRx2Tcdmiq2lH44hUD3OLX";
-    const std::string* cover_photo_url = &placeholder_photo;
+    // TODO(b/214577469): Get cover photo URL directly from `response_album`.
+    const std::string* cover_photo_id =
+        response_album.FindStringPath("coverItemId.mediaKey");
+    auto cover_photo_url_iter =
+        cover_photo_id ? cover_photo_urls_by_id.find(*cover_photo_id)
+                       : cover_photo_urls_by_id.end();
 
     int64_t num_photos;
-    if (!id || !title || !num_photos_string ||
+    if (!album_id || !title || !num_photos_string ||
         !base::StringToInt64(*num_photos_string, &num_photos) ||
-        !cover_photo_url) {
+        num_photos == 0 ||
+        cover_photo_url_iter == cover_photo_urls_by_id.end()) {
       continue;
     }
 
     parsed_response->albums->push_back(
         ash::personalization_app::mojom::GooglePhotosAlbum::New(
-            *id, *title, base::saturated_cast<int>(num_photos),
-            GURL(*cover_photo_url)));
+            *album_id, *title, base::saturated_cast<int>(num_photos),
+            GURL(cover_photo_url_iter->second)));
   }
   return parsed_response;
 }
