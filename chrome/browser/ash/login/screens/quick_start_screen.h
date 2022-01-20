@@ -41,6 +41,8 @@ class QuickStartScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
 
+  void SendRandomFiguresForTesting() const;
+
   base::raw_ptr<TView> view_;
   ScreenExitCallback exit_callback_;
 };

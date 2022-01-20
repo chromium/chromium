@@ -137,6 +137,7 @@ js_library("hid_detection.m") {
 js_library("quick_start.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/quick_start.m.js" ]
   deps = [
+    "../../components:oobe_types.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/dialogs:oobe_loading_dialog.m",

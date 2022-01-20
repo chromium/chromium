@@ -166,3 +166,13 @@ OobeTypes.EnrollmentStep = {
   ATTRIBUTE_PROMPT_ERROR: 'attribute-prompt-error',
   ACTIVE_DIRECTORY_JOIN_ERROR: 'active-directory-join-error',
 };
+
+/**
+ * Verification figure for the Quick Start screen.
+ * @typedef {{
+ *   shape: number,
+ *   color: number,
+ *   digit: number,
+ * }}
+ */
+OobeTypes.QuickStartScreenFigureData;

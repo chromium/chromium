@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 
+#include "base/bind.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
 
 namespace ash {
@@ -43,12 +49,25 @@ void QuickStartScreen::ShowImpl() {
   if (view_) {
     view_->Show();
   }
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&QuickStartScreen::SendRandomFiguresForTesting,  // IN-TEST
+                     base::Unretained(this)),
+      base::Seconds(1));
 }
 
 void QuickStartScreen::HideImpl() {}
 
 void QuickStartScreen::OnUserAction(const std::string& action_id) {
+  SendRandomFiguresForTesting();  // IN-TEST
   BaseScreen::OnUserAction(action_id);
+}
+
+void QuickStartScreen::SendRandomFiguresForTesting() const {
+  std::string token = base::UTF16ToASCII(
+      base::TimeFormatWithPattern(base::Time::Now(), "MMMMdjmmss"));
+  const auto& shapes = quick_start::GenerateShapes(token);
+  view_->SetShapes(shapes);
 }
 
 }  // namespace ash

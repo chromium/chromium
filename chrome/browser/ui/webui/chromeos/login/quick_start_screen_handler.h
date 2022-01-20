@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_QUICK_START_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_QUICK_START_SCREEN_HANDLER_H_
 
+#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -29,6 +30,7 @@ class QuickStartView {
   virtual void Show() = 0;
   virtual void Bind(ash::QuickStartScreen* screen) = 0;
   virtual void Unbind() = 0;
+  virtual void SetShapes(const ash::quick_start::ShapeList& shape_list) = 0;
 };
 
 // WebUI implementation of QuickStartView.
@@ -48,6 +50,7 @@ class QuickStartScreenHandler : public QuickStartView,
   void Show() override;
   void Bind(ash::QuickStartScreen* screen) override;
   void Unbind() override;
+  void SetShapes(const ash::quick_start::ShapeList& shape_list) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
