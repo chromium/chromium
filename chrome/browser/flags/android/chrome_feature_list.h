@@ -48,6 +48,7 @@ extern const base::Feature kCCTResizableForFirstParties;
 extern const base::Feature kCCTResizableForThirdParties;
 extern const base::Feature kCCTResourcePrefetch;
 extern const base::Feature kDontAutoHideBrowserControls;
+extern const base::Feature kChromeNewDownloadTab;
 extern const base::Feature kChromeShareLongScreenshot;
 extern const base::Feature kChromeShareScreenshot;
 extern const base::Feature kChromeSharingHub;
