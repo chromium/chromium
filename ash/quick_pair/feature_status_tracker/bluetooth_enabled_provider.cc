@@ -24,24 +24,29 @@ BluetoothEnabledProvider::~BluetoothEnabledProvider() = default;
 void BluetoothEnabledProvider::AdapterPoweredChanged(
     device::BluetoothAdapter* adapter,
     bool powered) {
-  if (!HasHardwareSupport()) {
-    SetEnabledAndInvokeCallback(/*is_enabled=*/false);
-    return;
-  }
+  Update();
+}
 
-  SetEnabledAndInvokeCallback(powered);
+void BluetoothEnabledProvider::AdapterPresentChanged(
+    device::BluetoothAdapter* adapter,
+    bool present) {
+  Update();
 }
 
 void BluetoothEnabledProvider::OnAdapterReceived(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   adapter_ = adapter;
+  adapter_observation_.Observe(adapter_.get());
 
+  Update();
+}
+
+void BluetoothEnabledProvider::Update() {
   if (!HasHardwareSupport()) {
     SetEnabledAndInvokeCallback(/*is_enabled=*/false);
     return;
   }
 
-  adapter_observation_.Observe(adapter_.get());
   SetEnabledAndInvokeCallback(adapter_->IsPowered());
 }
 

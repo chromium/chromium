@@ -16,7 +16,11 @@ class FakeBluetoothAdapter
  public:
   void NotifyPoweredChanged(bool powered);
 
+  bool IsPowered() const override;
+
   bool IsPresent() const override;
+
+  void SetBluetoothIsPowered(bool powered);
 
   void SetBluetoothIsPresent(bool present);
 
@@ -30,6 +34,7 @@ class FakeBluetoothAdapter
  private:
   ~FakeBluetoothAdapter() = default;
 
+  bool is_bluetooth_powered_ = false;
   bool is_bluetooth_present_ = true;
   device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       hardware_offloading_status_ = device::BluetoothAdapter::

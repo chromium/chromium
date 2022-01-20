@@ -75,7 +75,7 @@ TEST_F(FastPairEnabledProviderTest, ProviderCallbackIsInvokedOnBTChanges) {
 
   provider->SetCallback(callback.Get());
 
-  adapter_->NotifyPoweredChanged(true);
+  adapter_->SetBluetoothIsPowered(true);
 }
 
 // Represents: <is_flag_enabled, is_bt_enabled, is_pref_enabled,

@@ -22,13 +22,16 @@ class BluetoothEnabledProvider : public BaseEnabledProvider,
   BluetoothEnabledProvider();
   ~BluetoothEnabledProvider() override;
 
+ private:
   // BluetoothAdapter::Observer
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
+  void AdapterPresentChanged(device::BluetoothAdapter* adapter,
+                             bool present) override;
 
- private:
   void OnAdapterReceived(scoped_refptr<device::BluetoothAdapter> adapter);
 
+  void Update();
   bool HasHardwareSupport();
 
   base::ScopedObservation<device::BluetoothAdapter,
