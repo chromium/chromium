@@ -408,6 +408,10 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   // (calculating that isn't necessarily very cheap). So, start off without it.
   absl::optional<NGFragmentGeometry> fragment_geometry;
 
+  // CachedLayoutResult() might clear flags, so remember the need for layout
+  // before attempting to hit the cache.
+  bool needed_layout = box_->NeedsLayout();
+
   scoped_refptr<const NGLayoutResult> layout_result =
       box_->CachedLayoutResult(constraint_space, break_token, early_break,
                                &fragment_geometry, &cache_status);
@@ -430,8 +434,23 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     // added or removed scrollbars during overflow recalculation, which may have
     // marked us for layout. In that case the cached result is unusable, and we
     // need to re-lay out now.
-    if (!box_->NeedsLayout())
+    if (!box_->NeedsLayout()) {
+      if (needed_layout &&
+          constraint_space.CacheSlot() == NGCacheSlot::kLayout) {
+        // We need to clone the result to pick the most recent fragments from
+        // the LayoutBox children, because there may be relayout boundary
+        // children which just got laid out by the subtree layout machinery, but
+        // didn't rebuild the fragment tree spine, because its containing block
+        // (this node) was already marked for layout, and thus assuming that the
+        // containing block would eventually update its children (and remaining
+        // part of the ancestry) anyway. So, here we are, fulfilling our part of
+        // the deal.
+        layout_result =
+            NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
+        StoreResultInLayoutBox(layout_result, break_token);
+      }
       return layout_result;
+    }
   }
 
   if (!fragment_geometry) {
@@ -754,17 +773,7 @@ void NGBlockNode::FinishLayout(
 #endif
   }
 
-  if (physical_fragment.IsOnlyForNode()) {
-    box_->SetCachedLayoutResult(layout_result);
-  } else {
-    // Add all layout results (and fragments) generated from a node to a list in
-    // the layout object. Some extra care is required to correctly overwrite
-    // intermediate layout results: The sequence number of an incoming break
-    // token corresponds with the fragment index in the layout object (off by 1,
-    // though). When writing back a layout result, we remove any fragments in
-    // the layout box at higher indices than that of the one we're writing back.
-    box_->AddLayoutResult(layout_result, FragmentIndex(break_token));
-  }
+  StoreResultInLayoutBox(layout_result, break_token);
 
   if (block_flow) {
     const NGFragmentItems* items = physical_fragment.Items();
@@ -800,6 +809,24 @@ void NGBlockNode::FinishLayout(
   }
 
   CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
+}
+
+void NGBlockNode::StoreResultInLayoutBox(
+    scoped_refptr<const NGLayoutResult> result,
+    const NGBlockBreakToken* break_token) const {
+  const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+
+  if (fragment.IsOnlyForNode()) {
+    box_->SetCachedLayoutResult(std::move(result));
+  } else {
+    // Add all layout results (and fragments) generated from a node to a list in
+    // the layout object. Some extra care is required to correctly overwrite
+    // intermediate layout results: The sequence number of an incoming break
+    // token corresponds with the fragment index in the layout object (off by 1,
+    // though). When writing back a layout result, we remove any fragments in
+    // the layout box at higher indices than that of the one we're writing back.
+    box_->AddLayoutResult(std::move(result), FragmentIndex(break_token));
+  }
 }
 
 MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
