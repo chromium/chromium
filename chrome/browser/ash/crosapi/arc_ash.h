@@ -49,7 +49,7 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
 
   // arc::ArcIntentHelperObserver:
   void OnIconInvalidated(const std::string& package_name) override;
-  void OnArcIntentHelperBridgeDestruction() override;
+  void OnArcIntentHelperBridgeShutdown() override;
 
  private:
   // Called when activity icons are sent.

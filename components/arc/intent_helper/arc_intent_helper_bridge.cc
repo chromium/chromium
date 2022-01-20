@@ -168,8 +168,11 @@ ArcIntentHelperBridge::~ArcIntentHelperBridge() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   arc_bridge_service_->intent_helper()->SetHost(nullptr);
   LinkHandlerModel::SetDelegate(nullptr);
+}
+
+void ArcIntentHelperBridge::Shutdown() {
   for (auto& observer : observer_list_)
-    observer.OnArcIntentHelperBridgeDestruction();
+    observer.OnArcIntentHelperBridgeShutdown();
 }
 
 void ArcIntentHelperBridge::OnIconInvalidated(const std::string& package_name) {

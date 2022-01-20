@@ -74,6 +74,9 @@ class ArcIntentHelperBridge : public KeyedService,
   ArcIntentHelperBridge& operator=(const ArcIntentHelperBridge&) = delete;
   ~ArcIntentHelperBridge() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // mojom::IntentHelperHost
   void OnIconInvalidated(const std::string& package_name) override;
   void OnIntentFiltersUpdated(

@@ -45,8 +45,8 @@ class ArcIntentHelperObserver {
 
   virtual void OnIconInvalidated(const std::string& package_name) {}
 
-  // Called when ArcIntentHelperBridge is destroyed.
-  virtual void OnArcIntentHelperBridgeDestruction() {}
+  // Called when ArcIntentHelperBridge is shut down.
+  virtual void OnArcIntentHelperBridgeShutdown() {}
 };
 
 }  // namespace arc
