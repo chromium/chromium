@@ -724,20 +724,18 @@ bool AccountManager::IsTokenAvailable(
 void AccountManager::HasDummyGaiaToken(
     const ::account_manager::AccountKey& account_key,
     base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure = base::BindOnce(
-      &AccountManager::HasDummyGaiaTokenInternal, weak_factory_.GetWeakPtr(),
-      account_key, std::move(callback));
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure = base::BindOnce(
+        &AccountManager::HasDummyGaiaToken, weak_factory_.GetWeakPtr(),
+        account_key, std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::HasDummyGaiaTokenInternal(
-    const ::account_manager::AccountKey& account_key,
-    base::OnceCallback<void(bool)> callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   auto it = accounts_.find(account_key);
   std::move(callback).Run(it != accounts_.end() &&
                           it->second.token == kInvalidToken);

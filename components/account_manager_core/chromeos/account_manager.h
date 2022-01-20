@@ -212,7 +212,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // initialized yet.
   bool IsTokenAvailable(const ::account_manager::AccountKey& account_key) const;
 
-  // Calls the |callback| with true if the token stored against |account_key| is
+  // Calls the `callback` with true if the token stored against `account_key` is
   // a dummy Gaia token.
   void HasDummyGaiaToken(const ::account_manager::AccountKey& account_key,
                          base::OnceCallback<void(bool)> callback);
@@ -323,12 +323,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Returns |true| if |AccountManager| is operating in ephemeral / in-memory
   // mode, and not persisting anything to disk.
   bool IsEphemeralMode() const;
-
-  // Does the actual work of checking dummy token for |account_key|. Assumes
-  // that |AccountManager| initialization (|init_state_|) is complete.
-  void HasDummyGaiaTokenInternal(
-      const ::account_manager::AccountKey& account_key,
-      base::OnceCallback<void(bool)> callback) const;
 
   // Does the actual work of checking dummy token for all accounts. Assumes that
   // |AccountManager| initialization (|init_state_|) is complete.
