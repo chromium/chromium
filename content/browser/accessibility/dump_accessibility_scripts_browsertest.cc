@@ -347,6 +347,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityURL) {
   RunTypedTest<kMacMethods>("accessibility-url.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityElement) {
+  RunTypedTest<kMacMethods>("is-accessibility-element.html");
+}
+
 #endif
 
 }  // namespace content

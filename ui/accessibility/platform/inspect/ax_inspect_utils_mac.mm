@@ -227,10 +227,11 @@ absl::optional<id> PerformAXSelector(const id node,
   if (![node conformsToProtocol:@protocol(NSAccessibility)])
     return absl::nullopt;
 
-  SEL selector = NSSelectorFromString(base::SysUTF8ToNSString(selector_string));
+  NSString* selector_nsstring = base::SysUTF8ToNSString(selector_string);
+  SEL selector = NSSelectorFromString(selector_nsstring);
 
   if ([node respondsToSelector:selector])
-    return [node performSelector:selector];
+    return [node valueForKey:selector_nsstring];
   return absl::nullopt;
 }
 
