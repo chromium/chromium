@@ -9,7 +9,6 @@ import collections
 import json
 import logging
 import os
-import pipes
 import re
 import shutil
 import signal
@@ -131,20 +130,6 @@ class RemoteTest:
       self._test_cmd += ['--flash']
       if args.public_image:
         self._test_cmd += ['--public-image']
-
-    # This environment variable is set for tests that have been instrumented
-    # for code coverage. Its incoming value is expected to be a location
-    # inside a subdirectory of result_dir above. This is converted to an
-    # absolute path that the vm is able to write to, and passed in the
-    # --results-src flag to cros_run_vm_test for copying out of the vm before
-    # its termination.
-    self._llvm_profile_var = None
-    if os.environ.get('LLVM_PROFILE_FILE'):
-      _, llvm_profile_file = os.path.split(os.environ['LLVM_PROFILE_FILE'])
-      self._llvm_profile_var = '/tmp/profraw/%s' % llvm_profile_file
-
-      # This should make the vm test runner exfil the profiling data.
-      self._test_cmd += ['--results-src', '/tmp/profraw']
 
     self._test_env = setup_env()
 
@@ -281,7 +266,7 @@ class TastTest(RemoteTest):
           'lacros-chrome deployment uses --nostrip by default, so it cannot '
           'be specificed with --deploy-lacros.')
 
-    if not self._llvm_profile_var and not self._logs_dir:
+    if not self._logs_dir:
       # The host-side Tast bin returns 0 when tests fail, so we need to capture
       # and parse its json results to reliably determine if tests fail.
       raise TestFormatError(
@@ -323,86 +308,49 @@ class TastTest(RemoteTest):
         os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH)
     ] + self._additional_args
 
-    # Coverage tests require some special pre-test setup, so use an
-    # on_device_script in that case. For all other tests, use cros_run_test's
-    # built-in '--tast' option. This gives us much better results reporting.
-    if self._llvm_profile_var:
-      # Build the shell script that will be used on the device to invoke the
-      # test.
-      device_test_script_contents = self.BASIC_SHELL_SCRIPT[:]
-      device_test_script_contents += [
-          'echo "LLVM_PROFILE_FILE=%s" >> /etc/chrome_dev.conf' %
-          (self._llvm_profile_var)
-      ]
-
-      local_test_runner_cmd = ['local_test_runner', '-waituntilready']
-      if self._use_vm:
-        # If we're running tests in VMs, tell the test runner to skip tests that
-        # aren't compatible.
-        local_test_runner_cmd.append('-extrauseflags=tast_vm')
-      if self._attr_expr:
-        local_test_runner_cmd.append(pipes.quote(self._attr_expr))
-      else:
-        local_test_runner_cmd.extend(self._tests)
-      device_test_script_contents.append(' '.join(local_test_runner_cmd))
-
-      self._on_device_script = self.write_test_script_to_disk(
-          device_test_script_contents)
-
+    # Capture tast's results in the logs dir as well.
+    if self._logs_dir:
       self._test_cmd += [
-          '--files',
-          os.path.relpath(self._on_device_script), '--',
-          './' + os.path.relpath(self._on_device_script, self._path_to_outdir)
+          '--results-dir',
+          self._logs_dir,
       ]
+    self._test_cmd += [
+        '--tast-total-shards=%d' % self._test_launcher_total_shards,
+        '--tast-shard-index=%d' % self._test_launcher_shard_index,
+    ]
+    # If we're using a test filter, replace the contents of the Tast
+    # conditional with a long list of "name:test" expressions, one for each
+    # test in the filter.
+    if self._gtest_style_filter:
+      if self._attr_expr or self._tests:
+        logging.warning(
+            'Presence of --gtest_filter will cause the specified Tast expr'
+            ' or test list to be ignored.')
+      names = []
+      for test in self._gtest_style_filter.split(':'):
+        names.append('"name:%s"' % test)
+      self._attr_expr = '(' + ' || '.join(names) + ')'
+
+    if self._attr_expr:
+      # Don't use pipes.quote() here. Something funky happens with the arg
+      # as it gets passed down from cros_run_test to tast. (Tast picks up the
+      # escaping single quotes and complains that the attribute expression
+      # "must be within parentheses".)
+      self._test_cmd.append('--tast=%s' % self._attr_expr)
     else:
-      # Capture tast's results in the logs dir as well.
-      if self._logs_dir:
-        self._test_cmd += [
-            '--results-dir',
-            self._logs_dir,
-        ]
-      self._test_cmd += [
-          '--tast-total-shards=%d' % self._test_launcher_total_shards,
-          '--tast-shard-index=%d' % self._test_launcher_shard_index,
-      ]
-      # If we're using a test filter, replace the contents of the Tast
-      # conditional with a long list of "name:test" expressions, one for each
-      # test in the filter.
-      if self._gtest_style_filter:
-        if self._attr_expr or self._tests:
-          logging.warning(
-              'Presence of --gtest_filter will cause the specified Tast expr'
-              ' or test list to be ignored.')
-        names = []
-        for test in self._gtest_style_filter.split(':'):
-          names.append('"name:%s"' % test)
-        self._attr_expr = '(' + ' || '.join(names) + ')'
+      self._test_cmd.append('--tast')
+      self._test_cmd.extend(self._tests)
 
-      if self._attr_expr:
-        # Don't use pipes.quote() here. Something funky happens with the arg
-        # as it gets passed down from cros_run_test to tast. (Tast picks up the
-        # escaping single quotes and complains that the attribute expression
-        # "must be within parentheses".)
-        self._test_cmd.append('--tast=%s' % self._attr_expr)
-      else:
-        self._test_cmd.append('--tast')
-        self._test_cmd.extend(self._tests)
+    for v in self._tast_vars or []:
+      self._test_cmd.extend(['--tast-var', v])
 
-      for v in self._tast_vars or []:
-        self._test_cmd.extend(['--tast-var', v])
-
-      # Mounting ash-chrome gives it enough disk space to not need stripping,
-      # but only for one not instrumented with code coverage.
-      # Lacros uses --nostrip by default, so there is no need to specify.
-      if not self._deploy_lacros and not self._should_strip:
-        self._test_cmd.append('--nostrip')
+    # Mounting ash-chrome gives it enough disk space to not need stripping,
+    # but only for one not instrumented with code coverage.
+    # Lacros uses --nostrip by default, so there is no need to specify.
+    if not self._deploy_lacros and not self._should_strip:
+      self._test_cmd.append('--nostrip')
 
   def post_run(self, return_code):
-    # If we don't need to parse the host-side Tast tool's results, fall back to
-    # the parent method's default behavior.
-    if self._llvm_profile_var:
-      return super().post_run(return_code)
-
     tast_results_path = os.path.join(self._logs_dir, 'streamed_results.jsonl')
     if not os.path.exists(tast_results_path):
       logging.error(
@@ -592,11 +540,6 @@ class GTestTest(RemoteTest):
     # Build the shell script that will be used on the device to invoke the test.
     # Stored here as a list of lines.
     device_test_script_contents = self.BASIC_SHELL_SCRIPT[:]
-    if self._llvm_profile_var:
-      device_test_script_contents += [
-          'export LLVM_PROFILE_FILE=%s' % self._llvm_profile_var,
-      ]
-
     for var_name, var_val in self._env_vars:
       device_test_script_contents += ['export %s=%s' % (var_name, var_val)]
 
