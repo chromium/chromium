@@ -19,7 +19,6 @@ namespace ash {
 namespace {
 
 constexpr int kPillButtonHeight = 32;
-constexpr int kPillButtonHorizontalSpacing = 16;
 constexpr int kPillButtonMinimumWidth = 56;
 constexpr int kIconSize = 20;
 constexpr int kIconPillButtonImageLabelSpacingDp = 8;
@@ -54,32 +53,27 @@ SkColor GetPillButtonBackgroundColor(PillButton::Type type) {
   return AshColorProvider::Get()->GetControlsLayerColor(color_id);
 }
 
-int GetPillButtonWidth(bool has_icon) {
-  int button_width = 2 * kPillButtonHorizontalSpacing;
-  if (has_icon)
-    button_width += (kIconSize + kIconPillButtonImageLabelSpacingDp);
-  return button_width;
-}
-
 }  // namespace
 
 PillButton::PillButton(PressedCallback callback,
                        const std::u16string& text,
                        PillButton::Type type,
                        const gfx::VectorIcon* icon,
+                       int horizontal_spacing,
                        bool use_light_colors,
                        bool rounded_highlight_path)
     : views::LabelButton(std::move(callback), text),
       type_(type),
       icon_(icon),
-      use_light_colors_(use_light_colors) {
+      use_light_colors_(use_light_colors),
+      horizontal_spacing_(horizontal_spacing) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   const int vertical_spacing =
       std::max(kPillButtonHeight - GetPreferredSize().height() / 2, 0);
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_spacing, kPillButtonHorizontalSpacing)));
+      gfx::Insets(vertical_spacing, horizontal_spacing_)));
   label()->SetSubpixelRenderingEnabled(false);
   // TODO: Unify the font size, weight under ash/style as well.
   label()->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -104,9 +98,12 @@ PillButton::PillButton(PressedCallback callback,
 PillButton::~PillButton() = default;
 
 gfx::Size PillButton::CalculatePreferredSize() const {
-  gfx::Size size(label()->GetPreferredSize().width() +
-                     GetPillButtonWidth(type_ == PillButton::Type::kIcon),
-                 kPillButtonHeight);
+  int button_width =
+      2 * horizontal_spacing_ + label()->GetPreferredSize().width();
+  if (type_ == PillButton::Type::kIcon)
+    button_width += (kIconSize + kIconPillButtonImageLabelSpacingDp);
+
+  gfx::Size size(button_width, kPillButtonHeight);
   size.SetToMax(gfx::Size(kPillButtonMinimumWidth, kPillButtonHeight));
   return size;
 }

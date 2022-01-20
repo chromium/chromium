@@ -30,6 +30,9 @@ constexpr int kMessageListNotificationSpacing = 2;
 constexpr int kNotificationBarVerticalPadding = 8;
 constexpr int kNotificationBarHorizontalPadding = 10;
 
+// Horizontal spacing of the pill buttons inside notification.
+constexpr int kNotificationPillButtonHorizontalSpacing = 12;
+
 // Constants for `ash_notification_view`.
 
 // The width of notification that displayed inside the message center.

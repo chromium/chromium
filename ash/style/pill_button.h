@@ -18,6 +18,8 @@ class ASH_EXPORT PillButton : public views::LabelButton {
  public:
   METADATA_HEADER(PillButton);
 
+  static constexpr int kPillButtonHorizontalSpacing = 16;
+
   // Types of the PillButton.
   enum class Type {
     // PillButton with an icon, default text and background colors.
@@ -48,6 +50,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
              const std::u16string& text,
              Type type,
              const gfx::VectorIcon* icon,
+             int horizontal_spacing = kPillButtonHorizontalSpacing,
              bool use_light_colors = false,
              bool rounded_highlight_path = true);
   PillButton(const PillButton&) = delete;
@@ -74,6 +77,10 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // True if the button wants to use light colors when the D/L mode feature is
   // not enabled. Note, can be removed when D/L mode feature is fully launched.
   bool use_light_colors_;
+
+  // Horizontal spacing of this button. `kPillButtonHorizontalSpacing` will be
+  // set as the default value.
+  int horizontal_spacing_;
 
   // Customized value for text's color.
   absl::optional<SkColor> text_color_;

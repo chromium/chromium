@@ -885,9 +885,9 @@ AshNotificationView::GenerateNotificationLabelButton(
     views::Button::PressedCallback callback,
     const std::u16string& label) {
   std::unique_ptr<views::LabelButton> actions_button =
-      std::make_unique<PillButton>(std::move(callback), label,
-                                   PillButton::Type::kIconlessAccentFloating,
-                                   /*icon=*/nullptr);
+      std::make_unique<PillButton>(
+          std::move(callback), label, PillButton::Type::kIconlessAccentFloating,
+          /*icon=*/nullptr, kNotificationPillButtonHorizontalSpacing);
   // Override the inkdrop configuration to make sure it will show up when hover
   // or focus on the button.
   StyleUtil::SetUpInkDropForButton(actions_button.get(), gfx::Insets(),

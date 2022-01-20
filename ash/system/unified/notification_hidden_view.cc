@@ -11,6 +11,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -67,7 +68,8 @@ NotificationHiddenView::NotificationHiddenView()
         base::BindRepeating(&NotificationHiddenView::ChangeButtonPressed,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE),
-        PillButton::Type::kIconless, /*icon=*/nullptr));
+        PillButton::Type::kIconless, /*icon=*/nullptr,
+        kNotificationPillButtonHorizontalSpacing));
     change_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE_TOOLTIP));
   }
