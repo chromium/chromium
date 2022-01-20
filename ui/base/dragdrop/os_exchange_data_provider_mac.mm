@@ -140,6 +140,17 @@ void OSExchangeDataProviderMac::MarkOriginatedFromRenderer() {
 }
 
 bool OSExchangeDataProviderMac::DidOriginateFromRenderer() const {
+  // TODO(crbug.com/1288599): Implement this method.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void OSExchangeDataProviderMac::MarkAsFromPrivileged() {
+  NOTIMPLEMENTED();
+}
+
+bool OSExchangeDataProviderMac::IsFromPrivileged() const {
+  // TODO(crbug.com/1288601): Implement this method.
   NOTIMPLEMENTED();
   return false;
 }

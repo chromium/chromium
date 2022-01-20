@@ -62,6 +62,7 @@ STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path);
 STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path);
 
 const ClipboardFormatType& GetRendererTaintFormatType();
+const ClipboardFormatType& GetFromPrivilegedFormatType();
 const ClipboardFormatType& GetIgnoreFileContentsFormatType();
 // Creates the contents of an Internet Shortcut file for the given URL.
 std::string GetInternetShortcutFileContents(const GURL& url);
@@ -303,6 +304,16 @@ void OSExchangeDataProviderWin::MarkOriginatedFromRenderer() {
 
 bool OSExchangeDataProviderWin::DidOriginateFromRenderer() const {
   return HasCustomFormat(GetRendererTaintFormatType());
+}
+
+void OSExchangeDataProviderWin::MarkAsFromPrivileged() {
+  STGMEDIUM storage = CreateStorageForString(std::string());
+  data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
+      GetFromPrivilegedFormatType().ToFormatEtc(), storage));
+}
+
+bool OSExchangeDataProviderWin::IsFromPrivileged() const {
+  return HasCustomFormat(GetFromPrivilegedFormatType());
 }
 
 void OSExchangeDataProviderWin::SetString(const std::u16string& data) {
@@ -1197,6 +1208,12 @@ STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path) {
 const ClipboardFormatType& GetRendererTaintFormatType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ClipboardFormatType::GetType("chromium/x-renderer-taint"));
+  return *format;
+}
+
+const ClipboardFormatType& GetFromPrivilegedFormatType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ClipboardFormatType::GetType("chromium/from-privileged"));
   return *format;
 }
 

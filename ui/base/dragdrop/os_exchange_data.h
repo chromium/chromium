@@ -199,8 +199,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
  private:
   // Provides the actual data.
   std::unique_ptr<OSExchangeDataProvider> provider_;
-
-  bool is_from_privileged_ = false;
 };
 
 }  // namespace ui

@@ -48,6 +48,14 @@ bool OSExchangeDataProviderNonBacked::DidOriginateFromRenderer() const {
 #endif
 }
 
+void OSExchangeDataProviderNonBacked::MarkAsFromPrivileged() {
+  is_from_privileged_ = true;
+}
+
+bool OSExchangeDataProviderNonBacked::IsFromPrivileged() const {
+  return is_from_privileged_;
+}
+
 void OSExchangeDataProviderNonBacked::SetString(const std::u16string& data) {
   if (HasString())
     return;
@@ -278,6 +286,7 @@ void OSExchangeDataProviderNonBacked::CopyData(
   provider->source_ =
       source_ ? std::make_unique<DataTransferEndpoint>(*source_.get())
               : nullptr;
+  provider->is_from_privileged_ = is_from_privileged_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   provider->originated_from_renderer_ = originated_from_renderer_;
 #endif
