@@ -42,25 +42,54 @@ class UtilTest(test_runner_test.TestCase):
 class GetGTestFilterTest(test_runner_test.TestCase):
   """Tests for test_runner.get_gtest_filter."""
 
-  def test_correct(self):
+  def test_correct_included(self):
     """Ensures correctness of filter."""
-    tests = [
-      'test.1',
-      'test.2',
+    included = [
+        'test.1',
+        'test.2',
     ]
     expected = 'test.1:test.2'
 
-    self.assertEqual(test_apps.get_gtest_filter(tests), expected)
+    self.assertEqual(test_apps.get_gtest_filter(included, []), expected)
 
-  def test_correct_inverted(self):
+  def test_correct_excluded(self):
     """Ensures correctness of inverted filter."""
-    tests = [
-      'test.1',
-      'test.2',
+    excluded = [
+        'test.1',
+        'test.2',
     ]
     expected = '-test.1:test.2'
 
-    self.assertEqual(test_apps.get_gtest_filter(tests, invert=True), expected)
+    self.assertEqual(test_apps.get_gtest_filter([], excluded), expected)
+
+  def test_both_included_excluded(self):
+    """Ensures correctness when both included, excluded exist."""
+    included = ['test.1', 'test.2']
+    excluded = ['test.2', 'test.3']
+    expected = 'test.1'
+    self.assertEqual(test_apps.get_gtest_filter(included, excluded), expected)
+
+    included = ['test.1', 'test.2']
+    excluded = ['test.3', 'test.4']
+    expected = 'test.1:test.2'
+    self.assertEqual(test_apps.get_gtest_filter(included, excluded), expected)
+
+    included = ['test.1', 'test.2', 'test.3']
+    excluded = ['test.3']
+    expected = 'test.1:test.2'
+    self.assertEqual(test_apps.get_gtest_filter(included, excluded), expected)
+
+    included = ['test.1', 'test.2']
+    excluded = ['test.1', 'test.2']
+    expected = '-*'
+    self.assertEqual(test_apps.get_gtest_filter(included, excluded), expected)
+
+  def test_empty_included_excluded(self):
+    """Ensures correctness when both included, excluded are empty."""
+    with self.assertRaises(AssertionError) as ctx:
+      test_apps.get_gtest_filter([], [])
+      self.assertEuqals('One of included or excluded list should exist.',
+                        ctx.message)
 
 
 class EgtestsAppGetAllTestsTest(test_runner_test.TestCase):

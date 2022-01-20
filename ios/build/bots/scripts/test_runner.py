@@ -1028,16 +1028,10 @@ class DeviceTestRunner(TestRunner):
       '--start', self.cfbundleid,
     ]
     args = []
-    gtest_filter = []
 
-    if test_app.included_tests:
+    if test_app.included_tests or test_app.excluded_tests:
       gtest_filter = test_apps.get_gtest_filter(test_app.included_tests,
-                                                invert=False)
-    elif test_app.excluded_tests:
-      gtest_filter = test_apps.get_gtest_filter(test_app.excluded_tests,
-                                                invert=True)
-
-    if gtest_filter:
+                                                test_app.excluded_tests)
       args.append('--gtest_filter=%s' % gtest_filter)
 
     for env_var in self.env_vars:
