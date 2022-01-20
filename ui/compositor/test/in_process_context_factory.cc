@@ -48,7 +48,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
@@ -157,7 +157,7 @@ class InProcessContextFactory::PerCompositorData
     display_->SetVisible(visible);
   }
   void Resize(const gfx::Size& size) override { display_->Resize(size); }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool DisableSwapUntilResize() override {
     display_->DisableSwapUntilResize(base::OnceClosure());
     return true;
@@ -184,7 +184,7 @@ class InProcessContextFactory::PerCompositorData
   void AddVSyncParameterObserver(
       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
       override {}
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetVSyncPaused(bool paused) override {}
   void UpdateRefreshRate(float refresh_rate) override {}
   void SetSupportedRefreshRates(
@@ -262,7 +262,7 @@ InProcessContextFactory::InProcessContextFactory(
       << "gl::GLSurfaceTestSupport::InitializeOneOff()";
   if (use_skia_renderer)
     renderer_settings_.use_skia_renderer = true;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   renderer_settings_.release_overlay_resources_after_gpu_query = true;
   // Ensure that tests don't wait for frames that will never come.
   ui::CATransactionCoordinator::Get().DisableForTesting();
@@ -507,7 +507,7 @@ InProcessContextFactory::CreatePerCompositorData(Compositor* compositor) {
     data->SetSurfaceHandle(tracker->AddSurfaceForNativeWidget(
         gpu::GpuSurfaceTracker::SurfaceRecord(
             widget
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
             // We have to provide a surface too, but we don't have one.  For
             // now, we don't proide it, since nobody should ask anyway.
             // If we ever provide a valid surface here, then GpuSurfaceTracker

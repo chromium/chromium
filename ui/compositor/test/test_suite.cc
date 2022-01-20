@@ -15,17 +15,17 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // gn check complains on other platforms, because //gpu/ipc/service:service
 // is added to dependencies only for mac.
 #include "gpu/ipc/service/image_transport_surface.h"  // nogncheck
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif
 
@@ -47,13 +47,13 @@ void CompositorTestSuite::Initialize() {
   OzonePlatform::InitializeForUI(params);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   display::win::SetDefaultDeviceScaleFactor(1.0f);
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   ui::fuchsia::IgnorePresentCallsForTest();
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace test

@@ -36,7 +36,7 @@ namespace features {
 // to be done via corner points. See https://crbug.com/720596 for details.
 const base::Feature kEnablePixelCanvasRecording {
   "enable-pixel-canvas-recording",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -51,7 +51,7 @@ bool IsUIZeroCopyEnabled() {
   // Match the behavior of IsZeroCopyUploadEnabled() in content/browser/gpu.
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   return !command_line.HasSwitch(switches::kUIDisableZeroCopy);
 #else
   return command_line.HasSwitch(switches::kUIEnableZeroCopy);

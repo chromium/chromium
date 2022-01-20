@@ -208,7 +208,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // from changes to layer properties.
   void ScheduleRedrawRect(const gfx::Rect& damage_rect);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Until this is called with |should| true then both DisableSwapUntilResize()
   // and ReenableSwap() do nothing.
   void SetShouldDisableSwapUntilResize(bool should);
@@ -388,7 +388,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnCompleteSwapWithNewSize(const gfx::Size& size);
 #endif
 
@@ -507,7 +507,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   std::unique_ptr<ScrollInputHandler> scroll_input_handler_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool should_disable_swap_until_resize_ = false;
 #endif
 
