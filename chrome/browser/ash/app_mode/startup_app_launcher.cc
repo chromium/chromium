@@ -15,9 +15,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -27,6 +24,7 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -196,9 +194,9 @@ void StartupAppLauncher::LaunchApp() {
   SYSLOG(INFO) << "Attempt to launch app.";
 
   // Always open the app in a window.
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
+  ::OpenApplication(
+      profile_,
+      apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromKiosk));
