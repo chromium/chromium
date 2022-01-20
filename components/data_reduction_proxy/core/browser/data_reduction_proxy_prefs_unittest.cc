@@ -37,7 +37,7 @@ class DataReductionProxyPrefsTest : public testing::Test {
   void InitializeList(const char* pref_name,
                       int64_t starting_value,
                       PrefService* pref_service) {
-    ListPrefUpdateDeprecated list(local_state_prefs(), pref_name);
+    ListPrefUpdate list(local_state_prefs(), pref_name);
     for (int64_t i = 0; i < 10L; ++i) {
       list->Append(base::NumberToString(i + starting_value));
     }

@@ -110,13 +110,13 @@ void AddToDictionaryPref(PrefService* pref_service,
                          const std::string& pref,
                          int key,
                          int value) {
-  DictionaryPrefUpdateDeprecated pref_update(pref_service, pref);
+  DictionaryPrefUpdate pref_update(pref_service, pref);
   base::Value* pref_dict = pref_update.Get();
   const std::string key_str = base::NumberToString(key);
   base::Value* dict_value = pref_dict->FindKey(key_str);
   if (dict_value)
     value += dict_value->GetInt();
-  pref_dict->SetKey(key_str, base::Value(value));
+  pref_dict->SetIntKey(key_str, value);
 }
 
 // Moves the dictionary stored in preference |pref_src| to |pref_dst|, and
@@ -124,13 +124,12 @@ void AddToDictionaryPref(PrefService* pref_service,
 void MoveAndClearDictionaryPrefs(PrefService* pref_service,
                                  const std::string& pref_dst,
                                  const std::string& pref_src) {
-  DictionaryPrefUpdateDeprecated pref_update_dst(pref_service, pref_dst);
-  base::DictionaryValue* pref_dict_dst = pref_update_dst.Get();
-  DictionaryPrefUpdateDeprecated pref_update_src(pref_service, pref_src);
-  base::DictionaryValue* pref_dict_src = pref_update_src.Get();
-  pref_dict_dst->DictClear();
-  pref_dict_dst->Swap(pref_dict_src);
-  DCHECK(pref_dict_src->DictEmpty());
+  DictionaryPrefUpdate pref_update_dst(pref_service, pref_dst);
+  base::Value* pref_dict_dst = pref_update_dst.Get();
+  DictionaryPrefUpdate pref_update_src(pref_service, pref_src);
+  base::Value* pref_dict_src = pref_update_src.Get();
+  *pref_dict_dst = std::move(*pref_dict_src);
+  *pref_dict_src = base::Value(base::Value::Type::DICTIONARY);
 }
 
 void MaybeInitWeeklyAggregateDataUsePrefs(const base::Time& now,
@@ -427,7 +426,7 @@ void DataReductionProxyCompressionStats::IncreaseInt64Pref(
 base::Value* DataReductionProxyCompressionStats::GetList(
     const char* pref_path) {
   if (delay_.is_zero())
-    return ListPrefUpdateDeprecated(pref_service_, pref_path).Get();
+    return ListPrefUpdate(pref_service_, pref_path).Get();
 
   DelayedWritePrefs();
   auto it = list_pref_map_.find(pref_path);
@@ -448,7 +447,7 @@ void DataReductionProxyCompressionStats::WritePrefs() {
   for (auto iter = list_pref_map_.begin(); iter != list_pref_map_.end();
        ++iter) {
     TransferList(iter->second,
-                 ListPrefUpdateDeprecated(pref_service_, iter->first).Get());
+                 ListPrefUpdate(pref_service_, iter->first).Get());
   }
 }
 

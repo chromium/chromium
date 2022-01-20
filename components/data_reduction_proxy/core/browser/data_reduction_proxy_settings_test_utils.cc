@@ -51,10 +51,10 @@ void DataReductionProxySettingsTestBase::SetUp() {
 
   ResetSettings(nullptr);
 
-  ListPrefUpdateDeprecated original_update(
-      test_context_->pref_service(), prefs::kDailyHttpOriginalContentLength);
-  ListPrefUpdateDeprecated received_update(
-      test_context_->pref_service(), prefs::kDailyHttpReceivedContentLength);
+  ListPrefUpdate original_update(test_context_->pref_service(),
+                                 prefs::kDailyHttpOriginalContentLength);
+  ListPrefUpdate received_update(test_context_->pref_service(),
+                                 prefs::kDailyHttpReceivedContentLength);
   for (int64_t i = 0; i < kNumDaysInHistory; i++) {
     original_update->Insert(original_update->GetList().begin(),
                             base::Value(base::NumberToString(2 * i)));
