@@ -220,12 +220,9 @@ void OmniboxPedalProvider::TokenizeAndExpandDictionary(
           out_tokens.Clear();
           break;
         }
-        const auto token = token_sequence_string.substr(left, right - left);
-        // TODO(orinj): Consider checking an IsTokenValid(token) function
-        // before adding token to dictionary, as we don't want to include
-        // capitals, punctuation, etc. Alternatively, we could modify
-        // tokens (lowercase, remove unexpected characters, etc.) but
-        // processing should be limited since this could affect startup.
+        const std::u16string raw_token =
+            token_sequence_string.substr(left, right - left);
+        const std::u16string token = base::i18n::FoldCase(raw_token);
         const auto iter = dictionary_.find(token);
         if (iter == dictionary_.end()) {
           // Token not in dictionary; expand dictionary.
