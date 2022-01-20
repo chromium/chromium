@@ -108,7 +108,6 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'output', 'noop_output_manager_test.py'),
               J('pylib', 'output', 'remote_output_manager_test.py'),
               J('pylib', 'results', 'json_results_test.py'),
-              J('pylib', 'symbols', 'elf_symbolizer_unittest.py'),
               J('pylib', 'utils', 'chrome_proxy_utils_test.py'),
               J('pylib', 'utils', 'decorators_test.py'),
               J('pylib', 'utils', 'device_dependencies_test.py'),

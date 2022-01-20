@@ -463,10 +463,9 @@ def ResolveCrashSymbol(lines, more_info, llvm_symbolizer):
         logging.debug('Identified lib: %s' % area)
         # If a calls b which further calls c and c is inlined to b, we want to
         # display "a -> b -> c" in the stack trace instead of just "a -> c"
-        # To use llvm symbolizer, the hexadecimal address has to start with 0x.
-        info = llvm_symbolizer.GetSymbolInformation(
-            os.path.join(symbol.SYMBOLS_DIR, symbol.TranslateLibPath(area)),
-            '0x' + code_addr)
+        library = os.path.join(symbol.SYMBOLS_DIR,
+                               symbol.TranslateLibPath(area))
+        info = llvm_symbolizer.GetSymbolInformation(library, int(code_addr,16))
         logging.debug('symbol information: %s' % info)
         nest_count = len(info) - 1
         for source_symbol, source_location in info:
@@ -481,15 +480,16 @@ def ResolveCrashSymbol(lines, more_info, llvm_symbolizer):
             trace_lines.append((code_addr,
                                 source_symbol,
                                 source_location))
+
     match = _VALUE_LINE.match(line)
     if match:
       (_, addr, value, area, _, symbol_name) = match.groups()
       if area == UNKNOWN or area == HEAP or area == STACK or not area:
         value_lines.append((addr, value, '', area))
       else:
-        info = llvm_symbolizer.GetSymbolInformation(
-            os.path.join(symbol.SYMBOLS_DIR, symbol.TranslateLibPath(area)),
-            '0x' + value)
+        library = os.path.join(symbol.SYMBOLS_DIR,
+                               symbol.TranslateLibPath(area))
+        info = llvm_symbolizer.GetSymbolInformation(library, int(value,16))
         source_symbol, source_location = info.pop()
 
         value_lines.append((addr,
