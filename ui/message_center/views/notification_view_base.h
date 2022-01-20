@@ -195,6 +195,13 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   virtual void CreateOrUpdateHeaderView(const Notification& notification);
 
+  virtual void CreateOrUpdateCompactTitleMessageView(
+      const Notification& notification);
+
+  void CreateOrUpdateProgressBarView(const Notification& notification);
+
+  void CreateOrUpdateProgressStatusView(const Notification& notification);
+
   virtual void CreateOrUpdateTitleView(const Notification& notification) = 0;
 
   virtual void CreateOrUpdateSmallIconView(
@@ -320,9 +327,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   friend class NotificationViewBaseTest;
 
   void CreateOrUpdateMessageView(const Notification& notification);
-  void CreateOrUpdateCompactTitleMessageView(const Notification& notification);
-  void CreateOrUpdateProgressBarView(const Notification& notification);
-  void CreateOrUpdateProgressStatusView(const Notification& notification);
+  virtual void CreateOrUpdateProgressViews(const Notification& notification);
   void CreateOrUpdateListItemViews(const Notification& notification);
   void CreateOrUpdateIconView(const Notification& notification);
   void CreateOrUpdateImageView(const Notification& notification);

@@ -822,6 +822,21 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
       std::move(inline_settings_cancel_button));
 }
 
+void AshNotificationView::CreateOrUpdateCompactTitleMessageView(
+    const message_center::Notification& notification) {
+  // No CompactTitleMessageView required. It is only used for progress
+  // notifications when the notification is collapsed, and Ash progress
+  // notifications only show a progress bar when collapsed.
+}
+
+void AshNotificationView::CreateOrUpdateProgressViews(
+    const message_center::Notification& notification) {
+  // AshNotificationView should have the status view, followed by the progress
+  // bar. This is the opposite of what is required of the chrome notification.
+  CreateOrUpdateProgressStatusView(notification);
+  CreateOrUpdateProgressBarView(notification);
+}
+
 void AshNotificationView::UpdateControlButtonsVisibility() {
   NotificationViewBase::UpdateControlButtonsVisibility();
 
@@ -1000,7 +1015,8 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
 
 void AshNotificationView::UpdateMessageViewInExpandedState(
     const message_center::Notification& notification) {
-  if (notification.message().empty()) {
+  if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS ||
+      notification.message().empty()) {
     message_view_in_expanded_state_->SetVisible(false);
     return;
   }
@@ -1122,7 +1138,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     title_row_->PerformExpandCollapseAnimation();
 
   // Fade in `header row()` if this is not a grouped parent view.
-  if (header_row()->GetVisible() && !is_grouped_parent_view_) {
+  if (header_row() && header_row()->GetVisible() && !is_grouped_parent_view_) {
     message_center_utils::FadeInView(header_row(),
                                      kHeaderRowFadeInAnimationDelayMs,
                                      kHeaderRowFadeInAnimationDurationMs);
@@ -1131,7 +1147,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
   // Fade in `message_view()`. We only do fade in for both message view in
   // expanded and collapsed mode if there's a difference between them (a.k.a
   // when `message_view()` is truncated).
-  if (message_view()->GetVisible() &&
+  if (message_view() && message_view()->GetVisible() &&
       message_view()->IsDisplayTextTruncated()) {
     message_center_utils::FadeInView(message_view(),
                                      kMessageViewFadeInAnimationDelayMs,
@@ -1139,7 +1155,8 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
   }
 
   // Fade in `message_view_in_expanded_state_`.
-  if (message_view_in_expanded_state_->GetVisible() &&
+  if (message_view_in_expanded_state_ &&
+      message_view_in_expanded_state_->GetVisible() && message_view() &&
       message_view()->IsDisplayTextTruncated()) {
     message_center_utils::FadeInView(
         message_view_in_expanded_state_,
@@ -1151,7 +1168,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     PerformLargeImageAnimation();
   }
 
-  if (actions_row()->GetVisible()) {
+  if (actions_row() && actions_row()->GetVisible()) {
     message_center_utils::FadeInView(actions_row(),
                                      kActionsRowFadeInAnimationDelayMs,
                                      kActionsRowFadeInAnimationDurationMs);

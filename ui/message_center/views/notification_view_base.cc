@@ -284,8 +284,7 @@ void NotificationViewBase::CreateOrUpdateViews(
   CreateOrUpdateTitleView(notification);
   CreateOrUpdateMessageView(notification);
   CreateOrUpdateCompactTitleMessageView(notification);
-  CreateOrUpdateProgressBarView(notification);
-  CreateOrUpdateProgressStatusView(notification);
+  CreateOrUpdateProgressViews(notification);
   CreateOrUpdateListItemViews(notification);
   CreateOrUpdateIconView(notification);
   CreateOrUpdateSmallIconView(notification);
@@ -567,34 +566,6 @@ void NotificationViewBase::CreateOrUpdateHeaderView(
   header_row_->SetAppName(app_name);
 }
 
-void NotificationViewBase::CreateOrUpdateMessageView(
-    const Notification& notification) {
-  if (notification.type() == NOTIFICATION_TYPE_PROGRESS ||
-      notification.message().empty()) {
-    // Deletion will also remove |message_view_| from its parent.
-    delete message_view_;
-    message_view_ = nullptr;
-    return;
-  }
-
-  const std::u16string& text = gfx::TruncateString(
-      notification.message(), kMessageCharacterLimit, gfx::WORD_BREAK);
-
-  if (!message_view_) {
-    auto message_view = std::make_unique<views::Label>(
-        text, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_SECONDARY);
-    message_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    message_view->SetAllowCharacterBreak(true);
-    message_view_ = AddViewToLeftContent(std::move(message_view));
-  } else {
-    message_view_->SetText(text);
-    ReorderViewInLeftContent(message_view_);
-  }
-
-  message_view_->SetVisible(notification.items().empty());
-}
-
 void NotificationViewBase::CreateOrUpdateCompactTitleMessageView(
     const Notification& notification) {
   if (notification.type() != NOTIFICATION_TYPE_PROGRESS) {
@@ -672,6 +643,42 @@ void NotificationViewBase::CreateOrUpdateProgressStatusView(
   }
 
   status_view_->SetText(notification.progress_status());
+}
+
+void NotificationViewBase::CreateOrUpdateMessageView(
+    const Notification& notification) {
+  if (notification.type() == NOTIFICATION_TYPE_PROGRESS ||
+      notification.message().empty()) {
+    // Deletion will also remove |message_view_| from its parent.
+    delete message_view_;
+    message_view_ = nullptr;
+    return;
+  }
+
+  const std::u16string& text = gfx::TruncateString(
+      notification.message(), kMessageCharacterLimit, gfx::WORD_BREAK);
+
+  if (!message_view_) {
+    auto message_view = std::make_unique<views::Label>(
+        text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_SECONDARY);
+    message_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    message_view->SetAllowCharacterBreak(true);
+    message_view_ = AddViewToLeftContent(std::move(message_view));
+  } else {
+    message_view_->SetText(text);
+    ReorderViewInLeftContent(message_view_);
+  }
+
+  message_view_->SetVisible(notification.items().empty());
+}
+
+void NotificationViewBase::CreateOrUpdateProgressViews(
+    const Notification& notification) {
+  // Ordering should be Progress Bar, then the Progress Status for chrome. Ash
+  // reverses the ordering.
+  CreateOrUpdateProgressBarView(notification);
+  CreateOrUpdateProgressStatusView(notification);
 }
 
 void NotificationViewBase::CreateOrUpdateListItemViews(

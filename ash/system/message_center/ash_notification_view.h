@@ -83,6 +83,10 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) override;
   void CreateOrUpdateInlineSettingsViews(
       const message_center::Notification& notification) override;
+  void CreateOrUpdateCompactTitleMessageView(
+      const message_center::Notification& notification) override;
+  void CreateOrUpdateProgressViews(
+      const message_center::Notification& notification) override;
   void UpdateControlButtonsVisibility() override;
   bool IsIconViewShown() const override;
   void SetExpandButtonEnabled(bool enabled) override;
