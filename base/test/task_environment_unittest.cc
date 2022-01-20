@@ -1452,7 +1452,15 @@ TEST_F(TaskEnvironmentTest,
   TaskEnvironment::ParallelExecutionFence fence;
 }
 
-TEST_F(TaskEnvironmentTest, ParallelExecutionFenceNonMainThreadDeath) {
+// Flaky on Android (http://crbug.com/1289110)
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ParallelExecutionFenceNonMainThreadDeath \
+  DISABLED_ParallelExecutionFenceNonMainThreadDeath
+#else
+#define MAYBE_ParallelExecutionFenceNonMainThreadDeath \
+  ParallelExecutionFenceNonMainThreadDeath
+#endif
+TEST_F(TaskEnvironmentTest, MAYBE_ParallelExecutionFenceNonMainThreadDeath) {
   TaskEnvironment task_environment;
 
   ThreadPool::PostTask(BindOnce([]() {
