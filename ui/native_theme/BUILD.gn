@@ -98,6 +98,7 @@ if (is_win) {
       "//base",
       "//cc/paint",
       "//ui/base",
+      "//ui/color",
       "//ui/display",
       "//ui/gfx",
     ]

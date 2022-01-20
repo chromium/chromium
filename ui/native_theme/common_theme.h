@@ -12,6 +12,8 @@
 
 namespace ui {
 
+class ColorProvider;
+
 // Drawing code that is common for all platforms.
 
 // Gets the appropriate alert severity color for light / dark mode.
@@ -30,11 +32,11 @@ SkColor NATIVE_THEME_EXPORT GetAuraColor(
 
 void NATIVE_THEME_EXPORT CommonThemePaintMenuItemBackground(
     const NativeTheme* theme,
+    const ColorProvider* color_provider,
     cc::PaintCanvas* canvas,
     NativeTheme::State state,
     const gfx::Rect& rect,
-    const NativeTheme::MenuItemExtraParams& menu_item,
-    NativeTheme::ColorScheme color_scheme);
+    const NativeTheme::MenuItemExtraParams& menu_item);
 
 }  // namespace ui
 

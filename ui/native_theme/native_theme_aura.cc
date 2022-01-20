@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -114,11 +115,12 @@ SkColor NativeThemeAura::FocusRingColorForBaseColor(SkColor base_color) const {
 
 void NativeThemeAura::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
-  SkColor color =
-      GetSystemColor(NativeTheme::kColorId_MenuBackgroundColor, color_scheme);
+  DCHECK(color_provider);
+  SkColor color = color_provider->GetColor(kColorMenuBackground);
   if (menu_background.corner_radius > 0) {
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -141,12 +143,13 @@ void NativeThemeAura::PaintMenuPopupBackground(
 
 void NativeThemeAura::PaintMenuItemBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
     ColorScheme color_scheme) const {
-  CommonThemePaintMenuItemBackground(this, canvas, state, rect, menu_item,
-                                     color_scheme);
+  CommonThemePaintMenuItemBackground(this, color_provider, canvas, state, rect,
+                                     menu_item);
 }
 
 void NativeThemeAura::PaintArrowButton(

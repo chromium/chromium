@@ -53,15 +53,18 @@ class NativeThemeGtk : public ui::NativeThemeBase {
                             ColorScheme color_scheme) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
       const gfx::Size& size,
       const MenuBackgroundExtraParams& menu_background,
       ColorScheme color_scheme) const override;
-  void PaintMenuSeparator(cc::PaintCanvas* canvas,
-                          State state,
-                          const gfx::Rect& rect,
-                          const MenuSeparatorExtraParams& menu_separator,
-                          ColorScheme color_scheme) const override;
+  void PaintMenuSeparator(
+      cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
+      State state,
+      const gfx::Rect& rect,
+      const MenuSeparatorExtraParams& menu_separator) const override;
   void PaintMenuItemBackground(cc::PaintCanvas* canvas,
+                               const ui::ColorProvider* color_provider,
                                State state,
                                const gfx::Rect& rect,
                                const MenuItemExtraParams& menu_item,

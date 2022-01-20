@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -316,6 +317,7 @@ void NativeThemeGtk::PaintScrollbarCorner(cc::PaintCanvas* canvas,
 
 void NativeThemeGtk::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
@@ -327,6 +329,7 @@ void NativeThemeGtk::PaintMenuPopupBackground(
 
 void NativeThemeGtk::PaintMenuItemBackground(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
@@ -339,17 +342,17 @@ void NativeThemeGtk::PaintMenuItemBackground(
 
 void NativeThemeGtk::PaintMenuSeparator(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
-    const MenuSeparatorExtraParams& menu_separator,
-    ColorScheme color_scheme) const {
+    const MenuSeparatorExtraParams& menu_separator) const {
   // TODO(estade): use GTK to draw vertical separators too. See
   // crbug.com/710183
   if (menu_separator.type == ui::VERTICAL_SEPARATOR) {
     cc::PaintFlags paint;
     paint.setStyle(cc::PaintFlags::kFill_Style);
-    paint.setColor(GetSystemColor(ui::NativeTheme::kColorId_MenuSeparatorColor,
-                                  color_scheme));
+    DCHECK(color_provider);
+    paint.setColor(color_provider->GetColor(ui::kColorMenuSeparator));
     canvas->drawRect(gfx::RectToSkRect(rect), paint);
     return;
   }

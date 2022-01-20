@@ -17,6 +17,7 @@
 #import "skia/ext/skia_utils_mac.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/mac/scoped_current_nsappearance.h"
 #include "ui/color/mac/system_color_utils.h"
 #include "ui/gfx/canvas.h"
@@ -519,12 +520,14 @@ SkColor NativeThemeMac::GetSystemButtonPressedColor(SkColor base_color) const {
 
 void NativeThemeMac::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(GetSystemColor(kColorId_MenuBackgroundColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuBackground));
   const SkScalar radius = SkIntToScalar(menu_background.corner_radius);
   SkRect rect = gfx::RectToSkRect(gfx::Rect(size));
   canvas->drawRoundRect(rect, radius, radius, flags);
@@ -532,6 +535,7 @@ void NativeThemeMac::PaintMenuPopupBackground(
 
 void NativeThemeMac::PaintMenuItemBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
@@ -542,7 +546,7 @@ void NativeThemeMac::PaintMenuItemBackground(
       // Draw nothing over the regular background.
       break;
     case NativeTheme::kHovered:
-      PaintSelectedMenuItem(canvas, rect, color_scheme);
+      PaintSelectedMenuItem(canvas, color_provider, rect);
       break;
     default:
       NOTREACHED();
@@ -591,12 +595,12 @@ NativeThemeMac::~NativeThemeMac() {
 }
 
 void NativeThemeMac::PaintSelectedMenuItem(cc::PaintCanvas* canvas,
-                                           const gfx::Rect& rect,
-                                           ColorScheme color_scheme) const {
+                                           const ColorProvider* color_provider,
+                                           const gfx::Rect& rect) const {
+  DCHECK(color_provider);
   // Draw the background.
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(kColorId_FocusedMenuItemBackgroundColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuItemBackgroundSelected));
   canvas->drawRect(gfx::RectToSkRect(rect), flags);
 }
 

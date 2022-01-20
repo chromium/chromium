@@ -33,10 +33,12 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
   // NativeThemeBase:
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
       const gfx::Size& size,
       const MenuBackgroundExtraParams& menu_background,
       ColorScheme color_scheme) const override;
   void PaintMenuItemBackground(cc::PaintCanvas* canvas,
+                               const ColorProvider* color_provider,
                                State state,
                                const gfx::Rect& rect,
                                const MenuItemExtraParams& menu_item,

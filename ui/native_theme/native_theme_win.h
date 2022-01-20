@@ -102,14 +102,14 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // Painting functions that paint to PaintCanvas.
   void PaintMenuSeparator(cc::PaintCanvas* canvas,
-                          const MenuSeparatorExtraParams& params,
-                          ColorScheme color_scheme) const;
+                          const ColorProvider* color_provider,
+                          const MenuSeparatorExtraParams& params) const;
   void PaintMenuGutter(cc::PaintCanvas* canvas,
-                       const gfx::Rect& rect,
-                       ColorScheme color_scheme) const;
+                       const ColorProvider* color_provider,
+                       const gfx::Rect& rect) const;
   void PaintMenuBackground(cc::PaintCanvas* canvas,
-                           const gfx::Rect& rect,
-                           ColorScheme color_scheme) const;
+                           const ColorProvider* color_provider,
+                           const gfx::Rect& rect) const;
 
   // Paint directly to canvas' HDC.
   void PaintDirect(SkCanvas* destination_canvas,

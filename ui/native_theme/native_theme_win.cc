@@ -36,6 +36,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -257,17 +258,17 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
 
   switch (part) {
     case kMenuPopupGutter:
-      PaintMenuGutter(canvas, rect, color_scheme);
+      PaintMenuGutter(canvas, color_provider, rect);
       return;
     case kMenuPopupSeparator:
-      PaintMenuSeparator(canvas, extra.menu_separator, color_scheme);
+      PaintMenuSeparator(canvas, color_provider, extra.menu_separator);
       return;
     case kMenuPopupBackground:
-      PaintMenuBackground(canvas, rect, color_scheme);
+      PaintMenuBackground(canvas, color_provider, rect);
       return;
     case kMenuItemBackground:
-      CommonThemePaintMenuItemBackground(this, canvas, state, rect,
-                                         extra.menu_item, color_scheme);
+      CommonThemePaintMenuItemBackground(this, color_provider, canvas, state,
+                                         rect, extra.menu_item);
       return;
     default:
       PaintIndirect(canvas, part, state, rect, extra);
@@ -380,9 +381,11 @@ void NativeThemeWin::UpdateSystemColors() {
         color_utils::GetSysSkColor(sys_color);
 }
 
-void NativeThemeWin::PaintMenuSeparator(cc::PaintCanvas* canvas,
-                                        const MenuSeparatorExtraParams& params,
-                                        ColorScheme color_scheme) const {
+void NativeThemeWin::PaintMenuSeparator(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    const MenuSeparatorExtraParams& params) const {
+  DCHECK(color_provider);
   const gfx::RectF rect(*params.paint_rect);
   gfx::PointF start = rect.CenterPoint();
   gfx::PointF end = start;
@@ -395,27 +398,26 @@ void NativeThemeWin::PaintMenuSeparator(cc::PaintCanvas* canvas,
   }
 
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(NativeTheme::kColorId_MenuSeparatorColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuSeparator));
   canvas->drawLine(start.x(), start.y(), end.x(), end.y(), flags);
 }
 
 void NativeThemeWin::PaintMenuGutter(cc::PaintCanvas* canvas,
-                                     const gfx::Rect& rect,
-                                     ColorScheme color_scheme) const {
+                                     const ColorProvider* color_provider,
+                                     const gfx::Rect& rect) const {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(NativeTheme::kColorId_MenuSeparatorColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuSeparator));
   int position_x = rect.x() + rect.width() / 2;
   canvas->drawLine(position_x, rect.y(), position_x, rect.bottom(), flags);
 }
 
 void NativeThemeWin::PaintMenuBackground(cc::PaintCanvas* canvas,
-                                         const gfx::Rect& rect,
-                                         ColorScheme color_scheme) const {
+                                         const ColorProvider* color_provider,
+                                         const gfx::Rect& rect) const {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(NativeTheme::kColorId_MenuBackgroundColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuBackground));
   canvas->drawRect(gfx::RectToSkRect(rect), flags);
 }
 

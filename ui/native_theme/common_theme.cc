@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -196,21 +197,21 @@ SkColor GetAuraColor(NativeTheme::ColorId color_id,
 
 void CommonThemePaintMenuItemBackground(
     const NativeTheme* theme,
+    const ColorProvider* color_provider,
     cc::PaintCanvas* canvas,
     NativeTheme::State state,
     const gfx::Rect& rect,
-    const NativeTheme::MenuItemExtraParams& menu_item,
-    NativeTheme::ColorScheme color_scheme) {
+    const NativeTheme::MenuItemExtraParams& menu_item) {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
   switch (state) {
     case NativeTheme::kNormal:
     case NativeTheme::kDisabled:
-      flags.setColor(theme->GetSystemColor(
-          NativeTheme::kColorId_MenuBackgroundColor, color_scheme));
+      flags.setColor(color_provider->GetColor(kColorMenuBackground));
       break;
     case NativeTheme::kHovered:
-      flags.setColor(theme->GetSystemColor(
-          NativeTheme::kColorId_FocusedMenuItemBackgroundColor, color_scheme));
+      flags.setColor(
+          color_provider->GetColor(kColorMenuItemBackgroundSelected));
       break;
     default:
       NOTREACHED() << "Invalid state " << state;
