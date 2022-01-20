@@ -36,6 +36,23 @@ interface FileOps {
 
 type ReadableCallback = (deviceReadable: number) => void;
 
+/*
+ * Emscripten FileSystem API. This is the minimal type definitions that we're
+ * using here.
+ *
+ * Ref: https://emscripten.org/docs/api_reference/Filesystem-API.html#devices
+ */
+interface FSStream {
+  fd: number;
+}
+interface FS {
+  makedev(major: number, minor: number): number;
+  mkdev(path: string, mode?: number): void;
+  registerDevice(dev: number, ops: FileOps): void;
+  symlink(oldpath: string, newpath: string): void;
+  open(path: string, flags: string): FSStream;
+}
+
 /**
  * An emulated input device backed by Int8Array.
  */
@@ -245,6 +262,13 @@ class OutputDevice {
   }
 }
 
+declare global {
+  // TypeScript only exports values declared with "var" in global scope, and
+  // not "let" or "const".
+  // eslint-disable-next-line no-var
+  var waitReadable: ((callback: ReadableCallback) => void)|undefined;
+}
+
 /**
  * A ffmpeg-based video processor that can process input and output data
  * incrementally.
@@ -280,13 +304,14 @@ class FFMpegVideoProcessor {
 
     const config = {
       arguments: args,
-      locateFile: (file) => {
+      locateFile: (file: string) => {
         assert(file === 'ffmpeg.wasm');
         return '/js/lib/ffmpeg.wasm';
       },
       noFSInit: true,  // It would be setup in preRun().
       preRun: () => {
-        const fs = config['FS'];
+        // The FS property are injected by emscripten at runtime.
+        const fs = (config as unknown as {FS: FS})['FS'];
         assert(fs !== null);
         // 80 is just a random major number that won't collide with other
         // default devices of the Emscripten runtime environment, which uses
@@ -324,7 +349,7 @@ class FFMpegVideoProcessor {
     this.jobQueue.push(initFFmpeg);
 
     // This is a function to be called by ffmpeg before running read() in C.
-    globalThis.waitReadable = (callback) => {
+    globalThis.waitReadable = (callback: ReadableCallback) => {
       this.inputDevice.setReadableCallback(callback);
     };
   }
