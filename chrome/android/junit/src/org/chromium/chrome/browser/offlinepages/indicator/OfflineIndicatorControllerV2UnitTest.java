@@ -16,8 +16,8 @@ import static org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicato
 import static org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2.STATUS_INDICATOR_WAIT_BEFORE_HIDE_DURATION_MS;
 import static org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2.setMockElapsedTimeSupplier;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Handler;
 
 import org.junit.After;
@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.TimeUtils;
@@ -46,10 +47,6 @@ import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 @Config(manifest = Config.NONE)
 public class OfflineIndicatorControllerV2UnitTest {
     @Mock
-    private Context mContext;
-    @Mock
-    private Resources mResources;
-    @Mock
     private StatusIndicatorCoordinator mStatusIndicator;
     @Mock
     private ConnectivityDetector mConnectivityDetector;
@@ -64,22 +61,23 @@ public class OfflineIndicatorControllerV2UnitTest {
     @Mock
     private OfflineIndicatorMetricsDelegate mMetricsDelegate;
 
+    private Context mContext;
     private ObservableSupplierImpl<Boolean> mIsUrlBarFocusedSupplier =
             new ObservableSupplierImpl<>();
     private OfflineIndicatorControllerV2 mController;
     private long mElapsedTimeMs;
+    private String mOfflineString;
+    private String mOnlineString;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mContext = Robolectric.buildActivity(Activity.class).get();
+        mContext.setTheme(org.chromium.chrome.tab_ui.R.style.Theme_BrowserUI_DayNight);
 
-        when(mContext.getResources()).thenReturn(mResources);
-        when(mContext.getTheme()).thenReturn(null);
-        when(mContext.getString(R.string.offline_indicator_v2_offline_text)).thenReturn("Offline");
-        when(mContext.getString(R.string.offline_indicator_v2_back_online_text))
-                .thenReturn("Online");
-        when(mContext.getDrawable(anyInt())).thenReturn(null);
-        when(mResources.getColor(anyInt(), any())).thenReturn(0);
+        mOfflineString = mContext.getString(R.string.offline_indicator_v2_offline_text);
+        mOnlineString = mContext.getString(R.string.offline_indicator_v2_back_online_text);
+
         when(mCanAnimateNativeBrowserControls.get()).thenReturn(true);
         TimeUtilsJni.TEST_HOOKS.setInstanceForTesting(mTimeUtils);
         when(mTimeUtils.getTimeTicksNowUs()).thenReturn(0L);
@@ -109,7 +107,7 @@ public class OfflineIndicatorControllerV2UnitTest {
     public void testShowsStatusIndicatorWhenOffline() {
         // Show.
         changeConnectionState(true);
-        verify(mStatusIndicator).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator).show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
     }
 
     /**
@@ -127,7 +125,7 @@ public class OfflineIndicatorControllerV2UnitTest {
         // after that. First, verify the #updateContent() call.
         final ArgumentCaptor<Runnable> endAnimationCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mStatusIndicator)
-                .updateContent(eq("Online"), any(), anyInt(), anyInt(), anyInt(),
+                .updateContent(eq(mOnlineString), any(), anyInt(), anyInt(), anyInt(),
                         endAnimationCaptor.capture());
         // Simulate browser controls animation ending.
         endAnimationCaptor.getValue().run();
@@ -164,8 +162,8 @@ public class OfflineIndicatorControllerV2UnitTest {
         captor.getValue().run();
         // #updateContent() should be called since the cool-down is complete.
         verify(mStatusIndicator)
-                .updateContent(
-                        eq("Online"), any(), anyInt(), anyInt(), anyInt(), any(Runnable.class));
+                .updateContent(eq(mOnlineString), any(), anyInt(), anyInt(), anyInt(),
+                        any(Runnable.class));
     }
 
     /**
@@ -175,7 +173,8 @@ public class OfflineIndicatorControllerV2UnitTest {
     public void testCoolDown_Show() {
         // First, show.
         changeConnectionState(true);
-        verify(mStatusIndicator, times(1)).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, times(1))
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
         // Advance time so we can hide.
         advanceTimeByMs(STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS);
         // Now, hide.
@@ -186,7 +185,8 @@ public class OfflineIndicatorControllerV2UnitTest {
         changeConnectionState(true);
         // Cool-down should prevent it from showing and post a runnable for after the time is up.
         // times(1) because it's been already called once above, no new calls.
-        verify(mStatusIndicator, times(1)).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, times(1))
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(mHandler).postDelayed(
                 captor.capture(), eq(STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS - 1000L));
@@ -195,7 +195,8 @@ public class OfflineIndicatorControllerV2UnitTest {
         advanceTimeByMs(4000);
         captor.getValue().run();
         // #show() should be called since the cool-down is complete.
-        verify(mStatusIndicator, times(2)).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, times(2))
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
     }
 
     /**
@@ -213,7 +214,8 @@ public class OfflineIndicatorControllerV2UnitTest {
         changeConnectionState(true);
         // Cool-down should prevent it from showing and post a runnable for after the time is up.
         // times(1) because it's been already called once above, no new calls.
-        verify(mStatusIndicator, times(1)).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, times(1))
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(mHandler).postDelayed(
                 captor.capture(), eq(STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS - 1000L));
@@ -228,7 +230,8 @@ public class OfflineIndicatorControllerV2UnitTest {
         advanceTimeByMs(2000);
         captor.getValue().run();
         // Still times(1), no new call after the last one.
-        verify(mStatusIndicator, times(1)).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, times(1))
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
     }
 
     /**
@@ -241,11 +244,12 @@ public class OfflineIndicatorControllerV2UnitTest {
         // Now show, at least try.
         changeConnectionState(true);
         // Shouldn't show because the omnibox is focused.
-        verify(mStatusIndicator, never()).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, never())
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
 
         // Should show once unfocused.
         mIsUrlBarFocusedSupplier.set(false);
-        verify(mStatusIndicator).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator).show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
     }
 
     /**
@@ -259,13 +263,15 @@ public class OfflineIndicatorControllerV2UnitTest {
         // Now show, at least try.
         changeConnectionState(true);
         // Shouldn't show because the omnibox is focused.
-        verify(mStatusIndicator, never()).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, never())
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
 
         // Now, simulate going back online.
         changeConnectionState(false);
         // Unfocusing shouldn't cause a show because we're not offline.
         mIsUrlBarFocusedSupplier.set(false);
-        verify(mStatusIndicator, never()).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, never())
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
     }
 
     /**
@@ -282,7 +288,8 @@ public class OfflineIndicatorControllerV2UnitTest {
         advanceTimeByMs(1000);
         changeConnectionState(true);
         // times(1) because it's been already called once above, no new calls.
-        verify(mStatusIndicator, times(1)).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, times(1))
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
         final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(mHandler).postDelayed(
                 captor.capture(), eq(STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS - 1000L));
@@ -293,10 +300,12 @@ public class OfflineIndicatorControllerV2UnitTest {
         advanceTimeByMs(4000);
         captor.getValue().run();
         // Still times(1), no new calls. The indicator shouldn't show since the omnibox is focused.
-        verify(mStatusIndicator, times(1)).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, times(1))
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
         // Should show once unfocused.
         mIsUrlBarFocusedSupplier.set(false);
-        verify(mStatusIndicator, times(2)).show(eq("Offline"), any(), anyInt(), anyInt(), anyInt());
+        verify(mStatusIndicator, times(2))
+                .show(eq(mOfflineString), any(), anyInt(), anyInt(), anyInt());
     }
 
     /**

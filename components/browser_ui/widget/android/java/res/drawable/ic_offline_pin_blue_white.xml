@@ -12,7 +12,7 @@
     android:viewportHeight="24">
 
     <path
-        android:fillColor="@color/default_icon_color_inverse"
+        android:fillColor="@macro/default_icon_color_on_accent1"
         android:pathData="M20,12 a8,8 0 1,1 0,-0.0001" />
     <path
         android:fillColor="@macro/default_icon_color_accent1"

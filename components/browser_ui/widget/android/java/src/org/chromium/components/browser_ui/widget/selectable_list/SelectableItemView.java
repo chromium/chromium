@@ -17,11 +17,11 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
@@ -103,8 +103,8 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
      */
     public SelectableItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mStartIconSelectedColorList = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_inverse);
+        mStartIconSelectedColorList =
+                ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorInverse(context));
         mDefaultLevel = getResources().getInteger(R.integer.list_item_level_default);
         mSelectedLevel = getResources().getInteger(R.integer.list_item_level_selected);
         mCheckDrawable = AnimatedVectorDrawableCompat.create(
@@ -231,10 +231,15 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
     public static void applyModernIconStyle(
             ImageView imageView, Drawable defaultIcon, boolean isSelected) {
         imageView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
-        imageView.setImageDrawable(
-                isSelected ? TintedDrawable.constructTintedDrawable(imageView.getContext(),
-                        R.drawable.ic_check_googblue_24dp, R.color.default_icon_color_inverse)
-                           : defaultIcon);
+        Drawable drawable;
+        if (isSelected) {
+            drawable = TintedDrawable.constructTintedDrawable(
+                    imageView.getContext(), R.drawable.ic_check_googblue_24dp);
+            drawable.setTint(SemanticColorUtils.getDefaultIconColorInverse(imageView.getContext()));
+        } else {
+            drawable = defaultIcon;
+        }
+        imageView.setImageDrawable(drawable);
         imageView.getBackground().setLevel(isSelected
                         ? imageView.getResources().getInteger(R.integer.list_item_level_selected)
                         : imageView.getResources().getInteger(R.integer.list_item_level_default));
