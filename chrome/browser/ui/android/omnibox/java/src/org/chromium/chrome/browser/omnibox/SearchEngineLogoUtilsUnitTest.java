@@ -85,6 +85,8 @@ public class SearchEngineLogoUtilsUnitTest {
     LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock
     BrowserStartupController mBrowserStartupController;
+    @Mock
+    Resources mResource;
 
     SearchEngineLogoUtils mSearchEngineLogoUtils;
     Bitmap mBitmap;
@@ -102,6 +104,9 @@ public class SearchEngineLogoUtilsUnitTest {
                 .getLocalFaviconImageForURL(any(), anyString(), anyInt(), any());
         doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
         LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
+
+        // Used when creating bitmaps, needs to be greater than 0.
+        doReturn(1).when(mResource).getDimensionPixelSize(anyInt());
 
         doReturn(true).when(mBrowserStartupController).isFullBrowserStarted();
         mSearchEngineLogoUtils = new SearchEngineLogoUtils(mBrowserStartupController);
@@ -135,9 +140,8 @@ public class SearchEngineLogoUtilsUnitTest {
     public void getSearchEngineLogo() {
         StatusIconResource expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
 
-        mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService,
-                mCallback);
+        mSearchEngineLogoUtils.getSearchEngineLogo(mResource, BrandedColorScheme.APP_DEFAULT,
+                Mockito.mock(Profile.class), mTemplateUrlService, mCallback);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         any(), anyString(), anyInt(), mCallbackCaptor.capture());
@@ -181,9 +185,8 @@ public class SearchEngineLogoUtilsUnitTest {
     public void getSearchEngineLogo_faviconCached() {
         StatusIconResource expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
 
-        mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService,
-                mCallback);
+        mSearchEngineLogoUtils.getSearchEngineLogo(mResource, BrandedColorScheme.APP_DEFAULT,
+                Mockito.mock(Profile.class), mTemplateUrlService, mCallback);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         any(), anyString(), anyInt(), mCallbackCaptor.capture());
