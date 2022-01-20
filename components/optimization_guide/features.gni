@@ -14,5 +14,5 @@ declare_args() {
   # even in a developer build in args.gn.  Setting this variable explicitly to true will
   # cause your build to fail if the internal files are missing.
   build_with_internal_optimization_guide =
-      is_chrome_branded && !is_android && !is_ios
+      is_chrome_branded && !is_android && !is_ios && !is_fuchsia
 }
