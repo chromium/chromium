@@ -906,7 +906,7 @@ const base::Feature kScopeMemoryCachePerContext{
 // Allow image context menu selections to penetrate through transparent
 // elements.
 const base::Feature kEnablePenetratingImageSelection{
-    "EnablePenetratingImageSelection", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnablePenetratingImageSelection", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, permits shared/root element transitions. See
 // https://github.com/WICG/shared-element-transitions.
