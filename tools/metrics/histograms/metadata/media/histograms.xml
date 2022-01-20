@@ -2047,7 +2047,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaDrm.PreprovisionedOriginId.NonPerAppProvisioningDevice"
-    units="units" expires_after="2022-02-01">
+    units="units" expires_after="2023-01-03">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2058,7 +2058,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaDrm.PreprovisionedOriginId.PerAppProvisioningDevice"
-    units="units" expires_after="2022-02-01">
+    units="units" expires_after="2023-01-03">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
