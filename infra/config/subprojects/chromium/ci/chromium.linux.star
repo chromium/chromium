@@ -247,6 +247,11 @@ ci.builder(
     resultdb_bigquery_exports = [
         resultdb.export_text_artifacts(
             bq_table = "chrome-luci-data.chromium.ci_text_artifacts",
+            predicate = resultdb.artifact_predicate(
+                # Only archive output snippets since some tests can generate
+                # very large supplementary files.
+                content_type_regexp = "snippet",
+            ),
         ),
     ],
 )
