@@ -292,6 +292,8 @@ void PasswordStoreProxyBackend::InitBackend(
   main_backend_->InitBackend(std::move(remote_form_changes_received),
                              std::move(sync_enabled_or_disabled_cb),
                              base::BindOnce(pending_initialization_calls));
+  // TODO(crbug.com/1279335): instead of DoNothing, the shadow_backend should
+  // record a metric that a list call could have happened.
   shadow_backend_->InitBackend(base::DoNothing(), base::DoNothing(),
                                base::BindOnce(pending_initialization_calls));
 }

@@ -29,6 +29,8 @@ source_set("backend") {
     "android_backend_error.h",
     "password_manager_lifecycle_helper.cc",
     "password_manager_lifecycle_helper.h",
+    "password_manager_lifecycle_helper_impl.cc",
+    "password_manager_lifecycle_helper_impl.h",
     "password_store_android_backend.cc",
     "password_store_android_backend.h",
     "password_store_android_backend_bridge.h",

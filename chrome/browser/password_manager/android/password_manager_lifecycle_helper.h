@@ -6,19 +6,14 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_LIFECYCLE_HELPER_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"  // callback_forward doesn't suffice for members.
+#include "base/callback_forward.h"
 
-// This helper listens to Android lifecycle events like OnForegroundSessionStart
-// and calls a registered callback synchronously if it occurs.
-// Lifecycle events are not buffered or repeated — if the helper was added after
-// an event happened, it will not be triggered.
+// The interface is implemented by JNI helper classes that forward Android
+// lifecycle events for use in the password manager.
 class PasswordManagerLifecycleHelper {
  public:
-  // The passed `foregrounding_callback` is called synchronously every time
-  // chrome starts a foreground session (see `OnForegroundSessionStart` below).
-  explicit PasswordManagerLifecycleHelper(
-      base::RepeatingClosure foregrounding_callback);
-  ~PasswordManagerLifecycleHelper();
+  PasswordManagerLifecycleHelper() = default;
+
   PasswordManagerLifecycleHelper(PasswordManagerLifecycleHelper&&) = delete;
   PasswordManagerLifecycleHelper(const PasswordManagerLifecycleHelper&) =
       delete;
@@ -27,16 +22,15 @@ class PasswordManagerLifecycleHelper {
   PasswordManagerLifecycleHelper& operator=(
       const PasswordManagerLifecycleHelper&) = delete;
 
-  // Called via JNI. Called when chrome starts a top-level activity if none
-  // has been in the foreground yet. Check the java implementation at
-  // ChromeActivitySessionTrack#onForegroundSessionStart for more details.
-  void OnForegroundSessionStart(JNIEnv* env);
+  // The passed `foregrounding_callback` is expected to be called synchronously
+  // every time chrome starts a foreground session.
+  virtual void RegisterObserver(
+      base::RepeatingClosure foregrounding_callback) = 0;
 
- private:
-  base::RepeatingClosure foregrounding_callback_;
+  // Expects subclasses to stop listening for lifecycle events.
+  virtual void UnregisterObserver() = 0;
 
-  // Reference to the singleton instance of the Java counterpart of this class.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  virtual ~PasswordManagerLifecycleHelper() = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_LIFECYCLE_HELPER_H_

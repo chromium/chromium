@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,6 +82,27 @@ PasswordForm FormWithDisabledAutoSignIn(const PasswordForm& form_to_update) {
   return result;
 }
 
+class FakeLifecycleHelper : public PasswordManagerLifecycleHelper {
+ public:
+  FakeLifecycleHelper() {}
+
+  void RegisterObserver(
+      base::RepeatingClosure foregrounding_callback) override {
+    foregrounding_callback_ = std::move(foregrounding_callback);
+  }
+
+  void UnregisterObserver() override { foregrounding_callback_.Reset(); }
+
+  ~FakeLifecycleHelper() override {
+    DCHECK(foregrounding_callback_) << "Did not call UnregisterObserver!";
+  }
+
+  void OnForegroundSessionStart() { foregrounding_callback_.Run(); }
+
+ private:
+  base::RepeatingClosure foregrounding_callback_;
+};
+
 class MockPasswordStoreAndroidBackendBridge
     : public PasswordStoreAndroidBackendBridge {
  public:
@@ -101,17 +123,20 @@ class MockPasswordStoreAndroidBackendBridge
 class PasswordStoreAndroidBackendTest : public testing::Test {
  protected:
   PasswordStoreAndroidBackendTest() {
-    backend_ =
-        std::make_unique<PasswordStoreAndroidBackend>(CreateMockBridge());
+    backend_ = std::make_unique<PasswordStoreAndroidBackend>(
+        base::PassKey<class PasswordStoreAndroidBackendTest>(),
+        CreateMockBridge(), CreateFakeLifecycleHelper());
   }
 
   ~PasswordStoreAndroidBackendTest() override {
+    lifecycle_helper_ = nullptr;
     testing::Mock::VerifyAndClearExpectations(bridge_);
   }
 
   PasswordStoreBackend& backend() { return *backend_; }
   PasswordStoreAndroidBackendBridge::Consumer& consumer() { return *backend_; }
   MockPasswordStoreAndroidBackendBridge* bridge() { return bridge_; }
+  FakeLifecycleHelper* lifecycle_helper() { return lifecycle_helper_; }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -127,8 +152,15 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     return unique_bridge;
   }
 
+  std::unique_ptr<PasswordManagerLifecycleHelper> CreateFakeLifecycleHelper() {
+    auto new_helper = std::make_unique<FakeLifecycleHelper>();
+    lifecycle_helper_ = new_helper.get();
+    return new_helper;
+  }
+
   std::unique_ptr<PasswordStoreAndroidBackend> backend_;
   raw_ptr<StrictMock<MockPasswordStoreAndroidBackendBridge>> bridge_;
+  raw_ptr<FakeLifecycleHelper> lifecycle_helper_;
 };
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsCompletionCallbackAfterInit) {
@@ -648,6 +680,19 @@ TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLoginsSuccessMetrics) {
   histogram_tester.ExpectUniqueSample(kTotalCountMetric, 2, 1);
   histogram_tester.ExpectTotalCount(kSuccessRateMetric, 1);
   histogram_tester.ExpectUniqueSample(kSuccessRateMetric, 50, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, NotifyStoreOnForegroundSessionStart) {
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      store_notification_trigger;
+  backend().InitBackend(
+      /*stored_passwords_changed=*/store_notification_trigger.Get(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*completion=*/base::DoNothing());
+
+  // Verify that the store would be notified.
+  EXPECT_CALL(store_notification_trigger, Run(Eq(absl::nullopt)));
+  lifecycle_helper()->OnForegroundSessionStart();
 }
 
 class PasswordStoreAndroidBackendTestForMetrics

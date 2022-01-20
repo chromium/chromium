@@ -57,6 +57,6 @@ public class PasswordManagerLifecycleHelper {
      */
     @NativeMethods
     interface Natives {
-        void onForegroundSessionStart(long nativePasswordManagerLifecycleHelper);
+        void onForegroundSessionStart(long nativePasswordManagerLifecycleHelperImpl);
     }
 }
