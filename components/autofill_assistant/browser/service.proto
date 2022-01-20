@@ -2357,6 +2357,8 @@ message ProfileProto {
 message PaymentInstrumentProto {
   // The values for the card, where the key is one of autofill::ServerFieldType.
   map<int32, AutofillEntryProto> card_values = 2;
+  // The payments instrument id used to identify and unmask the credit card.
+  optional int64 instrument_id = 7;
   // The network of the card.
   optional string network = 5;
   // The last 4 digits of the card.

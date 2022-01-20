@@ -1315,6 +1315,9 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       credit_card->set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
       AddProtoDataToAutofillDataModel(payment_data.card_values(),
                                       proto_data.locale(), credit_card.get());
+      if (payment_data.has_instrument_id()) {
+        credit_card->set_instrument_id(payment_data.instrument_id());
+      }
       if (!payment_data.last_four_digits().empty()) {
         credit_card->SetNumber(
             base::UTF8ToUTF16(payment_data.last_four_digits()));

@@ -2502,6 +2502,9 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
                                   Pair(field_formatter::Key(-2), "visa"),
                                   Pair(field_formatter::Key(-5), "Visa"),
                                   Pair(field_formatter::Key(-4), "1111")}));
+        EXPECT_EQ(
+            user_data_.available_payment_instruments_[0]->card->instrument_id(),
+            123456);
         // Used for card summary in UI.
         EXPECT_EQ(user_data_.available_payment_instruments_[0]
                       ->card->NetworkForDisplay(),
@@ -2538,6 +2541,7 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
                                  ->add_available_payment_instruments();
   AddCompleteCardEntriesToMap("John Doe",
                               payment_instrument->mutable_card_values());
+  payment_instrument->set_instrument_id(123456);
   payment_instrument->set_network("visaCC");
   payment_instrument->set_last_four_digits("1111");
   AddCompleteAddressEntriesToMap("John Doe",
