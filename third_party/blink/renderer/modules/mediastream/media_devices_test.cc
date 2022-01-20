@@ -202,7 +202,7 @@ class MockMediaDevicesDispatcherHost final
     }
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void CloseFocusWindowOfOpportunity(const String& label) override {}
 
   void ProduceCropId(ProduceCropIdCallback callback) override {
@@ -244,7 +244,7 @@ class MockMediaDevicesDispatcherHost final
   mojo::Remote<mojom::blink::MediaDevicesListener> listener_;
   mojo::Receiver<mojom::blink::MediaDevicesDispatcherHost> receiver_{this};
   mojom::blink::CaptureHandleConfigPtr expected_capture_handle_config_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   String next_crop_id_ = "";  // Empty, not null.
 #endif
 };
@@ -737,7 +737,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
   const ScriptPromise div_promise = media_devices->produceCropId(
       scope.GetScriptState(), &div, scope.GetExceptionState());
   platform()->RunUntilIdle();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 #else  // Non-Android shown to work, proving the test is sane.
   EXPECT_FALSE(div_promise.IsEmpty());
@@ -745,7 +745,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
 #endif
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(scope.GetWindow());

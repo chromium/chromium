@@ -35,7 +35,7 @@ constexpr size_t kMaxSharedFileCount = 10;
 constexpr uint32_t kMaxSharedFileBytes = 50U * 1024 * 1024;
 
 constexpr uint32_t kMaxTitleLength = 16U * 1024;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr uint32_t kMaxTextLength = 120U * 1024;
 #else
 constexpr uint32_t kMaxTextLength = 1U * 1024 * 1024;
@@ -231,7 +231,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 // when the share completes. This goes against the web share spec to work around
 // the platform-specific bug, it is explicitly skipping section §2.1.2 step 2 of
 // the Web Share spec. https://www.w3.org/TR/web-share/#share-method
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (!clients_.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "A earlier share had not yet completed.");

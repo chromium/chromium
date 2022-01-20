@@ -60,7 +60,7 @@ SpeechSynthesis* SpeechSynthesis::speechSynthesis(LocalDOMWindow& window) {
   if (!synthesis) {
     synthesis = MakeGarbageCollected<SpeechSynthesis>(window);
     ProvideTo(window, synthesis);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // On Android devices we lazily initialize |mojom_synthesis_| to avoid
     // needlessly binding to the TTS service, see https://crbug.com/811929.
     // TODO(crbug/811929): Consider moving this logic into the Android-

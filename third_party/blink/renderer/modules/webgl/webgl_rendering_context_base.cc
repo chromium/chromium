@@ -2006,7 +2006,7 @@ void WebGLRenderingContextBase::bindTexture(GLenum target,
 
   // We use TEXTURE_EXTERNAL_OES to implement video texture on Android platform
   if (target == GL_TEXTURE_VIDEO_IMAGE_WEBGL) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/776222): Support extension on Android
     NOTIMPLEMENTED();
     return;
@@ -2023,7 +2023,7 @@ void WebGLRenderingContextBase::bindTexture(GLenum target,
       ContextGL()->TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                                  GL_CLAMP_TO_EDGE);
     }
-#endif  // defined OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   } else {
     ContextGL()->BindTexture(target, ObjectOrZero(texture));
   }
@@ -5529,7 +5529,7 @@ void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
 
 bool WebGLRenderingContextBase::CanUseTexImageViaGPU(GLenum format,
                                                      GLenum type) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // RGB5_A1 is not color-renderable on NVIDIA Mac, see crbug.com/676209.
   // Though, glCopyTextureCHROMIUM can handle RGB5_A1 internalformat by doing a
   // fallback path, but it doesn't know the type info. So, we still cannot do
@@ -5544,7 +5544,7 @@ bool WebGLRenderingContextBase::CanUseTexImageViaGPU(GLenum format,
   if (format == GL_RED_INTEGER)
     return false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(kbr): bugs were seen on Android devices with NVIDIA GPUs
   // when copying hardware-accelerated video textures to
   // floating-point textures. Investigate the root cause of this and
@@ -5997,7 +5997,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       CanUseTexImageViaGPU(format, type) &&
       transform == media::kNoTransformation;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1227921): When OOP GPU rasterization is disabled, uploading
   // via the GPU becomes extremely slow.
   const bool gpu_teximage_is_slow = !caps.supports_oop_raster;
@@ -6094,7 +6094,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // unmultiply has been requested or we need to never premultiply for Image
   // creation from a VideoFrame.
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1180726): Sampling from macOS IOSurfaces requires
   // GL_ARB_texture_rectangle which is not available in the WebGL context.
   constexpr bool kAllowZeroCopyImages = false;
@@ -6102,7 +6102,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   constexpr bool kAllowZeroCopyImages = true;
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/1175907): Only TexImage2D seems to work with the GPU path on
   // Android M -- appears to work fine on R, but to avoid regressions in <video>
   // limit to TexImage2D only for now. Fails conformance test on Nexus 5X:

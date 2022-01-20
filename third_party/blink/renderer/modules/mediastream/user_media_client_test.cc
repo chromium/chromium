@@ -264,7 +264,7 @@ class MockMediaDevicesDispatcherHost
     NOTREACHED();
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void CloseFocusWindowOfOpportunity(const String& label) override {
     NOTREACHED();
   }

@@ -43,7 +43,7 @@ class VideoFrame;
 }  // namespace media
 
 namespace video_track_recorder {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const int kVEAEncoderMinResolutionWidth = 176;
 const int kVEAEncoderMinResolutionHeight = 144;
 #else

@@ -559,7 +559,7 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
     if (extensions->hasHmacCreateSecret()) {
       mojo_options->hmac_create_secret = extensions->hmacCreateSecret();
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (extensions->hasUvm()) {
       mojo_options->user_verification_methods = extensions->uvm();
     }
@@ -714,7 +714,7 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
         mojo_options->cable_authentication_data = std::move(mojo_data);
       }
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (extensions->hasUvm()) {
       mojo_options->user_verification_methods = extensions->uvm();
     }

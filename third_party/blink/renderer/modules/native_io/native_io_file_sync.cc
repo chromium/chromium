@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -116,7 +116,7 @@ void NativeIOFileSync::setLength(uint64_t new_length,
     file_length_ = expected_length;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
   // syscalls issued from renderers. For this reason, base::File::SetLength()
   // fails in the renderer. We work around this problem by calling ftruncate()
@@ -166,7 +166,7 @@ void NativeIOFileSync::setLength(uint64_t new_length,
     }
     return;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   base::File::Error set_length_result = base::File::FILE_OK;
   int64_t actual_length = expected_length;

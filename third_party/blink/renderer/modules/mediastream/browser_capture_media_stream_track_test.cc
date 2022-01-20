@@ -50,7 +50,7 @@ class BrowserCaptureMediaStreamTrackTest : public testing::Test {
   }
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
   V8TestingScope v8_scope;
 

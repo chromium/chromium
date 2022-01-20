@@ -607,10 +607,10 @@ class WebMediaPlayerMSTest
   }
 
   void SetGpuMemoryBufferVideoForTesting() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     render_factory_->provider()->set_standard_size(
         WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     player_->SetGpuMemoryBufferVideoForTesting(
         new media::MockGpuMemoryBufferVideoFramePool(&frame_ready_cbs_));
@@ -1311,7 +1311,7 @@ TEST_P(WebMediaPlayerMSTest, CreateHardwareFrames) {
   else
     EXPECT_CALL(*this, DoStopRendering());
 }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(WebMediaPlayerMSTest, HiddenPlayerTests) {
   InitializeWebMediaPlayerMS();
   LoadAndGetFrameProvider(true);

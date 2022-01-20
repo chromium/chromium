@@ -24,7 +24,7 @@ bool ToCanvasContextCreationAttributes(
   result.depth = attrs->depth();
   result.fail_if_major_performance_caveat =
       attrs->failIfMajorPerformanceCaveat();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/945835): enable desynchronized on Mac.
   result.desynchronized = false;
 #else

@@ -565,7 +565,7 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
   }
 
   auto* web_frame = source_internal_frame_->web_frame();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Frames are allowed to be null in Android due to an issue in tests.
   // In practice, this is not an issue, since Android does not support
   // setSinkId(). https://crbug.com/1119689

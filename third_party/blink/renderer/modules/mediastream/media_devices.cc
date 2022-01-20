@@ -187,7 +187,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   base::OnceCallback<void(const String&, MediaStreamTrack*)>
       on_success_follow_up;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (media_type == UserMediaRequest::MediaType::kDisplayMedia) {
     on_success_follow_up = WTF::Bind(
         &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
@@ -341,7 +341,7 @@ ScriptPromise MediaDevices::produceCropId(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Unsupported.");
   return ScriptPromise();
@@ -642,7 +642,7 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(scheduled_events_);
   visitor->Trace(requests_);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   visitor->Trace(crop_id_resolvers_);
 #endif
   Supplement<Navigator>::Trace(visitor);
@@ -650,7 +650,7 @@ void MediaDevices::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
     const String& id,
     MediaStreamTrack* track) {

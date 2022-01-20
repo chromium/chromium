@@ -74,7 +74,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #endif
 
@@ -530,7 +530,7 @@ DOMArrayBuffer* VectorToDOMArrayBuffer(const Vector<uint8_t> buffer) {
                                 buffer.size());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 Vector<Vector<uint32_t>> UvmEntryToArray(
     const Vector<mojom::blink::UvmEntryPtr>& user_verification_methods) {
   Vector<Vector<uint32_t>> uvm_array;
@@ -692,7 +692,7 @@ void OnGetAssertionComplete(
     if (credential->echo_appid_extension) {
       extension_outputs->setAppid(credential->appid_extension);
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (credential->echo_user_verification_methods) {
       extension_outputs->setUvm(
           UvmEntryToArray(std::move(*credential->user_verification_methods)));
@@ -1019,7 +1019,7 @@ ScriptPromise CredentialsContainer::get(
                         WebFeature::kCredentialManagerGetPublicKeyCredential);
     }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (options->publicKey()->hasExtensions() &&
         options->publicKey()->extensions()->hasUvm()) {
       UseCounter::Count(resolver->GetExecutionContext(),

@@ -319,7 +319,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
 
 // This test is flaky on Marshmallow 64 bit Tester because the test is
 // crashing. See <http://crbug.com/1068057>.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults \
   DISABLED_EventsAfterEarlyDeathStopWithTwoQueuedResults
 #else
@@ -364,7 +364,7 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
 
 // This test is flaky on Marshmallow 64 bit Tester because the test is
 // crashing. See <http://crbug.com/1068057>.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AbortErrorAfterAbort \
   DISABLED_AbortErrorAfterAbort
 #else

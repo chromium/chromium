@@ -29,7 +29,7 @@ class MODULES_EXPORT FocusableMediaStreamTrack : public MediaStreamTrack {
                             const String& descriptor_id,
                             bool is_clone = false);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void CloseFocusWindowOfOpportunity() override;
 #endif
 
@@ -50,7 +50,7 @@ class MODULES_EXPORT FocusableMediaStreamTrack : public MediaStreamTrack {
   const String& descriptor_id() const { return descriptor_id_; }
 
  private:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Clones may not be focus()-ed.
   const bool is_clone_;
 

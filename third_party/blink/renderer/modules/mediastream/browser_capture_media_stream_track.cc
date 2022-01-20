@@ -21,7 +21,7 @@ namespace blink {
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // If crop_id is the empty string, returns an empty base::Token.
 // If crop_id is a valid UUID, returns a base::Token representing the ID.
 // Otherwise, returns nullopt.
@@ -118,7 +118,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kUnknownError, "Not supported on Android."));
   return promise;

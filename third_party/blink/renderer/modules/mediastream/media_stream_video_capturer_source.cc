@@ -192,7 +192,7 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
                          WTF::Unretained(this), capture_params_));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamVideoCapturerSource::Crop(
     const base::Token& crop_id,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {

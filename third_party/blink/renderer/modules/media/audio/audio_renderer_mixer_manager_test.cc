@@ -572,14 +572,14 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyPlayback) {
     EXPECT_EQ(44100, mixer->get_output_params_for_testing().sample_rate());
 
 // 20 ms at 44100 is 882 frames per buffer.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Round up 882 to the nearest multiple of the output buffer size (128).
     // which is 7 * 128 = 896
     EXPECT_EQ(896, mixer->get_output_params_for_testing().frames_per_buffer());
 #else
     // Round up 882 to the power of 2.
     EXPECT_EQ(1024, mixer->get_output_params_for_testing().frames_per_buffer());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   ReturnMixer(mixer);
@@ -638,13 +638,13 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyPlaybackFakeAudio) {
   EXPECT_EQ(32000, mixer->get_output_params_for_testing().sample_rate());
 
 // 20 ms at 32000 is 640 frames per buffer.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Use 20 ms buffer.
   EXPECT_EQ(640, mixer->get_output_params_for_testing().frames_per_buffer());
 #else
   // Ignore device buffer size, round up 640 to the power of 2.
   EXPECT_EQ(1024, mixer->get_output_params_for_testing().frames_per_buffer());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   ReturnMixer(mixer);
 }
@@ -677,19 +677,19 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyRtc) {
   EXPECT_EQ(output_sample_rate,
             mixer->get_output_params_for_testing().sample_rate());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_FUCHSIA)
   // Use 10 ms buffer (441 frames per buffer).
   EXPECT_EQ(output_sample_rate / 100,
             mixer->get_output_params_for_testing().frames_per_buffer());
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // If hardware buffer size (128) is less than 20 ms (882), use 20 ms buffer
   // (otherwise, use hardware buffer).
   EXPECT_EQ(882, mixer->get_output_params_for_testing().frames_per_buffer());
 #else
   // Use hardware buffer size (128).
   EXPECT_EQ(128, mixer->get_output_params_for_testing().frames_per_buffer());
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif
 
   ReturnMixer(mixer);
 }

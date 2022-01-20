@@ -195,7 +195,7 @@ bool UserMediaClient::IsCapturing() {
   return user_media_processor_->HasActiveSources();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void UserMediaClient::FocusCapturedSurface(const String& label, bool focus) {
   DCHECK(user_media_processor_);
   user_media_processor_->FocusCapturedSurface(label, focus);

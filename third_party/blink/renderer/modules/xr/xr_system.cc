@@ -1447,7 +1447,7 @@ void XRSystem::OnRequestSessionReturned(
 // On Android, due to the way the device renderer is configured, we always need
 // to enter fullscreen if we're starting an AR session, so if we aren't supposed
 // to enter DOMOverlay, we simply fullscreen the document body.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!fullscreen_element &&
       query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr) {
     fullscreen_element = DomWindow()->document()->body();

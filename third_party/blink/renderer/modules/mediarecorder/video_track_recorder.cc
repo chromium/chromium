@@ -152,7 +152,7 @@ VideoTrackRecorderImpl::CodecEnumerator::CodecEnumerator(
         vea_supported_profiles) {
   for (const auto& supported_profile : vea_supported_profiles) {
     const media::VideoCodecProfile codec = supported_profile.profile;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // TODO(mcasas): enable other codecs, https://crbug.com/638664.
     static_assert(media::VP8PROFILE_MAX + 1 == media::VP9PROFILE_MIN,
                   "VP8 and VP9 VideoCodecProfiles should be contiguous");

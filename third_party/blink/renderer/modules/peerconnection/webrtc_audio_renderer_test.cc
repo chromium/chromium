@@ -134,7 +134,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
   MAYBE_WebRtcAudioRendererTest()
       : source_(new MockAudioRendererSource())
 // Tests crash on Android if these are defined. https://crbug.com/1119689
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         ,
         agent_group_scheduler_(
             blink::scheduler::WebThreadScheduler::MainThreadScheduler()
@@ -290,12 +290,12 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, DISABLED_MultipleRenderers) {
 TEST_F(MAYBE_WebRtcAudioRendererTest, DISABLED_VerifySinkParameters) {
   SetupRenderer(kDefaultOutputDeviceId);
   renderer_proxy_->Start();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_FUCHSIA)
   static const int kExpectedBufferSize = kHardwareSampleRate / 100;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   static const int kExpectedBufferSize = 2 * kHardwareSampleRate / 100;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   static const int kExpectedBufferSize = kHardwareBufferSize;
 #else
 #error Unknown platform.

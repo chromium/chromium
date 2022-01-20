@@ -19,10 +19,10 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace blink {
 
@@ -49,10 +49,10 @@ class FileSystemAccessRegularFileDelegate final
   void Trace(Visitor* visitor) const override {
     FileSystemAccessFileDelegate::Trace(visitor);
     visitor->Trace(capacity_tracker_);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     visitor->Trace(context_);
     visitor->Trace(file_utilities_host_);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   base::FileErrorOr<int> Read(int64_t offset,
@@ -102,7 +102,7 @@ class FileSystemAccessRegularFileDelegate final
   void DidSuccessfulSetLength(int64_t new_length,
                               CrossThreadOnceFunction<void(bool)> callback);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void DidSetLengthIPC(base::OnceCallback<void(bool)> callback,
                        int64_t new_length,
                        base::File file,
@@ -113,7 +113,7 @@ class FileSystemAccessRegularFileDelegate final
   // We need the context_ to create the instance of FileUtilitiesHost lazily.
   Member<ExecutionContext> context_;
   HeapMojoRemote<mojom::blink::FileUtilitiesHost> file_utilities_host_;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // The file on disk backing the parent FileSystemFileHandle.
   base::File backing_file_;

@@ -62,7 +62,7 @@ class MODULES_EXPORT UserMediaClient
 
   bool IsCapturing();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void FocusCapturedSurface(const String& label, bool focus);
 #endif
 

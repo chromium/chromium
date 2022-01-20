@@ -36,13 +36,13 @@ FocusableMediaStreamTrack::FocusableMediaStreamTrack(
                        component,
                        ready_state,
                        std::move(callback)),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       is_clone_(is_clone),
 #endif
       descriptor_id_(descriptor_id) {
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void FocusableMediaStreamTrack::CloseFocusWindowOfOpportunity() {
   promise_settled_ = true;
 }
@@ -52,7 +52,7 @@ void FocusableMediaStreamTrack::focus(
     ExecutionContext* execution_context,
     V8CaptureStartFocusBehavior focus_behavior,
     ExceptionState& exception_state) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   UserMediaController* const controller =
       UserMediaController::From(To<LocalDOMWindow>(execution_context));
   if (!controller) {
@@ -114,7 +114,7 @@ void FocusableMediaStreamTrack::CloneInternal(
   MediaStreamTrack::CloneInternal(cloned_track);
 
   // Clone own state.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Copied for completeness, but should never be read on clones.
   cloned_track->focus_called_ = focus_called_;
   cloned_track->promise_settled_ = promise_settled_;

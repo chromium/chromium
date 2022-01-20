@@ -78,10 +78,10 @@ class MODULES_EXPORT WebRtcAudioDeviceNotImpl
   int32_t EnableBuiltInAEC(bool enable) override;
   int32_t EnableBuiltInAGC(bool enable) override;
   int32_t EnableBuiltInNS(bool enable) override;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   int GetPlayoutAudioParameters(AudioParameters* params) const override;
   int GetRecordAudioParameters(AudioParameters* params) const override;
-#endif  // OS_IOS
+#endif  // BUILDFLAG(IS_IOS)
 
  protected:
   ~WebRtcAudioDeviceNotImpl() override {}

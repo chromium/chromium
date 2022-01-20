@@ -42,7 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -127,7 +127,7 @@ class NativeIOFile::FileState
     return {actual_length, error};
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Used to implement browser-side SetLength() on macOS < 10.15.
   base::File TakeFile() {
     WTF::MutexLocker mutex_locker(mutex_);
@@ -143,7 +143,7 @@ class NativeIOFile::FileState
 
     file_ = std::move(file);
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Returns {read byte count, base::File::FILE_OK} in case of success.
   // Returns {invalid number, error} in case of failure.
@@ -345,7 +345,7 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
   io_pending_ = true;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
   // syscalls issued from renderers. For this reason, base::File::SetLength()
   // fails in the renderer. We work around this problem by calling ftruncate()
@@ -364,7 +364,7 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
                   WrapPersistent(resolver)));
     return resolver->Promise();
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
@@ -739,7 +739,7 @@ void NativeIOFile::DidSetLengthIo(
   resolver->Resolve();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void NativeIOFile::DidSetLengthIpc(
     ScriptPromiseResolver* resolver,
     base::File backing_file,
@@ -791,7 +791,7 @@ void NativeIOFile::DidSetLengthIpc(
 
   resolver->Resolve();
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 void NativeIOFile::DoRead(

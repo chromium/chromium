@@ -877,7 +877,7 @@ std::unique_ptr<AudioSourceProvider> MediaStreamTrack::CreateWebAudioSource(
                                                context_sample_rate));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamTrack::CloseFocusWindowOfOpportunity() {}
 #endif
 

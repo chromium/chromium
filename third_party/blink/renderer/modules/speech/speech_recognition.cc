@@ -197,7 +197,7 @@ bool SpeechRecognition::HasPendingActivity() const {
 }
 
 void SpeechRecognition::PageVisibilityChanged() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!GetPage()->IsPageVisible())
     abort();
 #endif

@@ -133,7 +133,7 @@ class MODULES_EXPORT MediaDevices final
   const mojo::Remote<mojom::blink::MediaDevicesDispatcherHost>&
   GetDispatcherHost(LocalFrame*);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Manage the window of opportunity that occurs immediately after
   // display-capture starts. The application can call MediaStreamTrack.focus()
   // on the microtask where the Promise<MediaStream> was resolved; later calls
@@ -158,7 +158,7 @@ class MODULES_EXPORT MediaDevices final
   HeapMojoReceiver<mojom::blink::MediaDevicesListener, MediaDevices> receiver_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // 1. When produceCropId() is first called for an Element, it has no crop-ID
   //    associated. We produce a Resolver, map the Element to it, and fire
   //    off a message to the browser process, asking for a new crop-ID to be

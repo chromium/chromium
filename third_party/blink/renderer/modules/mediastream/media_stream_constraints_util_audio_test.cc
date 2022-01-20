@@ -193,7 +193,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   void CheckGoogExperimentalEchoCancellationDefault(
       const AudioProcessingProperties& properties,
       bool value) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_FALSE(properties.goog_experimental_echo_cancellation);
 #else
     EXPECT_EQ(value, properties.goog_experimental_echo_cancellation);
@@ -2076,7 +2076,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
   // media::AudioLatency::GetExactBufferSize().
   CheckLocalMediaStreamAudioSourceLatency(variable_latency_device_, 0.001, 128);
   CheckLocalMediaStreamAudioSourceLatency(variable_latency_device_, 0.011, 512);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows only uses exactly the minimum or else multiples of the
   // hardware_buffer_size (512 for the variable_latency_device_).
   CheckLocalMediaStreamAudioSourceLatency(variable_latency_device_, 0.020,

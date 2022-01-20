@@ -147,7 +147,7 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
   }
 }
 
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 // https://crbug.com/1247967
 #define MAYBE_NoPressureByDefault DISABLED_NoPressureByDefault
 #else

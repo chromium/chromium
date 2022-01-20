@@ -519,7 +519,7 @@ AutoplayPolicy::Type AudioContext::GetAutoplayPolicy() const {
           AutoplayPolicy::Type::kDocumentUserActivationRequired &&
       RuntimeEnabledFeatures::AutoplayIgnoresWebAudioEnabled()) {
 // When ignored, the policy is different on Android compared to Desktop.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return AutoplayPolicy::Type::kUserGestureRequired;
 #else
     // Force no user gesture required on desktop.
