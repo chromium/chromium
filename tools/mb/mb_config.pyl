@@ -52,8 +52,8 @@
       'android-archive-dbg': 'android_without_codecs_debug_bot',
       'android-official': 'android_official_optimize_goma',
       'fuchsia-official': 'fuchsia_official_optimize_goma',
-      'linux-archive-rel': 'release_bot',
-      'linux-archive-dbg': 'debug_bot',
+      'linux-archive-rel': 'release_bot_reclient',
+      'linux-archive-dbg': 'debug_bot_reclient',
       'linux-archive-tagged': 'official_optimize_goma',
       'linux-official': 'official_optimize_goma',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols',
@@ -518,7 +518,7 @@
       'Network Service Linux': 'release_bot',
       'fuchsia-arm64-cast': 'release_bot_fuchsia_arm64_cast',
       'fuchsia-x64-cast': 'release_bot_fuchsia_cast',
-      'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only',
+      'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
       'linux-bfcache-rel': 'release_bot_blink',
       'linux-bionic-rel': 'gpu_tests_release_bot',
       'linux-extended-tracing-rel': 'release_bot_extended_tracing',
@@ -2158,6 +2158,10 @@
       'debug_bot',
     ],
 
+    'debug_bot_reclient': [
+      'debug_bot_reclient',
+    ],
+
     'debug_bot_arm64': [
       'debug_bot', 'arm64',
     ],
@@ -2184,6 +2188,10 @@
 
     'debug_bot_fuchsia_compile_only': [
       'debug_bot', 'fuchsia', 'compile_only',
+    ],
+
+    'debug_bot_fuchsia_compile_only_reclient': [
+      'debug_bot_reclient', 'fuchsia', 'compile_only',
     ],
 
     'debug_bot_paeverywhere_x64': [
