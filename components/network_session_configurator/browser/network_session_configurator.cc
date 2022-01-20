@@ -121,13 +121,15 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
     return;
   }
 
-  // After parsing initial settings, optionally add a setting with reserved
-  // identifier to "grease" settings, see
-  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
   params->http2_settings = GetHttp2Settings(http2_trial_params);
-  if (command_line.HasSwitch(switches::kHttp2GreaseSettings) ||
-      GetVariationParam(http2_trial_params, "http2_grease_settings") ==
-          "true") {
+
+  // Enable/disable greasing SETTINGS, see
+  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
+  if (command_line.HasSwitch(switches::kDisableHttp2GreaseSettings)) {
+    params->enable_http2_settings_grease = false;
+  } else if (command_line.HasSwitch(switches::kEnableHttp2GreaseSettings) ||
+             GetVariationParam(http2_trial_params, "http2_grease_settings") ==
+                 "true") {
     params->enable_http2_settings_grease = true;
   }
 

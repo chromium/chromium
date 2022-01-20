@@ -821,7 +821,7 @@ TEST_F(NetworkSessionConfiguratorTest, QuicHeadersIncludeH2StreamDependency) {
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromCommandLine) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitch(switches::kHttp2GreaseSettings);
+  command_line.AppendSwitch(switches::kEnableHttp2GreaseSettings);
 
   ParseCommandLineAndFieldTrials(command_line);
 
@@ -837,6 +837,21 @@ TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromFieldTrial) {
   ParseFieldTrials();
 
   EXPECT_TRUE(params_.enable_http2_settings_grease);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       DisableHttp2GreaseSettingsFromCommandLineOverridesFieldTrial) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kDisableHttp2GreaseSettings);
+
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["http2_grease_settings"] = "true";
+  variations::AssociateVariationParams("HTTP2", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("HTTP2", "Enabled");
+
+  ParseCommandLineAndFieldTrials(command_line);
+
+  EXPECT_FALSE(params_.enable_http2_settings_grease);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseFrameTypeFromCommandLine) {
