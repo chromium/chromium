@@ -18,9 +18,7 @@ _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 # - Windows: debug CRT is not compatible, see below.
 _disable_partition_alloc = is_component_build || (is_win && is_debug)
 _is_partition_alloc_platform =
-    is_android || is_win || is_mac || is_linux || is_chromeos ||
-    # TODO(crbug.com/1278780): Allow x64 once compatible with safe-stack.
-    (is_fuchsia && target_cpu == "arm64")
+    is_android || is_win || is_mac || is_linux || is_chromeos || is_fuchsia
 
 # Under Windows Debug the allocator shim is not compatible with CRT.
 #     NaCl in particular does seem to link some binaries statically
