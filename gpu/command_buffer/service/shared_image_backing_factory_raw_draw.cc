@@ -5,16 +5,20 @@
 #include "gpu/command_buffer/service/shared_image_backing_factory_raw_draw.h"
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "ui/gl/trace_util.h"
 
 namespace gpu {
 
@@ -64,7 +68,27 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDump* dump,
                     base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t client_tracing_id) override {}
+                    uint64_t client_tracing_id) override {
+    if (auto tracing_id = GrBackendTextureTracingID(backend_texture_)) {
+      // Add a |service_guid| which expresses shared ownership between the
+      // various GPU dumps.
+      auto client_guid = GetSharedImageGUIDForTracing(mailbox());
+      auto service_guid = gl::GetGLTextureServiceGUIDForTracing(tracing_id);
+      pmd->CreateSharedGlobalAllocatorDump(service_guid);
+
+      std::string format_dump_name =
+          base::StringPrintf("%s/format=%d", dump_name.c_str(), format());
+      base::trace_event::MemoryAllocatorDump* format_dump =
+          pmd->CreateAllocatorDump(format_dump_name);
+      format_dump->AddScalar(
+          base::trace_event::MemoryAllocatorDump::kNameSize,
+          base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+          static_cast<uint64_t>(EstimatedSizeForMemTracking()));
+
+      int importance = 2;  // This client always owns the ref.
+      pmd->AddOwnershipEdge(client_guid, service_guid, importance);
+    }
+  }
 
  protected:
   std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(

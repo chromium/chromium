@@ -103,6 +103,9 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
 GPU_GLES2_EXPORT bool ShouldVulkanSyncCpuForSkiaSubmit(
     viz::VulkanContextProvider* context_provider);
 
+GPU_GLES2_EXPORT uint64_t
+GrBackendTextureTracingID(const GrBackendTexture& backend_texture);
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SKIA_UTILS_H_
