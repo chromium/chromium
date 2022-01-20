@@ -32,13 +32,17 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
+namespace net {
+struct NetworkTrafficAnnotationTag;
+}  // namespace net
+
 namespace network {
 class SimpleURLLoader;
 }  // namespace network
 
 namespace webapps {
 struct ShortcutInfo;
-}
+}  // namespace webapps
 
 // The enum values are persisted to logs |WebApkInstallSpaceStatus| in
 // enums.xml, therefore they should never be reused nor renumbered.
@@ -204,7 +208,8 @@ class WebApkInstaller {
   // Sends a request to WebAPK server to create/update WebAPK. During a
   // successful request the WebAPK server responds with a token to send to
   // Google Play.
-  void SendRequest(std::unique_ptr<std::string> serialized_proto);
+  void SendRequest(const net::NetworkTrafficAnnotationTag& traffic_annotation,
+                   std::unique_ptr<std::string> serialized_proto);
 
   // Returns the WebAPK server URL based on the command line.
   GURL GetServerUrl();
