@@ -179,14 +179,6 @@ int HomeButton::OnDragUpdated(const ui::DropTargetEvent& event) {
   return event.source_operations();
 }
 
-ui::mojom::DragOperation HomeButton::OnPerformDrop(
-    const ui::DropTargetEvent& event) {
-  auto cb = GetDropCallback(event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback HomeButton::GetDropCallback(
     const ui::DropTargetEvent& event) {
   return base::BindOnce(&HomeButton::UpdateHomePage,
