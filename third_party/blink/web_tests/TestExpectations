@@ -472,6 +472,9 @@ crbug.com/1268426 virtual/threaded/external/wpt/css/css-backgrounds/border-image
 # No emoji flag symbols available in the Windows system emoji font.
 crbug.com/1272436 [ Win10.20h2 ] external/wpt/css/CSS2/text/bidi-flag-emoji-02.html [ Failure ]
 
+# LayoutNGBlockInInline
+crbug.com/1288784 [ Mac ] editing/selection/click-after-nested-block.html [ Failure ]
+
 # ==== Regressions introduced by BlinkGenPropertyTrees =====
 # Reflection / mask ordering issue
 crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Failure ]
