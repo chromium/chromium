@@ -264,10 +264,10 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
       kOffScreenCanvasEmFontSize, kOffScreenCanvasRemFontSize, &font, zoom);
   CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;
-  CSSToLengthConversionData conversion_data(nullptr,  // ComputedStyle
-                                            font_sizes, viewport_size,
-                                            container_sizes,
-                                            1);  // zoom
+  CSSToLengthConversionData conversion_data(
+      nullptr,  // ComputedStyle
+      WritingMode::kHorizontalTb, font_sizes, viewport_size, container_sizes,
+      1);  // zoom
 
   for (auto& curr_value : To<CSSValueList>(in_value)) {
     if (curr_value->IsURIValue())

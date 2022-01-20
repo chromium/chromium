@@ -50,17 +50,8 @@ PhysicalAxes SupportedAxes(const ComputedStyle& style) {
   return ToPhysicalAxes(supported, style.GetWritingMode());
 }
 
-absl::optional<double> FindSizeForContainerAxis(PhysicalAxes physical_axes,
-                                                LogicalAxes logical_axes,
+absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axes,
                                                 Element* nearest_container) {
-  // Exactly one physical *or* logical axis must be provided.
-  DCHECK(physical_axes == PhysicalAxes(kPhysicalAxisNone) ||
-         logical_axes == LogicalAxes(kLogicalAxisNone));
-  DCHECK(physical_axes == PhysicalAxes(kPhysicalAxisHorizontal) ||
-         physical_axes == PhysicalAxes(kPhysicalAxisVertical) ||
-         logical_axes == LogicalAxes(kLogicalAxisInline) ||
-         logical_axes == LogicalAxes(kLogicalAxisBlock));
-
   for (Element* element = nearest_container; element;
        element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
     auto* evaluator = element->GetContainerQueryEvaluator();
@@ -69,8 +60,6 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes physical_axes,
     const ComputedStyle* style = element->GetComputedStyle();
     if (!style)
       continue;
-    PhysicalAxes requested_axes =
-        physical_axes | ToPhysicalAxes(logical_axes, style->GetWritingMode());
     if ((requested_axes & SupportedAxes(*style)) != requested_axes)
       continue;
     evaluator->SetReferencedByUnit();
@@ -80,18 +69,6 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes physical_axes,
     return evaluator->Height();
   }
   return absl::nullopt;
-}
-
-absl::optional<double> FindSizeForContainerAxis(PhysicalAxes physical_axes,
-                                                Element* nearest_container) {
-  return FindSizeForContainerAxis(physical_axes, LogicalAxes(kLogicalAxisNone),
-                                  nearest_container);
-}
-
-absl::optional<double> FindSizeForContainerAxis(LogicalAxes logical_axes,
-                                                Element* nearest_container) {
-  return FindSizeForContainerAxis(PhysicalAxes(kLogicalAxisNone), logical_axes,
-                                  nearest_container);
 }
 
 }  // namespace
@@ -153,18 +130,6 @@ absl::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
   return cached_height_;
 }
 
-absl::optional<double> CSSToLengthConversionData::ContainerSizes::InlineSize()
-    const {
-  CacheSizeIfNeeded(LogicalAxes(kLogicalAxisInline), cached_inline_size_);
-  return cached_inline_size_;
-}
-
-absl::optional<double> CSSToLengthConversionData::ContainerSizes::BlockSize()
-    const {
-  CacheSizeIfNeeded(LogicalAxes(kLogicalAxisBlock), cached_block_size_);
-  return cached_block_size_;
-}
-
 void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
     PhysicalAxes requested_axis,
     absl::optional<double>& cache) const {
@@ -174,22 +139,15 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
   cache = FindSizeForContainerAxis(requested_axis, nearest_container_);
 }
 
-void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
-    LogicalAxes requested_axis,
-    absl::optional<double>& cache) const {
-  if ((cached_logical_axes_ & requested_axis) == requested_axis)
-    return;
-  cached_logical_axes_ |= requested_axis;
-  cache = FindSizeForContainerAxis(requested_axis, nearest_container_);
-}
-
 CSSToLengthConversionData::CSSToLengthConversionData(
     const ComputedStyle* style,
+    WritingMode writing_mode,
     const FontSizes& font_sizes,
     const ViewportSize& viewport_size,
     const ContainerSizes& container_sizes,
     float zoom)
     : style_(style),
+      writing_mode_(writing_mode),
       font_sizes_(font_sizes),
       viewport_size_(viewport_size),
       container_sizes_(container_sizes),
@@ -202,6 +160,7 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     Element* nearest_container,
     float zoom)
     : CSSToLengthConversionData(style,
+                                style->GetWritingMode(),
                                 FontSizes(style, root_style),
                                 ViewportSize(layout_view),
                                 ContainerSizes(nearest_container),
@@ -250,21 +209,13 @@ double CSSToLengthConversionData::ContainerHeightPercent() const {
 }
 
 double CSSToLengthConversionData::ContainerInlineSizePercent() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasContainerRelativeUnits();
-  if (absl::optional<double> size = container_sizes_.InlineSize())
-    return *size / 100;
-  // TODO(crbug.com/1223030): Support "small viewport size".
-  return ViewportWidthPercent();
+  return IsHorizontalWritingMode() ? ContainerWidthPercent()
+                                   : ContainerHeightPercent();
 }
 
 double CSSToLengthConversionData::ContainerBlockSizePercent() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasContainerRelativeUnits();
-  if (absl::optional<double> size = container_sizes_.BlockSize())
-    return *size / 100;
-  // TODO(crbug.com/1223030): Support "small viewport size".
-  return ViewportHeightPercent();
+  return IsHorizontalWritingMode() ? ContainerHeightPercent()
+                                   : ContainerWidthPercent();
 }
 
 double CSSToLengthConversionData::ContainerMinPercent() const {

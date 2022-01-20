@@ -99,24 +99,19 @@ class CORE_EXPORT CSSToLengthConversionData {
 
     absl::optional<double> Width() const;
     absl::optional<double> Height() const;
-    absl::optional<double> InlineSize() const;
-    absl::optional<double> BlockSize() const;
 
    private:
-    void CacheSizeIfNeeded(LogicalAxes, absl::optional<double>& cache) const;
     void CacheSizeIfNeeded(PhysicalAxes, absl::optional<double>& cache) const;
 
     Element* nearest_container_{nullptr};
     mutable PhysicalAxes cached_physical_axes_{kPhysicalAxisNone};
-    mutable LogicalAxes cached_logical_axes_{kLogicalAxisNone};
     mutable absl::optional<double> cached_width_;
     mutable absl::optional<double> cached_height_;
-    mutable absl::optional<double> cached_inline_size_;
-    mutable absl::optional<double> cached_block_size_;
   };
 
   CSSToLengthConversionData() : style_(nullptr), zoom_(1) {}
   CSSToLengthConversionData(const ComputedStyle*,
+                            WritingMode,
                             const FontSizes&,
                             const ViewportSize&,
                             const ContainerSizes&,
@@ -160,14 +155,20 @@ class CORE_EXPORT CSSToLengthConversionData {
   }
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
-    return CSSToLengthConversionData(style_, font_sizes_, viewport_size_,
-                                     container_sizes_, new_zoom);
+    return CSSToLengthConversionData(style_, writing_mode_, font_sizes_,
+                                     viewport_size_, container_sizes_,
+                                     new_zoom);
   }
 
   double ZoomedComputedPixels(double value, CSSPrimitiveValue::UnitType) const;
 
  private:
+  bool IsHorizontalWritingMode() const {
+    return blink::IsHorizontalWritingMode(writing_mode_);
+  }
+
   const ComputedStyle* style_;
+  WritingMode writing_mode_;
   FontSizes font_sizes_;
   ViewportSize viewport_size_;
   ContainerSizes container_sizes_;

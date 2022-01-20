@@ -182,6 +182,7 @@ class CORE_EXPORT StyleResolverState {
   void SetAffectsCompositorSnapshots() { affects_compositor_snapshots_ = true; }
 
  private:
+  void UpdateLengthConversionData();
   CSSToLengthConversionData UnzoomedLengthConversionData(
       const ComputedStyle* font_style) const;
 

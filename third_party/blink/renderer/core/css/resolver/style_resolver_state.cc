@@ -98,9 +98,7 @@ bool StyleResolverState::IsInheritedForUnset(
 void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
   // FIXME: Improve RAII of StyleResolverState to remove this function.
   style_ = std::move(style);
-  css_to_length_conversion_data_ = CSSToLengthConversionData(
-      style_.get(), RootElementStyle(), GetDocument().GetLayoutView(),
-      nearest_container_, style_->EffectiveZoom());
+  UpdateLengthConversionData();
 }
 
 scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
@@ -109,6 +107,12 @@ scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
     return nullptr;
   }
   return std::move(style_);
+}
+
+void StyleResolverState::UpdateLengthConversionData() {
+  css_to_length_conversion_data_ = CSSToLengthConversionData(
+      Style(), RootElementStyle(), GetDocument().GetLayoutView(),
+      nearest_container_, Style()->EffectiveZoom());
 }
 
 CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
@@ -121,8 +125,9 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
       GetDocument().GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes(nearest_container_);
 
-  return CSSToLengthConversionData(Style(), font_sizes, viewport_size,
-                                   container_sizes, 1);
+  return CSSToLengthConversionData(Style(), Style()->GetWritingMode(),
+                                   font_sizes, viewport_size, container_sizes,
+                                   1);
 }
 
 CSSToLengthConversionData StyleResolverState::FontSizeConversionData() const {
@@ -190,6 +195,7 @@ void StyleResolverState::SetWritingMode(WritingMode new_writing_mode) {
     return;
   }
   style_->SetWritingMode(new_writing_mode);
+  UpdateLengthConversionData();
   font_builder_.DidChangeWritingMode();
 }
 
