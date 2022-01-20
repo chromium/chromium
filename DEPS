@@ -744,7 +744,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/rts/model/windows-amd64',
-          'version': '0nQFGsuKXelRjXokhWjrVt2y2A5ahbNku-FCZwuS8dMC',
+          'version': 'uaVq40dDbFhQ1GN2EH8oXHwjxwwQYxBWBWBOMjtgMGsC',
         },
       ],
       'dep_type': 'cipd',
