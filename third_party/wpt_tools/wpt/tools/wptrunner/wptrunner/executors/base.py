@@ -748,9 +748,15 @@ class WdspecProtocol(Protocol):
                           output_handler_start_kwargs=self.output_handler_start_kwargs)
         self.logger.info(
             "WebDriver HTTP server listening at %s" % self.server.url)
-        self.session_config = {"host": self.server.host,
-                               "port": self.server.port,
-                               "capabilities": self.capabilities}
+        self.session_config = {
+            "webdriver": {
+                "binary": self.webdriver_binary,
+                "args": self.webdriver_args
+            },
+            "host": self.server.host,
+            "port": self.server.port,
+            "capabilities": self.capabilities
+        }
 
     def after_connect(self):
         pass

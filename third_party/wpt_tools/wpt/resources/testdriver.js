@@ -506,7 +506,7 @@
         /**
          * Removes all the credentials stored in a virtual authenticator
          *
-         * Matches the `Remoce All Credentials
+         * Matches the `Remove All Credentials
          * <https://w3c.github.io/webauthn/#sctn-automation-remove-all-credentials>`_
          * WebDriver command.
          *

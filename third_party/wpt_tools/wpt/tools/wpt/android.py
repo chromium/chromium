@@ -88,8 +88,8 @@ def install_android_packages(logger, sdk_path, no_prompt=False):
         raise OSError("Can't find sdkmanager at %s" % sdk_manager_path)
 
     packages = ["platform-tools",
-                "build-tools;30.0.2",
-                "platforms;android-30",
+                "build-tools;31.0.0",
+                "platforms;android-31",
                 "emulator"]
 
     # TODO: make this work non-internactively
