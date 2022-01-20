@@ -166,9 +166,14 @@ class AppListClientImpl
   struct StateForNewUser {
     // Indicates whether showing the app list has been recorded.
     bool showing_recorded = false;
+    bool shown_in_tablet_mode = false;
 
     // Indicates whether any launcher action has been recorded.
     bool action_recorded = false;
+
+    // Indicates whether the metric to track whether the user took action when
+    // the launcher was first shown was recorded.
+    bool first_open_success_recorded = false;
   };
 
   // session_manager::SessionManagerObserver:

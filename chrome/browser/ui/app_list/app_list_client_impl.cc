@@ -113,9 +113,15 @@ AppListClientImpl::~AppListClientImpl() {
 
     // Prefer the function to the macro because the usage data is recorded no
     // more than once per second.
-    base::UmaHistogramEnumeration(
-        "Apps.AppListUsageByNewUsers",
-        AppListUsageStateByNewUsers::kNotUsedBeforeDestruction);
+    if (IsTabletMode()) {
+      base::UmaHistogramEnumeration(
+          "Apps.AppListUsageByNewUsers.TabletMode",
+          AppListUsageStateByNewUsers::kNotUsedBeforeDestruction);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Apps.AppListUsageByNewUsers.ClamshellMode",
+          AppListUsageStateByNewUsers::kNotUsedBeforeDestruction);
+    }
   }
 
   session_manager::SessionManager::Get()->RemoveObserver(this);
@@ -269,8 +275,6 @@ void AppListClientImpl::ViewClosing() {
 }
 
 void AppListClientImpl::ViewShown(int64_t display_id) {
-  MaybeRecordViewShown();
-
   if (current_model_updater_) {
     base::RecordAction(base::UserMetricsAction("Launcher_Show"));
     base::UmaHistogramSparse("Apps.AppListBadgedAppsCount",
@@ -337,8 +341,9 @@ void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
   // TODO(crbug.com/1258415): This is only used in the old launcher, and can be
   // removed once the productivity launcher is launched.
   if (visible && search_controller_ &&
-      !ash::features::IsProductivityLauncherEnabled())
+      !ash::features::IsProductivityLauncherEnabled()) {
     search_controller_->StartSearch(std::u16string());
+  }
 }
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
@@ -346,8 +351,27 @@ void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
   if (visible) {
     if (search_controller_)
       search_controller_->AppListShown();
+    MaybeRecordViewShown();
   } else if (current_model_updater_) {
     current_model_updater_->OnAppListHidden();
+
+    // Record whether user took action first time they opened the launcher.
+    // Note that this is recorded only on first user session (otherwise
+    // `state_for_new_user_` will not be set).
+    if (state_for_new_user_ && state_for_new_user_->showing_recorded &&
+        !state_for_new_user_->first_open_success_recorded) {
+      state_for_new_user_->first_open_success_recorded = true;
+
+      if (state_for_new_user_->shown_in_tablet_mode) {
+        base::UmaHistogramBoolean(
+            "Apps.AppList.SuccessfulFirstUsageByNewUsers.TabletMode",
+            state_for_new_user_->action_recorded);
+      } else {
+        base::UmaHistogramBoolean(
+            "Apps.AppList.SuccessfulFirstUsageByNewUsers.ClamshellMode",
+            state_for_new_user_->action_recorded);
+      }
+    }
   }
 }
 
@@ -380,9 +404,15 @@ void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
     if (!state_for_new_user_->showing_recorded) {
       // We assume that the previous user before switching was new if
       // `state_for_new_user_` is not null.
-      base::UmaHistogramEnumeration(
-          "Apps.AppListUsageByNewUsers",
-          AppListUsageStateByNewUsers::kNotUsedBeforeSwitchingAccounts);
+      if (IsTabletMode()) {
+        base::UmaHistogramEnumeration(
+            "Apps.AppListUsageByNewUsers.TabletMode",
+            AppListUsageStateByNewUsers::kNotUsedBeforeSwitchingAccounts);
+      } else {
+        base::UmaHistogramEnumeration(
+            "Apps.AppListUsageByNewUsers.ClamshellMode",
+            AppListUsageStateByNewUsers::kNotUsedBeforeSwitchingAccounts);
+      }
     }
     state_for_new_user_.reset();
   }
@@ -647,22 +677,37 @@ void AppListClientImpl::MaybeRecordViewShown() {
   }
 
   state_for_new_user_->showing_recorded = true;
+  state_for_new_user_->shown_in_tablet_mode = IsTabletMode();
 
   CHECK(new_user_session_activation_time_.has_value());
   const base::TimeDelta opening_duration =
       base::Time::Now() - *new_user_session_activation_time_;
+  // `base::Time` may skew. Therefore only record when the time duration is
+  // non-negative.
   if (opening_duration >= base::TimeDelta()) {
-    // `base::Time` may skew. Therefore only record when the time duration is
-    // non-negative.
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        /*name=*/
-        "Apps."
-        "TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
-        /*sample=*/opening_duration, kTimeMetricsMin, kTimeMetricsMax,
-        kTimeMetricsBucketCount);
+    if (state_for_new_user_->shown_in_tablet_mode) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          /*name=*/
+          "Apps."
+          "TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening."
+          "TabletMode",
+          /*sample=*/opening_duration, kTimeMetricsMin, kTimeMetricsMax,
+          kTimeMetricsBucketCount);
 
-    base::UmaHistogramEnumeration("Apps.AppListUsageByNewUsers",
-                                  AppListUsageStateByNewUsers::kUsed);
+      base::UmaHistogramEnumeration("Apps.AppListUsageByNewUsers.TabletMode",
+                                    AppListUsageStateByNewUsers::kUsed);
+    } else {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          /*name=*/
+          "Apps."
+          "TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening."
+          "ClamshellMode",
+          /*sample=*/opening_duration, kTimeMetricsMin, kTimeMetricsMax,
+          kTimeMetricsBucketCount);
+
+      base::UmaHistogramEnumeration("Apps.AppListUsageByNewUsers.ClamshellMode",
+                                    AppListUsageStateByNewUsers::kUsed);
+    }
   }
 }
 
@@ -716,6 +761,13 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   state_for_new_user_->action_recorded = true;
   base::UmaHistogramEnumeration("Apps.FirstLauncherActionByNewUsers",
                                 launched_from);
+  if (IsTabletMode()) {
+    base::UmaHistogramEnumeration(
+        "Apps.FirstLauncherActionByNewUsers.TabletMode", launched_from);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Apps.FirstLauncherActionByNewUsers.ClamshellMode", launched_from);
+  }
 
   DCHECK(new_user_session_activation_time_.has_value());
   const base::TimeDelta launcher_action_duration =
@@ -723,10 +775,20 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   if (launcher_action_duration >= base::TimeDelta()) {
     // `base::Time` may skew. Therefore only record when the time duration is
     // non-negative.
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        /*name=*/
-        "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction",
-        /*sample=*/launcher_action_duration, kTimeMetricsMin, kTimeMetricsMax,
-        kTimeMetricsBucketCount);
+    if (IsTabletMode()) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          /*name=*/
+          "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction."
+          "TabletMode",
+          /*sample=*/launcher_action_duration, kTimeMetricsMin, kTimeMetricsMax,
+          kTimeMetricsBucketCount);
+    } else {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          /*name=*/
+          "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction."
+          "ClamshellMode",
+          /*sample=*/launcher_action_duration, kTimeMetricsMin, kTimeMetricsMax,
+          kTimeMetricsBucketCount);
+    }
   }
 }

@@ -759,6 +759,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Apps.AppList.SuccessfulFirstUsageByNewUsers{TabletOrClamshell}"
+    enum="Boolean" expires_after="2022-12-19">
+  <owner>gzadina@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Whether the user successfully used the launcher when they opened it for the
+    first time. Successful usage entails launching an app, or search result from
+    the launcher UI. Only recorded in user session started after creating a new
+    account on the device. Split by whether the launcher was first shown in
+    clamshell or tablet mode.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
 <histogram name="Apps.AppList.SuggestedContent.Enabled" enum="BooleanEnabled"
     expires_after="2022-04-10">
   <owner>wrong@chromium.org</owner>
@@ -1465,8 +1480,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListUsageByNewUsers"
-    enum="AppListUsageStateByNewUsers" expires_after="2022-04-17">
+<histogram name="Apps.AppListUsageByNewUsers{TabletOrClamshell}"
+    enum="AppListUsageStateByNewUsers" expires_after="2022-12-19">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -1477,8 +1492,16 @@ chromium-metrics-reviews@google.com.
     be triggered by loging out accounts, shuting down the device or system
     crashes and meanwhile the current user is new (3) the launcher has never
     shown when the active user has changed and the previous active user was a
-    new user.
+    new user. Split depending on whether the device was in tablet or clamshell
+    mode when the metric was recorded.
   </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Apps.AppsCount.{AppType}" units="Apps"
@@ -1734,8 +1757,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.FirstLauncherActionByNewUsers" enum="AppListLaunchedFrom"
-    expires_after="2022-04-17">
+<histogram name="Apps.FirstLauncherActionByNewUsers{TabletOrClamshell}"
+    enum="AppListLaunchedFrom" expires_after="2022-04-17">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -1743,8 +1766,16 @@ chromium-metrics-reviews@google.com.
     session. Launcher actions include the following: activating a launcher app
     and opening a search result from either a launcher suggestion chip or the
     search box. The metric is recorded when a launcher action performs on a new
-    user's session for the first time.
+    user's session for the first time. Split depending on whether the first
+    launcher action occurred in clamshell or tablet mode.
   </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram
@@ -2452,7 +2483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction"
+    name="Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction{TabletOrClamshell}"
     units="ms" expires_after="2022-04-17">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2463,10 +2494,17 @@ chromium-metrics-reviews@google.com.
     chip or the search box. This metric is recorded when a new user triggers the
     launcher action for the first time.
   </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram
-    name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening"
+    name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening{TabletOrClamshell}"
     units="ms" expires_after="2022-04-10">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2475,6 +2513,13 @@ chromium-metrics-reviews@google.com.
     the first time on a new user session. This metric is recorded when a new
     user opens the laucnher for the first time.
   </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Apps.UsageTime.{AppType}" units="ms"

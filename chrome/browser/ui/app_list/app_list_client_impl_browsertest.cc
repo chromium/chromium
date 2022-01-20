@@ -301,21 +301,23 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   ASSERT_TRUE(item);
   client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0);
   histogram_tester.ExpectBucketCount(
-      "Apps.FirstLauncherActionByNewUsers",
+      "Apps.FirstLauncherActionByNewUsers.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromGrid),
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction",
+      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction."
+      "ClamshellMode",
       /*expected_bucket_count=*/1);
 
   // Verify that only the first app activation is recorded.
   client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0);
   histogram_tester.ExpectBucketCount(
-      "Apps.FirstLauncherActionByNewUsers",
+      "Apps.FirstLauncherActionByNewUsers.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromGrid),
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction",
+      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction."
+      "ClamshellMode",
       /*expected_bucket_count=*/1);
 }
 
@@ -415,11 +417,12 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
 
   // Verify that opening the app result is recorded.
   histogram_tester.ExpectBucketCount(
-      "Apps.FirstLauncherActionByNewUsers",
+      "Apps.FirstLauncherActionByNewUsers.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromSearchBox),
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction",
+      "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction."
+      "ClamshellMode",
       /*expected_bucket_count=*/1);
 
   // App list should be dismissed.
@@ -699,10 +702,11 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester tester;
   ShowAppListAndVerify();
   tester.ExpectTotalCount(
-      "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
+      "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening."
+      "ClamshellMode",
       1);
   tester.ExpectBucketCount(
-      "Apps.AppListUsageByNewUsers",
+      "Apps.AppListUsageByNewUsers.ClamshellMode",
       static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::kUsed),
       1);
 }
@@ -718,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester tester;
   AddUser(registered_user_id_);
   tester.ExpectBucketCount(
-      "Apps.AppListUsageByNewUsers",
+      "Apps.AppListUsageByNewUsers.ClamshellMode",
       static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::
                            kNotUsedBeforeSwitchingAccounts),
       1);
@@ -726,10 +730,11 @@ IN_PROC_BROWSER_TEST_F(
   // Verify that the metric is not recorded.
   ShowAppListAndVerify();
   tester.ExpectTotalCount(
-      "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
+      "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening."
+      "ClamshellMode",
       0);
   tester.ExpectBucketCount(
-      "Apps.AppListUsageByNewUsers",
+      "Apps.AppListUsageByNewUsers.ClamshellMode",
       static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::kUsed),
       0);
 }
@@ -749,10 +754,11 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester tester;
   ShowAppListAndVerify();
   tester.ExpectTotalCount(
-      "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening",
+      "Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening."
+      "ClamshellMode",
       0);
   tester.ExpectBucketCount(
-      "Apps.AppListUsageByNewUsers",
+      "Apps.AppListUsageByNewUsers.ClamshellMode",
       static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::kUsed),
       0);
 }
@@ -775,7 +781,7 @@ class DurationBetweenSeesionActivationAndFirstLauncherShowingShutdownTest
 
   void TearDown() override {
     histogram_tester_->ExpectBucketCount(
-        "Apps.AppListUsageByNewUsers",
+        "Apps.AppListUsageByNewUsers.ClamshellMode",
         static_cast<int>(AppListClientImpl::AppListUsageStateByNewUsers::
                              kNotUsedBeforeDestruction),
         1);
