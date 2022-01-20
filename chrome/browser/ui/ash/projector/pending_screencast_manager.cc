@@ -168,7 +168,7 @@ PendingSreencastManager::~PendingSreencastManager() {
   if (session_manager) {
     session_manager->RemoveObserver(this);
     auto* drivefs_host = GetDriveFsHostForActiveProfile();
-    if (drivefs_host)
+    if (observed_drive_fs_host_ && drivefs_host)
       drivefs_host->RemoveObserver(this);
   }
 }
@@ -218,14 +218,19 @@ void PendingSreencastManager::OnSyncingStatusUpdate(
 void PendingSreencastManager::OnError(const drivefs::mojom::DriveError& error) {
 }
 
-void PendingSreencastManager::OnUserSessionStarted(bool is_primary_user) {
+void PendingSreencastManager::OnUserProfileLoaded(const AccountId& account_id) {
+  if (observed_drive_fs_host_)
+    return;
+
   auto* profile = ProfileManager::GetActiveUserProfile();
   if (!IsProjectorAllowedForProfile(profile))
     return;
 
   auto* drivefs_host = GetDriveFsHostForActiveProfile();
-  if (drivefs_host)
+  if (drivefs_host) {
     GetDriveFsHostForActiveProfile()->AddObserver(this);
+    observed_drive_fs_host_ = true;
+  }
 }
 
 const ash::PendingScreencastSet&

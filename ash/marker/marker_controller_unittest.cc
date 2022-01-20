@@ -9,6 +9,7 @@
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -39,18 +40,21 @@ class MarkerControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kProjector,
+                              features::kProjectorManagedUser},
+        /*disabled_features=*/{});
     AshTestBase::SetUp();
     observer_ = std::make_unique<TestMarkerObserver>();
-    controller_ = std::make_unique<MarkerController>();
+    controller_ = MarkerController::Get();
     controller_test_api_ =
-        std::make_unique<MarkerControllerTestApi>(controller_.get());
+        std::make_unique<MarkerControllerTestApi>(controller_);
   }
 
   void TearDown() override {
     // This needs to be called first to remove the event handler before the
     // shell instance gets torn down.
     controller_test_api_.reset();
-    controller_.reset();
     AshTestBase::TearDown();
   }
 
@@ -166,7 +170,8 @@ class MarkerControllerTest : public AshTestBase {
 
   TestMarkerObserver* observer() { return observer_.get(); }
 
-  std::unique_ptr<MarkerController> controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  MarkerController* controller_;
   std::unique_ptr<MarkerControllerTestApi> controller_test_api_;
   std::unique_ptr<TestMarkerObserver> observer_;
 };

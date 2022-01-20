@@ -45,7 +45,7 @@ class PendingSreencastManager : public session_manager::SessionManagerObserver,
   void OnError(const drivefs::mojom::DriveError& error) override;
 
   // session_manager::SessionManagerObserver:
-  void OnUserSessionStarted(bool is_primary_user) override;
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // Returns a list of pending screencast from `pending_screencast_cache_`.
   const ash::PendingScreencastSet& GetPendingScreencasts() const;
@@ -63,6 +63,9 @@ class PendingSreencastManager : public session_manager::SessionManagerObserver,
 
   // A blocking task runner for file IO operations.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+
+  // True if DriveFS host has been observed.
+  bool observed_drive_fs_host_ = false;
 
   base::WeakPtrFactory<PendingSreencastManager> weak_ptr_factory_{this};
 };

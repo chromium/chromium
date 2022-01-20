@@ -331,7 +331,9 @@ bool ProjectorControllerImpl::IsAnnotatorEnabled() {
 }
 
 void ProjectorControllerImpl::OnNewScreencastPreconditionChanged() {
-  client_->OnNewScreencastPreconditionChanged(GetNewScreencastPrecondition());
+  // `client_` could be not available in unit tests.
+  if (client_)
+    client_->OnNewScreencastPreconditionChanged(GetNewScreencastPrecondition());
 }
 
 void ProjectorControllerImpl::SetProjectorUiControllerForTest(
