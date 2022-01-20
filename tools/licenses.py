@@ -624,14 +624,15 @@ def FindThirdPartyDeps(gn_out_dir, gn_target, target_os):
       if isinstance(gn_deps, bytes):
         gn_deps = gn_deps.decode("utf-8")
   except:
-    print("""
-    ############################################################################
+    if sys.platform == 'win32':
+      print("""
+      ############################################################################
 
-    This is known issue, please report the failure to https://crbug.com/1208393.
+      This is known issue, please report the failure to https://crbug.com/1208393.
 
-    ############################################################################
-    """)
-    subprocess.check_call(['tasklist.exe'])
+      ############################################################################
+      """)
+      subprocess.check_call(['tasklist.exe'])
     raise
 
   return GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os)
