@@ -376,6 +376,19 @@ inline FuchsiaLogSeverity LogSeverityToFuchsiaLogSeverity(
 }
 #endif  // defined (OS_FUCHSIA)
 
+void WriteToFd(int fd, const char* data, size_t length) {
+  size_t bytes_written = 0;
+  int rv;
+  while (bytes_written < length) {
+    rv = HANDLE_EINTR(write(fd, data + bytes_written, length - bytes_written));
+    if (rv < 0) {
+      // Give up, nothing we can do now.
+      break;
+    }
+    bytes_written += rv;
+  }
+}
+
 }  // namespace
 
 #if defined(DCHECK_IS_CONFIGURABLE)
@@ -813,8 +826,18 @@ LogMessage::~LogMessage() {
   }
 
   if (ShouldLogToStderr(severity_)) {
-    ignore_result(fwrite(str_newline.data(), str_newline.size(), 1, stderr));
-    fflush(stderr);
+    // Not using fwrite() here, as there are crashes on Windows when CRT calls
+    // malloc() internally, triggering an OOM crash. This likely means that the
+    // process is close to OOM, but at least get the proper error message out,
+    // and give the caller a chance to free() up some resources. For instance if
+    // the calling code is:
+    //
+    // allocate_something();
+    // if (!TryToDoSomething()) {
+    //   LOG(ERROR) << "Something went wrong";
+    //   free_something();
+    // }
+    WriteToFd(STDERR_FILENO, str_newline.data(), str_newline.size());
   }
 
   if ((g_logging_destination & LOG_TO_FILE) != 0) {
@@ -1103,21 +1126,11 @@ void ScopedLoggingSettings::SetLogFormat(LogFormat log_format) const {
 
 void RawLog(int level, const char* message) {
   if (level >= g_min_log_level && message) {
-    size_t bytes_written = 0;
     const size_t message_len = strlen(message);
-    int rv;
-    while (bytes_written < message_len) {
-      rv = HANDLE_EINTR(
-          write(STDERR_FILENO, message + bytes_written,
-                message_len - bytes_written));
-      if (rv < 0) {
-        // Give up, nothing we can do now.
-        break;
-      }
-      bytes_written += rv;
-    }
+    WriteToFd(STDERR_FILENO, message, message_len);
 
     if (message_len > 0 && message[message_len - 1] != '\n') {
+      int rv;
       do {
         rv = HANDLE_EINTR(write(STDERR_FILENO, "\n", 1));
         if (rv < 0) {
