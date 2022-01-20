@@ -1981,6 +1981,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE" desc="Label for light color mode setting">
         Light
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_LABEL" desc="Label for the Avatar page in Personalization app.">
+        Avatar
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screensaver page in Personalization app.">
+        Screensaver
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

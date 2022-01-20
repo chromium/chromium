@@ -15,7 +15,7 @@ import './styles.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CurrentWallpaper, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
-import {PersonalizationRouter} from '../personalization_router_element.js';
+import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
 
@@ -67,10 +67,10 @@ export class WallpaperPreview extends WithPersonalizationStore {
   }
 
   /**
-   * Reload at the wallpaper collections page.
+   * Navigate to wallpaper collections page.
    */
-  private onClickWallpaper_() {
-    PersonalizationRouter.reloadAtWallpaper();
+  onClickWallpaper_() {
+    PersonalizationRouter.instance().goToRoute(Paths.Collections);
   }
 
   /**

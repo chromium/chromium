@@ -24,7 +24,7 @@ export enum Paths {
   User = '/user',
 }
 
-function isPersonalizationHubEnabled(): boolean {
+export function isPersonalizationHubEnabled(): boolean {
   return loadTimeData.getBoolean('isPersonalizationHubEnabled');
 }
 
@@ -141,6 +141,10 @@ export class PersonalizationRouter extends PolymerElement {
 
   private shouldShowWallpaperSubpage_(path: string|null): boolean {
     return !!path?.startsWith(Paths.Collections);
+  }
+
+  private shouldShowBreadcrumb_(path: string|null): boolean {
+    return path !== Paths.Root;
   }
 }
 

@@ -1,20 +1,33 @@
 <style>
   #container {
+    display: flex;
+    flex-flow: column nowrap;
     height: 100%;
     position: relative;
     width: 100%;
   }
-  #wallpaperContainer {
+  #breadcrumbArea {
     display: grid;
     grid-template-areas:
-      '. leftspacer breadcrumb rightspacer .'
+      '. . breadcrumb . .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: 56px;
+    position: relative;
+    width: 100%;
+  }
+  personalization-breadcrumb {
+    grid-area: breadcrumb;
+  }
+  #wallpaperContainer {
+    display: grid;
+    flex-grow: 1;
+    grid-template-areas:
       '. leftspacer selected   rightspacer .'
       '. leftspacer .          rightspacer .'
       '. leftspacer imagegrid  rightspacer .'
       '. leftspacer .          rightspacer .';
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
-    grid-template-rows: 56px 172px 12px 1fr 12px;
-    height: 100%;
+    grid-template-rows: 172px 12px 1fr 12px;
     position: relative;
     width: 100%;
   }
@@ -23,9 +36,6 @@
   }
   #rightspacer {
     grid-area: rightspacer;
-  }
-  personalization-breadcrumb {
-    grid-area: breadcrumb;
   }
   wallpaper-selected {
     grid-area: selected;
@@ -59,6 +69,14 @@
   <iron-query-params params-object="{{queryParams_}}"
     params-string="{{query_}}">
   </iron-query-params>
+  <template is="dom-if" if="[[shouldShowBreadcrumb_(path_)]]">
+    <div id="breadcrumbArea">
+      <personalization-breadcrumb path="[[path_]]"
+          collection-id="[[queryParams_.id]]"
+          google-photos-album-id="[[queryParams_.googlePhotosAlbumId]]">
+      </personalization-breadcrumb>
+    </div>
+  </template>
   <template is="dom-if" if="[[shouldShowRootPage_(path_)]]">
     <personalization-main></personalization-main>
   </template>
@@ -72,10 +90,6 @@
     <div id="wallpaperContainer">
       <!-- Prevent left margin from collapsing on narrow window in RTL -->
       <div id="leftspacer"></div>
-      <personalization-breadcrumb path="[[path_]]"
-          collection-id="[[queryParams_.id]]"
-          google-photos-album-id="[[queryParams_.googlePhotosAlbumId]]">
-      </personalization-breadcrumb>
       <wallpaper-selected path="[[path_]]" collection-id="[[queryParams_.id]]">
       </wallpaper-selected>
       <!-- do not use hidden$ here - need to listen on property change in

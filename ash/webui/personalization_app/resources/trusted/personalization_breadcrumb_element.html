@@ -44,15 +44,21 @@
 <div id="container">
   <template is="dom-if" if="[[showBackButton_]]">
     <cr-icon-button aria-label="[[getBackButtonAriaLabel_()]]" id="backButton"
-      class="icon-arrow-back" role="button" on-click="onBackClick_">
+        class="icon-arrow-back" role="button" on-click="onBackClick_">
     </cr-icon-button>
   </template>
   <div id="breadcrumbContainer">
+    <template is="dom-if" if="[[showHomeButton_()]]">
+      <cr-icon-button id="homeButton"
+          iron-icon="personalization:home" role="button" on-click="onHomeIconClick_">
+      </cr-icon-button>
+      <iron-icon icon="cr:chevron-right" aria-hidden$="true"></iron-icon>
+    </template>
     <template is="dom-repeat" items="[[breadcrumbs_]]" as="breadcrumb">
       <template is="dom-if" if="[[index]]">
         <iron-icon icon="cr:chevron-right" aria-hidden$="true"></iron-icon>
       </template>
-      <p class="breadcrumb" on-click="onBreadcrumbClick_">[[breadcrumb]]</p>
+      <p class="breadcrumb" id="breadcrumb[[index]]" on-click="onBreadcrumbClick_">[[breadcrumb]]</p>
     </template>
   </div>
 </div>
