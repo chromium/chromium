@@ -10,14 +10,14 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "mojo/core/embedder/embedder.h"  // nogncheck
 #endif
 
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   mojo::core::Init();
 #endif
 

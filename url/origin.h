@@ -25,7 +25,7 @@
 #include "url/url_canon.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 
 namespace base {
@@ -36,7 +36,7 @@ template <typename>
 class JavaRef;
 }  // namespace android
 }  // namespace base
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class GURL;
 
@@ -298,11 +298,11 @@ class COMPONENT_EXPORT(URL) Origin {
   // and precursor information.
   std::string GetDebugString(bool include_nonce = true) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
   static Origin FromJavaObject(
       const base::android::JavaRef<jobject>& java_origin);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
