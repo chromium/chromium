@@ -262,6 +262,7 @@ src/webgpu/shader/execution/builtin/float_built_functions.spec.ts
 src/webgpu/shader/execution/builtin/floor.spec.ts
 src/webgpu/shader/execution/builtin/fract.spec.ts
 src/webgpu/shader/execution/builtin/integer_built_in_functions.spec.ts
+src/webgpu/shader/execution/builtin/inversesqrt.spec.ts
 src/webgpu/shader/execution/builtin/logical_built_in_functions.spec.ts
 src/webgpu/shader/execution/builtin/min.spec.ts
 src/webgpu/shader/execution/builtin/select.spec.ts
