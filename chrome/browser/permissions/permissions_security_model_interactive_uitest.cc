@@ -3,25 +3,31 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/embedder_support/switches.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
@@ -120,6 +126,20 @@ content::RenderFrameHost* EmbedIframeFromURL(
   return iframe_rfh;
 }
 
+content::WebContents* OpenPopup(Browser* browser, const GURL& url) {
+  content::WebContents* contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  content::ExecuteScriptAsync(
+      contents, content::JsReplace("window.open($1, '', '[]');", url));
+  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_NE(popup, browser);
+  content::WebContents* popup_contents =
+      popup->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetMainFrame()));
+  WaitForLoadStop(popup_contents);
+  return popup_contents;
+}
+
 constexpr char kCheckNotifications[] = R"((async () => {
        const PermissionStatus = await navigator.permissions.query({name:
        'notifications'}); return PermissionStatus.state === 'granted';
@@ -174,20 +194,6 @@ class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
   }
 
  protected:
-  content::WebContents* OpenPopup(Browser* browser, const GURL& url) const {
-    content::WebContents* contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    content::ExecuteScriptAsync(
-        contents, content::JsReplace("window.open($1, '', '[]');", url));
-    Browser* popup = ui_test_utils::WaitForBrowserToOpen();
-    EXPECT_NE(popup, browser);
-    content::WebContents* popup_contents =
-        popup->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetMainFrame()));
-    WaitForLoadStop(popup_contents);
-    return popup_contents;
-  }
-
   void VerifyPermissionsAllowed(content::WebContents* web_contents,
                                 const std::string& request_permission_script,
                                 const std::string& check_permission_script) {
@@ -225,6 +231,7 @@ class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
         content::EvalJs(main_rfh, check_permission_script).value.GetBool());
   }
 
+  // `test_rfh` is either an embedded iframe or an external popup window.
   void VerifyPermission(content::WebContents* opener_or_embedder_contents,
                         content::RenderFrameHost* test_rfh,
                         const std::string& request_permission_script,
@@ -1143,4 +1150,133 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPortalTest,
   // granted to `portal_contents` as well because they have the same origin.
   VerifyPermissionsAlreadyGranted(portal_contents);
 }
+
+class PermissionRequestWithPrerendererTest
+    : public PermissionsSecurityModelInteractiveUITest {
+ public:
+  PermissionRequestWithPrerendererTest()
+      : prerender_helper_(base::BindRepeating(
+            &PermissionRequestWithPrerendererTest::GetActiveWebContents,
+            base::Unretained(this))) {}
+
+  ~PermissionRequestWithPrerendererTest() override = default;
+
+  PermissionRequestWithPrerendererTest(
+      const PermissionRequestWithPrerendererTest&) = delete;
+  PermissionRequestWithPrerendererTest& operator=(
+      const PermissionRequestWithPrerendererTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PermissionsSecurityModelInteractiveUITest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromDirectory(
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
+    PermissionsSecurityModelInteractiveUITest::SetUpOnMainThread();
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
+                       PermissionsRequestedFromPrerendererTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  EXPECT_FALSE(
+      GetActiveWebContents()->GetMainFrame()->IsInactiveAndDisallowActivation(
+          content::DisallowActivationReasonId::kRequestPermission));
+
+  // Start a prerender.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/prerenderer_geolocation_test.html");
+  prerender_helper().AddPrerender(prerender_url);
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+
+  content::RenderFrameHost* prerender_render_frame_host =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+
+  ASSERT_TRUE(prerender_render_frame_host);
+
+  // The main frame of an outer document is not a prerenderer.
+  EXPECT_FALSE(
+      GetActiveWebContents()->GetMainFrame()->IsInactiveAndDisallowActivation(
+          content::DisallowActivationReasonId::kRequestPermission));
+
+  // The main frame of a newly created frame tree is a prerenderer. It is
+  // inactive, all permission requests should be automatically denied.
+  // (crbug.com/1126305): Do not use RFH::IsInactiveAndDisallowActivation() as
+  // it will stop prerendering process.
+  EXPECT_EQ(prerender_render_frame_host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPrerendering);
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(
+          GetActiveWebContents());
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  // Enable auto-accept of a permission request.
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  EXPECT_EQ(
+      true,
+      content::ExecJs(
+          prerender_render_frame_host, "accessGeolocation();",
+          content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE |
+              content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  // Run a event loop so the page can fail the test.
+  EXPECT_TRUE(content::ExecJs(prerender_render_frame_host, "runLoop();"));
+
+  // Avoid race conditions, which can lead to a situation where we check for a
+  // permission prompt before it was shown.
+  base::RunLoop().RunUntilIdle();
+  // `accessGeolocation` will request Geolocation permission which should be
+  // automatically accepted, but it will not happen here, because the
+  // permissions API is deferred in Prerenderer.
+  EXPECT_EQ(0, bubble_factory->TotalRequestCount());
+
+  // Activate the prerenderer.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  EXPECT_EQ(prerender_render_frame_host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
+  // Wait for the completion of `accessGeolocation`.
+  EXPECT_EQ(true, content::EvalJs(prerender_render_frame_host, "result;"));
+  // Check the event sequence seen in the prerendered page.
+  content::EvalJsResult results =
+      content::EvalJs(prerender_render_frame_host, "eventsSeen");
+  std::vector<std::string> eventsSeen;
+  base::Value resultsList = results.ExtractList();
+  for (auto& result : resultsList.GetList())
+    eventsSeen.push_back(result.GetString());
+  EXPECT_THAT(eventsSeen, testing::ElementsAreArray(
+                              {"accessGeolocation (prerendering: true)",
+                               "prerenderingchange (prerendering: false)",
+                               "getCurrentPosition (prerendering: false)"}));
+
+  // Wait until a permission prompt is resolved.
+  base::RunLoop().RunUntilIdle();
+  // After the prerenderer activation, a deferred permission request will be
+  // displayed.
+  EXPECT_EQ(1, bubble_factory->TotalRequestCount());
+}
+
 }  // anonymous namespace
