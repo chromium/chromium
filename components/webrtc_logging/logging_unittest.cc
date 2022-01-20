@@ -78,7 +78,7 @@ static bool Initialize(int verbosity_level) {
 
 // LibjingleLogTest fail on Android (crbug.com/843104) and Fuchsia
 // (crbug.com/1241660).
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_WebRtcTextLogTest DISABLED_WebRtcTextLogTest
 #else
 #define MAYBE_WebRtcTextLogTest WebRtcTextLogTest

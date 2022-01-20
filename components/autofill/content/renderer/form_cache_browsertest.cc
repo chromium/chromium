@@ -773,7 +773,7 @@ TEST_P(FormCacheIframeBrowserTest, FrameLimit) {
 //   empty FormData::child_frames,
 // - the forms [kMaxParseableFields, end) should be skipped.
 // TODO(https://crbug.com/1287782): Flaky on android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FieldAndFrameLimit DISABLED_FieldAndFrameLimit
 #else
 #define MAYBE_FieldAndFrameLimit FieldAndFrameLimit
