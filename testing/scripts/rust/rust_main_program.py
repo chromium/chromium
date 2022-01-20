@@ -42,10 +42,16 @@ def _scrape_test_list(output, test_executable_name):
         A list of strings - a list of all test names.
     """
     TEST_SUFFIX = ': test'
-    test_case_names = [
-        line[:-len(TEST_SUFFIX)] for line in output.splitlines()
-        if line.endswith(TEST_SUFFIX)
-    ]
+    BENCHMARK_SUFFIX = ': benchmark'
+    test_case_names = []
+    for line in output.splitlines():
+        if line.endswith(TEST_SUFFIX):
+            test_case_names.append(line[:-len(TEST_SUFFIX)])
+        elif line.endswith(BENCHMARK_SUFFIX):
+            continue
+        else:
+            raise ValueError(
+                "Unexpected format of a list of tests: {}".format(output))
     test_names = [
         _format_test_name(test_executable_name, test_case_name)
         for test_case_name in test_case_names

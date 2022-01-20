@@ -23,10 +23,25 @@ class Tests(fake_filesystem_unittest.TestCase):
         test_input = """
 test_foo: test
 test_bar: test
+test_benchmark: benchmark
         """.strip()
         actual_results = _scrape_test_list(test_input, 'test_exe_name')
         expected_results = ['test_exe_name/test_foo', 'test_exe_name/test_bar']
         self.assertEqual(actual_results, expected_results)
+
+    # https://crbug.com/1281664 meant that Rust executables might
+    # incorrectly think that they were invoked with no cmdline args.
+    # Back then we didn't realize that out test wrappers broken :-(.
+    # The test below tries to ensure this won't happen again.
+    def test_scrape_test_list_with_unexpected_lines(self):
+        test_input = """
+running 1 test
+test test_hello ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+        """.strip()
+        with self.assertRaises(ValueError):
+            _scrape_test_list(test_input, 'test_exe_name')
 
     def test_scrape_test_results(self):
         test_input = """
