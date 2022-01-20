@@ -215,17 +215,4 @@ TEST_F(SecurityInterstitialTabHelperTest, NavigationDoesNotCommit) {
   EXPECT_TRUE(committed_blocking_page_destroyed);
 }
 
-// Tests that a security interstital created for a non-primary main frame
-// navigation is immediately discarded.
-TEST_F(SecurityInterstitialTabHelperTest, DiscardedOnNonPrimaryMainFrame) {
-  std::unique_ptr<content::MockNavigationHandle> blocking_page_handle =
-      CreateHandle(true, false);
-  blocking_page_handle->set_is_in_primary_main_frame(false);
-  bool blocking_page_destroyed = false;
-  CreateAssociatedBlockingPage(blocking_page_handle.get(),
-                               &blocking_page_destroyed);
-  // Interstitial should be discarded immediately.
-  EXPECT_TRUE(blocking_page_destroyed);
-}
-
 }  // namespace security_interstitials
