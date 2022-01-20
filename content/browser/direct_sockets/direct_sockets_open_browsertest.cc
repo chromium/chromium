@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -172,8 +173,9 @@ class MockHostResolver : public network::mojom::HostResolver {
     int rv = internal_request_->Start(
         base::BindOnce(&MockHostResolver::OnComplete, base::Unretained(this)));
     if (rv != net::ERR_IO_PENDING) {
-      response_client->OnComplete(rv, internal_request_->GetResolveErrorInfo(),
-                                  internal_request_->GetAddressResults());
+      response_client->OnComplete(
+          rv, internal_request_->GetResolveErrorInfo(),
+          base::OptionalFromPtr(internal_request_->GetAddressResults()));
       return;
     }
 
@@ -193,9 +195,9 @@ class MockHostResolver : public network::mojom::HostResolver {
     DCHECK(response_client_.is_bound());
     DCHECK(internal_request_);
 
-    response_client_->OnComplete(error,
-                                 internal_request_->GetResolveErrorInfo(),
-                                 internal_request_->GetAddressResults());
+    response_client_->OnComplete(
+        error, internal_request_->GetResolveErrorInfo(),
+        base::OptionalFromPtr(internal_request_->GetAddressResults()));
     response_client_.reset();
   }
 

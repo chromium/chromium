@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/no_destructor.h"
+#include "base/stl_util.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
@@ -60,7 +60,8 @@ int ResolveHostRequest::Start(
   mojo::Remote<mojom::ResolveHostClient> response_client(
       std::move(pending_response_client));
   if (rv != net::ERR_IO_PENDING) {
-    response_client->OnComplete(rv, GetResolveErrorInfo(), GetAddressResults());
+    response_client->OnComplete(rv, GetResolveErrorInfo(),
+                                base::OptionalFromPtr(GetAddressResults()));
     return rv;
   }
 
@@ -97,7 +98,7 @@ void ResolveHostRequest::OnComplete(int error) {
   control_handle_receiver_.reset();
   SignalNonAddressResults();
   response_client_->OnComplete(error, GetResolveErrorInfo(),
-                               GetAddressResults());
+                               base::OptionalFromPtr(GetAddressResults()));
   response_client_.reset();
 
   // Invoke completion callback last as it may delete |this|.
@@ -113,12 +114,9 @@ net::ResolveErrorInfo ResolveHostRequest::GetResolveErrorInfo() const {
   return internal_request_->GetResolveErrorInfo();
 }
 
-const absl::optional<net::AddressList>& ResolveHostRequest::GetAddressResults()
-    const {
+const net::AddressList* ResolveHostRequest::GetAddressResults() const {
   if (cancelled_) {
-    static base::NoDestructor<absl::optional<net::AddressList>>
-        cancelled_result(absl::nullopt);
-    return *cancelled_result;
+    return nullptr;
   }
 
   DCHECK(internal_request_);

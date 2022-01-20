@@ -14,6 +14,7 @@
 #include "base/immediate_crash.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
@@ -46,14 +47,10 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
   int Start(CompletionOnceCallback callback) override { return error_; }
   int Start() override { return error_; }
 
-  const absl::optional<AddressList>& GetAddressResults() const override {
-    static base::NoDestructor<absl::optional<AddressList>> nullopt_result;
-    return *nullopt_result;
-  }
+  AddressList* GetAddressResults() const override { return nullptr; }
 
-  absl::optional<std::vector<HostResolverEndpointResult>> GetEndpointResults()
-      const override {
-    return absl::nullopt;
+  std::vector<HostResolverEndpointResult>* GetEndpointResults() const override {
+    return nullptr;
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()
@@ -87,6 +84,10 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
  private:
   const int error_;
 };
+
+bool EndpointResultIsNonProtocol(const HostResolverEndpointResult& result) {
+  return result.metadata.supported_protocol_alpns.empty();
+}
 
 }  // namespace
 
@@ -269,6 +270,25 @@ HostResolver::AddressListToEndpointResults(const AddressList& address_list) {
 
   std::vector<HostResolverEndpointResult> list;
   list.push_back(std::move(connection_endpoint));
+  return list;
+}
+
+// static
+AddressList HostResolver::EndpointResultToAddressList(
+    const std::vector<HostResolverEndpointResult>& endpoints,
+    const std::set<std::string>& aliases) {
+  AddressList list;
+
+  auto non_protocol_endpoint =
+      base::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
+  if (non_protocol_endpoint == endpoints.end())
+    return list;
+
+  list.endpoints() = non_protocol_endpoint->ip_endpoints;
+
+  std::vector<std::string> aliases_vector(aliases.begin(), aliases.end());
+  list.SetDnsAliases(std::move(aliases_vector));
+
   return list;
 }
 

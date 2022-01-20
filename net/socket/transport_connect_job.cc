@@ -330,7 +330,7 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
     OnHostResolutionCallbackResult callback_result =
         params_->host_resolution_callback().Run(
             ToLegacyDestinationEndpoint(params_->destination()),
-            request_->GetAddressResults().value());
+            *request_->GetAddressResults());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&TransportConnectJob::OnIOComplete,
@@ -350,20 +350,19 @@ int TransportConnectJob::DoTransportConnect() {
     socket_performance_watcher =
         socket_performance_watcher_factory()->CreateSocketPerformanceWatcher(
             SocketPerformanceWatcherFactory::PROTOCOL_TCP,
-            request_->GetAddressResults().value());
+            *request_->GetAddressResults());
   }
   transport_socket_ = client_socket_factory()->CreateTransportClientSocket(
-      request_->GetAddressResults().value(),
-      std::move(socket_performance_watcher), network_quality_estimator(),
-      net_log().net_log(), net_log().source());
+      *request_->GetAddressResults(), std::move(socket_performance_watcher),
+      network_quality_estimator(), net_log().net_log(), net_log().source());
 
   // If the list contains IPv6 and IPv4 addresses, and the first address
   // is IPv6, the IPv4 addresses will be tried as fallback addresses, per
   // "Happy Eyeballs" (RFC 6555).
   bool try_ipv6_connect_with_ipv4_fallback =
-      request_->GetAddressResults().value().front().GetFamily() ==
+      request_->GetAddressResults()->front().GetFamily() ==
           ADDRESS_FAMILY_IPV6 &&
-      !AddressListOnlyContainsIPv6(request_->GetAddressResults().value());
+      !AddressListOnlyContainsIPv6(*request_->GetAddressResults());
 
   transport_socket_->ApplySocketTag(socket_tag());
 
@@ -403,7 +402,7 @@ int TransportConnectJob::DoTransportConnectComplete(bool is_fallback,
 
   if (result == OK) {
     DCHECK(request_);
-    const AddressList& addresses = request_->GetAddressResults().value();
+    const AddressList& addresses = *request_->GetAddressResults();
     bool is_ipv4 = addresses.front().GetFamily() == ADDRESS_FAMILY_IPV4;
     RaceResult race_result = RACE_UNKNOWN;
     if (is_fallback) {
@@ -439,7 +438,7 @@ void TransportConnectJob::OnIPv6FallbackTimerComplete() {
 
   DCHECK(!fallback_transport_socket_.get());
 
-  AddressList fallback_addresses = request_->GetAddressResults().value();
+  AddressList fallback_addresses = *request_->GetAddressResults();
   MakeAddressListStartWithIPv4(&fallback_addresses);
 
   // Create a |SocketPerformanceWatcher|, and pass the ownership.

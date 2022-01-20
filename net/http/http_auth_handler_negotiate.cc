@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -361,11 +362,15 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalNameComplete(int rv) {
   std::string server = scheme_host_port_.host();
   if (resolve_host_request_) {
     if (rv == OK) {
-      DCHECK(resolve_host_request_->GetAddressResults());
-      const std::string& canonical_name =
-          resolve_host_request_->GetAddressResults().value().GetCanonicalName();
-      if (!canonical_name.empty())
-        server = canonical_name;
+      // Expect at most a single DNS alias representing the canonical name
+      // because the `HostResolver` request was made with
+      // `include_canonical_name`.
+      DCHECK(resolve_host_request_->GetDnsAliasResults());
+      DCHECK_LE(resolve_host_request_->GetDnsAliasResults()->size(), 1u);
+      if (!resolve_host_request_->GetDnsAliasResults()->empty()) {
+        server = *resolve_host_request_->GetDnsAliasResults()->begin();
+        DCHECK(!server.empty());
+      }
     } else {
       // Even in the error case, try to use origin_.host instead of
       // passing the failure on to the caller.

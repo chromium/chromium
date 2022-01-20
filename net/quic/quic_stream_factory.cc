@@ -451,10 +451,10 @@ class QuicStreamFactory::Job {
       return false;
 
     std::vector<net::IPEndPoint> endpoints =
-        fresh_resolve_host_request_->GetAddressResults().value().endpoints();
+        fresh_resolve_host_request_->GetAddressResults()->endpoints();
 
     IPEndPoint stale_address =
-        resolve_host_request_->GetAddressResults().value().front();
+        resolve_host_request_->GetAddressResults()->front();
 
     if (std::find(endpoints.begin(), endpoints.end(), stale_address) !=
         endpoints.end()) {
@@ -643,8 +643,7 @@ void QuicStreamFactory::Job::OnResolveHostComplete(int rv) {
       resolve_host_request_ = std::move(fresh_resolve_host_request_);
       io_state_ = STATE_RESOLVE_HOST_COMPLETE;
     } else if (factory_->HasMatchingIpSession(
-                   key_,
-                   fresh_resolve_host_request_->GetAddressResults().value(),
+                   key_, *fresh_resolve_host_request_->GetAddressResults(),
                    use_dns_aliases_)) {
       // Session with resolved IP has already existed, so close racing
       // connection, run callback, and return.
@@ -802,7 +801,7 @@ int QuicStreamFactory::Job::DoResolveHostComplete(int rv) {
   // Inform the factory of this resolution, which will set up
   // a session alias, if possible.
   if (factory_->HasMatchingIpSession(
-          key_, resolve_host_request_->GetAddressResults().value(),
+          key_, *resolve_host_request_->GetAddressResults(),
           use_dns_aliases_)) {
     LogConnectionIpPooling(true);
     return OK;
@@ -824,9 +823,8 @@ int QuicStreamFactory::Job::DoConnect() {
   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
   int rv = factory_->CreateSession(
       key_, quic_version_, cert_verify_flags_, require_confirmation,
-      resolve_host_request_->GetAddressResults().value(),
-      dns_resolution_start_time_, dns_resolution_end_time_, net_log_, &session_,
-      &network_);
+      *resolve_host_request_->GetAddressResults(), dns_resolution_start_time_,
+      dns_resolution_end_time_, net_log_, &session_, &network_);
   DVLOG(1) << "Created session on network: " << network_;
 
   if (rv != OK) {

@@ -47,9 +47,9 @@ class StaleHostResolver::RequestImpl
 
   // net::HostResolver::ResolveHostRequest implementation:
   int Start(net::CompletionOnceCallback result_callback) override;
-  const absl::optional<net::AddressList>& GetAddressResults() const override;
-  absl::optional<std::vector<net::HostResolverEndpointResult>>
-  GetEndpointResults() const override;
+  const net::AddressList* GetAddressResults() const override;
+  const std::vector<net::HostResolverEndpointResult>* GetEndpointResults()
+      const override;
   const absl::optional<std::vector<std::string>>& GetTextResults()
       const override;
   const absl::optional<std::vector<net::HostPortPair>>& GetHostnameResults()
@@ -184,8 +184,8 @@ int StaleHostResolver::RequestImpl::Start(
   return network_rv;
 }
 
-const absl::optional<net::AddressList>&
-StaleHostResolver::RequestImpl::GetAddressResults() const {
+const net::AddressList* StaleHostResolver::RequestImpl::GetAddressResults()
+    const {
   if (network_request_)
     return network_request_->GetAddressResults();
 
@@ -193,7 +193,7 @@ StaleHostResolver::RequestImpl::GetAddressResults() const {
   return cache_request_->GetAddressResults();
 }
 
-absl::optional<std::vector<net::HostResolverEndpointResult>>
+const std::vector<net::HostResolverEndpointResult>*
 StaleHostResolver::RequestImpl::GetEndpointResults() const {
   if (network_request_)
     return network_request_->GetEndpointResults();

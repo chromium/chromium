@@ -734,24 +734,15 @@ class HostResolverManager::RequestImpl
     return rv;
   }
 
-  const absl::optional<AddressList>& GetAddressResults() const override {
+  const AddressList* GetAddressResults() const override {
     DCHECK(complete_);
-    static const base::NoDestructor<absl::optional<AddressList>> nullopt_result;
-    return results_ ? results_.value().legacy_addresses() : *nullopt_result;
+    return base::OptionalOrNullptr(legacy_address_results_);
   }
 
-  absl::optional<std::vector<HostResolverEndpointResult>> GetEndpointResults()
+  const std::vector<HostResolverEndpointResult>* GetEndpointResults()
       const override {
     DCHECK(complete_);
-
-    if (!results_.has_value() ||
-        !results_.value().legacy_addresses().has_value())
-      return absl::nullopt;
-
-    // TODO(crbug.com/1264933): Use HostResolverEndpointResult internally
-    // instead of converting on output.
-    return HostResolver::AddressListToEndpointResults(
-        results_.value().legacy_addresses().value());
+    return base::OptionalOrNullptr(endpoint_results_);
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()
@@ -783,10 +774,6 @@ class HostResolverManager::RequestImpl
             GetAddressResults()->dns_aliases().begin(),
             GetAddressResults()->dns_aliases().end());
         DCHECK(address_list_aliases_set == fixed_up_dns_alias_results_.value());
-        DCHECK_EQ(GetAddressResults()->GetCanonicalName(),
-                  fixed_up_dns_alias_results_->empty()
-                      ? ""
-                      : *fixed_up_dns_alias_results_->begin());
       }
     }
 #endif  // DCHECK_IS_ON()
@@ -823,6 +810,7 @@ class HostResolverManager::RequestImpl
     DCHECK(!parameters_.is_speculative);
 
     results_ = std::move(results);
+    FixUpEndpointAndAliasResults();
   }
 
   void set_error_info(int error, bool is_secure_network_error) {
@@ -904,30 +892,48 @@ class HostResolverManager::RequestImpl
 
   bool complete() const { return complete_; }
 
-  void FixupDnsAliasResults() {
-    // If there are no address results, if there are no aliases, or if there
-    // are already fixed up alias results, there is nothing to do.
-    if (!results_ || !results_.value().legacy_addresses() ||
-        results_.value().legacy_addresses()->dns_aliases().empty() ||
-        fixed_up_dns_alias_results_) {
-      return;
-    }
+ private:
+  void FixUpEndpointAndAliasResults() {
+    DCHECK(results_.has_value());
+    DCHECK(!legacy_address_results_.has_value());
+    DCHECK(!endpoint_results_.has_value());
+    DCHECK(!fixed_up_dns_alias_results_.has_value());
 
-    fixed_up_dns_alias_results_.emplace(
-        results_.value().legacy_addresses()->dns_aliases().begin(),
-        results_.value().legacy_addresses()->dns_aliases().end());
+    if (results_.value().legacy_addresses().has_value()) {
+      DCHECK(!results_.value().GetEndpoints());
+      legacy_address_results_ = results_.value().legacy_addresses();
+      endpoint_results_ = HostResolver::AddressListToEndpointResults(
+          legacy_address_results_.value());
 
-    // Skip fixups for `include_canonical_name` requests. Just use the
-    // canonical name exactly as it was received from the system resolver.
-    if (parameters().include_canonical_name) {
-      DCHECK_LE(results_.value().legacy_addresses()->dns_aliases().size(), 1u);
+      fixed_up_dns_alias_results_ = std::set<std::string>(
+          legacy_address_results_.value().dns_aliases().begin(),
+          legacy_address_results_.value().dns_aliases().end());
+
+      // Skip fixups for `include_canonical_name` requests. Just use the
+      // canonical name exactly as it was received from the system resolver.
+      if (parameters().include_canonical_name) {
+        DCHECK_LE(legacy_address_results_.value().dns_aliases().size(), 1u);
+      } else {
+        fixed_up_dns_alias_results_ = dns_alias_utility::FixUpDnsAliases(
+            fixed_up_dns_alias_results_.value());
+      }
     } else {
-      fixed_up_dns_alias_results_ = dns_alias_utility::FixUpDnsAliases(
-          fixed_up_dns_alias_results_.value());
+      endpoint_results_ = results_.value().GetEndpoints();
+      if (endpoint_results_.has_value()) {
+        DCHECK(results_.value().aliases());
+        fixed_up_dns_alias_results_ = *results_.value().aliases();
+
+        // Expect `aliases()` results to already be fixed up.
+        DCHECK(dns_alias_utility::FixUpDnsAliases(
+                   fixed_up_dns_alias_results_.value()) ==
+               fixed_up_dns_alias_results_.value());
+
+        legacy_address_results_ = HostResolver::EndpointResultToAddressList(
+            endpoint_results_.value(), fixed_up_dns_alias_results_.value());
+      }
     }
   }
 
- private:
   // Logging and metrics for when a request has just been started.
   void LogStartRequest() {
     DCHECK(request_time_.is_null());
@@ -994,6 +1000,8 @@ class HostResolverManager::RequestImpl
   bool complete_;
   absl::optional<HostCache::Entry> results_;
   absl::optional<HostCache::EntryStaleness> stale_info_;
+  absl::optional<AddressList> legacy_address_results_;
+  absl::optional<std::vector<HostResolverEndpointResult>> endpoint_results_;
   absl::optional<std::set<std::string>> fixed_up_dns_alias_results_;
   ResolveErrorInfo error_info_;
 
@@ -2852,11 +2860,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       if (results.error() == OK && !req->parameters().is_speculative) {
         req->set_results(
             results.CopyWithDefaultPort(GetPort(req->request_host())));
-
-        // TODO(cammie): Move the sanitization deeper, possibly in
-        // HostCache::Entry::SetResult(AddressList addresses), so that it
-        // doesn't happen on a per-request basis.
-        req->FixupDnsAliasResults();
       }
       req->OnJobCompleted(
           this, results.error(),
@@ -3283,9 +3286,6 @@ int HostResolverManager::Resolve(RequestImpl* request) {
     if (results.error() == OK && !request->parameters().is_speculative) {
       request->set_results(
           results.CopyWithDefaultPort(GetPort(request->request_host())));
-
-      // TODO(cammie): Sanitize before adding to the cache instead.
-      request->FixupDnsAliasResults();
     }
     if (stale_info && !request->parameters().is_speculative)
       request->set_stale_info(std::move(stale_info).value());

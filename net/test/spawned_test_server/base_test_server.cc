@@ -185,7 +185,7 @@ bool BaseTestServer::GetAddressList(AddressList* address_list) const {
     return false;
   }
 
-  *address_list = request->GetAddressResults().value();
+  *address_list = *request->GetAddressResults();
   return true;
 }
 

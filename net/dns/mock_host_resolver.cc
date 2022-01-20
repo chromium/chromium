@@ -189,15 +189,15 @@ class MockHostResolverBase::RequestImpl
     return rv;
   }
 
-  const absl::optional<AddressList>& GetAddressResults() const override {
+  const AddressList* GetAddressResults() const override {
     DCHECK(complete_);
-    return address_results_;
+    return base::OptionalOrNullptr(address_results_);
   }
 
-  absl::optional<std::vector<HostResolverEndpointResult>> GetEndpointResults()
+  const std::vector<HostResolverEndpointResult>* GetEndpointResults()
       const override {
     DCHECK(complete_);
-    return endpoint_results_;
+    return base::OptionalOrNullptr(endpoint_results_);
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()
@@ -1423,11 +1423,9 @@ class HangingHostResolver::RequestImpl
     return ERR_IO_PENDING;
   }
 
-  const absl::optional<AddressList>& GetAddressResults() const override {
-    IMMEDIATE_CRASH();
-  }
+  const AddressList* GetAddressResults() const override { IMMEDIATE_CRASH(); }
 
-  absl::optional<std::vector<HostResolverEndpointResult>> GetEndpointResults()
+  const std::vector<HostResolverEndpointResult>* GetEndpointResults()
       const override {
     IMMEDIATE_CRASH();
   }

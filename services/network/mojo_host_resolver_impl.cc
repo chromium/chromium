@@ -126,8 +126,7 @@ void MojoHostResolverImpl::Job::OnResolveDone(int result) {
 
   std::vector<net::IPAddress> result_addresses;
   if (request_->GetAddressResults()) {
-    for (const auto& endpoint :
-         request_->GetAddressResults().value().endpoints()) {
+    for (const auto& endpoint : request_->GetAddressResults()->endpoints()) {
       result_addresses.push_back(endpoint.address());
     }
   }

@@ -187,7 +187,7 @@ int WebSocketTransportConnectJob::DoResolveHostComplete(int result) {
     OnHostResolutionCallbackResult callback_result =
         params_->host_resolution_callback().Run(
             ToLegacyDestinationEndpoint(params_->destination()),
-            request_->GetAddressResults().value());
+            *request_->GetAddressResults());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&WebSocketTransportConnectJob::OnIOComplete,
@@ -207,9 +207,8 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
   int result = ERR_UNEXPECTED;
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
 
-  for (AddressList::const_iterator it =
-           request_->GetAddressResults().value().begin();
-       it != request_->GetAddressResults().value().end(); ++it) {
+  for (AddressList::const_iterator it = request_->GetAddressResults()->begin();
+       it != request_->GetAddressResults()->end(); ++it) {
     switch (it->GetFamily()) {
       case ADDRESS_FAMILY_IPV4:
         ipv4_addresses.push_back(*it);

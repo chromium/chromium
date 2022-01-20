@@ -189,7 +189,14 @@ void PepperHostResolverMessageFilter::OnLookupFinished(
   if (net_result != net::OK) {
     SendResolveError(NetErrorToPepperError(net_result), context);
   } else {
-    const std::string& canonical_name = addresses.value().GetCanonicalName();
+    // Ignore DNS aliases unless only one is received. Otherwise unknown which
+    // is the "canonical name" desired here. There is always expected to be at
+    // most 1 alias when the request is made with `include_canonical_name` (see
+    // `PrepareRequestInfo()`).
+    const std::string& canonical_name =
+        addresses.value().dns_aliases().size() == 1
+            ? addresses.value().dns_aliases().front()
+            : "";
     NetAddressList net_address_list;
     CreateNetAddressListFromAddressList(addresses.value(), &net_address_list);
     if (net_address_list.empty())

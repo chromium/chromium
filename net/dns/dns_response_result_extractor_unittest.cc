@@ -43,7 +43,6 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleARecord) {
   ASSERT_TRUE(results.legacy_addresses());
   EXPECT_THAT(results.legacy_addresses().value().endpoints(),
               testing::ElementsAre(expected_endpoint));
-  EXPECT_EQ(results.legacy_addresses().value().GetCanonicalName(), kName);
   EXPECT_THAT(results.legacy_addresses().value().dns_aliases(),
               testing::ElementsAre(kName));
   EXPECT_TRUE(results.has_ttl());
@@ -67,7 +66,6 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleAAAARecord) {
   ASSERT_TRUE(results.legacy_addresses());
   EXPECT_THAT(results.legacy_addresses().value().endpoints(),
               testing::ElementsAre(expected_endpoint));
-  EXPECT_EQ(results.legacy_addresses().value().GetCanonicalName(), kName);
   EXPECT_THAT(results.legacy_addresses().value().dns_aliases(),
               testing::ElementsAre(kName));
 }
@@ -89,8 +87,6 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleARecordWithCname) {
   ASSERT_TRUE(results.legacy_addresses());
   EXPECT_THAT(results.legacy_addresses().value().endpoints(),
               testing::ElementsAre(expected_endpoint));
-  EXPECT_EQ(results.legacy_addresses().value().GetCanonicalName(),
-            kCanonicalName);
   EXPECT_THAT(results.legacy_addresses().value().dns_aliases(),
               testing::ElementsAre(kCanonicalName, "address.test"));
 }
@@ -121,8 +117,6 @@ TEST(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
                   IPEndPoint(IPAddress(74, 125, 226, 180), 0 /* port */),
                   IPEndPoint(IPAddress(74, 125, 226, 176), 0 /* port */),
                   IPEndPoint(IPAddress(74, 125, 226, 177), 0 /* port */)));
-  EXPECT_EQ(results.legacy_addresses().value().GetCanonicalName(),
-            "alias.test");
   EXPECT_THAT(results.legacy_addresses().value().dns_aliases(),
               testing::ElementsAre("alias.test", "addresses.test"));
 }
@@ -145,7 +139,6 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   ASSERT_TRUE(results.legacy_addresses());
   EXPECT_TRUE(results.legacy_addresses().value().empty());
-  EXPECT_EQ(results.legacy_addresses().value().GetCanonicalName(), "");
   EXPECT_TRUE(results.legacy_addresses().value().dns_aliases().empty());
 
   ASSERT_TRUE(results.has_ttl());
@@ -169,7 +162,6 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataAResponses) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   ASSERT_TRUE(results.legacy_addresses());
   EXPECT_TRUE(results.legacy_addresses().value().empty());
-  EXPECT_EQ(results.legacy_addresses().value().GetCanonicalName(), "");
   EXPECT_TRUE(results.legacy_addresses().value().dns_aliases().empty());
 
   ASSERT_TRUE(results.has_ttl());
@@ -217,7 +209,6 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsInAResponse) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   ASSERT_TRUE(results.legacy_addresses());
   EXPECT_TRUE(results.legacy_addresses().value().empty());
-  EXPECT_EQ(results.legacy_addresses().value().GetCanonicalName(), "");
   EXPECT_TRUE(results.legacy_addresses().value().dns_aliases().empty());
   EXPECT_FALSE(results.has_ttl());
 }
@@ -242,7 +233,6 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsMixedWithARecords) {
   IPEndPoint expected_endpoint(kExpected, 0 /* port */);
   EXPECT_THAT(results.legacy_addresses().value().endpoints(),
               testing::ElementsAre(expected_endpoint));
-  EXPECT_EQ(results.legacy_addresses().value().GetCanonicalName(), kName);
   EXPECT_THAT(results.legacy_addresses().value().dns_aliases(),
               testing::ElementsAre(kName));
 

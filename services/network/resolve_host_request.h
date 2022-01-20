@@ -54,7 +54,7 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
  private:
   void OnComplete(int error);
   net::ResolveErrorInfo GetResolveErrorInfo() const;
-  const absl::optional<net::AddressList>& GetAddressResults() const;
+  const net::AddressList* GetAddressResults() const;
   void SignalNonAddressResults();
 
   std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request_;

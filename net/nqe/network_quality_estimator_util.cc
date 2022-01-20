@@ -39,9 +39,9 @@ bool IsPrivateHost(HostResolver* host_resolver,
   DCHECK_NE(rv, ERR_IO_PENDING);
 
   if (rv == OK && request->GetAddressResults() &&
-      !request->GetAddressResults().value().empty()) {
+      !request->GetAddressResults()->empty()) {
     // Checking only the first address should be sufficient.
-    IPEndPoint ip_endpoint = request->GetAddressResults().value().front();
+    IPEndPoint ip_endpoint = request->GetAddressResults()->front();
     IPAddress ip_address = ip_endpoint.address();
     if (!ip_address.IsPubliclyRoutable())
       return true;
