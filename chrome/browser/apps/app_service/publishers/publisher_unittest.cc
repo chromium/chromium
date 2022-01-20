@@ -23,7 +23,9 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -68,6 +70,28 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void AddArcPackage(ArcAppTest& arc_test,
+                   std::vector<arc::mojom::AppInfo>& fake_apps) {
+  for (const auto& fake_app : fake_apps) {
+    base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
+        permissions;
+    permissions.emplace(arc::mojom::AppPermission::CAMERA,
+                        arc::mojom::PermissionState::New(/*granted=*/false,
+                                                         /*managed=*/false));
+    permissions.emplace(arc::mojom::AppPermission::LOCATION,
+                        arc::mojom::PermissionState::New(/*granted=*/true,
+                                                         /*managed=*/false));
+    arc::mojom::ArcPackageInfoPtr package = arc::mojom::ArcPackageInfo::New(
+        fake_app.package_name, /*package_version=*/1,
+        /*last_backup_android_id=*/1,
+        /*last_backup_time=*/1, /*sync=*/true, /*system=*/false,
+        /*vpn_provider=*/false, /*web_app_info=*/nullptr, absl::nullopt,
+        std::move(permissions));
+    arc_test.AddPackage(package->Clone());
+    arc_test.app_instance()->SendPackageAdded(package->Clone());
+  }
+}
+
 apps::mojom::AppPtr MakeMojomApp(apps::mojom::AppType app_type,
                                  const std::string& app_id,
                                  const std::string& name,
@@ -81,7 +105,46 @@ apps::mojom::AppPtr MakeMojomApp(apps::mojom::AppType app_type,
       /*icon_effects=*/0);
   return app;
 }
+
+// TODO(crbug.com/1253250): Will be removed when AppService Lacros mojom is
+// migrated to non-mojom App struct.
+apps::mojom::PermissionPtr MakeFakeMojomPermission(
+    apps::mojom::PermissionType permission_type,
+    bool bool_value) {
+  auto permission = apps::mojom::Permission::New();
+  permission->permission_type = permission_type;
+  permission->value = apps::mojom::PermissionValue::New();
+  permission->value->set_bool_value(bool_value);
+  permission->is_managed = false;
+  return permission;
+}
+
+apps::Permissions MakeFakePermissions() {
+  apps::Permissions permissions;
+  permissions.push_back(std::make_unique<apps::Permission>(
+      apps::PermissionType::kCamera,
+      std::make_unique<apps::PermissionValue>(false),
+      /*is_managed*/ false));
+  permissions.push_back(std::make_unique<apps::Permission>(
+      apps::PermissionType::kLocation,
+      std::make_unique<apps::PermissionValue>(true),
+      /*is_managed*/ false));
+  return permissions;
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+bool IsEqual(const apps::Permissions& source, const apps::Permissions& target) {
+  if (source.size() != target.size()) {
+    return false;
+  }
+
+  for (int i = 0; i < static_cast<int>(source.size()); i++) {
+    if (*source[i] != *target[i]) {
+      return false;
+    }
+  }
+  return true;
+}
 
 }  // namespace
 
@@ -148,7 +211,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
                  InstallSource install_source,
                  const std::vector<std::string>& additional_search_terms,
                  base::Time last_launch_time,
-                 base::Time install_time) {
+                 base::Time install_time,
+                 const apps::Permissions& permissions) {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
 
@@ -167,6 +231,9 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     }
     if (!install_time.is_null()) {
       EXPECT_EQ(install_time, cache.states_[app_id]->install_time);
+    }
+    if (!permissions.empty()) {
+      EXPECT_TRUE(IsEqual(permissions, cache.states_[app_id]->permissions));
     }
   }
 
@@ -190,6 +257,7 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
   // Install fake apps.
   std::vector<arc::mojom::AppInfo> fake_apps = arc_test.fake_apps();
   arc_test.app_instance()->SendRefreshAppList(fake_apps);
+  AddArcPackage(arc_test, fake_apps);
 
   // Verify ARC apps are added to AppRegistryCache.
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
@@ -201,7 +269,8 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           AppType::kArc, app_id, app_info->name, Readiness::kReady,
           app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
           app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
-          {}, app_info->last_launch_time, app_info->install_time);
+          {}, app_info->last_launch_time, app_info->install_time,
+          apps::Permissions());
 
       // Simulate the app is removed.
       RemoveArcApp(app_id);
@@ -222,7 +291,8 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           AppType::kArc, app_id, app_info->name, Readiness::kReady,
           app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
           app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
-          {}, app_info->last_launch_time, app_info->install_time);
+          {}, app_info->last_launch_time, app_info->install_time,
+          MakeFakePermissions());
 
       // Test OnAppLastLaunchTimeUpdated.
       const base::Time before_time = base::Time::Now();
@@ -233,7 +303,8 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           AppType::kArc, app_id, app_info->name, Readiness::kReady,
           app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
           app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
-          {}, app_info->last_launch_time, app_info->install_time);
+          {}, app_info->last_launch_time, app_info->install_time,
+          MakeFakePermissions());
     }
   }
 
@@ -256,7 +327,8 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
     VerifyApp(AppType::kBuiltIn, internal_app.app_id,
               l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
               Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
-              additional_search_terms, base::Time(), base::Time());
+              additional_search_terms, base::Time(), base::Time(),
+              apps::Permissions());
   }
 }
 
@@ -310,6 +382,10 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     app->additional_search_terms.push_back("TestApp");
     app->last_launch_time = kLastLaunchTime;
     app->install_time = kInstallTime;
+    app->permissions.push_back(MakeFakeMojomPermission(
+        apps::mojom::PermissionType::kCamera, /*bool_value=*/false));
+    app->permissions.push_back(MakeFakeMojomPermission(
+        apps::mojom::PermissionType::kLocation, /*bool_value=*/true));
     apps.push_back(std::move(app));
     web_apps_crosapi->OnApps(std::move(apps));
   }
@@ -322,21 +398,21 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
   VerifyApp(AppType::kStandaloneBrowser, extension_misc::kLacrosAppId, "Lacros",
             Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
-            {"chrome"}, base::Time(), base::Time());
+            {"chrome"}, base::Time(), base::Time(), apps::Permissions());
 }
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
   ExtensionAppsOnApps();
   VerifyApp(AppType::kStandaloneBrowserChromeApp, "a", "TestApp",
             Readiness::kReady, InstallReason::kUser, InstallSource::kSync, {},
-            base::Time(), base::Time());
+            base::Time(), base::Time(), apps::Permissions());
 }
 
 TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
   WebAppsCrosapiOnApps();
   VerifyApp(AppType::kWeb, "a", "TestApp", Readiness::kReady,
             InstallReason::kUser, InstallSource::kSync, {"TestApp"},
-            kLastLaunchTime, kInstallTime);
+            kLastLaunchTime, kInstallTime, MakeFakePermissions());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -353,27 +429,28 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   app_service_test.SetUp(profile());
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
-            base::Time(), base::Time());
+            base::Time(), base::Time(), apps::Permissions());
 
   // Uninstall the Chrome app.
   service_->UninstallExtension(
       store->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   VerifyApp(AppType::kChromeApp, store->id(), store->name(),
             Readiness::kUninstalledByUser, InstallReason::kDefault,
-            InstallSource::kChromeWebStore, {}, base::Time(), base::Time());
+            InstallSource::kChromeWebStore, {}, base::Time(), base::Time(),
+            apps::Permissions());
 
   // Reinstall the Chrome app.
   service_->AddExtension(store.get());
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
-            base::Time(), base::Time());
+            base::Time(), base::Time(), apps::Permissions());
 
   // Test OnExtensionLastLaunchTimeChanged.
   extensions::ExtensionPrefs::Get(profile())->SetLastLaunchTime(
       store->id(), kLastLaunchTime);
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
-            kLastLaunchTime, base::Time());
+            kLastLaunchTime, base::Time(), apps::Permissions());
 }
 
 TEST_F(PublisherTest, WebAppsOnApps) {
@@ -384,7 +461,7 @@ TEST_F(PublisherTest, WebAppsOnApps) {
 
   VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady,
             InstallReason::kSync, InstallSource::kBrowser, {}, base::Time(),
-            base::Time());
+            base::Time(), apps::Permissions());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -51,6 +51,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -118,6 +119,7 @@ void OnArcAppIconCompletelyLoaded(apps::IconType icon_type,
   UpdateIconImage(std::move(callback), std::move(iv));
 }
 
+// TODO(crbug.com/1253250): Remove and use GetPermissionType
 apps::mojom::PermissionType GetAppServicePermissionType(
     arc::mojom::AppPermission arc_permission_type) {
   switch (arc_permission_type) {
@@ -133,6 +135,24 @@ apps::mojom::PermissionType GetAppServicePermissionType(
       return apps::mojom::PermissionType::kContacts;
     case arc::mojom::AppPermission::STORAGE:
       return apps::mojom::PermissionType::kStorage;
+  }
+}
+
+apps::PermissionType GetPermissionType(
+    arc::mojom::AppPermission arc_permission_type) {
+  switch (arc_permission_type) {
+    case arc::mojom::AppPermission::CAMERA:
+      return apps::PermissionType::kCamera;
+    case arc::mojom::AppPermission::LOCATION:
+      return apps::PermissionType::kLocation;
+    case arc::mojom::AppPermission::MICROPHONE:
+      return apps::PermissionType::kMicrophone;
+    case arc::mojom::AppPermission::NOTIFICATIONS:
+      return apps::PermissionType::kNotifications;
+    case arc::mojom::AppPermission::CONTACTS:
+      return apps::PermissionType::kContacts;
+    case arc::mojom::AppPermission::STORAGE:
+      return apps::PermissionType::kStorage;
   }
 }
 
@@ -164,6 +184,7 @@ bool GetArcPermissionType(
   }
 }
 
+// TODO(crbug.com/1253250): Remove and use CreatePermissions
 void UpdateAppPermissions(
     const base::flat_map<arc::mojom::AppPermission,
                          arc::mojom::PermissionStatePtr>& new_permissions,
@@ -178,6 +199,19 @@ void UpdateAppPermissions(
 
     permissions->push_back(std::move(permission));
   }
+}
+
+apps::Permissions CreatePermissions(
+    const base::flat_map<arc::mojom::AppPermission,
+                         arc::mojom::PermissionStatePtr>& new_permissions) {
+  apps::Permissions permissions;
+  for (const auto& new_permission : new_permissions) {
+    permissions.push_back(std::make_unique<apps::Permission>(
+        GetPermissionType(new_permission.first),
+        std::make_unique<apps::PermissionValue>(new_permission.second->granted),
+        new_permission.second->managed));
+  }
+  return permissions;
 }
 
 absl::optional<arc::UserInteractionType> GetUserInterationType(
@@ -1502,6 +1536,12 @@ std::unique_ptr<App> ArcApps::CreateApp(
 
   app->last_launch_time = app_info.last_launch_time;
   app->install_time = app_info.install_time;
+
+  std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
+      prefs->GetPackage(app_info.package_name);
+  if (package) {
+    app->permissions = CreatePermissions(package->permissions);
+  }
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

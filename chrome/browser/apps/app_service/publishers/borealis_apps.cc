@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -106,6 +107,7 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
   return app;
 }
 
+// TODO(crbug.com/1253250): Remove and use CreatePermissions.
 void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
   for (const PermissionInfo& info : permission_infos) {
     auto permission = apps::mojom::Permission::New();
@@ -116,6 +118,18 @@ void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
     permission->is_managed = false;
     app->permissions.push_back(std::move(permission));
   }
+}
+
+apps::Permissions CreatePermissions(Profile* profile) {
+  apps::Permissions permissions;
+  for (const PermissionInfo& info : permission_infos) {
+    permissions.push_back(std::make_unique<apps::Permission>(
+        apps::ConvertMojomPermissionTypeToPermissionType(info.permission),
+        std::make_unique<apps::PermissionValue>(
+            profile->GetPrefs()->GetBoolean(info.pref_name)),
+        /*is_managed=*/false));
+  }
+  return permissions;
 }
 
 bool IsBorealisLauncherAllowed(Profile* profile) {
@@ -187,6 +201,10 @@ std::unique_ptr<App> BorealisApps::CreateApp(
 
   app->last_launch_time = registration.LastLaunchTime();
   app->install_time = registration.InstallTime();
+
+  if (registration.app_id() == borealis::kClientAppId) {
+    app->permissions = CreatePermissions(profile_);
+  }
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

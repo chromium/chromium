@@ -27,6 +27,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -121,9 +122,13 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void SetWebAppShowInFields(apps::mojom::AppPtr& app, const WebApp* web_app);
 
   // Appends |web_app| permissions to |target|.
+  // TODO(crbug.com/1253250): Remove and use CreatePermissions.
   void PopulateWebAppPermissions(
       const WebApp* web_app,
       std::vector<apps::mojom::PermissionPtr>* target);
+
+  // Creates permissions for `web_app`.
+  apps::Permissions CreatePermissions(const WebApp* web_app);
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Creates an |std::unique_ptr<apps::App>| describing |web_app|.

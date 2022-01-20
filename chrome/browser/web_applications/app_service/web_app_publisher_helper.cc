@@ -380,6 +380,48 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
   }
 }
 
+apps::Permissions WebAppPublisherHelper::CreatePermissions(
+    const WebApp* web_app) {
+  apps::Permissions permissions;
+
+  const GURL url = web_app->start_url();
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  DCHECK(host_content_settings_map);
+
+  for (ContentSettingsType type : kSupportedPermissionTypes) {
+    ContentSetting setting =
+        host_content_settings_map->GetContentSetting(url, url, type);
+
+    // Map ContentSettingsType to an apps::mojom::TriState value
+    apps::TriState setting_val;
+    switch (setting) {
+      case CONTENT_SETTING_ALLOW:
+        setting_val = apps::TriState::kAllow;
+        break;
+      case CONTENT_SETTING_ASK:
+        setting_val = apps::TriState::kAsk;
+        break;
+      case CONTENT_SETTING_BLOCK:
+        setting_val = apps::TriState::kBlock;
+        break;
+      default:
+        setting_val = apps::TriState::kAsk;
+    }
+
+    content_settings::SettingInfo setting_info;
+    host_content_settings_map->GetWebsiteSetting(url, url, type, &setting_info);
+
+    permissions.push_back(std::make_unique<apps::Permission>(
+        apps::ConvertMojomPermissionTypeToPermissionType(
+            GetPermissionType(type)),
+        std::make_unique<apps::PermissionValue>(setting_val),
+        /*is_managed=*/setting_info.source ==
+            content_settings::SETTING_SOURCE_POLICY));
+  }
+  return permissions;
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
     const WebApp* web_app) {
@@ -430,6 +472,7 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
     }
   }
   app->policy_id = install_url.spec();
+  app->permissions = CreatePermissions(web_app);
 
   return app;
 }
