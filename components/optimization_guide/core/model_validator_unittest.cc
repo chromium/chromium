@@ -126,8 +126,14 @@ TEST_F(ModelValidatorExecutorTest, ValidModel) {
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
       ExecutionStatus::kErrorUnknown, 1);
 
+  histogram_tester().ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
+          GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
+      true, 1);
+
   histogram_tester().ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
+      "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
       1);
@@ -148,8 +154,15 @@ TEST_F(ModelValidatorExecutorTest, DISABLED_InvalidModel) {
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
       ExecutionStatus::kErrorModelFileNotValid, 1);
+
+  histogram_tester().ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
+          GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
+      false, 1);
+
   histogram_tester().ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
+      "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
       1);

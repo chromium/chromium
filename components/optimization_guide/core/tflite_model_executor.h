@@ -34,8 +34,7 @@ class ScopedExecutionStatusResultRecorder {
  public:
   explicit ScopedExecutionStatusResultRecorder(
       proto::OptimizationTarget optimization_target)
-      : optimization_target_(optimization_target),
-        start_time_(base::TimeTicks::Now()) {}
+      : optimization_target_(optimization_target) {}
 
   ~ScopedExecutionStatusResultRecorder() {
     base::UmaHistogramEnumeration(
@@ -43,12 +42,6 @@ class ScopedExecutionStatusResultRecorder {
             optimization_guide::GetStringNameForOptimizationTarget(
                 optimization_target_),
         status_);
-
-    base::UmaHistogramTimes(
-        "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target_),
-        base::TimeTicks::Now() - start_time_);
   }
 
   ExecutionStatus* mutable_status() { return &status_; }
@@ -60,9 +53,6 @@ class ScopedExecutionStatusResultRecorder {
  private:
   // The OptimizationTarget of the model being executed.
   const proto::OptimizationTarget optimization_target_;
-
-  // The time at which this instance was constructed.
-  const base::TimeTicks start_time_;
 
   ExecutionStatus status_ = ExecutionStatus::kUnknown;
 };
@@ -267,6 +257,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
       return false;
     }
 
+    base::TimeTicks loading_start_time = base::TimeTicks::Now();
+
     std::unique_ptr<base::MemoryMappedFile> model_fb =
         std::make_unique<base::MemoryMappedFile>();
     if (!model_fb->Initialize(*model_file_path_)) {
@@ -276,6 +268,23 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     model_fb_ = std::move(model_fb);
 
     loaded_model_ = BuildModelExecutionTask(model_fb_.get(), out_status);
+
+    if (!!loaded_model_) {
+      // We only want to record successful loading times.
+      base::UmaHistogramTimes(
+          "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
+              optimization_guide::GetStringNameForOptimizationTarget(
+                  optimization_target_),
+          base::TimeTicks::Now() - loading_start_time);
+    }
+
+    // Local histogram used in integration testing.
+    base::BooleanHistogram::FactoryGet(
+        "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
+            optimization_guide::GetStringNameForOptimizationTarget(
+                optimization_target_),
+        base::Histogram::kNoFlags)
+        ->Add(!!loaded_model_);
 
     return !!loaded_model_;
   }

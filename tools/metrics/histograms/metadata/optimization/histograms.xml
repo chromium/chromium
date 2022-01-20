@@ -506,10 +506,29 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.ModelExecutor.ModelLoadingDuration.{OptimizationTarget}"
     units="ms" expires_after="M106">
+  <obsolete>
+    Replaced by
+    OptimizationGuide.ModelExecutor.ModelLoadingDuration2.{OptimizationTarget}
+    in M99 becuase the metrics recorded here were incorrect and should not be
+    used.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the time duration it took to load a model file (un)successfully for
+    {OptimizationTarget}. Recorded once per model load attempt for
+    {OptimizationTarget}.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecutor.ModelLoadingDuration2.{OptimizationTarget}"
+    units="ms" expires_after="M106">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time duration it took to load a model file successfully for
     {OptimizationTarget}. Recorded once per model load attempt for
     {OptimizationTarget}.
   </summary>
