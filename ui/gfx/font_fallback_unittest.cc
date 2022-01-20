@@ -19,7 +19,7 @@
 #include "ui/gfx/platform_font.h"
 #include "ui/gfx/test/font_fallback_test_data.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -170,7 +170,7 @@ TEST_P(GetFallbackFontTest, GetFallbackFont) {
                          base_font_option_.weight);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Skip testing this call to GetFallbackFont on older windows versions. Some
   // fonts only got introduced on windows 10 and the test will fail on previous
   // versions.

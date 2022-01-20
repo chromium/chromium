@@ -7,7 +7,7 @@
 
 namespace mojo {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // static
 gfx::mojom::CALayerResult
 EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::ToMojom(

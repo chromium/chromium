@@ -13,11 +13,11 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 #include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
@@ -74,7 +74,7 @@ void SaturatedClampRange(int min, int max, int* origin, int* span) {
 
 namespace gfx {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 Rect::Rect(const RECT& r)
     : origin_(r.left, r.top),
@@ -89,7 +89,7 @@ RECT Rect::ToRECT() const {
   return r;
 }
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 
 Rect::Rect(const CGRect& r)
     : origin_(r.origin.x, r.origin.y), size_(r.size.width, r.size.height) {}

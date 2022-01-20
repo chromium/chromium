@@ -18,9 +18,9 @@
 namespace gfx {
 namespace test {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 typedef UIImage* PlatformImage;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef NSImage* PlatformImage;
 #else
 typedef gfx::ImageSkia PlatformImage;

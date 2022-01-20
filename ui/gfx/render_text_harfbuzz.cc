@@ -49,15 +49,15 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "third_party/skia/include/ports/SkTypeface_mac.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/locale_utils.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #include <hb.h>
 
@@ -812,7 +812,7 @@ namespace internal {
 sk_sp<SkTypeface> CreateSkiaTypeface(const Font& font,
                                      bool italic,
                                      Font::Weight weight) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   const Font::FontStyle style = italic ? Font::ITALIC : Font::NORMAL;
   Font font_with_style = font.Derive(0, style, weight);
   if (!font_with_style.GetNativeFont())
@@ -1359,7 +1359,7 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
 }
 
 std::string GetApplicationLocale() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(etienneb): Android locale should work the same way than base locale.
   return base::android::GetDefaultLocaleString();
 #else
@@ -1603,7 +1603,7 @@ SelectionModel RenderTextHarfBuzz::AdjacentWordSelectionModel(
     if (run == run_list->size())
       break;
     size_t cursor = current.caret_pos();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Windows generally advances to the start of a word in either direction.
     // TODO: Break on the end of a word when the neighboring text is
     // punctuation.
@@ -1614,7 +1614,7 @@ SelectionModel RenderTextHarfBuzz::AdjacentWordSelectionModel(
         run_list->runs()[run]->font_params.is_rtl == (direction == CURSOR_LEFT);
     if (is_forward ? iter.IsEndOfWord(cursor) : iter.IsStartOfWord(cursor))
       break;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
   return current;
 }
@@ -2060,7 +2060,7 @@ void RenderTextHarfBuzz::ShapeRuns(
                  TRACE_STR_COPY(uscript_getShortName(font_params.script)));
     fallback_font_list = GetFallbackFonts(primary_font);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Append fonts in the fallback list of the fallback fonts.
     // TODO(tapted): Investigate whether there's a case that benefits from this
     // on Mac.

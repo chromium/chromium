@@ -42,7 +42,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -239,13 +239,13 @@ UChar32 ReplaceControlCharacter(UChar32 codepoint) {
   if (codepoint > 0x7F) {
     // Private use codepoints are working with a pair of font
     // and codepoint, but they are not used in Chrome.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Support Apple defined PUA on Mac.
     // see: http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/CORPCHAR.TXT
     if (codepoint == 0xF8FF)
       return codepoint;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Support Microsoft defined PUA on Windows.
     // see:
     // https://docs.microsoft.com/en-us/windows/uwp/design/style/segoe-ui-symbol-font

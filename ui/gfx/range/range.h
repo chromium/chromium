@@ -15,13 +15,13 @@
 #include "build/build_config.h"
 #include "ui/gfx/range/gfx_range_export.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #if __OBJC__
 #import <Foundation/Foundation.h>
 #else
 typedef struct _NSRange NSRange;
 #endif
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace gfx {
 
@@ -42,7 +42,7 @@ class GFX_RANGE_EXPORT Range {
   constexpr explicit Range(uint32_t position) : Range(position, position) {}
 
   // Platform constructors.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   explicit Range(const NSRange& range);
 #endif
 
@@ -115,7 +115,7 @@ class GFX_RANGE_EXPORT Range {
                : InvalidRange();
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   Range& operator=(const NSRange& range);
 
   // NSRange does not store the directionality of a range, so if this

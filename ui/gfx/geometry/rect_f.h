@@ -14,7 +14,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 typedef struct CGRect CGRect;
 #endif
 
@@ -40,7 +40,7 @@ class GEOMETRY_EXPORT RectF {
               static_cast<float>(r.width()),
               static_cast<float>(r.height())) {}
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   explicit RectF(const CGRect& r);
   // Construct an equivalent CoreGraphics object.
   CGRect ToCGRect() const;

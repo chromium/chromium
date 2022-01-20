@@ -9,13 +9,13 @@
 
 namespace mojo {
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 mojo::PlatformHandle
 StructTraits<gfx::mojom::GpuFenceHandleDataView,
              gfx::GpuFenceHandle>::native_fd(gfx::GpuFenceHandle& handle) {
   return mojo::PlatformHandle(std::move(handle.owned_fd));
 }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 mojo::PlatformHandle
 StructTraits<gfx::mojom::GpuFenceHandleDataView,
              gfx::GpuFenceHandle>::native_handle(gfx::GpuFenceHandle& handle) {
@@ -25,10 +25,10 @@ StructTraits<gfx::mojom::GpuFenceHandleDataView,
 
 bool StructTraits<gfx::mojom::GpuFenceHandleDataView, gfx::GpuFenceHandle>::
     Read(gfx::mojom::GpuFenceHandleDataView data, gfx::GpuFenceHandle* out) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   out->owned_fd = data.TakeNativeFd().TakeFD();
   return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   out->owned_handle = data.TakeNativeHandle().TakeHandle();
   return true;
 #else
@@ -38,9 +38,9 @@ bool StructTraits<gfx::mojom::GpuFenceHandleDataView, gfx::GpuFenceHandle>::
 
 void StructTraits<gfx::mojom::GpuFenceHandleDataView,
                   gfx::GpuFenceHandle>::SetToNull(gfx::GpuFenceHandle* handle) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   handle->owned_fd.reset();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   handle->owned_handle.Close();
 #endif
 }

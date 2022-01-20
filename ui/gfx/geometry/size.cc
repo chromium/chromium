@@ -10,17 +10,17 @@
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 #include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
 namespace gfx {
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 Size::Size(const CGSize& s) : Size(s.width, s.height) {}
 #endif
 
@@ -32,14 +32,14 @@ void Size::operator-=(const Size& size) {
   Enlarge(-size.width(), -size.height());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 SIZE Size::ToSIZE() const {
   SIZE s;
   s.cx = width();
   s.cy = height();
   return s;
 }
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 CGSize Size::ToCGSize() const {
   return CGSizeMake(width(), height());
 }

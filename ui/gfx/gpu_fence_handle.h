@@ -8,15 +8,15 @@
 #include "build/build_config.h"
 #include "ui/gfx/gfx_export.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/scoped_file.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/event.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
 
@@ -39,11 +39,11 @@ struct GFX_EXPORT GpuFenceHandle {
   GpuFenceHandle Clone() const;
 
   // TODO(crbug.com/1142962): Make this a class instead of struct.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::ScopedFD owned_fd;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   zx::event owned_event;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   base::win::ScopedHandle owned_handle;
 #endif
 };

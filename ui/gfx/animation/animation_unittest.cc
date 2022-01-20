@@ -12,7 +12,7 @@
 #include "ui/gfx/animation/test_animation_delegate.h"
 #include "ui/gfx/switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -136,7 +136,7 @@ TEST_F(AnimationTest, DeleteFromEnd) {
 }
 
 TEST_F(AnimationTest, ShouldRenderRichAnimation) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   BOOL result;
   ASSERT_NE(0,
             ::SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, &result, 0));

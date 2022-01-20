@@ -13,7 +13,7 @@
 #include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 struct CGSize;
 #endif
 
@@ -34,7 +34,7 @@ class GEOMETRY_EXPORT SizeF {
       : SizeF(static_cast<float>(size.width()),
               static_cast<float>(size.height())) {}
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   explicit SizeF(const CGSize&);
   CGSize ToCGSize() const;
 #endif

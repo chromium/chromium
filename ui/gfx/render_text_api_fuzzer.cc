@@ -20,15 +20,16 @@
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_ANDROID) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/test/test_discardable_memory_allocator.h"
 #endif
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kFontDescription[] = "Segoe UI, 13px";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kFontDescription[] = "serif, 13px";
 #else
 const char kFontDescription[] = "sans, 13px";
@@ -42,7 +43,8 @@ struct Environment {
     logging::SetMinLogLevel(logging::LOG_FATAL);
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_ANDROID) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     // Some platforms require discardable memory to use bitmap fonts.
     base::DiscardableMemoryAllocator::SetInstance(
         &discardable_memory_allocator);
@@ -53,7 +55,8 @@ struct Environment {
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_ANDROID) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
 #endif
 

@@ -21,10 +21,10 @@
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/mac/foundation_util.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -33,18 +33,18 @@
 namespace gfx {
 namespace internal {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromUIImage(
     UIImage* uiimage);
 UIImage* UIImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
 gfx::Size UIImageSize(UIImage* image);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
     NSImage* nsimage);
 NSImage* NSImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps,
                         CGColorSpaceRef color_space);
 gfx::Size NSImageSize(NSImage* image);
-#endif  // defined(OS_MAC)
+#endif
 
 ImageSkia ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(

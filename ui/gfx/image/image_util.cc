@@ -38,7 +38,7 @@ bool ColumnHasVisiblePixels(const SkBitmap& bitmap, int x) {
 namespace gfx {
 
 // The iOS implementations of the JPEG functions are in image_util_ios.mm.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 Image ImageFrom1xJPEGEncodedData(const unsigned char* input,
                                  size_t input_size) {
@@ -62,13 +62,13 @@ Image ResizedImageForMaxDimensions(const Image& image,
 }
 
 // The MacOS implementation of this function is in image_utils_mac.mm.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 bool JPEG1xEncodedDataFromImage(const Image& image,
                                 int quality,
                                 std::vector<unsigned char>* dst) {
   return JPEG1xEncodedDataFromSkiaRepresentation(image, quality, dst);
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 bool JPEG1xEncodedDataFromSkiaRepresentation(const Image& image,
                                              int quality,
@@ -121,7 +121,7 @@ Image ResizedImageForMaxDimensionsSkiaRepresentation(const Image& image,
 
   return image;
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 void GetVisibleMargins(const ImageSkia& image, int* left, int* right) {
   *left = 0;

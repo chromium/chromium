@@ -10,7 +10,7 @@
 
 namespace gfx {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr bool kWin10Only = true;
 #endif
 
@@ -32,7 +32,7 @@ FallbackFontTestCase::FallbackFontTestCase(
 
 FallbackFontTestCase::~FallbackFontTestCase() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // A list of script and the fallback font on a default windows installation.
 // This list may need to be updated if fonts or operating systems are
 // upgraded.
@@ -254,7 +254,7 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
     {USCRIPT_VAI, "vai", u"\uA501\uA502", {"Ebrima"}},
     {USCRIPT_YI, "yi", u"\uA000\uA001", {"Microsoft Yi Baiti"}}};
 
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // A list of script and the fallback font on the linux test environment.
 // On linux, font-config configuration and fonts are mock. The config

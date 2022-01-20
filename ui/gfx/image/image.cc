@@ -18,10 +18,10 @@
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/mac/foundation_util.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -74,7 +74,7 @@ class ImageRep {
         static_cast<const ImageRep*>(this)->AsImageRepSkia());
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   const ImageRepCocoaTouch* AsImageRepCocoaTouch() const {
     CHECK_EQ(type_, Image::kImageRepCocoaTouch);
     return reinterpret_cast<const ImageRepCocoaTouch*>(this);
@@ -83,7 +83,7 @@ class ImageRep {
     return const_cast<ImageRepCocoaTouch*>(
         static_cast<const ImageRep*>(this)->AsImageRepCocoaTouch());
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   const ImageRepCocoa* AsImageRepCocoa() const {
     CHECK_EQ(type_, Image::kImageRepCocoa);
     return reinterpret_cast<const ImageRepCocoa*>(this);
@@ -168,7 +168,7 @@ class ImageRepSkia : public ImageRep {
   ImageSkia image_;
 };
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 class ImageRepCocoaTouch : public ImageRep {
  public:
   explicit ImageRepCocoaTouch(UIImage* image)
@@ -197,7 +197,7 @@ class ImageRepCocoaTouch : public ImageRep {
  private:
   UIImage* image_;
 };
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 class ImageRepCocoa : public ImageRep {
  public:
   explicit ImageRepCocoa(NSImage* image)
@@ -226,7 +226,7 @@ class ImageRepCocoa : public ImageRep {
  private:
   NSImage* image_;
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // The Storage class acts similarly to the pixels in a SkBitmap: the Image
 // class holds a refptr instance of Storage, which in turn holds all the
@@ -239,11 +239,11 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
  public:
   explicit ImageStorage(Image::RepresentationType default_type)
       : default_representation_type_(default_type)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         ,
         default_representation_color_space_(
             base::mac::GetGenericRGBColorSpace())
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   {
   }
 
@@ -288,7 +288,7 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
     return result.first->second.get();
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void set_default_representation_color_space(CGColorSpaceRef color_space) {
     DCHECK(IsOnValidSequence());
     default_representation_color_space_ = color_space;
@@ -297,7 +297,7 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
     DCHECK(IsOnValidSequence());
     return default_representation_color_space_;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   friend class base::RefCounted<ImageStorage>;
@@ -308,13 +308,13 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   // exist in the |representations_| map.
   Image::RepresentationType default_representation_type_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The default representation's colorspace. This is used for converting to
   // NSImage. This field exists to compensate for PNGCodec not writing or
   // reading colorspace ancillary chunks. (sRGB, iCCP).
   // Not owned.
   CGColorSpaceRef default_representation_color_space_;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // All the representations of an Image. Size will always be at least one, with
   // more for any converted representations.
@@ -349,14 +349,14 @@ Image::Image(const ImageSkia& image) {
   }
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 Image::Image(UIImage* image) {
   if (image) {
     storage_ = new internal::ImageStorage(Image::kImageRepCocoaTouch);
     AddRepresentation(std::make_unique<internal::ImageRepCocoaTouch>(image));
   }
 }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 Image::Image(NSImage* image) {
   if (image) {
     storage_ = new internal::ImageStorage(Image::kImageRepCocoa);
@@ -423,7 +423,7 @@ const ImageSkia* Image::ToImageSkia() const {
             internal::ImageSkiaFromPNG(png_rep->image_reps()));
         break;
       }
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       case kImageRepCocoaTouch: {
         const internal::ImageRepCocoaTouch* native_rep =
             GetRepresentation(kImageRepCocoaTouch, true)
@@ -432,7 +432,7 @@ const ImageSkia* Image::ToImageSkia() const {
             ImageSkia(ImageSkiaFromUIImage(native_rep->image())));
         break;
       }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
       case kImageRepCocoa: {
         const internal::ImageRepCocoa* native_rep =
             GetRepresentation(kImageRepCocoa, true)->AsImageRepCocoa();
@@ -450,7 +450,7 @@ const ImageSkia* Image::ToImageSkia() const {
   return rep->AsImageRepSkia()->image();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 UIImage* Image::ToUIImage() const {
   const internal::ImageRep* rep = GetRepresentation(kImageRepCocoaTouch, false);
   if (!rep) {
@@ -478,7 +478,7 @@ UIImage* Image::ToUIImage() const {
   }
   return rep->AsImageRepCocoaTouch()->image();
 }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 NSImage* Image::ToNSImage() const {
   const internal::ImageRep* rep = GetRepresentation(kImageRepCocoa, false);
   if (!rep) {
@@ -531,7 +531,7 @@ scoped_refptr<base::RefCountedMemory> Image::As1xPNGBytes() const {
 
   scoped_refptr<base::RefCountedMemory> png_bytes;
   switch (DefaultRepresentationType()) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     case kImageRepCocoaTouch: {
       const internal::ImageRepCocoaTouch* cocoa_touch_rep =
           GetRepresentation(kImageRepCocoaTouch, true)->AsImageRepCocoaTouch();
@@ -539,7 +539,7 @@ scoped_refptr<base::RefCountedMemory> Image::As1xPNGBytes() const {
           cocoa_touch_rep->image());
       break;
     }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     case kImageRepCocoa: {
       const internal::ImageRepCocoa* cocoa_rep =
           GetRepresentation(kImageRepCocoa, true)->AsImageRepCocoa();
@@ -584,7 +584,7 @@ ImageSkia Image::AsImageSkia() const {
   return IsEmpty() ? ImageSkia() : *ToImageSkia();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 NSImage* Image::AsNSImage() const {
   return IsEmpty() ? nil : ToNSImage();
 }
@@ -620,12 +620,12 @@ gfx::Size Image::Size() const {
   return GetRepresentation(DefaultRepresentationType(), true)->Size();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void Image::SetSourceColorSpace(CGColorSpaceRef color_space) {
   if (storage())
     storage()->set_default_representation_color_space(color_space);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 Image::RepresentationType Image::DefaultRepresentationType() const {
   CHECK(storage());

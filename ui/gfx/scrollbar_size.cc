@@ -7,14 +7,14 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 namespace gfx {
 
 int scrollbar_size() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GetSystemMetrics(SM_CXVSCROLL);
 #else
   return 15;

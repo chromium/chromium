@@ -14,7 +14,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -475,7 +475,7 @@ TEST(RectTest, ScaleToRoundedRect) {
   TestScaleRectOverflowClamp(ScaleToRoundedRect);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(RectTest, ConstructAndAssign) {
   const RECT rect_1 = { 0, 0, 10, 10 };
   const RECT rect_2 = { 0, 0, -10, -10 };

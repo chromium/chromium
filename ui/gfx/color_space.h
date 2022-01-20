@@ -258,12 +258,12 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // sRGB's (1,1,1) maps to scRGB linear's (1,1,1) when the SDR white level is
   // set to 80 nits. On Mac and ChromeOS, sRGB's (1,1,1) maps to PQ's 100 nits.
   // Using a platform specific value here satisfies both constraints.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static constexpr float kDefaultScrgbLinearSdrWhiteLevel = 80.0f;
 #else
   static constexpr float kDefaultScrgbLinearSdrWhiteLevel =
       kDefaultSDRWhiteLevel;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   bool operator==(const ColorSpace& other) const;
   bool operator!=(const ColorSpace& other) const;

@@ -7,15 +7,15 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
 namespace gfx {
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 SizeF::SizeF(const CGSize& size) : SizeF(size.width, size.height) {}
 
 CGSize SizeF::ToCGSize() const {

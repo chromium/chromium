@@ -15,9 +15,9 @@
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kFontDescription[] = "Segoe UI, 13px";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kFontDescription[] = "serif, 13px";
 #else
 const char kFontDescription[] = "sans, 13px";

@@ -25,7 +25,7 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
 // configuration. This allows UI that wants to target a particular size of font
 // to obtain that size for the majority of users, while still compensating for a
 // user preference for a larger or smaller font.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   static constexpr int kDefaultBaseFontSize = 13;
 #else
   static constexpr int kDefaultBaseFontSize = 12;
@@ -33,7 +33,7 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
 
   // Creates an appropriate PlatformFont implementation.
   static PlatformFont* CreateDefault();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   static PlatformFont* CreateFromNativeFont(NativeFont native_font);
 #endif
   // Creates a PlatformFont implementation with the specified |font_name|
@@ -96,7 +96,7 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
   // Returns an object describing how the font should be rendered.
   virtual const FontRenderParams& GetFontRenderParams() = 0;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Returns the native font handle.
   virtual NativeFont GetNativeFont() const = 0;
 #endif

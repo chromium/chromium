@@ -25,7 +25,7 @@ namespace gfx {
 namespace {
 
 gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
-#if defined(USE_OZONE) || defined(OS_APPLE)
+#if defined(USE_OZONE) || BUILDFLAG(IS_APPLE)
   return static_cast<gfx::AcceleratedWidget>(i);
 #else
   return reinterpret_cast<gfx::AcceleratedWidget>(i);
@@ -171,18 +171,18 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   base::UnsafeSharedMemoryRegion output_memory = std::move(output.region);
   EXPECT_TRUE(output_memory.Map().IsValid());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
   gfx::GpuMemoryBufferHandle handle2;
   const uint64_t kSize = kOffset + kStride;
   handle2.type = gfx::NATIVE_PIXMAP;
   handle2.id = kId;
   handle2.offset = kOffset;
   handle2.stride = kStride;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const uint64_t kModifier = 2;
   base::ScopedFD buffer_handle;
   handle2.native_pixmap_handle.modifier = kModifier;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo buffer_handle;
   handle2.native_pixmap_handle.buffer_collection_id =
       gfx::SysmemBufferCollectionId::Create();
@@ -193,9 +193,9 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
                                                    std::move(buffer_handle));
   remote->EchoGpuMemoryBufferHandle(std::move(handle2), &output);
   EXPECT_EQ(gfx::NATIVE_PIXMAP, output.type);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(kModifier, output.native_pixmap_handle.modifier);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   EXPECT_EQ(handle2.native_pixmap_handle.buffer_collection_id,
             output.native_pixmap_handle.buffer_collection_id);
   EXPECT_EQ(handle2.native_pixmap_handle.buffer_index,
@@ -245,7 +245,7 @@ TEST_F(StructTraitsTest, PresentationFeedback) {
   uint32_t flags =
       PresentationFeedback::kVSync | PresentationFeedback::kZeroCopy;
   PresentationFeedback input{timestamp, interval, flags};
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   input.ca_layer_error_code = kCALayerFailedPictureContent;
 #endif
 
@@ -261,7 +261,7 @@ TEST_F(StructTraitsTest, PresentationFeedback) {
   EXPECT_EQ(input.available_timestamp, output.available_timestamp);
   EXPECT_EQ(input.ready_timestamp, output.ready_timestamp);
   EXPECT_EQ(input.latch_timestamp, output.latch_timestamp);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(input.ca_layer_error_code, output.ca_layer_error_code);
 #endif
 }

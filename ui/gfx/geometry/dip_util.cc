@@ -17,7 +17,7 @@
 
 namespace gfx {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Returns true if the floating point value is holding an integer, modulo
 // floating point error. The value `f` can be safely converted to its integer
 // form with base::ClampRound().
@@ -28,7 +28,7 @@ static bool IsIntegerInFloat(float f) {
 
 PointF ConvertPointToDips(const Point& point_in_pixels,
                           float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -37,7 +37,7 @@ PointF ConvertPointToDips(const Point& point_in_pixels,
 
 PointF ConvertPointToDips(const PointF& point_in_pixels,
                           float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -46,7 +46,7 @@ PointF ConvertPointToDips(const PointF& point_in_pixels,
 
 PointF ConvertPointToPixels(const Point& point_in_dips,
                             float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -55,7 +55,7 @@ PointF ConvertPointToPixels(const Point& point_in_dips,
 
 PointF ConvertPointToPixels(const PointF& point_in_dips,
                             float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -63,7 +63,7 @@ PointF ConvertPointToPixels(const PointF& point_in_dips,
 }
 
 SizeF ConvertSizeToDips(const Size& size_in_pixels, float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -72,7 +72,7 @@ SizeF ConvertSizeToDips(const Size& size_in_pixels, float device_scale_factor) {
 
 SizeF ConvertSizeToDips(const SizeF& size_in_pixels,
                         float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -80,7 +80,7 @@ SizeF ConvertSizeToDips(const SizeF& size_in_pixels,
 }
 
 SizeF ConvertSizeToPixels(const Size& size_in_dips, float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -89,7 +89,7 @@ SizeF ConvertSizeToPixels(const Size& size_in_dips, float device_scale_factor) {
 
 SizeF ConvertSizeToPixels(const SizeF& size_in_dips,
                           float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -97,7 +97,7 @@ SizeF ConvertSizeToPixels(const SizeF& size_in_dips,
 }
 
 RectF ConvertRectToDips(const Rect& rect_in_pixels, float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -106,7 +106,7 @@ RectF ConvertRectToDips(const Rect& rect_in_pixels, float device_scale_factor) {
 
 RectF ConvertRectToDips(const RectF& rect_in_pixels,
                         float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -114,7 +114,7 @@ RectF ConvertRectToDips(const RectF& rect_in_pixels,
 }
 
 RectF ConvertRectToPixels(const Rect& rect_in_dips, float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -123,7 +123,7 @@ RectF ConvertRectToPixels(const Rect& rect_in_dips, float device_scale_factor) {
 
 RectF ConvertRectToPixels(const RectF& rect_in_dips,
                           float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -132,7 +132,7 @@ RectF ConvertRectToPixels(const RectF& rect_in_dips,
 
 InsetsF ConvertInsetsToDips(const gfx::Insets& insets_in_pixels,
                             float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -141,7 +141,7 @@ InsetsF ConvertInsetsToDips(const gfx::Insets& insets_in_pixels,
 
 InsetsF ConvertInsetsToDips(const gfx::InsetsF& insets_in_pixels,
                             float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -150,7 +150,7 @@ InsetsF ConvertInsetsToDips(const gfx::InsetsF& insets_in_pixels,
 
 InsetsF ConvertInsetsToPixels(const gfx::Insets& insets_in_dips,
                               float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
@@ -159,7 +159,7 @@ InsetsF ConvertInsetsToPixels(const gfx::Insets& insets_in_dips,
 
 InsetsF ConvertInsetsToPixels(const gfx::InsetsF& insets_in_dips,
                               float device_scale_factor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Device scale factor on MacOSX is always an integer.
   DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif

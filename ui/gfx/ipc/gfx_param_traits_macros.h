@@ -18,7 +18,7 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/gfx/swap_result.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/native_pixmap_handle.h"
 #endif
 
@@ -34,7 +34,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(gfx::SelectionBound::Type, gfx::SelectionBound::LAST)
 
 IPC_STRUCT_TRAITS_BEGIN(gfx::CALayerParams)
   IPC_STRUCT_TRAITS_MEMBER(is_empty)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   IPC_STRUCT_TRAITS_MEMBER(ca_context_id)
   IPC_STRUCT_TRAITS_MEMBER(io_surface_mach_port)
   IPC_STRUCT_TRAITS_MEMBER(pixel_size)
@@ -48,13 +48,13 @@ IPC_STRUCT_TRAITS_BEGIN(gfx::GpuMemoryBufferHandle)
   IPC_STRUCT_TRAITS_MEMBER(region)
   IPC_STRUCT_TRAITS_MEMBER(offset)
   IPC_STRUCT_TRAITS_MEMBER(stride)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   IPC_STRUCT_TRAITS_MEMBER(native_pixmap_handle)
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   IPC_STRUCT_TRAITS_MEMBER(io_surface)
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   IPC_STRUCT_TRAITS_MEMBER(dxgi_handle)
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   IPC_STRUCT_TRAITS_MEMBER(android_hardware_buffer)
 #endif
 IPC_STRUCT_TRAITS_END()
@@ -63,24 +63,24 @@ IPC_STRUCT_TRAITS_BEGIN(gfx::GpuMemoryBufferId)
   IPC_STRUCT_TRAITS_MEMBER(id)
 IPC_STRUCT_TRAITS_END()
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 IPC_STRUCT_TRAITS_BEGIN(gfx::NativePixmapPlane)
   IPC_STRUCT_TRAITS_MEMBER(stride)
   IPC_STRUCT_TRAITS_MEMBER(offset)
   IPC_STRUCT_TRAITS_MEMBER(size)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   IPC_STRUCT_TRAITS_MEMBER(fd)
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   IPC_STRUCT_TRAITS_MEMBER(vmo)
 #endif
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(gfx::NativePixmapHandle)
   IPC_STRUCT_TRAITS_MEMBER(planes)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   IPC_STRUCT_TRAITS_MEMBER(modifier)
 #endif
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   IPC_STRUCT_TRAITS_MEMBER(buffer_collection_id)
   IPC_STRUCT_TRAITS_MEMBER(buffer_index)
   IPC_STRUCT_TRAITS_MEMBER(ram_coherency)
@@ -106,10 +106,10 @@ IPC_STRUCT_TRAITS_BEGIN(gfx::PresentationFeedback)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(gfx::GpuFenceHandle)
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   IPC_STRUCT_TRAITS_MEMBER(owned_fd)
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   IPC_STRUCT_TRAITS_MEMBER(owned_handle)
 #endif
 IPC_STRUCT_TRAITS_END()

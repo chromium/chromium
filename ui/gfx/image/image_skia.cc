@@ -528,7 +528,7 @@ const SkBitmap& ImageSkia::GetBitmap() const {
 
   // TODO(oshima): This made a few tests flaky on Windows.
   // Fix the root cause and re-enable this. crbug.com/145623.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   CHECK(CanRead());
 #endif
 

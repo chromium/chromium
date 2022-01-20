@@ -11,11 +11,11 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/gfx_export.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <objc/objc.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -54,10 +54,10 @@ enum class CursorType;
 
 #endif  // defined(USE_AURA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef struct HFONT__* HFONT;
 struct IAccessible;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 struct CGContext;
 #ifdef __OBJC__
 @class UIEvent;
@@ -74,7 +74,7 @@ class UIView;
 class UIWindow;
 class UITextField;
 #endif  // __OBJC__
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 struct CGContext;
 #ifdef __OBJC__
 @class NSCursor;
@@ -95,7 +95,7 @@ class NSTextField;
 #endif  // __OBJC__
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 struct ANativeWindow;
 namespace ui {
 class WindowAndroid;
@@ -106,7 +106,7 @@ class SkBitmap;
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern "C" {
 struct _AtkObject;
 typedef struct _AtkObject AtkObject;
@@ -122,14 +122,14 @@ typedef aura::Window* NativeWindow;
 typedef ui::Event* NativeEvent;
 constexpr NativeView kNullNativeView = nullptr;
 constexpr NativeWindow kNullNativeWindow = nullptr;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 typedef void* NativeCursor;
 typedef UIView* NativeView;
 typedef UIWindow* NativeWindow;
 typedef UIEvent* NativeEvent;
 constexpr NativeView kNullNativeView = nullptr;
 constexpr NativeWindow kNullNativeWindow = nullptr;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef NSCursor* NativeCursor;
 typedef NSEvent* NativeEvent;
 // NativeViews and NativeWindows on macOS are not necessarily in the same
@@ -187,7 +187,7 @@ class GFX_EXPORT NativeWindow {
 };
 constexpr NativeView kNullNativeView = NativeView(nullptr);
 constexpr NativeWindow kNullNativeWindow = NativeWindow(nullptr);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 typedef void* NativeCursor;
 typedef ui::ViewAndroid* NativeView;
 typedef ui::WindowAndroid* NativeWindow;
@@ -198,18 +198,18 @@ constexpr NativeWindow kNullNativeWindow = nullptr;
 #error Unknown build environment.
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef HFONT NativeFont;
 typedef IAccessible* NativeViewAccessible;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 typedef UIFont* NativeFont;
 typedef id NativeViewAccessible;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef NSFont* NativeFont;
 typedef id NativeViewAccessible;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Linux doesn't have a native font type.
 typedef AtkObject* NativeViewAccessible;
 #else
@@ -235,16 +235,16 @@ const gfx::NativeCursor kNullCursor = static_cast<gfx::NativeCursor>(nullptr);
 typedef intptr_t NativeViewId;
 
 // AcceleratedWidget provides a surface to compositors to paint pixels.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef HWND AcceleratedWidget;
 constexpr AcceleratedWidget kNullAcceleratedWidget = nullptr;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 typedef UIView* AcceleratedWidget;
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef uint64_t AcceleratedWidget;
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 typedef ANativeWindow* AcceleratedWidget;
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
 #elif defined(USE_OZONE)

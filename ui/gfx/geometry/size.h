@@ -13,9 +13,9 @@
 #include "build/build_config.h"
 #include "ui/gfx/geometry/geometry_export.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef struct tagSIZE SIZE;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 typedef struct CGSize CGSize;
 #endif
 
@@ -27,7 +27,7 @@ class GEOMETRY_EXPORT Size {
   constexpr Size() : width_(0), height_(0) {}
   constexpr Size(int width, int height)
       : width_(std::max(0, width)), height_(std::max(0, height)) {}
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   explicit Size(const CGSize& s);
 #endif
 
@@ -35,9 +35,9 @@ class GEOMETRY_EXPORT Size {
 
   void operator-=(const Size& size);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SIZE ToSIZE() const;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   CGSize ToCGSize() const;
 #endif
 

@@ -44,7 +44,7 @@ namespace gfx {
 
 namespace {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // The returned string will have at least one character besides the ellipsis
 // on either side of '@'; if that's impossible, a single ellipsis is returned.
 // If possible, only the username is elided. Otherwise, the domain is elided
@@ -172,12 +172,12 @@ std::u16string StringSlicer::CutString(size_t length,
 std::u16string ElideFilename(const base::FilePath& filename,
                              const FontList& font_list,
                              float available_pixel_width) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string filename_utf16 = WideToUTF16(filename.value());
   std::u16string extension = WideToUTF16(filename.Extension());
   std::u16string rootname =
       WideToUTF16(filename.BaseName().RemoveExtension().value());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   std::u16string filename_utf16 =
       WideToUTF16(base::SysNativeMBToWide(filename.value()));
   std::u16string extension =
@@ -222,7 +222,7 @@ std::u16string ElideText(const std::u16string& text,
                          const FontList& font_list,
                          float available_pixel_width,
                          ElideBehavior behavior) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   DCHECK_NE(behavior, FADE_TAIL);
   std::unique_ptr<RenderText> render_text = RenderText::CreateRenderText();
   render_text->SetCursorEnabled(false);

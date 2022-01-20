@@ -14,7 +14,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 struct CGPoint;
 #endif
 
@@ -29,7 +29,7 @@ class GEOMETRY_EXPORT PointF {
   constexpr explicit PointF(const Point& p)
       : PointF(static_cast<float>(p.x()), static_cast<float>(p.y())) {}
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   explicit PointF(const CGPoint&);
   CGPoint ToCGPoint() const;
 #endif
