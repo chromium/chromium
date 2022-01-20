@@ -232,6 +232,8 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
     // The bubble widget is cached, but it may change displays. Update pointers
     // that are tied to the display.
     bubble_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
+    // Refresh suggestions now that zero-state search data is updated.
+    bubble_view_->UpdateSuggestions();
     bubble_event_filter_->SetButton(home_button);
     // The observer for the correct display will be added below.
     aura::client::GetFocusClient(bubble_widget_->GetNativeWindow())

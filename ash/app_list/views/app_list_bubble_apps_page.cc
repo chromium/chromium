@@ -138,12 +138,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_->AddObserver(this);
 
   // Recent apps row.
-  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
-  AppListModel* const model = AppListModelProvider::Get()->model();
   recent_apps_ = scroll_contents->AddChildView(
       std::make_unique<RecentAppsView>(this, view_delegate));
   recent_apps_->UpdateAppListConfig(app_list_config);
-  recent_apps_->ShowResults(search_model, model);
   // Observe changes in continue section visibility, to keep separator
   // visibility in sync.
   recent_apps_->AddObserver(this);
@@ -174,6 +171,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_->Init();
   scrollable_apps_grid_view_->UpdateAppListConfig(app_list_config);
   scrollable_apps_grid_view_->SetMaxColumns(5);
+  AppListModel* const model = AppListModelProvider::Get()->model();
   scrollable_apps_grid_view_->SetModel(model);
   scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
   scrollable_apps_grid_view_->ResetForShowApps();
@@ -183,14 +181,20 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
   scroll_view_->SetContents(std::move(scroll_contents));
 
-  continue_section_->UpdateSuggestionTasks();
-  UpdateSeparatorVisibility();
+  UpdateSuggestions();
 }
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() {
   AppListModelProvider::Get()->RemoveObserver(this);
   continue_section_->RemoveObserver(this);
   recent_apps_->RemoveObserver(this);
+}
+
+void AppListBubbleAppsPage::UpdateSuggestions() {
+  recent_apps_->ShowResults(AppListModelProvider::Get()->search_model(),
+                            AppListModelProvider::Get()->model());
+  continue_section_->UpdateSuggestionTasks();
+  UpdateSeparatorVisibility();
 }
 
 void AppListBubbleAppsPage::AnimateShowLauncher() {

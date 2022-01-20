@@ -226,6 +226,28 @@ TEST_F(AppListBubbleViewTest, Layout) {
   EXPECT_EQ(kBorderSize + search_box_view->height(), separator_origin.y());
 }
 
+TEST_F(AppListBubbleViewTest,
+       ShowingBubbleUpdatesContinueSectionAndRecentApps) {
+  // Show the app list with 3 tasks and 4 recent apps.
+  AddContinueSuggestionResult(3);
+  AddRecentApps(4);
+  AddAppItems(5);
+  ShowAppList();
+
+  // Hide the app list. The widget and views are cached.
+  DismissAppList();
+
+  // While the app list is hidden, update to have 4 tasks and 5 recent apps.
+  GetAppListTestHelper()->GetSearchResults()->DeleteAll();
+  AddContinueSuggestionResult(4);
+  AddRecentApps(5);
+  ShowAppList();
+
+  // Continue section and recent apps have the updated item counts.
+  EXPECT_EQ(GetContinueSectionView()->GetTasksSuggestionsCount(), 4u);
+  EXPECT_EQ(GetRecentAppsView()->GetItemViewCount(), 5);
+}
+
 TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
   // Enable animations.
   base::test::ScopedFeatureList feature(

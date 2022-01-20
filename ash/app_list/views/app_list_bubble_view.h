@@ -49,6 +49,9 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void SetDragAndDropHostOfCurrentAppList(
       ApplicationDragAndDropHost* drag_and_drop_host);
 
+  // Updates continue tasks and recent apps.
+  void UpdateSuggestions();
+
   // Starts the bubble show animation.
   void StartShowAnimation();
 

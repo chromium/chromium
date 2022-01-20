@@ -153,6 +153,10 @@ AppListBubbleView::~AppListBubbleView() {
   folder_view_ = nullptr;
 }
 
+void AppListBubbleView::UpdateSuggestions() {
+  apps_page_->UpdateSuggestions();
+}
+
 void AppListBubbleView::SetDragAndDropHostOfCurrentAppList(
     ApplicationDragAndDropHost* drag_and_drop_host) {
   DCHECK(drag_and_drop_host);

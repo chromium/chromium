@@ -60,6 +60,9 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   AppListBubbleAppsPage& operator=(const AppListBubbleAppsPage&) = delete;
   ~AppListBubbleAppsPage() override;
 
+  // Updates the continue section and recent apps.
+  void UpdateSuggestions();
+
   // Starts the launcher show animation.
   void AnimateShowLauncher();
 
