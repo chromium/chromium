@@ -3048,11 +3048,6 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ Failure ]
-crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg-basic.html [ Failure ]
-crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg.html [ Failure ]
-crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter.html [ Failure ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-002.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-013.https.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/wasm/jsapi/constructor/instantiate-bad-imports.any.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/wasm/jsapi/constructor/instantiate-bad-imports.any.worker.html [ Timeout ]
@@ -5036,8 +5031,8 @@ crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network
 crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party-issue.js [ Pass ]
 
 # Temporarily disabled to allow a change to DebuggerModel#scriptsForSourceUrl to land.
-crbug.com/1277403 http/tests/devtools/bindings/inline-styles-binding.js [ Failure Pass ]
-crbug.com/1277403 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Failure Pass ]
+crbug.com/1277403 http/tests/devtools/bindings/inline-styles-binding.js [ Pass Failure ]
+crbug.com/1277403 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Pass Failure ]
 
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
@@ -7597,9 +7592,9 @@ crbug.com/1288136 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 
 # Sheriff 2022-01-18
 crbug.com/1287067 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/embedder-require-corp.https.html [ Failure Pass ]
-crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/redirect-loop-base-https-other-https.html [ Pass Skip Timeout ]
-crbug.com/1288264 [ Win ] http/tests/fetch/window/thorough/cors-preflight2-base-https-other-https.html [ Pass Skip Timeout ]
-crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker/thorough/nocors-base-https-other-https.html [ Pass Skip Timeout ]
+crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/redirect-loop-base-https-other-https.html [ Skip Pass Timeout ]
+crbug.com/1288264 [ Win ] http/tests/fetch/window/thorough/cors-preflight2-base-https-other-https.html [ Skip Pass Timeout ]
+crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker/thorough/nocors-base-https-other-https.html [ Skip Pass Timeout ]
 crbug.com/1288264 [ Win ] http/tests/security/aboutBlank/xss-DENIED-navigate-opener-document-write.html [ Pass Timeout ]
 crbug.com/1227911 [ Linux Release ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomainport.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomainport.sub.https.html [ Failure Pass ]
@@ -7609,10 +7604,10 @@ crbug.com/1227911 [ Linux Release ] virtual/no-auto-wpt-origin-isolation/externa
 crbug.com/1227911 [ Mac10.14 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-no-subdomain-child2-no-subdomain2.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Linux Release ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Pass ]
-crbug.com/1227911 [ Release Win ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomain.sub.https.html [ Failure Pass ]
+crbug.com/1227911 [ Win Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Linux Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomain.sub.https.html [ Failure Pass ]
-crbug.com/1227911 [ Release Win ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
+crbug.com/1227911 [ Win Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Linux Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
 

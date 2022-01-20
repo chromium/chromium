@@ -56,3 +56,11 @@ enum PermissionName {
   "speaker-selection",
   "xr-spatial-tracking",
 };
+
+dictionary DevicePermissionDescriptor : PermissionDescriptor {
+  DOMString deviceId;
+};
+
+dictionary CameraDevicePermissionDescriptor : DevicePermissionDescriptor {
+  boolean panTiltZoom = false;
+};

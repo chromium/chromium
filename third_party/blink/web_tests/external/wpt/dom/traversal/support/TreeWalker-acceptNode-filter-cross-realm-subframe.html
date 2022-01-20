@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<body id="treeWalkerRoot">
+<div></div>
+
+<script>
+window.testCases = [];
+
+(function() {
+    let walker = parent.document.createTreeWalker(parent.treeWalkerRoot, NodeFilter.SHOW_ELEMENT, new parent.Object);
+    try { walker.firstChild(); } catch (err) { testCases.push({ actual: err, expected: parent.TypeError, description: "parent's |this|, parent's method, parent's filter, parent's root" }); }
+
+    walker = parent.document.createTreeWalker(treeWalkerRoot, NodeFilter.SHOW_ELEMENT, new parent.Object);
+    try { walker.firstChild(); } catch (err) { testCases.push({ actual: err, expected: parent.TypeError, description: "parent's |this|, parent's method, parent's filter, iframe's root" }); }
+
+    walker = parent.document.createTreeWalker(treeWalkerRoot, NodeFilter.SHOW_ELEMENT, {});
+    try { walker.firstChild(); } catch (err) { testCases.push({ actual: err, expected: parent.TypeError, description: "parent's |this|, parent's method, iframe's filter, iframe's root" }); }
+
+    walker = document.createTreeWalker.call(parent.document, treeWalkerRoot, NodeFilter.SHOW_ELEMENT, {});
+    try { walker.firstChild(); } catch (err) { testCases.push({ actual: err, expected: TypeError, description: "parent's |this|, iframes's method, iframe's filter, iframe's root" }); }
+})();
+</script>

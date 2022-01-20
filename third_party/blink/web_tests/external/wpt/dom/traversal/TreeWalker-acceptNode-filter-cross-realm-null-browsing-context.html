@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>TreeWalker: NodeFilter from detached iframe doesn't get called</title>
+<title>TreeWalker: NodeFilter from detached iframe works as expected</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#ref-for-call-a-user-objects-operation%E2%91%A0">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
 <body>
-<div></div>
-
 <script>
 const t = async_test();
 
@@ -17,13 +16,8 @@ iframe.onload = t.step_func_done(() => {
     iframe.remove();
 
     assert_equals(iframe.contentWindow, null);
-
-    let errorWasThrown = false;
-    try { nodeIterator.nextNode(); }
-    catch { errorWasThrown = true; }
-
-    assert_true(errorWasThrown);
-    assert_false(nodeIterator.dummyFilterCalled);
+    assert_equals(nodeIterator.nextNode(), document.body);
+    assert_true(nodeIterator.dummyFilterCalled);
 });
 
 document.body.append(iframe);

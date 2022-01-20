@@ -11,18 +11,18 @@ partial interface Navigator {
 [Exposed=Window]
 interface WindowControlsOverlay : EventTarget {
   readonly attribute boolean visible;
-  DOMRect getTitlebarAreaRect();
+  DOMRect getBoundingClientRect();
   attribute EventHandler ongeometrychange;
 };
 
 [Exposed=Window]
 interface WindowControlsOverlayGeometryChangeEvent : Event {
   constructor(DOMString type, WindowControlsOverlayGeometryChangeEventInit eventInitDict);
-  [SameObject] readonly attribute DOMRect titlebarAreaRect;
+  [SameObject] readonly attribute DOMRect boundingRect;
   readonly attribute boolean visible;
 };
 
 dictionary WindowControlsOverlayGeometryChangeEventInit : EventInit {
-  required DOMRect titlebarAreaRect;
+  required DOMRect boundingRect;
   boolean visible = false;
 };

@@ -51,7 +51,6 @@ interface NDEFReader : EventTarget {
   Promise<undefined> scan(optional NDEFScanOptions options={});
   Promise<undefined> write(NDEFMessageSource message,
                                  optional NDEFWriteOptions options={});
-  Promise<undefined> makeReadOnly(optional NDEFMakeReadOnlyOptions options={});
 };
 
 [SecureContext, Exposed=Window]
@@ -69,10 +68,6 @@ dictionary NDEFReadingEventInit : EventInit {
 
 dictionary NDEFWriteOptions {
   boolean overwrite = true;
-  AbortSignal? signal;
-};
-
-dictionary NDEFMakeReadOnlyOptions {
   AbortSignal? signal;
 };
 
