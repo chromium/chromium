@@ -115,7 +115,21 @@ DEFINE_VARIATION_PARAM(
 DEFINE_VARIATION_PARAM(
     kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature,
     "IPH_FeatureNotificationGuideVoiceSearchNotificationShown");
+DEFINE_VARIATION_PARAM(kIPHFeatureNotificationGuideDefaultBrowserPromoFeature,
+                       "IPH_FeatureNotificationGuideDefaultBrowserPromo");
+DEFINE_VARIATION_PARAM(kIPHFeatureNotificationGuideSignInHelpBubbleFeature,
+                       "IPH_FeatureNotificationGuideSignInHelpBubble");
+DEFINE_VARIATION_PARAM(
+    kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature,
+    "IPH_FeatureNotificationGuideIncognitoTabHelpBubble");
+DEFINE_VARIATION_PARAM(
+    kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature,
+    "IPH_FeatureNotificationGuideNTPSuggestionCardHelpBubble");
+DEFINE_VARIATION_PARAM(kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature,
+                       "IPH_FeatureNotificationGuideVoiceSearchHelpBubble");
 DEFINE_VARIATION_PARAM(kIPHFeedCardMenuFeature, "IPH_FeedCardMenu");
+DEFINE_VARIATION_PARAM(kIPHGenericAlwaysTriggerHelpUiFeature,
+                       "IPH_GenericAlwaysTriggerHelpUiFeature");
 DEFINE_VARIATION_PARAM(kIPHHomepagePromoCardFeature, "IPH_HomepagePromoCard");
 DEFINE_VARIATION_PARAM(kIPHIdentityDiscFeature, "IPH_IdentityDisc");
 DEFINE_VARIATION_PARAM(kIPHInstanceSwitcherFeature, "IPH_InstanceSwitcher");

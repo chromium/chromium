@@ -4,11 +4,33 @@
 
 #include "components/feature_engagement/public/feature_configurations.h"
 
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 
 namespace feature_engagement {
+
+FeatureConfig CreateAlwaysTriggerConfig(const base::Feature* feature) {
+  // Trim "IPH_" prefix from the feature name to use for trigger and used
+  // events.
+  const char* prefix = "IPH_";
+  std::string stripped_feature_name = feature->name;
+  if (base::StartsWith(stripped_feature_name, prefix,
+                       base::CompareCase::SENSITIVE))
+    stripped_feature_name = stripped_feature_name.substr(strlen(prefix));
+
+  // A config that always meets condition to trigger IPH.
+  FeatureConfig config;
+  config.valid = true;
+  config.availability = Comparator(ANY, 0);
+  config.session_rate = Comparator(ANY, 0);
+  config.trigger = EventConfig(stripped_feature_name + "_trigger",
+                               Comparator(ANY, 0), 90, 90);
+  config.used =
+      EventConfig(stripped_feature_name + "_used", Comparator(ANY, 0), 90, 90);
+  return config;
+}
 
 absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     const base::Feature* feature) {
@@ -208,6 +230,26 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("add_to_homescreen_text_bubble_iph_trigger",
                     Comparator(EQUAL, 0), 15, 90));
     return config;
+  }
+
+  // Feature notification guide help UI promos that are shown in response to a
+  // notification click.
+  if (kIPHFeatureNotificationGuideDefaultBrowserPromoFeature.name ==
+          feature->name ||
+      kIPHFeatureNotificationGuideSignInHelpBubbleFeature.name ==
+          feature->name ||
+      kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature.name ==
+          feature->name ||
+      kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature.name ==
+          feature->name ||
+      kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature.name ==
+          feature->name) {
+    return CreateAlwaysTriggerConfig(feature);
+  }
+
+  // A generic feature that always returns true.
+  if (kIPHGenericAlwaysTriggerHelpUiFeature.name == feature->name) {
+    return CreateAlwaysTriggerConfig(feature);
   }
 
   if (kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature.name ==

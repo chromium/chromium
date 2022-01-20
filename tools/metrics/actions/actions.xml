@@ -32393,19 +32393,31 @@ should be able to be added at any place in this file.
   <suffix name="FeatureNotificationGuideDefaultBrowserNotificationShown"
       label="For feature notification guide default browser notification
              feature."/>
+  <suffix name="FeatureNotificationGuideDefaultBrowserPromo"
+      label="For feature notification guide default browser promo."/>
+  <suffix name="FeatureNotificationGuideIncognitoTabHelpBubble"
+      label="For feature notification guide incognito tab help bubble."/>
   <suffix name="FeatureNotificationGuideIncognitoTabNotificationShown"
       label="For feature notification guide incognito tab notification
              feature."/>
+  <suffix name="FeatureNotificationGuideNTPSuggestionCardHelpBubble"
+      label="For feature notification guide NTP suggestion card help bubble."/>
   <suffix name="FeatureNotificationGuideNTPSuggestionCardNotificationShown"
       label="For feature notification guide NTP suggestion card notification
              feature."/>
+  <suffix name="FeatureNotificationGuideSignInHelpBubble"
+      label="For feature notification guide sign in help bubble."/>
   <suffix name="FeatureNotificationGuideSignInNotificationShown"
       label="For feature notification guide sign in notification feature."/>
+  <suffix name="FeatureNotificationGuideVoiceSearchHelpBubble"
+      label="For feature notification guide voice search help bubble."/>
   <suffix name="FeatureNotificationGuideVoiceSearchNotificationShown"
       label="For feature notification guide voice search notification
              feature."/>
   <suffix name="FeedCardMenu" label="For FeedCardMenu feature."/>
   <suffix name="FeedHeaderMenu" label="For FeedHeaderMenu feature."/>
+  <suffix name="GenericAlwaysTriggerHelpUiFeature"
+      label="For generic always show help UI feature."/>
   <suffix name="GlobalMediaControls" label="For GlobalMediaControls feature."/>
   <suffix name="GMCCastStartStopFeature"
       label="For Global Media Controls Cast start and stop feature."/>

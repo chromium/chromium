@@ -130,18 +130,30 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_ExploreSitesTile" summary="Explore Sites feature"/>
   <variant name="IPH_FeatureNotificationGuideDefaultBrowserNotificationShown"
       summary="feature notification guide default browser notification"/>
+  <variant name="IPH_FeatureNotificationGuideDefaultBrowserPromo"
+      summary="feature notification guide default browser promo"/>
+  <variant name="IPH_FeatureNotificationGuideIncognitoTabHelpBubble"
+      summary="feature notification guide incognito tab help bubble"/>
   <variant name="IPH_FeatureNotificationGuideIncognitoTabNotificationShown"
       summary="feature notification guide incognito tab notification"/>
+  <variant name="IPH_FeatureNotificationGuideNTPSuggestionCardHelpBubble"
+      summary="feature notification guide NTP suggestion card help bubble"/>
   <variant
       name="IPH_FeatureNotificationGuideNTPSuggestionCardNotificationShown"
       summary="feature notification guide NTP suggestion card notification"/>
+  <variant name="IPH_FeatureNotificationGuideSignInHelpBubble"
+      summary="feature notification guide sign in help bubble"/>
   <variant name="IPH_FeatureNotificationGuideSignInNotificationShown"
       summary="feature notification guide sign in notification"/>
+  <variant name="IPH_FeatureNotificationGuideVoiceSearchHelpBubble"
+      summary="feature notification guide voice search help bubble"/>
   <variant name="IPH_FeatureNotificationGuideVoiceSearchNotificationShown"
       summary="feature notification guide voice search notification"/>
   <variant name="IPH_FeedCardMenu" summary="feed card menu on NTP"/>
   <variant name="IPH_FeedHeaderMenu" summary="feed header menu on NTP"/>
   <variant name="IPH_FeedSwipeRefresh" summary="swipe refreshing feeds on NTP"/>
+  <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
+      summary="generic feature to always show help Ui whenever asked"/>
   <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
   <variant name="IPH_GMCCastStartStop"
       summary="Cast start stop in the Zenith dialog"/>

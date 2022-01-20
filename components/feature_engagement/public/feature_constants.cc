@@ -151,8 +151,26 @@ const base::Feature
     kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature{
         "IPH_FeatureNotificationGuideVoiceSearchNotificationShown",
         base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHFeatureNotificationGuideDefaultBrowserPromoFeature{
+    "IPH_FeatureNotificationGuideDefaultBrowserPromo",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHFeatureNotificationGuideSignInHelpBubbleFeature{
+    "IPH_FeatureNotificationGuideSignInHelpBubble",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature{
+    "IPH_FeatureNotificationGuideIncognitoTabHelpBubble",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature
+    kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature{
+        "IPH_FeatureNotificationGuideNTPSuggestionCardHelpBubble",
+        base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature{
+    "IPH_FeatureNotificationGuideVoiceSearchHelpBubble",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHFeedCardMenuFeature{"IPH_FeedCardMenu",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHGenericAlwaysTriggerHelpUiFeature{
+    "IPH_GenericAlwaysTriggerHelpUiFeature", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHHomepagePromoCardFeature{
     "IPH_HomepagePromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHIdentityDiscFeature{"IPH_IdentityDisc",

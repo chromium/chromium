@@ -96,7 +96,17 @@ extern const base::Feature
     kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature;
 extern const base::Feature
     kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideDefaultBrowserPromoFeature;
+extern const base::Feature kIPHFeatureNotificationGuideSignInHelpBubbleFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature;
 extern const base::Feature kIPHFeedCardMenuFeature;
+extern const base::Feature kIPHGenericAlwaysTriggerHelpUiFeature;
 extern const base::Feature kIPHHomePageButtonFeature;
 extern const base::Feature kIPHHomepageTileFeature;
 extern const base::Feature kIPHHomepagePromoCardFeature;
