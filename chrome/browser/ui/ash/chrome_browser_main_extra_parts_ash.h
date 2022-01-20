@@ -12,7 +12,8 @@
 
 namespace ash {
 class NewWindowDelegateProvider;
-}
+class NightLightClient;
+}  // namespace ash
 
 namespace chromeos {
 class NetworkPortalNotificationController;
@@ -36,7 +37,6 @@ class MediaClientImpl;
 class MicrophoneMuteNotificationDelegateImpl;
 class MobileDataNotifications;
 class NetworkConnectDelegateChromeOS;
-class NightLightClient;
 class ScreenOrientationDelegateChromeos;
 class SessionControllerClientImpl;
 class SystemTrayClientImpl;
@@ -128,7 +128,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
-  std::unique_ptr<NightLightClient> night_light_client_;
+  std::unique_ptr<ash::NightLightClient> night_light_client_;
   std::unique_ptr<AmbientClientImpl> ambient_client_;
 };
 

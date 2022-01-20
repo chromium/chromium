@@ -16,6 +16,8 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
+namespace ash {
+
 namespace {
 
 using ScheduleType = ash::NightLightController::ScheduleType;
@@ -281,3 +283,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(ScheduleType::kSunsetToSunrise,
                                            ScheduleType::kCustom));
 }  // namespace
+
+}  // namespace ash

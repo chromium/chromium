@@ -23,6 +23,8 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+namespace ash {
+
 // Periodically requests the IP-based geolocation and provides it to the
 // NightLightController running in ash.
 class NightLightClient : public ash::NightLightController::Observer,
@@ -111,5 +113,7 @@ class NightLightClient : public ash::NightLightController::Observer,
   // geoposition once per day.
   bool using_geoposition_ = false;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_
