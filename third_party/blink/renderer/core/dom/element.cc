@@ -4862,11 +4862,6 @@ bool Element::ForceLegacyLayoutInFragmentationContext(
         !parent->GetComputedStyle()
              ->InsideFragmentationContextWithNondeterministicEngine())
       break;
-
-    // Otherwise, if this element is always marked for legacy fallback, we can
-    // bail.
-    if (legacy_root->ShouldForceLegacyLayoutForChild())
-      return false;
   }
 
   // Only mark for reattachment if needed. Unnecessary reattachments may lead to
