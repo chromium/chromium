@@ -130,7 +130,8 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                           views::Builder<DesksTemplatesNameView>()
                               .CopyAddressTo(&name_view_)
                               .SetText(template_name)
-                              .SetAccessibleName(template_name),
+                              .SetAccessibleName(template_name)
+                              .SetReadOnly(!desk_template_->IsModifiable()),
                           views::Builder<views::ImageView>()
                               .SetPreferredSize(
                                   gfx::Size(kManagedStatusIndicatorSize,

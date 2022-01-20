@@ -90,6 +90,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // Indicates whether this template has been updated since creation.
   bool WasUpdatedSinceCreation() const { return !updated_time_.is_null(); }
 
+  // Indicates whether this template can be modified by user.
+  bool IsModifiable() const { return source_ == DeskTemplateSource::kUser; }
+
  private:
   DeskTemplate();
 
