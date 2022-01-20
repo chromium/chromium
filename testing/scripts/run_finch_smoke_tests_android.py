@@ -156,7 +156,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
     rest_args.extend(['run',
       self.wpt_product_name(),
-      '--tests=' + wpt_common.EXTERNAL_WPT_TESTS_DIR,
+      '--tests=' + wpt_common.TESTS_ROOT_DIR,
       '--test-type=' + 'testharness',
       '--device-serial',
       self._device.serial,

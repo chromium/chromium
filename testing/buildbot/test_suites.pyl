@@ -572,10 +572,9 @@
       'chrome_public_wpt': {
         'args': [
           '--log-wptreport',
-          '--processes=2',
         ],
         'swarming': {
-          'shards': 18,
+          'shards': 25,
           'expiration': 18000,
           'hard_timeout': 14400,
         },
@@ -5127,7 +5126,7 @@
     'system_webview_wpt': {
       'system_webview_wpt': {
         'swarming': {
-          'shards': 18,
+          'shards': 25,
           'expiration': 18000,
           'hard_timeout': 14400,
         },
@@ -5415,11 +5414,8 @@
 
     'weblayer_shell_wpt': {
       'weblayer_shell_wpt': {
-        'args': [
-          '--processes=2',
-        ],
         'swarming': {
-          'shards': 18,
+          'shards': 25,
           'expiration': 18000,
           'hard_timeout': 14400,
         },

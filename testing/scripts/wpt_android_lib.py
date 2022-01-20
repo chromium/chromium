@@ -107,8 +107,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     rest_args.extend(['--venv=' + SRC_DIR, '--skip-venv-setup'])
 
     rest_args.extend(['run',
-      '--tests=' + wpt_common.EXTERNAL_WPT_TESTS_DIR,
-      '--test-type=' + self.options.test_type,
+      '--tests=' + wpt_common.TESTS_ROOT_DIR,
       '--webdriver-binary',
       self.options.webdriver_binary,
       '--symbols-path',
@@ -234,9 +233,6 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--ignore-browser-specific-expectations',
                         action='store_true', default=False,
                         help='Ignore browser specific expectation files.')
-    parser.add_argument('--test-type', default='testharness',
-                        help='Specify to experiment with other test types.'
-                        ' Currently only the default is expected to work.')
     parser.add_argument('--verbose', '-v', action='count', default=0,
                         help='Verbosity level.')
     parser.add_argument('--repeat',

@@ -5413,7 +5413,7 @@
           "expiration": 18000,
           "hard_timeout": 14400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 25
         },
         "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
       }
@@ -5424,7 +5424,6 @@
       {
         "args": [
           "--log-wptreport",
-          "--processes=2",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
         ],
         "experiment_percentage": 100,
@@ -5480,7 +5479,7 @@
             ]
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 25
         },
         "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
       }
@@ -6093,7 +6092,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--processes=2",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
         ],
         "experiment_percentage": 100,
@@ -6149,7 +6147,7 @@
             ]
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 25
         },
         "test_id_prefix": "ninja://weblayer/shell/android:weblayer_shell_wpt/"
       }
@@ -6159,7 +6157,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--processes=2",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--default-exclude",
           "--include-file=../../third_party/blink/web_tests/android/WPTSmokeTestCases"
@@ -6227,8 +6224,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
-          "--log-wptreport",
-          "--processes=2"
+          "--log-wptreport"
         ],
         "experiment_percentage": 100,
         "isolate_name": "system_webview_wpt",
@@ -6283,7 +6279,7 @@
             ]
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 25
         },
         "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
       }
