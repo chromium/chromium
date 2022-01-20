@@ -1297,35 +1297,6 @@ LayoutUnit LayoutBlock::TextIndentOffset() const {
   return MinimumValueForLength(StyleRef().TextIndent(), cw);
 }
 
-bool LayoutBlock::IsPointInOverflowControl(
-    HitTestResult& result,
-    const PhysicalOffset& hit_test_location,
-    const PhysicalOffset& accumulated_offset) const {
-  NOT_DESTROYED();
-  if (!ScrollsOverflow())
-    return false;
-
-  return Layer()->GetScrollableArea()->HitTestOverflowControls(
-      result, ToRoundedPoint(hit_test_location - accumulated_offset));
-}
-
-bool LayoutBlock::HitTestOverflowControl(
-    HitTestResult& result,
-    const HitTestLocation& hit_test_location,
-    const PhysicalOffset& adjusted_location) const {
-  NOT_DESTROYED();
-  if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
-      IsPointInOverflowControl(result, hit_test_location.Point(),
-                               adjusted_location)) {
-    UpdateHitTestResult(result, hit_test_location.Point() - adjusted_location);
-    // FIXME: isPointInOverflowControl() doesn't handle rect-based tests yet.
-    if (result.AddNodeToListBasedTestResult(
-            NodeForHitTest(), hit_test_location) == kStopHitTesting)
-      return true;
-  }
-  return false;
-}
-
 bool LayoutBlock::HitTestChildren(HitTestResult& result,
                                   const HitTestLocation& hit_test_location,
                                   const PhysicalOffset& accumulated_offset,

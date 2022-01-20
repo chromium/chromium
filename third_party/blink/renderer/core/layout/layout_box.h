@@ -1935,12 +1935,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const HitTestLocation&,
       const PhysicalOffset& border_box_location) const;
 
-  virtual bool HitTestOverflowControl(HitTestResult&,
-                                      const HitTestLocation&,
-                                      const PhysicalOffset&) const {
-    NOT_DESTROYED();
-    return false;
-  }
+  bool HitTestOverflowControl(HitTestResult&,
+                              const HitTestLocation&,
+                              const PhysicalOffset&) const;
 
   // Returns true if the box intersects the viewport visible to the user.
   bool IntersectsVisibleViewport() const;

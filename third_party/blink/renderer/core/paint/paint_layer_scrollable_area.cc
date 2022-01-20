@@ -2013,7 +2013,7 @@ gfx::Rect PaintLayerScrollableArea::ScrollCornerAndResizerRect() const {
   return scroll_corner_and_resizer;
 }
 
-bool PaintLayerScrollableArea::IsPointInResizeControl(
+bool PaintLayerScrollableArea::IsAbsolutePointInResizeControl(
     const gfx::Point& absolute_point,
     ResizerHitTestType resizer_hit_test_type) const {
   if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
@@ -2022,6 +2022,16 @@ bool PaintLayerScrollableArea::IsPointInResizeControl(
 
   gfx::Point local_point = ToRoundedPoint(
       GetLayoutBox()->AbsoluteToLocalPoint(PhysicalOffset(absolute_point)));
+  return ResizerCornerRect(resizer_hit_test_type).Contains(local_point);
+}
+
+bool PaintLayerScrollableArea::IsLocalPointInResizeControl(
+    const gfx::Point& local_point,
+    ResizerHitTestType resizer_hit_test_type) const {
+  if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
+      !GetLayoutBox()->CanResize())
+    return false;
+
   return ResizerCornerRect(resizer_hit_test_type).Contains(local_point);
 }
 

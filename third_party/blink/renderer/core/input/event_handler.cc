@@ -486,7 +486,7 @@ bool EventHandler::ShouldShowResizeForNode(const Node* node,
   if (LayoutObject* layout_object = node->GetLayoutObject()) {
     PaintLayer* layer = layout_object->EnclosingLayer();
     if (layer->GetScrollableArea() &&
-        layer->GetScrollableArea()->IsPointInResizeControl(
+        layer->GetScrollableArea()->IsAbsolutePointInResizeControl(
             ToRoundedPoint(location.Point()), kResizerForPointer)) {
       return true;
     }
@@ -873,7 +873,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
     gfx::Point p = view->ConvertFromRootFrame(
         gfx::ToFlooredPoint(mouse_event.PositionInRootFrame()));
     if (layer && layer->GetScrollableArea() &&
-        layer->GetScrollableArea()->IsPointInResizeControl(
+        layer->GetScrollableArea()->IsAbsolutePointInResizeControl(
             p, kResizerForPointer)) {
       scroll_manager_->SetResizeScrollableArea(layer, p);
       return WebInputEventResult::kHandledSystem;

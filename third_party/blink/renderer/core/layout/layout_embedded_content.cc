@@ -109,11 +109,19 @@ bool LayoutEmbeddedContent::NodeAtPointOverEmbeddedContentView(
                                             accumulated_offset, action);
 
   // Check to see if we are really over the EmbeddedContentView itself (and not
-  // just in the border/padding area).
+  // just in the border/padding area or the resizer area).
   if ((inside || hit_test_location.IsRectBasedTest()) && !had_result &&
       result.InnerNode() == GetNode()) {
-    result.SetIsOverEmbeddedContentView(
-        PhysicalContentBoxRect().Contains(result.LocalPoint()));
+    bool is_over_content_view =
+        PhysicalContentBoxRect().Contains(result.LocalPoint());
+    if (is_over_content_view) {
+      if (const auto* scrollable_area = GetScrollableArea()) {
+        if (scrollable_area->IsLocalPointInResizeControl(
+                ToRoundedPoint(result.LocalPoint()), kResizerForPointer))
+          is_over_content_view = false;
+      }
+    }
+    result.SetIsOverEmbeddedContentView(is_over_content_view);
   }
   return inside;
 }

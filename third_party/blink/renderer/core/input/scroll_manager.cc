@@ -1210,8 +1210,8 @@ bool ScrollManager::HandleScrollGestureOnResizer(
     gfx::Point p = frame_->View()->ConvertFromRootFrame(
         gfx::ToFlooredPoint(gesture_event.PositionInRootFrame()));
     if (layer && layer->GetScrollableArea() &&
-        layer->GetScrollableArea()->IsPointInResizeControl(p,
-                                                           kResizerForTouch)) {
+        layer->GetScrollableArea()->IsAbsolutePointInResizeControl(
+            p, kResizerForTouch)) {
       resize_scrollable_area_ = layer->GetScrollableArea();
       resize_scrollable_area_->SetInResizeMode(true);
       offset_from_resize_corner_ =

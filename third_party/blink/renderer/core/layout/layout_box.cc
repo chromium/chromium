@@ -2529,6 +2529,29 @@ bool LayoutBox::HitTestAllPhases(HitTestResult& result,
                                         accumulated_offset, hit_test_filter);
 }
 
+bool LayoutBox::HitTestOverflowControl(
+    HitTestResult& result,
+    const HitTestLocation& hit_test_location,
+    const PhysicalOffset& adjusted_location) const {
+  NOT_DESTROYED();
+
+  auto* scrollable_area = GetScrollableArea();
+  if (!scrollable_area)
+    return false;
+
+  if (!VisibleToHitTestRequest(result.GetHitTestRequest()))
+    return false;
+
+  PhysicalOffset local_point = hit_test_location.Point() - adjusted_location;
+  if (!scrollable_area->HitTestOverflowControls(result,
+                                                ToRoundedPoint(local_point)))
+    return false;
+
+  UpdateHitTestResult(result, local_point);
+  return result.AddNodeToListBasedTestResult(
+             NodeForHitTest(), hit_test_location) == kStopHitTesting;
+}
+
 bool LayoutBox::NodeAtPoint(HitTestResult& result,
                             const HitTestLocation& hit_test_location,
                             const PhysicalOffset& accumulated_offset,
@@ -2539,7 +2562,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
 
   bool should_hit_test_self = IsInSelfHitTestingPhase(action);
 
-  if (should_hit_test_self && IsScrollContainer() &&
+  if (should_hit_test_self &&
       HitTestOverflowControl(result, hit_test_location, accumulated_offset))
     return true;
 

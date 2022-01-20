@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .target {
+            width: 169px;
+            height: 121px;
+            resize: both;
+        }
+    </style>
+</head>
+<body>
+    <hr>
+    <p>
+        Test for
+        <i><a href="https://bugs.webkit.org/show_bug.cgi?id=9547">http://bugzilla.opendarwin.org/show_bug.cgi?id=9547</a>
+        Resize corner does not track the mouse accurately</i>.
+    </p>
+    <hr>
+    <div id="div" class="target" style="overflow: auto; border: blue 2px solid;"></div>
+    <div id="div-with-stacked-child" class="target" style="overflow: auto; border: blue 2px solid;">
+        <div style="width: 149px; height: 98px; position: relative; background: yellow"></div>
+    </div>
+    <textarea id="textarea1" class="target" style="border: blue 2px solid;"></textarea>
+    <textarea id="textarea2" class="target"></textarea>
+    <iframe id="iframe1" class="target"></iframe>
+</body>

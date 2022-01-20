@@ -49,8 +49,6 @@ class LayoutIFrame final : public LayoutEmbeddedContent {
     NOT_DESTROYED();
     return type == kLayoutObjectIFrame || LayoutEmbeddedContent::IsOfType(type);
   }
-
-  PaintLayerType LayerTypeRequired() const override;
 };
 
 template <>
