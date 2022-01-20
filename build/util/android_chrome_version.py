@@ -48,11 +48,15 @@ _PACKAGE_NAMES = {
     'WEBVIEW_DEV': 20,
 }
 
-""" "Next" builds get +5 on their package version code digit.
+""" "Next" builds get +500 on their patch number.
 
-We choose 5 because it won't conflict with values in _PACKAGE_NAMES.
+This ensures that they are considered "newer" than any non-next build of the
+same branch number; this is a workaround for Android requiring a total ordering
+of versions when we only really have a partial ordering. This assumes that the
+actual patch number will never reach 500, which has never even come close in
+the past.
 """
-_NEXT_BUILD_VERSION_CODE_DIFF = 50
+_NEXT_BUILD_VERSION_CODE_DIFF = 50000
 
 """List of version numbers to be created for each build configuration.
 Tuple format:
