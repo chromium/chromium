@@ -39,6 +39,7 @@ struct WebPrintPresetOptions;
 
 namespace gfx {
 class PointF;
+class Vector2d;
 }  // namespace gfx
 
 namespace chrome_pdf {
@@ -408,7 +409,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
+  // TODO(crbug.com/1288847): Don't provide direct access to the origin of
+  // `plugin_rect_`, as this exposes the unintuitive "paint offset."
   const gfx::Rect& plugin_rect() const { return plugin_rect_; }
+
+  // Gets the frame-relative offset of the plugin in device pixels.
+  virtual gfx::Vector2d plugin_offset_in_frame() const;
 
   // Sets the new zoom scale.
   void SetZoom(double scale);

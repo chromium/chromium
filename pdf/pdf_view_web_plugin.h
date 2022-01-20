@@ -319,6 +319,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                               int right_height) override;
   void NotifyUnsupportedFeature() override;
   void UserMetricsRecordAction(const std::string& action) override;
+  gfx::Vector2d plugin_offset_in_frame() const override;
 
  private:
   // Call `Destroy()` instead.

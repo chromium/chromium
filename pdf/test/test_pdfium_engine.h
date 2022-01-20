@@ -74,6 +74,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   std::vector<uint8_t> GetSaveData() override;
 
+  MOCK_METHOD(void, SetCaretPosition, (const gfx::Point&), (override));
+
   void SetPermissions(const std::vector<DocumentPermission>& permissions);
 
  protected:

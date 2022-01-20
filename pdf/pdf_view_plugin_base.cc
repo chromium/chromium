@@ -522,8 +522,8 @@ void PdfViewPluginBase::SetIsSelecting(bool is_selecting) {
 
 void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
                                          const gfx::Rect& right) {
-  const gfx::Rect left_with_offset = left + plugin_rect_.OffsetFromOrigin();
-  const gfx::Rect right_with_offset = right + plugin_rect_.OffsetFromOrigin();
+  const gfx::Rect left_with_offset = left + plugin_offset_in_frame();
+  const gfx::Rect right_with_offset = right + plugin_offset_in_frame();
 
   gfx::PointF left_point(left_with_offset.x() + available_area_.x(),
                          left_with_offset.y());
@@ -534,7 +534,6 @@ void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
   left_point.Scale(inverse_scale);
   right_point.Scale(inverse_scale);
 
-  // TODO(crbug.com/1270502): Add a unit test for scaling height.
   NotifySelectionChanged(left_point, left_with_offset.height() * inverse_scale,
                          right_point,
                          right_with_offset.height() * inverse_scale);
@@ -1059,8 +1058,9 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
 
 void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
   AccessibilityViewportInfo viewport_info;
-  viewport_info.scroll =
-      gfx::ScaleToFlooredPoint(plugin_rect_.origin(), -1 / device_scale_);
+  viewport_info.scroll = gfx::ScaleToFlooredPoint(
+      gfx::PointAtOffsetFromOrigin(plugin_offset_in_frame()),
+      -1 / device_scale_);
   viewport_info.offset = gfx::ScaleToFlooredPoint(available_area_.origin(),
                                                   1 / (device_scale_ * zoom_));
   viewport_info.zoom = zoom_;
@@ -1089,6 +1089,10 @@ void PdfViewPluginBase::StopFind() {
   engine_->StopFind();
   tickmarks_.clear();
   NotifyFindTickmarks(tickmarks_);
+}
+
+gfx::Vector2d PdfViewPluginBase::plugin_offset_in_frame() const {
+  return plugin_rect_.OffsetFromOrigin();
 }
 
 void PdfViewPluginBase::SetZoom(double scale) {
@@ -1814,10 +1818,10 @@ void PdfViewPluginBase::LoadNextPreviewPage() {
 
 gfx::Point PdfViewPluginBase::FrameToPdfCoordinates(
     const gfx::PointF& frame_coordinates) const {
+  // TODO(crbug.com/1288847): Use methods on `blink::WebPluginContainer`.
   return gfx::ToFlooredPoint(
              gfx::ScalePoint(frame_coordinates, device_scale_)) -
-         plugin_rect_.OffsetFromOrigin() -
-         gfx::Vector2d(available_area_.x(), 0);
+         plugin_offset_in_frame() - gfx::Vector2d(available_area_.x(), 0);
 }
 
 }  // namespace chrome_pdf

@@ -85,6 +85,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -995,6 +996,10 @@ void PdfViewWebPlugin::NotifyUnsupportedFeature() {
 
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   client_->RecordComputedAction(action);
+}
+
+gfx::Vector2d PdfViewWebPlugin::plugin_offset_in_frame() const {
+  return gfx::Vector2d();
 }
 
 void PdfViewWebPlugin::OnViewportChanged(

@@ -43,6 +43,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -525,6 +526,14 @@ TEST_P(PdfViewWebPluginTestUseZoomForDSF,
   TestUpdateGeometrySetsPluginRect(
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(2, 2, 0, 0),
       /*expected_device_scale=*/1.0f, /*expected_plugin_rect=*/gfx::Rect());
+}
+
+TEST_P(PdfViewWebPluginTestUseZoomForDSF, SetCaretPositionIgnoresOrigin) {
+  SetDocumentDimensions({16, 9});
+  UpdatePluginGeometryWithoutWaiting(1.0f, {10, 20, 20, 5});
+
+  EXPECT_CALL(*engine_ptr_, SetCaretPosition(gfx::Point(2, 3)));
+  plugin_->SetCaretPosition({4.0f, 3.0f});
 }
 
 TEST_P(PdfViewWebPluginTestUseZoomForDSF, PaintEmptySnapshots) {
