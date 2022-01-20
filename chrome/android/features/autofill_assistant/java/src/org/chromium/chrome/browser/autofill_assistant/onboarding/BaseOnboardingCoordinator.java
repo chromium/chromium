@@ -58,7 +58,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     private final AssistantInfoPageUtil mInfoPageUtil;
     private final String mExperimentIds;
     private final Map<String, String> mParameters;
-    private final Map<String, String> mStringMap = new HashMap<>();
+    protected final Map<String, String> mStringMap = new HashMap<>();
 
     private boolean mOnboardingShown;
 
@@ -130,7 +130,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     /**
      * Setup the shared |mView|
      */
-    private void setupSharedView(Callback<Integer> callback) {
+    protected void setupSharedView(Callback<Integer> callback) {
         // Set focusable for accessibility.
         mView.setFocusable(true);
         mView.findViewById(R.id.button_init_ok)

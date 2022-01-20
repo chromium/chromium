@@ -12,12 +12,16 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.util.AccessibilityUtil;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
  * Onboarding coordinator factory which facilitates the creation of onboarding coordinators.
  */
 public class OnboardingCoordinatorFactory {
+    // See details and variant breakdown in b/209561294.
+    private static final String SPLIT_ONBOARDING_VARIANT_A_EXPERIMENT_ID = "4702489";
+
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControls;
@@ -42,6 +46,13 @@ public class OnboardingCoordinatorFactory {
      */
     public BaseOnboardingCoordinator createBottomSheetOnboardingCoordinator(
             String experimentIds, Map<String, String> parameters) {
+        if (Arrays.asList(experimentIds.split(","))
+                        .contains(SPLIT_ONBOARDING_VARIANT_A_EXPERIMENT_ID)) {
+            return new BottomSheetOnboardingWithPopupCoordinator(mInfoPageUtil, experimentIds,
+                    parameters, mContext, mBottomSheetController, mBrowserControls, mRootView,
+                    mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
+        }
+
         return new BottomSheetOnboardingCoordinator(mInfoPageUtil, experimentIds, parameters,
                 mContext, mBottomSheetController, mBrowserControls, mRootView,
                 mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
