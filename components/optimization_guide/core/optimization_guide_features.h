@@ -35,6 +35,7 @@ extern const base::Feature kOptimizationGuideMetadataValidation;
 extern const base::Feature kPageTopicsBatchAnnotations;
 extern const base::Feature kPageVisibilityBatchAnnotations;
 extern const base::Feature kUseLocalPageEntitiesMetadataProvider;
+extern const base::Feature kBatchAnnotationsValidation;
 
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.
@@ -257,6 +258,16 @@ bool UseLocalPageEntitiesMetadataProvider();
 // models. A size of 1 is equivalent to annotating one page load at time
 // immediately after requested.
 size_t AnnotateVisitBatchSize();
+
+// Whether the batch annotation validation feature is enabled.
+bool BatchAnnotationsValidationEnabled();
+
+// The time period between browser start and running a running batch annotation
+// validation.
+base::TimeDelta BatchAnnotationValidationStartupDelay();
+
+// The size of batches to run for validation.
+size_t BatchAnnotationsValidationBatchSize();
 
 }  // namespace features
 }  // namespace optimization_guide

@@ -31,6 +31,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace base {
+class OneShotTimer;
+}  // namespace base
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -195,6 +199,10 @@ class PageContentAnnotationsService : public KeyedService,
                     PersistAnnotationsCallback callback,
                     history::QueryURLResult url_result);
 
+  // Runs a batch annotation validation, that is calls |BatchAnnotate| with
+  // dummy input and discards the output.
+  void RunBatchAnnotationValidation();
+
   // A metadata-only provider for page entities (as opposed to |model_manager_|
   // which does both entity model execution and metadata providing) that uses a
   // local database to provide the metadata for a given entity id. This is only
@@ -225,6 +233,9 @@ class PageContentAnnotationsService : public KeyedService,
   // The batch of visits being annotated. If this is empty, it is assumed that
   // no visits are actively be annotated and a new batch can be started.
   std::vector<HistoryVisit> current_visit_annotation_batch_;
+
+  // Is only ever set when the feature is enabled.
+  std::unique_ptr<base::OneShotTimer> validation_timer_;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
 };

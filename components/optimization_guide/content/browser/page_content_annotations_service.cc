@@ -4,10 +4,14 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/default_tick_clock.h"
+#include "base/timer/timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/local_page_entities_metadata_provider.h"
@@ -74,6 +78,15 @@ void MaybeRecordVisibilityUKM(
 }
 #endif /* BUILDFLAG(BUILD_WITH_TFLITE_LIB) */
 
+const char kDummyTextBlob[] =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+    "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
+    "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+    "commodo consequat. Duis aute irure dolor in reprehenderit in voluptate "
+    "velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint "
+    "occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
+    "mollit anim id est laborum";
+
 }  // namespace
 
 PageContentAnnotationsService::PageContentAnnotationsService(
@@ -99,6 +112,16 @@ PageContentAnnotationsService::PageContentAnnotationsService(
         std::make_unique<LocalPageEntitiesMetadataProvider>();
     local_page_entities_metadata_provider_->Initialize(
         database_provider, database_dir, background_task_runner);
+  }
+
+  if (features::BatchAnnotationsValidationEnabled()) {
+    validation_timer_ = std::make_unique<base::OneShotTimer>(
+        base::DefaultTickClock::GetInstance());
+    validation_timer_->Start(
+        FROM_HERE, features::BatchAnnotationValidationStartupDelay(),
+        base::BindRepeating(
+            &PageContentAnnotationsService::RunBatchAnnotationValidation,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -343,6 +366,30 @@ void PageContentAnnotationsService::PersistRemotePageEntities(
            base::BindOnce(
                &history::HistoryService::AddContentModelAnnotationsForVisit,
                history_service_->AsWeakPtr(), annotations));
+}
+
+void PageContentAnnotationsService::RunBatchAnnotationValidation() {
+  DCHECK(features::BatchAnnotationsValidationEnabled());
+  DCHECK(validation_timer_);
+  validation_timer_.reset();
+
+  std::vector<std::string> dummy_inputs;
+  dummy_inputs.reserve(features::BatchAnnotationsValidationBatchSize());
+  for (size_t i = 0; i < features::BatchAnnotationsValidationBatchSize(); i++) {
+    // Pick a random substring of the dummy blob so that we can't do any caching
+    // or deduping.
+    size_t half_length = std::strlen(kDummyTextBlob) / 2;
+    size_t rand_start = base::RandInt(0, half_length - 1);
+    dummy_inputs.emplace_back(
+        std::string(kDummyTextBlob + rand_start, half_length));
+  }
+
+  LOCAL_HISTOGRAM_COUNTS_100(
+      "OptimizationGuide.PageContentAnnotationsService.ValidationRun",
+      dummy_inputs.size());
+
+  BatchAnnotate(base::DoNothing(), dummy_inputs,
+                AnnotationType::kContentVisibility);
 }
 
 // static

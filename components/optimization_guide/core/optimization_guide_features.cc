@@ -99,6 +99,9 @@ const base::Feature kPageVisibilityBatchAnnotations{
 const base::Feature kUseLocalPageEntitiesMetadataProvider{
     "UseLocalPageEntitiesMetadataProvider", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kBatchAnnotationsValidation{
+    "BatchAnnotationsValidation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -529,6 +532,22 @@ size_t AnnotateVisitBatchSize() {
   return std::max(
       1, GetFieldTrialParamByFeatureAsInt(kPageContentAnnotations,
                                           "annotate_visit_batch_size", 1));
+}
+
+bool BatchAnnotationsValidationEnabled() {
+  return base::FeatureList::IsEnabled(kBatchAnnotationsValidation);
+}
+
+base::TimeDelta BatchAnnotationValidationStartupDelay() {
+  return base::Seconds(
+      std::max(1, GetFieldTrialParamByFeatureAsInt(kBatchAnnotationsValidation,
+                                                   "startup_delay", 30)));
+}
+
+size_t BatchAnnotationsValidationBatchSize() {
+  int batch_size = GetFieldTrialParamByFeatureAsInt(kBatchAnnotationsValidation,
+                                                    "batch_size", 25);
+  return std::max(1, batch_size);
 }
 
 }  // namespace features

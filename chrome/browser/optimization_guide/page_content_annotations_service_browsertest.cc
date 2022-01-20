@@ -654,6 +654,35 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceModelNotLoadedOnStartupTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", 2);
 }
+
+class PageContentAnnotationsServiceValidationTest
+    : public PageContentAnnotationsServiceBrowserTest {
+ public:
+  PageContentAnnotationsServiceValidationTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kBatchAnnotationsValidation, {
+                                                   {"startup_delay", "5"},
+                                                   {"batch_size", "10"},
+                                               });
+  }
+  ~PageContentAnnotationsServiceValidationTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceValidationTest,
+                       StartsValidation) {
+  base::HistogramTester histogram_tester;
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ValidationRun", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ValidationRun", 10, 1);
+}
+
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 }  // namespace optimization_guide
