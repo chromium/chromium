@@ -21,6 +21,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -194,11 +195,16 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
   DCHECK_EQ(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
   web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  LOG_IF(FATAL, !manager) << "CreateWebModalDialogViews without a manager"
-                          << ", scheme="
-                          << web_contents->GetLastCommittedURL().scheme_piece()
-                          << ", host="
-                          << web_contents->GetLastCommittedURL().host_piece();
+
+  // TODO(http://crbug/1273287): Drop "if" and DEBUG_ALIAS_FOR_GURL after fix.
+  if (!manager) {
+    const GURL& url = web_contents->GetLastCommittedURL();
+    DEBUG_ALIAS_FOR_GURL(url_alias, url);
+    LOG_IF(FATAL, !manager)
+        << "CreateWebModalDialogViews without a manager"
+        << ", scheme=" << url.scheme_piece() << ", host=" << url.host_piece();
+  }
+
   return views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr,
       manager->delegate()->GetWebContentsModalDialogHost()->GetHostView());
