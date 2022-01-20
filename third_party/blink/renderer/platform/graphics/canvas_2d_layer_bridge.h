@@ -85,7 +85,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
-  void FinalizeFrame();
+  void FinalizeFrame(bool printing = false);
   void SetIsInHiddenPage(bool);
   void SetIsBeingDisplayed(bool);
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
@@ -156,7 +156,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   }
   CanvasResourceProvider* GetOrCreateResourceProvider();
   CanvasResourceProvider* ResourceProvider() const;
-  void FlushRecording();
+  void FlushRecording(bool printing = false);
 
   sk_sp<cc::PaintRecord> getLastRecord() {
     return last_record_tainted_by_write_pixels_ ? nullptr : last_recording_;

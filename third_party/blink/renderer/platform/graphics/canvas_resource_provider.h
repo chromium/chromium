@@ -171,7 +171,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // FlushCanvas and do not preserve recordings.
   void FlushCanvas();
   // FlushCanvas and preserve recordings.
-  sk_sp<cc::PaintRecord> FlushCanvasAndMaybePreserveRecording();
+  sk_sp<cc::PaintRecord> FlushCanvasAndMaybePreserveRecording(bool printing);
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
   gfx::ColorSpace GetColorSpace() const;
