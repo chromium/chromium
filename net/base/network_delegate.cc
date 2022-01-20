@@ -107,7 +107,6 @@ bool NetworkDelegate::AnnotateAndMoveUserBlockedCookies(
     net::CookieAccessResultList& excluded_cookies,
     bool allowed_from_caller) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(PrivacyMode::PRIVACY_MODE_DISABLED, request.privacy_mode());
   bool allowed = OnAnnotateAndMoveUserBlockedCookies(
       request, maybe_included_cookies, excluded_cookies, allowed_from_caller);
   cookie_util::DCheckIncludedAndExcludedCookieLists(maybe_included_cookies,

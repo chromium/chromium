@@ -888,7 +888,6 @@ EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 //      "initiator": <Initiator origin of the request, if any, or else "not an
 //                    origin">,
 //      "load_flags": <Numeric value of the combined load flags>,
-//      "privacy_mode": <Privacy mode associated with the request>,
 //      "network_isolation_key": <NIK associated with the request>,
 //      "request_type": <Type of the request, which is "main frame", "subframe",
 //                       or "other">,
@@ -4075,3 +4074,10 @@ EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 //     "source_dependency": <Source identifier for the attached event>
 //   }
 EVENT_TYPE(CREATED_BY)
+
+// This event is logged when a URLRequestHttpJob's privacy mode is computed. It
+// contains the following parameter:
+// {
+//    "privacy_mode": <Privacy mode associated with the request>,
+// }
+EVENT_TYPE(COMPUTED_PRIVACY_MODE)

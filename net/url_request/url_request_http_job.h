@@ -21,6 +21,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
+#include "net/base/privacy_mode.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/http/http_request_info.h"
 #include "net/socket/connection_attempts.h"
@@ -110,8 +111,15 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
 
   void DestroyTransaction();
 
+  // Computes the PrivacyMode that should be associated with this leg of the
+  // request. Must be recomputed on redirects.
+  PrivacyMode DeterminePrivacyMode() const;
+
   void AddExtraHeaders();
   void AddCookieHeaderAndStart();
+  void AnnotateAndMoveUserBlockedCookies(
+      CookieAccessResultList& maybe_included_cookies,
+      CookieAccessResultList& excluded_cookies) const;
   void SaveCookiesAndNotifyHeadersComplete(int result);
 
   // Processes the Strict-Transport-Security header, if one exists.

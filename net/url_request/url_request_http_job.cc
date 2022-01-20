@@ -39,6 +39,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/trace_constants.h"
 #include "net/base/url_util.h"
@@ -285,7 +286,10 @@ void URLRequestHttpJob::Start() {
 
   // Privacy mode could still be disabled in SetCookieHeaderAndStart if we are
   // going to send previously saved cookies.
-  request_info_.privacy_mode = request_->privacy_mode();
+  request_info_.privacy_mode = DeterminePrivacyMode();
+  request()->net_log().AddEventWithStringParams(
+      NetLogEventType::COMPUTED_PRIVACY_MODE, "privacy_mode",
+      PrivacyModeToDebugString(request_info_.privacy_mode));
 
   // Strip Referer from request_info_.extra_headers to prevent, e.g., plugins
   // from overriding headers that are controlled using other means. Otherwise a
@@ -332,6 +336,32 @@ int URLRequestHttpJob::NotifyConnectedCallback(
     const TransportInfo& info,
     CompletionOnceCallback callback) {
   return URLRequestJob::NotifyConnected(info, std::move(callback));
+}
+
+PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
+  if (!request()->allow_credentials()) {
+    // |allow_credentials_| implies LOAD_DO_NOT_SAVE_COOKIES.
+    DCHECK(request_->load_flags() & LOAD_DO_NOT_SAVE_COOKIES);
+
+    // TODO(https://crbug.com/775438): Client certs should always be
+    // affirmatively omitted for these requests.
+    return request()->send_client_certs()
+               ? PRIVACY_MODE_ENABLED
+               : PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
+  }
+
+  // Otherwise, check with the delegate if present, or base it off of
+  // |URLRequest::DefaultCanUseCookies()| if not.
+  // TODO(mmenke): Looks like |URLRequest::DefaultCanUseCookies()| is not too
+  // useful, with the network service - remove it.
+  bool enable_privacy_mode = !URLRequest::DefaultCanUseCookies();
+  if (request()->network_delegate()) {
+    enable_privacy_mode = request()->network_delegate()->ForcePrivacyMode(
+        request()->url(), request()->site_for_cookies(),
+        request()->isolation_info().top_frame_origin(),
+        request()->first_party_set_metadata().context().context_type());
+  }
+  return enable_privacy_mode ? PRIVACY_MODE_ENABLED : PRIVACY_MODE_DISABLED;
 }
 
 void URLRequestHttpJob::NotifyHeadersComplete() {
@@ -698,6 +728,24 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
   request_->set_maybe_sent_cookies(std::move(maybe_sent_cookies));
 
   StartTransaction();
+}
+
+void URLRequestHttpJob::AnnotateAndMoveUserBlockedCookies(
+    CookieAccessResultList& maybe_included_cookies,
+    CookieAccessResultList& excluded_cookies) const {
+  DCHECK_EQ(request_info_.privacy_mode, PrivacyMode::PRIVACY_MODE_DISABLED);
+  bool can_get_cookies = URLRequest::DefaultCanUseCookies();
+  if (request()->network_delegate()) {
+    can_get_cookies =
+        request()->network_delegate()->AnnotateAndMoveUserBlockedCookies(
+            *request(), maybe_included_cookies, excluded_cookies,
+            /*allowed_from_caller=*/true);
+  }
+
+  if (!can_get_cookies) {
+    request()->net_log().AddEvent(
+        NetLogEventType::COOKIE_GET_BLOCKED_BY_NETWORK_DELEGATE);
+  }
 }
 
 void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {

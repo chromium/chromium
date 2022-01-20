@@ -43,7 +43,6 @@ NET_EXPORT base::Value NetLogURLRequestStartParams(
     const GURL& url,
     const std::string& method,
     int load_flags,
-    PrivacyMode privacy_mode,
     const IsolationInfo& isolation_info,
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& initiator,
