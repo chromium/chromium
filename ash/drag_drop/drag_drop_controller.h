@@ -77,7 +77,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Overridden from aura::WindowObserver.
-  void OnWindowDestroyed(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   void SetDragImage(const gfx::ImageSkia& image,
                     const gfx::Vector2d& image_offset);

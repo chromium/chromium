@@ -785,6 +785,9 @@ TEST_F(DragDropControllerTest, DragCanceledThenWindowDestroyedDuringDragDrop) {
   AddViewToWidgetAndResize(widget.get(), drag_view);
   aura::Window* window = widget->GetNativeView();
 
+  EventTargetTestDelegate delegate(window);
+  aura::client::SetDragDropDelegate(window, &delegate);
+
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      widget->GetNativeView());
   generator.PressLeftButton();
@@ -818,6 +821,8 @@ TEST_F(DragDropControllerTest, DragCanceledThenWindowDestroyedDuringDragDrop) {
   // Drag must have been canceled.
   EXPECT_TRUE(drag_drop_controller_->drag_canceled_);
   EXPECT_FALSE(drag_drop_controller_->drop_received_);
+
+  EXPECT_EQ(EventTargetTestDelegate::State::kDragExitInvoked, delegate.state());
 }
 
 TEST_F(DragDropControllerTest, WindowDestroyedDuringDragDrop) {
@@ -825,6 +830,9 @@ TEST_F(DragDropControllerTest, WindowDestroyedDuringDragDrop) {
   DragTestView* drag_view = new DragTestView;
   AddViewToWidgetAndResize(widget.get(), drag_view);
   aura::Window* window = widget->GetNativeView();
+
+  EventTargetTestDelegate delegate(window);
+  aura::client::SetDragDropDelegate(window, &delegate);
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      widget->GetNativeView());
@@ -852,7 +860,6 @@ TEST_F(DragDropControllerTest, WindowDestroyedDuringDragDrop) {
   RunWithClosure(base::BindLambdaForTesting(loop_task));
   EXPECT_TRUE(dragged);
   EXPECT_FALSE(GetDragWindow());
-  LOG(ERROR) << "N=" << n;
   EXPECT_GT(n, 50);
   generator.ReleaseLeftButton();
 
@@ -860,6 +867,7 @@ TEST_F(DragDropControllerTest, WindowDestroyedDuringDragDrop) {
   // Drag must have been canceled.
   EXPECT_TRUE(drag_drop_controller_->drag_canceled_);
   EXPECT_FALSE(drag_drop_controller_->drop_received_);
+  EXPECT_EQ(EventTargetTestDelegate::State::kDragExitInvoked, delegate.state());
 }
 
 TEST_F(DragDropControllerTest, SyntheticEventsDuringDragDrop) {

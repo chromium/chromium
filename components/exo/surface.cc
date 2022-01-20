@@ -309,7 +309,7 @@ Surface::~Surface() {
   ImmediateExplicitRelease(
       std::move(cached_state_.per_commit_explicit_release_callback_));
 
-  WMHelper::GetInstance()->ResetDragDropDelegate(window_.get());
+  // Do not reset the DragDropDelegate in order to handle exit upon deletion.
 }
 
 // static

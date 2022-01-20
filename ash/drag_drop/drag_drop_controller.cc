@@ -480,11 +480,20 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
   event->StopPropagation();
 }
 
-void DragDropController::OnWindowDestroyed(aura::Window* window) {
-  if (drag_window_ == window)
+void DragDropController::OnWindowDestroying(aura::Window* window) {
+  if (drag_window_ == window) {
+    aura::client::DragDropDelegate* delegate =
+        aura::client::GetDragDropDelegate(drag_window_);
+    if (delegate)
+      delegate->OnDragExited();
+    drag_window_->RemoveObserver(this);
     drag_window_ = nullptr;
-  if (drag_source_window_ == window)
+  }
+  if (drag_source_window_ == window) {
+    if (drag_source_window_->HasObserver(this))
+      drag_source_window_->RemoveObserver(this);
     drag_source_window_ = nullptr;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
