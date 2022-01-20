@@ -1,0 +1,544 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "mouse_lock": {
+    "key": "Escape"
+  },
+  "move": {
+    "mouse": [
+      {
+        "name": "camera move",
+        "hide_cursor": 1,
+        "mouse_action": "hover_move",
+        "location": [
+          {
+            "type": "position",
+            "anchor_to_target": [
+              0.5,
+              0.5
+            ]
+          }
+        ],
+        "target_area": {
+          "top_left": {
+            "type": "position",
+            "anchor_to_target": [
+              0.5,
+              0
+            ]
+          },
+          "bottom_right": {
+            "type": "position",
+            "anchor_to_target": [
+              0.9999,
+              0.9999
+            ]
+          }
+        }
+      }
+    ],
+    "keyboard": [
+      {
+        "name": "Virtual Joystick",
+        "keys": [
+          "KeyW",
+          "KeyA",
+          "KeyS",
+          "KeyD"
+        ],
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              0,
+              1
+            ],
+            "anchor_to_target": [
+              0.16875,
+              -0.2472222222
+            ],
+            "x_on_y": 1.213483146,
+            "y_on_x": 0.8240740741
+          }
+        ]
+      }
+    ]
+  },
+  "tap": {
+    "mouse": [
+      {
+        "name": "fight",
+        "mouse_action": "primary_click",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.1796875,
+              -0.25
+            ],
+            "x_on_y": 1.277777778,
+            "y_on_x": 0.7826086957
+          }
+        ]
+      },
+      {
+        "name": "aim",
+        "mouse_action": "secondary_click",
+        "location":[
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.0375,
+              -0.4574074074
+            ],
+            "x_on_y": 0.1457489879,
+            "y_on_x": 6.861111111
+          }
+        ]
+      }
+    ],
+    "keyboard": [
+      {
+        "name": "jump",
+        "key": "Space",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.034375,
+              -0.3055555556
+            ],
+            "x_on_y": 0.2,
+            "y_on_x": 5
+          }
+        ]
+      },
+      {
+        "name": "crouch",
+        "key": "KeyC",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.0625,
+              -0.1083333333
+            ],
+            "x_on_y": 1.025641026,
+            "y_on_x": 0.975
+          }
+        ]
+      },
+      {
+        "name": "lean",
+        "key": "KeyZ",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.1786458333,
+              -0.075
+            ],
+            "x_on_y": 4.234567901,
+            "y_on_x": 0.2361516035
+          }
+        ]
+      },
+      {
+        "name": "hand",
+        "key": "KeyQ",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.2864583333,
+              -0.5064814815
+            ],
+            "x_on_y": 1.005484461,
+            "y_on_x": 0.9945454545
+          }
+        ]
+      },
+      {
+        "name": "revive",
+        "key": "Digit5",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.2864583333,
+              -0.3342592593
+            ],
+            "x_on_y": 1.523545706,
+            "y_on_x": 0.6563636364
+          }
+        ]
+      },
+      {
+        "name": "reload",
+        "key": "KeyR",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              0
+            ],
+            "anchor_to_target": [
+              -0.09479166667,
+              0.08425925926
+            ],
+            "x_on_y": 2,
+            "y_on_x": 0.5
+          }
+        ]
+      },
+      {
+        "name": "gun1",
+        "key": "Digit1",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              0
+            ],
+            "anchor_to_target": [
+              -0.1557291667,
+              0.2009259259
+            ],
+            "x_on_y": 1.377880184,
+            "y_on_x": 0.7257525084
+          }
+        ]
+      },
+      {
+        "name": "gun2",
+        "key": "Digit2",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              0
+            ],
+            "anchor_to_target": [
+              -0.09322916667,
+              0.2009259259
+            ],
+            "x_on_y": 0.8248847926,
+            "y_on_x": 1.212290503
+          }
+        ]
+      },
+      {
+        "name": "gun3",
+        "key": "Digit3",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              0
+            ],
+            "anchor_to_target": [
+              -0.0296875,
+              0.2009259259
+            ],
+            "x_on_y": 0.2626728111,
+            "y_on_x": 3.807017544
+          }
+        ]
+      },
+      {
+        "name": "item1",
+        "key": "KeyF",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              0
+            ],
+            "anchor_to_target": [
+              -0.2380208333,
+              0.3703703704
+            ],
+            "x_on_y": 1.1425,
+            "y_on_x": 0.875273523
+          }
+        ]
+      },
+      {
+        "name": "item2",
+        "key": "KeyG",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              0
+            ],
+            "anchor_to_target": [
+              -0.1682291667,
+              0.3703703704
+            ],
+            "x_on_y": 0.8075,
+            "y_on_x": 1.238390093
+          }
+        ]
+      },
+      {
+        "name": "item3",
+        "key": "KeyH",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              0
+            ],
+            "anchor_to_target": [
+              -0.1005208333,
+              0.3703703704
+            ],
+            "x_on_y": 0.4825,
+            "y_on_x": 2.07253886
+          }
+        ]
+      },
+      {
+        "name": "item4",
+        "key": "KeyJ",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              1,
+              0
+            ],
+            "anchor_to_target": [
+              -0.03125,
+              0.3703703704
+            ],
+            "x_on_y": 0.15,
+            "y_on_x": 6.666666667
+          }
+        ]
+      },
+      {
+        "name": "map",
+        "key": "KeyM",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.078125,
+              0.1333333333
+            ],
+            "x_on_y": 1.041666667,
+            "y_on_x": 0.96
+          }
+        ]
+      },
+      {
+        "name": "mic",
+        "key": "KeyT",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.184375,
+              0.03055555556
+            ],
+            "x_on_y": 10.72727273,
+            "y_on_x": 0.09322033898
+          }
+        ]
+      },
+      {
+        "name": "volumn",
+        "key": "KeyY",
+        "location": [
+          {
+            "type": "dependent_position",
+            "aspect_ratio": 1.78,
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.184375,
+              0.1055555556
+            ],
+            "x_on_y": 3.105263158,
+            "y_on_x": 0.3220338983
+          }
+        ]
+      },
+      {
+        "name": "speed",
+        "key": "ShiftLeft",
+        "location": [
+          {
+            "type": "position",
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.1666666667,
+              0.4305555556
+            ],
+            "max_x": 320
+          }
+        ]
+      },
+      {
+        "name": "surf",
+        "key": "ControlLeft",
+        "location": [
+          {
+            "type": "position",
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.3098958333,
+              0.3194444444
+            ],
+            "max_x": 595
+          }
+        ]
+      },
+      {
+        "name": "fire",
+        "key": "KeyE",
+        "location": [
+          {
+            "type": "position",
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.2401041667,
+              0.4324074074
+            ],
+            "max_x": 461
+          }
+        ]
+      },
+      {
+        "name": "bag",
+        "key": "Tab",
+        "location": [
+          {
+            "type": "position",
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.03072916667,
+              0.5
+            ],
+            "max_x": 60
+          }
+        ]
+      },
+      {
+        "name": "heal",
+        "key": "Digit4",
+        "location": [
+          {
+            "type": "position",
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.03072916667,
+              0.6212962963
+            ],
+            "max_x": 60
+          }
+        ]
+      },
+      {
+        "name": "bomb",
+        "key": "KeyB",
+        "location": [
+          {
+            "type": "position",
+            "anchor": [
+              0,
+              0
+            ],
+            "anchor_to_target": [
+              0.03072916667,
+              0.7222222222
+            ],
+            "max_x": 60
+          }
+        ]
+      }
+    ]
+  }
+}

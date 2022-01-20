@@ -16,6 +16,7 @@
        <include name="IDR_IO_ORG_CHROMIUM_ARC_TESTAPP_INPUTOVERLAY" file="org.chromium.arc.testapp.inputoverlay.json" type="BINDATA" />
        <include name="IDR_IO_COM_BLACKPANTHER_NINJAARASHI2" file="com.blackpanther.ninjaarashi2.json" type="BINDATA" />
        <include name="IDR_IO_COM_HABBY_ARCHERO" file="com.habby.archero.json" type="BINDATA" />
+       <include name="IDR_IO_COM_DTS_FREEFIRETH" file="com.dts.freefireth.json" type="BINDATA" />
     </includes>
   </release>
 </grit>
