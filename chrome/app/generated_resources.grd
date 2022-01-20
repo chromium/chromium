@@ -6002,11 +6002,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
         Customize cards
       </message>
-      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_AGO" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
-        Viewed <ph name="RELATIVE_TIME">$1<ex>5 days ago</ex></ph>
-      </message>
       <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_TODAY" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
         Viewed today
+      </message>
+      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_YESTERDAY" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
+        Viewed yesterday
+      </message>
+      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_PAST_WEEK" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
+        Viewed in the past week
+      </message>
+      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_PAST_MONTH" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
+        Viewed in the past month
+      </message>
+      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_PREVIOUSLY" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
+        Viewed previously
       </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_SENTENCE" desc="Name of the shopping tasks module in sentence case shown in various UIs.">
         Shopping suggestions

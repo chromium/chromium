@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/new_tab_page/modules/task_module/time_format_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -139,27 +140,6 @@ const char* GetModuleName(task_module::mojom::TaskModuleType task_module_type) {
     case task_module::mojom::TaskModuleType::kShopping:
       return "ShoppingTasks";
   }
-}
-
-std::string GetViewedItemText(int viewed_timestamp) {
-  // GWS timestamps are relative to the Unix Epoch.
-  auto viewed_time = base::Time::UnixEpoch() + base::Seconds(viewed_timestamp);
-  auto viewed_delta = base::Time::Now() - viewed_time;
-  // Viewing items in the future is not supported. Assume the item was viewed
-  // today to account for small shifts between the local and server clock.
-  if (viewed_delta.InSeconds() < 0) {
-    viewed_delta = base::TimeDelta();
-  }
-  if (viewed_delta.InDays() < 1) {
-    return l10n_util::GetStringUTF8(
-        IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_TODAY);
-  }
-  return base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
-      IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_AGO,
-      ui::TimeFormat::SimpleWithMonthAndYear(
-          ui::TimeFormat::Format::FORMAT_ELAPSED,
-          ui::TimeFormat::Length::LENGTH_LONG, viewed_delta,
-          /*use_month_and_year=*/true)));
 }
 
 std::string GetRecommendedItemText(
