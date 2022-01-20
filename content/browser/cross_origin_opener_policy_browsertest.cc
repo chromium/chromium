@@ -401,6 +401,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopSameOrigin());
   EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
             network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+  EXPECT_FALSE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -426,9 +427,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // COOP and COEP inherited from Blob creator
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopSameOriginPlusCoep());
-
   EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
             network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless);
+  EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -454,9 +455,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // COOP and COEP inherited from Blob creator
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopSameOriginPlusCoep());
-
   EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
             network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp);
+  EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -483,9 +484,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // COOP and COEP inherited from Blob creator
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(),
             CoopSameOriginAllowPopups());
-
   EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
             network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp);
+  EXPECT_FALSE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -524,9 +525,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // COOP is inherited from creator's top level document, COEP is inherited from
   // creator.
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy(), CoopSameOrigin());
-
   EXPECT_EQ(popup_rfh->cross_origin_embedder_policy().value,
             network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp);
+  EXPECT_FALSE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
@@ -569,9 +570,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // be same-origin-allow-popups, instead of inheriting from initiator.
   EXPECT_EQ(second_popup_rfh->cross_origin_opener_policy(),
             CoopUnsafeNoneWithSoapByDefault());
-
   EXPECT_EQ(second_popup_rfh->cross_origin_embedder_policy().value,
             network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+  EXPECT_FALSE(second_popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
