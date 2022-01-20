@@ -86,7 +86,6 @@
 #include "components/component_updater/component_updater_switches.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/public.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"

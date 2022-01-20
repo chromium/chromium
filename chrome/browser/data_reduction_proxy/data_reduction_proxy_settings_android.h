@@ -41,12 +41,6 @@ class DataReductionProxySettingsAndroid {
   void InitDataReductionProxySettings(Profile* profile);
 
   // JNI wrapper interfaces to the indentically-named superclass methods.
-  jboolean IsDataReductionProxyPromoAllowed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  jboolean IsDataReductionProxyFREPromoAllowed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
   jboolean IsDataReductionProxyEnabled(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);

@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
@@ -83,22 +82,6 @@ public abstract class FirstRunFlowSequencer  {
                 // - "skip the first use hints" is set, but there is at least one account.
                 return !shouldSkipFirstUseHints(activity) || !accounts.isEmpty();
             }
-        }
-
-        /**
-         * @param openAdvancedSyncSettings Whether the user wants to open the advanced sync
-         *         settings.
-         * @return true if the Data Reduction promo page should be shown.
-         */
-        boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
-            if (FREMobileIdentityConsistencyFieldTrial.isEnabled() && openAdvancedSyncSettings) {
-                // Skip the data reduction page when the user wants to open the advanced sync
-                // settings.
-                return false;
-            }
-            return !DataReductionProxySettings.getInstance().isDataReductionProxyManaged()
-                    && DataReductionProxySettings.getInstance()
-                               .isDataReductionProxyFREPromoAllowed();
         }
 
         /** @return true if the Search Engine promo page should be shown. */
@@ -175,10 +158,6 @@ public abstract class FirstRunFlowSequencer  {
         });
     }
 
-    private boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
-        return mDelegate.shouldShowDataReductionPage(openAdvancedSyncSettings);
-    }
-
     @VisibleForTesting
     protected boolean shouldShowSearchEnginePage() {
         return mDelegate.shouldShowSearchEnginePage();
@@ -217,9 +196,6 @@ public abstract class FirstRunFlowSequencer  {
     public void updateFirstRunProperties(Bundle freProperties) {
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
-        freProperties.putBoolean(FirstRunActivity.SHOW_DATA_REDUCTION_PAGE,
-                shouldShowDataReductionPage(
-                        freProperties.getBoolean(FirstRunActivity.OPEN_ADVANCED_SYNC_SETTINGS)));
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());
     }

@@ -372,7 +372,6 @@ test("components_unittests") {
         "//components/crash/content/browser:unit_tests",
         "//components/crash/core/app:unit_tests",
         "//components/data_reduction_proxy/core/browser:unit_tests",
-        "//components/data_reduction_proxy/core/common:unit_tests",
       ]
     }
 

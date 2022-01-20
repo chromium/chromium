@@ -10,7 +10,6 @@ import org.junit.rules.ExternalResource;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.test.pagecontroller.controllers.PageController;
-import org.chromium.chrome.test.pagecontroller.controllers.first_run.DataSaverController;
 import org.chromium.chrome.test.pagecontroller.controllers.first_run.SyncConfirmationViewPageController;
 import org.chromium.chrome.test.pagecontroller.controllers.first_run.TOSController;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
@@ -60,10 +59,6 @@ public class ChromeUiApplicationTestRule extends ExternalResource {
             ((TOSController) controller).acceptAndContinue();
             controller = detectPageOnFirstRun();
         }
-        if (controller instanceof DataSaverController) {
-            ((DataSaverController) controller).clickNext();
-            controller = detectPageOnFirstRun();
-        }
         if (controller instanceof SyncConfirmationViewPageController) {
             ((SyncConfirmationViewPageController) controller).clickNoThanks();
             controller = detectPageOnFirstRun();
@@ -106,7 +101,7 @@ public class ChromeUiApplicationTestRule extends ExternalResource {
      */
     private static PageController detectPageOnFirstRun() {
         return detectPageAmong(TOSController.getInstance(),
-                SyncConfirmationViewPageController.getInstance(), DataSaverController.getInstance(),
+                SyncConfirmationViewPageController.getInstance(),
                 NewTabPageController.getInstance());
     }
 }

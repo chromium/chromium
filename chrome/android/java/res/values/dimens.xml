@@ -119,7 +119,6 @@
     <dimen name="fre_margin">24dp</dimen>
 
     <dimen name="fre_image_bottom_margin">36dp</dimen>
-    <dimen name="fre_image_height">120dp</dimen>
     <dimen name="fre_tos_image_height">110dp</dimen>
     <dimen name="fre_tos_checkbox_padding">12dp</dimen>
     <dimen name="fre_tos_bottom_margin">16dp</dimen>
@@ -130,15 +129,13 @@
     <dimen name="fre_policy_privacy_disclaimer_top_margin">16dp</dimen>
 
     <dimen name="fre_button_vertical_margin">24dp</dimen>
-    <!-- fre_button_bar_height = 68dp = layout_height (48dp) + 2 * layout_marginBottom(10dp) -->
-    <dimen name="fre_button_bar_height">68dp</dimen>
+
 
     <dimen name="fre_button_vertical_margin_small">16dp</dimen>
 
     <!-- Account Signin dimensions -->
     <!-- The Account Signin page appears in the First Run Experience (amongst other places), so uses
     a lot of the fre_* dimensions for consistency. -->
-    <dimen name="signin_image_carousel_width">240dp</dimen>
     <dimen name="signin_chooser_padding">16dp</dimen>
     <dimen name="signin_screen_top_padding">50dp</dimen>
 

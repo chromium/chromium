@@ -3898,7 +3898,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/infobar/AutofillCreditCardFillingInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/AutofillOfferNotificationInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/AutofillSaveCardInfoBar.java",
-    "java/src/org/chromium/chrome/browser/infobar/DataReductionPromoInfoBarDelegate.java",
     "java/src/org/chromium/chrome/browser/infobar/DownloadProgressInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/DuplicateDownloadInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/FramebustBlockInfoBar.java",

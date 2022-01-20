@@ -12,13 +12,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.datareduction.settings.DataReductionDataUseItem;
 import org.chromium.chrome.browser.datareduction.settings.DataReductionStatsPreference;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.datareduction.DataReductionProxySavingsClearedReason;
-import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,23 +122,6 @@ public class DataReductionProxySettings {
                 DataReductionProxySettingsJni.get().init(DataReductionProxySettings.this);
     }
 
-    /** Returns true if the SPDY proxy promo is allowed to be shown. */
-    public boolean isDataReductionProxyPromoAllowed() {
-        return DataReductionProxySettingsJni.get().isDataReductionProxyPromoAllowed(
-                mNativeDataReductionProxySettings, DataReductionProxySettings.this);
-    }
-
-    /** Returns true if the data saver proxy promo is allowed to be shown as part of FRE. */
-    public boolean isDataReductionProxyFREPromoAllowed() {
-        return DataReductionProxySettingsJni.get().isDataReductionProxyFREPromoAllowed(
-                mNativeDataReductionProxySettings, DataReductionProxySettings.this);
-    }
-
-    /** Returns true if the snackbar promo is allowed to be shown. */
-    public boolean isSnackbarPromoAllowed(String url) {
-        return url.startsWith(UrlConstants.HTTP_URL_PREFIX) && isDataReductionProxyEnabled();
-    }
-
     /**
      * Sets the preference on whether to enable/disable the SPDY proxy. This will zero out the
      * data reduction statistics if this is the first time the SPDY proxy has been enabled.
@@ -198,7 +179,6 @@ public class DataReductionProxySettings {
     public void clearDataSavingStatistics(@DataReductionProxySavingsClearedReason int reason) {
         // When the data saving statistics are cleared, reset the milestone promo that tells the
         // user how much data they have saved using Data Saver so far.
-        DataReductionPromoUtils.saveMilestonePromoDisplayed(0);
         SharedPreferencesManager.getInstance().writeLong(
                 ChromePreferenceKeys.DATA_REDUCTION_FIRST_ENABLED_TIME, System.currentTimeMillis());
         DataReductionProxySettingsJni.get().clearDataSavingStatistics(
@@ -300,10 +280,6 @@ public class DataReductionProxySettings {
     @NativeMethods
     public interface Natives {
         long init(DataReductionProxySettings caller);
-        boolean isDataReductionProxyPromoAllowed(
-                long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);
-        boolean isDataReductionProxyFREPromoAllowed(
-                long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);
         boolean isDataReductionProxyEnabled(
                 long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);
         boolean isDataReductionProxyManaged(

@@ -16,7 +16,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
-import org.chromium.chrome.browser.datareduction.DataReductionSavingsMilestonePromo;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitor;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitorDelegate;
@@ -134,7 +133,6 @@ public class ToolbarButtonInProductHelpController
 
                 if (tab.isUserInteractable()) {
                     showDataSaverDetail();
-                    if (dataSaved > 0L) showDataSaverMilestonePromo();
                 }
 
                 showDownloadPageTextBubble(tab, FeatureConstants.DOWNLOAD_PAGE_FEATURE);
@@ -262,30 +260,6 @@ public class ToolbarButtonInProductHelpController
                                                    -> turnOnHighlightForMenuItem(
                                                            getDataReductionMenuItemHighlight()))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                        .build());
-    }
-
-    // Attempts to show an IPH text bubble for data saver milestone promo.
-    private void showDataSaverMilestonePromo() {
-        final DataReductionSavingsMilestonePromo promo =
-                new DataReductionSavingsMilestonePromo(mActivity,
-                        DataReductionProxySettings.getInstance().getTotalHttpContentLengthSaved());
-        if (!promo.shouldShowPromo()) return;
-
-        final Runnable dismissCallback = () -> {
-            promo.onPromoTextSeen();
-            turnOffHighlightForMenuItem();
-        };
-
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(),
-                        FeatureConstants.DATA_SAVER_MILESTONE_PROMO_FEATURE, promo.getPromoText(),
-                        promo.getPromoText())
-                        .setAnchorView(mMenuButtonAnchorView)
-                        .setOnShowCallback(()
-                                                   -> turnOnHighlightForMenuItem(
-                                                           getDataReductionMenuItemHighlight()))
-                        .setOnDismissCallback(dismissCallback)
                         .build());
     }
 

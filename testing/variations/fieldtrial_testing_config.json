@@ -2937,35 +2937,6 @@
             ]
         }
     ],
-    "DataReductionProxyFREPromo": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
-    "DataReductionProxyLowMemoryDevicePromo": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DataReductionProxyLowMemoryDevicePromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultEnableGpuRasterization": [
         {
             "platforms": [

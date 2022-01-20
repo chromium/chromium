@@ -18,7 +18,6 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
@@ -65,11 +64,6 @@ public class DataReductionPreferenceFragment extends PreferenceFragmentCompat {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        if (mWasEnabledAtCreation && !mIsEnabled) {
-            // If the user manually disables Data Saver, don't show the infobar promo.
-            DataReductionPromoUtils.saveInfoBarPromoDisplayed();
-        }
 
         int statusChange;
         if (mFromMainMenu) {

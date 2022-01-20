@@ -47,7 +47,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -87,17 +86,10 @@ public class FirstRunActivitySigninAndSyncTest {
     private ExternalAuthUtils mExternalAuthUtilsMock;
 
     @Mock
-    private DataReductionProxySettings mDataReductionProxySettingsMock;
-
-    @Mock
     private LocaleManagerDelegate mLocalManagerDelegateMock;
 
     @Before
     public void setUp() {
-        when(mDataReductionProxySettingsMock.isDataReductionProxyManaged()).thenReturn(false);
-        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
-                .thenReturn(true);
-        DataReductionProxySettings.setInstanceForTesting(mDataReductionProxySettingsMock);
         when(mLocalManagerDelegateMock.getSearchEnginePromoShowType())
                 .thenReturn(SearchEnginePromoType.DONT_SHOW);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -115,7 +107,8 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_dismiss_button);
 
-        ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
+        ApplicationTestUtils.waitForActivityState(
+                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
     }
 
     @Test
@@ -127,7 +120,8 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_dismiss_button);
 
-        ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
+        ApplicationTestUtils.waitForActivityState(
+                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
     }
 
     @Test
@@ -167,7 +161,8 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_continue_button);
 
-        ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
+        ApplicationTestUtils.waitForActivityState(
+                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
     }
 
     @Test
@@ -202,7 +197,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    public void acceptingSyncShowsDataReductionPage() {
+    public void acceptingSyncEndsFre() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
@@ -212,12 +207,13 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.positive_button);
 
-        ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
+        ApplicationTestUtils.waitForActivityState(
+                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
     }
 
     @Test
     @MediumTest
-    public void refusingSyncShowsDataReductionPage() {
+    public void refusingSyncEndsFre() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
         ensureCurrentPageIs(SigninFirstRunFragment.class);
@@ -226,7 +222,8 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.negative_button);
 
-        ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
+        ApplicationTestUtils.waitForActivityState(
+                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
     }
 
     @Test

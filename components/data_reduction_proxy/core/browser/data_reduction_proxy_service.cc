@@ -21,9 +21,7 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/data_reduction_proxy/proto/data_store.pb.h"
 #include "components/data_use_measurement/core/data_use_measurement.h"
@@ -32,25 +30,6 @@
 namespace data_reduction_proxy {
 
 namespace {
-
-absl::optional<base::Value> GetSaveDataSavingsPercentEstimateFromFieldTrial() {
-  if (!base::FeatureList::IsEnabled(features::kReportSaveDataSavings))
-    return absl::nullopt;
-  const auto origin_savings_estimate_json =
-      base::GetFieldTrialParamValueByFeature(features::kReportSaveDataSavings,
-                                             "origin_savings_estimate");
-  if (origin_savings_estimate_json.empty())
-    return absl::nullopt;
-
-  auto origin_savings_estimates =
-      base::JSONReader::Read(origin_savings_estimate_json);
-
-  UMA_HISTOGRAM_BOOLEAN(
-      "DataReductionProxy.ReportSaveDataSavings.ParseResult",
-      origin_savings_estimates && origin_savings_estimates->is_dict());
-
-  return origin_savings_estimates;
-}
 
 // Hostname used for the other bucket which consists of chrome-services traffic.
 // This should be in sync with the same in DataReductionSiteBreakdownView.java
@@ -69,9 +48,7 @@ DataReductionProxyService::DataReductionProxyService(
       prefs_(prefs),
       db_data_owner_(new DBDataOwner(std::move(store))),
       db_task_runner_(db_task_runner),
-      data_use_measurement_(data_use_measurement),
-      save_data_savings_estimate_dict_(
-          GetSaveDataSavingsPercentEstimateFromFieldTrial()) {
+      data_use_measurement_(data_use_measurement) {
   DCHECK(data_use_measurement_);
   DCHECK(settings);
 
@@ -222,15 +199,7 @@ void DataReductionProxyService::OnServicesDataUse(int32_t service_hash_code,
 
 double DataReductionProxyService::GetSaveDataSavingsPercentEstimate(
     const std::string& origin) const {
-  if (origin.empty() || !save_data_savings_estimate_dict_ ||
-      !save_data_savings_estimate_dict_->is_dict()) {
-    return 0;
-  }
-  const auto savings_percent =
-      save_data_savings_estimate_dict_->FindDoubleKey(origin);
-  if (!savings_percent)
-    return 0;
-  return *savings_percent;
+  return 0;
 }
 
 }  // namespace data_reduction_proxy

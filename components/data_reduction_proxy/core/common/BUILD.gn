@@ -9,12 +9,8 @@ import("//build/util/process_version.gni")
 template("common_tmpl") {
   static_library(target_name) {
     sources = [
-      "data_reduction_proxy_features.cc",
-      "data_reduction_proxy_features.h",
       "data_reduction_proxy_headers.cc",
       "data_reduction_proxy_headers.h",
-      "data_reduction_proxy_params.cc",
-      "data_reduction_proxy_params.h",
       "data_reduction_proxy_pref_names.cc",
       "data_reduction_proxy_pref_names.h",
       "data_reduction_proxy_switches.cc",
@@ -41,25 +37,6 @@ common_tmpl("common") {
   deps = [
     "//net",
     "//url",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "data_reduction_proxy_params_unittest.cc" ]
-
-  deps = [
-    ":common",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs",
-    "//components/prefs:test_support",
-
-    # TODO this dependency seems wrong, but
-    "//components/data_reduction_proxy/core/browser",
-    "//components/data_reduction_proxy/proto:data_reduction_proxy_proto",
-    "//net:test_support",
-    "//testing/gtest",
   ]
 }
 

@@ -285,12 +285,6 @@ public class FirstRunIntegrationTest {
         FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity);
         navigationHelper.ensurePagesCreationSucceeded().acceptTermsOfService();
 
-        if (testCase.showDataSaverPromo()) {
-            navigationHelper.acknowledgeDataSaverEnabled();
-        } else {
-            navigationHelper.ensureDataSaverPromoNotCurrentPage();
-        }
-
         if (testCase.searchPromoType() == SearchEnginePromoType.DONT_SHOW) {
             navigationHelper.ensureDefaultSearchEnginePromoNotCurrentPage();
         } else {
@@ -420,34 +414,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    public void testFirstRunPages_NoCctPolicy_DataSaverPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase().withDataSaverPromo());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_NoCctPolicy_DataSaverPromo_SearchPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase().withDataSaverPromo().withSearchPromo());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_NoCctPolicy_DataSaverPromo_SearchPromo_SigninPromo()
-            throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase()
-                                     .withDataSaverPromo()
-                                     .withSearchPromo()
-                                     .withSigninPromo());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_NoCctPolicy_DataSaverPromo_SigninPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase().withDataSaverPromo().withSigninPromo());
-    }
-
-    @Test
-    @MediumTest
     public void testFirstRunPages_NoCctPolicy_SearchPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo());
     }
@@ -467,10 +433,7 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
-        initializePreferences(new FirstRunPagesTestCase()
-                                      .withDataSaverPromo()
-                                      .withSearchPromo()
-                                      .withSigninPromo());
+        initializePreferences(new FirstRunPagesTestCase().withSearchPromo().withSigninPromo());
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
 
@@ -479,17 +442,13 @@ public class FirstRunIntegrationTest {
         new FirstRunNavigationHelper(firstRunActivity)
                 .ensurePagesCreationSucceeded()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .selectDefaultSearchEngine()
                 .ensureSigninPromoIsCurrentPage()
                 .goBackToPreviousPage()
                 .ensureDefaultSearchEnginePromoIsCurrentPage()
                 .goBackToPreviousPage()
-                .ensureDataSaverPromoIsCurrentPage()
-                .goBackToPreviousPage()
                 .ensureTermsOfServiceIsCurrentPage()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .selectDefaultSearchEngine()
                 .skipSigninPromo();
 
@@ -500,41 +459,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     public void testFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_WithCctPolicy_DataSaverPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withDataSaverPromo());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_WithCctPolicy_DataSaverPromo_SearchPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase()
-                                     .withCctTosDisabled()
-                                     .withDataSaverPromo()
-                                     .withSearchPromo());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_WithCctPolicy_DataSaverPromo_SigninPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase()
-                                     .withCctTosDisabled()
-                                     .withDataSaverPromo()
-                                     .withSigninPromo());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_WithCctPolicy_DataSaverPromo_SearchPromo_SigninPromo()
-            throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase()
-                                     .withCctTosDisabled()
-                                     .withDataSaverPromo()
-                                     .withSearchPromo()
-                                     .withSigninPromo());
     }
 
     @Test
@@ -563,7 +487,6 @@ public class FirstRunIntegrationTest {
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(new FirstRunPagesTestCase()
                                       .withCctTosDisabled()
-                                      .withDataSaverPromo()
                                       .withSearchPromo()
                                       .withSigninPromo());
 
@@ -574,17 +497,13 @@ public class FirstRunIntegrationTest {
         new FirstRunNavigationHelper(firstRunActivity)
                 .ensurePagesCreationSucceeded()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .selectDefaultSearchEngine()
                 .ensureSigninPromoIsCurrentPage()
                 .goBackToPreviousPage()
                 .ensureDefaultSearchEnginePromoIsCurrentPage()
                 .goBackToPreviousPage()
-                .ensureDataSaverPromoIsCurrentPage()
-                .goBackToPreviousPage()
                 .ensureTermsOfServiceIsCurrentPage()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .selectDefaultSearchEngine()
                 .skipSigninPromo();
 
@@ -653,10 +572,7 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
-        initializePreferences(new FirstRunPagesTestCase()
-                                      .withDataSaverPromo()
-                                      .withSearchPromo()
-                                      .withSigninPromo());
+        initializePreferences(new FirstRunPagesTestCase().withSearchPromo().withSigninPromo());
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
 
@@ -665,25 +581,21 @@ public class FirstRunIntegrationTest {
         new FirstRunNavigationHelper(firstRunActivity)
                 .ensurePagesCreationSucceeded()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .selectDefaultSearchEngine()
                 .ensureSigninPromoIsCurrentPage()
                 .goBackToPreviousPage()
                 .ensureDefaultSearchEnginePromoIsCurrentPage()
                 .goBackToPreviousPage()
-                .ensureDataSaverPromoIsCurrentPage()
-                .goBackToPreviousPage()
                 .ensureTermsOfServiceIsCurrentPage()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .selectDefaultSearchEngine()
                 .skipSigninPromo();
 
         waitForActivity(ChromeTabbedActivity.class);
 
         checkRecordedProgressSteps(Arrays.asList(new Integer[] {MobileFreProgress.STARTED,
-                MobileFreProgress.WELCOME_SHOWN, MobileFreProgress.DATA_SAVER_SHOWN,
-                MobileFreProgress.SYNC_CONSENT_SHOWN, MobileFreProgress.SYNC_CONSENT_DISMISSED,
+                MobileFreProgress.WELCOME_SHOWN, MobileFreProgress.SYNC_CONSENT_SHOWN,
+                MobileFreProgress.SYNC_CONSENT_DISMISSED,
                 MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN}));
     }
 
@@ -1041,10 +953,8 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testPrefsUpdated_allPagesAlreadyShown() throws Exception {
-        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
-                                                 .withDataSaverPromo()
-                                                 .withSearchPromo()
-                                                 .withSigninPromo();
+        FirstRunPagesTestCase testCase =
+                new FirstRunPagesTestCase().withSearchPromo().withSigninPromo();
         initializePreferences(testCase);
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -1053,12 +963,10 @@ public class FirstRunIntegrationTest {
         FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
                                                             .ensurePagesCreationSucceeded()
                                                             .acceptTermsOfService()
-                                                            .acknowledgeDataSaverEnabled()
                                                             .selectDefaultSearchEngine()
                                                             .ensureSigninPromoIsCurrentPage();
 
         // Change preferences to disable all promos.
-        testCase.setDataSaverPromo(false);
         testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
         testCase.setSigninPromo(false);
 
@@ -1074,10 +982,8 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testPrefsUpdated_noPagesShown() throws Exception {
-        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
-                                                 .withDataSaverPromo()
-                                                 .withSearchPromo()
-                                                 .withSigninPromo();
+        FirstRunPagesTestCase testCase =
+                new FirstRunPagesTestCase().withSearchPromo().withSigninPromo();
         initializePreferences(testCase);
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -1088,13 +994,11 @@ public class FirstRunIntegrationTest {
                                                             .ensureTermsOfServiceIsCurrentPage();
 
         // Change preferences before any promo page is shown.
-        testCase.setDataSaverPromo(false);
         testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
         testCase.setSigninPromo(false);
 
         // Accepting terms of services should complete first run, since all the promos are disabled.
         navigationHelper.acceptTermsOfService()
-                .ensureDataSaverPromoNotCurrentPage()
                 .ensureDefaultSearchEnginePromoNotCurrentPage()
                 .ensureSigninPromoNotCurrentPage();
 
@@ -1103,88 +1007,9 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    public void testPrefsUpdated_dataReductionPromoDisableAfterPromoShown() throws Exception {
-        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
-                                                 .withDataSaverPromo()
-                                                 .withSearchPromo()
-                                                 .withSigninPromo();
-        initializePreferences(testCase);
-
-        FirstRunActivity firstRunActivity = launchFirstRunActivity();
-
-        // Accept terms of service and pass through data saver prompt.
-        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
-                                                            .ensurePagesCreationSucceeded()
-                                                            .acceptTermsOfService()
-                                                            .acknowledgeDataSaverEnabled();
-
-        // Disable data saver prompt after the next page is shown.
-        testCase.setDataSaverPromo(false);
-
-        // Go until the last page without skipping the last one, go back until initial page, and
-        // then complete first run. The data server prompt shouldn't be shown again in either
-        // direction.
-        navigationHelper.selectDefaultSearchEngine()
-                .ensureSigninPromoIsCurrentPage()
-                .goBackToPreviousPage()
-                .ensureDefaultSearchEnginePromoIsCurrentPage()
-                .goBackToPreviousPage()
-                .ensureDataSaverPromoNotCurrentPage()
-                .ensureTermsOfServiceIsCurrentPage()
-                .acceptTermsOfService()
-                .ensureDataSaverPromoNotCurrentPage()
-                .selectDefaultSearchEngine()
-                .skipSigninPromo();
-
-        waitForActivity(ChromeTabbedActivity.class);
-    }
-
-    @Test
-    @MediumTest
-    public void testPrefsUpdated_dataReductionPromoDisableWhilePromoShown() throws Exception {
-        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
-                                                 .withDataSaverPromo()
-                                                 .withSearchPromo()
-                                                 .withSigninPromo();
-        initializePreferences(testCase);
-
-        FirstRunActivity firstRunActivity = launchFirstRunActivity();
-
-        // Accept terms of service and don't skip the data saver prompt.
-        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
-                                                            .ensurePagesCreationSucceeded()
-                                                            .acceptTermsOfService()
-                                                            .ensureDataSaverPromoIsCurrentPage();
-
-        // Disable data saver prompt while it's shown. This will not hide the page.
-        testCase.setDataSaverPromo(false);
-
-        // Pass the data saver prompt, and go until the last page without skipping the last one.
-        // Go back until initial page, and then complete first run. The data server prompt shouldn't
-        // be shown again in either direction.
-        navigationHelper.acknowledgeDataSaverEnabled()
-                .selectDefaultSearchEngine()
-                .ensureSigninPromoIsCurrentPage()
-                .goBackToPreviousPage()
-                .ensureDefaultSearchEnginePromoIsCurrentPage()
-                .goBackToPreviousPage()
-                .ensureDataSaverPromoNotCurrentPage()
-                .ensureTermsOfServiceIsCurrentPage()
-                .acceptTermsOfService()
-                .ensureDataSaverPromoNotCurrentPage()
-                .selectDefaultSearchEngine()
-                .skipSigninPromo();
-
-        waitForActivity(ChromeTabbedActivity.class);
-    }
-
-    @Test
-    @MediumTest
     public void testPrefsUpdated_searchEnginePromoDisableAfterPromoShown() throws Exception {
-        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
-                                                 .withDataSaverPromo()
-                                                 .withSearchPromo()
-                                                 .withSigninPromo();
+        FirstRunPagesTestCase testCase =
+                new FirstRunPagesTestCase().withSearchPromo().withSigninPromo();
         initializePreferences(testCase);
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -1193,7 +1018,6 @@ public class FirstRunIntegrationTest {
         FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
                                                             .ensurePagesCreationSucceeded()
                                                             .acceptTermsOfService()
-                                                            .acknowledgeDataSaverEnabled()
                                                             .selectDefaultSearchEngine()
                                                             .ensureSigninPromoIsCurrentPage();
 
@@ -1206,10 +1030,7 @@ public class FirstRunIntegrationTest {
         // direction.
         navigationHelper.goBackToPreviousPage()
                 .ensureDefaultSearchEnginePromoNotCurrentPage()
-                .ensureDataSaverPromoIsCurrentPage()
-                .goBackToPreviousPage()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .ensureDefaultSearchEnginePromoNotCurrentPage()
                 .skipSigninPromo();
 
@@ -1219,10 +1040,8 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testPrefsUpdated_searchEnginePromoDisableWhilePromoShown() throws Exception {
-        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
-                                                 .withDataSaverPromo()
-                                                 .withSearchPromo()
-                                                 .withSigninPromo();
+        FirstRunPagesTestCase testCase =
+                new FirstRunPagesTestCase().withSearchPromo().withSigninPromo();
         initializePreferences(testCase);
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -1232,7 +1051,6 @@ public class FirstRunIntegrationTest {
                 new FirstRunNavigationHelper(firstRunActivity)
                         .ensurePagesCreationSucceeded()
                         .acceptTermsOfService()
-                        .acknowledgeDataSaverEnabled()
                         .ensureDefaultSearchEnginePromoIsCurrentPage();
 
         // Disable search engine prompt while it's shown. This will not hide the page.
@@ -1246,10 +1064,7 @@ public class FirstRunIntegrationTest {
                 .ensureSigninPromoIsCurrentPage()
                 .goBackToPreviousPage()
                 .ensureDefaultSearchEnginePromoNotCurrentPage()
-                .ensureDataSaverPromoIsCurrentPage()
-                .goBackToPreviousPage()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .ensureDefaultSearchEnginePromoNotCurrentPage()
                 .skipSigninPromo();
 
@@ -1259,10 +1074,8 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testPrefsUpdated_signinPromoPromoDisableAfterPromoShown() throws Exception {
-        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
-                                                 .withDataSaverPromo()
-                                                 .withSearchPromo()
-                                                 .withSigninPromo();
+        FirstRunPagesTestCase testCase =
+                new FirstRunPagesTestCase().withSearchPromo().withSigninPromo();
         initializePreferences(testCase);
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -1271,7 +1084,6 @@ public class FirstRunIntegrationTest {
         FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
                                                             .ensurePagesCreationSucceeded()
                                                             .acceptTermsOfService()
-                                                            .acknowledgeDataSaverEnabled()
                                                             .selectDefaultSearchEngine()
                                                             .ensureSigninPromoIsCurrentPage();
 
@@ -1283,10 +1095,7 @@ public class FirstRunIntegrationTest {
         navigationHelper.goBackToPreviousPage()
                 .ensureDefaultSearchEnginePromoIsCurrentPage()
                 .goBackToPreviousPage()
-                .ensureDataSaverPromoIsCurrentPage()
-                .goBackToPreviousPage()
                 .acceptTermsOfService()
-                .acknowledgeDataSaverEnabled()
                 .selectDefaultSearchEngine();
 
         waitForActivity(ChromeTabbedActivity.class);
@@ -1295,10 +1104,8 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testPrefsUpdated_signinPromoPromoDisableWhilePromoShown() throws Exception {
-        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
-                                                 .withDataSaverPromo()
-                                                 .withSearchPromo()
-                                                 .withSigninPromo();
+        FirstRunPagesTestCase testCase =
+                new FirstRunPagesTestCase().withSearchPromo().withSigninPromo();
         initializePreferences(testCase);
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -1307,7 +1114,6 @@ public class FirstRunIntegrationTest {
         FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
                                                             .ensurePagesCreationSucceeded()
                                                             .acceptTermsOfService()
-                                                            .acknowledgeDataSaverEnabled()
                                                             .selectDefaultSearchEngine()
                                                             .ensureSigninPromoIsCurrentPage();
 
@@ -1360,15 +1166,10 @@ public class FirstRunIntegrationTest {
     static class FirstRunPagesTestCase {
         private boolean mCctTosDisabled;
         private @SearchEnginePromoType int mSearchPromoType = SearchEnginePromoType.DONT_SHOW;
-        private boolean mShowDataSaverPromo;
         private boolean mShowSigninPromo;
 
         boolean cctTosDisabled() {
             return mCctTosDisabled;
-        }
-
-        boolean showDataSaverPromo() {
-            return mShowDataSaverPromo;
         }
 
         @SearchEnginePromoType
@@ -1390,11 +1191,6 @@ public class FirstRunIntegrationTest {
             return this;
         }
 
-        FirstRunPagesTestCase setDataSaverPromo(boolean showDataSaverPromo) {
-            mShowDataSaverPromo = showDataSaverPromo;
-            return this;
-        }
-
         FirstRunPagesTestCase setSearchPromoType(@SearchEnginePromoType int searchPromoType) {
             mSearchPromoType = searchPromoType;
             return this;
@@ -1409,10 +1205,6 @@ public class FirstRunIntegrationTest {
             return setCctTosDisabled(true);
         }
 
-        FirstRunPagesTestCase withDataSaverPromo() {
-            return setDataSaverPromo(true);
-        }
-
         FirstRunPagesTestCase withSearchPromo() {
             return setSearchPromoType(SearchEnginePromoType.SHOW_EXISTING);
         }
@@ -1422,10 +1214,7 @@ public class FirstRunIntegrationTest {
         }
 
         static FirstRunPagesTestCase createWithShowAllPromos() {
-            return new FirstRunPagesTestCase()
-                    .withDataSaverPromo()
-                    .withSearchPromo()
-                    .withSigninPromo();
+            return new FirstRunPagesTestCase().withSearchPromo().withSigninPromo();
         }
     }
 
@@ -1469,17 +1258,6 @@ public class FirstRunIntegrationTest {
                             .or(Matchers.instanceOf(
                                     TosAndUmaFirstRunFragmentWithEnterpriseSupport.class))
                             .or(Matchers.instanceOf(SigninFirstRunFragment.class)));
-        }
-
-        protected FirstRunNavigationHelper ensureDataSaverPromoIsCurrentPage() {
-            return waitForCurrentFragmentToMatch("Data reduction promo should be the current page",
-                    Matchers.instanceOf(DataReductionProxyFirstRunFragment.class));
-        }
-
-        protected FirstRunNavigationHelper ensureDataSaverPromoNotCurrentPage() {
-            return waitForCurrentFragmentToMatch(
-                    "Data reduction promo shouldn't be the current page",
-                    Matchers.not(Matchers.instanceOf(DataReductionProxyFirstRunFragment.class)));
         }
 
         protected FirstRunNavigationHelper ensureDefaultSearchEnginePromoIsCurrentPage() {
@@ -1533,17 +1311,6 @@ public class FirstRunIntegrationTest {
                     mScopedObserverData.jumpToPageCallback.getCallCount());
             Assert.assertEquals("Unexpected accept of the ToS", acceptCallCount,
                     mScopedObserverData.acceptTermsOfServiceCallback.getCallCount());
-
-            return this;
-        }
-
-        protected FirstRunNavigationHelper acknowledgeDataSaverEnabled() throws Exception {
-            ensureDataSaverPromoIsCurrentPage();
-
-            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
-            clickButton(mFirstRunActivity, R.id.next_button, "Failed to skip data saver");
-            mScopedObserverData.jumpToPageCallback.waitForCallback(
-                    "Failed try to move past the data saver fragment", jumpCallCount);
 
             return this;
         }
@@ -1613,11 +1380,6 @@ public class FirstRunIntegrationTest {
         public boolean shouldShowSyncConsentPage(
                 Activity activity, List<Account> accounts, @Status int childAccountStatus) {
             return mTestCase.showSigninPromo();
-        }
-
-        @Override
-        public boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
-            return mTestCase.showDataSaverPromo();
         }
 
         @Override

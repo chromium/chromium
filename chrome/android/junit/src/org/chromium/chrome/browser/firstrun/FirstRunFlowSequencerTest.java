@@ -34,7 +34,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
@@ -114,9 +113,6 @@ public class FirstRunFlowSequencerTest {
     }
 
     @Mock
-    private DataReductionProxySettings mDataReductionProxySettingsMock;
-
-    @Mock
     private UmaRecorder mUmaRecorderMock;
 
     @Mock
@@ -135,12 +131,6 @@ public class FirstRunFlowSequencerTest {
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
 
-        // Show data reduction page by default.
-        when(mDataReductionProxySettingsMock.isDataReductionProxyManaged()).thenReturn(false);
-        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
-                .thenReturn(true);
-        DataReductionProxySettings.setInstanceForTesting(mDataReductionProxySettingsMock);
-
         mActivityController = Robolectric.buildActivity(Activity.class);
         Activity activity = mActivityController.setup().get();
         mDelegate = new TestFirstRunFlowSequencerDelegate();
@@ -158,8 +148,6 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowTosNotSeen() {
-        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
-                .thenReturn(false);
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldSkipFirstUseHints = false;
 
@@ -171,19 +159,16 @@ public class FirstRunFlowSequencerTest {
 
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
                 bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertEquals(3, bundle.size());
     }
 
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowOneChildAccount() {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
-        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
-                .thenReturn(false);
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldSkipFirstUseHints = false;
 
@@ -195,35 +180,10 @@ public class FirstRunFlowSequencerTest {
 
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.REGULAR_CHILD,
                 bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
-    }
-
-    @Test
-    @Feature({"FirstRun"})
-    public void testStandardFlowShowDataReductionPage() {
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
-        mAccountManagerTestRule.addAccount("second.test.account@gmail.com");
-        mDelegate.isSyncAllowed = true;
-        mDelegate.shouldSkipFirstUseHints = false;
-        mDelegate.shouldShowSearchEnginePage = false;
-
-        mSequencer.start();
-
-        verifyNumberOfAccountsRecorded(2);
-        assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
-
-        Bundle bundle = mSequencer.returnedBundle;
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
-        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertEquals(3, bundle.size());
     }
 
     @Test
@@ -241,11 +201,10 @@ public class FirstRunFlowSequencerTest {
 
         Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
                 bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertEquals(3, bundle.size());
     }
 
     @Test
@@ -264,11 +223,10 @@ public class FirstRunFlowSequencerTest {
         assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
         final Bundle bundle = mSequencer.returnedBundle;
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
                 bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertEquals(3, bundle.size());
     }
 
     @Test
@@ -288,11 +246,10 @@ public class FirstRunFlowSequencerTest {
         assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
         final Bundle bundle = mSequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
                 bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertEquals(3, bundle.size());
     }
 
     private void verifyNumberOfAccountsRecorded(int numberOfAccounts) {

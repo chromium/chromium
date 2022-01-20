@@ -24,7 +24,6 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/data_reduction_proxy/proto/data_store.pb.h"
@@ -317,72 +316,6 @@ void PrintTo(const SaveDataTestCase& test, std::ostream* os) {
     *os << ", ";
   }
   *os << " }, is_valid_json=" << test.is_valid_json << " }";
-}
-
-// Browser tests with Lite mode not enabled.
-class SaveDataSavingsEstimateBrowserTest
-    : public DataSaverSiteBreakdownMetricsObserverBrowserTest,
-      public ::testing::WithParamInterface<SaveDataTestCase> {
- public:
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-    const std::string estimates_json =
-        !GetParam().origin_savings_estimate_raw_json.empty()
-            ? GetParam().origin_savings_estimate_raw_json
-            : (!GetParam().origin_savings_estimate_list.empty()
-                   ? ConvertSaveDataSavingsEstimateToJson(
-                         GetParam().origin_savings_estimate_list,
-                         *embedded_test_server())
-                   : "");
-    if (!estimates_json.empty()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{data_reduction_proxy::features::kReportSaveDataSavings,
-            {{"origin_savings_estimate", estimates_json}}}},
-          {});
-    }
-    DataSaverSiteBreakdownMetricsObserverBrowserTest::SetUp();
-    if (!estimates_json.empty()) {
-      histogram_tester_.ExpectUniqueSample(
-          "DataReductionProxy.ReportSaveDataSavings.ParseResult",
-          GetParam().is_valid_json, 1);
-    } else {
-      histogram_tester_.ExpectTotalCount(
-          "DataReductionProxy.ReportSaveDataSavings.ParseResult", 0);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::HistogramTester histogram_tester_;
-};
-
-INSTANTIATE_TEST_SUITE_P(SaveDataSavingsEstimateBrowserTest,
-                         SaveDataSavingsEstimateBrowserTest,
-                         ::testing::ValuesIn(kSaveDataTestCases));
-
-// Flaky on LINUX.  http://crbug.com/1091573
-IN_PROC_BROWSER_TEST_P(SaveDataSavingsEstimateBrowserTest,
-                       DISABLED_NavigateToSimplePage) {
-  WaitForDBToInitialize();
-
-  for (const auto& test : GetParam().tests) {
-    GURL test_url(
-        embedded_test_server()->GetURL(test.test_host, "/google/google.html"));
-    std::string host = test_url.HostNoBrackets();
-    uint64_t data_usage_before_navigation = GetDataUsage(host);
-    uint64_t data_savings_before_navigation = GetDataSavings(host);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-    base::RunLoop().RunUntilIdle();
-    // Navigate away to force the histogram recording.
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    double data_savings_percent =
-        100.0 * (GetDataSavings(host) - data_savings_before_navigation) /
-        (GetDataUsage(host) - data_usage_before_navigation);
-    EXPECT_NEAR(data_savings_percent, test.expected_savings_percent, 0.01);
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(DataSaverSiteBreakdownMetricsObserverBrowserTest,

@@ -141,9 +141,6 @@ class DataReductionProxyService
   // lifetime of |this|.
   raw_ptr<data_use_measurement::DataUseMeasurement> data_use_measurement_;
 
-  // Dictionary of save-data savings estimates by origin.
-  const absl::optional<base::Value> save_data_savings_estimate_dict_;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DataReductionProxyService> weak_factory_{this};

@@ -16,7 +16,6 @@
 #include "base/strings/string_split.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/common/chrome_features.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 

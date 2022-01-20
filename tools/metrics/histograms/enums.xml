@@ -60126,7 +60126,7 @@ Called by update_use_counter_css.py.-->
 <enum name="MobileFreProgress">
   <int value="0" label="FRE started"/>
   <int value="1" label="Welcome shown"/>
-  <int value="2" label="Data saver shown"/>
+  <int value="2" label="Data saver shown (Deprecated 01/2022)"/>
   <int value="3" label="Sync consent shown"/>
   <int value="4"
       label="The user clicked on the continue button to continue with sync

@@ -1568,41 +1568,6 @@ Your Google account may have other forms of browsing history like searches and a
         Reset
       </message>
 
-      <!-- Lite Mode Promo and FRE card -->
-      <message name="IDS_DATA_REDUCTION_PROMO_TITLE_LITE_MODE" desc="The title for the promo inviting users to enable Lite mode" >
-        Browse faster. Use less data.
-      </message>
-      <message name="IDS_DATA_REDUCTION_PROMO_SUMMARY_LITE_MODE" desc="Description for the promo inviting users to enable Lite mode. This informs users that their web traffic will sent to Google to optimize data usage. The Learn more link goes to the help center article for Lite mode." meaning="The translation of percent should be spelled out instead of using the percent symbol.">
-        In Lite mode, Chrome loads pages faster and uses up to 60 percent less data. To optimize the pages that you visit, Chrome sends your web traffic to Google. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_DATA_REDUCTION_PROMO_LEARN_MORE_URL" desc="URL for Lite mode help center article" translateable="false">
-        https://support.google.com/chrome/?p=lite_mode
-      </message>
-      <message name="IDS_DATA_REDUCTION_ENABLE_BUTTON_LITE_MODE" desc="Button the user presses if they want to enable Lite mode" >
-        Turn on Lite mode
-      </message>
-      <message name="IDS_DATA_REDUCTION_ENABLED_SWITCH_LITE_MODE" desc="Message to show when the Lite mode feature is enabled via the switch on the First Run Experience card" >
-        Lite mode is on
-      </message>
-      <message name="IDS_DATA_REDUCTION_DISABLED_SWITCH_LITE_MODE" desc="Message to show when the Lite mode feature is disabled via the switch on the First Run Experience card" >
-        Lite mode is off
-      </message>
-      <message name="IDS_DATA_REDUCTION_ENABLED_TOAST_LITE_MODE" desc="Toast message displayed after the user enables Lite mode from the promo" >
-        Lite mode is on. Manage it in Settings.
-      </message>
-      <message name="IDS_DATA_REDUCTION_PROMO_INFOBAR_TITLE" desc="Text to be displayed in the data reduction promo infobar title">
-        Save up to 60% of your data
-      </message>
-      <message name="IDS_DATA_REDUCTION_PROMO_INFOBAR_TEXT" desc="Text to be displayed in the data reduction promo infobar">
-        Google servers will optimize the pages you visit.
-      </message>
-      <message name="IDS_DATA_REDUCTION_MILESTONE_PROMO_TEXT_MB" desc="Text to be displayed in the data reduction promo message that lets the user know they saved a certain amount of data in MB">
-        Chrome has saved you <ph name="megabytes">%1$d<ex>100</ex></ph> MB
-      </message>
-      <message name="IDS_DATA_REDUCTION_MILESTONE_PROMO_TEXT_GB" desc="Text to be displayed in the data reduction promo message that lets the user know they saved a certain amount of data in GB">
-        Chrome has saved you <ph name="gigabytes">%1$d<ex>10</ex></ph> GB
-      </message>
-
        <!-- Dangerous download -->
       <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
         Download anyway
