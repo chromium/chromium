@@ -48,17 +48,23 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   MediaDialogView(const MediaDialogView&) = delete;
   MediaDialogView& operator=(const MediaDialogView&) = delete;
 
-  static views::Widget* ShowDialog(
-      views::View* anchor_view,
-      MediaNotificationService* service,
-      Profile* profile,
-      global_media_controls::GlobalMediaControlsEntryPoint entry_point);
-  static views::Widget* ShowDialogForPresentationRequest(
-      views::View* anchor_view,
+  static views::Widget* ShowDialogFromToolbar(views::View* anchor_view,
+                                              MediaNotificationService* service,
+                                              Profile* profile);
+  static views::Widget* ShowDialogCentered(
+      const gfx::Rect& bounds,
       MediaNotificationService* service,
       Profile* profile,
       content::WebContents* contents,
       global_media_controls::GlobalMediaControlsEntryPoint entry_point);
+  static views::Widget* ShowDialog(
+      views::View* anchor_view,
+      views::BubbleBorder::Arrow anchor_position,
+      MediaNotificationService* service,
+      Profile* profile,
+      content::WebContents* contents,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point);
+
   static void HideDialog();
   static bool IsShowing();
 
@@ -97,6 +103,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   friend class MediaDialogViewBrowserTest;
   MediaDialogView(
       views::View* anchor_view,
+      views::BubbleBorder::Arrow anchor_position,
       MediaNotificationService* service,
       Profile* profile,
       content::WebContents* contents,

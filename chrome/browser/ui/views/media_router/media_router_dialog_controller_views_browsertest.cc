@@ -115,7 +115,30 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialog) {
   CreateDialogController();
   dialog_controller_->ShowMediaRouterDialogForPresentation(
       CreateStartPresentationContext(initiator_));
-  EXPECT_TRUE(MediaDialogView::IsShowing());
+  ASSERT_TRUE(MediaDialogView::IsShowing());
+  auto* view = MediaDialogView::GetDialogViewForTesting();
+  ASSERT_TRUE(view->GetAnchorView());
+}
+
+IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialogInWebApp) {
+  EXPECT_FALSE(MediaDialogView::IsShowing());
+  // Navigate to a page with origin so that the PresentationRequest notification
+  // created on this page has an origin to be displayed.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple_page.html")));
+  CreateDialogController();
+  dialog_controller_->SetHideMediaButtonForTesting(true);
+  dialog_controller_->ShowMediaRouterDialogForPresentation(
+      CreateStartPresentationContext(initiator_));
+
+  ASSERT_TRUE(MediaDialogView::IsShowing());
+  auto* view = MediaDialogView::GetDialogViewForTesting();
+  // If there does not exist a media button, the dialog should not have an
+  // anchor view.
+  EXPECT_FALSE(view->GetAnchorView());
+  gfx::Rect anchor_bounds = initiator_->GetContainerBounds();
+  anchor_bounds.set_height(0);
+  EXPECT_EQ(anchor_bounds, view->GetAnchorRect());
 }
 
 IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,

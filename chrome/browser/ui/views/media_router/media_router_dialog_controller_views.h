@@ -15,6 +15,8 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+class MediaToolbarButtonView;
+
 namespace media_router {
 
 class MediaRouterUI;
@@ -49,6 +51,8 @@ class MediaRouterDialogControllerViews
   // Sets a callback to be called whenever a dialog is created.
   void SetDialogCreationCallbackForTesting(base::RepeatingClosure callback);
 
+  void SetHideMediaButtonForTesting(bool hide);
+
  private:
   friend class content::WebContentsUserData<MediaRouterDialogControllerViews>;
   friend class MediaRouterCastUiForTest;
@@ -62,6 +66,18 @@ class MediaRouterDialogControllerViews
 
   // Initializes |ui_|.
   void InitializeMediaRouterUI();
+
+  // If there exists a media button, show the GMC dialog anchored to the media
+  // button. Otherwise, show the dialog anchored to the top center of the web
+  // contents.
+  void ShowGlobalMeidaControlsDialog(
+      std::unique_ptr<StartPresentationContext> context);
+
+  // Returns the media button from the browser that initiates the request to
+  // open the dialog. Returns nullptr if:
+  // (1) the browser does not have a media button (i.e. the browser is
+  // running a PWA.) or (2) |hide_media_button_for_testing_| is true.
+  MediaToolbarButtonView* GetMediaButton();
 
   // MediaRouterActionController is responsible for showing and hiding the
   // toolbar action. It's owned by MediaRouterUIService and it may be nullptr.
@@ -82,6 +98,8 @@ class MediaRouterDialogControllerViews
 
   // Service that provides MediaRouterActionController. It outlives |this|.
   const raw_ptr<MediaRouterUIService> media_router_ui_service_;
+
+  bool hide_media_button_for_testing_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

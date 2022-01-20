@@ -154,9 +154,7 @@ void MediaToolbarButtonView::ButtonPressed() {
   if (MediaDialogView::IsShowing()) {
     MediaDialogView::HideDialog();
   } else {
-    MediaDialogView::ShowDialog(
-        this, service_, browser_->profile(),
-        global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon);
+    MediaDialogView::ShowDialogFromToolbar(this, service_, browser_->profile());
     ClosePromoBubble();
 
     for (auto& observer : observers_)
