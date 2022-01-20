@@ -23,6 +23,8 @@ E2ETestBase = class extends testing.Test {
   #include "chrome/browser/ash/crosapi/browser_manager.h"
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
   #include "chrome/browser/ui/browser.h"
+  #include "chrome/common/extensions/extension_constants.h"
+  #include "content/public/test/browser_test.h"
   #include "content/public/test/browser_test_utils.h"
   #include "extensions/browser/extension_host.h"
   #include "extensions/browser/process_manager.h"
