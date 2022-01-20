@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <EGL/egl.h>
 #else
 #include "third_party/khronos/EGL/egl.h"

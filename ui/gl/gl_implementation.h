@@ -83,7 +83,7 @@ struct GL_EXPORT GLWindowSystemBindingInfo {
 };
 
 using GLFunctionPointerType = void (*)();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef GLFunctionPointerType(WINAPI* GLGetProcAddressProc)(const char* name);
 #else
 typedef GLFunctionPointerType (*GLGetProcAddressProc)(const char* name);

@@ -12,7 +12,7 @@
 namespace gl {
 
 GLShareGroup::GLShareGroup()
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     : renderer_id_(-1)
 #endif
 {
@@ -50,7 +50,7 @@ void GLShareGroup::SetSharedContext(GLContext* context) {
   shared_context_ = context;
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void GLShareGroup::SetRendererID(int renderer_id) {
   renderer_id_ = renderer_id;
 }

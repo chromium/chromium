@@ -171,7 +171,7 @@ bool InitializeGLOneOffPlatformHelper(bool init_extensions) {
 }  // namespace
 
 GLImplementationParts GetSoftwareGLImplementationForPlatform() {
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   return GetSoftwareGLImplementation();
 #else
   return GetLegacySoftwareGLImplementation();

@@ -247,7 +247,7 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // context is made current.
   void DirtyVirtualContextState();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Create a fence for all work submitted to this context so far, and return a
   // monotonically increasing handle to it. This returned handle never needs to
   // be freed. This method is used to create backpressure to throttle GL work
@@ -297,7 +297,7 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
 
   GLApi* gl_api() { return gl_api_wrapper_->api(); }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Child classes are responsible for calling DestroyBackpressureFences during
   // their destruction while a context is current.
   bool HasBackpressureFences() const;
@@ -338,7 +338,7 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // where this underlying context becomes lost.  https://crbug.com/1061442
   bool context_lost_ = false;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   std::map<uint64_t, std::unique_ptr<GLFence>> backpressure_fences_;
   uint64_t next_backpressure_fence_ = 0;
 #endif

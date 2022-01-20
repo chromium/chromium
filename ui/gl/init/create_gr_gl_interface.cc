@@ -13,7 +13,7 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -93,7 +93,7 @@ GLboolean glIsSyncEmulateEGL(GLsync sync) {
   return true;
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 std::map<GLuint, base::TimeTicks>& GetProgramCreateTimesMap() {
   static base::NoDestructor<std::map<GLuint, base::TimeTicks>> instance;
   return *instance.get();
@@ -140,7 +140,7 @@ template <bool droppable_call = false, typename R, typename... Args>
 GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_slow_on_mac(
     R(GL_BINDING_CALL* func)(Args...),
     gl::ProgressReporter* progress_reporter) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (!progress_reporter) {
     return maybe_drop_call<droppable_call>(func);
   }
@@ -159,7 +159,7 @@ template <bool droppable_call = false, typename R, typename... Args>
 GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_with_flush_on_mac(
     R(GL_BINDING_CALL* func)(Args...),
     bool is_angle) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // If running on Apple silicon or ANGLE, regardless of the architecture,
   // disable this workaround.  See https://crbug.com/1131312.
   const bool needs_flush =
@@ -325,7 +325,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
       bind_slow(gl->glCompressedTexSubImage2DFn, progress_reporter);
   functions->fCopyTexSubImage2D =
       bind_slow(gl->glCopyTexSubImage2DFn, progress_reporter);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   functions->fCreateProgram = [func = gl->glCreateProgramFn]() {
     auto& program_create_times = GetProgramCreateTimesMap();
     GLuint program = func();
@@ -339,7 +339,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fCullFace = gl->glCullFaceFn;
   functions->fDeleteBuffers =
       bind_slow(gl->glDeleteBuffersARBFn, progress_reporter);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   functions->fDeleteProgram = [func = gl->glDeleteProgramFn](GLuint program) {
     auto& program_create_times = GetProgramCreateTimesMap();
     program_create_times.erase(program);
@@ -409,7 +409,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fGetQueryiv = gl->glGetQueryivFn;
   functions->fGetProgramBinary = gl->glGetProgramBinaryFn;
   functions->fGetProgramInfoLog = gl->glGetProgramInfoLogFn;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   functions->fGetProgramiv = [func = gl->glGetProgramivFn](
                                  GLuint program, GLenum pname, GLint* params) {
     func(program, pname, params);

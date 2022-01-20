@@ -266,9 +266,9 @@ bool GLImageMemory::Initialize(const unsigned char* memory,
   stride_ = stride;
 
   bool tex_image_from_pbo_is_slow = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   tex_image_from_pbo_is_slow = true;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   GLContext* context = GLContext::GetCurrent();
   DCHECK(context);
   if (!tex_image_from_pbo_is_slow && SupportsPBO(context) &&

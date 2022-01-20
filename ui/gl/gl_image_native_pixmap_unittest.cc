@@ -34,7 +34,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
  public:
   absl::optional<GLImplementationParts> GetPreferedGLImplementation()
       const override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return absl::optional<GLImplementationParts>(GLImplementationParts(
         kGLImplementationEGLANGLE, ANGLEImplementation::kNone));
 #else

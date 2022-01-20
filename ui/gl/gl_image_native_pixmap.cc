@@ -275,11 +275,11 @@ gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
     }
   }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/852011): Implement image handle export on Fuchsia.
   NOTIMPLEMENTED();
   return gfx::NativePixmapHandle();
-#else   // defined(OS_FUCHSIA)
+#else   // BUILDFLAG(IS_FUCHSIA)
   std::vector<int> fds(num_planes);
   std::vector<EGLint> strides(num_planes);
   std::vector<EGLint> offsets(num_planes);
@@ -308,7 +308,7 @@ gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
   }
 
   return handle;
-#endif  // !defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 unsigned GLImageNativePixmap::GetInternalFormat() {

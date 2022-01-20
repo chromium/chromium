@@ -404,7 +404,7 @@ void GLContextEGL::SetVisibility(bool visibility) {
 }
 
 void GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   bool has_backpressure_fences = HasBackpressureFences();
 #else
   bool has_backpressure_fences = false;
@@ -434,7 +434,7 @@ void GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences() {
     }
 
     yuv_to_rgb_converters_.clear();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     DestroyBackpressureFences();
 #endif
 

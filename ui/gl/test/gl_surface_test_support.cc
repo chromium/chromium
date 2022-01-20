@@ -14,7 +14,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/platform_window/common/platform_window_defaults.h"  // nogncheck
 #endif
 
@@ -34,7 +34,7 @@ void InitializeOneOffHelper(bool init_extensions) {
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
@@ -47,7 +47,7 @@ void InitializeOneOffHelper(bool init_extensions) {
     use_software_gl = false;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android we always use hardware GL.
   use_software_gl = false;
 #endif

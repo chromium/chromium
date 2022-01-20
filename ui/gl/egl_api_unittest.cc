@@ -27,7 +27,7 @@ class EGLApiTest : public testing::Test {
     g_driver_egl.fn.eglGetErrorFn = &FakeGetError;
     g_driver_egl.fn.eglGetProcAddressFn = &FakeGetProcAddress;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     SetGLImplementation(kGLImplementationEGLANGLE);
 #else
     SetGLImplementation(kGLImplementationEGLGLES2);

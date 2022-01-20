@@ -160,7 +160,7 @@ const struct {
      GLImplementationParts(kGLImplementationDesktopGL)},
     {kGLImplementationSwiftShaderName, kANGLEImplementationNoneName,
      GLImplementationParts(kGLImplementationSwiftShaderGL)},
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     {kGLImplementationAppleName, kANGLEImplementationNoneName,
      GLImplementationParts(kGLImplementationAppleGL)},
 #endif

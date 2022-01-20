@@ -42,7 +42,7 @@
 #include "ui/gl/scoped_make_current.h"
 #include "ui/gl/sync_control_vsync_provider.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
 #include "base/android/build_info.h"
 #endif
@@ -896,7 +896,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
 
   if (supports_angle_opengl) {
     if (use_angle_default && !supports_angle_d3d) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // Don't request desktopGL on android
       AddInitDisplay(init_displays, ANGLE_OPENGLES);
 #else
@@ -1065,7 +1065,7 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
   // because it is emulated with pbuffers if native support is not present. See
   // https://crbug.com/382349.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Use the WebGL compatibility extension for detecting ANGLE. ANGLE always
   // exposes it.
   bool is_angle = g_egl_create_context_webgl_compatability_supported;
@@ -1103,7 +1103,7 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
   // that version onward.
   g_egl_android_native_fence_sync_supported =
       HasEGLExtension("EGL_ANDROID_native_fence_sync");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!g_egl_android_native_fence_sync_supported &&
       base::android::BuildInfo::GetInstance()->sdk_int() >=
           base::android::SDK_VERSION_NOUGAT &&
@@ -1459,12 +1459,12 @@ NativeViewGLSurfaceEGL::NativeViewGLSurfaceEGL(
     EGLNativeWindowType window,
     std::unique_ptr<gfx::VSyncProvider> vsync_provider)
     : window_(window), vsync_provider_external_(std::move(vsync_provider)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (window)
     ANativeWindow_acquire(window);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RECT windowRect;
   if (GetClientRect(window_, &windowRect))
     size_ = gfx::Rect(windowRect).size();
@@ -2126,7 +2126,7 @@ bool NativeViewGLSurfaceEGL::ScheduleOverlayPlane(
 
 NativeViewGLSurfaceEGL::~NativeViewGLSurfaceEGL() {
   Destroy();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (window_)
     ANativeWindow_release(window_);
 #endif
@@ -2144,7 +2144,7 @@ PbufferGLSurfaceEGL::PbufferGLSurfaceEGL(const gfx::Size& size)
 bool PbufferGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
   EGLSurface old_surface = surface_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This is to allow context virtualization which requires on- and offscreen
   // to use a compatible config. We expect the client to request RGB565
   // onscreen surface also for this to work (with the exception of
@@ -2244,7 +2244,7 @@ EGLSurface PbufferGLSurfaceEGL::GetHandle() {
 }
 
 void* PbufferGLSurfaceEGL::GetShareHandle() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
   return NULL;
 #else
