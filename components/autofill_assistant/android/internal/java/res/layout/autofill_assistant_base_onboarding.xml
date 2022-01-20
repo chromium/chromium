@@ -92,19 +92,9 @@
         <Space android:layout_width="0dp" android:layout_height="20dp"/>
 
         <!-- Terms and Conditions message and link -->
-        <LinearLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:paddingBottom="9dp">
-            <TextView
-                android:id="@+id/google_terms_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:layout_gravity="center"
-                android:textAppearance="@style/TextAppearance.AssistantBlackCaption"
-                android:text="@string/autofill_assistant_google_terms_description" />
-        </LinearLayout>
+        <include layout="@layout/autofill_assistant_onboarding_terms"/>
+
+        <!-- Some space between terms and onboarding buttons -->
         <Space android:layout_width="0dp" android:layout_height="18dp"/>
     </LinearLayout>
 </ScrollView>

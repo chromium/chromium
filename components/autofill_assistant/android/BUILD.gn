@@ -95,6 +95,7 @@ android_resources("java_resources") {
     "internal/java/res/layout/autofill_assistant_info_box.xml",
     "internal/java/res/layout/autofill_assistant_login.xml",
     "internal/java/res/layout/autofill_assistant_onboarding_no_button.xml",
+    "internal/java/res/layout/autofill_assistant_onboarding_terms.xml",
     "internal/java/res/layout/autofill_assistant_onboarding_yes_button.xml",
     "internal/java/res/layout/autofill_assistant_payment_method_full.xml",
     "internal/java/res/layout/autofill_assistant_payment_method_summary.xml",
