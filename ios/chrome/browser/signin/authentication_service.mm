@@ -126,6 +126,7 @@ void AuthenticationService::Initialize(
 
   MigrateAccountsStoredInPrefsIfNeeded();
 
+  identity_manager_observation_.Observe(identity_manager_);
   HandleForgottenIdentity(nil, /*should_prompt=*/true,
                           device_restore_session == signin::Tribool::kTrue);
 
@@ -158,7 +159,6 @@ void AuthenticationService::Initialize(
   // application is cold starting, |keychain_reload| must be set to true.
   ReloadCredentialsFromIdentities(/*keychain_reload=*/true);
 
-  identity_manager_observation_.Observe(identity_manager_);
   OnApplicationWillEnterForeground();
   bool has_primary_account_after_initialize =
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
