@@ -118,6 +118,27 @@
         },
         'os_type': 'chromeos'
       },
+      'chromeos-jacuzzi-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_device_only_gtests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'ChromeOS',
+              'device_type': 'jacuzzi',
+              'pool': 'chrome.tests',
+            },
+          ],
+        },
+        'os_type': 'chromeos'
+      },
       'chromeos-kevin-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',

@@ -104,6 +104,30 @@
       "use_goma": true
     }
   },
+  "chromeos-jacuzzi-chrome": {
+    "args_file": "//build/args/chromeos/jacuzzi.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
+  "chromeos-jacuzzi-compile-chrome": {
+    "args_file": "//build/args/chromeos/jacuzzi.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
   "chromeos-kevin-chrome": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {

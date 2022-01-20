@@ -21,6 +21,7 @@
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
       'chromeos-kevin-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks',
+      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
       'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks',
       'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official',
       'lacros-amd64-generic-chrome-skylab': 'chromeos_amd64-generic_lacros_official_skylab',
@@ -893,6 +894,8 @@
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
       'chromeos-eve-compile-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
+      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
+      'chromeos-jacuzzi-compile-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
       'chromeos-kevin-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks',
       'chromeos-kevin-compile-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks',
       'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks',
@@ -1950,6 +1953,13 @@
 
     'chromeos_kevin_include_unwind_tables_official_dchecks': [
       'chromeos_kevin', 'include_unwind_tables', 'official', 'dcheck_always_on',
+    ],
+
+    'chromeos_jacuzzi_include_unwind_tables_official': [
+      'chromeos_device', 'jacuzzi', 'include_unwind_tables', 'official',
+      # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
+      # display-orientation DCHECK failures are resolved.
+      # 'dcheck_always_on',
     ],
 
     'chromeos_msan_release_bot': [
@@ -3659,6 +3669,10 @@
 
     'is_skylab': {
       'gn_args': 'is_skylab=true',
+    },
+
+    'jacuzzi': {
+      'args_file': '//build/args/chromeos/jacuzzi.gni',
     },
 
     'mbi_mode_per_render_process_host': {
