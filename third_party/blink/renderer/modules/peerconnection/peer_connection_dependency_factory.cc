@@ -340,7 +340,7 @@ void ReportUmaEncodeDecodeCapabilities(
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
       blink::CreateWebrtcVideoDecoderFactory(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
-          render_color_space);
+          render_color_space, base::DoNothing());
   if (webrtc_encoder_factory && webrtc_decoder_factory) {
     using Sdp = webrtc::SdpVideoFormat;
     // Query for encode/decode support for H264, VP8, VP9, VP9 k-SVC.
@@ -598,7 +598,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
       blink::CreateWebrtcVideoDecoderFactory(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
-          render_color_space);
+          render_color_space, base::DoNothing());
 
   if (!encode_decode_capabilities_reported_) {
     encode_decode_capabilities_reported_ = true;

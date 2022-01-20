@@ -12,6 +12,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_software_fallback_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_software_fallback_wrapper.h"
 #include "third_party/webrtc/media/base/codec.h"
@@ -27,6 +28,9 @@
 namespace blink {
 
 namespace {
+// Kill switch to disable WebRTC Media Capabilities stats collection.
+const base::Feature kWebrtcMediaCapabilitiesStatsCollection{
+    "WebrtcMediaCapabilitiesStatsCollection", base::FEATURE_ENABLED_BY_DEFAULT};
 
 template <typename Factory>
 bool IsFormatSupported(const Factory* factory,
@@ -154,8 +158,10 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
 class DecoderAdapter : public webrtc::VideoDecoderFactory {
  public:
   explicit DecoderAdapter(
-      std::unique_ptr<webrtc::VideoDecoderFactory> hardware_decoder_factory)
-      : hardware_decoder_factory_(std::move(hardware_decoder_factory)) {}
+      std::unique_ptr<webrtc::VideoDecoderFactory> hardware_decoder_factory,
+      StatsCollectingDecoder::StoreProcessingStatsCB stats_callback)
+      : hardware_decoder_factory_(std::move(hardware_decoder_factory)),
+        stats_callback_(stats_callback) {}
 
   std::unique_ptr<webrtc::VideoDecoder> CreateVideoDecoder(
       const webrtc::SdpVideoFormat& format) override {
@@ -165,7 +171,14 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
     std::unique_ptr<webrtc::VideoDecoder> hardware_decoder =
         CreateDecoder(hardware_decoder_factory_.get(), format);
 
-    return Wrap(std::move(software_decoder), std::move(hardware_decoder));
+    if (base::FeatureList::IsEnabled(kWebrtcMediaCapabilitiesStatsCollection)) {
+      return std::make_unique<StatsCollectingDecoder>(
+          format,
+          Wrap(std::move(software_decoder), std::move(hardware_decoder)),
+          stats_callback_);
+    } else {
+      return Wrap(std::move(software_decoder), std::move(hardware_decoder));
+    }
   }
 
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override {
@@ -195,6 +208,7 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
  private:
   webrtc::InternalDecoderFactory software_decoder_factory_;
   const std::unique_ptr<webrtc::VideoDecoderFactory> hardware_decoder_factory_;
+  StatsCollectingDecoder::StoreProcessingStatsCB stats_callback_;
 };
 
 }  // namespace
@@ -221,7 +235,8 @@ std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     media::DecoderFactory* media_decoder_factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
-    const gfx::ColorSpace& render_color_space) {
+    const gfx::ColorSpace& render_color_space,
+    StatsCollectingDecoder::StoreProcessingStatsCB stats_callback) {
   const bool use_hw_decoding =
       gpu_factories != nullptr &&
       gpu_factories->IsGpuVideoDecodeAcceleratorEnabled() &&
@@ -238,7 +253,8 @@ std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
         std::move(media_task_runner), render_color_space);
   }
 
-  return std::make_unique<DecoderAdapter>(std::move(decoder_factory));
+  return std::make_unique<DecoderAdapter>(std::move(decoder_factory),
+                                          stats_callback);
 }
 
 }  // namespace blink

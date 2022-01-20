@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VIDEO_CODEC_FACTORY_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
@@ -37,7 +38,8 @@ CreateWebrtcVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     media::DecoderFactory* media_decoder_factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
-    const gfx::ColorSpace& render_color_space);
+    const gfx::ColorSpace& render_color_space,
+    StatsCollectingDecoder::StoreProcessingStatsCB stats_callback);
 
 }  // namespace blink
 
