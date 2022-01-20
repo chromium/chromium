@@ -19,12 +19,14 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/win/registry.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
@@ -215,8 +217,41 @@ bool ComServerApp::SwapInNewVersion() {
 bool ComServerApp::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
-  // TODO(crbug.com/1250524): Implement. Note we will need both user and system
-  // scopes here.
+  HKEY root = (updater_scope() == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE
+                                                         : HKEY_CURRENT_USER;
+  for (base::win::RegistryKeyIterator it(root, CLIENTS_KEY, KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const std::wstring app_id = it.Name();
+
+    // Skip importing legacy updater.
+    if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdaterAppID))
+      continue;
+
+    base::win::RegKey key;
+    if (key.Open(root, base::StrCat({CLIENTS_KEY, app_id}).c_str(),
+                 Wow6432(KEY_READ)) != ERROR_SUCCESS) {
+      continue;
+    }
+
+    RegistrationRequest registration;
+    registration.app_id = base::SysWideToUTF8(app_id);
+    std::wstring pv;
+    if (key.ReadValue(kRegValuePV, &pv) == ERROR_SUCCESS)
+      registration.version = base::Version(base::SysWideToUTF8(pv));
+    if (!registration.version.IsValid())
+      continue;
+
+    std::wstring brand_code;
+    if (key.ReadValue(kRegValueBrandCode, &brand_code) == ERROR_SUCCESS)
+      registration.brand_code = base::SysWideToUTF8(brand_code);
+
+    std::wstring ap;
+    if (key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS)
+      registration.ap = base::SysWideToUTF8(ap);
+
+    register_callback.Run(registration);
+  }
+
   return true;
 }
 
