@@ -28,12 +28,12 @@
 #if BUILDFLAG(IS_POSIX)
 #include <sched.h>
 
-#define YIELD_THREAD sched_yield()
+#define PA_YIELD_THREAD sched_yield()
 
 #else  // Other OS
 
 #warning "Thread yield not supported on this OS."
-#define YIELD_THREAD ((void)0)
+#define PA_YIELD_THREAD ((void)0)
 #endif
 
 #endif  // !defined(PA_HAS_FAST_MUTEX)
@@ -140,7 +140,7 @@ void SpinningMutex::LockSlowSpinLock() {
   int yield_thread_count = 0;
   do {
     if (yield_thread_count < 10) {
-      YIELD_THREAD;
+      PA_YIELD_THREAD;
       yield_thread_count++;
     } else {
       // At this point, it's likely that the lock is held by a lower priority

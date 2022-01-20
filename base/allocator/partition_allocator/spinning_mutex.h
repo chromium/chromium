@@ -102,7 +102,7 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
  private:
   void LockSlow() EXCLUSIVE_LOCK_FUNCTION();
 
-  // See below, the latency of YIELD_PROCESSOR can be as high as ~150
+  // See below, the latency of PA_YIELD_PROCESSOR can be as high as ~150
   // cycles. Meanwhile, sleeping costs a few us. Spinning 64 times at 3GHz would
   // cost 150 * 64 / 3e9 ~= 3.2us.
   //
@@ -172,7 +172,7 @@ ALWAYS_INLINE void SpinningMutex::Acquire() {
     // Also, loop several times here, following the guidelines in section 2.3.4
     // of the manual, "Pause latency in Skylake Client Microarchitecture".
     for (int yields = 0; yields < backoff; yields++) {
-      YIELD_PROCESSOR;
+      PA_YIELD_PROCESSOR;
       tries++;
     }
     constexpr int kMaxBackoff = 16;
