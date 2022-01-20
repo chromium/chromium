@@ -1279,15 +1279,9 @@ TEST_F(CompositorFrameReportingControllerTest,
     const base::HistogramBase::Count count;
   } expected_counts[] = {
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency", 1},
-      {"EventLatency.GestureScrollBegin.Wheel.TotalLatencyToSwapBegin", 1},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency", 1},
-      {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatencyToSwapBegin",
-       1},
       {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency", 1},
-      {"EventLatency.GestureScrollUpdate.Wheel.TotalLatencyToSwapBegin", 1},
       {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency", 1},
-      {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatencyToSwapBegin",
-       1},
       {"EventLatency.TotalLatency", 4},
   };
   for (const auto& expected_count : expected_counts) {
@@ -1297,7 +1291,6 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   const base::TimeTicks presentation_time =
       details.presentation_feedback.timestamp;
-  const base::TimeTicks swap_begin_time = details.swap_timings.swap_start;
   struct {
     const char* name;
     const base::HistogramBase::Sample latency_ms;
@@ -1305,27 +1298,15 @@ TEST_F(CompositorFrameReportingControllerTest,
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[0]).InMicroseconds())},
-      {"EventLatency.GestureScrollBegin.Wheel.TotalLatencyToSwapBegin",
-       static_cast<base::HistogramBase::Sample>(
-           (swap_begin_time - event_times[0]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[1]).InMicroseconds())},
-      {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatencyToSwapBegin",
-       static_cast<base::HistogramBase::Sample>(
-           (swap_begin_time - event_times[1]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[2]).InMicroseconds())},
-      {"EventLatency.GestureScrollUpdate.Wheel.TotalLatencyToSwapBegin",
-       static_cast<base::HistogramBase::Sample>(
-           (swap_begin_time - event_times[2]).InMicroseconds())},
       {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[3]).InMicroseconds())},
-      {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatencyToSwapBegin",
-       static_cast<base::HistogramBase::Sample>(
-           (swap_begin_time - event_times[3]).InMicroseconds())},
   };
   for (const auto& expected_latency : expected_latencies) {
     histogram_tester.ExpectBucketCount(expected_latency.name,

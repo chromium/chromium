@@ -1019,27 +1019,6 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
             EventMetrics::DispatchStage::kGenerated);
     DCHECK_LT(generated_timestamp, total_latency_stage.end_time);
 
-    // For scroll events, report total latency up to gpu-swap-begin. This is
-    // useful in comparing new EventLatency metrics with LatencyInfo-based
-    // scroll event latency metrics.
-    if (event_metrics->AsScroll() && !viz_breakdown_.swap_timings.is_null()) {
-      const base::TimeDelta swap_begin_latency =
-          viz_breakdown_.swap_timings.swap_start - generated_timestamp;
-      const std::string event_swap_begin_histogram_name =
-          histogram_base_name + ".TotalLatencyToSwapBegin";
-      // Note: There's a 1:1 mapping between `event_histogram_index` and
-      // `event_swap_begin_histogram_name` which allows the use of
-      // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
-      STATIC_HISTOGRAM_POINTER_GROUP(
-          event_swap_begin_histogram_name, event_histogram_index,
-          kMaxEventLatencyHistogramIndex,
-          AddTimeMicrosecondsGranularity(swap_begin_latency),
-          base::Histogram::FactoryMicrosecondsTimeGet(
-              event_swap_begin_histogram_name, kEventLatencyHistogramMin,
-              kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount,
-              base::HistogramBase::kUmaTargetedHistogramFlag));
-    }
-
     // Report total latency up to presentation for the event.
     const base::TimeDelta total_latency =
         total_latency_stage.end_time - generated_timestamp;

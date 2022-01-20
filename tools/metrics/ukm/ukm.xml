@@ -6815,6 +6815,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="TotalLatencyToSwapBegin">
+    <obsolete>
+      Deprecated as of 01/2021.
+    </obsolete>
     <summary>
       The time from when the event is created in the browser to when the
       gpu-swap is started, for scroll events, in microseconds.

@@ -104,7 +104,6 @@ const char kVizBreakdownLatchToSwapEnd[] =
 const char kVizBreakdownSwapEndToPresentationCompositorFrame[] =
     "SubmitCompositorFrameToPresentationCompositorFrame."
     "SwapEndToPresentationCompositorFrame";
-const char kTotalLatencyToSwapBegin[] = "TotalLatencyToSwapBegin";
 const char kTotalLatency[] = "TotalLatency";
 
 // Names of frame sequence types use in compositor latency UKM metrics (see
@@ -809,11 +808,6 @@ TEST_F(UkmManagerTest, EventLatency) {
         entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
         (viz_breakdown.presentation_feedback.timestamp -
          viz_breakdown.swap_timings.swap_end)
-            .InMicroseconds());
-    test_ukm_recorder_->ExpectEntryMetric(
-        entry, kTotalLatencyToSwapBegin,
-        (viz_breakdown.swap_timings.swap_start -
-         event_dispatch_times[i].generated)
             .InMicroseconds());
     test_ukm_recorder_->ExpectEntryMetric(
         entry, kTotalLatency,

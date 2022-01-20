@@ -22,12 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="EventLatencyBreakdown">
-  <variant name="TotalLatency"
-      summary="total latency from when the event is generated until the frame
-               is presented on screen"/>
-</variants>
-
 <variants name="EventLatencyEventType">
   <variant name="GestureDoubleTap" summary="gesture-double-tap events"/>
   <variant name="GestureLongPress" summary="gesture-long-press events"/>
@@ -64,14 +58,17 @@ chromium-metrics-reviews@google.com.
 
 <variants name="EventLatencyScrollEventType">
   <variant name="FirstGestureScrollUpdate"
-      summary="the first gesture-scroll-update event in a scroll sequence"/>
+      summary="gesture-scroll-update events that are the first one in a
+               scroll sequence"/>
   <variant name="GestureScrollBegin" summary="gesture-scroll-begin events"/>
   <variant name="GestureScrollEnd" summary="gesture-scroll-end events"/>
   <variant name="GestureScrollUpdate"
-      summary="non-inertial gesture-scroll-update events in a scroll sequence
-               except for the first one"/>
+      summary="gesture-scroll-update events that are non-inertial (i.e. not
+               generated due to a user fling) and not the first one in a
+               scroll sequence"/>
   <variant name="InertialGestureScrollUpdate"
-      summary="inertial gesture-scroll-update events in a scroll sequence"/>
+      summary="gesture-scroll-update events that are inertial (i.e. generated
+               due to a user fling)"/>
 </variants>
 
 <variants name="EventLatencyScrollInputType">
@@ -1865,57 +1862,56 @@ chromium-metrics-reviews@google.com.
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Tracks the total latency of all event types from when the event is generated
-    until the frame containing updates from that event is presented on the
-    screen.
+    Tracks total latency of all event types, from when the event is generated
+    until the frame caused by the event is submitted by the GPU service and
+    presented successfully on the screen.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
-<histogram name="EventLatency.{EventType}.{Breakdown}" units="microseconds"
+<histogram name="EventLatency.{EventType}.TotalLatency" units="microseconds"
     expires_after="2023-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Tracks {Breakdown} for {EventType}.
+    Tracks total latency of {EventType}, from when the event is generated until
+    the frame caused by the event is submitted by the GPU service and presented
+    successfully on the screen.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="EventType" variants="EventLatencyEventType"/>
-  <token key="Breakdown" variants="EventLatencyBreakdown"/>
 </histogram>
 
-<histogram name="EventLatency.{PinchEventType}.{PinchInputType}.{Breakdown}"
+<histogram name="EventLatency.{PinchEventType}.{PinchInputType}.TotalLatency"
     units="microseconds" expires_after="2023-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Tracks {Breakdown} for {PinchEventType} by {PinchInputType}.
+    Tracks total latency of {PinchInputType} {PinchEventType}, from when the
+    event is generated until the frame caused by the event is submitted by the
+    GPU service and presented successfully on the screen.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="PinchEventType" variants="EventLatencyPinchEventType"/>
   <token key="PinchInputType" variants="EventLatencyPinchInputType"/>
-  <token key="Breakdown" variants="EventLatencyBreakdown"/>
 </histogram>
 
-<histogram name="EventLatency.{ScrollEventType}.{ScrollInputType}.{Breakdown}"
+<histogram name="EventLatency.{ScrollEventType}.{ScrollInputType}.TotalLatency"
     units="microseconds" expires_after="2023-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Tracks {Breakdown} for {ScrollEventType} by {ScrollInputType}.
+    Tracks total latency of {ScrollInputType} {ScrollEventType}, from when the
+    event is generated until the frame caused by the event is submitted by the
+    GPU service and presented successfully on the screen.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="ScrollEventType" variants="EventLatencyScrollEventType"/>
   <token key="ScrollInputType" variants="EventLatencyScrollInputType"/>
-  <token key="Breakdown" variants="EventLatencyBreakdown">
-    <variant name="TotalLatencyToSwapBegin"
-        summary="total latency from when the event is generated until the
-                 gpu-swap is started"/>
-  </token>
 </histogram>
 
 </histograms>
