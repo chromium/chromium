@@ -59,8 +59,6 @@ suite('languages page', function() {
       languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
       languagesPage = document.createElement('settings-languages-page');
-      // TODO(crbug/1109431): Update this test once migration is completed.
-      languagesPage.isChromeOSLanguagesSettingsUpdate_ = false;
 
       // Prefs would normally be data-bound to settings-languages-page.
       languagesPage.prefs = settingsPrefs.prefs;

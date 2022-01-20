@@ -3,44 +3,41 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isChromeOS, isWindows} from 'chrome://resources/js/cr.m.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {LanguageHelper, LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
-import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
+import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {FakeSettingsPrivate} from './fake_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 // clang-format on
 
 suite('settings-languages', function() {
-  /**
-   * @param {!Array<string>} expected
-   */
-  function assertLanguageOrder(expected) {
-    assertEquals(expected.length, languageHelper.languages.enabled.length);
+  function assertLanguageOrder(expected: string[]) {
+    assertEquals(expected.length, languageHelper.languages!.enabled.length);
     for (let i = 0; i < expected.length; i++) {
       assertEquals(
-          expected[i], languageHelper.languages.enabled[i].language.code);
+          expected[i], languageHelper.languages!.enabled[i]!.language.code);
     }
   }
 
-  /** @type {?LanguagesBrowserProxy} */
-  let browserProxy = null;
-
-  let languageHelper;
+  let browserProxy: TestLanguagesBrowserProxy;
+  let languageHelper: LanguageHelper;
+  let languageSettingsPrivate: FakeLanguageSettingsPrivate;
 
   suiteSetup(function() {
     CrSettingsPrefs.deferInitialization = true;
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   setup(function() {
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(settingsPrivate);
+    settingsPrefs.initialize(
+        settingsPrivate as unknown as typeof chrome.settingsPrivate);
     document.body.appendChild(settingsPrefs);
 
     // Setup test browser proxy.
@@ -48,46 +45,46 @@ suite('settings-languages', function() {
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
     // Setup fake languageSettingsPrivate API.
-    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
+    languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
+        unknown as FakeLanguageSettingsPrivate;
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
-    languageHelper = document.createElement('settings-languages');
+    const settingsLanguages = document.createElement('settings-languages');
+    languageHelper = settingsLanguages.languageHelper;
 
     // Prefs would normally be data-bound to settings-languages.
-    fakeDataBind(settingsPrefs, languageHelper, 'prefs');
+    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
 
-    document.body.appendChild(languageHelper);
+    document.body.appendChild(settingsLanguages);
     return languageHelper.whenReady().then(function() {
-      if (isChromeOS || isWindows) {
-        return browserProxy.whenCalled('getProspectiveUILanguage');
-      }
+      return isWindows ? browserProxy.whenCalled('getProspectiveUILanguage') :
+                         Promise.resolve();
     });
   });
 
   test('languages model', function() {
-    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
     for (let i = 0; i < languageSettingsPrivate.languages.length; i++) {
       assertEquals(
-          languageSettingsPrivate.languages[i].code,
-          languageHelper.languages.supported[i].code);
+          languageSettingsPrivate.languages[i]!.code,
+          languageHelper.languages!.supported[i]!.code);
     }
     assertLanguageOrder(['en-US', 'sw']);
-    assertEquals('en', languageHelper.languages.translateTarget);
+    assertEquals('en', languageHelper.languages!.translateTarget);
 
     // TODO(michaelpg): Test other aspects of the model.
   });
 
   test('get language', function() {
     // If a language code is not found, try language without location.
-    let lang = languageHelper.getLanguage('en-CN');
+    let lang = languageHelper.getLanguage('en-CN')!;
     assertEquals('en', lang.code);
 
     // The old language code for Hebriew is supported.
-    lang = languageHelper.getLanguage('iw');
+    lang = languageHelper.getLanguage('iw')!;
     assertEquals('he', lang.code);
 
     // The 'no' macrolanguage is returned for Norsk Nynorsk.
-    lang = languageHelper.getLanguage('nn');
+    lang = languageHelper.getLanguage('nn')!;
     assertEquals('no', lang.code);
   });
 
@@ -134,34 +131,4 @@ suite('settings-languages', function() {
     languageHelper.moveLanguage('en-US', false /* upDirection */);
     assertLanguageOrder(expectedOrder);
   });
-
-  if (isChromeOS) {
-    test('modifying input methods', function() {
-      assertEquals(2, languageHelper.languages.inputMethods.enabled.length);
-      const inputMethods = languageHelper.getInputMethodsForLanguage('en-US');
-      assertEquals(4, inputMethods.length);
-
-      // We can remove one input method.
-      const dvorak =
-          '_comp_ime_fgoepimhcoialccpbmpnnblemnepkkaoxkb:us:dvorak:eng';
-      languageHelper.removeInputMethod(dvorak);
-      assertEquals(1, languageHelper.languages.inputMethods.enabled.length);
-
-      // Enable Swahili.
-      languageHelper.enableLanguage('sw');
-      assertEquals(1, languageHelper.languages.inputMethods.enabled.length);
-
-      // Add input methods for Swahili.
-      const sw = '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:sw:sw';
-      const swUS = 'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw';
-      languageHelper.addInputMethod(sw);
-      languageHelper.addInputMethod(swUS);
-      assertEquals(3, languageHelper.languages.inputMethods.enabled.length);
-
-      // Disable Swahili. The Swahili-only keyboard should NOT be removed,
-      // as enabled languages and input methods are decoupled.
-      languageHelper.disableLanguage('sw');
-      assertEquals(3, languageHelper.languages.inputMethods.enabled.length);
-    });
-  }
 });

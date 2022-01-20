@@ -970,4 +970,10 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-languages': SettingsLanguagesElement;
+  }
+}
+
 customElements.define(SettingsLanguagesElement.is, SettingsLanguagesElement);

@@ -64,9 +64,10 @@ export type LanguagesModel = {
 
 /**
  * Helper methods for reading and writing language settings.
- * @interface
  */
 export interface LanguageHelper {
+  languages?: LanguagesModel|undefined;
+
   whenReady(): Promise<void>;
 
   // <if expr="is_win">

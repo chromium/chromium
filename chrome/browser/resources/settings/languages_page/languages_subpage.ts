@@ -625,5 +625,11 @@ export class SettingsLanguagesSubpageElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-languages-subpage': SettingsLanguagesSubpageElement;
+  }
+}
+
 customElements.define(
     SettingsLanguagesSubpageElement.is, SettingsLanguagesSubpageElement);

@@ -39,10 +39,6 @@ suite('languages subpage', function() {
   const initialLanguages = 'en-US,sw';
 
   suiteSetup(function() {
-    // TODO(crbug/1109431): Update this test once migration is completed.
-    loadTimeData.overrideValues({
-      isChromeOSLanguagesSettingsUpdate: false,
-    });
     testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
     CrSettingsPrefs.deferInitialization = true;

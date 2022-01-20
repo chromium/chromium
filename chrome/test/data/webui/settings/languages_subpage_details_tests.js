@@ -38,9 +38,7 @@ suite('languages subpage detailed settings', function() {
   const neverTranslatePref = 'translate_blocked_languages';
 
   suiteSetup(function() {
-    // TODO(crbug/1109431): Update this test once migration is completed.
     loadTimeData.overrideValues({
-      isChromeOSLanguagesSettingsUpdate: false,
       enableDesktopDetailedLanguageSettings: true,
     });
     testing.Test.disableAnimationsAndTransitions();

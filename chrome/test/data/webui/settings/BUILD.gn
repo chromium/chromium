@@ -60,7 +60,6 @@ non_preprocessed_files = [
   "do_not_track_toggle_test.ts",
   "dropdown_menu_tests.ts",
   "extension_controlled_indicator_tests.ts",
-  "fake_language_settings_private.js",
   "fake_settings_private.js",
   "help_page_test.ts",
   "idle_load_tests.ts",
@@ -153,11 +152,12 @@ if (is_chromeos_ash) {
   ]
 } else {
   non_preprocessed_files += [
-    "languages_page_metrics_test_browser.js",
+    "fake_language_settings_private.ts",
+    "languages_page_metrics_test_browser.ts",
     "languages_page_tests.js",
     "languages_subpage_details_tests.js",
     "languages_subpage_tests.js",
-    "languages_tests.js",
+    "languages_tests.ts",
     "metrics_reporting_tests.ts",
     "people_page_manage_profile_test.ts",
     "relaunch_confirmation_dialog_test.ts",
