@@ -39,9 +39,9 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
                                SupportedCodecs supported_secure_codecs,
                                bool persistent_license_support)
       : supported_non_secure_codecs_(supported_non_secure_codecs),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         supported_secure_codecs_(supported_secure_codecs),
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
         persistent_license_support_(persistent_license_support) {
   }
 
@@ -57,11 +57,11 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
     return supported_non_secure_codecs_;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SupportedCodecs GetSupportedHwSecureCodecs() const override {
     return supported_secure_codecs_;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   EmeConfigRule GetRobustnessConfigRule(
       const std::string& key_system,
@@ -74,11 +74,11 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
     // incompatibility at this point, it will still be caught by the rule logic
     // in KeySystemConfigSelector: crbug.com/1204284
     if (requested_robustness.empty()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
 #else
       return EmeConfigRule::SUPPORTED;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     }
 
     // Cast-specific PlayReady implementation does not currently recognize or
@@ -107,9 +107,9 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
 
  private:
   const SupportedCodecs supported_non_secure_codecs_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const SupportedCodecs supported_secure_codecs_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   const bool persistent_license_support_;
 };
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)
@@ -184,7 +184,7 @@ void AddCmaKeySystems(
       EmeFeatureSupport::ALWAYS_ENABLED));  // Distinctive identifier.
 #endif                                      // BUILDFLAG(ENABLE_WIDEVINE)
 }
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_PLAYREADY)
 void AddCastPlayreadyKeySystemAndroid(
     std::vector<std::unique_ptr<::media::KeySystemProperties>>*
@@ -216,7 +216,7 @@ void AddCastAndroidKeySystems(
   cdm::AddAndroidWidevine(key_systems_properties);
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -229,9 +229,9 @@ void AddChromecastKeySystems(
 #if BUILDFLAG(USE_CHROMECAST_CDMS) || BUILDFLAG(ENABLE_WIDEVINE)
   AddCmaKeySystems(key_systems_properties, enable_persistent_license_support,
                    enable_playready);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   AddCastAndroidKeySystems(key_systems_properties, enable_playready);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace media

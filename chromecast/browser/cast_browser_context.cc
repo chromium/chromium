@@ -59,7 +59,7 @@ CastBrowserContext::~CastBrowserContext() {
 }
 
 void CastBrowserContext::InitWhileIOAllowed() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &path_));
   path_ = path_.Append(FILE_PATH_LITERAL("cast_shell"));
 
@@ -71,7 +71,7 @@ void CastBrowserContext::InitWhileIOAllowed() {
   // data (currently only cookies and local storage) will be
   // shared in a single location as defined here.
   CHECK(base::PathService::Get(DIR_CAST_HOME, &path_));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::unique_ptr<content::ZoomLevelDelegate>

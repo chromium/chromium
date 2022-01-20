@@ -58,7 +58,7 @@ bool CastDevToolsManagerDelegate::HasEnabledWebContents() const {
 }
 
 std::string CastDevToolsManagerDelegate::GetDiscoveryPageHTML() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::string();
 #else
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

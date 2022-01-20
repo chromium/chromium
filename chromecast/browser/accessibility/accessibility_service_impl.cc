@@ -15,13 +15,14 @@
 #include "base/notreached.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chromecast/ui/display_settings_manager.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 #include "base/android/jni_android.h"
 #include "chromecast/browser/jni_headers/CastAccessibilityHelper_jni.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 #include "chromecast/base/chromecast_switches.h"
@@ -74,7 +75,7 @@ void AccessibilityServiceImpl::SetColorInversion(bool enable) {
 bool AccessibilityServiceImpl::IsScreenReaderEnabled() {
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   return (chromevox_extension_ != nullptr);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_CastAccessibilityHelper_isScreenReaderEnabled(env);
 #else

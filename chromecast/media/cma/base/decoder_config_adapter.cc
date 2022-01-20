@@ -233,12 +233,12 @@ AudioConfig DecoderConfigAdapter::ToCastAudioConfig(
   audio_config.encryption_scheme =
       ToEncryptionScheme(config.encryption_scheme());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, Chromium's mp4 parser adds extra data for AAC, but we don't
   // need this with CMA.
   if (audio_config.codec == kCodecAAC)
     audio_config.extra_data.clear();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return audio_config;
 }

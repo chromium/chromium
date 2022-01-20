@@ -7,9 +7,10 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "chromecast/browser/media/media_caps_impl.h"
 #include "chromecast/media/base/media_codec_support.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
 #endif
 #include "media/base/video_codecs.h"
@@ -20,7 +21,7 @@ namespace media {
 void SupportedCodecFinder::FindSupportedCodecProfileLevels(
     MediaCapsImpl* media_caps) {
 // Don't need to list supported codecs on non-Android devices.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Get list of supported codecs from MediaCodec.
   std::vector<::media::CodecProfileLevel> codec_profile_levels;
   ::media::MediaCodecUtil::AddSupportedCodecProfileLevels(

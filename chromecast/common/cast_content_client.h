@@ -27,9 +27,9 @@ class CastContentClient : public content::ContentClient {
       ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ::media::MediaDrmBridgeClient* GetMediaDrmBridgeClient() override;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   void ExposeInterfacesToBrowser(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::BinderMap* binders) override;

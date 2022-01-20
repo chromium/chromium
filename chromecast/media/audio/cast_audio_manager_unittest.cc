@@ -31,9 +31,9 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/audio/android/audio_track_output_stream.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using testing::_;
 using testing::AnyNumber;
@@ -202,7 +202,7 @@ TEST_F(CastAudioManagerTest, CanMakeStream) {
   RunThreadsUntilIdle();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   const ::media::AudioParameters kAC3AudioParams(
       ::media::AudioParameters::AUDIO_BITSTREAM_AC3,
@@ -225,7 +225,7 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   }
   stream->Close();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {
   SetUpBackendAndDecoder();

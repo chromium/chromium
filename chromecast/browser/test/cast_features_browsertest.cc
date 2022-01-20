@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_TRUE(GetDCSExperimentIds().empty());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestExperimentIdsPersisted DISABLED_TestExperimentIdsPersisted
 #else
 #define MAYBE_TestExperimentIdsPersisted TestExperimentIdsPersisted

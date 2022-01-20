@@ -37,9 +37,9 @@ namespace media {
 class MediaCapsObserverImpl;
 class SupportedCodecProfileLevelsMemo;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class CastAudioDeviceFactory;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 namespace shell {
@@ -126,7 +126,7 @@ class CastContentRendererClient
   std::unique_ptr<media::SupportedCodecProfileLevelsMemo> supported_profiles_;
   mojo::Receiver<mojom::ApplicationMediaCapabilitiesObserver>
       app_media_capabilities_observer_receiver_{this};
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<MemoryPressureObserverImpl> memory_pressure_observer_;
 #endif
 
@@ -138,7 +138,7 @@ class CastContentRendererClient
       guest_view_container_dispatcher_;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<media::CastAudioDeviceFactory> cast_audio_device_factory_;
 #endif
 

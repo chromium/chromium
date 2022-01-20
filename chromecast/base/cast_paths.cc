@@ -13,7 +13,7 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/file_utils.h"
 #endif
 
@@ -26,7 +26,7 @@ namespace chromecast {
 bool PathProvider(int key, base::FilePath* result) {
   switch (key) {
     case DIR_CAST_HOME: {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       // On Fuchsia, use the component's local /data directory.
       base::FilePath home(base::kPersistedDataDirectoryPath);
 #else
@@ -43,45 +43,45 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       return true;
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case FILE_CAST_ANDROID_LOG: {
       base::FilePath base_dir;
       CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &base_dir));
       *result = base_dir.AppendASCII("cast_shell.log");
       return true;
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     case FILE_CAST_CONFIG: {
       base::FilePath data_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_dir));
       *result = data_dir.Append("cast_shell.conf");
 #else
       CHECK(base::PathService::Get(DIR_CAST_HOME, &data_dir));
       *result = data_dir.Append(".eureka.conf");
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
       return true;
     }
     case FILE_CAST_CRL: {
       base::FilePath data_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_dir));
       *result = data_dir.Append("cast_shell.crl");
 #else
       CHECK(base::PathService::Get(DIR_CAST_HOME, &data_dir));
       *result = data_dir.Append(".eureka.crl");
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
       return true;
     }
     case FILE_CAST_PAK: {
       base::FilePath base_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &base_dir));
       *result = base_dir.Append("paks/cast_shell.pak");
 #else
       CHECK(base::PathService::Get(base::DIR_ASSETS, &base_dir));
       *result = base_dir.Append("assets/cast_shell.pak");
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
       return true;
     }
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
@@ -97,13 +97,13 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
     case FILE_CAST_BROWSER_CONFIG: {
       base::FilePath data_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_dir));
       *result = data_dir.Append("cast_browser.conf");
 #else
       CHECK(base::PathService::Get(DIR_CAST_HOME, &data_dir));
       *result = data_dir.Append(".cast_browser.conf");
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
       return true;
     }
   }

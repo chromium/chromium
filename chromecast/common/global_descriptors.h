@@ -14,10 +14,10 @@ enum {
   // TODO(gunsch): Remove once there's a real value here. Otherwise, non-Android
   // build compile fails due to empty enum.
   kDummyValue = kContentIPCDescriptorMax + 1,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   kAndroidPakDescriptor,
   kAndroidMinidumpDescriptor,
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROMECAST_COMMON_GLOBAL_DESCRIPTORS_H_

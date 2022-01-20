@@ -31,10 +31,10 @@
 #include "net/log/net_log_source.h"
 #include "net/socket/tcp_server_socket.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/devtools_auth.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace chromecast {
 namespace shell {
@@ -45,7 +45,7 @@ const uint16_t kDefaultRemoteDebuggingPort = 9222;
 
 const int kBackLog = 10;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   explicit UnixDomainServerSocketFactory(const std::string& socket_name)
@@ -107,7 +107,7 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
 
 std::unique_ptr<content::DevToolsSocketFactory> CreateSocketFactory(
     uint16_t port) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::string socket_name = "cast_shell_devtools_remote";
   if (command_line->HasSwitch(switches::kRemoteDebuggingSocketName)) {

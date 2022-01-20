@@ -42,9 +42,9 @@ class CastMainDelegate : public content::ContentMainDelegate {
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void ZygoteForked() override;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool ShouldCreateFeatureList() override;
   void PostEarlyInitialization(bool is_running_tests) override;
   content::ContentClient* CreateContentClient() override;
@@ -63,9 +63,9 @@ class CastMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<CastResourceDelegate> resource_delegate_;
   CastContentClient content_client_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<content::BrowserMainRunner> browser_runner_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<CastFeatureListCreator> cast_feature_list_creator_;
 };

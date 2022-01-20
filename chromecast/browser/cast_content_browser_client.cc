@@ -98,15 +98,16 @@
 #include "ui/display/screen.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_handler_host_linux.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/breakpad_linux.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chromecast/media/audio/cast_audio_manager_android.h"  // nogncheck
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/core/app/crashpad.h"
@@ -114,7 +115,7 @@
 #include "media/audio/audio_features.h"
 #else
 #include "chromecast/browser/memory_pressure_controller_impl.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(USE_ALSA)
 #include "chromecast/media/audio/cast_audio_manager_alsa.h"  // nogncheck
@@ -132,16 +133,16 @@
 #include "extensions/common/constants.h"                            // nogncheck
 #endif
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
 #include "chromecast/browser/webview/webview_controller.h"
-#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/service/video_geometry_setter_service.h"
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 #include "device/bluetooth/cast/bluetooth_adapter_cast.h"
 #endif
 
@@ -164,7 +165,7 @@ CastContentBrowserClient::CastContentBrowserClient(
       cast_feature_list_creator_(cast_feature_list_creator) {
   cast_feature_list_creator_->SetExtraEnableFeatures({
     ::media::kInternalMediaSession, features::kNetworkServiceInProcess,
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_VIDEO_CAPTURE_SERVICE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VIDEO_CAPTURE_SERVICE)
         features::kMojoVideoCapture,
 #endif
 #if BUILDFLAG(USE_V4L2_CODEC)
@@ -173,7 +174,7 @@ CastContentBrowserClient::CastContentBrowserClient(
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
   });
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   cast_feature_list_creator_->SetExtraDisableFeatures({
       ::media::kAudioFocusLossSuspendMediaSession,
       ::media::kRequestSystemAudioFocus,
@@ -284,7 +285,7 @@ CastContentBrowserClient::CreateAudioManager(
       content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
       browser_main_parts()->connector(),
       BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kEnableChromeAudioManagerAndroid)) {
     LOG(INFO) << "Use AudioManagerAndroid instead of CastAudioManagerAndroid.";
     return std::make_unique<::media::AudioManagerAndroid>(
@@ -326,13 +327,13 @@ media::MediaCapsImpl* CastContentBrowserClient::media_caps() {
   return cast_browser_main_parts_->media_caps();
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 scoped_refptr<device::BluetoothAdapterCast>
 CastContentBrowserClient::CreateBluetoothAdapter() {
   NOTREACHED() << "Bluetooth Adapter is not supported!";
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 void CastContentBrowserClient::SetMetricsClientId(
     const std::string& client_id) {}
@@ -367,7 +368,7 @@ CastContentBrowserClient::CreateBrowserMainParts(
 
 void CastContentBrowserClient::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Cast on Android always allows persisting data.
   //
   // Cast on Android build always uses kForceVideoOverlays command line switch
@@ -377,7 +378,7 @@ void CastContentBrowserClient::RenderProcessWillLaunch(
   // Remove kForceVideoOverlays and swtich to the Clank model for secure codecs
   // support.
   host->AddFilter(new cdm::CdmMessageFilterAndroid(true, true));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   int render_process_id = host->GetID();
@@ -441,8 +442,8 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
   base::CommandLine* browser_command_line =
       base::CommandLine::ForCurrentProcess();
 
-#if !defined(OS_FUCHSIA)
-#if defined(OS_ANDROID)
+#if !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableCrashReporter)) {
     command_line->AppendSwitch(switches::kEnableCrashReporter);
@@ -454,8 +455,8 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
   if (breakpad::IsCrashReporterEnabled()) {
     command_line->AppendSwitch(switches::kEnableCrashReporter);
   }
-#endif  // defined(OS_ANDROID)
-#endif  // !defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // Command-line for different processes.
   if (process_type == switches::kRendererProcess) {
@@ -475,7 +476,7 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
                                           switches::kAudioOutputChannels));
     }
   } else if (process_type == switches::kGpuProcess) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Necessary for accelerated 2d canvas.  By default on Linux, Chromium
     // assumes GLES2 contexts can be lost to a power-save mode, which breaks GPU
     // canvas apps.
@@ -542,13 +543,13 @@ void CastContentBrowserClient::OverrideWebkitPrefs(
   prefs->images_enabled = false;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Enable the television style for viewport so that all cast apps have a
   // 1280px wide layout viewport by default.
   DCHECK(prefs->viewport_enabled);
   DCHECK(prefs->viewport_meta_enabled);
   prefs->viewport_style = blink::mojom::ViewportStyle::kTelevision;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Disable WebSQL databases by default.
   prefs->databases_enabled = false;
@@ -750,19 +751,19 @@ void CastContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
     const base::CommandLine& command_line,
     int child_process_id,
     content::PosixFileDescriptorInfo* mappings) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   mappings->ShareWithRegion(
       kAndroidPakDescriptor,
       base::GlobalDescriptors::GetInstance()->Get(kAndroidPakDescriptor),
       base::GlobalDescriptors::GetInstance()->GetRegion(kAndroidPakDescriptor));
-#endif  // defined(OS_ANDROID)
-#if !defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/753619): Complete crash reporting integration on Fuchsia.
   int crash_signal_fd = GetCrashSignalFD(command_line);
   if (crash_signal_fd >= 0) {
     mappings->Share(kCrashDumpSignal, crash_signal_fd);
   }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 }
 
 void CastContentBrowserClient::GetAdditionalWebUISchemes(
@@ -800,12 +801,12 @@ scoped_refptr<net::SSLPrivateKey> CastContentBrowserClient::DeviceKey() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int CastContentBrowserClient::GetCrashSignalFD(
     const base::CommandLine& command_line) {
   return crashpad::CrashHandlerHost::Get()->GetDeathSignalSocket();
 }
-#elif !defined(OS_FUCHSIA)
+#elif !BUILDFLAG(IS_FUCHSIA)
 int CastContentBrowserClient::GetCrashSignalFD(
     const base::CommandLine& command_line) {
   std::string process_type =
@@ -843,7 +844,7 @@ CastContentBrowserClient::CreateCrashHandlerHost(
   crash_handler->StartUploaderThread();
   return crash_handler;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 CastContentBrowserClient::CreateThrottlesForNavigation(
@@ -871,12 +872,12 @@ CastContentBrowserClient::CreateThrottlesForNavigation(
             handle, general_audience_browsing_service_.get()));
   }
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
   auto webview_throttle = WebviewController::MaybeGetNavigationThrottle(handle);
   if (webview_throttle) {
     throttles.push_back(std::move(webview_throttle));
   }
-#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
 
   return throttles;
 }

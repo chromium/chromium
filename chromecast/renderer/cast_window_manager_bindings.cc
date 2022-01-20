@@ -42,7 +42,7 @@ const char kCanRightDragName[] = "canRightDrag";
 const char kMinimize[] = "minimize";
 const char kMaximize[] = "maximize";
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kDisplayControlsName[] = "displayControls";
 #endif
 
@@ -183,7 +183,7 @@ void CastWindowManagerBindings::OnTouchInputSupportSet(
     resolver.Get(isolate)
         ->Resolve(context,
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
                   gin::DataObjectBuilder(isolate)
                       .Set(kDisplayControlsName, display_controls)
                       .Build()

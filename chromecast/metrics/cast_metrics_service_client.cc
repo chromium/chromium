@@ -34,7 +34,7 @@
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chromecast/base/android/dumpstate_writer.h"
 #endif
 
@@ -47,11 +47,11 @@ const int kStandardUploadIntervalMinutes = 5;
 
 const char kMetricsOldClientID[] = "user_experience_metrics.client_id";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kClientIdName[] = "Client ID";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 const struct ChannelMap {
   const char* chromecast_channel;
@@ -78,7 +78,7 @@ const struct ChannelMap {
   // Any non-empty channel name is considered beta channel
   return ::metrics::SystemProfileProto::CHANNEL_BETA;
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 
@@ -96,7 +96,7 @@ void CastMetricsServiceClient::SetMetricsClientId(
   LOG(INFO) << "Metrics client ID set: " << client_id;
   if (delegate_)
     delegate_->SetMetricsClientId(client_id);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DumpstateWriter::AddDumpValue(kClientIdName, client_id);
 #endif
 }
@@ -162,7 +162,7 @@ bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
 }
 
 ::metrics::SystemProfileProto::Channel CastMetricsServiceClient::GetChannel() {
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   switch (cast_sys_info_->GetBuildType()) {
     case CastSysInfo::BUILD_ENG:
       return ::metrics::SystemProfileProto::CHANNEL_UNKNOWN;
@@ -179,7 +179,7 @@ bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
   // arbitrary.
   return GetReleaseChannelFromUpdateChannelName(
       cast_sys_info_->GetSystemReleaseChannel());
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 }
 
 bool CastMetricsServiceClient::IsExtendedStableChannel() {
@@ -346,12 +346,12 @@ void CastMetricsServiceClient::StartMetricsService() {
     delegate_->RegisterMetricsProviders(metrics_service_.get());
 
   metrics_service_->InitializeMetricsRecordingState();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Signal that the session has not yet exited cleanly. We later signal that
   // the session exited cleanly via MetricsService::RecordCompletedSessionEnd().
   // TODO(crbug.com/1208587): See whether this can be called even earlier.
   metrics_state_manager_->LogHasSessionShutdownCleanly(false);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (IsReportingEnabled())
     metrics_service_->Start();

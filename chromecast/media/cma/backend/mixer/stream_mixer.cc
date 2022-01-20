@@ -105,7 +105,7 @@ base::TimeDelta GetNoInputCloseTimeout() {
 }
 
 void UseHighPriority() {
-#if (!defined(OS_FUCHSIA) && !defined(OS_ANDROID))
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   struct sched_param params;
   params.sched_priority = sched_get_priority_max(SCHED_FIFO);
   pthread_setschedparam(pthread_self(), SCHED_FIFO, &params);

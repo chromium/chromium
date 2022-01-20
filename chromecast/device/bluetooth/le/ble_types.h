@@ -12,7 +12,7 @@
 namespace chromecast {
 namespace bluetooth {
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 using HandleId = uint64_t;
 #else
 using HandleId = uint16_t;

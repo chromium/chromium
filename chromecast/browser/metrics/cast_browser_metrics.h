@@ -41,10 +41,10 @@ class CastBrowserMetrics {
  private:
   std::unique_ptr<CastMetricsServiceClient> metrics_service_client_;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ExternalMetrics* external_metrics_ = nullptr;
   ExternalMetrics* platform_metrics_ = nullptr;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace metrics

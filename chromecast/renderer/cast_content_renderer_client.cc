@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chromecast/base/bitstream_audio_codecs.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/base/chromecast_switches.h"
@@ -45,12 +46,12 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chromecast/media/audio/cast_audio_device_factory.h"
 #include "media/base/android/media_codec_util.h"
 #else
 #include "chromecast/renderer/memory_pressure_observer_impl.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 #include "chromecast/common/cast_extensions_client.h"
@@ -76,7 +77,7 @@ bool IsSupportedBitstreamAudioCodecHelper(::media::AudioCodec codec, int mask) {
 }
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Audio renderer algorithm maximum capacity. 5s buffer is already large enough,
 // we don't need a larger capacity. Otherwise audio renderer will double the
 // buffer size when underrun happens, which will cause the playback paused to
@@ -87,18 +88,18 @@ constexpr base::TimeDelta kAudioRendererMaxCapacity = base::Seconds(5);
 constexpr base::TimeDelta kAudioRendererStartingCapacity = base::Seconds(5);
 constexpr base::TimeDelta kAudioRendererStartingCapacityEncrypted =
     base::Seconds(5);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 CastContentRendererClient::CastContentRendererClient()
     : supported_profiles_(
           std::make_unique<media::SupportedCodecProfileLevelsMemo>()),
       activity_url_filter_manager_(
           std::make_unique<CastActivityUrlFilterManager>()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Registers a custom content::AudioDeviceFactory
   cast_audio_device_factory_ =
       std::make_unique<media::CastAudioDeviceFactory>();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 CastContentRendererClient::~CastContentRendererClient() = default;
@@ -113,7 +114,7 @@ void CastContentRendererClient::RenderThreadStarted() {
       new media::MediaCapsObserverImpl(&proxy, supported_profiles_.get()));
   media_caps->AddObserver(std::move(proxy));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Register to observe memory pressure changes
   mojo::Remote<chromecast::mojom::MemoryPressureController>
       memory_pressure_controller;
@@ -192,7 +193,7 @@ void CastContentRendererClient::RenderFrameCreated(
   dispatcher->OnRenderFrameCreated(render_frame);
 #endif
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
   // JsChannelBindings destroys itself when the RenderFrame is destroyed.
   JsChannelBindings::Create(render_frame);
 #endif
@@ -237,7 +238,7 @@ void CastContentRendererClient::AddSupportedKeySystems(
 
 bool CastContentRendererClient::IsSupportedAudioType(
     const ::media::AudioType& type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (type.spatial_rendering)
     return false;
 
@@ -289,10 +290,10 @@ if (type.hdr_metadata_type != ::gfx::HdrMetadataType::kNone) {
   return false;
 }
 
-#if defined(OS_ANDROID)
-  return supported_profiles_->IsSupportedVideoConfig(
-      media::ToCastVideoCodec(type.codec, type.profile),
-      media::ToCastVideoProfile(type.profile), type.level);
+#if BUILDFLAG(IS_ANDROID)
+return supported_profiles_->IsSupportedVideoConfig(
+    media::ToCastVideoCodec(type.codec, type.profile),
+    media::ToCastVideoProfile(type.profile), type.level);
 #else
   return media::MediaCapabilitiesShlib::IsSupportedVideoConfig(
       media::ToCastVideoCodec(type.codec, type.profile),
@@ -390,7 +391,7 @@ CastContentRendererClient::CreateURLLoaderThrottleProvider(
 absl::optional<::media::AudioRendererAlgorithmParameters>
 CastContentRendererClient::GetAudioRendererAlgorithmParameters(
     ::media::AudioParameters audio_parameters) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) {
     return absl::nullopt;
   }
