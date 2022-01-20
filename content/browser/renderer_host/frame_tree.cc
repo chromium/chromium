@@ -420,7 +420,6 @@ FrameTreeNode* FrameTree::AddFrame(
   // frame will need the value of pending frame policy instead of effective
   // frame policy.
   new_node->SetPendingFramePolicy(frame_policy);
-  new_node->CommitFramePolicy(frame_policy);
 
   if (was_discarded)
     new_node->set_was_discarded();
@@ -428,7 +427,7 @@ FrameTreeNode* FrameTree::AddFrame(
   // Add the new node to the FrameTree, creating the RenderFrameHost.
   FrameTreeNode* added_node =
       parent->AddChild(std::move(new_node), new_routing_id,
-                       std::move(frame_remote), frame_token);
+                       std::move(frame_remote), frame_token, frame_policy);
 
   added_node->SetFencedFrameNonceIfNeeded();
 
@@ -789,13 +788,14 @@ void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
 void FrameTree::Init(SiteInstance* main_frame_site_instance,
                      bool renderer_initiated_creation,
                      const std::string& main_frame_name,
-                     RenderFrameHostImpl* opener) {
+                     RenderFrameHostImpl* opener,
+                     const blink::FramePolicy& frame_policy) {
   // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
   // main frame - let's do the same thing here.
   std::string unique_name;
   root_->SetFrameName(main_frame_name, unique_name);
   root_->render_manager()->InitRoot(main_frame_site_instance,
-                                    renderer_initiated_creation);
+                                    renderer_initiated_creation, frame_policy);
   root_->SetFencedFrameNonceIfNeeded();
 
   // The initial empty document should inherit the origin of its opener (the

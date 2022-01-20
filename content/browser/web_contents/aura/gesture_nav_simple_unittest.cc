@@ -38,7 +38,8 @@ class GestureNavTestWebContents : public TestWebContents {
             browser_context, std::move(fake_native_view),
             std::move(fake_contents_window));
     web_contents->Init(
-        WebContents::CreateParams(browser_context, std::move(instance)));
+        WebContents::CreateParams(browser_context, std::move(instance)),
+        blink::FramePolicy());
     return web_contents;
   }
 

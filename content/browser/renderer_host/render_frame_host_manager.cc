@@ -313,8 +313,13 @@ RenderFrameHostManager::~RenderFrameHostManager() {
   SetRenderFrameHost(nullptr);
 }
 
-void RenderFrameHostManager::InitRoot(SiteInstance* site_instance,
-                                      bool renderer_initiated_creation) {
+void RenderFrameHostManager::InitRoot(
+    SiteInstance* site_instance,
+    bool renderer_initiated_creation,
+    blink::FramePolicy initial_main_frame_policy) {
+  // TODO(crbug.com/1270671) - replication state and frame policy will need
+  // to both be updated here.
+  browsing_context_state_->CommitFramePolicy(initial_main_frame_policy);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
@@ -331,7 +336,9 @@ void RenderFrameHostManager::InitChild(
     SiteInstance* site_instance,
     int32_t frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-    const blink::LocalFrameToken& frame_token) {
+    const blink::LocalFrameToken& frame_token,
+    blink::FramePolicy frame_policy) {
+  browsing_context_state_->CommitFramePolicy(frame_policy);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
       std::move(frame_remote), frame_token,
@@ -463,8 +470,23 @@ void RenderFrameHostManager::DidNavigateFrame(
   // Make sure any dynamic changes to this frame's sandbox flags and permissions
   // policy that were made prior to navigation take effect.  This should only
   // happen for cross-document navigations.
-  if (!is_same_document_navigation)
-    CommitFramePolicy(frame_policy);
+  if (!is_same_document_navigation) {
+    if (!render_frame_host->browsing_context_state()->CommitFramePolicy(
+            frame_policy)) {
+      // The frame policy didn't change, no need to send updates to proxies.
+      return;
+    }
+
+    // Policy updates can only happen when the frame has a parent.
+    CHECK(frame_tree_node_->parent());
+
+    // There should be no children of this frame; any policy changes should only
+    // happen on navigation commit which will delete any child frames.
+    DCHECK(!frame_tree_node_->child_count());
+
+    browsing_context_state_->SendFramePolicyUpdatesToProxies(
+        frame_tree_node_->parent()->GetSiteInstance(), frame_policy);
+  }
 }
 
 void RenderFrameHostManager::CommitPendingIfNecessary(
@@ -553,40 +575,6 @@ void RenderFrameHostManager::DidChangeOpener(
       speculative_render_frame_host_->GetSiteInstance() !=
           source_site_instance) {
     speculative_render_frame_host_->UpdateOpener();
-  }
-}
-
-void RenderFrameHostManager::CommitFramePolicy(
-    const blink::FramePolicy& frame_policy) {
-  // Return early if there were no updates to sandbox flags or container policy.
-  if (!frame_tree_node_->CommitFramePolicy(frame_policy))
-    return;
-
-  // Policy updates can only happen when the frame has a parent.
-  CHECK(frame_tree_node_->parent());
-
-  // There should be no children of this frame; any policy changes should only
-  // happen on navigation commit.
-  DCHECK(!frame_tree_node_->child_count());
-
-  // Notify all of the frame's proxies about updated policies, excluding
-  // the parent process since it already knows the latest state.
-  SiteInstance* parent_site_instance =
-      frame_tree_node_->parent()->GetSiteInstance();
-  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    if (pair.second->GetSiteInstance() != parent_site_instance) {
-      pair.second->GetAssociatedRemoteFrame()->DidUpdateFramePolicy(
-          frame_policy);
-    }
-  }
-}
-
-void RenderFrameHostManager::OnDidSetFramePolicyHeaders() {
-  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    pair.second->GetAssociatedRemoteFrame()->DidSetFramePolicyHeaders(
-        browsing_context_state_->active_sandbox_flags(),
-        browsing_context_state_->current_replication_state()
-            .permissions_policy_header);
   }
 }
 

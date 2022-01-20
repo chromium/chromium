@@ -206,13 +206,15 @@ class CONTENT_EXPORT FrameTree {
   // creates an initial NavigationEntry that potentially inherits `opener`'s
   // origin in its NavigationController. This method will call back into the
   // delegates so it should only be called once they have completed their
-  // initialization.
+  // initialization. Pass in frame_policy so that it can be set in the root
+  // node's replication_state.
   // TODO(carlscab): It would be great if initialization could happened in the
   // constructor so we do not leave objects in a half initialized state.
   void Init(SiteInstance* main_frame_site_instance,
             bool renderer_initiated_creation,
             const std::string& main_frame_name,
-            RenderFrameHostImpl* opener);
+            RenderFrameHostImpl* opener,
+            const blink::FramePolicy& frame_policy);
 
   Type type() const { return type_; }
 

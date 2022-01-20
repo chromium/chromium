@@ -89,7 +89,8 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
         SiteInstance::Create(web_contents.GetBrowserContext());
     frame_tree_->Init(site_instance.get(),
                       /*renderer_initiated_creation=*/false,
-                      /*main_frame_name=*/"", /*opener=*/nullptr);
+                      /*main_frame_name=*/"", /*opener=*/nullptr,
+                      /*frame_policy=*/blink::FramePolicy());
 
     const auto& site_info =
         static_cast<SiteInstanceImpl*>(site_instance.get())->GetSiteInfo();

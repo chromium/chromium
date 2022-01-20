@@ -184,13 +184,16 @@ class CONTENT_EXPORT RenderFrameHostManager {
   ~RenderFrameHostManager();
 
   // Initialize this frame as the root of a new FrameTree.
-  void InitRoot(SiteInstance* site_instance, bool renderer_initiated_creation);
+  void InitRoot(SiteInstance* site_instance,
+                bool renderer_initiated_creation,
+                blink::FramePolicy initial_main_frame_policy);
 
   // Initialize this frame as the child of another frame.
   void InitChild(SiteInstance* site_instance,
                  int32_t frame_routing_id,
                  mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-                 const blink::LocalFrameToken& frame_token);
+                 const blink::LocalFrameToken& frame_token,
+                 blink::FramePolicy frame_policy);
 
   // Returns the currently active RenderFrameHost.
   //
@@ -403,11 +406,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // skipping the parent process.
   void OnDidUpdateFrameOwnerProperties(
       const blink::mojom::FrameOwnerProperties& properties);
-
-  // Notify the proxies that the active sandbox flags or permissions policy
-  // header on the frame have been changed during page load. Sandbox flags can
-  // change when set by a CSP header.
-  void OnDidSetFramePolicyHeaders();
 
   void EnsureRenderViewInitialized(RenderViewHostImpl* render_view_host,
                                    SiteInstance* instance);
@@ -855,9 +853,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
                                 bool was_caused_by_user_gesture,
                                 bool is_same_document_navigation,
                                 bool clear_proxies_on_commit);
-
-  // Commits given frame policy when the renderer's frame navigates.
-  void CommitFramePolicy(const blink::FramePolicy& frame_policy);
 
   // Runs the unload handler in the old RenderFrameHost, after the new
   // RenderFrameHost has committed.  |old_render_frame_host| will either be

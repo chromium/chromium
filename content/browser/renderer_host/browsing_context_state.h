@@ -116,20 +116,6 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
     replication_state_->has_active_user_gesture = has_active_user_gesture;
   }
 
-  void set_permissions_policy_header(
-      const blink::ParsedPermissionsPolicy& parsed_header) {
-    replication_state_->permissions_policy_header = parsed_header;
-  }
-
-  void set_active_sandbox_flags(network::mojom::WebSandboxFlags updated_flags) {
-    replication_state_->active_sandbox_flags = updated_flags;
-  }
-
-  void UpdateFramePolicy(const blink::FramePolicy& new_frame_policy,
-                         bool did_change_flags,
-                         bool did_change_container_policy,
-                         bool did_change_required_document_policy);
-
   RenderFrameProxyHost* GetRenderFrameProxyHost(
       SiteInstanceGroup* site_instance_group) const;
 
@@ -146,7 +132,7 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
   void SetInsecureNavigationsSet(
       const std::vector<uint32_t>& insecure_navigations_set);
 
-  // Sets the the sticky user activation status and notifies proxies about the
+  // Sets the sticky user activation status and notifies proxies about the
   // update.
   void OnSetHadStickyUserActivationBeforeNavigation(bool value);
 
@@ -161,6 +147,32 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
   void ActiveFrameCountIsZero(SiteInstanceImpl* site_instance) override;
   void RenderProcessGone(SiteInstanceImpl* site_instance,
                          const ChildProcessTerminationInfo& info) override;
+
+  // Set the frame_policy provided in function parameter as active frame policy,
+  // while leaving the FrameTreeNode::pending_frame_policy_ untouched. This
+  // functionality is used on FrameTreeNode initialization, where it is
+  // associated with a RenderFrameHost. Returns a boolean indicating whether
+  // there was an update to the FramePolicy.
+  bool CommitFramePolicy(const blink::FramePolicy& frame_policy);
+
+  // Updates the active sandbox flags in this frame, in response to a
+  // Content-Security-Policy header adding additional flags, in addition to
+  // those given to this frame by its parent, or in response to the
+  // Permissions-Policy header being set. Usually this will be when we create
+  // WebContents with an opener. Note that on navigation, these updates will be
+  // cleared, and the flags in the pending frame policy will be applied to the
+  // frame. The old document's frame policy should therefore not impact the new
+  // document's frame policy.
+  // Returns true iff this operation has changed state of either sandbox flags
+  // or permissions policy.
+  bool UpdateFramePolicyHeaders(
+      network::mojom::WebSandboxFlags sandbox_flags,
+      const blink::ParsedPermissionsPolicy& parsed_header);
+
+  // Notify all of the proxies about the updated FramePolicy, excluding the
+  // parent, as it will already know.
+  void SendFramePolicyUpdatesToProxies(SiteInstance* parent_site_instance,
+                                       const blink::FramePolicy& frame_policy);
 
  protected:
   friend class base::RefCounted<BrowsingContextState>;

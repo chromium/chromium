@@ -63,7 +63,8 @@ FencedFrame::FencedFrame(
   // apply for fenced frames, portals, and prerendered nested FrameTrees, hence
   // the decision to mark it as false.
   frame_tree_->Init(site_instance.get(), /*renderer_initiated_creation=*/false,
-                    /*main_frame_name=*/"", /*opener=*/nullptr);
+                    /*main_frame_name=*/"", /*opener=*/nullptr,
+                    /*frame_policy=*/blink::FramePolicy());
 
   // TODO(crbug.com/1199679): This should be moved to FrameTree::Init.
   web_contents_->NotifySwappedFromRenderManager(
