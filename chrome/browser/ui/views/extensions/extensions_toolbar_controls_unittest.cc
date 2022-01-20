@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -83,7 +84,8 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // menu. The extension should still have access to the current site.
   extensions::ExtensionContextMenuModel context_menu(
       extension.get(), browser(), extensions::ExtensionContextMenuModel::PINNED,
-      nullptr, true);
+      nullptr, true,
+      extensions::ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
   context_menu.ExecuteCommand(
       extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE, 0);
   EXPECT_TRUE(IsSiteAccessButtonVisible());

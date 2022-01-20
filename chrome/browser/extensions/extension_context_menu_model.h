@@ -69,6 +69,9 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kMaxValue = kPageAccessLearnMore,
   };
 
+  // Location where the context menu is open from.
+  enum class ContextMenuSource { kToolbarAction = 0, kMenuItem = 1 };
+
   // The current visibility of the extension; this affects the "pin" / "unpin"
   // strings in the menu.
   // TODO(devlin): Rename this "PinState" when we finish removing the old UI
@@ -103,7 +106,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
                             Browser* browser,
                             ButtonVisibility visibility,
                             PopupDelegate* delegate,
-                            bool can_show_icon_in_toolbar);
+                            bool can_show_icon_in_toolbar,
+                            ContextMenuSource source);
 
   ExtensionContextMenuModel(const ExtensionContextMenuModel&) = delete;
   ExtensionContextMenuModel& operator=(const ExtensionContextMenuModel&) =
@@ -180,6 +184,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // The action taken by the menu. Has a valid value when the menu is being
   // shown.
   absl::optional<ContextMenuAction> action_taken_;
+
+  ContextMenuSource source_;
 };
 
 }  // namespace extensions

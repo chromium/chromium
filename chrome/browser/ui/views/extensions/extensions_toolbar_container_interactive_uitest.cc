@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
@@ -699,7 +700,8 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
     ToolbarActionViewController* const controller =
         GetExtensionsToolbarContainer()->GetActionForId(extension_->id());
     return static_cast<extensions::ExtensionContextMenuModel*>(
-        controller->GetContextMenu());
+        controller->GetContextMenu(extensions::ExtensionContextMenuModel::
+                                       ContextMenuSource::kToolbarAction));
   }
 
   std::u16string GetActionTooltip() {

@@ -76,7 +76,9 @@ class ExtensionActionViewController
   bool IsShowingPopup() const override;
   void HidePopup() override;
   gfx::NativeView GetPopupNativeView() override;
-  ui::MenuModel* GetContextMenu() override;
+  ui::MenuModel* GetContextMenu(
+      extensions::ExtensionContextMenuModel::ContextMenuSource
+          context_menu_source) override;
   void OnContextMenuShown() override;
   void OnContextMenuClosed() override;
   bool ExecuteAction(bool by_user, InvocationSource source) override;

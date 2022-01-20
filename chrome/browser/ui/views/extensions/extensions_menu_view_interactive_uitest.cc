@@ -92,7 +92,8 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
       extensions::ExtensionContextMenuModel menu_model(
           extensions()[0].get(), browser(),
           extensions::ExtensionContextMenuModel::PINNED, nullptr,
-          false /* can_show_icon_in_toolbar */);
+          /*can_show_icon_in_toolbar=*/false,
+          extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
       menu_model.ExecuteCommand(
           extensions::ExtensionContextMenuModel::UNINSTALL, 0);
       ASSERT_TRUE(waiter.WaitIfNeededAndGet());
@@ -501,7 +502,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   extensions::ExtensionContextMenuModel menu(
       extensions()[0].get(), incognito_browser(),
       extensions::ExtensionContextMenuModel::PINNED, nullptr,
-      true /* can_show_icon_in_toolbar */);
+      /* can_show_icon_in_toolbar=*/true,
+      extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
   EXPECT_FALSE(menu.IsCommandIdEnabled(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY));
 
@@ -566,7 +568,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Verify the context menu option is to unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
       extensions_container->GetActionForId(extensions()[0]->id())
-          ->GetContextMenu());
+          ->GetContextMenu(extensions::ExtensionContextMenuModel::
+                               ContextMenuSource::kMenuItem));
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
@@ -596,7 +599,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Verify the context menu option is to unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
       extensions_container->GetActionForId(extensions()[0]->id())
-          ->GetContextMenu());
+          ->GetContextMenu(extensions::ExtensionContextMenuModel::
+                               ContextMenuSource::kMenuItem));
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
@@ -757,7 +761,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   auto* context_menu = static_cast<extensions::ExtensionContextMenuModel*>(
       GetExtensionsToolbarContainer()
           ->GetActionForId(extensions()[0]->id())
-          ->GetContextMenu());
+          ->GetContextMenu(extensions::ExtensionContextMenuModel::
+                               ContextMenuSource::kMenuItem));
   ASSERT_TRUE(context_menu);
   {
     content::WindowedNotificationObserver permissions_observer(

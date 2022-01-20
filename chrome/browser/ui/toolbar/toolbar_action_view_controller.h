@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {
@@ -105,7 +106,9 @@ class ToolbarActionViewController {
   virtual gfx::NativeView GetPopupNativeView() = 0;
 
   // Returns the context menu model, or null if no context menu should be shown.
-  virtual ui::MenuModel* GetContextMenu() = 0;
+  virtual ui::MenuModel* GetContextMenu(
+      extensions::ExtensionContextMenuModel::ContextMenuSource
+          context_menu_source) = 0;
 
   // Called when a context menu is shown so the controller can perform any
   // necessary setup.

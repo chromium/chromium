@@ -209,8 +209,9 @@ void ExtensionsMenuItemView::AddPinButton() {
 void ExtensionsMenuItemView::AddContextMenuButton() {
   DCHECK_EQ(item_type_, MenuItemType::kExtensions);
 
-  context_menu_controller_ =
-      std::make_unique<ExtensionContextMenuController>(controller_.get());
+  context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
+      controller_.get(),
+      extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
 
   auto context_menu_button = std::make_unique<HoverButton>(
       views::Button::PressedCallback(), std::u16string());

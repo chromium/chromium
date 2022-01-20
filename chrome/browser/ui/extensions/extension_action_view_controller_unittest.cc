@@ -320,8 +320,9 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   // state.
   auto check_visibility_string = [](ToolbarActionViewController* action,
                                     int expected_visibility_string) {
-    ui::SimpleMenuModel* context_menu =
-        static_cast<ui::SimpleMenuModel*>(action->GetContextMenu());
+    ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
+        action->GetContextMenu(extensions::ExtensionContextMenuModel::
+                                   ContextMenuSource::kToolbarAction));
     int visibility_index = context_menu->GetIndexOfCommandId(
         extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
     ASSERT_GE(visibility_index, 0);

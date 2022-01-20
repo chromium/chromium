@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 
 // A minimalistic and configurable ToolbarActionViewController for use in
@@ -34,7 +35,9 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   bool IsShowingPopup() const override;
   void HidePopup() override;
   gfx::NativeView GetPopupNativeView() override;
-  ui::MenuModel* GetContextMenu() override;
+  ui::MenuModel* GetContextMenu(
+      extensions::ExtensionContextMenuModel::ContextMenuSource
+          context_menu_source) override;
   bool ExecuteAction(bool by_user, InvocationSource source) override;
   void UpdateState() override;
   PageInteractionStatus GetPageInteractionStatus(

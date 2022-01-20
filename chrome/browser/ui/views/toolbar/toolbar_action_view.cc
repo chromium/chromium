@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
@@ -77,8 +78,9 @@ ToolbarActionView::ToolbarActionView(
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
 
-  context_menu_controller_ =
-      std::make_unique<ExtensionContextMenuController>(view_controller);
+  context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
+      view_controller,
+      extensions::ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
   set_context_menu_controller(context_menu_controller_.get());
 
   UpdateState();

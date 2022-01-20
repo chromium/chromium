@@ -68,7 +68,9 @@ gfx::NativeView TestToolbarActionViewController::GetPopupNativeView() {
   return nullptr;
 }
 
-ui::MenuModel* TestToolbarActionViewController::GetContextMenu() {
+ui::MenuModel* TestToolbarActionViewController::GetContextMenu(
+    extensions::ExtensionContextMenuModel::ContextMenuSource
+        context_menu_source) {
   return nullptr;
 }
 
