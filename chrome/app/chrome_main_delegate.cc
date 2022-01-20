@@ -68,7 +68,7 @@
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/profiling.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/http/http_cache.h"
 #include "net/url_request/url_request.h"
 #include "pdf/buildflags.h"
@@ -167,6 +167,10 @@
 #include "components/crash/core/app/crashpad.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif
+
 #if BUILDFLAG(ENABLE_NACL)
 #include "components/nacl/common/nacl_switches.h"
 #include "components/nacl/renderer/plugin/ppapi_entrypoints.h"
@@ -202,9 +206,11 @@ base::LazyInstance<ChromeContentUtilityClient>::DestructorAtExit
 extern int NaClMain(content::MainFunctionParams);
 
 const char* const ChromeMainDelegate::kNonWildcardDomainNonPortSchemes[] = {
-    extensions::kExtensionScheme, chrome::kChromeSearchScheme,
-    content::kChromeDevToolsScheme, content::kChromeUIScheme,
-    content::kChromeUIUntrustedScheme};
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    extensions::kExtensionScheme,
+#endif
+    chrome::kChromeSearchScheme, content::kChromeDevToolsScheme,
+    content::kChromeUIScheme, content::kChromeUIUntrustedScheme};
 const size_t ChromeMainDelegate::kNonWildcardDomainNonPortSchemesSize =
     base::size(kNonWildcardDomainNonPortSchemes);
 

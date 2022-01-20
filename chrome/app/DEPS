@@ -37,6 +37,7 @@ include_rules = [
   "+content/public/app",
   "+content/public/browser/browser_main_runner.h",
   "+content/public/common",
+  "+extensions/buildflags/buildflags.h",
   "+extensions/common/constants.h",
   "+headless/app/headless_shell_switches.h",
   "+headless/public",
