@@ -21,7 +21,6 @@ namespace {
 constexpr int kIconSizeDip = 15;
 constexpr int kSpaceBetweenIconAndTextDip = 10;
 constexpr SkColor kIconAndLabelColor = SK_ColorBLACK;
-constexpr SkColor kBackgroundColor = SK_ColorWHITE;
 }  // namespace
 
 DictationBubbleView::DictationBubbleView() {
@@ -52,7 +51,6 @@ void DictationBubbleView::Init() {
   SetLayoutManager(std::move(layout));
 
   UseCompactMargins();
-  SetBackground(views::CreateSolidBackground(kBackgroundColor));
 
   auto create_image_view = [](views::ImageView** destination_view,
                               const gfx::VectorIcon& icon) {
@@ -74,7 +72,7 @@ void DictationBubbleView::OnBeforeBubbleWidgetInit(
     views::Widget::InitParams* params,
     views::Widget* widget) const {
   params->type = views::Widget::InitParams::TYPE_BUBBLE;
-  params->opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
+  params->opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params->activatable = views::Widget::InitParams::Activatable::kNo;
   params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params->name = "DictationBubbleView";
