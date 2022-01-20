@@ -594,7 +594,7 @@ void NodeController::AddPeer(const ports::NodeName& name,
     }
 
     if (dropped_peers_.Contains(name)) {
-      LOG(ERROR) << "Trying to re-add dropped peer " << name;
+      DVLOG(1) << "Trying to re-add dropped peer " << name;
       return;
     }
 
