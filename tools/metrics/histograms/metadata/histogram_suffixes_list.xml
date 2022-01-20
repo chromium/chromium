@@ -10283,12 +10283,16 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
   <affected-histogram
       name="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame"/>
+  <affected-histogram
+      name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2"/>
   <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstTextPaint"/>
+  <affected-histogram
+      name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"/>
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>

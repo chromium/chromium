@@ -190,6 +190,8 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl1) {
   tester()->SimulateRenderDataUpdate(render_data);
   render_data.layout_shift_delta = 1.5;
   render_data.layout_shift_delta_before_input_or_scroll = 0.0;
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(base::TimeTicks::Now(), 0.5));
   tester()->SimulateRenderDataUpdate(render_data);
 
   // Navigate again to force logging.
@@ -269,6 +271,11 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl1) {
       internal::kHistogramFromGWSCumulativeLayoutShiftMainFrame, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramFromGWSCumulativeLayoutShiftMainFrame, 25, 1);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow, 5000, 1);
 
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
