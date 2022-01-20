@@ -2205,8 +2205,9 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
-// Test the case where the ProcessManager delays the auction.
-TEST_F(AuctionRunnerTest, ProcessManagerDelaysAuction) {
+// Test the case where the ProcessManager initially prevents creating worklets,
+// due to being at its process limit.
+TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
@@ -2228,79 +2229,125 @@ TEST_F(AuctionRunnerTest, ProcessManagerDelaysAuction) {
                                         "?hostname=publisher1.com&keys=l1,l2"),
                                    R"({"l1":"a", "l2": "b", "extra": "c"})");
 
-  // Create AuctionProcessManager in advance of starting the auction so can
-  // create seller worklets before the auction starts.
-  auction_process_manager_ =
-      std::make_unique<SameProcessAuctionProcessManager>();
+  // For the seller worklet, it only matters if the worklet process limit has
+  // been hit or not.
+  for (bool seller_worklet_creation_delayed : {false, true}) {
+    SCOPED_TRACE(seller_worklet_creation_delayed);
 
-  AuctionProcessManager* auction_process_manager =
-      auction_process_manager_.get();
+    // For bidder worklets, in addition to testing the cases with no processes
+    // and at the process limit, also test the case where we're one below the
+    // limit, which should serialize bidder worklet creation and execution.
+    for (size_t num_used_bidder_worklet_processes :
+         std::vector<size_t>{static_cast<size_t>(0),
+                             AuctionProcessManager::kMaxBidderProcesses - 1,
+                             AuctionProcessManager::kMaxBidderProcesses}) {
+      SCOPED_TRACE(num_used_bidder_worklet_processes);
 
-  // Make kMaxSellerProcesses seller worklet requests for other origins.
-  std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers;
-  for (size_t i = 0; i < AuctionProcessManager::kMaxSellerProcesses; ++i) {
-    sellers.push_back(std::make_unique<AuctionProcessManager::ProcessHandle>());
-    url::Origin origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
-    EXPECT_TRUE(auction_process_manager->RequestWorkletService(
-        AuctionProcessManager::WorkletType::kSeller, origin, &*sellers.back(),
-        base::BindOnce(
-            []() { ADD_FAILURE() << "This should not be called"; })));
+      bool bidder_worklet_creation_delayed =
+          num_used_bidder_worklet_processes ==
+          AuctionProcessManager::kMaxBidderProcesses;
+
+      // Create AuctionProcessManager in advance of starting the auction so can
+      // create worklets before the auction starts.
+      auction_process_manager_ =
+          std::make_unique<SameProcessAuctionProcessManager>();
+
+      AuctionProcessManager* auction_process_manager =
+          auction_process_manager_.get();
+
+      std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers;
+      if (seller_worklet_creation_delayed) {
+        // Make kMaxSellerProcesses seller worklet requests for other origins so
+        // seller worklet creation will be blocked by the process limit.
+        for (size_t i = 0; i < AuctionProcessManager::kMaxSellerProcesses;
+             ++i) {
+          sellers.push_back(
+              std::make_unique<AuctionProcessManager::ProcessHandle>());
+          url::Origin origin = url::Origin::Create(
+              GURL(base::StringPrintf("https://%zu.test", i)));
+          EXPECT_TRUE(auction_process_manager->RequestWorkletService(
+              AuctionProcessManager::WorkletType::kSeller, origin,
+              &*sellers.back(), base::BindOnce([]() {
+                ADD_FAILURE() << "This should not be called";
+              })));
+        }
+      }
+
+      // Make `num_used_bidder_worklet_processes` bidder worklet requests for
+      // different origins.
+      std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> bidders;
+      for (size_t i = 0; i < num_used_bidder_worklet_processes; ++i) {
+        bidders.push_back(
+            std::make_unique<AuctionProcessManager::ProcessHandle>());
+        url::Origin origin = url::Origin::Create(
+            GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
+        EXPECT_TRUE(auction_process_manager->RequestWorkletService(
+            AuctionProcessManager::WorkletType::kBidder, origin,
+            &*bidders.back(), base::BindOnce([]() {
+              ADD_FAILURE() << "This should not be called";
+            })));
+      }
+
+      // If neither sellers nor bidders are at their limit, the auction should
+      // complete.
+      if (!seller_worklet_creation_delayed &&
+          !bidder_worklet_creation_delayed) {
+        RunStandardAuction();
+      } else {
+        // Otherwise, the auction should be blocked.
+        StartStandardAuction();
+        task_environment_.RunUntilIdle();
+
+        EXPECT_EQ(
+            seller_worklet_creation_delayed ? 1u : 0u,
+            auction_process_manager->GetPendingSellerRequestsForTesting());
+        EXPECT_EQ(
+            bidder_worklet_creation_delayed ? 2u : 0u,
+            auction_process_manager->GetPendingBidderRequestsForTesting());
+        EXPECT_FALSE(auction_complete_);
+
+        // Free up a seller slot, if needed.
+        if (seller_worklet_creation_delayed) {
+          sellers.pop_front();
+          task_environment_.RunUntilIdle();
+          EXPECT_EQ(
+              0u,
+              auction_process_manager->GetPendingSellerRequestsForTesting());
+          EXPECT_EQ(
+              bidder_worklet_creation_delayed ? 2u : 0,
+              auction_process_manager->GetPendingBidderRequestsForTesting());
+        }
+
+        // Free up a single bidder slot, if needed.
+        if (bidder_worklet_creation_delayed) {
+          EXPECT_FALSE(auction_complete_);
+          bidders.pop_front();
+        }
+
+        // The auction should now be able to run to completion.
+        auction_run_loop_->Run();
+      }
+      EXPECT_TRUE(auction_complete_);
+
+      EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+      EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
+                result_.ad_component_urls);
+      EXPECT_EQ(GURL("https://reporting.example.com/"),
+                result_.seller_report_url);
+      EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+                result_.bidder_report_url);
+      EXPECT_EQ(6, result_.bidder1_bid_count);
+      EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+      EXPECT_EQ(6, result_.bidder2_bid_count);
+      ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+      EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+                result_.bidder2_prev_wins[3]->ad_json);
+      EXPECT_THAT(result_.errors, testing::ElementsAre());
+      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                      /*expected_interest_groups=*/2,
+                      /*expected_owners=*/2);
+    }
   }
-
-  StartStandardAuction();
-
-  // The auction should be waiting for a seller worklet slot.
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1u, auction_process_manager->GetPendingSellerRequestsForTesting());
-  EXPECT_EQ(0u, auction_process_manager->GetPendingBidderRequestsForTesting());
-  EXPECT_FALSE(auction_complete_);
-
-  // Make kMaxBidderProcesses bidder worklet requests for different origins.
-  // Do this after starting the auction, so the auction will incorrectly
-  // complete once a seller worklet slot is freed if the auction already
-  // requested bidder worklet processes.
-  std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> bidders;
-  for (size_t i = 0; i < AuctionProcessManager::kMaxBidderProcesses; ++i) {
-    bidders.push_back(std::make_unique<AuctionProcessManager::ProcessHandle>());
-    url::Origin origin = url::Origin::Create(
-        GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
-    EXPECT_TRUE(auction_process_manager->RequestWorkletService(
-        AuctionProcessManager::WorkletType::kBidder, origin, &*bidders.back(),
-        base::BindOnce(
-            []() { ADD_FAILURE() << "This should not be called"; })));
-  }
-
-  // Free up a seller slot. Auction should now be blocked waiting for bidder
-  // slots.
-  sellers.pop_front();
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(0u, auction_process_manager->GetPendingSellerRequestsForTesting());
-  EXPECT_EQ(2u, auction_process_manager->GetPendingBidderRequestsForTesting());
-  EXPECT_FALSE(auction_complete_);
-
-  // Free up a single bidder slot. The auction should now run to completion -
-  // since each bidder is freed once it is run, only need one bidder slot free
-  // to run the auction.
-  bidders.pop_front();
-  auction_run_loop_->Run();
-  EXPECT_TRUE(auction_complete_);
-
-  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
-  EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
-            result_.ad_component_urls);
-  EXPECT_EQ(GURL("https://reporting.example.com/"), result_.seller_report_url);
-  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
-            result_.bidder_report_url);
-  EXPECT_EQ(6, result_.bidder1_bid_count);
-  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
-  EXPECT_EQ(6, result_.bidder2_bid_count);
-  ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
-            result_.bidder2_prev_wins[3]->ad_json);
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
 // Test a seller worklet load failure while waiting on bidder worklet processes

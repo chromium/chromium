@@ -219,6 +219,7 @@ void AuctionRunner::OnInterestGroupRead(
   num_bids_not_sent_to_seller_worklet_ = bid_states_.size();
   outstanding_bids_ = num_bids_not_sent_to_seller_worklet_;
   RequestSellerWorklet();
+  RequestBidderWorklets();
 }
 
 void AuctionRunner::RequestSellerWorklet() {
@@ -235,6 +236,16 @@ void AuctionRunner::RequestSellerWorklet() {
 }
 
 void AuctionRunner::OnSellerWorkletReceived() {
+  DCHECK(!seller_worklet_received_);
+
+  seller_worklet_received_ = true;
+  for (auto& bid_state : bid_states_) {
+    if (bid_state.state == BidState::State::kWaitingOnSellerWorkletLoad)
+      ScoreBid(&bid_state);
+  }
+}
+
+void AuctionRunner::RequestBidderWorklets() {
   // Auctions are only run when there are bidders participating. As-is, an
   // empty bidder vector here would result in synchronously calling back into
   // the creator, which isn't allowed.
@@ -368,13 +379,15 @@ void AuctionRunner::OnGenerateBidComplete(
 
   state->bid_result = std::move(bid);
   state->state = BidState::State::kWaitingOnSellerWorkletLoad;
-  ScoreBid(state);
+  if (seller_worklet_received_)
+    ScoreBid(state);
 }
 
 void AuctionRunner::ScoreBid(BidState* state) {
   DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
   DCHECK_GT(outstanding_bids_, 0);
   DCHECK_EQ(state->state, BidState::State::kWaitingOnSellerWorkletLoad);
+  DCHECK(seller_worklet_received_);
   state->state = BidState::State::kSellerScoringBid;
 
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
