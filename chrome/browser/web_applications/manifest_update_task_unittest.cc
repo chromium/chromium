@@ -201,47 +201,47 @@ TEST_F(ManifestUpdateTaskTest, TestImageComparison) {
     SkColor icon_color;
   };
 
-  const std::vector<const icon> NoIcons;
+  const std::vector<icon> NoIcons;
   const SkColor starting_icon_color = SK_ColorTRANSPARENT;
   const SkColor ending_icon_color = SK_ColorRED;
-  const std::vector<const icon> Icon1 = {
+  const std::vector<icon> Icon1 = {
       {kUnimportantIconSize1, starting_icon_color}};
-  const std::vector<const icon> Icon1Red = {
+  const std::vector<icon> Icon1Red = {
       {kUnimportantIconSize1, ending_icon_color}};
   // Another icon size.
-  const std::vector<const icon> Icon2 = {
+  const std::vector<icon> Icon2 = {
       {kUnimportantIconSize2, starting_icon_color}};
 
   // Launcher icon (starts yellow, ends up blue).
   const SkColor starting_launcher_icon_color = SK_ColorYELLOW;
   const SkColor ending_launcher_icon_color = SK_ColorBLUE;
-  const std::vector<const icon> Launcher = {
+  const std::vector<icon> Launcher = {
       {kLauncherIconSize, starting_launcher_icon_color}};
-  const std::vector<const icon> LauncherBlue = {
+  const std::vector<icon> LauncherBlue = {
       {kLauncherIconSize, ending_launcher_icon_color}};
 
   // Install icon (starts off green, ends up cyan).
   const SkColor starting_install_icon_color = SK_ColorGREEN;
   const SkColor ending_install_icon_color = SK_ColorCYAN;
-  const std::vector<const icon> InstallIcon = {
+  const std::vector<icon> InstallIcon = {
       {kInstallIconSize, starting_install_icon_color}};
-  const std::vector<const icon> InstallIconCyan = {
+  const std::vector<icon> InstallIconCyan = {
       {kInstallIconSize, ending_install_icon_color}};
 
   // Launcher and install icon together.
-  const std::vector<const icon> BothBefore = {
+  const std::vector<icon> BothBefore = {
       {kLauncherIconSize, starting_launcher_icon_color},
       {kInstallIconSize, starting_install_icon_color}};
-  const std::vector<const icon> BothAfter = {
+  const std::vector<icon> BothAfter = {
       {kLauncherIconSize, ending_launcher_icon_color},
       {kInstallIconSize, ending_install_icon_color}};
 
   // All types (Launcher, install and unimportant icon).
-  const std::vector<const icon> AllBefore = {
+  const std::vector<icon> AllBefore = {
       {kUnimportantIconSize1, starting_icon_color},
       {kLauncherIconSize, starting_launcher_icon_color},
       {kInstallIconSize, starting_install_icon_color}};
-  const std::vector<const icon> AllAfter = {
+  const std::vector<icon> AllAfter = {
       {kUnimportantIconSize1, ending_icon_color},
       {kLauncherIconSize, ending_launcher_icon_color},
       {kInstallIconSize, ending_install_icon_color}};
@@ -249,9 +249,9 @@ TEST_F(ManifestUpdateTaskTest, TestImageComparison) {
   struct {
     PassType pass_type;
     MapType map_current;
-    std::vector<const icon> current;
+    std::vector<icon> current;
     MapType map_downloaded;
-    std::vector<const icon> downloaded;
+    std::vector<icon> downloaded;
     IconDiffResult expected_diff_result;
   } test_cases[] = {
       // Test: zero icons -> zero icons:
