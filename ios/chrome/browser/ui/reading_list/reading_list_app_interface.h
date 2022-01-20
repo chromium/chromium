@@ -16,12 +16,12 @@
 @interface ReadingListAppInterface : NSObject
 
 // Removes all entries in the ReadingListModel.
-+ (NSError*)clearEntries WARN_UNUSED_RESULT;
++ (NSError*)clearEntries [[nodiscard]];
 
 // Adds an entry in the ReadingListModel.
 + (NSError*)addEntryWithURL:(NSURL*)url
                       title:(NSString*)title
-                       read:(BOOL)read WARN_UNUSED_RESULT;
+                       read:(BOOL)read [[nodiscard]];
 
 // The number of read entries in the ReadingListModel.
 + (NSInteger)readEntriesCount;

@@ -22,28 +22,28 @@
 // Enables the Badged Reading List help feature. Clients must call +reset after
 // the test finish running. Returns NO if FeatureEngagementTracker failed to
 // load.
-+ (BOOL)enableBadgedReadingListTriggering WARN_UNUSED_RESULT;
++ (BOOL)enableBadgedReadingListTriggering [[nodiscard]];
 
 // Enables the Badged Translate Manual Trigger feature. Clients must call +reset
 // after the test finish running. Returns NO if FeatureEngagementTracker failed
 // to load.
-+ (BOOL)enableBadgedTranslateManualTrigger WARN_UNUSED_RESULT;
++ (BOOL)enableBadgedTranslateManualTrigger [[nodiscard]];
 
 // Enables the New Tab Tip to be triggered. Clients must call +reset after the
 // test finish running. Returns NO if FeatureEngagementTracker failed to load.
-+ (BOOL)enableNewTabTipTriggering WARN_UNUSED_RESULT;
++ (BOOL)enableNewTabTipTriggering [[nodiscard]];
 
 // Enables the Bottom Toolbar Tip to be triggered. Clients must call +reset
 // after the test finish running. Returns NO if FeatureEngagementTracker failed
 // to load.
-+ (BOOL)enableBottomToolbarTipTriggering WARN_UNUSED_RESULT;
++ (BOOL)enableBottomToolbarTipTriggering [[nodiscard]];
 
 // Enables the Long Press Tip to be triggered. Clients must call +reset
 // after the test finish running. The tip has a configuration where it can be
 // displayed as first or second tip of the session and needs to be displayed
 // after the BottomToolbar tip is displayed. Returns NO if
 // FeatureEngagementTracker failed to load.
-+ (BOOL)enableLongPressTipTriggering WARN_UNUSED_RESULT;
++ (BOOL)enableLongPressTipTriggering [[nodiscard]];
 
 // Starts manual page translation.
 + (void)showTranslate;

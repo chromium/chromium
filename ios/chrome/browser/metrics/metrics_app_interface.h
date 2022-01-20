@@ -38,7 +38,7 @@ const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 + (BOOL)checkUKMRecordingEnabled:(BOOL)enabled;
 
 // Returns YES if the ReportUserNoisedUserBirthYearAndGender feature is enabled.
-+ (BOOL)isReportUserNoisedUserBirthYearAndGenderEnabled WARN_UNUSED_RESULT;
++ (BOOL)isReportUserNoisedUserBirthYearAndGenderEnabled [[nodiscard]];
 
 // Returns the current UKM client ID.
 + (uint64_t)UKMClientID;
@@ -90,34 +90,34 @@ const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 
 // Creates a chrome_test_util::HistogramTester that will record every histogram
 // sent during test.
-+ (NSError*)setupHistogramTester WARN_UNUSED_RESULT;
++ (NSError*)setupHistogramTester [[nodiscard]];
 
 // Releases the chrome_test_util::HistogramTester.
-+ (NSError*)releaseHistogramTester WARN_UNUSED_RESULT;
++ (NSError*)releaseHistogramTester [[nodiscard]];
 
 // We don't know the values of the samples, but we know how many there are.
 // This measures the diff from the snapshot taken when this object was
 // constructed.
 + (NSError*)expectTotalCount:(int)count
-                forHistogram:(NSString*)histogram WARN_UNUSED_RESULT;
+                forHistogram:(NSString*)histogram [[nodiscard]];
 
 // We know the exact number of samples in a bucket, but other buckets may
 // have samples as well. Measures the diff from the snapshot taken when this
 // object was constructed.
 + (NSError*)expectCount:(int)count
               forBucket:(int)bucket
-           forHistogram:(NSString*)histogram WARN_UNUSED_RESULT;
+           forHistogram:(NSString*)histogram [[nodiscard]];
 
 // We know the exact number of samples in a bucket, and that no other bucket
 // should have samples. Measures the diff from the snapshot taken when this
 // object was constructed.
 + (NSError*)expectUniqueSampleWithCount:(int)count
                               forBucket:(int)bucket
-                           forHistogram:(NSString*)histogram WARN_UNUSED_RESULT;
+                           forHistogram:(NSString*)histogram [[nodiscard]];
 
 // Checks the sum of all samples recorder for |histogram|.
 + (NSError*)expectSum:(NSInteger)sum
-         forHistogram:(NSString*)histogram WARN_UNUSED_RESULT;
+         forHistogram:(NSString*)histogram [[nodiscard]];
 
 @end
 

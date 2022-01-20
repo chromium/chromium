@@ -26,7 +26,7 @@
 // Calls downloadManagerTabHelper:decidePolicyForDownload:completionHandler:
 // completion handler. Returns YES if decidePolicyForDownload: was called.
 // nulls out decidingPolicyForDownload.
-- (BOOL)decidePolicy:(NewDownloadPolicy)policy WARN_UNUSED_RESULT;
+- (BOOL)decidePolicy:(NewDownloadPolicy)policy [[nodiscard]];
 
 @end
 

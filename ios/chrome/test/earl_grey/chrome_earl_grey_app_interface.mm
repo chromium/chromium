@@ -350,12 +350,12 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return CGRectZero;
 }
 
-+ (NSUInteger)windowCount WARN_UNUSED_RESULT {
++ (NSUInteger)windowCount [[nodiscard]] {
   // If the scene API is in use, return the count of open sessions.
   return UIApplication.sharedApplication.openSessions.count;
 }
 
-+ (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT {
++ (NSUInteger)foregroundWindowCount [[nodiscard]] {
   // If the scene API is in use, look at all the connected scenes and count
   // those in the foreground.
   NSUInteger count = 0;

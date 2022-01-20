@@ -39,7 +39,7 @@ namespace {
 }
 
 // Adds cookies to the default data store. Returns whether it succeed to add
-// cookies. Declare the function to have the "WARN_UNUSED_RESULT".
+// cookies.
 [[nodiscard]] bool AddCookie() {
   NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:@{
     NSHTTPCookiePath : @"path",
@@ -60,7 +60,7 @@ namespace {
 }
 
 // Checks that the cookies data store has cookies or not, depending on
-// |should_have_cookies|. Declare the function to have the "WARN_UNUSED_RESULT".
+// |should_have_cookies|.
 [[nodiscard]] bool HasCookies(bool should_have_cookies) {
   __block bool has_cookies = false;
   __block bool completion_called = false;
@@ -80,7 +80,7 @@ namespace {
 
 // Removes the |types| from the data remover associated with |browser_state|.
 // Returns whether the completion block of the clear browsing data has been
-// called. Declare the function to have the "WARN_UNUSED_RESULT".
+// called.
 [[nodiscard]] bool RemoveCookies(web::BrowserState* browser_state,
                                  web::ClearBrowsingDataMask types) {
   web::BrowsingDataRemover* remover =

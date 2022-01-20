@@ -901,11 +901,11 @@ UIWindow* GetAnyKeyWindow() {
       screenPositionOfScreenWithNumber:windowNumber];
 }
 
-- (NSUInteger)windowCount WARN_UNUSED_RESULT {
+- (NSUInteger)windowCount [[nodiscard]] {
   return [ChromeEarlGreyAppInterface windowCount];
 }
 
-- (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT {
+- (NSUInteger)foregroundWindowCount [[nodiscard]] {
   return [ChromeEarlGreyAppInterface foregroundWindowCount];
 }
 
