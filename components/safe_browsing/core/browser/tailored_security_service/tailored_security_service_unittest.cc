@@ -259,10 +259,6 @@ void TestingTailoredSecurityService::MaybeNotifySyncUser(
 }  // namespace
 
 // A test class used for testing the TailoredSecurityService class.
-// In order for TailoredSecurityService to be valid, we must have a valid
-// ProfileSyncService. Using the ProfileSyncServiceMock class allows to
-// assign specific return values as needed to make sure the tailored security
-// service is available.
 class TailoredSecurityServiceTest : public testing::Test {
  public:
   TailoredSecurityServiceTest()

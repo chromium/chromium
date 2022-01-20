@@ -4255,7 +4255,7 @@
 -ProfileProtoDBTest.TestMaintenanceNonMatchingDataId
 -ProfileReportGeneratorTest.PendingRequest_Justification
 -ProfileReportGeneratorTest.ProfileIdObfuscate
--ProfileSyncServiceFactoryTest.DisableSyncFlag
+-SyncServiceFactoryTest.DisableSyncFlag
 -ProfilesState/IsGuestModeRequestedTest.Requested/0
 -ProfilesState/IsGuestModeRequestedTest.Requested/1
 -ProfilesState/IsGuestModeRequestedTest.Requested/2

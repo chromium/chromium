@@ -81959,7 +81959,7 @@ chromium-metrics-reviews@google.com.
   <owner>zea@chromium.org</owner>
   <summary>
     Whether OAuth2 refresh token was available at the time when
-    ProfileSyncService was starting backend.
+    SyncServiceImpl was starting backend.
   </summary>
 </histogram>
 
@@ -82250,7 +82250,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>zea@chromium.org</owner>
   <summary>
-    Time taken from the start of sync shutdown (in ProfileSyncService) until the
+    Time taken from the start of sync shutdown (in SyncServiceImpl) until the
     backend (SyncEngine) is fully destroyed.
   </summary>
 </histogram>
@@ -82302,7 +82302,7 @@ chromium-metrics-reviews@google.com.
   <owner>jeremy@chromium.org</owner>
   <owner>zea@google.com</owner>
   <summary>
-    Time spent after ProfileSyncService *creation* but before SyncEngine
+    Time spent after SyncServiceImpl *creation* but before SyncEngine
     initialization.
   </summary>
 </histogram>
