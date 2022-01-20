@@ -70,7 +70,7 @@ TEST_F(CheckResourceIntegrityTest, NonExistentFile) {
   loop.Quit();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On Windows, CheckPakFileIntegrity() dynamically finds this symbol from its
 // main exe module (normally chrome.exe). In unit_tests.exe, provide the same
 // export.
@@ -82,7 +82,7 @@ extern "C" __declspec(dllexport) __cdecl void GetPakFileHashes(
   *chrome_100_pak = kSha256_chrome_100_percent_pak.data();
   *chrome_200_pak = kSha256_chrome_200_percent_pak.data();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(CheckResourceIntegrityTest, ChromePaks) {
   base::HistogramTester tester;

@@ -257,7 +257,7 @@ TEST_F(PlatformUtilTest, OpenFolder) {
   EXPECT_EQ(OPEN_FAILED_PATH_NOT_FOUND, CallOpenItem(nowhere_, OPEN_FOLDER));
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Symbolic links are currently only supported on Posix. Windows technically
 // supports it as well, but not on Windows XP.
 class PlatformUtilPosixTest : public PlatformUtilTest {
@@ -278,7 +278,7 @@ class PlatformUtilPosixTest : public PlatformUtilTest {
   base::FilePath symlink_to_folder_;
   base::FilePath symlink_to_nowhere_;
 };
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // ChromeOS doesn't follow symbolic links in sandboxed filesystems. So all the
@@ -311,7 +311,7 @@ TEST_F(PlatformUtilTest, OpenFileWithUnhandledFileType) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_POSIX) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // On all other Posix platforms, the symbolic link tests should work as
 // expected.
 
@@ -330,6 +330,6 @@ TEST_F(PlatformUtilPosixTest, OpenFolderWithPosixSymlinks) {
   EXPECT_EQ(OPEN_FAILED_PATH_NOT_FOUND,
             CallOpenItem(symlink_to_nowhere_, OPEN_FOLDER));
 }
-#endif  // OS_POSIX && !OS_CHROMEOS
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace platform_util

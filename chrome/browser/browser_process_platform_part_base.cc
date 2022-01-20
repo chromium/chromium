@@ -26,7 +26,7 @@ void BrowserProcessPlatformPartBase::StartTearDown() {
 void BrowserProcessPlatformPartBase::AttemptExit(bool try_to_quit_application) {
 // chrome::CloseAllBrowsers() doesn't link on OS_ANDROID, but it overrides this
 // method already.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
   // On most platforms, closing all windows causes the application to exit.

@@ -7,6 +7,7 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_
 
+#include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_posix.h"
 
 class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
@@ -23,7 +24,7 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   // ChromeBrowserMainPartsPosix overrides.
   void PostCreateMainMessageLoop() override;
   void PreProfileInit() override;
-#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
   // Only needed for native Linux, to set up the low-memory-monitor-based memory
   // monitoring (which depends on D-Bus).
   void PostBrowserStart() override;

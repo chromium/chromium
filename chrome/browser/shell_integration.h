@@ -91,7 +91,7 @@ DefaultWebClientState GetDefaultBrowser();
 // user. This method is very fast so it can be invoked in the UI thread.
 bool IsFirefoxDefaultBrowser();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Returns true if IE is likely to be the default browser for the current
 // user. This method is very fast so it can be invoked in the UI thread.
 bool IsIEDefaultBrowser();
@@ -134,7 +134,7 @@ base::CommandLine CommandLineArgsForLauncher(
 void AppendProfileArgs(const base::FilePath& profile_path,
                        base::CommandLine* command_line);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // Gets the name of the Chrome Apps menu folder in which to place app
 // shortcuts. This is needed for Mac and Linux.
 std::u16string GetAppShortcutsSubdirName();

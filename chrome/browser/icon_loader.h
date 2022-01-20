@@ -73,7 +73,7 @@ class IconLoader {
 
   void ReadGroup();
   void ReadIcon();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Reads an icon in a sandboxed service. Use this when the file itself must
   // be parsed.
   void ReadIconInSandbox();
@@ -95,9 +95,9 @@ class IconLoader {
 
   IconGroup group_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   IconSize icon_size_;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   const float scale_;
   IconLoadedCallback callback_;
 };

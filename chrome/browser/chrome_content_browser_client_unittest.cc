@@ -54,7 +54,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "url/gurl.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
@@ -77,9 +77,9 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/test/scoped_feature_list.h"
@@ -106,7 +106,7 @@ TEST_F(ChromeContentBrowserClientTest, ShouldAssignSiteForURL) {
 }
 
 // BrowserWithTestWindowTest doesn't work on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 using ChromeContentBrowserClientWindowTest = BrowserWithTestWindowTest;
 
@@ -232,7 +232,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
       ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_LINK, transition));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // NOTE: Any updates to the expectations in these tests should also be done in
 // the browser test WebRtcDisableEncryptionFlagBrowserTest.
@@ -278,7 +278,7 @@ TEST_F(DisableWebRtcEncryptionFlagTest, DevChannel) {
 
 TEST_F(DisableWebRtcEncryptionFlagTest, BetaChannel) {
   MaybeCopyDisableWebRtcEncryptionSwitch(version_info::Channel::BETA);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(to_command_line_.HasSwitch(switches::kDisableWebRtcEncryption));
 #else
   EXPECT_FALSE(to_command_line_.HasSwitch(switches::kDisableWebRtcEncryption));
@@ -377,7 +377,7 @@ TEST_F(BlinkSettingsFieldTrialTest, FieldTrialEnabled) {
                                            blink::switches::kBlinkSettings));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 namespace content {
 
 class InstantNTPURLRewriteTest : public BrowserWithTestWindowTest {
@@ -421,7 +421,7 @@ TEST_F(InstantNTPURLRewriteTest, UberURLHandler_InstantExtendedNewTabPage) {
 }
 
 }  // namespace content
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ChromeContentBrowserClientGetLoggingFileTest : public testing::Test {};
 
@@ -498,7 +498,7 @@ TEST_F(ChromeContentBrowserClientTest, RedirectSiteDataURL) {
   histogram_tester.ExpectTotalCount(histogram_name, 2);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest
     : public ChromeContentBrowserClientTest {
  public:
@@ -655,7 +655,7 @@ TEST_F(ChromeContentSettingsPolicyTrustAnchor, PolicyTrustAnchor) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class CaptivePortalCheckProcessHost : public content::MockRenderProcessHost {
  public:

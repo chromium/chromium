@@ -117,7 +117,7 @@ MATCHER_P3(DependingOnPolicy,
            isolate_nothing,
            isolate_extensions,
            isolate_all_sites,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
            std::string("(with oopifs disabled) ") +
                PrintToString(isolate_nothing)
 #else
@@ -128,7 +128,7 @@ MATCHER_P3(DependingOnPolicy,
                      PrintToString(isolate_extensions)
 #endif
 ) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return ExplainMatchResult(isolate_nothing, arg, result_listener);
 #else
   return content::AreAllSitesIsolatedForTesting()

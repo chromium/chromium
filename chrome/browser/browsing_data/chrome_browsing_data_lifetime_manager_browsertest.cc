@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   SetupSiteData(GetActiveWebContents());
   ApplyBrowsingDataLifetimeDeletion(kPref);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // The site data is not deleted since the page where it happened is still
   // opened.
   CheckSiteData(GetActiveWebContents(), /*has_site_data=*/true);

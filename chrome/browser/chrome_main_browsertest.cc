@@ -30,7 +30,7 @@
 
 // These tests don't apply to Mac or Lacros; see GetCommandLineForRelaunch
 // for details.
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #error Not supported on this platform.
 #endif
 
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, ReuseBrowserInstanceWhenOpeningFile) {
 
 // ChromeMainTest.SecondLaunchWithIncognitoUrl is flaky on Win and Linux.
 // http://crbug.com/130395
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SecondLaunchWithIncognitoUrl DISABLED_SecondLaunchWithIncognitoUrl
 #else
 #define MAYBE_SecondLaunchWithIncognitoUrl SecondLaunchWithIncognitoUrl

@@ -1924,7 +1924,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
 };
 
 // Test failure on macOS: crbug.com/1287934
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MaxConnectionsPerProxy DISABLED_MaxConnectionsPerProxy
 #else
 #define MAYBE_MaxConnectionsPerProxy MaxConnectionsPerProxy
@@ -1969,7 +1969,7 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
 };
 
 // crbug.com/1288780: flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MaxConnectionsPerProxy DISABLED_MaxConnectionsPerProxy
 #else
 #define MAYBE_MaxConnectionsPerProxy MaxConnectionsPerProxy

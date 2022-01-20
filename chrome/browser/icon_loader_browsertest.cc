@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "ui/display/win/dpi.h"
 #endif
@@ -63,14 +63,15 @@ class TestIconLoader {
   base::OnceClosure quit_closure_;
 };
 
-#if !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(MEMORY_SANITIZER))
+#if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+      defined(MEMORY_SANITIZER))
 const base::FilePath::CharType kGroupOnlyFilename[] =
     FILE_PATH_LITERAL("unlikely-to-exist-file.txt");
 
 // Under GTK, the icon providing functions do not return icons.
 IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
   float scale = 1.0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scale = display::win::GetDPIScale();
 
   // This test times out on Win7. Return early to avoid disabling test on
@@ -89,10 +90,10 @@ IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
   runner.Run();
   EXPECT_TRUE(test_loader.load_succeeded());
 }
-#endif  // !((defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
+#endif  // !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(MEMORY_SANITIZER))
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadExeIcon) {
   float scale = display::win::GetDPIScale();
   base::RunLoop runner;
@@ -123,4 +124,4 @@ IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadDefaultExeIcon) {
   runner.Run();
   EXPECT_TRUE(test_loader.load_succeeded());
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)

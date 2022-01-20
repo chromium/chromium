@@ -8,7 +8,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -22,11 +22,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "crypto/secure_hash.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/app/chrome_exe_main_win.h"
 #else
 #include "chrome/app/packed_resources_integrity.h"  // nogncheck
-#endif                                              // defined(OS_WIN)
+#endif
 
 namespace {
 
@@ -84,7 +84,7 @@ void CheckPakFileIntegrity() {
   // with the Grit resource allow-list generation. Instead, the hashes are
   // embedded in chrome.exe, which provides an exported function to
   // access them.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto get_pak_file_hashes = reinterpret_cast<decltype(&GetPakFileHashes)>(
       ::GetProcAddress(::GetModuleHandle(nullptr), "GetPakFileHashes"));
   if (!get_pak_file_hashes) {
@@ -111,7 +111,7 @@ void CheckPakFileIntegrity() {
       kSha256_chrome_100_percent_pak;
   base::span<const uint8_t, crypto::kSHA256Length> chrome_200_hash =
       kSha256_chrome_200_percent_pak;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(

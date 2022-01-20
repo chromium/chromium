@@ -129,7 +129,7 @@ INSTANTIATE_TEST_SUITE_P(SecureOriginAllowlistBrowsertest,
                                          TestVariant::kCommandline,
 // The legacy policy isn't defined on ChromeOS or Android, so skip tests that
 // use it on those platforms.
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
                                          TestVariant::kPolicyOld,
                                          TestVariant::kPolicyOldAndNew,
 #endif

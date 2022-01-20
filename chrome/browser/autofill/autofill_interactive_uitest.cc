@@ -864,11 +864,11 @@ class AutofillInteractiveTestWithHistogramTester
 };
 
 // Test is flaky on Linux TSAN and Mac, see http://crbug.com/1045709.
-#if defined(THREAD_SANITIZER) || defined(OS_MAC)
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_BasicFormFill DISABLED_BasicFormFill
 #else
 #define MAYBE_BasicFormFill BasicFormFill
-#endif  // defined(THREAD_SANITIZER) || defined(OS_MAC)
+#endif  // defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
 // Test that basic form fill is working.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestWithHistogramTester,
                        MAYBE_BasicFormFill) {

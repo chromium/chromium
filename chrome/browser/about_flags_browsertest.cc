@@ -337,7 +337,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(true));
 
 // Crashes on Win.  http://crbug.com/1108357
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ExpiryHidesFlag DISABLED_ExpiryHidesFlag
 #else
 #define MAYBE_ExpiryHidesFlag ExpiryHidesFlag

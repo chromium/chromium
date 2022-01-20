@@ -64,7 +64,7 @@
 #include "url/url_constants.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/test/base/launchservices_utils_mac.h"
 #endif
 
@@ -469,7 +469,7 @@ class ProtocolHandlerTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, CustomHandler) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(test::RegisterAppWithLaunchServices());
 #endif
   AddProtocolHandler("news", "https://abc.xyz/?url=%s");
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class KeepaliveDurationOnShutdownTest : public InProcessBrowserTest,
                                         public InstantTestBase {
  public:
@@ -558,6 +558,6 @@ IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
   EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::Seconds(3));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

@@ -26,7 +26,7 @@
 #include "components/ukm/ukm_recorder_impl.h"
 #include "components/version_info/version_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
@@ -46,10 +46,10 @@ namespace {
 // Create a field trial to control metrics/crash sampling for Stable on
 // Windows/Android if no variations seed was applied.
 void CreateFallbackSamplingTrialIfNeeded(base::FeatureList* feature_list) {
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
       chrome::GetChannel(), feature_list);
-#endif  // defined(OS_WIN) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 }
 
 // Create a field trial to control UKM sampling for Stable if no variations
@@ -73,7 +73,7 @@ void ChromeBrowserFieldTrials::SetUpFieldTrials() {
   // Field trials that are shared by all platforms.
   InstantiateDynamicTrials();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   chrome::SetupMobileFieldTrials();
 #endif
 }
@@ -97,7 +97,7 @@ void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
 }
 
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static constexpr char kReachedCodeProfilerTrial[] =
       "ReachedCodeProfilerSynthetic2";
   std::string reached_code_profiler_group =
@@ -196,7 +196,7 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
           kFREMobileIdentityConsistencyVariationsTrial, variation_group);
     }
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserFieldTrials::InstantiateDynamicTrials() {

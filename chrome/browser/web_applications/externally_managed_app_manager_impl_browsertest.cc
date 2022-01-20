@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Installing a placeholder app with a custom name should succeed.
 // This feature is ChromeOS-only.
 IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
@@ -238,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                 app_id.value(), kIconSize, 0, 0));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the browser doesn't crash if it gets shutdown with a pending
 // installation.

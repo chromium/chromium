@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
 
 // Tests deleting a deletable omnibox extension suggestion result.
 // Flaky on Windows and Linux TSan. https://crbug.com/1287949
-#if BUILDFLAG(IS_WIN) || (defined(OS_LINUX) && defined(THREAD_SANITIZER))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 #define MAYBE_DeleteOmniboxSuggestionResult \
   DISABLED_DeleteOmniboxSuggestionResult
 #else

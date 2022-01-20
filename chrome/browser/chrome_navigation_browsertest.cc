@@ -186,7 +186,7 @@ class CtrlClickProcessTest : public ChromeNavigationBrowserTest {
     content::WebContents* new_contents = nullptr;
     {
       content::WebContentsAddedObserver new_tab_observer;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       const char* new_tab_click_script_template =
           "simulateClick(\"%s\", { metaKey: true });";
 #else
@@ -1676,7 +1676,7 @@ using NavigationConsumingTest = ChromeNavigationBrowserTest;
 // so use that API to test if navigation consumes the activation.
 // https://fullscreen.spec.whatwg.org/#allowed-to-request-fullscreen
 // https://crbug.com/1283289 Flaky on ChromeOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NavigationConsumesUserGesture_Fullscreen \
   DISABLED_NavigationConsumesUserGesture_Fullscreen
 #else

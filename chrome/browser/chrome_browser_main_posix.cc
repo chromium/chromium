@@ -72,7 +72,7 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
   } else {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     switch (signal) {
       case SIGINT:
       case SIGHUP:
@@ -167,7 +167,7 @@ void ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop() {
 void ChromeBrowserMainPartsPosix::ShowMissingLocaleMessageBox() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();  // Should not ever happen on ChromeOS.
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // Not called on Mac because we load the locale files differently.
   NOTREACHED();
 #elif defined(USE_AURA)

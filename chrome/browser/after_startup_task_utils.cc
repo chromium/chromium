@@ -25,7 +25,7 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/views/linux_ui/linux_ui.h"
 #endif
 
@@ -110,8 +110,8 @@ void SetBrowserStartupIsComplete() {
     return;
 
   g_startup_complete_flag.Get().Set();
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   // Process::Current().CreationTime() is not available on all platforms.
   const base::Time process_creation_time =
       base::Process::Current().CreationTime();
@@ -119,8 +119,8 @@ void SetBrowserStartupIsComplete() {
     UMA_HISTOGRAM_LONG_TIMES("Startup.AfterStartupTaskDelayedUntilTime",
                              base::Time::Now() - process_creation_time);
   }
-#endif  // defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
   UMA_HISTOGRAM_COUNTS_10000("Startup.AfterStartupTaskCount",
                              g_after_startup_tasks.Get().size());
   for (AfterStartupTask* queued_task : g_after_startup_tasks.Get())
@@ -130,7 +130,7 @@ void SetBrowserStartupIsComplete() {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Make sure we complete the startup notification sequence, or launchers will
   // get confused by not receiving the expected message from the main process.
   views::LinuxUI* linux_ui = views::LinuxUI::instance();
@@ -227,7 +227,7 @@ void StartupObserver::Start() {
 void AfterStartupTaskUtils::StartMonitoringStartup() {
   // For Android, startup completion is signaled via
   // AfterStartupTaskUtils.java. We do not use the StartupObserver.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // For Lacros, there may not be a Browser created at startup.
   if (chromeos::LacrosService::Get()->init_params()->initial_browser_action ==
@@ -250,7 +250,7 @@ void AfterStartupTaskUtils::StartMonitoringStartup() {
 #endif
 
   StartupObserver::Start();
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add failsafe timeout
   content::GetUIThreadTaskRunner({})->PostDelayedTask(

@@ -106,7 +106,7 @@ TEST_F(ChromeSiteIsolationPolicyTest, IsolatedOriginsContainChromeOrigins) {
   // built-in origins.
   std::vector<url::Origin> expected_embedder_origins =
       site_isolation::GetBrowserSpecificBuiltInIsolatedOrigins();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   expected_embedder_origins.push_back(
       url::Origin::Create(GaiaUrls::GetInstance()->gaia_url()));
 #endif

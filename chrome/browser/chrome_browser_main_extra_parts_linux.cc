@@ -120,7 +120,7 @@ ChromeBrowserMainExtraPartsLinux::ChromeBrowserMainExtraPartsLinux() = default;
 ChromeBrowserMainExtraPartsLinux::~ChromeBrowserMainExtraPartsLinux() = default;
 
 void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // On the desktop, we fix the platform name if necessary.
   // See https://crbug.com/1246928.
   auto* const command_line = base::CommandLine::ForCurrentProcess();
@@ -132,7 +132,7 @@ void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
           switches::kOzonePlatform, MaybeFixPlatformName(ozone_platform_hint));
     }
   }
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization();
 }

@@ -22,7 +22,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
 
@@ -65,7 +65,7 @@ extern void InitializeLocalState(
 // locale. An empty |actual_locale| value indicates failure.
 std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
                                                  bool is_running_tests) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // In order for SetLoadSecondaryLocalePaks() to work ResourceBundle must
   // not have been created yet.
   DCHECK(!ui::ResourceBundle::HasSharedInstance());
@@ -78,7 +78,7 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
 #endif
 
   std::string preferred_locale;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(markusheintz): Read preference pref::kApplicationLocale in order
   // to enforce the application locale.
   // Tests always get en-US.
@@ -109,7 +109,7 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
                  ":AddDataPack");
     base::FilePath resources_pack_path;
     base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ui::LoadMainAndroidPackFile("assets/resources.pak", resources_pack_path);
 
     // Avoid loading DFM native resources here, to keep startup lean. These
@@ -117,7 +117,7 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
 #else
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         resources_pack_path, ui::kScaleFactorNone);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

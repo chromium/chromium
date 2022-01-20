@@ -191,7 +191,7 @@ void ShowIntentPickerBubble(content::WebContents* web_contents,
 }
 
 bool IntentPickerPwaPersistenceEnabled() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;

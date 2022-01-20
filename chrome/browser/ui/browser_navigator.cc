@@ -539,7 +539,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Force isolated PWAs to open in an app window.
   params->force_open_pwa_window = web_app::IsUrlInIsolatedAppScope(
       params->initiating_profile->GetPrefs(), params->url);

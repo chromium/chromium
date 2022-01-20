@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/net/system_network_context_manager.h"
 #endif
 
@@ -51,7 +51,7 @@ const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 const base::Feature kUseManagementService{"UseManagementService",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Enables integration with the macOS feature Universal Links.
 const base::Feature kEnableUniveralLinks{"EnableUniveralLinks",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -69,7 +69,7 @@ const base::Feature kDoubleTapToZoomInTabletMode{
     "DoubleTapToZoomInTabletMode", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Adds an item to the context menu that copies a link to the page with the
 // selected text highlighted.
 const base::Feature kCopyLinkToText{"CopyLinkToText",
@@ -80,7 +80,7 @@ const base::Feature kMuteNotificationSnoozeAction{
     "MuteNotificationSnoozeAction", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Results in remembering fonts used at the time of fcp, and prewarming those
 // fonts on subsequent loading of search results pages for the default search
 // engine.
@@ -141,7 +141,7 @@ const base::Feature kTabCaptureBlueBorderForSelfCaptureRegionCaptureOT{
 // `data_path`. See the explanation in network_context.mojom.
 const base::Feature kTriggerNetworkDataMigration {
   "TriggerNetworkDataMigration",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -153,7 +153,7 @@ const base::Feature kTriggerNetworkDataMigration {
 const base::Feature kWebUsbDeviceDetection{"WebUsbDeviceDetection",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Enables Certificate Transparency on Android.
 const base::Feature kCertificateTransparencyAndroid{
     "CertificateTransparencyAndroid", base::FEATURE_DISABLED_BY_DEFAULT};

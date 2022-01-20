@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -34,20 +35,20 @@ IconLoader::IconLoader(const base::FilePath& file_path,
                        float scale,
                        IconLoadedCallback callback)
     : file_path_(file_path),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       icon_size_(size),
-#endif  // defined(OS_ANDROID)
+#endif
       scale_(scale),
       callback_(std::move(callback)) {
 }
 
 IconLoader::~IconLoader() {}
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 void IconLoader::ReadGroup() {
   group_ = GroupForFilepath(file_path_);
 
   GetReadIconTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&IconLoader::ReadIcon, base::Unretained(this)));
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)

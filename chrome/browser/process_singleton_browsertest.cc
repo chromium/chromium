@@ -215,7 +215,7 @@ class ProcessSingletonTest : public InProcessBrowserTest {
 };
 
 // ChromeOS hits DCHECKS on ProcessSingleton rendezvous: crbug.com/782487
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_StartupRaceCondition DISABLED_StartupRaceCondition
 #else
 #define MAYBE_StartupRaceCondition StartupRaceCondition
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(ProcessSingletonTest, MAYBE_StartupRaceCondition) {
 
     // Test both with and without the first-run dialog, since they exercise
     // different paths.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     // TODO(mattm): test first run dialog singleton handling on linux too.
     // On posix if we test the first run dialog, GracefulShutdownHandler gets
     // the TERM signal, but since the message loop isn't running during the gtk

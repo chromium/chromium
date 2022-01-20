@@ -9,13 +9,13 @@
 #include "build/chromeos_buildflags.h"
 
 // Include the appropriate BrowserProcessPlatformPart based on the platform.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/browser_process_platform_part_android.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process_platform_part_win.h"
 #else
 #include "chrome/browser/browser_process_platform_part_base.h"

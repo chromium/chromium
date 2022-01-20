@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest, FocusOmniBox) {
   omnibox->SetFocus(/*is_user_initiated=*/true);
 
   base::RunLoop().RunUntilIdle();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On MacOS, calling omnibox->SetFocus function doesn't invoke
   // RWHI::SetActive. Hence there is no IPC call to renderer and
   // FakeFrameWidget's 'active' state remains uninitialised.

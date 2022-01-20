@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(OS_POSIX)
-#include <signal.h>
-#endif
-
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -137,7 +133,7 @@ class UnloadTest : public InProcessBrowserTest {
       command_line->AppendSwitch(embedder_support::kDisablePopupBlocking);
     } else if (strstr(test_info->name(), "BrowserTerminateBeforeUnload") !=
                nullptr) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       DisableSIGTERMHandling();
 #endif
     }

@@ -2445,7 +2445,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 }
 
 // Test failure on macOS: crbug.com/1287901
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_AppendRecentNavigationsToEmptyReferrerChain \
   DISABLED_AppendRecentNavigationsToEmptyReferrerChain
 #else
@@ -3374,7 +3374,7 @@ class SBNavigationObserverOmitNonUserGesturesBrowserTest
 };
 
 // Test failure on macOS: crbug.com/1287901
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_AppendRecentNavigationsToEmptyReferrerChain \
   DISABLED_AppendRecentNavigationsToEmptyReferrerChain
 #else

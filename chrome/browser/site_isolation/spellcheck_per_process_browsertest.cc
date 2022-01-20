@@ -132,7 +132,7 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback) override {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(
       InitializeDictionariesCallback callback) override {
     if (base::FeatureList::IsEnabled(
@@ -173,10 +173,10 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   // Callback passed as argument to InitializeDictionaries, and invoked when
   // the dictionaries are loaded for the first time.
   InitializeDictionariesCallback dictionaries_loaded_callback_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // spellcheck::mojom::SpellCheckHost:
   void DisconnectSessionBridge() override {}
 #endif
@@ -269,14 +269,14 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
   ChromeSitePerProcessSpellCheckTest() = default;
 
   void SetUp() override {
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     // When delayed initialization of the spellcheck service is enabled by
     // default, want to maintain test coverage for the older code path that
     // initializes spellcheck on browser startup.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
         /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
     ChromeSitePerProcessTest::SetUp();
   }
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
 }
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 class ChromeSitePerProcessSpellCheckTestDelayInit
     : public ChromeSitePerProcessSpellCheckTest {
  public:
@@ -413,4 +413,4 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTestDelayInit,
                        OOPIFDisabledSpellCheckTest) {
   RunOOPIFDisabledSpellCheckTest();
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)

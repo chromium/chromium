@@ -146,7 +146,7 @@ double GetFrameDeviceScaleFactor(const content::ToRenderFrameHost& adapter) {
 }
 
 // Flaky on Windows 10. http://crbug.com/700150
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InterstitialLoadsWithCorrectDeviceScaleFactor \
   DISABLED_InterstitialLoadsWithCorrectDeviceScaleFactor
 #else
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
   // Ctrl-click the anchor/link in the page.
   content::WebContentsAddedObserver new_tab_observer;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::string new_tab_click_script = "simulateClick({ metaKey: true });";
 #else
   std::string new_tab_click_script = "simulateClick({ ctrlKey: true });";

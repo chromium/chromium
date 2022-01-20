@@ -97,12 +97,12 @@
 #include "net/base/network_interfaces.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/process_singleton_dialog_linux.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS) && \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "ui/views/linux_ui/linux_ui.h"
 #endif
 
@@ -110,7 +110,7 @@ using content::BrowserThread;
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // In order to allow longer paths for the singleton socket's filesystem node,
 // provide an "oversized" sockaddr_un-equivalent with a larger sun_path member.
 // sockaddr_un in the SDK has sun_path[104], which is too confined for the
@@ -250,7 +250,7 @@ bool SetupSockAddr(const std::string& path,
                    SockaddrUn* addr,
                    socklen_t* socklen) {
   addr->sun_family = AF_UNIX;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Allow the use of the entire length of sun_path, without reservation for a
   // NUL terminator. The socklen parameter to bind and connect encodes the
   // length of the sockaddr structure, and xnu does not require sun_path to be
@@ -356,11 +356,11 @@ bool DisplayProfileInUseError(const base::FilePath& lock_path,
   if (g_disable_prompt)
     return g_user_opted_unlock_in_use_profile;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::u16string relaunch_button_text =
       l10n_util::GetStringUTF16(IDS_PROFILE_IN_USE_LINUX_RELAUNCH);
   return ShowProcessSingletonDialog(error, relaunch_button_text);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // On Mac, always usurp the lock.
   return true;
 #endif
@@ -466,7 +466,7 @@ bool ConnectSocket(ScopedSocket* socket,
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool ReplaceOldSingletonLock(const base::FilePath& symlink_content,
                              const base::FilePath& lock_path) {
   // Try taking an flock(2) on the file. Failure means the lock is taken so we
@@ -499,7 +499,7 @@ bool ReplaceOldSingletonLock(const base::FilePath& symlink_content,
 
   return SymlinkPath(symlink_content, lock_path);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 void SendRemoteProcessInteractionResultHistogram(
     ProcessSingleton::RemoteProcessInteractionResult result) {
@@ -811,7 +811,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
   for (int retries = 0; retries <= retry_attempts; ++retries) {
     // Try to connect to the socket.
     if (ConnectSocket(&socket, socket_path_, cookie_path_)) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // On Mac, we want the open process' pid in case there are
       // Apple Events to forward. See crbug.com/777863.
       std::string hostname;
@@ -875,7 +875,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     base::PlatformThread::Sleep(sleep_interval);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (pid > 0 && WaitForAndForwardOpenURLEvent(pid)) {
     return PROCESS_NOTIFIED;
   }
@@ -935,7 +935,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     return PROCESS_NONE;
   } else if (strncmp(buf, kACKToken, base::size(kACKToken) - 1) == 0) {
 #if defined(TOOLKIT_VIEWS) && \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     // Likely NULL in unit tests.
     views::LinuxUI* linux_ui = views::LinuxUI::instance();
     if (linux_ui)
@@ -1040,7 +1040,7 @@ bool ProcessSingleton::Create() {
   if (!SymlinkPath(symlink_content, lock_path_)) {
     // TODO(jackhou): Remove this case once this code is stable on Mac.
     // http://crbug.com/367612
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac, an existing non-symlink lock file means the lock could be held by
     // the old process singleton code. If we can successfully replace the lock,
     // continue as normal.

@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuOrigin) {
 
 // Context menu, from HTTPS to HTTP.
 // TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_HttpsContextMenuOrigin DISABLED_HttpsContextMenuOrigin
 #else
 #define MAYBE_HttpsContextMenuOrigin HttpsContextMenuOrigin
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 
 // Context menu, from HTTP to HTTP via server redirect.
 // TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ContextMenuRedirect DISABLED_ContextMenuRedirect
 #else
 #define MAYBE_ContextMenuRedirect ContextMenuRedirect
