@@ -116,6 +116,16 @@ OobeTypes.PinSetupScreenParameters;
 OobeTypes.SecurityTokenPinDialogParameters;
 
 /**
+ * Data type that is expected for each app that is shown on the RecommendApps screen.
+ * @typedef {{
+ *   icon: string,
+ *   name: string,
+ *   package_name: string,
+ * }}
+ */
+OobeTypes.RecommendedAppsExpectedAppData;
+
+/**
  * Event sent from inner webview to enclosing Recommended apps screen.
  * @typedef {{
  *   type: (string|undefined),

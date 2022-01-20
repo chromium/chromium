@@ -35,6 +35,7 @@ group("polymer3_elements") {
     ":os_trial_module",
     ":parental_handoff_module",
     ":pin_setup_module",
+    ":recommend_apps_module",
     ":saml_confirm_password_module",
     ":signin_fatal_error_module",
     ":sync_consent_module",
@@ -75,6 +76,7 @@ js_type_check("closure_compile_module") {
     ":os_trial.m",
     ":parental_handoff.m",
     ":pin_setup.m",
+    ":recommend_apps.m",
     ":saml_confirm_password.m",
     ":signin_fatal_error.m",
     ":sync_consent.m",
@@ -448,6 +450,24 @@ js_library("pin_setup.m") {
   extra_deps = [ ":pin_setup_module" ]
 }
 
+js_library("recommend_apps.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps.m.js" ]
+  deps = [
+     "../../components:oobe_types.m",
+     "../../components/behaviors:login_screen_behavior.m",
+     "../../components/behaviors:multi_step_behavior.m",
+     "../../components/behaviors:oobe_dialog_host_behavior.m",
+     "../../components/behaviors:oobe_i18n_behavior.m",
+     "../../components/buttons:oobe_text_button.m",
+     "../../components/dialogs:oobe_adaptive_dialog.m",
+     "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  externs_list = [
+    "$externs_path/webview_tag.js",
+  ]
+  extra_deps = [ ":recommend_apps_module" ]
+}
+
 js_library("saml_confirm_password.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/saml_confirm_password.m.js" ]
   deps = [
@@ -718,6 +738,14 @@ polymer_modulizer("parental_handoff") {
 polymer_modulizer("pin_setup") {
   js_file = "pin_setup.js"
   html_file = "pin_setup.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("recommend_apps") {
+  js_file = "recommend_apps.js"
+  html_file = "recommend_apps.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
