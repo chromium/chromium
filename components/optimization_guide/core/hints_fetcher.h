@@ -23,7 +23,6 @@
 class PrefService;
 
 namespace network {
-class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
@@ -41,8 +40,8 @@ enum class HintsFetcherRequestStatus {
   kSuccess,
   // Fetch request was sent but no response received.
   kResponseError,
-  // Fetch request not sent because of offline network status.
-  kNetworkOffline,
+  // DEPRECATED: Fetch request not sent because of offline network status.
+  kDeprecatedNetworkOffline,
   // Fetch request not sent because fetcher was busy with another request.
   kFetcherBusy,
   // Fetch request not sent because the host and URL lists were empty.
@@ -70,8 +69,7 @@ class HintsFetcher {
   HintsFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& optimization_guide_service_url,
-      PrefService* pref_service,
-      network::NetworkConnectionTracker* network_connection_tracker);
+      PrefService* pref_service);
 
   HintsFetcher(const HintsFetcher&) = delete;
   HintsFetcher& operator=(const HintsFetcher&) = delete;
@@ -169,10 +167,6 @@ class HintsFetcher {
 
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
-
-  // Listens to changes around the network connection. Not owned. Guaranteed to
-  // outlive |this|.
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Holds the hosts being requested by the hints fetcher.
   std::vector<std::string> hosts_fetched_;

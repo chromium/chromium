@@ -203,7 +203,6 @@ void OptimizationGuideKeyedService::Initialize() {
   hints_manager_ = std::make_unique<optimization_guide::ChromeHintsManager>(
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
       tab_url_provider_.get(), url_loader_factory,
-      content::GetNetworkConnectionTracker(),
       MaybeCreatePushNotificationManager(profile));
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, url_loader_factory,

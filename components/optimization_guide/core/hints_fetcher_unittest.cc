@@ -25,7 +25,6 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,8 +55,7 @@ class HintsFetcherTest : public testing::Test,
 
     hints_fetcher_ = std::make_unique<HintsFetcher>(
         shared_url_loader_factory_, GURL(optimization_guide_service_url),
-        pref_service_.get(),
-        network::TestNetworkConnectionTracker::GetInstance());
+        pref_service_.get());
     hints_fetcher_->SetTimeClockForTesting(task_environment_.GetMockClock());
   }
 
@@ -72,19 +70,7 @@ class HintsFetcherTest : public testing::Test,
       hints_fetched_ = true;
   }
 
-  bool hints_fetched() { return hints_fetched_; }
-
-  void SetConnectionOffline() {
-    network_tracker_ = network::TestNetworkConnectionTracker::GetInstance();
-    network_tracker_->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_NONE);
-  }
-
-  void SetConnectionOnline() {
-    network_tracker_ = network::TestNetworkConnectionTracker::GetInstance();
-    network_tracker_->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_4G);
-  }
+  bool hints_fetched() const { return hints_fetched_; }
 
   // Updates the pref so that hints for each of the host in |hosts| are set to
   // expire at |host_invalid_time|.
@@ -177,7 +163,6 @@ class HintsFetcherTest : public testing::Test,
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  raw_ptr<network::TestNetworkConnectionTracker> network_tracker_;
 
   std::string last_request_body_;
 };
@@ -353,35 +338,6 @@ TEST_P(HintsFetcherTest, FetchReturnBadResponse) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateActiveTabs",
       HintsFetcherRequestStatus::kResponseError, 1);
-}
-
-TEST_P(HintsFetcherTest, FetchAttemptWhenNetworkOffline) {
-  base::HistogramTester histogram_tester;
-
-  SetConnectionOffline();
-  std::string response_content;
-  EXPECT_FALSE(FetchHints({"foo.com"}, {} /* urls */));
-  EXPECT_FALSE(hints_fetched());
-
-  // Make sure histograms are recorded correctly on bad response.
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 0);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateActiveTabs",
-      HintsFetcherRequestStatus::kNetworkOffline, 1);
-
-  SetConnectionOnline();
-  EXPECT_TRUE(FetchHints({"foo.com"}, {} /* urls */));
-  VerifyHasPendingFetchRequests();
-  EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
-  EXPECT_TRUE(hints_fetched());
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
-      "BatchUpdateActiveTabs",
-      1);
 }
 
 TEST_P(HintsFetcherTest, HintsFetchSuccessfulHostsRecorded) {

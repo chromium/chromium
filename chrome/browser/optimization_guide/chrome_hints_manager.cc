@@ -56,7 +56,6 @@ ChromeHintsManager::ChromeHintsManager(
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker,
     std::unique_ptr<optimization_guide::PushNotificationManager>
         push_notification_manager)
     : HintsManager(profile->IsOffTheRecord(),
@@ -66,7 +65,6 @@ ChromeHintsManager::ChromeHintsManager(
                    top_host_provider,
                    tab_url_provider,
                    url_loader_factory,
-                   network_connection_tracker,
                    std::move(push_notification_manager)),
       profile_(profile) {
   NavigationPredictorKeyedService* navigation_predictor_service =

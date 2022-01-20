@@ -27,7 +27,6 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -64,6 +63,7 @@ std::string GetStringNameForRequestContext(
 
 void RecordRequestStatusHistogram(proto::RequestContext request_context,
                                   HintsFetcherRequestStatus status) {
+  DCHECK_NE(status, HintsFetcherRequestStatus::kDeprecatedNetworkOffline);
   base::UmaHistogramEnumeration(
       "OptimizationGuide.HintsFetcher.RequestStatus." +
           GetStringNameForRequestContext(request_context),
@@ -75,14 +75,12 @@ void RecordRequestStatusHistogram(proto::RequestContext request_context,
 HintsFetcher::HintsFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& optimization_guide_service_url,
-    PrefService* pref_service,
-    network::NetworkConnectionTracker* network_connection_tracker)
+    PrefService* pref_service)
     : optimization_guide_service_url_(net::AppendOrReplaceQueryParameter(
           optimization_guide_service_url,
           "key",
           features::GetOptimizationGuideServiceAPIKey())),
       pref_service_(pref_service),
-      network_connection_tracker_(network_connection_tracker),
       time_clock_(base::DefaultClock::GetInstance()) {
   url_loader_factory_ = std::move(url_loader_factory);
   // Allow non-https scheme only when it is overridden in command line. This is
@@ -176,13 +174,6 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(optimization_types.size(), 0u);
   request_context_ = request_context;
-
-  if (network_connection_tracker_->IsOffline()) {
-    RecordRequestStatusHistogram(request_context_,
-                                 HintsFetcherRequestStatus::kNetworkOffline);
-    std::move(hints_fetched_callback).Run(absl::nullopt);
-    return false;
-  }
 
   if (active_url_loader_) {
     RecordRequestStatusHistogram(request_context_,

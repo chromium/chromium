@@ -50,7 +50,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace optimization_guide {
@@ -294,7 +293,6 @@ HintsManager::HintsManager(
     TopHostProvider* top_host_provider,
     TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker,
     std::unique_ptr<PushNotificationManager> push_notification_manager)
     : is_off_the_record_(is_off_the_record),
       application_locale_(application_locale),
@@ -308,8 +306,7 @@ HintsManager::HintsManager(
       hints_fetcher_factory_(std::make_unique<HintsFetcherFactory>(
           url_loader_factory,
           features::GetOptimizationGuideServiceGetHintsURL(),
-          pref_service,
-          network_connection_tracker)),
+          pref_service)),
       top_host_provider_(top_host_provider),
       tab_url_provider_(tab_url_provider),
       push_notification_manager_(std::move(push_notification_manager)),

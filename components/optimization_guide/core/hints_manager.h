@@ -33,7 +33,6 @@ class PrefService;
 
 namespace network {
 class SharedURLLoaderFactory;
-class NetworkConnectionTracker;
 }  // namespace network
 
 namespace optimization_guide {
@@ -58,7 +57,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
       TopHostProvider* top_host_provider,
       TabUrlProvider* tab_url_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      network::NetworkConnectionTracker* network_connection_tracker,
       std::unique_ptr<PushNotificationManager> push_notification_manager);
 
   ~HintsManager() override;
