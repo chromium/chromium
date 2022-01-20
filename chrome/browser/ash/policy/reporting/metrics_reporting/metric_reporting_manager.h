@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
@@ -105,6 +106,10 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
         const std::string& enable_setting_path,
         bool setting_enabled_default_value,
         std::vector<Sampler*> additional_samplers);
+
+    base::TimeDelta GetInitDelay() const;
+
+    base::TimeDelta GetInitialUploadDelay() const;
   };
 
   static std::unique_ptr<MetricReportingManager> Create(
@@ -160,6 +165,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       bool setting_enabled_default_value,
       std::vector<Sampler*> additional_samplers = {});
 
+  void UploadTelemetry();
+
   void InitCrosHealthdInfoCollector(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category,
       const std::string& setting_path,
@@ -197,6 +204,12 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   base::ScopedObservation<::ash::DeviceSettingsService,
                           ::ash::DeviceSettingsService::Observer>
       device_settings_observation_{this};
+
+  base::OneShotTimer init_timer_;
+
+  base::OneShotTimer init_on_login_timer_;
+
+  base::OneShotTimer initial_upload_timer_;
 };
 }  // namespace reporting
 

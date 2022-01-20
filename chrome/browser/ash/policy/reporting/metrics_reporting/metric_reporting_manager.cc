@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
@@ -31,6 +32,9 @@ constexpr base::TimeDelta kDefaultReportUploadFrequencyForTesting =
 constexpr base::TimeDelta kDefaultCollectionRateForTesting = base::Minutes(2);
 constexpr base::TimeDelta kDefaultEventCheckingRateForTesting =
     base::Minutes(1);
+
+constexpr base::TimeDelta kInitDelay = base::Minutes(1);
+constexpr base::TimeDelta kInitialUploadDelay = base::Minutes(3);
 
 constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
 constexpr base::TimeDelta kDefaultNetworkTelemetryCollectionRate =
@@ -185,6 +189,15 @@ MetricReportingManager::Delegate::CreateEventObserverManager(
       std::move(additional_samplers));
 }
 
+base::TimeDelta MetricReportingManager::Delegate::GetInitDelay() const {
+  return kInitDelay;
+}
+
+base::TimeDelta MetricReportingManager::Delegate::GetInitialUploadDelay()
+    const {
+  return kInitialUploadDelay;
+}
+
 // static
 std::unique_ptr<MetricReportingManager> MetricReportingManager::Create(
     policy::ManagedSessionService* managed_session_service) {
@@ -208,7 +221,8 @@ void MetricReportingManager::OnLogin(Profile* profile) {
   if (!delegate_->IsAffiliated(profile)) {
     return;
   }
-  InitOnAffiliatedLogin();
+  init_on_login_timer_.Start(FROM_HERE, delegate_->GetInitDelay(), this,
+                             &MetricReportingManager::InitOnAffiliatedLogin);
 }
 
 void MetricReportingManager::DeviceSettingsUpdated() {
@@ -224,7 +238,18 @@ MetricReportingManager::MetricReportingManager(
   if (delegate_->IsDeprovisioned()) {
     return;
   }
-  Init();
+
+  info_report_queue_ = delegate_->CreateMetricReportQueue(
+      Destination::INFO_METRIC, Priority::SLOW_BATCH);
+  telemetry_report_queue_ = delegate_->CreatePeriodicUploadReportQueue(
+      Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH,
+      &reporting_settings_, ::ash::kReportUploadFrequency,
+      GetDefaultReportUploadFrequency());
+  event_report_queue_ = delegate_->CreateMetricReportQueue(
+      Destination::EVENT_METRIC, Priority::SLOW_BATCH);
+  init_timer_.Start(FROM_HERE, delegate_->GetInitDelay(), this,
+                    &MetricReportingManager::Init);
+
   if (managed_session_service) {
     managed_session_observation_.Observe(managed_session_service);
   }
@@ -244,14 +269,9 @@ void MetricReportingManager::Shutdown() {
 }
 
 void MetricReportingManager::Init() {
-  info_report_queue_ = delegate_->CreateMetricReportQueue(
-      Destination::INFO_METRIC, Priority::SLOW_BATCH);
-  telemetry_report_queue_ = delegate_->CreatePeriodicUploadReportQueue(
-      Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH,
-      &reporting_settings_, ::ash::kReportUploadFrequency,
-      GetDefaultReportUploadFrequency());
-  event_report_queue_ = delegate_->CreateMetricReportQueue(
-      Destination::EVENT_METRIC, Priority::SLOW_BATCH);
+  if (delegate_->IsDeprovisioned()) {
+    return;
+  }
 
   InitCrosHealthdInfoCollector(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum::kCpu,
@@ -272,11 +292,21 @@ void MetricReportingManager::Init() {
         /*enable_setting_path=*/::ash::kReportDeviceNetworkConfiguration,
         /*setting_enabled_default_value=*/true);
   }
+
+  initial_upload_timer_.Start(FROM_HERE, delegate_->GetInitialUploadDelay(),
+                              this, &MetricReportingManager::UploadTelemetry);
 }
 
 void MetricReportingManager::InitOnAffiliatedLogin() {
+  if (delegate_->IsDeprovisioned()) {
+    return;
+  }
+
   InitNetworkCollectors();
   InitAudioCollectors();
+
+  initial_upload_timer_.Start(FROM_HERE, delegate_->GetInitialUploadDelay(),
+                              this, &MetricReportingManager::UploadTelemetry);
 }
 
 void MetricReportingManager::InitOneShotCollector(
@@ -345,6 +375,13 @@ void MetricReportingManager::InitEventObserverManager(
       std::move(event_observer), event_report_queue_.get(),
       &reporting_settings_, enable_setting_path, setting_enabled_default_value,
       std::move(additional_samplers)));
+}
+
+void MetricReportingManager::UploadTelemetry() {
+  if (!telemetry_report_queue_) {
+    return;
+  }
+  telemetry_report_queue_->Upload();
 }
 
 void MetricReportingManager::InitCrosHealthdInfoCollector(

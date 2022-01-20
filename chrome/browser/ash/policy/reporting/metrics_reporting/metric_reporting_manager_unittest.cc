@@ -208,16 +208,18 @@ class MetricReportingManagerTest
     event_queue_ = std::make_unique<test::FakeMetricReportQueue>();
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<MetricReportQueue> info_queue_;
-  std::unique_ptr<MetricReportQueue> telemetry_queue_;
-  std::unique_ptr<MetricReportQueue> event_queue_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<test::FakeMetricReportQueue> info_queue_;
+  std::unique_ptr<test::FakeMetricReportQueue> telemetry_queue_;
+  std::unique_ptr<test::FakeMetricReportQueue> event_queue_;
 };
 
 TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
   auto fake_reporting_settings =
       std::make_unique<test::FakeReportingSettings>();
   auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
+  const auto init_delay = mock_delegate->GetInitDelay();
   int one_shot_collector_count = 0;
   int periodic_collector_count = 0;
   int periodic_event_collector_count = 0;
@@ -254,12 +256,16 @@ TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate), nullptr);
 
+  task_environment_.FastForwardBy(init_delay);
+
   EXPECT_EQ(one_shot_collector_count, 0);
   EXPECT_EQ(periodic_collector_count, 0);
   EXPECT_EQ(periodic_event_collector_count, 0);
   EXPECT_EQ(observer_manager_count, 0);
 
   metric_reporting_manager->OnLogin(nullptr);
+
+  task_environment_.FastForwardBy(init_delay);
 
   EXPECT_EQ(one_shot_collector_count, 0);
   EXPECT_EQ(periodic_collector_count, 0);
@@ -277,6 +283,7 @@ TEST_P(MetricReportingManagerInfoTest, Default) {
                                        test_case.disabled_features);
 
   auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
+  const auto init_delay = mock_delegate->GetInitDelay();
   auto* const mock_delegate_ptr = mock_delegate.get();
   auto* const info_queue_ptr = info_queue_.get();
   int collector_count = 0;
@@ -295,9 +302,15 @@ TEST_P(MetricReportingManagerInfoTest, Default) {
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate), nullptr);
 
+  EXPECT_EQ(collector_count, 0);
+
+  task_environment_.FastForwardBy(init_delay);
+
   EXPECT_EQ(collector_count, test_case.expected_count_before_login);
 
   metric_reporting_manager->OnLogin(nullptr);
+
+  task_environment_.FastForwardBy(init_delay);
 
   EXPECT_EQ(collector_count, test_case.expected_count_after_login);
 
@@ -360,6 +373,7 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   auto fake_reporting_settings =
       std::make_unique<test::FakeReportingSettings>();
   auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
+  const auto init_delay = mock_delegate->GetInitDelay();
   auto* const mock_delegate_ptr = mock_delegate.get();
   auto* const event_queue_ptr = event_queue_.get();
   int observer_manager_count = 0;
@@ -380,9 +394,15 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate), nullptr);
 
+  task_environment_.FastForwardBy(init_delay);
+
   EXPECT_EQ(observer_manager_count, test_case.expected_count_before_login);
 
   metric_reporting_manager->OnLogin(nullptr);
+
+  EXPECT_EQ(observer_manager_count, test_case.expected_count_before_login);
+
+  task_environment_.FastForwardBy(init_delay);
 
   EXPECT_EQ(observer_manager_count, test_case.expected_count_after_login);
 
@@ -446,6 +466,8 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
                                        test_case.disabled_features);
 
   auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
+  const auto init_delay = mock_delegate->GetInitDelay();
+  const auto upload_delay = mock_delegate->GetInitialUploadDelay();
   auto* const mock_delegate_ptr = mock_delegate.get();
   auto* const telemetry_queue_ptr = telemetry_queue_.get();
   int collector_count = 0;
@@ -469,11 +491,26 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate), nullptr);
 
+  task_environment_.FastForwardBy(init_delay);
+
   EXPECT_EQ(collector_count, test_case.expected_count_before_login);
+
+  task_environment_.FastForwardBy(upload_delay);
+
+  EXPECT_EQ(telemetry_queue_ptr->GetNumFlush(), 1);
 
   metric_reporting_manager->OnLogin(nullptr);
 
+  EXPECT_EQ(collector_count, test_case.expected_count_before_login);
+
+  task_environment_.FastForwardBy(init_delay);
+
   EXPECT_EQ(collector_count, test_case.expected_count_after_login);
+
+  const int expected_login_flush_count = test_case.is_affiliated ? 1 : 0;
+  task_environment_.FastForwardBy(upload_delay);
+
+  EXPECT_EQ(telemetry_queue_ptr->GetNumFlush(), 1 + expected_login_flush_count);
 
   ON_CALL(*mock_delegate_ptr, IsDeprovisioned).WillByDefault(Return(true));
   metric_reporting_manager->DeviceSettingsUpdated();
@@ -521,6 +558,7 @@ TEST_P(MetricReportingManagerPeriodicEventTest, Default) {
                                        test_case.disabled_features);
 
   auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
+  const auto init_delay = mock_delegate->GetInitDelay();
   auto* const mock_delegate_ptr = mock_delegate.get();
   auto* const event_queue_ptr = event_queue_.get();
   int collector_count = 0;
@@ -542,9 +580,15 @@ TEST_P(MetricReportingManagerPeriodicEventTest, Default) {
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate), nullptr);
 
+  task_environment_.FastForwardBy(init_delay);
+
   EXPECT_EQ(collector_count, test_case.expected_count_before_login);
 
   metric_reporting_manager->OnLogin(nullptr);
+
+  EXPECT_EQ(collector_count, test_case.expected_count_before_login);
+
+  task_environment_.FastForwardBy(init_delay);
 
   EXPECT_EQ(collector_count, test_case.expected_count_after_login);
 
