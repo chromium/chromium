@@ -8,7 +8,7 @@
  * URL. |dataType| specifies 'blob' or 'url' accordingly (other values are
  * interpreted as no preview data).
  * @typedef {{
- *   data: ?(Blob|string),
+ *   data: ?(Blob|string|undefined),
  *   dataType: string
  * }}
  */

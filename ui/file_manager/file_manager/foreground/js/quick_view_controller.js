@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
-import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
@@ -706,7 +706,7 @@ export class QuickViewController {
    *
    * @param {string} url Thumbnail url
    * @param {Date|undefined} modificationTime File's modification time.
-   * @return !Promise<!LoadImageResponse>
+   * @return {!Promise<!LoadImageResponse>}
    * @private
    */
   async loadThumbnailFromDrive_(url, modificationTime) {
@@ -725,7 +725,7 @@ export class QuickViewController {
    * refresh the cached |entry| data with the most recent data.
    *
    * @param {!Entry} entry The RAW file entry.
-   * @return !Promise<!LoadImageResponse>
+   * @return {!Promise<!LoadImageResponse>}
    * @private
    */
   loadRawFileThumbnailFromImageLoader_(entry) {
