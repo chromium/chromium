@@ -9,8 +9,6 @@
 
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
-
 // Adds utility functions for Lacros's system URL handling.
 //
 // Lacros is sending some special system os:// URLs to Ash.
@@ -67,7 +65,5 @@ COMPONENT_EXPORT(CROSAPI) GURL GetChromeUrlFromSystemUrl(const GURL& url);
 }  // namespace gurl_os_handler_utils
 
 }  // namespace crosapi
-
-#endif  // defined(OS_CHROMEOS)
 
 #endif  // CHROMEOS_CROSAPI_CPP_GURL_OS_HANDLER_UTILS_H_
