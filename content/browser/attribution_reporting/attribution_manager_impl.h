@@ -112,8 +112,9 @@ class CONTENT_EXPORT AttributionManagerImpl
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;
-  void SendReportsForWebUI(const std::vector<AttributionReport::Id>& ids,
-                           base::OnceClosure done) override;
+  void SendReportsForWebUI(
+      const std::vector<AttributionReport::EventLevelData::Id>& ids,
+      base::OnceClosure done) override;
   const AttributionPolicy& GetAttributionPolicy() const override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
@@ -157,7 +158,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   void OnReportSent(base::OnceClosure done,
                     AttributionReport report,
                     SendResult info);
-  void MarkReportCompleted(AttributionReport::Id report_id);
+  void MarkReportCompleted(AttributionReport::EventLevelData::Id report_id);
 
   void OnReportStored(AttributionStorage::CreateReportResult result);
 
@@ -192,7 +193,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   // Set of all conversion IDs that are currently being sent, deleted, or
   // updated. The number of concurrent conversion reports being sent at any time
   // is expected to be small, so a `flat_set` is used.
-  base::flat_set<AttributionReport::Id> reports_being_sent_;
+  base::flat_set<AttributionReport::EventLevelData::Id> reports_being_sent_;
 
   base::ObserverList<Observer> observers_;
 

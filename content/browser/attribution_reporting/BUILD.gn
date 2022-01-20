@@ -14,7 +14,7 @@ mojom("mojo_bindings") {
       types = [
         {
           mojom = "content.mojom.AttributionReportID"
-          cpp = "::content::AttributionReport::Id"
+          cpp = "::content::AttributionReport::EventLevelData::Id"
         },
         {
           mojom = "content.mojom.SourceType"

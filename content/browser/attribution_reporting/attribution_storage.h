@@ -212,7 +212,7 @@ class AttributionStorage {
   // Returns the reports with the given IDs. This call is logically const, and
   // does not modify the underlying storage.
   virtual std::vector<AttributionReport> GetReports(
-      const std::vector<AttributionReport::Id>& ids) = 0;
+      const std::vector<AttributionReport::EventLevelData::Id>& ids) = 0;
 
   // Returns all active sources in storage. Active sources are all
   // sources that can still convert. Sources that: are past expiry,
@@ -224,14 +224,14 @@ class AttributionStorage {
 
   // Deletes the report with the given |report_id|. Returns
   // false if an error occurred.
-  [[nodiscard]] virtual bool DeleteReport(AttributionReport::Id report_id) = 0;
+  [[nodiscard]] virtual bool DeleteReport(
+      AttributionReport::EventLevelData::Id report_id) = 0;
 
   // Updates the number of failures associated with the given report, and sets
   // its report time to the given value. Should be called after a transient
-  // failure to send the report so that it is retried later. Returns false on
-  // failure.
+  // failure to send the report so that it is retried later.
   [[nodiscard]] virtual bool UpdateReportForSendFailure(
-      AttributionReport::Id report_id,
+      AttributionReport::EventLevelData::Id report_id,
       base::Time new_report_time) = 0;
 
   // Adjusts the report time of all reports that should have been sent while the

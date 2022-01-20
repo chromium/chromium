@@ -8,10 +8,10 @@ namespace mojo {
 
 // static
 bool StructTraits<content::mojom::AttributionReportIDDataView,
-                  content::AttributionReport::Id>::
+                  content::AttributionReport::EventLevelData::Id>::
     Read(content::mojom::AttributionReportIDDataView data,
-         content::AttributionReport::Id* out) {
-  *out = content::AttributionReport::Id(data.value());
+         content::AttributionReport::EventLevelData::Id* out) {
+  *out = content::AttributionReport::EventLevelData::Id(data.value());
   return true;
 }
 

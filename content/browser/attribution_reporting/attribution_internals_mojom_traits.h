@@ -46,12 +46,15 @@ class EnumTraits<content::mojom::SourceType,
 
 template <>
 class StructTraits<content::mojom::AttributionReportIDDataView,
-                   content::AttributionReport::Id> {
+                   content::AttributionReport::EventLevelData::Id> {
  public:
-  static int64_t value(const content::AttributionReport::Id& id) { return *id; }
+  static int64_t value(
+      const content::AttributionReport::EventLevelData::Id& id) {
+    return *id;
+  }
 
   static bool Read(content::mojom::AttributionReportIDDataView data,
-                   content::AttributionReport::Id* out);
+                   content::AttributionReport::EventLevelData::Id* out);
 };
 
 }  // namespace mojo

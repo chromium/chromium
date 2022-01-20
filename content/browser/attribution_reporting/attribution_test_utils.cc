@@ -316,14 +316,15 @@ ReportBuilder& ReportBuilder::SetExternalReportId(
 }
 
 ReportBuilder& ReportBuilder::SetReportId(
-    absl::optional<AttributionReport::Id> id) {
+    absl::optional<AttributionReport::EventLevelData::Id> id) {
   report_id_ = id;
   return *this;
 }
 
 AttributionReport ReportBuilder::Build() const {
-  return AttributionReport(source_, trigger_data_, trigger_time_, report_time_,
-                           priority_, external_report_id_, report_id_);
+  return AttributionReport(
+      source_, trigger_time_, report_time_, external_report_id_,
+      AttributionReport::EventLevelData(trigger_data_, priority_, report_id_));
 }
 
 // Custom comparator for `StorableSource` that does not take impression IDs
@@ -340,16 +341,45 @@ bool operator==(const StorableSource& a, const StorableSource& b) {
   return tie(a) == tie(b);
 }
 
-// Custom comparator for comparing two vectors of conversion reports. Does not
-// compare impression and conversion IDs as they are set by the underlying
-// sqlite db and should not be tested.
+bool operator==(const HistogramContribution& a,
+                const HistogramContribution& b) {
+  const auto tie = [](const HistogramContribution& contribution) {
+    return std::make_tuple(contribution.bucket(), contribution.value());
+  };
+  return tie(a) == tie(b);
+}
+
+bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b) {
+  const auto tie = [](const AggregatableAttribution& aggregate_attribution) {
+    return std::make_tuple(
+        aggregate_attribution.source_id, aggregate_attribution.trigger_time,
+        aggregate_attribution.report_time, aggregate_attribution.contributions);
+  };
+  return tie(a) == tie(b);
+}
+
+// Does not compare ID as it is set by the underlying sqlite db and
+// should not be tested.
+bool operator==(const AttributionReport::EventLevelData& a,
+                const AttributionReport::EventLevelData& b) {
+  const auto tie = [](const AttributionReport::EventLevelData& data) {
+    return std::make_tuple(data.trigger_data, data.priority);
+  };
+  return tie(a) == tie(b);
+}
+
+// Does not compare ID as it is set by the underlying sqlite db and
+// should not be tested.
+bool operator==(const AttributionReport::AggregateContributionData& a,
+                const AttributionReport::AggregateContributionData& b) {
+  return a.contribution == b.contribution;
+}
+
 bool operator==(const AttributionReport& a, const AttributionReport& b) {
-  const auto tie = [](const AttributionReport& conversion) {
-    return std::make_tuple(conversion.source(), conversion.trigger_data(),
-                           conversion.trigger_time(), conversion.report_time(),
-                           conversion.priority(),
-                           conversion.external_report_id(),
-                           conversion.failed_send_attempts());
+  const auto tie = [](const AttributionReport& report) {
+    return std::make_tuple(report.source(), report.trigger_time(),
+                           report.report_time(), report.external_report_id(),
+                           report.failed_send_attempts(), report.data());
   };
   return tie(a) == tie(b);
 }
@@ -497,18 +527,63 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
   return out << "]}";
 }
 
-std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
-  return out << "{source=" << report.source()
-             << ",trigger_data=" << report.trigger_data()
-             << ",trigger_time=" << report.trigger_time()
-             << ",report_time=" << report.report_time()
-             << ",priority=" << report.priority()
-             << ",external_report_id=" << report.external_report_id()
-             << ",conversion_id="
-             << (report.report_id() ? base::NumberToString(**report.report_id())
-                                    : "null")
-             << ",failed_send_attempts=" << report.failed_send_attempts()
+std::ostream& operator<<(std::ostream& out,
+                         const HistogramContribution& contribution) {
+  return out << "{bucket=" << contribution.bucket()
+             << ",value=" << contribution.value() << "}";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AggregatableAttribution& aggregate_attribution) {
+  out << "{source_id=" << aggregate_attribution.source_id
+      << ",trigger_time=" << aggregate_attribution.trigger_time
+      << ",report_time=" << aggregate_attribution.report_time
+      << ",contributions=[";
+
+  const char* separator = "";
+  for (const HistogramContribution& contribution :
+       aggregate_attribution.contributions) {
+    out << separator << contribution;
+    separator = ", ";
+  }
+
+  return out << "]}";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionReport::EventLevelData& data) {
+  return out << "{trigger_data=" << data.trigger_data
+             << ",priority=" << data.priority
+             << ",id=" << (data.id ? base::NumberToString(**data.id) : "null")
              << "}";
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionReport::AggregateContributionData& data) {
+  return out << "{contribution=" << data.contribution
+             << ",id=" << (data.id ? base::NumberToString(**data.id) : "null")
+             << "}";
+}
+
+namespace {
+std::ostream& operator<<(
+    std::ostream& out,
+    const absl::variant<AttributionReport::EventLevelData,
+                        AttributionReport::AggregateContributionData>& data) {
+  absl::visit([&out](const auto& v) { out << v; }, data);
+  return out;
+}
+}  // namespace
+
+std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
+  out << "{source=" << report.source()
+      << ",trigger_time=" << report.trigger_time()
+      << ",report_time=" << report.report_time()
+      << ",external_report_id=" << report.external_report_id()
+      << ",failed_send_attempts=" << report.failed_send_attempts()
+      << ",data=" << report.data() << "}";
+  return out;
 }
 
 std::ostream& operator<<(std::ostream& out, SendResult::Status status) {

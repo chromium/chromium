@@ -606,14 +606,16 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>(
           {ReportBuilder(SourceBuilder().Build())
                .SetPriority(7)
-               .SetReportId(AttributionReport::Id(5))
+               .SetReportId(AttributionReport::EventLevelData::Id(5))
                .Build()}))
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>({}));
 
   EXPECT_CALL(manager_,
-              SendReportsForWebUI(ElementsAre(AttributionReport::Id(5)), _))
-      .WillOnce([](const std::vector<AttributionReport::Id>& ids,
-                   base::OnceClosure done) { std::move(done).Run(); });
+              SendReportsForWebUI(
+                  ElementsAre(AttributionReport::EventLevelData::Id(5)), _))
+      .WillOnce(
+          [](const std::vector<AttributionReport::EventLevelData::Id>& ids,
+             base::OnceClosure done) { std::move(done).Run(); });
 
   OverrideWebUIAttributionManager();
 

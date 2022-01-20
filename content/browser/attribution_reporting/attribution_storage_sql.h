@@ -87,11 +87,12 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       int limit = -1) override;
   absl::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::vector<AttributionReport> GetReports(
-      const std::vector<AttributionReport::Id>& ids) override;
+      const std::vector<AttributionReport::EventLevelData::Id>& ids) override;
   std::vector<StorableSource> GetActiveSources(int limit = -1) override;
-  bool DeleteReport(AttributionReport::Id report_id) override;
-  bool UpdateReportForSendFailure(AttributionReport::Id report_id,
-                                  base::Time new_report_time) override;
+  bool DeleteReport(AttributionReport::EventLevelData::Id report_id) override;
+  bool UpdateReportForSendFailure(
+      AttributionReport::EventLevelData::Id report_id,
+      base::Time new_report_time) override;
   absl::optional<base::Time> AdjustOfflineReportTimes(
       base::TimeDelta min_delay,
       base::TimeDelta max_delay) override;
@@ -122,7 +123,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
-  [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id report_id)
+  [[nodiscard]] bool DeleteReportInternal(
+      AttributionReport::EventLevelData::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   bool HasCapacityForStoringSource(const std::string& serialized_origin)
@@ -164,7 +166,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       absl::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
+  absl::optional<AttributionReport> GetReport(
+      AttributionReport::EventLevelData::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<std::vector<int64_t>> ReadDedupKeys(

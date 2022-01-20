@@ -11,25 +11,64 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
 namespace content {
 
-AttributionReport::AttributionReport(StorableSource source,
-                                     uint64_t trigger_data,
-                                     base::Time trigger_time,
-                                     base::Time report_time,
-                                     int64_t priority,
-                                     base::GUID external_report_id,
-                                     absl::optional<Id> report_id)
+AttributionReport::EventLevelData::EventLevelData(uint64_t trigger_data,
+                                                  int64_t priority,
+                                                  absl::optional<Id> id)
+    : trigger_data(trigger_data), priority(priority), id(id) {}
+
+AttributionReport::EventLevelData::EventLevelData(const EventLevelData& other) =
+    default;
+
+AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
+    const EventLevelData& other) = default;
+
+AttributionReport::EventLevelData::EventLevelData(EventLevelData&& other) =
+    default;
+
+AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
+    EventLevelData&& other) = default;
+
+AttributionReport::EventLevelData::~EventLevelData() = default;
+
+AttributionReport::AggregateContributionData::AggregateContributionData(
+    HistogramContribution contribution,
+    absl::optional<Id> id)
+    : contribution(std::move(contribution)), id(id) {}
+
+AttributionReport::AggregateContributionData::AggregateContributionData(
+    const AggregateContributionData& other) = default;
+
+AttributionReport::AggregateContributionData&
+AttributionReport::AggregateContributionData::operator=(
+    const AggregateContributionData& other) = default;
+
+AttributionReport::AggregateContributionData::AggregateContributionData(
+    AggregateContributionData&& other) = default;
+
+AttributionReport::AggregateContributionData&
+AttributionReport::AggregateContributionData::operator=(
+    AggregateContributionData&& other) = default;
+
+AttributionReport::AggregateContributionData::~AggregateContributionData() =
+    default;
+
+AttributionReport::AttributionReport(
+    StorableSource source,
+    base::Time trigger_time,
+    base::Time report_time,
+    base::GUID external_report_id,
+    absl::variant<EventLevelData, AggregateContributionData> data)
     : source_(std::move(source)),
-      trigger_data_(trigger_data),
       trigger_time_(trigger_time),
       report_time_(report_time),
-      priority_(priority),
       external_report_id_(std::move(external_report_id)),
-      report_id_(report_id) {
+      data_(std::move(data)) {
   DCHECK(external_report_id_.is_valid());
 }
 
@@ -46,14 +85,30 @@ AttributionReport& AttributionReport::operator=(AttributionReport&& other) =
 AttributionReport::~AttributionReport() = default;
 
 GURL AttributionReport::ReportURL() const {
+  struct Visitor {
+    const char* operator()(const EventLevelData&) {
+      static constexpr char kEventEndpointPath[] =
+          "/.well-known/attribution-reporting/report-attribution";
+      return kEventEndpointPath;
+    }
+
+    const char* operator()(const AggregateContributionData&) {
+      static constexpr char kAggregateEndpointPath[] =
+          "/.well-known/attribution-reporting/report-aggregate-attribution";
+      return kAggregateEndpointPath;
+    }
+  };
+
+  const char* path = absl::visit(Visitor{}, data_);
   url::Replacements<char> replacements;
-  static constexpr char kEndpointPath[] =
-      "/.well-known/attribution-reporting/report-attribution";
-  replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
+  replacements.SetPath(path, url::Component(0, strlen(path)));
   return source_.reporting_origin().GetURL().ReplaceComponents(replacements);
 }
 
 std::string AttributionReport::ReportBody(bool pretty_print) const {
+  const auto* event_data = absl::get_if<EventLevelData>(&data_);
+  DCHECK(event_data);
+
   base::Value dict(base::Value::Type::DICTIONARY);
 
   dict.SetStringKey("attribution_destination",
@@ -64,7 +119,8 @@ std::string AttributionReport::ReportBody(bool pretty_print) const {
   dict.SetStringKey("source_event_id",
                     base::NumberToString(source_.source_event_id()));
 
-  dict.SetStringKey("trigger_data", base::NumberToString(trigger_data_));
+  dict.SetStringKey("trigger_data",
+                    base::NumberToString(event_data->trigger_data));
 
   const char* source_type = nullptr;
   switch (source_.source_type()) {
@@ -86,6 +142,11 @@ std::string AttributionReport::ReportBody(bool pretty_print) const {
       &output_json);
   DCHECK(success);
   return output_json;
+}
+
+absl::optional<AttributionReport::Id> AttributionReport::ReportId() const {
+  return absl::visit([](const auto& v) { return absl::optional<Id>(v.id); },
+                     data_);
 }
 
 void AttributionReport::set_report_time(base::Time report_time) {

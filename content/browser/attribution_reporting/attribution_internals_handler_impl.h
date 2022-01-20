@@ -50,9 +50,10 @@ class AttributionInternalsHandlerImpl
       override;
   void GetReports(
       mojom::AttributionInternalsHandler::GetReportsCallback callback) override;
-  void SendReports(const std::vector<AttributionReport::Id>& ids,
-                   mojom::AttributionInternalsHandler::SendReportsCallback
-                       callback) override;
+  void SendReports(
+      const std::vector<AttributionReport::EventLevelData::Id>& ids,
+      mojom::AttributionInternalsHandler::SendReportsCallback callback)
+      override;
   void ClearStorage(mojom::AttributionInternalsHandler::ClearStorageCallback
                         callback) override;
   void AddObserver(

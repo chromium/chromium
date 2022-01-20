@@ -27,8 +27,9 @@ StorableSource::Id NextImpressionId(StorableSource::Id id) {
   return StorableSource::Id(*id + 1);
 }
 
-AttributionReport::Id NextConversionId(AttributionReport::Id id) {
-  return AttributionReport::Id(*id + 1);
+AttributionReport::EventLevelData::Id NextConversionId(
+    AttributionReport::EventLevelData::Id id) {
+  return AttributionReport::EventLevelData::Id(*id + 1);
 }
 
 struct ImpressionIdAndConversionOrigin {
@@ -101,9 +102,9 @@ GetImpressionIdAndImpressionOrigins(sql::Database* db,
   return impressions;
 }
 
-std::vector<AttributionReport::Id> GetConversionIds(
+std::vector<AttributionReport::EventLevelData::Id> GetConversionIds(
     sql::Database* db,
-    AttributionReport::Id start_conversion_id) {
+    AttributionReport::EventLevelData::Id start_conversion_id) {
   static constexpr char kGetConversionsSql[] =
       "SELECT conversion_id FROM conversions "
       "WHERE conversion_id >= ? "
@@ -117,7 +118,7 @@ std::vector<AttributionReport::Id> GetConversionIds(
   const int kNumConversions = 100;
   statement.BindInt(1, kNumConversions);
 
-  std::vector<AttributionReport::Id> conversion_ids;
+  std::vector<AttributionReport::EventLevelData::Id> conversion_ids;
   while (statement.Step()) {
     conversion_ids.emplace_back(statement.ColumnInt64(0));
   }
@@ -1162,8 +1163,8 @@ bool MigrateToVersion15(sql::Database* db,
   //
   // We update a subset of rows at a time to avoid pulling the entire
   // conversions table into memory.
-  std::vector<AttributionReport::Id> conversion_ids =
-      GetConversionIds(db, AttributionReport::Id(0));
+  std::vector<AttributionReport::EventLevelData::Id> conversion_ids =
+      GetConversionIds(db, AttributionReport::EventLevelData::Id(0));
 
   static constexpr char kUpdateExternalReportIdSql[] =
       "UPDATE new_conversions SET external_report_id = ? "
@@ -1173,7 +1174,7 @@ bool MigrateToVersion15(sql::Database* db,
 
   while (!conversion_ids.empty()) {
     // Perform the column updates for each row we pulled into memory.
-    for (AttributionReport::Id conversion_id : conversion_ids) {
+    for (AttributionReport::EventLevelData::Id conversion_id : conversion_ids) {
       update_statement.Reset(/*clear_bound_vars=*/true);
 
       base::GUID external_report_id = delegate->NewReportID();

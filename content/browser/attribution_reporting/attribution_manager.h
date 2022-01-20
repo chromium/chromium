@@ -92,7 +92,7 @@ class AttributionManager {
   // Sends the given reports immediately, and runs |done| once they have all
   // been sent.
   virtual void SendReportsForWebUI(
-      const std::vector<AttributionReport::Id>& ids,
+      const std::vector<AttributionReport::EventLevelData::Id>& ids,
       base::OnceClosure done) = 0;
 
   // Returns the AttributionPolicy that is used to control API policies such

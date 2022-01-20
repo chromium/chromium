@@ -33,9 +33,11 @@ using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::VariantWith;
 
 class AttributionStorageSqlTest : public testing::Test {
  public:
@@ -401,7 +403,8 @@ TEST_F(AttributionStorageSqlTest,
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(storage()->DeleteReport(AttributionReport::Id(1)));
+  EXPECT_TRUE(
+      storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), impression_origin));
@@ -461,7 +464,8 @@ TEST_F(AttributionStorageSqlTest,
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(storage()->DeleteReport(AttributionReport::Id(1)));
+  EXPECT_TRUE(
+      storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), conversion_origin));
@@ -542,7 +546,10 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
 
   EXPECT_THAT(
       storage()->GetAttributionsToReport(base::Time::Now()),
-      ElementsAre(Property(&AttributionReport::trigger_data, kMaxUint64)));
+      ElementsAre(Property(
+          &AttributionReport::data,
+          VariantWith<AttributionReport::EventLevelData>(Field(
+              &AttributionReport::EventLevelData::trigger_data, kMaxUint64)))));
 }
 
 TEST_F(AttributionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
@@ -641,7 +648,8 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   std::vector<AttributionReport> reports =
       storage()->GetAttributionsToReport(base::Time::Now());
   EXPECT_THAT(reports, SizeIs(1));
-  EXPECT_TRUE(storage()->DeleteReport(*reports[0].report_id()));
+  EXPECT_TRUE(storage()->DeleteReport(
+      *(absl::get<AttributionReport::EventLevelData>(reports[0].data()).id)));
   // Store another impression to trigger the expiry logic.
   storage()->StoreSource(
       SourceBuilder().SetExpiry(base::Milliseconds(3)).Build());

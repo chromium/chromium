@@ -288,7 +288,7 @@ void AttributionManagerImpl::GetPendingReportsForWebUI(
 }
 
 void AttributionManagerImpl::SendReportsForWebUI(
-    const std::vector<AttributionReport::Id>& ids,
+    const std::vector<AttributionReport::EventLevelData::Id>& ids,
     base::OnceClosure done) {
   attribution_storage_.AsyncCall(&AttributionStorage::GetReports)
       .WithArgs(ids)
@@ -428,10 +428,16 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
                                          base::RepeatingClosure done) {
   const base::Time now = base::Time::Now();
   for (AttributionReport& report : reports) {
-    DCHECK(report.report_id().has_value());
+    DCHECK(report.ReportId().has_value());
     DCHECK_LE(report.report_time(), now);
 
-    bool inserted = reports_being_sent_.emplace(*report.report_id()).second;
+    DCHECK(absl::holds_alternative<AttributionReport::EventLevelData::Id>(
+        *report.ReportId()));
+    bool inserted =
+        reports_being_sent_
+            .emplace(absl::get<AttributionReport::EventLevelData::Id>(
+                *report.ReportId()))
+            .second;
     if (!inserted) {
       done.Run();
       continue;
@@ -468,7 +474,7 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
 }
 
 void AttributionManagerImpl::MarkReportCompleted(
-    AttributionReport::Id report_id) {
+    AttributionReport::EventLevelData::Id report_id) {
   size_t num_removed = reports_being_sent_.erase(report_id);
   DCHECK_EQ(num_removed, 1u);
 }
@@ -476,7 +482,7 @@ void AttributionManagerImpl::MarkReportCompleted(
 void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                                           AttributionReport report,
                                           SendResult info) {
-  DCHECK(report.report_id().has_value());
+  DCHECK(report.ReportId().has_value());
 
   // If there was a transient failure, and another attempt is allowed,
   // update the report's DB state to reflect that. Otherwise, delete the report
@@ -494,6 +500,11 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
     }
   }
 
+  DCHECK(absl::holds_alternative<AttributionReport::EventLevelData::Id>(
+      *report.ReportId()));
+  const auto report_id =
+      absl::get<AttributionReport::EventLevelData::Id>(*report.ReportId());
+
   if (should_retry) {
     // After updating the report's failure count and new report time in the DB,
     // add it directly to the queue so that the retry is attempted as the new
@@ -501,12 +512,12 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
     // occur.
     attribution_storage_
         .AsyncCall(&AttributionStorage::UpdateReportForSendFailure)
-        .WithArgs(*report.report_id(), report.report_time())
+        .WithArgs(report_id, report.report_time())
         .Then(base::BindOnce(
             [](base::OnceClosure done,
                base::WeakPtr<AttributionManagerImpl> manager,
-               AttributionReport::Id report_id, base::Time new_report_time,
-               bool success) {
+               AttributionReport::EventLevelData::Id report_id,
+               base::Time new_report_time, bool success) {
               std::move(done).Run();
 
               if (manager && success) {
@@ -515,16 +526,16 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                 manager->NotifyReportsChanged();
               }
             },
-            std::move(done), weak_factory_.GetWeakPtr(), *report.report_id(),
+            std::move(done), weak_factory_.GetWeakPtr(), report_id,
             report.report_time()));
   } else {
     RecordDeleteEvent(DeleteEvent::kStarted);
     attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
-        .WithArgs(*report.report_id())
+        .WithArgs(report_id)
         .Then(base::BindOnce(
             [](base::OnceClosure done,
                base::WeakPtr<AttributionManagerImpl> manager,
-               AttributionReport::Id report_id, bool success) {
+               AttributionReport::EventLevelData::Id report_id, bool success) {
               std::move(done).Run();
               RecordDeleteEvent(success ? DeleteEvent::kSucceeded
                                         : DeleteEvent::kFailed);
@@ -534,7 +545,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                 manager->NotifyReportsChanged();
               }
             },
-            std::move(done), weak_factory_.GetWeakPtr(), *report.report_id()));
+            std::move(done), weak_factory_.GetWeakPtr(), report_id));
 
     base::UmaHistogramEnumeration(
         "Conversions.ReportSendOutcome",

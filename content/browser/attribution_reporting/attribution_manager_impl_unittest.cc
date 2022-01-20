@@ -64,6 +64,7 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
+using ::testing::VariantWith;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
@@ -639,19 +640,27 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
 
     EXPECT_CALL(
         observer,
-        OnReportDropped(
-            AllOf(Property(&CreateReportResult::dropped_report,
-                           Optional(Property(&AttributionReport::priority, 1))),
-                  Property(&CreateReportResult::status,
-                           CreateReportStatus::kSuccessDroppedLowerPriority))));
+        OnReportDropped(AllOf(
+            Property(
+                &CreateReportResult::dropped_report,
+                Optional(Property(
+                    &AttributionReport::data,
+                    VariantWith<AttributionReport::EventLevelData>(Field(
+                        &AttributionReport::EventLevelData::priority, 1))))),
+            Property(&CreateReportResult::status,
+                     CreateReportStatus::kSuccessDroppedLowerPriority))));
 
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(
         observer,
         OnReportDropped(AllOf(
-            Property(&CreateReportResult::dropped_report,
-                     Optional(Property(&AttributionReport::priority, -5))),
+            Property(
+                &CreateReportResult::dropped_report,
+                Optional(Property(
+                    &AttributionReport::data,
+                    VariantWith<AttributionReport::EventLevelData>(Field(
+                        &AttributionReport::EventLevelData::priority, -5))))),
             Property(&CreateReportResult::status,
                      CreateReportStatus::kPriorityTooLow))));
 
@@ -659,18 +668,26 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
 
     EXPECT_CALL(
         observer,
-        OnReportDropped(
-            AllOf(Property(&CreateReportResult::dropped_report,
-                           Optional(Property(&AttributionReport::priority, 2))),
-                  Property(&CreateReportResult::status,
-                           CreateReportStatus::kSuccessDroppedLowerPriority))));
+        OnReportDropped(AllOf(
+            Property(
+                &CreateReportResult::dropped_report,
+                Optional(Property(
+                    &AttributionReport::data,
+                    VariantWith<AttributionReport::EventLevelData>(Field(
+                        &AttributionReport::EventLevelData::priority, 2))))),
+            Property(&CreateReportResult::status,
+                     CreateReportStatus::kSuccessDroppedLowerPriority))));
     EXPECT_CALL(
         observer,
-        OnReportDropped(
-            AllOf(Property(&CreateReportResult::dropped_report,
-                           Optional(Property(&AttributionReport::priority, 3))),
-                  Property(&CreateReportResult::status,
-                           CreateReportStatus::kSuccessDroppedLowerPriority))));
+        OnReportDropped(AllOf(
+            Property(
+                &CreateReportResult::dropped_report,
+                Optional(Property(
+                    &AttributionReport::data,
+                    VariantWith<AttributionReport::EventLevelData>(Field(
+                        &AttributionReport::EventLevelData::priority, 3))))),
+            Property(&CreateReportResult::status,
+                     CreateReportStatus::kSuccessDroppedLowerPriority))));
   }
 
   attribution_manager_->HandleSource(
@@ -746,8 +763,10 @@ TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   EXPECT_THAT(reports, SizeIs(1));
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
-  attribution_manager_->SendReportsForWebUI({*reports.front().report_id()},
-                                            base::DoNothing());
+  attribution_manager_->SendReportsForWebUI(
+      {*(absl::get<AttributionReport::EventLevelData>(reports.front().data())
+             .id)},
+      base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 }
@@ -765,7 +784,10 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   attribution_manager_->SendReportsForWebUI(
-      {*reports.front().report_id(), *reports.back().report_id()},
+      {*(absl::get<AttributionReport::EventLevelData>(reports.front().data())
+             .id),
+       *(absl::get<AttributionReport::EventLevelData>(reports.back().data())
+             .id)},
       base::BindLambdaForTesting([&]() { callback_calls++; }));
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(network_sender_->calls(), SizeIs(2));
@@ -1173,8 +1195,8 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  attribution_manager_->SendReportsForWebUI({AttributionReport::Id(1)},
-                                            base::DoNothing());
+  attribution_manager_->SendReportsForWebUI(
+      {AttributionReport::EventLevelData::Id(1)}, base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 

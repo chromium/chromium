@@ -25,6 +25,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -81,11 +82,14 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
     const AttributionReport& report,
     int http_response_code,
     mojom::WebUIAttributionReport::Status status) {
+  const auto* data =
+      absl::get_if<AttributionReport::EventLevelData>(&report.data());
+  DCHECK(data);
   return mojom::WebUIAttributionReport::New(
-      report.report_id(), report.source().ConversionDestination().Serialize(),
+      data->id, report.source().ConversionDestination().Serialize(),
       report.ReportURL(),
       /*trigger_time=*/report.trigger_time().ToJsTime(),
-      /*report_time=*/report.report_time().ToJsTime(), report.priority(),
+      /*report_time=*/report.report_time().ToJsTime(), data->priority,
       report.ReportBody(/*pretty_print=*/true),
       /*attributed_truthfully=*/report.source().attribution_logic() ==
           StorableSource::AttributionLogic::kTruthfully,
@@ -156,7 +160,7 @@ void AttributionInternalsHandlerImpl::GetReports(
 }
 
 void AttributionInternalsHandlerImpl::SendReports(
-    const std::vector<AttributionReport::Id>& ids,
+    const std::vector<AttributionReport::EventLevelData::Id>& ids,
     mojom::AttributionInternalsHandler::SendReportsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {

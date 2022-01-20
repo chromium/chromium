@@ -379,6 +379,8 @@ source_set("browser") {
     "aggregation_service/public_key.h",
     "aggregation_service/public_key_parsing_utils.cc",
     "aggregation_service/public_key_parsing_utils.h",
+    "attribution_reporting/aggregatable_attribution.cc",
+    "attribution_reporting/aggregatable_attribution.h",
     "attribution_reporting/attribution_host.cc",
     "attribution_reporting/attribution_host.h",
     "attribution_reporting/attribution_host_utils.cc",

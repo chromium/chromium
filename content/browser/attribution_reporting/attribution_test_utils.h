@@ -34,7 +34,10 @@
 
 namespace content {
 
+class HistogramContribution;
 class StorableTrigger;
+
+struct AggregatableAttribution;
 
 class MockAttributionReportingContentBrowserClient
     : public TestContentBrowserClient {
@@ -172,7 +175,7 @@ class MockAttributionManager : public AttributionManager {
 
   MOCK_METHOD(void,
               SendReportsForWebUI,
-              (const std::vector<AttributionReport::Id>& ids,
+              (const std::vector<AttributionReport::EventLevelData::Id>& ids,
                base::OnceClosure done),
               (override));
 
@@ -305,7 +308,8 @@ class ReportBuilder {
 
   ReportBuilder& SetExternalReportId(base::GUID external_report_id);
 
-  ReportBuilder& SetReportId(absl::optional<AttributionReport::Id> id);
+  ReportBuilder& SetReportId(
+      absl::optional<AttributionReport::EventLevelData::Id> id);
 
   AttributionReport Build() const;
 
@@ -316,10 +320,20 @@ class ReportBuilder {
   base::Time report_time_;
   int64_t priority_ = 0;
   base::GUID external_report_id_;
-  absl::optional<AttributionReport::Id> report_id_;
+  absl::optional<AttributionReport::EventLevelData::Id> report_id_;
 };
 
 bool operator==(const StorableSource& a, const StorableSource& b);
+
+bool operator==(const HistogramContribution& a, const HistogramContribution& b);
+
+bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b);
+
+bool operator==(const AttributionReport::EventLevelData& a,
+                const AttributionReport::EventLevelData& b);
+
+bool operator==(const AttributionReport::AggregateContributionData& a,
+                const AttributionReport::AggregateContributionData& b);
 
 bool operator==(const AttributionReport& a, const AttributionReport& b);
 
@@ -343,6 +357,19 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion);
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& impression);
+
+std::ostream& operator<<(std::ostream& out,
+                         const HistogramContribution& contribution);
+
+std::ostream& operator<<(std::ostream& out,
+                         const AggregatableAttribution& aggregate_attribution);
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionReport::EventLevelData& data);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionReport::AggregateContributionData& data);
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
 
