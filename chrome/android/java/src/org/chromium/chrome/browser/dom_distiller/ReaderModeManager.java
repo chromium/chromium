@@ -144,6 +144,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** Whether the messages UI was requested for a navigation. */
     private boolean mMessageRequestedForNavigation;
 
+    /** Whether the message ui is being shown or has already been shown. */
+    private boolean mMessageShown;
+
     ReaderModeManager(Tab tab, Supplier<MessageDispatcher> messageDispatcherSupplier) {
         super();
         mTab = tab;
@@ -435,10 +438,12 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 || mIsDismissed) {
             return;
         }
-
         MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
         if (messageDispatcher != null && DomDistillerTabUtils.useMessagesForReaderModePrompt()) {
-            if (!mMessageRequestedForNavigation) showReaderModeMessage(messageDispatcher);
+            if (!mMessageRequestedForNavigation && !mMessageShown) {
+                showReaderModeMessage(messageDispatcher);
+                mMessageShown = true;
+            }
             mMessageRequestedForNavigation = true;
         } else {
             ReaderModeInfoBar.showReaderModeInfoBar(mTab);
