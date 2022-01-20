@@ -62,12 +62,14 @@ enum Milestone {
   kM99 = 99,
   kM100 = 100,
   kM101 = 101,
+  kM102 = 102,
+  kM103 = 103,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
 base::Time::Exploded MilestoneDate(Milestone milestone) {
   // These are the Estimated Stable Dates:
-  // https://www.chromium.org/developers/calendar
+  // https://chromiumdash.appspot.com/schedule
   // All dates except for kUnknown are at 04:00:00 GMT.
   switch (milestone) {
     case kUnknown:
@@ -142,6 +144,10 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
       return {2022, 3, 0, 29, 4};
     case kM101:
       return {2022, 4, 0, 26, 4};
+    case kM102:
+      return {2022, 5, 0, 24, 4};
+    case kM103:
+      return {2022, 6, 0, 21, 4};
   }
 
   NOTREACHED();
@@ -408,6 +414,13 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "a cross-origin iframe. You should consider requesting permission "
           "from a top-level frame or opening a new window instead.",
           "6451284559265792");
+
+    case WebFeature::kBatteryStatusInsecureOrigin:
+      return DeprecationInfo::WithFeatureAndChromeStatusID(
+          "BatteryStatusInsecureOrigin", Milestone::kM103,
+          "Using the Battery Status API (e.g. navigator.getBattery()) in "
+          "insecure origins like HTTP",
+          "4878376799043584");
 
     case WebFeature::kCSSSelectorInternalMediaControlsOverlayCastButton:
       return DeprecationInfo::WithDetailsAndChromeStatusID(

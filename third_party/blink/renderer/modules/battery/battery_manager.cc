@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -27,8 +28,10 @@ ScriptPromise BatteryManager::getBattery(ScriptState* script_state,
   // Check to see if this request would be blocked according to the Battery
   // Status API specification.
   LocalDOMWindow* window = navigator.DomWindow();
-  if (!window->IsSecureContext())
-    UseCounter::Count(window, WebFeature::kBatteryStatusInsecureOrigin);
+  if (!window->IsSecureContext()) {
+    Deprecation::CountDeprecation(window,
+                                  WebFeature::kBatteryStatusInsecureOrigin);
+  }
   window->GetFrame()->CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
       WebFeature::kBatteryStatusCrossOrigin,
       WebFeature::kBatteryStatusSameOriginABA);
