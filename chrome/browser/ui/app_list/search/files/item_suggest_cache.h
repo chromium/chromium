@@ -28,12 +28,15 @@ class ItemSuggestCache {
  public:
   // Information on a single file suggestion result.
   struct Result {
-    Result(const std::string& id, const std::string& title);
+    Result(const std::string& id,
+           const std::string& title,
+           const absl::optional<std::string>& prediction_reason);
     Result(const Result& other);
     ~Result();
 
     std::string id;
     std::string title;
+    absl::optional<std::string> prediction_reason;
   };
 
   // Information on all file suggestion results returned from an ItemSuggest

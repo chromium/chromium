@@ -48,11 +48,12 @@ constexpr char kValidJsonResponse[] = R"(
         {
           "itemId": "item id 2",
           "displayText": "display text 2",
-          "predictionReason": "unused field"
+          "predictionReason": "prediction reason 2"
         },
         {
           "itemId": "item id 3",
-          "displayText": "display text 3"
+          "displayText": "display text 3",
+          "predictionReason": "prediction reason 3"
         }
       ],
       "suggestionSessionId": "suggestion id 1"
@@ -79,21 +80,26 @@ class ItemSuggestCacheTest : public testing::Test {
 
   void ResultMatches(const ItemSuggestCache::Result& actual,
                      const std::string& id,
-                     const std::string& title) {
+                     const std::string& title,
+                     const absl::optional<std::string>& prediction_reason) {
     EXPECT_EQ(actual.id, id);
     EXPECT_EQ(actual.title, title);
+    EXPECT_EQ(actual.prediction_reason, prediction_reason);
   }
 
   void ResultsMatch(
       const absl::optional<ItemSuggestCache::Results>& actual,
       const std::string& suggestion_id,
-      const std::vector<std::pair<std::string, std::string>>& results) {
+      const std::vector<
+          std::tuple<std::string, std::string, absl::optional<std::string>>>&
+          results) {
     EXPECT_TRUE(actual.has_value());
 
     EXPECT_EQ(actual->suggestion_id, suggestion_id);
     ASSERT_EQ(actual->results.size(), results.size());
     for (int i = 0; i < results.size(); ++i) {
-      ResultMatches(actual->results[i], results[i].first, results[i].second);
+      ResultMatches(actual->results[i], std::get<0>(results[i]),
+                    std::get<1>(results[i]), std::get<2>(results[i]));
     }
   }
 
@@ -143,9 +149,9 @@ class ItemSuggestCacheTest : public testing::Test {
 TEST_F(ItemSuggestCacheTest, ConvertJsonSuccess) {
   const base::Value full = Parse(kValidJsonResponse);
   ResultsMatch(ItemSuggestCache::ConvertJsonForTest(&full), "suggestion id 1",
-               {{"item id 1", "display text 1"},
-                {"item id 2", "display text 2"},
-                {"item id 3", "display text 3"}});
+               {{"item id 1", "display text 1", absl::nullopt},
+                {"item id 2", "display text 2", "prediction reason 2"},
+                {"item id 3", "display text 3", "prediction reason 3"}});
 
   const base::Value empty_items = Parse(R"(
     {
@@ -464,12 +470,12 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSavesResults) {
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kResponseSizeHistogramName,
-                                       /* sample= */ 419,
+                                       /* sample= */ 477,
                                        /* expected_count= */ 1);
   ResultsMatch(itemSuggestCache->GetResults(), "suggestion id 1",
-               {{"item id 1", "display text 1"},
-                {"item id 2", "display text 2"},
-                {"item id 3", "display text 3"}});
+               {{"item id 1", "display text 1", absl::nullopt},
+                {"item id 2", "display text 2", "prediction reason 2"},
+                {"item id 3", "display text 3", "prediction reason 3"}});
   histogram_tester_.ExpectUniqueSample(kStatusHistogramName,
                                        ItemSuggestCache::Status::kOk, 1);
 }
@@ -497,7 +503,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSmallTimeBetweenUpdates) {
   itemSuggestCache->UpdateCache();
   task_environment_.RunUntilIdle();
   ResultsMatch(itemSuggestCache->GetResults(), "suggestion id 1",
-               {{"item id 1", "display text 1"}});
+               {{"item id 1", "display text 1", absl::nullopt}});
 
   task_environment_.AdvanceClock(base::Minutes(2));
 
@@ -518,7 +524,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSmallTimeBetweenUpdates) {
   // The first set of results are in the cache since the second update occurred
   // before the minimum time between updates.
   ResultsMatch(itemSuggestCache->GetResults(), "suggestion id 1",
-               {{"item id 1", "display text 1"}});
+               {{"item id 1", "display text 1", absl::nullopt}});
 }
 
 }  // namespace app_list

@@ -261,6 +261,7 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
 
   DCHECK(cache_results_);
   DCHECK_EQ(cache_results_->results.size(), paths->size());
+  const auto& cache_results = cache_results_->results;
 
   // Assign scores to results by simply using their position in the results
   // list. The order of results from the ItemSuggest API is significant:
@@ -280,11 +281,8 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
     double score = 1.0 - (item_index / total_items);
     ++item_index;
 
-    // TODO(crbug.com/1034842): Use |cache_results_| to attach the session id to
-    // the result.
-
-    provider_results.emplace_back(
-        MakeListResult(path_or_error->get_path(), score));
+    provider_results.emplace_back(MakeListResult(
+        path_or_error->get_path(), cache_results[i].prediction_reason, score));
     if (suggested_files_enabled_ && IsSuggestedContentEnabled(profile_)) {
       provider_results.emplace_back(
           MakeChipResult(path_or_error->get_path(), score));
@@ -309,11 +307,17 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
 
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const base::FilePath& filepath,
+    const absl::optional<std::string>& prediction_reason,
     const float relevance) {
-  return std::make_unique<FileResult>(
+  auto result = std::make_unique<FileResult>(
       kListSchema, ReparentToDriveMount(filepath, drive_service_),
       ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
       relevance, std::u16string(), FileResult::Type::kFile, profile_);
+  // If it exists, override the details text with the prediction reason in the
+  // productivity launcher.
+  if (prediction_reason && ash::features::IsProductivityLauncherEnabled())
+    result->SetDetails(base::UTF8ToUTF16(prediction_reason.value()));
+  return result;
 }
 
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(
