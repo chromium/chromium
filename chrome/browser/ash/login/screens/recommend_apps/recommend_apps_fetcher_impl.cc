@@ -505,28 +505,16 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   //
   // The response starts with a prefix ")]}'". This needs to be removed before
   // further parsing.
-  constexpr base::StringPiece json_xss_prevention_prefix(")]}'");
-  base::StringPiece response_body_json(*response_body);
+  const std::string json_xss_prevention_prefix = ")]}'";
+  std::string response_body_json = *response_body;
   if (base::StartsWith(response_body_json, json_xss_prevention_prefix))
-    response_body_json.remove_prefix(json_xss_prevention_prefix.length());
+    response_body_json =
+        response_body_json.substr(json_xss_prevention_prefix.length());
 
-  absl::optional<base::Value> output;
-  if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
-    output =
-        base::JSONReader::ReadAndReturnValueWithError(response_body_json).value;
-    if (!output.has_value()) {
-      delegate_->OnParseResponseError();
-      return;
-    }
-  } else {
-    output = ParseResponse(response_body_json);
-    if (!output.has_value()) {
-      RecordUmaResponseAppCount(0);
-      delegate_->OnParseResponseError();
-      return;
-    }
-  }
-  delegate_->OnLoadSuccess(std::move(output.value()));
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      response_body_json,
+      base::BindOnce(&RecommendAppsFetcherImpl::OnJsonParsed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RecommendAppsFetcherImpl::Start() {
@@ -542,31 +530,17 @@ void RecommendAppsFetcherImpl::Retry() {
 }
 
 absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
-    base::StringPiece response) {
+    const base::Value& parsed_json) {
   base::Value output(base::Value::Type::LIST);
-
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(response);
-
-  if (!parsed_json.value ||
-      (!parsed_json.value->is_list() && !parsed_json.value->is_dict())) {
-    LOG(ERROR) << "Error parsing response JSON: " << parsed_json.error_message;
-    RecordUmaResponseParseResult(
-        RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
-    return absl::nullopt;
-  }
 
   // If the response is a dictionary, it is an error message in the
   // following format:
   //   {"Error code":"error code","Error message":"Error message"}
-  if (parsed_json.value->is_dict()) {
+  if (parsed_json.is_dict()) {
     const base::Value* response_error_code_value =
-        parsed_json.value->FindKeyOfType("Error code",
-                                         base::Value::Type::STRING);
-
+        parsed_json.FindKeyOfType("Error code", base::Value::Type::STRING);
     if (!response_error_code_value) {
-      LOG(ERROR) << "Unable to find error code: response="
-                 << response.substr(0, 128);
+      LOG(ERROR) << "Unable to find error code";
       RecordUmaResponseParseResult(
           RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
       return absl::nullopt;
@@ -597,7 +571,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   // Otherwise, the response should return a list of apps.
-  base::Value::ConstListView app_list = parsed_json.value->GetList();
+  base::Value::ConstListView app_list = parsed_json.GetList();
   if (app_list.empty()) {
     DVLOG(1) << "No app in the response.";
     RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP);
@@ -650,6 +624,32 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   RecordUmaResponseAppCount(static_cast<int>(output.GetList().size()));
 
   return output;
+}
+
+void RecommendAppsFetcherImpl::OnJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
+    if (!result.value) {
+      delegate_->OnParseResponseError();
+      return;
+    }
+    delegate_->OnLoadSuccess(std::move(*result.value));
+    return;
+  }
+
+  if (!result.value || (!result.value->is_list() && !result.value->is_dict())) {
+    RecordUmaResponseParseResult(
+        RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
+    delegate_->OnParseResponseError();
+    return;
+  }
+  absl::optional<base::Value> output = ParseResponse(*result.value);
+  if (!output.has_value()) {
+    RecordUmaResponseAppCount(0);
+    delegate_->OnParseResponseError();
+    return;
+  }
+  delegate_->OnLoadSuccess(std::move(output.value()));
 }
 
 }  // namespace ash
