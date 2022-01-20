@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_PAGE_H_
 
 #include <string.h>
+
 #include <cstdint>
 #include <limits>
 #include <utility>
@@ -403,12 +404,15 @@ CommittedStateBitmapSize() {
   return bits::AlignUp(sizeof(AllocationStateMap), SystemPageSize());
 }
 
-// Returns the pointer to the state bitmap in the super page. It's the caller's
-// responsibility to ensure that the bitmaps even exist.
-ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(uintptr_t super_page) {
+// Returns the address/pointer to the state bitmap in the super page. It's the
+// caller's responsibility to ensure that the bitmaps even exist.
+ALWAYS_INLINE uintptr_t SuperPageStateBitmapAddr(uintptr_t super_page) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
-  return reinterpret_cast<AllocationStateMap*>(super_page +
-                                               PartitionPageSize());
+  return super_page + PartitionPageSize();
+}
+ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(uintptr_t super_page) {
+  return reinterpret_cast<AllocationStateMap*>(
+      SuperPageStateBitmapAddr(super_page));
 }
 
 ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,

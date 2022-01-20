@@ -1350,8 +1350,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::DecommitSystemPagesForData(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer timer{this};
-  DecommitSystemPages(reinterpret_cast<void*>(address), length,
-                      accessibility_disposition);
+  DecommitSystemPages(address, length, accessibility_disposition);
   DecreaseCommittedPages(length);
 }
 
@@ -1363,13 +1362,12 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer timer{this};
 
-  void* ptr = reinterpret_cast<void*>(address);
-  bool ok = TryRecommitSystemPages(ptr, length, PageReadWriteTagged,
+  bool ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
                                    accessibility_disposition);
   if (UNLIKELY(!ok)) {
     // Decommit some memory and retry. The alternative is crashing.
     DecommitEmptySlotSpans();
-    RecommitSystemPages(ptr, length, PageReadWriteTagged,
+    RecommitSystemPages(address, length, PageReadWriteTagged,
                         accessibility_disposition);
   }
 
@@ -1382,8 +1380,7 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer timer{this};
-  void* ptr = reinterpret_cast<void*>(address);
-  bool ok = TryRecommitSystemPages(ptr, length, PageReadWriteTagged,
+  bool ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
                                    accessibility_disposition);
 #if defined(PA_COMMIT_CHARGE_IS_LIMITED)
   if (UNLIKELY(!ok)) {
@@ -1391,7 +1388,7 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
       ::partition_alloc::ScopedGuard guard(lock_);
       DecommitEmptySlotSpans();
     }
-    ok = TryRecommitSystemPages(ptr, length, PageReadWriteTagged,
+    ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
                                 accessibility_disposition);
   }
 #endif  // defined(PA_COMMIT_CHARGE_IS_LIMITED)

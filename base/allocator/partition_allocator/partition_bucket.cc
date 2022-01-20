@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/partition_bucket.h"
+
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
@@ -272,7 +273,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     {
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(
-          reinterpret_cast<void*>(reservation_start + SystemPageSize()),
+          reservation_start + SystemPageSize(),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
           // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is
           // used, allocate 2 SystemPages, one for SuperPage metadata and the
@@ -329,8 +330,9 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // first and the last bytes are on the same system page, i.e. within the
     // super page metadata region.
     PA_DCHECK(
-        bits::AlignDown(reinterpret_cast<char*>(metadata), SystemPageSize()) ==
-        bits::AlignDown(reinterpret_cast<char*>(metadata) +
+        bits::AlignDown(reinterpret_cast<uintptr_t>(metadata),
+                        SystemPageSize()) ==
+        bits::AlignDown(reinterpret_cast<uintptr_t>(metadata) +
                             sizeof(PartitionDirectMapMetadata<thread_safe>) - 1,
                         SystemPageSize()));
     PA_DCHECK(page == &metadata->page);
@@ -367,9 +369,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // Note that we didn't check above, because if we cannot even commit a
     // single page, then this is likely hopeless anyway, and we will crash very
     // soon.
-    const bool ok = root->TryRecommitSystemPagesForData(
-        reinterpret_cast<uintptr_t>(slot_start), slot_size,
-        PageUpdatePermissions);
+    const bool ok = root->TryRecommitSystemPagesForData(slot_start, slot_size,
+                                                        PageUpdatePermissions);
     if (!ok) {
       if (!return_null) {
         PartitionOutOfMemoryCommitFailure(root, slot_size);
@@ -378,9 +379,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       {
         ScopedSyscallTimer timer{root};
 #if !defined(PA_HAS_64_BITS_POINTERS)
-        AddressPoolManager::GetInstance()->MarkUnused(
-            pool, reinterpret_cast<uintptr_t>(reservation_start),
-            reservation_size);
+        AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
+                                                      reservation_size);
 #endif
         AddressPoolManager::GetInstance()->UnreserveAndDecommit(
             pool, reservation_start, reservation_size);
@@ -562,9 +562,8 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
     PA_DEBUG_DATA_ON_STACK("spansize", slot_span_reservation_size);
     PA_DEBUG_DATA_ON_STACK("spancmt", slot_span_committed_size);
 
-    root->RecommitSystemPagesForData(
-        reinterpret_cast<uintptr_t>(slot_span_start), slot_span_committed_size,
-        PageUpdatePermissions);
+    root->RecommitSystemPagesForData(slot_span_start, slot_span_committed_size,
+                                     PageUpdatePermissions);
   }
 
   PA_CHECK(get_slots_per_span() <=
@@ -606,8 +605,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
 
   root->next_super_page = super_page + kSuperPageSize;
   uintptr_t state_bitmap = super_page + PartitionPageSize();
-  PA_DCHECK(reinterpret_cast<uintptr_t>(SuperPageStateBitmap(super_page)) ==
-            state_bitmap);
+  PA_DCHECK(SuperPageStateBitmapAddr(super_page) == state_bitmap);
   const size_t state_bitmap_reservation_size =
       root->IsQuarantineAllowed() ? ReservedStateBitmapSize() : 0;
   const size_t state_bitmap_size_to_commit =
@@ -628,7 +626,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   {
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(
-        reinterpret_cast<void*>(super_page + SystemPageSize()),
+        super_page + SystemPageSize(),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
         // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
         // allocate 2 SystemPages, one for SuperPage metadata and the other for
@@ -692,9 +690,8 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   if (root->IsQuarantineEnabled()) {
     {
       ScopedSyscallTimer timer{root};
-      RecommitSystemPages(reinterpret_cast<void*>(state_bitmap),
-                          state_bitmap_size_to_commit, PageReadWrite,
-                          PageUpdatePermissions);
+      RecommitSystemPages(state_bitmap, state_bitmap_size_to_commit,
+                          PageReadWrite, PageUpdatePermissions);
     }
     PCScan::RegisterNewSuperPage(root, super_page);
   }
@@ -770,8 +767,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // Windows anyway).
   if (kUseLazyCommit) {
     // TODO(lizeb): Handle commit failure.
-    root->RecommitSystemPagesForData(reinterpret_cast<uintptr_t>(commit_start),
-                                     commit_end - commit_start,
+    root->RecommitSystemPagesForData(commit_start, commit_end - commit_start,
                                      PageUpdatePermissions);
   }
 

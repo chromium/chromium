@@ -4,25 +4,24 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_APPLE)
-#include <sys/mman.h>
-#endif
-
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_APPLE)
+#include <sys/mman.h>
+#endif
 
 namespace base {
 namespace internal {
@@ -48,7 +47,7 @@ void DecommitPages(uintptr_t address, size_t size) {
   // Callers rely on the pages being zero-initialized when recommitting them.
   // |DecommitSystemPages| doesn't guarantee this on all operating systems, in
   // particular on macOS, but |DecommitAndZeroSystemPages| does.
-  DecommitAndZeroSystemPages(reinterpret_cast<void*>(address), size);
+  DecommitAndZeroSystemPages(address, size);
 }
 
 }  // namespace
@@ -303,9 +302,8 @@ uintptr_t AddressPoolManager::Reserve(pool_handle handle,
                                       uintptr_t requested_address,
                                       size_t length) {
   PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
-  uintptr_t address = reinterpret_cast<uintptr_t>(
-      AllocPages(reinterpret_cast<void*>(requested_address), length,
-                 kSuperPageSize, PageInaccessible, PageTag::kPartitionAlloc));
+  uintptr_t address = AllocPages(requested_address, length, kSuperPageSize,
+                                 PageInaccessible, PageTag::kPartitionAlloc);
   return address;
 }
 
@@ -314,7 +312,7 @@ void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
                                               size_t length) {
   PA_DCHECK(!(address & kSuperPageOffsetMask));
   PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
-  FreePages(reinterpret_cast<void*>(address), length);
+  FreePages(address, length);
 }
 
 void AddressPoolManager::MarkUsed(pool_handle handle,

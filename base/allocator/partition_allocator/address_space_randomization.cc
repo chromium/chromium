@@ -4,6 +4,8 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 
+#include <cstdint>
+
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/random.h"
@@ -18,7 +20,7 @@
 
 namespace base {
 
-void* GetRandomPageBase() {
+uintptr_t GetRandomPageBase() {
   uintptr_t random = static_cast<uintptr_t>(RandomValue());
 
 #if defined(ARCH_CPU_64_BITS)
@@ -55,14 +57,14 @@ void* GetRandomPageBase() {
   if (is_wow64 == -1 && !IsWow64Process(GetCurrentProcess(), &is_wow64))
     is_wow64 = FALSE;
   if (!is_wow64)
-    return nullptr;
+    return 0;
 #endif  // BUILDFLAG(IS_WIN)
   random &= internal::ASLRMask();
   random += internal::ASLROffset();
 #endif  // defined(ARCH_CPU_32_BITS)
 
   PA_DCHECK(!(random & PageAllocationGranularityOffsetMask()));
-  return reinterpret_cast<void*>(random);
+  return random;
 }
 
 }  // namespace base

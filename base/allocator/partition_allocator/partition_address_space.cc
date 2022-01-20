@@ -10,7 +10,6 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
@@ -74,9 +73,9 @@ void PartitionAddressSpace::Init() {
   if (IsInitialized())
     return;
 
-  setup_.regular_pool_base_address_ = reinterpret_cast<uintptr_t>(
-      AllocPages(nullptr, kRegularPoolSize, kRegularPoolSize,
-                 base::PageInaccessible, PageTag::kPartitionAlloc));
+  setup_.regular_pool_base_address_ =
+      AllocPages(kRegularPoolSize, kRegularPoolSize, base::PageInaccessible,
+                 PageTag::kPartitionAlloc);
   if (!setup_.regular_pool_base_address_)
     HandleGigaCageAllocFailure();
   PA_DCHECK(!(setup_.regular_pool_base_address_ & (kRegularPoolSize - 1)));
@@ -95,14 +94,13 @@ void PartitionAddressSpace::Init() {
   // is a valid pointer, and having a "forbidden zone" before the BRP pool
   // prevents such a pointer from "sneaking into" the pool.
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
-  void* ptr = AllocPagesWithAlignOffset(
-      nullptr, kBRPPoolSize + kForbiddenZoneSize, kBRPPoolSize,
+  uintptr_t base_address = AllocPagesWithAlignOffset(
+      0, kBRPPoolSize + kForbiddenZoneSize, kBRPPoolSize,
       kBRPPoolSize - kForbiddenZoneSize, base::PageInaccessible,
       PageTag::kPartitionAlloc);
-  if (!ptr)
+  if (!base_address)
     HandleGigaCageAllocFailure();
-  setup_.brp_pool_base_address_ =
-      reinterpret_cast<uintptr_t>(ptr) + kForbiddenZoneSize;
+  setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
   PA_DCHECK(!(setup_.brp_pool_base_address_ & (kBRPPoolSize - 1)));
   setup_.brp_pool_ = internal::AddressPoolManager::GetInstance()->Add(
       setup_.brp_pool_base_address_, kBRPPoolSize);
@@ -147,13 +145,11 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
 }
 
 void PartitionAddressSpace::UninitForTesting() {
-  FreePages(reinterpret_cast<void*>(setup_.regular_pool_base_address_),
-            kRegularPoolSize);
+  FreePages(setup_.regular_pool_base_address_, kRegularPoolSize);
   // For BRP pool, the allocation region includes a "forbidden zone" before the
   // pool.
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
-  FreePages(reinterpret_cast<void*>(setup_.brp_pool_base_address_ -
-                                    kForbiddenZoneSize),
+  FreePages(setup_.brp_pool_base_address_ - kForbiddenZoneSize,
             kBRPPoolSize + kForbiddenZoneSize);
   // Do not free pages for the configurable pool, because its memory is owned
   // by someone else, but deinitialize it nonetheless.

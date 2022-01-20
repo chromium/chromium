@@ -4,9 +4,10 @@
 
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 
+#include <cstdint>
+
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -19,12 +20,11 @@ using TestBitmap = StateBitmap<kSuperPageSize, kSuperPageSize, kAlignment>;
 class PageWithBitmap final {
  public:
   PageWithBitmap()
-      : base_(base::AllocPages(nullptr,
-                               kSuperPageSize,
+      : base_(base::AllocPages(kSuperPageSize,
                                kSuperPageAlignment,
                                PageReadWrite,
                                PageTag::kPartitionAlloc)),
-        bitmap_(new (base_) TestBitmap) {}
+        bitmap_(new (reinterpret_cast<void*>(base_)) TestBitmap) {}
 
   PageWithBitmap(const PageWithBitmap&) = delete;
   PageWithBitmap& operator=(const PageWithBitmap&) = delete;
@@ -33,10 +33,10 @@ class PageWithBitmap final {
 
   TestBitmap& bitmap() const { return *bitmap_; }
 
-  void* base() const { return base_; }
+  void* base() const { return reinterpret_cast<void*>(base_); }
   size_t size() const { return kSuperPageSize; }
 
-  void* base_;
+  uintptr_t base_;
   TestBitmap* bitmap_;
 };
 
@@ -154,8 +154,7 @@ TEST_F(PartitionAllocStateBitmapTest, CountAllocated) {
 }
 
 TEST_F(PartitionAllocStateBitmapTest, StateTransititions) {
-  for (auto i : {static_cast<uintptr_t>(0), static_cast<uintptr_t>(1),
-                 LastIndex() - 1, LastIndex()}) {
+  for (auto i : {uintptr_t{0}, uintptr_t{1}, LastIndex() - 1, LastIndex()}) {
     AssertFreed(i);
 
     AllocateObject(i);

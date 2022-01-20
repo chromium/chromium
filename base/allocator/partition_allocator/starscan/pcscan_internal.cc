@@ -284,9 +284,9 @@ SimdSupport DetectSimdSupport() {
 
 void CommitCardTable() {
 #if PA_STARSCAN_USE_CARD_TABLE
-  RecommitSystemPages(
-      reinterpret_cast<void*>(PartitionAddressSpace::RegularPoolBase()),
-      sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
+  RecommitSystemPages(PartitionAddressSpace::RegularPoolBase(),
+                      sizeof(QuarantineCardTable), PageReadWrite,
+                      PageUpdatePermissions);
 #endif
 }
 
@@ -992,8 +992,7 @@ void UnmarkInCardTable(uintptr_t object,
       const uintptr_t discard_begin = bits::AlignUp(object, SystemPageSize());
       const intptr_t discard_size = discard_end - discard_begin;
       if (discard_size > 0) {
-        DiscardSystemPages(reinterpret_cast<void*>(discard_begin),
-                           discard_size);
+        DiscardSystemPages(discard_begin, discard_size);
         stat.discarded_bytes += discard_size;
       }
     }
@@ -1417,7 +1416,7 @@ PCScanInternal::SuperPages GetSuperPagesAndCommitStateBitmaps(
       const volatile char* metadata = reinterpret_cast<char*>(
           PartitionSuperPageToMetadataArea<ThreadSafe>(super_page));
       *metadata;
-      RecommitSystemPages(SuperPageStateBitmap(super_page),
+      RecommitSystemPages(SuperPageStateBitmapAddr(super_page),
                           state_bitmap_size_to_commit, PageReadWrite,
                           PageUpdatePermissions);
       super_pages.push_back(super_page);

@@ -1655,15 +1655,13 @@ TEST_F(PartitionAllocTest, MappingCollision) {
   uintptr_t super_page = slot_spart_start - PartitionPageSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
-  void* map1 = AllocPages(
-      reinterpret_cast<void*>(super_page - PageAllocationGranularity()),
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageInaccessible, PageTag::kPartitionAlloc);
+  uintptr_t map1 = AllocPages(
+      super_page - PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAllocationGranularity(), PageInaccessible, PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
-  void* map2 =
-      AllocPages(reinterpret_cast<void*>(super_page + kSuperPageSize),
-                 PageAllocationGranularity(), PageAllocationGranularity(),
-                 PageInaccessible, PageTag::kPartitionAlloc);
+  uintptr_t map2 = AllocPages(
+      super_page + kSuperPageSize, PageAllocationGranularity(),
+      PageAllocationGranularity(), PageInaccessible, PageTag::kPartitionAlloc);
   EXPECT_TRUE(map2);
 
   for (i = 0; i < num_partition_pages_needed; ++i)
@@ -1678,14 +1676,13 @@ TEST_F(PartitionAllocTest, MappingCollision) {
   super_page -= PartitionPageSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
-  map1 = AllocPages(
-      reinterpret_cast<void*>(super_page - PageAllocationGranularity()),
-      PageAllocationGranularity(), PageAllocationGranularity(),
-      PageReadWriteTagged, PageTag::kPartitionAlloc);
-  EXPECT_TRUE(map1);
-  map2 = AllocPages(reinterpret_cast<void*>(super_page + kSuperPageSize),
+  map1 = AllocPages(super_page - PageAllocationGranularity(),
                     PageAllocationGranularity(), PageAllocationGranularity(),
                     PageReadWriteTagged, PageTag::kPartitionAlloc);
+  EXPECT_TRUE(map1);
+  map2 = AllocPages(super_page + kSuperPageSize, PageAllocationGranularity(),
+                    PageAllocationGranularity(), PageReadWriteTagged,
+                    PageTag::kPartitionAlloc);
   EXPECT_TRUE(map2);
   EXPECT_TRUE(TrySetSystemPagesAccess(map1, PageAllocationGranularity(),
                                       PageInaccessible));
@@ -2959,12 +2956,9 @@ TEST_F(PartitionAllocTest, FundamentalAlignment) {
     void* ptr2 = allocator.root()->Alloc(size, "");
     void* ptr3 = allocator.root()->Alloc(size, "");
 
-    EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr) % fundamental_alignment,
-              static_cast<uintptr_t>(0));
-    EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr2) % fundamental_alignment,
-              static_cast<uintptr_t>(0));
-    EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr3) % fundamental_alignment,
-              static_cast<uintptr_t>(0));
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr) % fundamental_alignment, 0u);
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr2) % fundamental_alignment, 0u);
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr3) % fundamental_alignment, 0u);
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
     // The capacity(C) is slot size - kExtraAllocSize.
@@ -2976,12 +2970,11 @@ TEST_F(PartitionAllocTest, FundamentalAlignment) {
     // == (kAlignment - kInSlotRefCountBufferSize) % kAlignment.
     EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr) %
                   fundamental_alignment,
-              static_cast<uintptr_t>(fundamental_alignment -
-                                     kInSlotRefCountBufferSize));
+              fundamental_alignment - kInSlotRefCountBufferSize);
 #else
     EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr) %
                   fundamental_alignment,
-              static_cast<uintptr_t>(0));
+              0u);
 #endif
 
     allocator.root()->Free(ptr);
@@ -3751,10 +3744,9 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
        pool_size /= 2) {
     DCHECK(bits::IsPowerOfTwo(pool_size));
     EXPECT_FALSE(IsConfigurablePoolAvailable());
-    void* pool_memory = AllocPages(nullptr, pool_size, pool_size,
-                                   PageInaccessible, PageTag::kPartitionAlloc);
-    EXPECT_NE(nullptr, pool_memory);
-    uintptr_t pool_base = reinterpret_cast<uintptr_t>(pool_memory);
+    uintptr_t pool_base = AllocPages(pool_size, pool_size, PageInaccessible,
+                                     PageTag::kPartitionAlloc);
+    EXPECT_NE(0u, pool_base);
     PartitionAddressSpace::InitConfigurablePool(pool_base, pool_size);
 
     EXPECT_TRUE(IsConfigurablePoolAvailable());
@@ -3782,7 +3774,7 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
     }
 
     PartitionAddressSpace::UninitConfigurablePoolForTesting();
-    FreePages(pool_memory, pool_size);
+    FreePages(pool_base, pool_size);
   }
 
 #endif  // defined(ARCH_CPU_64_BITS)

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
+
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
 #include "build/build_config.h"
@@ -30,16 +30,16 @@ class PartitionAllocAddressPoolManagerTest : public testing::Test {
 
   void SetUp() override {
     manager_ = std::make_unique<AddressPoolManagerForTesting>();
-    base_ptr_ = AllocPages(nullptr, kPoolSize, kSuperPageSize,
-                           base::PageInaccessible, PageTag::kPartitionAlloc);
-    base_address_ = reinterpret_cast<uintptr_t>(base_ptr_);
+    base_address_ =
+        AllocPages(kPoolSize, kSuperPageSize, base::PageInaccessible,
+                   PageTag::kPartitionAlloc);
     ASSERT_TRUE(base_address_);
     pool_ = manager_->Add(base_address_, kPoolSize);
   }
 
   void TearDown() override {
     manager_->Remove(pool_);
-    FreePages(base_ptr_, kPoolSize);
+    FreePages(base_address_, kPoolSize);
     manager_.reset();
   }
 
@@ -49,7 +49,6 @@ class PartitionAllocAddressPoolManagerTest : public testing::Test {
   static constexpr size_t kPoolSize = kSuperPageSize * kPageCnt;
 
   std::unique_ptr<AddressPoolManagerForTesting> manager_;
-  void* base_ptr_;
   uintptr_t base_address_;
   pool_handle pool_;
 };
@@ -196,23 +195,21 @@ TEST_F(PartitionAllocAddressPoolManagerTest, DecommittedDataIsErased) {
   uintptr_t address =
       GetAddressPoolManager()->Reserve(pool_, 0, kSuperPageSize);
   ASSERT_TRUE(address);
-  void* ptr = reinterpret_cast<void*>(address);
-  RecommitSystemPages(ptr, kSuperPageSize, PageReadWrite,
+  RecommitSystemPages(address, kSuperPageSize, PageReadWrite,
                       PageUpdatePermissions);
 
-  memset(ptr, 42, kSuperPageSize);
+  memset(reinterpret_cast<void*>(address), 42, kSuperPageSize);
   GetAddressPoolManager()->UnreserveAndDecommit(pool_, address, kSuperPageSize);
 
   uintptr_t address2 =
       GetAddressPoolManager()->Reserve(pool_, 0, kSuperPageSize);
   ASSERT_EQ(address, address2);
-  uint8_t* ptr2 = reinterpret_cast<uint8_t*>(address2);
-  RecommitSystemPages(ptr2, kSuperPageSize, PageReadWrite,
+  RecommitSystemPages(address2, kSuperPageSize, PageReadWrite,
                       PageUpdatePermissions);
 
   uint32_t sum = 0;
   for (size_t i = 0; i < kSuperPageSize; i++) {
-    sum += ptr2[i];
+    sum += reinterpret_cast<uint8_t*>(address2)[i];
   }
   EXPECT_EQ(0u, sum) << sum / 42 << " bytes were not zeroed";
 

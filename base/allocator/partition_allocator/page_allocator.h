@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <cstddef>
+#include <cstdint>
 
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/base_export.h"
@@ -67,8 +68,8 @@ BASE_EXPORT uintptr_t NextAlignedWithOffset(uintptr_t ptr,
 // |PageAllocationGranularity()|. |length| and |align| must be non-zero.
 // |align_offset| must be less than |align|. |align| must be a power of two.
 //
-// If |address| is null, then a suitable and randomized address will be chosen
-// automatically.
+// If |address| is 0/nullptr, then a suitable and randomized address will be
+// chosen automatically.
 //
 // |accessibility| controls the permission of the allocated pages.
 // PageInaccessible means uncommitted.
@@ -76,19 +77,28 @@ BASE_EXPORT uintptr_t NextAlignedWithOffset(uintptr_t ptr,
 // |page_tag| is used on some platforms to identify the source of the
 // allocation. Use PageTag::kChromium as a catch-all category.
 //
-// This call will return null if the allocation cannot be satisfied.
+// This call will return 0/nullptr if the allocation cannot be satisfied.
+BASE_EXPORT uintptr_t AllocPages(size_t length,
+                                 size_t align,
+                                 PageAccessibilityConfiguration accessibility,
+                                 PageTag page_tag);
+BASE_EXPORT uintptr_t AllocPages(uintptr_t address,
+                                 size_t length,
+                                 size_t align,
+                                 PageAccessibilityConfiguration accessibility,
+                                 PageTag page_tag);
 BASE_EXPORT void* AllocPages(void* address,
                              size_t length,
                              size_t align,
                              PageAccessibilityConfiguration accessibility,
                              PageTag page_tag);
-BASE_EXPORT void* AllocPagesWithAlignOffset(
-    void* address,
-    size_t length,
-    size_t align,
-    size_t align_offset,
-    PageAccessibilityConfiguration page_accessibility,
-    PageTag page_tag);
+BASE_EXPORT uintptr_t
+AllocPagesWithAlignOffset(uintptr_t address,
+                          size_t length,
+                          size_t align,
+                          size_t align_offset,
+                          PageAccessibilityConfiguration page_accessibility,
+                          PageTag page_tag);
 
 // Free one or more pages starting at |address| and continuing for |length|
 // bytes.
@@ -96,6 +106,7 @@ BASE_EXPORT void* AllocPagesWithAlignOffset(
 // |address| and |length| must match a previous call to |AllocPages|. Therefore,
 // |address| must be aligned to |PageAllocationGranularity()| bytes, and
 // |length| must be a multiple of |PageAllocationGranularity()|.
+BASE_EXPORT void FreePages(uintptr_t address, size_t length);
 BASE_EXPORT void FreePages(void* address, size_t length);
 
 // Mark one or more system pages, starting at |address| with the given
@@ -104,6 +115,10 @@ BASE_EXPORT void FreePages(void* address, size_t length);
 //
 // Returns true if the permission change succeeded. In most cases you must
 // |CHECK| the result.
+[[nodiscard]] BASE_EXPORT bool TrySetSystemPagesAccess(
+    uintptr_t address,
+    size_t length,
+    PageAccessibilityConfiguration page_accessibility);
 [[nodiscard]] BASE_EXPORT bool TrySetSystemPagesAccess(
     void* address,
     size_t length,
@@ -114,6 +129,10 @@ BASE_EXPORT void FreePages(void* address, size_t length);
 // bytes.
 //
 // Performs a CHECK that the operation succeeds.
+BASE_EXPORT void SetSystemPagesAccess(
+    uintptr_t address,
+    size_t length,
+    PageAccessibilityConfiguration page_accessibility);
 BASE_EXPORT void SetSystemPagesAccess(
     void* address,
     size_t length,
@@ -152,6 +171,10 @@ BASE_EXPORT void SetSystemPagesAccess(
 //
 // This API will crash if the operation cannot be performed.
 BASE_EXPORT void DecommitSystemPages(
+    uintptr_t address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition);
+BASE_EXPORT void DecommitSystemPages(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition);
@@ -165,6 +188,7 @@ BASE_EXPORT void DecommitSystemPages(
 // setting them to PageInaccessible).
 //
 // This API will crash if the operation cannot be performed.
+BASE_EXPORT void DecommitAndZeroSystemPages(uintptr_t address, size_t length);
 BASE_EXPORT void DecommitAndZeroSystemPages(void* address, size_t length);
 
 // Whether decommitted memory is guaranteed to be zeroed when it is
@@ -194,14 +218,14 @@ constexpr BASE_EXPORT bool DecommittedMemoryIsAlwaysZeroed() {
 //
 // This API will crash if the operation cannot be performed.
 BASE_EXPORT void RecommitSystemPages(
-    void* address,
+    uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration page_accessibility,
     PageAccessibilityDisposition accessibility_disposition);
 
 // Like RecommitSystemPages(), but returns false instead of crashing.
 [[nodiscard]] BASE_EXPORT bool TryRecommitSystemPages(
-    void* address,
+    uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration page_accessibility,
     PageAccessibilityDisposition accessibility_disposition);
@@ -227,6 +251,7 @@ BASE_EXPORT void RecommitSystemPages(
 // that the page is required again. Once written to, the content of the page is
 // guaranteed stable once more. After being written to, the page content may be
 // based on the original page content, or a page of zeroes.
+BASE_EXPORT void DiscardSystemPages(uintptr_t address, size_t length);
 BASE_EXPORT void DiscardSystemPages(void* address, size_t length);
 
 // Rounds up |address| to the next multiple of |SystemPageSize()|. Returns

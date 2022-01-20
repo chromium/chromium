@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 
+#include <cstdint>
 #include <vector>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -48,7 +49,7 @@ uintptr_t GetMask() {
 const size_t kSamples = 100;
 
 uintptr_t GetAddressBits() {
-  return reinterpret_cast<uintptr_t>(base::GetRandomPageBase());
+  return base::GetRandomPageBase();
 }
 
 uintptr_t GetRandomBits() {
@@ -63,10 +64,10 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, DisabledASLR) {
   if (!mask) {
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
     // ASLR should be turned off on 32-bit Windows.
-    EXPECT_EQ(nullptr, base::GetRandomPageBase());
+    EXPECT_EQ(0u, base::GetRandomPageBase());
 #else
-    // Otherwise, nullptr is very unexpected.
-    EXPECT_NE(nullptr, base::GetRandomPageBase());
+    // Otherwise, 0 is very unexpected.
+    EXPECT_NE(0u, base::GetRandomPageBase());
 #endif
   }
 }
@@ -106,15 +107,13 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Predictable) {
 
   std::vector<uintptr_t> sequence;
   for (size_t i = 0; i < kSamples; ++i) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(base::GetRandomPageBase());
-    sequence.push_back(address);
+    sequence.push_back(GetRandomPageBase());
   }
 
   base::SetMmapSeedForTesting(kInitialSeed);
 
   for (size_t i = 0; i < kSamples; ++i) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(base::GetRandomPageBase());
-    EXPECT_EQ(address, sequence[i]);
+    EXPECT_EQ(GetRandomPageBase(), sequence[i]);
   }
 }
 
