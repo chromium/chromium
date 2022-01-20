@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/mock_web_contents_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -3406,7 +3407,16 @@ IN_PROC_BROWSER_TEST_F(
   // 2) Navigate to B, and inject a blank subframe just before it commits.
   {
     InjectCreateChildFrame injector(shell()->web_contents(), url_b);
-    ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    shell()->LoadURL(url_b);
+    navigation_observer.Wait();
+    // We cannot use NavigateToURL which will automatically wait for particular
+    // url in the navigation above because running a nested message loop in the
+    // injector confuses TestNavigationObserver by changing the order of
+    // notifications.
+    EXPECT_EQ(url_b, shell()->web_contents()->GetLastCommittedURL());
+
     EXPECT_TRUE(injector.was_called());
   }
 
