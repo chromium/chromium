@@ -339,7 +339,6 @@
       "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": true,
-      "is_p2p_enabled": false,
       "symbol_level": 1,
       "target_cpu": "x64",
       "target_environment": "catalyst",
