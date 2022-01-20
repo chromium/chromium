@@ -4,12 +4,19 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 
+#include <sstream>
+
 #include "base/containers/contains.h"
+#include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -18,16 +25,30 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
+
+namespace {
+
+void RecordSignalType(ExtensionSignalType signal_type) {
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ExtensionTelemetry.Signals.SignalType", signal_type);
+}
+
+}  // namespace
+
+using google::protobuf::RepeatedPtrField;
 
 ExtensionTelemetryService::~ExtensionTelemetryService() = default;
 
 ExtensionTelemetryService::ExtensionTelemetryService(
     Profile* profile,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     extensions::ExtensionRegistry* extension_registry,
     extensions::ExtensionPrefs* extension_prefs)
     : profile_(profile),
+      url_loader_factory_(url_loader_factory),
       extension_registry_(extension_registry),
       extension_prefs_(extension_prefs),
       enabled_(false),
@@ -61,9 +82,13 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     signal_processors_.emplace(
         ExtensionSignalType::kTabsExecuteScript,
         std::make_unique<TabsExecuteScriptSignalProcessor>());
-    // Start timer for sending periodic telemetry reports.
-    timer_.Start(FROM_HERE, current_reporting_interval_, this,
-                 &ExtensionTelemetryService::CreateAndUploadReports);
+    // Start timer for sending periodic telemetry reports if reporting interval
+    // is not 0. An interval of 0 effectively turns off creation and uploading
+    // of telemetry reports.
+    if (current_reporting_interval_.is_positive()) {
+      timer_.Start(FROM_HERE, current_reporting_interval_, this,
+                   &ExtensionTelemetryService::CreateAndUploadReport);
+    }
   } else {
     // Stop timer for periodic telemetry reports.
     timer_.Stop();
@@ -107,15 +132,35 @@ void ExtensionTelemetryService::AddSignal(
   processor.ProcessSignal(std::move(signal));
 }
 
-void ExtensionTelemetryService::CreateAndUploadReports() {
+void ExtensionTelemetryService::CreateAndUploadReport() {
   DCHECK(enabled_);
 
-  std::unique_ptr<ExtensionTelemetryReportRequest> telemetry_report_pb =
-      CreateReport();
+  active_report_ = CreateReport();
+  if (!active_report_)
+    return;
 
-  if (telemetry_report_pb) {
-    // TODO(anunoy): add upload, retry, backoff logic.
+  auto upload_data = std::make_unique<std::string>();
+  if (!active_report_->SerializeToString(upload_data.get())) {
+    active_report_.reset();
+    return;
   }
+
+  auto callback =
+      base::BindOnce(&ExtensionTelemetryService::OnUploadComplete,
+                     weak_factory_.GetWeakPtr(), active_report_.get());
+  active_uploader_ = std::make_unique<ExtensionTelemetryUploader>(
+      std::move(callback), url_loader_factory_, std::move(upload_data));
+  active_uploader_->Start();
+}
+
+void ExtensionTelemetryService::OnUploadComplete(
+    ExtensionTelemetryReportRequest* report,
+    bool /* success */) {
+  DCHECK(report && (report == active_report_.get()));
+
+  // Clean up the upload resources.
+  active_report_.reset();
+  active_uploader_.reset();
 }
 
 std::unique_ptr<ExtensionTelemetryReportRequest>
@@ -127,7 +172,6 @@ ExtensionTelemetryService::CreateReport() {
   if (extension_store_.empty() && installed_extensions->is_empty())
     return nullptr;
 
-  using google::protobuf::RepeatedPtrField;
   auto telemetry_report_pb =
       std::make_unique<ExtensionTelemetryReportRequest>();
   RepeatedPtrField<ExtensionTelemetryReportRequest_Report>* reports_pb =
@@ -187,6 +231,49 @@ ExtensionTelemetryService::CreateReport() {
   return telemetry_report_pb;
 }
 
+void ExtensionTelemetryService::DumpReportForTest(
+    const ExtensionTelemetryReportRequest& report) {
+  base::Time creation_time =
+      base::Time::FromJavaTime(report.creation_timestamp_msec());
+  std::stringstream ss;
+  ss << "Report creation time: "
+     << base::UTF16ToUTF8(TimeFormatShortDateAndTimeWithTimeZone(creation_time))
+     << "\n";
+
+  const RepeatedPtrField<ExtensionTelemetryReportRequest_Report>& reports =
+      report.reports();
+
+  for (const auto& report_pb : reports) {
+    const auto& extension_pb = report_pb.extension();
+    base::Time install_time =
+        base::Time::FromJavaTime(extension_pb.install_timestamp_msec());
+    ss << "Extension Id: " << extension_pb.id() << "\n"
+       << "  Name: " << extension_pb.name() << "\n"
+       << "  Version: " << extension_pb.version() << "\n"
+       << "  Install Time: "
+       << base::UTF16ToUTF8(
+              TimeFormatShortDateAndTimeWithTimeZone(install_time))
+       << "\n";
+
+    const RepeatedPtrField<ExtensionTelemetryReportRequest_SignalInfo>&
+        signals = report_pb.signals();
+    for (const auto& signal_pb : signals) {
+      const auto& tabs_execute_script_info_pb =
+          signal_pb.tabs_execute_script_info();
+      const RepeatedPtrField<
+          ExtensionTelemetryReportRequest_SignalInfo_TabsExecuteScriptInfo_ScriptInfo>&
+          scripts = tabs_execute_script_info_pb.scripts();
+      for (const auto& script_pb : scripts) {
+        ss << "    Script hash: "
+           << base::HexEncode(script_pb.hash().c_str(), script_pb.hash().size())
+           << " count: " << script_pb.execution_count() << "\n";
+      }
+    }
+  }
+
+  DVLOG(1) << "Telemetry Report: " << ss.str();
+}
+
 std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>
 ExtensionTelemetryService::GetExtensionInfoForReport(
     const extensions::Extension& extension) {
@@ -199,12 +286,6 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
       extension_prefs_->GetInstallTime(extension.id()).ToJavaTime());
 
   return extension_info;
-}
-
-void ExtensionTelemetryService::RecordSignalType(
-    ExtensionSignalType signal_type) {
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.ExtensionTelemetry.Signals.SignalType", signal_type);
 }
 
 }  // namespace safe_browsing

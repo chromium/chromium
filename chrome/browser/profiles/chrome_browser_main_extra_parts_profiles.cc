@@ -213,6 +213,7 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -476,6 +477,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance();
+  safe_browsing::ExtensionTelemetryServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_MAC)
   if (screentime::IsScreenTimeEnabled())

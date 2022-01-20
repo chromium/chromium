@@ -20,6 +20,9 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -75,6 +78,7 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<ExtensionTelemetryService> telemetry_service_;
   raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
@@ -90,7 +94,8 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
   // Create telemetry service instance.
   profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
-      &profile_, extension_registry_, extension_prefs_);
+      &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
+      extension_registry_, extension_prefs_);
 
   // Create fake extension service instance.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -158,8 +163,10 @@ TEST_F(ExtensionTelemetryServiceTest, IsEnabledOnlyWhenESBIsEnabled) {
   EXPECT_FALSE(IsTelemetryServiceEnabled());
 
   // Destruct and restart service and verify that it starts disabled.
+
   telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
-      &profile_, extension_registry_, extension_prefs_);
+      &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
+      extension_registry_, extension_prefs_);
   EXPECT_FALSE(IsTelemetryServiceEnabled());
 
   // Re-enable ESB, service should become enabled.

@@ -253,6 +253,8 @@ static_library("safe_browsing") {
         "extension_telemetry/extension_telemetry_service.h",
         "extension_telemetry/extension_telemetry_service_factory.cc",
         "extension_telemetry/extension_telemetry_service_factory.h",
+        "extension_telemetry/extension_telemetry_uploader.cc",
+        "extension_telemetry/extension_telemetry_uploader.h",
         "extension_telemetry/tabs_execute_script_signal.cc",
         "extension_telemetry/tabs_execute_script_signal.h",
         "extension_telemetry/tabs_execute_script_signal_processor.cc",

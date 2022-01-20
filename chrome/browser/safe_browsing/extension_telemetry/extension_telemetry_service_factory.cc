@@ -9,9 +9,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#include "chrome/browser/safe_browsing/network_context_service.h"
+#include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -23,6 +24,10 @@ namespace safe_browsing {
 // static
 ExtensionTelemetryService* ExtensionTelemetryServiceFactory::GetForProfile(
     Profile* profile) {
+  // The feature enable check happens in BuildServiceInstanceFor too but
+  // added this check here for expediency when the feature is disabled.
+  if (!base::FeatureList::IsEnabled(kExtensionTelemetry))
+    return nullptr;
   return static_cast<ExtensionTelemetryService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /* create= */ true));
 }
@@ -47,9 +52,21 @@ KeyedService* ExtensionTelemetryServiceFactory::BuildServiceInstanceFor(
   if (!base::FeatureList::IsEnabled(kExtensionTelemetry))
     return nullptr;
   Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile->IsRegularProfile())
+    return nullptr;
+  NetworkContextService* network_service =
+      NetworkContextServiceFactory::GetForBrowserContext(context);
+  if (!network_service)
+    return nullptr;
   return new ExtensionTelemetryService(
-      profile, extensions::ExtensionRegistry::Get(context),
+      profile, network_service->GetURLLoaderFactory(),
+      extensions::ExtensionRegistry::Get(context),
       extensions::ExtensionPrefs::Get(context));
+}
+
+bool ExtensionTelemetryServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
 }
 
 }  // namespace safe_browsing

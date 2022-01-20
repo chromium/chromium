@@ -26,6 +26,10 @@ class ExtensionPrefs;
 class ExtensionRegistry;
 }  // namespace extensions
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace safe_browsing {
 
 enum class ExtensionSignalType;
@@ -33,13 +37,13 @@ class ExtensionSignal;
 class ExtensionSignalProcessor;
 class ExtensionTelemetryReportRequest;
 class ExtensionTelemetryReportRequest_ExtensionInfo;
+class ExtensionTelemetryUploader;
 
 // This class process extension signals and reports telemetry for a given
-// user/profile. It is used exclusively on the UI thread.
+// profile (regular profile only). It is used exclusively on the UI thread.
 // Lifetime:
-// The service is lazy-instantiated when a signal is triggered by an extension
-// for the first time. The service is destructed when the corresponding profile
-// is destructed.
+// The service is instantiated when the associated profile is instantiated. It
+// is destructed when the corresponding profile is destructed.
 // Enable/Disable state:
 // The service is enabled/disabled based on kEnhancedSafeBrowsing. The service
 // subscribes to the SB preference change notification to update its state.
@@ -49,9 +53,11 @@ class ExtensionTelemetryReportRequest_ExtensionInfo;
 // signals are ignored and no reports are sent to the SB servers.
 class ExtensionTelemetryService : public KeyedService {
  public:
-  ExtensionTelemetryService(Profile* profile,
-                            extensions::ExtensionRegistry* extension_registry,
-                            extensions::ExtensionPrefs* extension_prefs);
+  ExtensionTelemetryService(
+      Profile* profile,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      extensions::ExtensionRegistry* extension_registry,
+      extensions::ExtensionPrefs* extension_prefs);
 
   ExtensionTelemetryService(const ExtensionTelemetryService&) = delete;
   ExtensionTelemetryService& operator=(const ExtensionTelemetryService&) =
@@ -78,22 +84,26 @@ class ExtensionTelemetryService : public KeyedService {
   void OnPrefChanged();
 
   // Creates and uploads telemetry reports.
-  void CreateAndUploadReports();
+  void CreateAndUploadReport();
+
+  void OnUploadComplete(ExtensionTelemetryReportRequest* report, bool success);
 
   // Creates telemetry report protobuf for all extension store extensions
   // and currently installed extensions along with signal data retrieved from
   // signal processors.
   std::unique_ptr<ExtensionTelemetryReportRequest> CreateReport();
 
+  void DumpReportForTest(const ExtensionTelemetryReportRequest& report);
+
   // Collects extension information for reporting.
   std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>
   GetExtensionInfoForReport(const extensions::Extension& extension);
 
-  // Records UMA metric: signal type.
-  void RecordSignalType(ExtensionSignalType signal_type);
-
   // The profile with which this instance of the service is associated.
   const raw_ptr<Profile> profile_;
+
+  // The URLLoaderFactory used to issue network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Unowned object used for getting preference settings.
   raw_ptr<PrefService> pref_service_;
@@ -106,11 +116,16 @@ class ExtensionTelemetryService : public KeyedService {
   const raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
 
   // Keeps track of the state of the service.
-  bool enabled_;
+  bool enabled_ = false;
 
   // Used for periodic collection of telemetry reports.
   base::RepeatingTimer timer_;
   base::TimeDelta current_reporting_interval_;
+
+  // The current report being uploaded.
+  std::unique_ptr<ExtensionTelemetryReportRequest> active_report_;
+  // The current uploader instance uploading the active report.
+  std::unique_ptr<ExtensionTelemetryUploader> active_uploader_;
 
   // Maps extension id to extension data.
   using ExtensionStore = base::flat_map<

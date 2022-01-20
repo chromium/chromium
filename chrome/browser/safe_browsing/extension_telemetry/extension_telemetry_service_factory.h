@@ -46,6 +46,7 @@ class ExtensionTelemetryServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 }  // namespace safe_browsing

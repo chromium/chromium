@@ -1058,6 +1058,33 @@ chromium-metrics-reviews@google.com.
       variants="MetricsCollectorTimesDisabledEnabledDuration"/>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.NetworkRequestResponseCodeOrError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-06-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The HTTP response code or net error from each upload attempt. This is
+    recorded once for each network request made as part of an upload, i.e. if an
+    upload fails the first time, but a retry succeeds, this metric is recorded
+    twice. Upload attempts occur periodically (default period is 1 hour) and
+    there are multiple retries attempted (if necessary) after every upload
+    interval.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionTelemetry.RetriesTillUploadSuccess"
+    units="retries" expires_after="2022-06-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Counts how many retries were needed to successfully complete the upload
+    request. This is emitted only for a successful upload. Upload attempts occur
+    periodically (default period is 1 hour) and there are multiple retries
+    attempted (if necessary) after every upload interval.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionTelemetry.Signals.SignalType"
     enum="SBExtensionTelemetrySignalsSignalType" expires_after="2022-06-26">
   <owner>anunoy@chromium.org</owner>
@@ -1066,6 +1093,47 @@ chromium-metrics-reviews@google.com.
     Records the extension telemetry signal type. Logged each time a signal is
     triggered (eg. a tabs.executeScript API call is invoked).
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionTelemetry.UploadSize" units="bytes"
+    expires_after="2022-06-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The size of the upload request body. This is recorded once for each upload,
+    regardless of whether it was successful. Upload attempts occur periodically
+    (default period is 1 hour).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionTelemetry.UploadSuccess"
+    enum="BooleanSuccess" expires_after="2022-06-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the overall upload request succeeded or not. This is recorded once
+    for an upload request, regardless of how many retries were needed to
+    complete the upload. Upload attempts occur periodically (default period is 1
+    hour) and there are multiple retries attempted (if necessary) after every
+    upload interval.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionTelemetry.{Result}UploadDuration"
+    units="s" expires_after="2022-06-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Measures the total duration (including delay due to retries) of a {Result}
+    upload request. This is recorded after the last retry on every {Result}
+    upload. Upload attempts occur periodically (default period is 1 hour) and
+    there are multiple retries attempted (if necessary) after every upload
+    interval.
+  </summary>
+  <token key="Result">
+    <variant name="Failed" summary="failed"/>
+    <variant name="Successful" summary="successful"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.FileTypeUpdate.DynamicUpdateResult"

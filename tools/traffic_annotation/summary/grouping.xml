@@ -270,6 +270,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="safe_browsing_certificate_error_reporting"/>
       <traffic_annotation unique_id="safe_browsing_client_side_phishing_detector"/>
       <traffic_annotation unique_id="safe_browsing_extended_reporting"/>
+      <traffic_annotation unique_id="safe_browsing_extension_telemetry"/>
       <traffic_annotation unique_id="safe_browsing_feedback"/>
       <traffic_annotation unique_id="safe_browsing_incident"/>
       <traffic_annotation unique_id="safe_browsing_v4_get_hash"/>
