@@ -28,47 +28,48 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="@string/signin_fre_uma_dialog_title"
-                style="@style/TextAppearance.Headline.Primary" />
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
             <Switch
                 android:id="@+id/fre_uma_dialog_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:text="@string/usage_and_crash_reports_title"
                 android:checked="true"
                 android:gravity="start|center"
                 android:lineSpacingMultiplier="1.2"
-                style="@style/TextAppearance.TextLarge.Primary" />
+                android:text="@string/usage_and_crash_reports_title"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="@string/signin_fre_uma_dialog_first_section_header"
-                style="@style/TextAppearance.TextMediumThick.Accent1" />
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                app:leading="@dimen/text_size_medium_leading"
                 android:text="@string/signin_fre_uma_dialog_first_section_body"
-                style="@style/TextAppearance.TextMedium.Secondary" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="@string/signin_fre_uma_dialog_second_section_header"
-                style="@style/TextAppearance.TextMediumThick.Accent1" />
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="6dp"
+                app:leading="@dimen/text_size_medium_leading"
                 android:text="@string/signin_fre_uma_dialog_second_section_body"
-                style="@style/TextAppearance.TextMedium.Secondary"
-                app:leading="@dimen/text_size_medium_leading" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
         </LinearLayout>
     </ScrollView>
 

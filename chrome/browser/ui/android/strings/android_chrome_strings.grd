@@ -2796,17 +2796,17 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_FRE_UMA_DIALOG_TITLE" desc="Title of the dialog where users can change their Chrome metric sharing settings, like usage data. This appears when they open the Chrome app for the first time on their phone.">
         Make Chrome better
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_HEADER" desc="Header of the section that shows the benefits for users if they turn on the metric sharing option. This header implies 'What you get from Google Chrome' but we have omitted 'from Google Chrome' for brevity.">
-        What you get
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_HEADER" desc="Header of the section that shows the benefits for users if they turn on the metric sharing option.">
+        When on
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_BODY" desc="Text that describes the concrete benefits users will get if they turn on the metrics sharing option.">
-        New features and improved performance
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_BODY" desc="Text that describes the benefits users will get if they turn on the metrics sharing option.">
+        Help make Chrome better for people who use it the way you do
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_HEADER" desc="Header of the section that shows the data that users share with Google if they turn on the metric sharing option.">
-        What you share with Google
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_HEADER" desc="Header of the section with info about the data that users share with Google if they turn on the metric sharing option.">
+        Things to consider
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY" desc="Text that describes the concrete data that users share with Google if they turn on the metric sharing option.">
-        Info about your Chrome usage that can\u2019t be tied to you\n\nRelevant data from rare Chrome crashes, which may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs you visit
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY" desc="Text with info about the data that users share with Google if they turn on the metric sharing option.">
+        Info is sent to Google about your Chrome usage, but it isn\u2019t tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs you visit
       </message>
       <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_1" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to use additional features that are only available to signed-in users. Try to limit translations to 50 characters. Do not exceed 75 characters.">
         Sign in to get the most out of Chrome
