@@ -99,7 +99,7 @@ const AcceleratorData kDeveloperAcceleratorData[] = {
     {false, ui::VKEY_POWER, ui::EF_SHIFT_DOWN, LOCK_RELEASED},
     {true, ui::VKEY_D, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
      DEV_ADD_REMOVE_DISPLAY},
-    {true, ui::VKEY_J, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+    {true, ui::VKEY_U, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
      DEV_TOGGLE_UNIFIED_DESKTOP},
     {true, ui::VKEY_M, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
      TOGGLE_MIRROR_MODE},
