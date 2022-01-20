@@ -100,7 +100,7 @@ index 1706b56dfd90..4825b22fc6f5 100644
  // The following is adapted from fdlibm (http://www.netlib.org/fdlibm).
  //
  // ====================================================
-@@ -12,30 +13,22 @@
+@@ -12,30 +13,21 @@
  // The original source code covered by the above license above has been
  // modified significantly by Google Inc.
  // Copyright 2016 the V8 project authors. All rights reserved.
@@ -116,7 +116,6 @@ index 1706b56dfd90..4825b22fc6f5 100644
 -#include "src/base/macros.h"
 -#include "src/base/overflowing-math.h"
 +#include "base/bit_cast.h"
-+#include "base/compiler_specific.h"
 +#include "build/build_config.h"
 +#include "third_party/fdlibm/overflowing-math.h"
  
@@ -138,19 +137,24 @@ index 1706b56dfd90..4825b22fc6f5 100644
  /*
   * The original fdlibm code used statements like:
   *  n0 = ((*(int*)&one)>>29)^1;   * index of high word *
-@@ -104,11 +98,11 @@ namespace {
+@@ -104,11 +98,15 @@ namespace {
      (d) = bit_cast<double>(bits);          \
    } while (false)
  
 -int32_t __ieee754_rem_pio2(double x, double* y) V8_WARN_UNUSED_RESULT;
 -double __kernel_cos(double x, double y) V8_WARN_UNUSED_RESULT;
-+int32_t __ieee754_rem_pio2(double x, double* y) WARN_UNUSED_RESULT;
-+double __kernel_cos(double x, double y) WARN_UNUSED_RESULT;
- int __kernel_rem_pio2(double* x, double* y, int e0, int nx, int prec,
+-int __kernel_rem_pio2(double* x, double* y, int e0, int nx, int prec,
 -                      const int32_t* ipio2) V8_WARN_UNUSED_RESULT;
 -double __kernel_sin(double x, double y, int iy) V8_WARN_UNUSED_RESULT;
-+                      const int32_t* ipio2) WARN_UNUSED_RESULT;
-+double __kernel_sin(double x, double y, int iy) WARN_UNUSED_RESULT;
++[[nodiscard]] int32_t __ieee754_rem_pio2(double x, double* y);
++[[nodiscard]] double __kernel_cos(double x, double y);
++[[nodiscard]] int __kernel_rem_pio2(double* x,
++                                    double* y,
++                                    int e0,
++                                    int nx,
++                                    int prec,
++                                    const int32_t* ipio2);
++[[nodiscard]] double __kernel_sin(double x, double y, int iy);
  
  /* __ieee754_rem_pio2(x,y)
   *
@@ -235,7 +239,7 @@ index 1706b56dfd90..4825b22fc6f5 100644
  #undef EXTRACT_WORDS
  #undef GET_HIGH_WORD
  #undef GET_LOW_WORD
-@@ -3015,6 +3029,5 @@ double tanh(double x) {
+@@ -3015,6 +3029,4 @@ double tanh(double x) {
  #undef SET_HIGH_WORD
  #undef SET_LOW_WORD
  
@@ -243,7 +247,6 @@ index 1706b56dfd90..4825b22fc6f5 100644
 -}  // namespace base
 -}  // namespace v8
 +}  // namespace fdlibm
-+
 diff --git a/third_party/fdlibm/ieee754.h b/third_party/fdlibm/ieee754.h
 index f2b3a3eb5808..27b5013818a2 100644
 --- a/third_party/fdlibm/ieee754.h

@@ -21,7 +21,6 @@
 #include <limits>
 
 #include "base/bit_cast.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/fdlibm/overflowing-math.h"
 
@@ -97,11 +96,15 @@ namespace {
     (d) = bit_cast<double>(bits);          \
   } while (false)
 
-int32_t __ieee754_rem_pio2(double x, double* y) WARN_UNUSED_RESULT;
-double __kernel_cos(double x, double y) WARN_UNUSED_RESULT;
-int __kernel_rem_pio2(double* x, double* y, int e0, int nx, int prec,
-                      const int32_t* ipio2) WARN_UNUSED_RESULT;
-double __kernel_sin(double x, double y, int iy) WARN_UNUSED_RESULT;
+[[nodiscard]] int32_t __ieee754_rem_pio2(double x, double* y);
+[[nodiscard]] double __kernel_cos(double x, double y);
+[[nodiscard]] int __kernel_rem_pio2(double* x,
+                                    double* y,
+                                    int e0,
+                                    int nx,
+                                    int prec,
+                                    const int32_t* ipio2);
+[[nodiscard]] double __kernel_sin(double x, double y, int iy);
 
 /* __ieee754_rem_pio2(x,y)
  *
@@ -3029,4 +3032,3 @@ float asinf(double x) {
 #undef SET_LOW_WORD
 
 }  // namespace fdlibm
-
