@@ -45,6 +45,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -63,6 +64,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -134,6 +136,10 @@ class WebAppsPublisherHostBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppsPublisherHostBrowserTest() = default;
   ~WebAppsPublisherHostBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kFileHandlingAPI};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
@@ -430,6 +436,44 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, Launch) {
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
   launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  web_apps_publisher_host.Launch(std::move(launch_params), base::DoNothing());
+  navigation_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LaunchWithFiles) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_apps/file_handler_index.html");
+  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+
+  const GURL launch_url =
+      embedded_test_server()->GetURL("/web_apps/file_handler_action.html");
+  content::TestNavigationObserver navigation_observer(launch_url);
+  navigation_observer.StartWatchingNewWebContents();
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  launch_params->intent = crosapi::mojom::Intent::New();
+  launch_params->intent->action = apps_util::kIntentActionView;
+
+  auto intent_file = crosapi::mojom::IntentFile::New();
+  intent_file->file_path = base::FilePath("/path/not/actually/used/file.txt");
+  std::vector<crosapi::mojom::IntentFilePtr> files;
+  files.push_back(std::move(intent_file));
+  launch_params->intent->files = std::move(files);
+
+  // Skip past the permission dialog.
+  web_app::ScopedRegistryUpdate(
+      &web_app::WebAppProvider::GetForTest(profile())->sync_bridge())
+      ->UpdateApp(app_id)
+      ->SetFileHandlerApprovalState(web_app::ApiApprovalState::kAllowed);
+
   web_apps_publisher_host.Launch(std::move(launch_params), base::DoNothing());
   navigation_observer.Wait();
 }

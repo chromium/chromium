@@ -26,41 +26,13 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
 using apps::IconEffects;
-
-namespace {
-
-using LaunchResultCallback =
-    base::OnceCallback<void(::crosapi::mojom::LaunchResultPtr)>;
-
-void ReturnLaunchResult(Profile* profile,
-                        content::WebContents* web_contents,
-                        LaunchResultCallback callback) {
-  // TODO(crbug.com/1144877): Run callback when the window is ready.
-  auto* app_instance_tracker =
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppInstanceTracker();
-  auto launch_result = crosapi::mojom::LaunchResult::New();
-  if (app_instance_tracker) {
-    const apps::BrowserAppInstance* app_instance =
-        app_instance_tracker->GetAppInstance(web_contents);
-    launch_result->instance_id =
-        app_instance ? app_instance->id : base::UnguessableToken::Create();
-  } else {
-    // TODO(crbug.com/1144877): This part of code should not be reached
-    // after the instance tracker flag is turn on. Replaced with DCHECK when
-    // the app instance tracker flag is turned on.
-    launch_result->instance_id = base::UnguessableToken::Create();
-  }
-  std::move(callback).Run(std::move(launch_result));
-}
-
-}  // namespace
 
 namespace web_app {
 
@@ -215,7 +187,7 @@ void WebAppsPublisherHost::ExecuteContextMenuCommand(
   auto* web_contents = publisher_helper().ExecuteContextMenuCommand(
       app_id, id, display::kDefaultDisplayId);
 
-  ReturnLaunchResult(profile_, web_contents, std::move(callback));
+  ReturnLaunchResult(std::move(callback), web_contents);
 }
 
 void WebAppsPublisherHost::StopApp(const std::string& app_id) {
@@ -235,29 +207,55 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
   content::WebContents* web_contents = nullptr;
   if (launch_params->intent) {
     if (!profile_) {
-      ReturnLaunchResult(profile_, nullptr, std::move(callback));
+      ReturnLaunchResult(std::move(callback), nullptr);
       return;
     }
 
     web_contents = publisher_helper().MaybeNavigateExistingWindow(
         launch_params->app_id, launch_params->intent->url);
     if (web_contents) {
-      ReturnLaunchResult(profile_, web_contents, std::move(callback));
+      ReturnLaunchResult(std::move(callback), web_contents);
       return;
     }
   }
 
   auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile_);
-  if (!params.launch_files.empty() && !launch_params->intent) {
+  bool is_file_handling_launch =
+      !params.launch_files.empty() && !apps_util::IsShareIntent(params.intent);
+  if (is_file_handling_launch) {
     // File handling may create the WebContents asynchronously.
-    // TODO(crbug/1261263): implement.
-    NOTIMPLEMENTED_LOG_ONCE();
-    params.launch_files.clear();
+    publisher_helper().LaunchAppWithFilesCheckingUserPermission(
+        launch_params->app_id, std::move(params),
+        base::BindOnce(&WebAppsPublisherHost::ReturnLaunchResult,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
   }
 
   web_contents = publisher_helper().LaunchAppWithParams(std::move(params));
 
-  ReturnLaunchResult(profile_, web_contents, std::move(callback));
+  ReturnLaunchResult(std::move(callback), web_contents);
+}
+
+void WebAppsPublisherHost::ReturnLaunchResult(
+    LaunchCallback callback,
+    content::WebContents* web_contents) {
+  // TODO(crbug.com/1144877): Run callback when the window is ready.
+  auto* app_instance_tracker =
+      apps::AppServiceProxyFactory::GetForProfile(profile_)
+          ->BrowserAppInstanceTracker();
+  auto launch_result = crosapi::mojom::LaunchResult::New();
+  if (app_instance_tracker) {
+    const apps::BrowserAppInstance* app_instance =
+        app_instance_tracker->GetAppInstance(web_contents);
+    launch_result->instance_id =
+        app_instance ? app_instance->id : base::UnguessableToken::Create();
+  } else {
+    // TODO(crbug.com/1144877): This part of code should not be reached
+    // after the instance tracker flag is turn on. Replaced with DCHECK when
+    // the app instance tracker flag is turned on.
+    launch_result->instance_id = base::UnguessableToken::Create();
+  }
+  std::move(callback).Run(std::move(launch_result));
 }
 
 void WebAppsPublisherHost::OnShortcutsMenuIconsRead(

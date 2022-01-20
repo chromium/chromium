@@ -226,6 +226,15 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const std::string& shortcut_id,
       int64_t display_id);
 
+  // Checks that the user permits the app launch (possibly presenting a blocking
+  // user choice dialog). Launches the app with read access to the files in
+  // `params.launch_files` and returns the created WebContents via `callback`,
+  // or doesn't launch the app and returns null in `callback`.
+  void LaunchAppWithFilesCheckingUserPermission(
+      const std::string& app_id,
+      apps::AppLaunchParams params,
+      base::OnceCallback<void(content::WebContents*)> callback);
+
   Profile* profile() { return profile_; }
 
   apps::mojom::AppType app_type() const { return app_type_; }
@@ -326,15 +335,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const std::string& app_id,
       apps::mojom::OptionalBool has_notification_indicator);
 #endif
-
-  // Checks that the user permits the app launch (possibly presenting a blocking
-  // user choice dialog). Launches the app with read access to the files in
-  // `params.launch_files` and returns the created WebContents via `callback`,
-  // or doesn't launch the app and returns null in `callback`.
-  void LaunchAppWithFilesCheckingUserPermission(
-      const std::string& app_id,
-      apps::AppLaunchParams params,
-      base::OnceCallback<void(content::WebContents*)> callback);
 
   // Called after the user has allowed or denied an app launch with files.
   void OnFileHandlerDialogCompleted(

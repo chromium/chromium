@@ -64,6 +64,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, OpenNativeSettings);
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, WindowMode);
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, Launch);
+  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, LaunchWithFiles);
 
   void OnReady();
 
@@ -101,6 +102,9 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       const std::string& app_id,
       absl::optional<bool> accessing_camera,
       absl::optional<bool> accessing_microphone) override;
+
+  void ReturnLaunchResult(LaunchCallback callback,
+                          content::WebContents* web_contents);
 
   const WebApp* GetWebApp(const AppId& app_id) const;
 
