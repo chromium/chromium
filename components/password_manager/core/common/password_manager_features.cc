@@ -79,6 +79,10 @@ const base::Feature kIOSEnablePasswordManagerBrandingUpdate{
     "IOSEnablePasswordManagerBrandingUpdate",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables (un)muting compromised passwords from bulk leak check in settings.
+const base::Feature kMuteCompromisedPasswords{
+    "MuteCompromisedPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables password leak detection for unauthenticated users.
 const base::Feature kLeakDetectionUnauthenticated = {
     "LeakDetectionUnauthenticated", base::FEATURE_DISABLED_BY_DEFAULT};
