@@ -7,6 +7,8 @@
 // LSAN_OPTIONS=suppressions=/path/to/suppressions. Please refer to
 // http://dev.chromium.org/developers/testing/leaksanitizer for more info.
 
+#include "build/build_config.h"
+
 #if defined(LEAK_SANITIZER)
 
 // Please make sure the code below declares a single string variable
@@ -70,7 +72,7 @@ char kLSanDefaultSuppressions[] =
     // Suppress leaks in CreateCdmInstance. https://crbug.com/961062
     "leak:media::CdmAdapter::CreateCdmInstance\n"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Suppress leak in FileStream. crbug.com/1263374
     "leak:chromeos::PipeReader::StartIO\n"
     // Supppress AnimationObserverToHideView leak. crbug.com/1261464

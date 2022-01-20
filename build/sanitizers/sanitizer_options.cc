@@ -44,7 +44,7 @@ void _sanitizer_options_link_helper() { }
 //   symbolize=1 - enable in-process symbolization.
 //   external_symbolizer_path=... - provides the path to llvm-symbolizer
 //     relative to the main executable
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kAsanDefaultOptions[] =
     "check_printf=1 use_sigaltstack=1 strip_path_prefix=/../../ "
     "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 "
@@ -52,21 +52,21 @@ const char kAsanDefaultOptions[] =
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer";
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 const char* kAsanDefaultOptions =
     "check_printf=1 use_sigaltstack=1 strip_path_prefix=/../../ "
     "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 ";
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const char* kAsanDefaultOptions =
     "check_printf=1 use_sigaltstack=1 strip_path_prefix=\\..\\..\\ "
     "fast_unwind_on_fatal=1 detect_stack_use_after_return=1 "
     "symbolize=1 external_symbolizer_path=%d/../../third_party/"
     "llvm-build/Release+Asserts/bin/llvm-symbolizer.exe";
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE) || \
+    BUILDFLAG(IS_WIN)
 // Allow NaCl to override the default asan options.
 extern const char* kAsanDefaultOptionsNaCl;
 __attribute__((weak)) const char* kAsanDefaultOptionsNaCl = nullptr;
@@ -82,11 +82,11 @@ extern char kASanDefaultSuppressions[];
 SANITIZER_HOOK_ATTRIBUTE const char *__asan_default_suppressions() {
   return kASanDefaultSuppressions;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) ||
-        // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
+        // || BUILDFLAG(IS_WIN)
 #endif  // ADDRESS_SANITIZER
 
-#if defined(THREAD_SANITIZER) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if defined(THREAD_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 // Default options for ThreadSanitizer in various configurations:
 //   detect_deadlocks=1 - enable deadlock (lock inversion) detection.
 //   second_deadlock_stack=1 - more verbose deadlock reports.
@@ -117,8 +117,8 @@ SANITIZER_HOOK_ATTRIBUTE const char *__tsan_default_suppressions() {
   return kTSanDefaultSuppressions;
 }
 
-#endif  // defined(THREAD_SANITIZER) && (defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS))
+#endif  // defined(THREAD_SANITIZER) && (BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS))
 
 #if defined(MEMORY_SANITIZER)
 // Default options for MemorySanitizer:
@@ -129,11 +129,11 @@ SANITIZER_HOOK_ATTRIBUTE const char *__tsan_default_suppressions() {
 const char kMsanDefaultOptions[] =
     "strip_path_prefix=/../../ "
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer"
 #endif
-;
+    ;
 
 SANITIZER_HOOK_ATTRIBUTE const char *__msan_default_options() {
   return kMsanDefaultOptions;
@@ -160,7 +160,7 @@ const char kLsanDefaultOptions[] =
     "print_suppressions=1 strip_path_prefix=/../../ "
     "use_poisoned=1 "
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer "
 #endif
@@ -192,7 +192,7 @@ SANITIZER_HOOK_ATTRIBUTE const char *__lsan_default_suppressions() {
 const char kUbsanDefaultOptions[] =
     "print_stacktrace=1 strip_path_prefix=/../../ "
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer"
 #endif
