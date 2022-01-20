@@ -1432,10 +1432,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   ASSERT_FALSE(
       GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS).has_value());
   {
-    ListPrefUpdateDeprecated update(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
+                          policy::policy_prefs::kSystemFeaturesDisableList);
+    base::Value* list = update.Get();
     list->Append(policy::SystemFeature::kOsSettings);
   }
   WaitForTestSystemAppInstall();
@@ -1449,10 +1448,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
               GetAppIconKey(*settings_id)->icon_effects);
 
   {
-    ListPrefUpdateDeprecated update(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
+                          policy::policy_prefs::kSystemFeaturesDisableList);
+    base::Value* list = update.Get();
     list->ClearList();
   }
   GetAppServiceProxy(browser()->profile())->FlushMojoCallsForTesting();
@@ -1472,10 +1470,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));
 
   {
-    ListPrefUpdateDeprecated update(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
+                          policy::policy_prefs::kSystemFeaturesDisableList);
+    base::Value* list = update.Get();
     list->Append(policy::SystemFeature::kOsSettings);
   }
 
@@ -1487,10 +1484,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
               GetAppIconKey(*settings_id)->icon_effects);
 
   {
-    ListPrefUpdateDeprecated update(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
+                          policy::policy_prefs::kSystemFeaturesDisableList);
+    base::Value* list = update.Get();
     list->ClearList();
   }
   proxy->FlushMojoCallsForTesting();
