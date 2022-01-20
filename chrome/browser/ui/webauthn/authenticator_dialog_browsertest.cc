@@ -7,19 +7,23 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
+#include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/cbor/values.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -30,6 +34,15 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
 
   AuthenticatorDialogTest(const AuthenticatorDialogTest&) = delete;
   AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
+
+  void SetUp() override {
+    // Enable all upcoming features so that people can see the UI.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kWebAuthCable, device::kWebAuthCableSecondFactor,
+         device::kWebAuthPhoneSupport},
+        {});
+    DialogBrowserTest::SetUp();
+  }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -48,6 +61,15 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     if (name == "cable_server_link_activate") {
       transport_availability.available_transports.insert(
           AuthenticatorTransport::kAndroidAccessory);
+    } else if (name == "mechanisms") {
+      // A phone is configured so that the "Manage devices" button is shown.
+      std::array<uint8_t, device::kP256X962Length> public_key = {0};
+      AuthenticatorRequestDialogModel::PairedPhone phone("Phone", 0,
+                                                         public_key);
+      model->set_cable_transport_info(
+          /*extension_is_v2=*/absl::nullopt,
+          /*paired_phones=*/{phone},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
     }
     transport_availability.has_recognized_platform_authenticator_credential =
         false;
@@ -247,6 +269,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
  private:
   base::RepeatingTimer timer_;
   int bio_samples_remaining_ = 5;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Run with:

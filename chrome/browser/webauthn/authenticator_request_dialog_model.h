@@ -145,6 +145,9 @@ class AuthenticatorRequestDialogModel {
     // Called when the user cancelled WebAuthN request by clicking the
     // "cancel" button or the back arrow in the UI dialog.
     virtual void OnCancelRequest() {}
+
+    // Called when the user clicks “Manage Devices” to manage their phones.
+    virtual void OnManageDevicesClicked() {}
   };
 
   // A Mechanism is a user-visable method of authenticating. It might be a
@@ -152,7 +155,7 @@ class AuthenticatorRequestDialogModel {
   // delegation to a platform API. Mechanisms are listed in the UI for the
   // user to select between.
   struct Mechanism {
-    // These types describe the type of Mechanism, but this is only for testing.
+    // These types describe the type of Mechanism.
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag,
@@ -173,6 +176,7 @@ class AuthenticatorRequestDialogModel {
     Mechanism(const Mechanism&) = delete;
     Mechanism& operator=(const Mechanism&) = delete;
 
+    const Type type;
     const std::u16string name;
     const std::u16string short_name;
     const raw_ptr<const gfx::VectorIcon> icon;
@@ -180,9 +184,6 @@ class AuthenticatorRequestDialogModel {
     // priority is true if this mechanism should be activated immediately.
     // Only a single Mechanism in a list should have priority.
     const bool priority;
-
-    // type should only be accessed by tests.
-    const Type type;
   };
 
   // PairedPhone represents a paired caBLEv2 device.
@@ -351,6 +352,9 @@ class AuthenticatorRequestDialogModel {
   //
   // Valid action at all steps.
   void Cancel();
+
+  // Opens a tab to the settings page for managing phones as security keys.
+  void ManageDevices();
 
   // Called by the AuthenticatorRequestSheetModel subclasses when their state
   // changes, which will trigger notifying observers of OnSheetModelChanged.

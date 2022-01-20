@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -127,6 +128,11 @@ void AuthenticatorSheetModelBase::OnModelDestroyed(
 
 // AuthenticatorMechanismSelectorSheetModel -----------------------------------
 
+AuthenticatorMechanismSelectorSheetModel::
+    AuthenticatorMechanismSelectorSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model) {}
+
 bool AuthenticatorMechanismSelectorSheetModel::IsBackButtonVisible() const {
   return false;
 }
@@ -147,6 +153,28 @@ std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepDescription()
     const {
   return l10n_util::GetStringUTF16(
       IDS_WEBAUTHN_TRANSPORT_SELECTION_DESCRIPTION);
+}
+
+bool AuthenticatorMechanismSelectorSheetModel::IsManageDevicesButtonVisible()
+    const {
+  // If any phones are shown then also show a button that goes to the settings
+  // page to manage them.
+  return base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) &&
+         std::any_of(
+             dialog_model()->mechanisms().begin(),
+             dialog_model()->mechanisms().end(),
+             [](const AuthenticatorRequestDialogModel::Mechanism& mechanism)
+                 -> bool {
+               return absl::holds_alternative<
+                   AuthenticatorRequestDialogModel::Mechanism::Phone>(
+                   mechanism.type);
+             });
+}
+
+void AuthenticatorMechanismSelectorSheetModel::OnManageDevices() {
+  if (dialog_model()) {
+    dialog_model()->ManageDevices();
+  }
 }
 
 // AuthenticatorInsertAndActivateUsbSheetModel ----------------------

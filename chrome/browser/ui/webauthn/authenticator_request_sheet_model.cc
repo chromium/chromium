@@ -16,3 +16,9 @@ std::u16string AuthenticatorRequestSheetModel::GetError() const {
 ui::MenuModel* AuthenticatorRequestSheetModel::GetOtherMechanismsMenuModel() {
   return nullptr;
 }
+
+bool AuthenticatorRequestSheetModel::IsManageDevicesButtonVisible() const {
+  return false;
+}
+
+void AuthenticatorRequestSheetModel::OnManageDevices() {}

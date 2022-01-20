@@ -108,12 +108,12 @@ AuthenticatorRequestDialogModel::Mechanism::Mechanism(
     const gfx::VectorIcon* in_icon,
     base::RepeatingClosure in_callback,
     bool is_priority)
-    : name(std::move(in_name)),
+    : type(std::move(in_type)),
+      name(std::move(in_name)),
       short_name(std::move(in_short_name)),
       icon(in_icon),
       callback(std::move(in_callback)),
-      priority(is_priority),
-      type(std::move(in_type)) {}
+      priority(is_priority) {}
 AuthenticatorRequestDialogModel::Mechanism::~Mechanism() = default;
 AuthenticatorRequestDialogModel::Mechanism::Mechanism(Mechanism&&) = default;
 
@@ -330,6 +330,12 @@ void AuthenticatorRequestDialogModel::Cancel() {
 
   for (auto& observer : observers_)
     observer.OnCancelRequest();
+}
+
+void AuthenticatorRequestDialogModel::ManageDevices() {
+  for (auto& observer : observers_) {
+    observer.OnManageDevicesClicked();
+  }
 }
 
 void AuthenticatorRequestDialogModel::OnSheetModelDidChange() {

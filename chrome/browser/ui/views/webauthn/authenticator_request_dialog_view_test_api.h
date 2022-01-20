@@ -22,13 +22,17 @@ class AuthenticatorRequestDialogViewTestApi {
   // Returns a non-owning pointer to an AuthenticatorRequestDialogView for
   // testing.
   static AuthenticatorRequestDialogView* CreateDialogView(
-      std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model);
 
   // Replaces the current sheet on |dialog| with |new_sheet|.
   static void ShowWithSheet(
       AuthenticatorRequestDialogView* dialog,
       std::unique_ptr<AuthenticatorRequestSheetView> new_sheet);
+
+  // Get a non-owning pointer to the current sheet.
+  static AuthenticatorRequestSheetView* GetSheet(
+      AuthenticatorRequestDialogView* dialog);
 };
 
 }  // namespace test
