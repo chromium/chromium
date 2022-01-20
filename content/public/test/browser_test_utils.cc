@@ -157,21 +157,14 @@
 namespace content {
 namespace {
 
-// Specifying a prototype so that we can add the WARN_UNUSED_RESULT attribute.
+// Executes the passed |script| in the frame specified by |render_frame_host|.
+// If |result| is not NULL, stores the value that the evaluation of the script
+// in |result|.  Returns true on success.
 [[nodiscard]] bool ExecuteScriptHelper(RenderFrameHost* render_frame_host,
                                        const std::string& script,
                                        bool user_gesture,
                                        int32_t world_id,
-                                       std::unique_ptr<base::Value>* result);
-
-// Executes the passed |script| in the frame specified by |render_frame_host|.
-// If |result| is not NULL, stores the value that the evaluation of the script
-// in |result|.  Returns true on success.
-bool ExecuteScriptHelper(RenderFrameHost* render_frame_host,
-                         const std::string& script,
-                         bool user_gesture,
-                         int32_t world_id,
-                         std::unique_ptr<base::Value>* result) {
+                                       std::unique_ptr<base::Value>* result) {
   // TODO(lukasza): Only get messages from the specific |render_frame_host|.
   DOMMessageQueue dom_message_queue(render_frame_host);
 
