@@ -1205,6 +1205,12 @@ TEST_F(TimeTest, MAYBE_NowOverride) {
 
 #undef MAYBE_NowOverride
 
+TEST_F(TimeTest, TimeFormatHTTP) {
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromString("1994-11-06T08:49:37Z", &time));
+  EXPECT_EQ("Sun, 06 Nov 1994 08:49:37 GMT", TimeFormatHTTP(time));
+}
+
 #if BUILDFLAG(IS_FUCHSIA)
 TEST(ZxTimeTest, ToFromConversions) {
   Time unix_epoch = Time::UnixEpoch();

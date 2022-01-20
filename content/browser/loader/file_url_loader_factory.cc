@@ -45,6 +45,7 @@
 #include "net/base/mime_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/cors/cors.h"
@@ -674,10 +675,16 @@ class FileURLLoader : public network::mojom::URLLoader {
       head->mime_type.assign(new_type);
       head->did_mime_sniff = true;
     }
-    if (head->headers) {
-      head->headers->AddHeader(net::HttpRequestHeaders::kContentType,
-                               head->mime_type);
+    if (!head->headers) {
+      head->headers =
+          base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
     }
+    head->headers->AddHeader(net::HttpRequestHeaders::kContentType,
+                             head->mime_type);
+    // We add a Last-Modified header to file responses so that our
+    // implementation of document.lastModified can access it (crbug.com/875299).
+    head->headers->AddHeader(net::HttpResponseHeaders::kLastModified,
+                             base::TimeFormatHTTP(info.last_modified));
     client_->OnReceiveResponse(std::move(head));
     client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 

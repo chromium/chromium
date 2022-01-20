@@ -1145,6 +1145,10 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
 // For logging use only.
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, ThreadTicks time_ticks);
 
+// Returns a string representation of the given time in the IMF-fixdate format
+// defined by RFC 7231 (satisfying its HTTP-date format).
+BASE_EXPORT std::string TimeFormatHTTP(base::Time time);
+
 }  // namespace base
 
 #endif  // BASE_TIME_TIME_H_

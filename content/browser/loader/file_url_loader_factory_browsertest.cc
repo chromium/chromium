@@ -524,5 +524,30 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryDisabledSecurityBrowserTest,
                                    img_url)));
 }
 
+IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, LastModified) {
+  // Create a temporary file with an arbitrary last-modified timestamp.
+  const char kLastModified[] = "1994-11-15T12:45:26.000Z";
+  base::FilePath path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateTemporaryFile(&path));
+    base::Time last_modified_time;
+    ASSERT_TRUE(base::Time::FromString(kLastModified, &last_modified_time));
+    ASSERT_TRUE(base::TouchFile(path, /*last_accessed=*/base::Time::Now(),
+                                last_modified_time));
+  }
+  EXPECT_TRUE(NavigateToURL(shell(), net::FilePathToFileURL(path)));
+
+  // Verify the syntax
+  EXPECT_THAT(content::EvalJs(shell()->web_contents(), "document.lastModified")
+                  .ExtractString(),
+              testing::MatchesRegex(R"(\d\d/\d\d/\d\d\d\d \d\d:\d\d:\d\d)"));
+  // Verify the value (it's in local time, so we parse it and convert it in JS
+  // to get a representation in UTC).
+  EXPECT_EQ(kLastModified,
+            content::EvalJs(shell()->web_contents(),
+                            "new Date(document.lastModified).toISOString()"));
+}
+
 }  // namespace
 }  // namespace content

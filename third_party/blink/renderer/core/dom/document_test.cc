@@ -1421,6 +1421,21 @@ class MockReportingContext final : public ReportingContext {
 
 }  // namespace
 
+TEST_F(DocumentSimTest, LastModified) {
+  const char kLastModified[] = "Tue, 15 Nov 1994 12:45:26 GMT";
+  SimRequest::Params params;
+  params.response_http_headers = {{"Last-Modified", kLastModified}};
+  SimRequest main_resource("https://example.com", "text/html", params);
+  LoadURL("https://example.com");
+  main_resource.Finish();
+
+  // We test lastModifiedTime() instead of lastModified() because the latter
+  // returns a string in the local time zone.
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromString(kLastModified, &time));
+  EXPECT_EQ(time, GetDocument().lastModifiedTime());
+}
+
 TEST_F(DocumentSimTest, DuplicatedDocumentPolicyViolationsAreIgnored) {
   blink::ScopedDocumentPolicyForTest scoped_document_policy(true);
   SimRequest::Params params;

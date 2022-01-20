@@ -9,7 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace installer {
 
@@ -26,36 +26,11 @@ std::vector<base::WStringPiece> Parse(base::WStringPiece value) {
                                 base::SPLIT_WANT_NONEMPTY);
 }
 
-// Returns an abbreviated day name for a zero-based |day_of_week|.
-const wchar_t* AbbreviatedDayOfWeek(int day_of_week) {
-  // Matches the abbreviated day names from the ICU "en" locale.
-  static constexpr const wchar_t* kDays[] = {L"Sun", L"Mon", L"Tue", L"Wed",
-                                             L"Thu", L"Fri", L"Sat"};
-  return kDays[day_of_week];
-}
-
-// Returns an abbreviated month name for a one-based |month|.
-const wchar_t* AbbreviatedMonth(int month) {
-  // Matches the abbreviated month names from the ICU "en" locale.
-  static constexpr const wchar_t* kMonths[] = {L"Jan", L"Feb", L"Mar", L"Apr",
-                                               L"May", L"Jun", L"Jul", L"Aug",
-                                               L"Sep", L"Oct", L"Nov", L"Dec"};
-  return kMonths[month - 1];
-}
-
 // Returns a formatted string given a date that is compatible with Omaha (see
 // https://github.com/google/omaha/blob/master/omaha/base/time.cc#L132).
 std::wstring FormatDate(base::Time date) {
-  base::Time::Exploded exploded_time;
-  date.UTCExplode(&exploded_time);
-
   // "Fri, 14 Aug 2015 16:13:03 GMT"
-  return base::StringPrintf(L"%ls, %02d %ls %04d %02d:%02d:%02d GMT",
-                            AbbreviatedDayOfWeek(exploded_time.day_of_week),
-                            exploded_time.day_of_month,
-                            AbbreviatedMonth(exploded_time.month),
-                            exploded_time.year, exploded_time.hour,
-                            exploded_time.minute, exploded_time.second);
+  return base::UTF8ToWide(base::TimeFormatHTTP(date));
 }
 
 // Appends "label_name=label_value|expiration" to |label|.
