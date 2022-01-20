@@ -45,9 +45,6 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1263234
   "quicksettings.ManagedDeviceInfo",
 
-  # b/201197372
-  "crostini.AppEmacs",
-
   # crbug.com/1273743
   "crostini.Launcher.local_wayland_bullseye_stable",
   "crostini.Launcher.local_wayland_buster_stable",
