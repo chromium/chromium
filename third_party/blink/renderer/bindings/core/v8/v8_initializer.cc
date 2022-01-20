@@ -766,13 +766,9 @@ void V8Initializer::InitializeMainThread(
 
   ThreadScheduler* scheduler = ThreadScheduler::Current();
 
-  v8::Isolate* isolate;
-  {
-    SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Blink.V8.InitPerIsolateData");
-    isolate = V8PerIsolateData::Initialize(scheduler->V8TaskRunner(),
-                                           GetV8ContextSnapshotMode(),
-                                           CreateHistogram, AddHistogramSample);
-  }
+  v8::Isolate* isolate = V8PerIsolateData::Initialize(
+      scheduler->V8TaskRunner(), GetV8ContextSnapshotMode(), CreateHistogram,
+      AddHistogramSample);
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer

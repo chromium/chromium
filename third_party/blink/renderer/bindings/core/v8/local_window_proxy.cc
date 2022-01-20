@@ -65,7 +65,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -73,14 +72,6 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-namespace {
-
-base::SingleSampleMetric* g_v8_context_count_logger = nullptr;
-
-}  // namespace
-
-// static
-int LocalWindowProxy::v8_context_count_ = 0;
 
 void LocalWindowProxy::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
@@ -230,26 +221,8 @@ void LocalWindowProxy::CreateContext() {
   v8::ExtensionConfiguration extension_configuration =
       ScriptController::ExtensionsFor(GetFrame()->DomWindow());
 
-  ++v8_context_count_;
-  if (!g_v8_context_count_logger) {
-    g_v8_context_count_logger =
-        base::SingleSampleMetricsFactory::Get()
-            ->CreateCustomCountsMetric("Blink.V8.NumberContextsCreatedOfWindow",
-                                       1, 100, 50)
-            .release();
-  }
-  g_v8_context_count_logger->SetSample(v8_context_count_);
-
   v8::Local<v8::Context> context;
   {
-    DEFINE_STATIC_LOCAL(
-        CustomCountHistogram, main_frame_hist,
-        ("Blink.Binding.CreateV8ContextForMainFrame", 0, 10000000, 50));
-    DEFINE_STATIC_LOCAL(
-        CustomCountHistogram, non_main_frame_hist,
-        ("Blink.Binding.CreateV8ContextForNonMainFrame", 0, 10000000, 50));
-    ScopedUsHistogramTimer timer(
-        GetFrame()->IsMainFrame() ? main_frame_hist : non_main_frame_hist);
     v8::Isolate* isolate = GetIsolate();
     V8PerIsolateData::UseCounterDisabledScope use_counter_disabled(
         V8PerIsolateData::From(isolate));

@@ -116,42 +116,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Binding.CreateV8ContextForMainFrame"
-    units="microseconds" expires_after="2022-06-26">
-  <owner>sky@chromium.org</owner>
-  <owner>yukishiino@chromium.org</owner>
-  <summary>
-    Warning: this histogram was expired from ~4/2019 to ~10/2021.
-
-    Time (in microseconds) spent to create a v8::Context instance during a page
-    loading in the main-frame window.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Binding.CreateV8ContextForNonMainFrame"
-    units="microseconds" expires_after="2022-06-26">
-  <owner>sky@chromium.org</owner>
-  <owner>yukishiino@chromium.org</owner>
-  <summary>
-    Warning: this histogram was expired from ~4/2019 to ~10/2021.
-
-    Time spent (in microseconds) to create a v8::Context instance during a page
-    loading in a non-main-frame window, e.g. iframe.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.2DPrintingAsVector" enum="BooleanSuccess"
     expires_after="2022-01-31">
   <owner>fserb@chromium.org</owner>
@@ -2553,31 +2517,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
-  </summary>
-</histogram>
-
-<histogram name="Blink.V8.InitPerIsolateData" units="microseconds"
-    expires_after="2022-07-11">
-  <owner>sky@chromium.org</owner>
-  <owner>yukishiino@chromium.org</owner>
-  <summary>
-    The number of microseconds it takes to call V8PerIsolateData::Initialize().
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Blink.V8.NumberContextsCreatedOfWindow" units="count"
-    expires_after="2022-07-17">
-  <owner>sky@chromium.org</owner>
-  <owner>yukishiino@chromium.org</owner>
-  <summary>
-    The number of V8 contexts blink created for windows. Logged when the
-    renderer shuts down.
   </summary>
 </histogram>
 
