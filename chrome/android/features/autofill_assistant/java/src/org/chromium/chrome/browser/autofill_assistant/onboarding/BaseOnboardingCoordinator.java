@@ -50,6 +50,10 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     private static final String SHOPPING_INTENT = "SHOPPING";
     private static final String SHOPPING_ASSISTED_CHECKOUT_INTENT = "SHOPPING_ASSISTED_CHECKOUT";
     private static final String BUY_MOVIE_TICKETS_EXPERIMENT_ID = "4363482";
+    private static final String ONBOARDING_TITLE_KEY = "onboarding_title";
+    private static final String ONBOARDING_SUBTITLE_KEY = "onboarding_text";
+    private static final String TERMS_AND_CONDITIONS_KEY = "terms_and_conditions";
+    private static final String TERMS_AND_CONDITIONS_URL_KEY = "terms_and_conditions_url";
 
     private final AssistantInfoPageUtil mInfoPageUtil;
     private final String mExperimentIds;
@@ -167,38 +171,17 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     @CalledByNative
     @VisibleForTesting
     public void updateAndShowView() {
-        updateView();
+        updateViews();
         showViewImpl();
     }
 
-    private void updateView() {
-        assert mView != null;
-
-        String termsAndConditionsKey = "terms_and_conditions";
-        String termsAndConditionsUrlKey = "terms_and_conditions_url";
-        updateTermsAndConditions(mView, mStringMap.get(termsAndConditionsKey),
-                mStringMap.get(termsAndConditionsUrlKey));
-
-        if (mStringMap.isEmpty()) {
-            updateViewBasedOnIntent(mView);
-        } else {
-            String onboardingTitleKey = "onboarding_title";
-            if (mStringMap.containsKey(onboardingTitleKey)) {
-                ((TextView) mView.findViewById(R.id.onboarding_try_assistant))
-                        .setText(mStringMap.get(onboardingTitleKey));
-            }
-
-            String onboardingTextKey = "onboarding_text";
-            if (mStringMap.containsKey(onboardingTextKey)) {
-                ((TextView) mView.findViewById(R.id.onboarding_subtitle))
-                        .setText(mStringMap.get(onboardingTextKey));
-            }
-        }
-    }
-
-    private void updateTermsAndConditions(ScrollView initView,
-            @Nullable String termsAndConditionsString, @Nullable String termsAndConditionsUrl) {
-        TextView termsTextView = initView.findViewById(R.id.google_terms_message);
+    /**
+     * Updates the given ToC view text based on the current parameters.
+     */
+    protected void updateTermsAndConditionsView(TextView termsAndConditionsView) {
+        // Note: these strings may be null.
+        String termsAndConditionsString = mStringMap.get(TERMS_AND_CONDITIONS_KEY);
+        String termsAndConditionsUrl = mStringMap.get(TERMS_AND_CONDITIONS_URL_KEY);
 
         // Note: `SpanApplier.applySpans` will throw an error if the text does not contain
         // <link></link> to replace!
@@ -220,54 +203,85 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
                                         : termsAndConditionsUrl));
         SpannableString spannableMessage = SpanApplier.applySpans(
                 termsAndConditionsString, new SpanApplier.SpanInfo("<link>", "</link>", termsSpan));
-        termsTextView.setText(spannableMessage);
-        termsTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        termsAndConditionsView.setText(spannableMessage);
+        termsAndConditionsView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private void updateViewBasedOnIntent(ScrollView initView) {
+    /**
+     * Updates the given title view text based on the current parameters.
+     */
+    protected void updateTitleView(TextView titleView) {
+        if (mStringMap.containsKey(ONBOARDING_TITLE_KEY)) {
+            titleView.setText(mStringMap.get(ONBOARDING_TITLE_KEY));
+            return;
+        }
+
         if (!mParameters.containsKey(INTENT_IDENTFIER)) {
             return;
         }
 
-        TextView titleTextView = initView.findViewById(R.id.onboarding_try_assistant);
-        TextView termsTextView = initView.findViewById(R.id.onboarding_subtitle);
         switch (mParameters.get(INTENT_IDENTFIER)) {
             case FLIGHTS_INTENT:
-                termsTextView.setText(R.string.autofill_assistant_init_message_short);
-                titleTextView.setText(R.string.autofill_assistant_init_message_flights_checkin);
-                break;
+                titleView.setText(R.string.autofill_assistant_init_message_flights_checkin);
+                return;
             case FOOD_ORDERING_INTENT:
             case FOOD_ORDERING_PICKUP_INTENT:
             case FOOD_ORDERING_DELIVERY_INTENT:
-                termsTextView.setText(R.string.autofill_assistant_init_message_short);
-                titleTextView.setText(R.string.autofill_assistant_init_message_food_ordering);
-                break;
+                titleView.setText(R.string.autofill_assistant_init_message_food_ordering);
+                return;
             case VOICE_SEARCH_INTENT:
-                termsTextView.setText(R.string.autofill_assistant_init_message_short);
-                titleTextView.setText(R.string.autofill_assistant_init_message_voice_search);
-                break;
+                titleView.setText(R.string.autofill_assistant_init_message_voice_search);
+                return;
             case RENT_CAR_INTENT:
-                termsTextView.setText(R.string.autofill_assistant_init_message_short);
-                titleTextView.setText(R.string.autofill_assistant_init_message_rent_car);
-                break;
+                titleView.setText(R.string.autofill_assistant_init_message_rent_car);
+                return;
             case PASSWORD_CHANGE_INTENT:
-                termsTextView.setText(R.string.autofill_assistant_init_message_short);
-                titleTextView.setText(R.string.autofill_assistant_init_message_password_change);
-                break;
+                titleView.setText(R.string.autofill_assistant_init_message_password_change);
+                return;
             case SHOPPING_INTENT:
             case SHOPPING_ASSISTED_CHECKOUT_INTENT:
-                termsTextView.setText(R.string.autofill_assistant_init_message_short);
-                titleTextView.setText(R.string.autofill_assistant_init_message_shopping);
-                break;
+                titleView.setText(R.string.autofill_assistant_init_message_shopping);
+                return;
             case BUY_MOVIE_TICKETS_INTENT:
                 if (Arrays.asList(mExperimentIds.split(","))
                                 .contains(BUY_MOVIE_TICKETS_EXPERIMENT_ID)) {
-                    termsTextView.setText(R.string.autofill_assistant_init_message_short);
-                    titleTextView.setText(
-                            R.string.autofill_assistant_init_message_buy_movie_tickets);
+                    titleView.setText(R.string.autofill_assistant_init_message_buy_movie_tickets);
                 }
+                return;
+        }
+    }
 
-                break;
+    /**
+     * Updates the given subtitle view text based on the current parameters.
+     */
+    protected void updateSubtitleView(TextView subtitleView) {
+        if (mStringMap.containsKey(ONBOARDING_SUBTITLE_KEY)) {
+            subtitleView.setText(mStringMap.get(ONBOARDING_SUBTITLE_KEY));
+            return;
+        }
+
+        if (!mParameters.containsKey(INTENT_IDENTFIER)) {
+            return;
+        }
+
+        switch (mParameters.get(INTENT_IDENTFIER)) {
+            case FLIGHTS_INTENT:
+            case FOOD_ORDERING_INTENT:
+            case FOOD_ORDERING_PICKUP_INTENT:
+            case FOOD_ORDERING_DELIVERY_INTENT:
+            case VOICE_SEARCH_INTENT:
+            case RENT_CAR_INTENT:
+            case PASSWORD_CHANGE_INTENT:
+            case SHOPPING_INTENT:
+            case SHOPPING_ASSISTED_CHECKOUT_INTENT:
+                subtitleView.setText(R.string.autofill_assistant_init_message_short);
+                return;
+            case BUY_MOVIE_TICKETS_INTENT:
+                if (Arrays.asList(mExperimentIds.split(","))
+                                .contains(BUY_MOVIE_TICKETS_EXPERIMENT_ID)) {
+                    subtitleView.setText(R.string.autofill_assistant_init_message_short);
+                }
+                return;
         }
     }
 

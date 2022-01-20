@@ -84,6 +84,14 @@ class DialogOnboardingCoordinator extends BaseOnboardingCoordinator {
     }
 
     @Override
+    public void updateViews() {
+        assert mView != null;
+        updateTermsAndConditionsView(mView.findViewById(R.id.google_terms_message));
+        updateTitleView(mView.findViewById(R.id.onboarding_try_assistant));
+        updateSubtitleView(mView.findViewById(R.id.onboarding_subtitle));
+    }
+
+    @Override
     public boolean isInProgress() {
         return mDialog != null;
     }
