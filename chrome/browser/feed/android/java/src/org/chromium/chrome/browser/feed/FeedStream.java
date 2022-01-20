@@ -59,6 +59,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.feed.proto.FeedUiProto;
+import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
@@ -181,6 +182,13 @@ public class FeedStream implements Stream {
         private void openSuggestionUrl(String url, int disposition) {
             boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
                     || disposition == WindowOpenDisposition.OFF_THE_RECORD);
+
+            if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
+                    && mLaunchReliabilityLogger != null
+                    && mLaunchReliabilityLogger.isLaunchInProgress()) {
+                mLaunchReliabilityLogger.logLaunchFinished(
+                        System.nanoTime(), DiscoverLaunchResult.CARD_TAPPED.getNumber());
+            }
             // This postTask is necessary so that other click-handlers have a chance
             // to run before we begin navigating. On start surface, navigation immediately
             // triggers unbind, which can break event handling.
@@ -414,6 +422,7 @@ public class FeedStream implements Stream {
     private final Map<String, Object> mHandlersMap;
     private RotationObserver mRotationObserver;
     private FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
+    private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
 
     // Things valid only when bound.
     private @Nullable RecyclerView mRecyclerView;
@@ -566,6 +575,7 @@ public class FeedStream implements Stream {
             FeedScrollState savedInstanceState, SurfaceScope surfaceScope,
             HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
             int headerCount) {
+        mLaunchReliabilityLogger = launchReliabilityLogger;
         launchReliabilityLogger.sendPendingEvents(
                 mIsInterestFeed ? StreamType.FOR_YOU : StreamType.WEB_FEED,
                 FeedStreamJni.get().getSurfaceId(mNativeFeedStream, FeedStream.this));

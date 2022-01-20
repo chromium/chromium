@@ -61,6 +61,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.base.ViewUtils;
@@ -77,10 +78,10 @@ import java.util.List;
 /**
  * Provides a surface that displays an interest feed rendered list of content suggestions.
  */
-public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDelegate,
-                                               SwipeRefreshLayout.OnRefreshListener,
-                                               BackToTopBubbleScrollListener.ResultHandler,
-                                               SurfaceCoordinator, FeedAutoplaySettingsDelegate {
+public class FeedSurfaceCoordinator
+        implements FeedSurfaceProvider, FeedBubbleDelegate, SwipeRefreshLayout.OnRefreshListener,
+                   BackToTopBubbleScrollListener.ResultHandler, SurfaceCoordinator,
+                   FeedAutoplaySettingsDelegate, FeedReliabilityLoggingSignals {
     private static final String TAG = "FeedSurfaceCoordinator";
 
     protected final Activity mActivity;
@@ -138,7 +139,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private @Nullable BackToTopBubbleScrollListener mBackToTopBubbleScrollListener;
 
     private final FeedLaunchReliabilityLoggingState mLaunchReliabilityLoggingState;
-    private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
+    private FeedLaunchReliabilityLogger mLaunchReliabilityLogger =
+            new FeedLaunchReliabilityLogger() {};
     private final PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
 
     private final Supplier<Toolbar> mToolbarSupplier;
@@ -407,11 +409,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     @Override
     public void onRefresh() {
         updateReloadButtonVisibility(/*isReloading=*/true);
-        // It is possible that onRefresh() is called when mLaunchReliabilityLogger is null, see
-        // https://crbug.com/1269056.
-        if (mLaunchReliabilityLogger != null) {
-            mLaunchReliabilityLogger.logManualRefresh(System.nanoTime());
-        }
+        mLaunchReliabilityLogger.logManualRefresh(System.nanoTime());
         mMediator.manualRefresh((Boolean v) -> {
             if (mSwipeRefreshLayout == null) return;
             updateReloadButtonVisibility(/*isReloading=*/false);
@@ -534,11 +532,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             mHybridListRenderer = new NativeViewListRenderer(context);
         }
 
-        if (mLaunchReliabilityLogger == null) {
-            // No-op logger.
-            mLaunchReliabilityLogger = new FeedLaunchReliabilityLogger() {};
-        }
-
         RecyclerView view;
         if (mHybridListRenderer != null) {
             // XSurface returns a View, but it should be a RecyclerView.
@@ -583,7 +576,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         return mContentManager;
     }
 
-    /** @return Returns this surface's {@link FeedLaunchReliabilityLogger}. */
+    /**
+     * @return This surface's {@link FeedLaunchReliabilityLogger}. The logger instance may change.
+     */
     public FeedLaunchReliabilityLogger getLaunchReliabilityLogger() {
         return mLaunchReliabilityLogger;
     }
@@ -892,6 +887,57 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     @Override
     public void removeObserver(SurfaceCoordinator.Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    @Override
+    public void onActivityPaused() {
+        logLaunchFinishedIfInProgress(DiscoverLaunchResult.FRAGMENT_PAUSED);
+    }
+
+    @Override
+    public void onActivityResumed() {
+        mLaunchReliabilityLogger.cancelPendingFinished();
+    }
+
+    @Override
+    public void onOmniboxFocused() {
+        // The user could return to the feed while it's still loading, so call pendingFinished()
+        // rather than logLaunchFinished().
+        recordPendingLaunchFinishedIfInProgress(DiscoverLaunchResult.SEARCH_BOX_TAPPED);
+    }
+
+    @Override
+    public void onVoiceSearch() {
+        // The user could return to the feed while it's still loading, so call pendingFinished()
+        // rather than logLaunchFinished().
+        recordPendingLaunchFinishedIfInProgress(DiscoverLaunchResult.VOICE_SEARCH_TAPPED);
+    }
+
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {
+        // URL bar gaining focus is already handled by onOmniboxFocused() and onVoiceSearch().
+        if (hasFocus || !mLaunchReliabilityLogger.isLaunchInProgress()) {
+            return;
+        }
+        mLaunchReliabilityLogger.cancelPendingFinished();
+    }
+
+    @Override
+    public void onUrlAnimationFinished(boolean hasFocus) {}
+
+    private void recordPendingLaunchFinishedIfInProgress(DiscoverLaunchResult status) {
+        if (!mLaunchReliabilityLogger.isLaunchInProgress()) {
+            return;
+        }
+        mLaunchReliabilityLogger.pendingFinished(System.nanoTime(), status.getNumber());
+    }
+
+    private void logLaunchFinishedIfInProgress(DiscoverLaunchResult status) {
+        if (!mLaunchReliabilityLogger.isLaunchInProgress()) {
+            return;
+        }
+        // TODO(iwells): Switch logging to use SystemClock.elapsedRealtimeNanos() instead.
+        mLaunchReliabilityLogger.logLaunchFinished(System.nanoTime(), status.getNumber());
     }
 
     public boolean isLoadingFeed() {

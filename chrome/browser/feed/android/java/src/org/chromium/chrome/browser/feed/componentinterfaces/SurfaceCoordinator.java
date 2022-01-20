@@ -18,6 +18,9 @@ public interface SurfaceCoordinator {
     void onSurfaceOpened();
     boolean isActive();
 
+    void onActivityPaused();
+    void onActivityResumed();
+
     /** Enumeration of the possible selection options of feed tabs. */
     @IntDef({StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
     public @interface StreamTabId {
