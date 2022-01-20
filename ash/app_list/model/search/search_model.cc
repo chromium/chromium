@@ -8,9 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
 
 namespace ash {
+
+using TextItem = ash::SearchResultTextItem;
+using TextType = ash::SearchResultTextItemType;
 
 SearchModel::SearchModel()
     : search_box_(std::make_unique<SearchBoxModel>()),
@@ -83,10 +87,30 @@ void SearchModel::PublishResults(
       // Update and use the old result if it exists.
       std::unique_ptr<SearchResult> ui_result = std::move(ui_result_it->second);
       ui_result->SetMetadata(new_result->TakeMetadata());
-      // TODO(crbug/1216097): Setup TextVector metadata if none is sent from the
-      // backend. TextVector metadata will eventually be set for all results by
-      // the backend but we need to do this for now to update how all search
-      // result views are created.
+
+      // Setup TextVector metadata if the result has title text and an empty
+      // title text vector.
+      if (!ui_result->title().empty() &&
+          ui_result->title_text_vector().empty()) {
+        std::vector<TextItem> text_vector;
+        TextItem text_item(TextType::kString);
+        text_item.SetText(ui_result->title());
+        text_item.SetTextTags(ui_result->title_tags());
+        text_vector.push_back(text_item);
+        ui_result->set_title_text_vector(text_vector);
+      }
+
+      // Setup TextVector metadata if the result has details text and an empty
+      // details text vector.
+      if (!ui_result->details().empty() &&
+          ui_result->details_text_vector().empty()) {
+        std::vector<TextItem> text_vector;
+        TextItem text_item(TextType::kString);
+        text_item.SetText(ui_result->title());
+        text_item.SetTextTags(ui_result->details_tags());
+        text_vector.push_back(text_item);
+        ui_result->set_details_text_vector(text_vector);
+      }
       results_->Add(std::move(ui_result));
 
       // Remove the item from the map so that it ends up only with unused
