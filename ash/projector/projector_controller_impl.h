@@ -119,7 +119,7 @@ class ASH_EXPORT ProjectorControllerImpl
 
   // Starts or stops the speech recognition session.
   void StartSpeechRecognition();
-  void StopSpeechRecognition();
+  void MaybeStopSpeechRecognition();
 
   // Triggered when finish creating the screencast container folder. This method
   // caches the the container folder path in `ProjectorSession` and triggers the

@@ -148,6 +148,11 @@ void ProjectorControllerImpl::OnTranscription(
 }
 
 void ProjectorControllerImpl::OnTranscriptionError() {
+  is_speech_recognition_on_ = false;
+
+  ProjectorUiController::ShowFailureNotification(
+      IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION);
+
   CaptureModeController::Get()->EndVideoRecording(
       EndRecordingReason::kProjectorTranscriptionError);
 }
@@ -159,6 +164,7 @@ void ProjectorControllerImpl::OnSpeechRecognitionStopped() {
     SaveScreencast();
   }
 
+  is_speech_recognition_on_ = false;
   projector_session_->Stop();
 }
 
@@ -279,7 +285,7 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
   if (ui_controller_)
     ui_controller_->CloseToolbar();
 
-  StopSpeechRecognition();
+  MaybeStopSpeechRecognition();
 
   // At this point, the screencast might not synced to Drive yet. Open
   // Projector App which shows the Gallery view by default.
@@ -374,15 +380,15 @@ void ProjectorControllerImpl::StartSpeechRecognition() {
   is_speech_recognition_on_ = true;
 }
 
-void ProjectorControllerImpl::StopSpeechRecognition() {
-  if (ProjectorController::AreExtendedProjectorFeaturesDisabled()) {
+void ProjectorControllerImpl::MaybeStopSpeechRecognition() {
+  if (ProjectorController::AreExtendedProjectorFeaturesDisabled() ||
+      !is_speech_recognition_on_) {
     OnSpeechRecognitionStopped();
     return;
   }
 
   DCHECK(speech_recognition_availability_ ==
          SpeechRecognitionAvailability::kAvailable);
-  DCHECK(is_speech_recognition_on_);
   DCHECK_NE(client_, nullptr);
   client_->StopSpeechRecognition();
   is_speech_recognition_on_ = false;
