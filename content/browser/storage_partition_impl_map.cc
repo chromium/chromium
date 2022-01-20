@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -259,10 +260,10 @@ void NormalizeActivePaths(const base::FilePath& storage_root,
 void BlockingGarbageCollect(
     const base::FilePath& storage_root,
     const scoped_refptr<base::TaskRunner>& file_access_runner,
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths) {
+    std::unordered_set<base::FilePath> active_paths) {
   CHECK(storage_root.IsAbsolute());
 
-  NormalizeActivePaths(storage_root, active_paths.get());
+  NormalizeActivePaths(storage_root, &active_paths);
 
   base::FileEnumerator enumerator(storage_root, false, kAllFileTypes);
   base::FilePath trash_directory;
@@ -273,8 +274,7 @@ void BlockingGarbageCollect(
   }
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
-    if (active_paths->find(path) == active_paths->end() &&
-        path != trash_directory) {
+    if (!base::Contains(active_paths, path) && path != trash_directory) {
       // Since |trash_directory| is unique for each run of this function there
       // can be no colllisions on the move.
       base::Move(path, trash_directory.Append(path.BaseName()));
@@ -415,16 +415,14 @@ void StoragePartitionImplMap::AsyncObliterate(
 }
 
 void StoragePartitionImplMap::GarbageCollect(
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
+    std::unordered_set<base::FilePath> active_paths,
     base::OnceClosure done) {
   // Include all paths for current StoragePartitions in the active_paths since
   // they cannot be deleted safely.
-  for (PartitionMap::const_iterator it = partitions_.begin();
-       it != partitions_.end();
-       ++it) {
-    const StoragePartitionConfig& config = it->first;
+  for (const auto& part : partitions_) {
+    const StoragePartitionConfig& config = part.first;
     if (!config.in_memory())
-      active_paths->insert(it->second->GetPath());
+      active_paths.insert(part.second->GetPath());
   }
 
   // Find the directory holding the StoragePartitions and delete everything in

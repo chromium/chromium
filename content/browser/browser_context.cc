@@ -170,7 +170,7 @@ void BrowserContext::AsyncObliterateStoragePartition(
 }
 
 void BrowserContext::GarbageCollectStoragePartitions(
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
+    std::unordered_set<base::FilePath> active_paths,
     base::OnceClosure done) {
   impl()->GetOrCreateStoragePartitionMap()->GarbageCollect(
       std::move(active_paths), std::move(done));

@@ -166,10 +166,14 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
                                        base::OnceClosure on_gc_required,
                                        base::OnceClosure done_callback);
 
-  // This function clears the contents of |active_paths| but does not take
-  // ownership of the pointer.
+  // Examines the on-disk storage and removes any entries that are not listed
+  // in the `active_paths`, or in use by current entries in the storage
+  // partition.
+  //
+  // The `done` closure is executed on the calling thread when garbage
+  // collection is complete.
   void GarbageCollectStoragePartitions(
-      std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
+      std::unordered_set<base::FilePath> active_paths,
       base::OnceClosure done);
 
   StoragePartition* GetDefaultStoragePartition();

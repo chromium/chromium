@@ -56,15 +56,9 @@ class CONTENT_EXPORT StoragePartitionImplMap
                        base::OnceClosure on_gc_required,
                        base::OnceClosure done_callback);
 
-  // Examines the on-disk storage and removes any entires that are not listed
-  // in the |active_paths|, or in use by current entries in the storage
-  // partition.
-  //
-  // The |done| closure is executed on the calling thread when garbage
-  // collection is complete.
-  void GarbageCollect(
-      std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
-      base::OnceClosure done);
+  // See BrowserContext::GarbageCollectStoragePartitions().
+  void GarbageCollect(std::unordered_set<base::FilePath> active_paths,
+                      base::OnceClosure done);
 
   void ForEach(BrowserContext::StoragePartitionCallback callback);
 
