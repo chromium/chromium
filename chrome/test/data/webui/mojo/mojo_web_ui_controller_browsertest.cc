@@ -163,7 +163,7 @@ class MojoWebUIControllerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     base::FilePath pak_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
     pak_path = pak_path.AppendASCII("browser_tests.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path, ui::kScaleFactorNone);
