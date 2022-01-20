@@ -103,20 +103,17 @@ void LocalCardMigrationBubbleViews::AddedToWidget() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
+  const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // kGooglePayLogoIcon is square, and CreateTiledImage() will clip it whereas
   // setting the icon size would rescale it incorrectly.
   gfx::ImageSkia image = gfx::ImageSkiaOperations::CreateTiledImage(
-      gfx::CreateVectorIcon(kGooglePayLogoIcon,
-                            GetNativeTheme()->ShouldUseDarkColors()
-                                ? gfx::kGoogleGrey200
-                                : gfx::kGoogleGrey700),
+      gfx::CreateVectorIcon(kGooglePayLogoIcon, color),
       /*x=*/0, /*y=*/0, kMigrationBubbleGooglePayLogoWidth,
       kMigrationBubbleGooglePayLogoHeight);
 #else
   gfx::ImageSkia image = gfx::CreateVectorIcon(
-      kCreditCardIcon, kMigrationBubbleGooglePayLogoHeight,
-      GetColorProvider()->GetColor(ui::kColorIcon));
+      kCreditCardIcon, kMigrationBubbleGooglePayLogoHeight, color);
 #endif
   views::ImageView* icon_view = new views::ImageView();
   icon_view->SetImage(image);
