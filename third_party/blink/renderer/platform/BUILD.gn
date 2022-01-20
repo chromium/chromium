@@ -747,8 +747,6 @@ component("platform") {
     "geometry/calculation_value.h",
     "geometry/double_point.cc",
     "geometry/double_point.h",
-    "geometry/double_size.cc",
-    "geometry/double_size.h",
     "geometry/float_polygon.cc",
     "geometry/float_polygon.h",
     "geometry/float_rounded_rect.cc",

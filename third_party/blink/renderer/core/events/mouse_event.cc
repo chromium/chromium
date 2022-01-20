@@ -50,19 +50,21 @@ namespace blink {
 
 namespace {
 
-DoubleSize ContentsScrollOffset(AbstractView* abstract_view) {
+DoublePoint ClientToPageLocation(const DoublePoint& client_location,
+                                 AbstractView* abstract_view) {
   auto* local_dom_window = DynamicTo<LocalDOMWindow>(abstract_view);
   if (!local_dom_window)
-    return DoubleSize();
+    return client_location;
   LocalFrame* frame = local_dom_window->GetFrame();
   if (!frame)
-    return DoubleSize();
+    return client_location;
   ScrollableArea* scrollable_area = frame->View()->LayoutViewport();
   if (!scrollable_area)
-    return DoubleSize();
+    return client_location;
   float scale_factor = frame->PageZoomFactor();
-  return DoubleSize(scrollable_area->ScrollOffsetInt().x() / scale_factor,
-                    scrollable_area->ScrollOffsetInt().y() / scale_factor);
+  gfx::Vector2d scroll_offset = scrollable_area->ScrollOffsetInt();
+  return DoublePoint(client_location.X() + scroll_offset.x() / scale_factor,
+                     client_location.Y() + scroll_offset.y() / scale_factor);
 }
 
 float PageZoomFactor(const UIEvent* event) {
@@ -164,7 +166,7 @@ void MouseEvent::InitCoordinates(const double client_x, const double client_y) {
   // Set up initial values for coordinates.
   // Correct values are computed lazily, see computeRelativePosition.
   client_location_ = DoublePoint(client_x, client_y);
-  page_location_ = client_location_ + ContentsScrollOffset(view());
+  page_location_ = ClientToPageLocation(client_location_, view());
 
   layer_location_ = page_location_;
   offset_location_ = page_location_;
@@ -481,8 +483,8 @@ void MouseEvent::ComputeRelativePosition() {
 
     PhysicalOffset physical_offset;
     layer->ConvertToLayerCoords(nullptr, physical_offset);
-    layer_location_ -= DoubleSize(physical_offset.left.ToDouble(),
-                                  physical_offset.top.ToDouble());
+    layer_location_.Move(-physical_offset.left.ToDouble(),
+                         -physical_offset.top.ToDouble());
 
     if (inverse_zoom_factor != 1.0f)
       layer_location_.Scale(inverse_zoom_factor, inverse_zoom_factor);

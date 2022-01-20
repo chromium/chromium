@@ -133,9 +133,13 @@ float CSSToLengthConversionData::FontSizes::Zoom() const {
 }
 
 CSSToLengthConversionData::ViewportSize::ViewportSize(
-    const LayoutView* layout_view)
-    : size_(layout_view ? layout_view->ViewportSizeForViewportUnits()
-                        : DoubleSize()) {}
+    const LayoutView* layout_view) {
+  if (layout_view) {
+    gfx::SizeF size = layout_view->ViewportSizeForViewportUnits();
+    width_ = size.width();
+    height_ = size.height();
+  }
+}
 
 absl::optional<double> CSSToLengthConversionData::ContainerSizes::Width()
     const {

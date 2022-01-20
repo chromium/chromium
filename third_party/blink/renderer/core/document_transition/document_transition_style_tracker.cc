@@ -285,8 +285,8 @@ void DocumentTransitionStyleTracker::RunPostLayoutSteps() {
     auto* resize_observer_entry =
         MakeGarbageCollected<ResizeObserverEntry>(element_data->target_element);
     auto entry_size = resize_observer_entry->borderBoxSize()[0];
-    auto border_box_size = LayoutSize(
-        DoubleSize(entry_size->inlineSize(), entry_size->blockSize()));
+    LayoutSize border_box_size(LayoutUnit(entry_size->inlineSize()),
+                               LayoutUnit(entry_size->blockSize()));
 
     if (viewport_matrix == element_data->viewport_matrix &&
         border_box_size == element_data->border_box_size) {

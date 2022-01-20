@@ -14,14 +14,6 @@ DoublePoint::operator gfx::PointF() const {
   return gfx::PointF(ClampTo<float>(x_), ClampTo<float>(y_));
 }
 
-DoublePoint DoublePoint::ExpandedTo(const DoublePoint& other) const {
-  return DoublePoint(std::max(x_, other.x_), std::max(y_, other.y_));
-}
-
-DoublePoint DoublePoint::ShrunkTo(const DoublePoint& other) const {
-  return DoublePoint(std::min(x_, other.x_), std::min(y_, other.y_));
-}
-
 std::ostream& operator<<(std::ostream& ostream, const DoublePoint& point) {
   return ostream << point.ToString();
 }

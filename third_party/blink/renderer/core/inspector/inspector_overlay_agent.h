@@ -292,7 +292,7 @@ class CORE_EXPORT InspectorOverlayAgent final
 
   LocalFrame* OverlayMainFrame();
   void Reset(const gfx::Size& viewport_size,
-             const DoubleSize& visual_viewport_size);
+             const gfx::SizeF& visual_viewport_size);
   void OnResizeTimer(TimerBase*);
   void PaintOverlayPage();
 

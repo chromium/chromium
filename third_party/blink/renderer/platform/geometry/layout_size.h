@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_SIZE_H_
 
 #include <iosfwd>
-#include "third_party/blink/renderer/platform/geometry/double_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -61,8 +60,6 @@ class PLATFORM_EXPORT LayoutSize {
       : width_(size.width()), height_(size.height()) {}
   constexpr explicit LayoutSize(const gfx::Vector2dF& vector)
       : width_(vector.x()), height_(vector.y()) {}
-  constexpr explicit LayoutSize(const DoubleSize& size)
-      : width_(size.Width()), height_(size.Height()) {}
 
   constexpr explicit operator gfx::SizeF() const {
     return gfx::SizeF(width_.ToFloat(), height_.ToFloat());

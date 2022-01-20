@@ -3118,7 +3118,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
   }
 
   VisualViewport& visual_viewport = frame_->GetPage()->GetVisualViewport();
-  DoubleSize visual_viewport_size(visual_viewport.VisibleWidthCSSPx(),
+  gfx::SizeF visual_viewport_size(visual_viewport.VisibleWidthCSSPx(),
                                   visual_viewport.VisibleHeightCSSPx());
 
   bool did_layout = UpdateStyleAndLayoutInternal();
@@ -3151,7 +3151,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
     bool visual_viewport_size_changed = false;
     if (frame_->IsMainFrame()) {
       // Scrollbars changing state can cause a visual viewport size change.
-      DoubleSize new_viewport_size(visual_viewport.VisibleWidthCSSPx(),
+      gfx::SizeF new_viewport_size(visual_viewport.VisibleWidthCSSPx(),
                                    visual_viewport.VisibleHeightCSSPx());
       visual_viewport_size_changed =
           (new_viewport_size != visual_viewport_size);
@@ -3343,7 +3343,10 @@ DoublePoint LocalFrameView::DocumentToFrame(
   if (!layout_viewport)
     return point_in_document;
 
-  return point_in_document - DoubleSize(layout_viewport->GetScrollOffset());
+  ScrollOffset scroll_offset = layout_viewport->GetScrollOffset();
+  DoublePoint result = point_in_document;
+  result.Move(-scroll_offset.x(), -scroll_offset.y());
+  return result;
 }
 
 gfx::Point LocalFrameView::DocumentToFrame(

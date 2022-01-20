@@ -1375,31 +1375,31 @@ double XRSession::RecommendedFramebufferScale() const {
   return recommended_framebuffer_scale_;
 }
 
-DoubleSize XRSession::RecommendedFramebufferSize() const {
+gfx::SizeF XRSession::RecommendedFramebufferSize() const {
   if (!immersive()) {
-    return OutputCanvasSize();
+    return gfx::SizeF(OutputCanvasSize());
   }
 
-  double scale = recommended_framebuffer_scale_;
-  double width = 0;
-  double height = 0;
+  float scale = recommended_framebuffer_scale_;
+  float width = 0;
+  float height = 0;
 
   // For the moment, concatenate all the views into a big strip.
   // Won't scale well for displays that use more than a stereo pair.
   for (const auto& view : pending_views_) {
     width += view->viewport.width();
-    height = std::max(height, static_cast<double>(view->viewport.height()));
+    height = std::max<float>(height, view->viewport.height());
   }
 
-  return DoubleSize(width * scale, height * scale);
+  return gfx::SizeF(width * scale, height * scale);
 }
 
-DoubleSize XRSession::OutputCanvasSize() const {
+gfx::Size XRSession::OutputCanvasSize() const {
   if (!render_state_->output_canvas()) {
-    return DoubleSize();
+    return gfx::Size();
   }
 
-  return DoubleSize(output_width_, output_height_);
+  return gfx::Size(output_width_, output_height_);
 }
 
 void XRSession::OnFocusChanged() {

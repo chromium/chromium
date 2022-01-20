@@ -76,7 +76,6 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
-#include "third_party/blink/renderer/platform/geometry/double_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -1153,11 +1152,11 @@ static std::unique_ptr<protocol::DictionaryValue> BuildObjectForSize(
 }
 
 static std::unique_ptr<protocol::DictionaryValue> BuildObjectForSize(
-    const DoubleSize& size) {
+    const gfx::SizeF& size) {
   std::unique_ptr<protocol::DictionaryValue> result =
       protocol::DictionaryValue::create();
-  result->setDouble("width", size.Width());
-  result->setDouble("height", size.Height());
+  result->setDouble("width", size.width());
+  result->setDouble("height", size.height());
   return result;
 }
 
@@ -1257,7 +1256,7 @@ LocalFrame* InspectorOverlayAgent::OverlayMainFrame() {
 
 void InspectorOverlayAgent::Reset(
     const gfx::Size& viewport_size,
-    const DoubleSize& viewport_size_for_media_queries) {
+    const gfx::SizeF& viewport_size_for_media_queries) {
   std::unique_ptr<protocol::DictionaryValue> reset_data =
       protocol::DictionaryValue::create();
   reset_data->setDouble("deviceScaleFactor", WindowToViewportScale());

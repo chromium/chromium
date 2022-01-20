@@ -60,8 +60,6 @@ class PLATFORM_EXPORT LayoutRect {
       : location_(LayoutPoint(x, y)), size_(LayoutSize(width, height)) {}
   constexpr LayoutRect(const gfx::PointF& location, const gfx::SizeF& size)
       : location_(location), size_(size) {}
-  constexpr LayoutRect(const DoublePoint& location, const DoubleSize& size)
-      : location_(location), size_(size) {}
   constexpr LayoutRect(const gfx::Point& location, const gfx::Size& size)
       : location_(location), size_(size) {}
   constexpr explicit LayoutRect(const gfx::Rect& rect)
