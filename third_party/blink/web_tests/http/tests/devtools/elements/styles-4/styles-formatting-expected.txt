@@ -7,8 +7,7 @@ Running: testFormattedInsertStart
 raw cssText:
 {
           /* leading comment */
-          firstProperty: rgba(1, 2, 3, 0);
-          color: red;   /* comment1 */
+          firstProperty: rgba(1, 2, 3, 0);color: red;   /* comment1 */
           zoom: 1;/* comment2 */ /* like: property */
           padding: 0
       }
@@ -27,8 +26,7 @@ raw cssText:
 {
           /* leading comment */
           color: red;   /* comment1 */
-          middleProperty: middleValue /* comment */;
-          zoom: 1;/* comment2 */ /* like: property */
+          middleProperty: middleValue /* comment */;zoom: 1;/* comment2 */ /* like: property */
           padding: 0
       }
 
@@ -47,9 +45,8 @@ raw cssText:
           /* leading comment */
           color: red;   /* comment1 */
           zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
-          endProperty: endValue;
-      }
+          padding: 0
+      ;endProperty: endValue;}
 
 Running: testFormattedRemoveEnd
 raw cssText:
@@ -57,8 +54,8 @@ raw cssText:
           /* leading comment */
           color: red;   /* comment1 */
           zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
-      }
+          padding: 0
+      ;}
 
 Running: testFormattedDisableStart
 raw cssText:
@@ -66,8 +63,8 @@ raw cssText:
           /* leading comment */
           /* color: red; */   /* comment1 */
           zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
-      }
+          padding: 0
+      ;}
 
 Running: testFormattedDisableEnd
 raw cssText:
@@ -75,8 +72,8 @@ raw cssText:
           /* leading comment */
           /* color: red; */   /* comment1 */
           zoom: 1;/* comment2 */ /* like: property */
-          /* padding: 0; */
-      }
+          /* padding: 0
+      ; */}
 
 Running: testFormattedDisableMiddle
 raw cssText:
@@ -84,119 +81,89 @@ raw cssText:
           /* leading comment */
           /* color: red; */   /* comment1 */
           /* zoom: 1; *//* comment2 */ /* like: property */
-          /* padding: 0; */
-      }
+          /* padding: 0
+      ; */}
 
 Running: testFormattedInsert1
 raw cssText:
 {
           /* leading comment */
-          propA: valA;
-          /* color: red; */   /* comment1 */
+          propA: valA;/* color: red; */   /* comment1 */
           /* zoom: 1; *//* comment2 */ /* like: property */
-          /* padding: 0; */
-      }
+          /* padding: 0
+      ; */}
 
 Running: testFormattedInsert2
 raw cssText:
 {
           /* leading comment */
-          propA: valA;
-          /* color: red; */   /* comment1 */
-          propB: valB;
-          /* zoom: 1; *//* comment2 */ /* like: property */
-          /* padding: 0; */
-      }
+          propA: valA;/* color: red; */   /* comment1 */
+          propB: valB;/* zoom: 1; *//* comment2 */ /* like: property */
+          /* padding: 0
+      ; */}
 
 Running: testFormattedInsert3
 raw cssText:
 {
           /* leading comment */
-          propA: valA;
-          /* color: red; */   /* comment1 */
-          propB: valB;
-          /* zoom: 1; *//* comment2 */ /* like: property */
-          /* padding: 0; */
-          propC: valC;
-      }
+          propA: valA;/* color: red; */   /* comment1 */
+          propB: valB;/* zoom: 1; *//* comment2 */ /* like: property */
+          /* padding: 0
+      ; */propC: valC;}
 
 Running: testFormattedEnableStart
 raw cssText:
 {
           /* leading comment */
-          propA: valA;
-          color: red;   /* comment1 */
-          propB: valB;
-          /* zoom: 1; *//* comment2 */ /* like: property */
-          /* padding: 0; */
-          propC: valC;
-      }
+          propA: valA;color: red;   /* comment1 */
+          propB: valB;/* zoom: 1; *//* comment2 */ /* like: property */
+          /* padding: 0
+      ; */propC: valC;}
 
 Running: testFormattedEnableEnd
 raw cssText:
 {
           /* leading comment */
-          propA: valA;
-          color: red;   /* comment1 */
-          propB: valB;
-          /* zoom: 1; *//* comment2 */ /* like: property */
-          padding: 0;
-          propC: valC;
-      }
+          propA: valA;color: red;   /* comment1 */
+          propB: valB;/* zoom: 1; *//* comment2 */ /* like: property */
+          padding: 0
+      ;propC: valC;}
 
 Running: testFormattedEnableMiddle
 raw cssText:
 {
           /* leading comment */
-          propA: valA;
-          color: red;   /* comment1 */
-          propB: valB;
-          zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
-          propC: valC;
-      }
+          propA: valA;color: red;   /* comment1 */
+          propB: valB;zoom: 1;/* comment2 */ /* like: property */
+          padding: 0
+      ;propC: valC;}
 
 Running: testFormattedWithMeta
 raw cssText:
 {
           /* leading comment */
-          -webkit-animation: linear;
-          propA: valA;
-          color: red;   /* comment1 */
-          propB: valB;
-          zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
-          propC: valC;
-      }
+          -webkit-animation: linear;propA: valA;color: red;   /* comment1 */
+          propB: valB;zoom: 1;/* comment2 */ /* like: property */
+          padding: 0
+      ;propC: valC;}
 
 Running: testFormattedWithMetaValue
 raw cssText:
 {
           /* leading comment */
-          -webkit-animation: linear;
-          unicode-bidi: webkit-isolate;
-          propA: valA;
-          color: red;   /* comment1 */
-          propB: valB;
-          zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
-          propC: valC;
-      }
+          -webkit-animation: linear;unicode-bidi: webkit-isolate;propA: valA;color: red;   /* comment1 */
+          propB: valB;zoom: 1;/* comment2 */ /* like: property */
+          padding: 0
+      ;propC: valC;}
 
 Running: testFormattedWithAtoms
 raw cssText:
 {
           /* leading comment */
-          border-left: 1px solid rgb(1,1,1);
-          -webkit-animation: linear;
-          unicode-bidi: webkit-isolate;
-          propA: valA;
-          color: red;   /* comment1 */
-          propB: valB;
-          zoom: 1;/* comment2 */ /* like: property */
-          padding: 0;
-          propC: valC;
-      }
+          border-left: 1px solid rgb(1,1,1);-webkit-animation: linear;unicode-bidi: webkit-isolate;propA: valA;color: red;   /* comment1 */
+          propB: valB;zoom: 1;/* comment2 */ /* like: property */
+          padding: 0
+      ;propC: valC;}
 
 Running: initUnformattedStyle
 
