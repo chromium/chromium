@@ -652,10 +652,18 @@ void AppsContainerView::MoveFocusDownFromRecents(int column) {
   item->RequestFocus();
 }
 
-void AppsContainerView::OnTemporarySortOrderChanged(
-    const absl::optional<AppListSortOrder>& new_order) {
+void AppsContainerView::UpdateForNewSortingOrder(
+    const absl::optional<AppListSortOrder>& new_order,
+    bool animate,
+    base::OnceClosure update_position_closure) {
   DCHECK(features::IsLauncherAppSortEnabled());
   reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
+
+  // TODO(https://crbug.com/1287334): run `update_position_closure` at the end
+  // of the fade out animation when reorder animation in tablet mode is
+  // implemented.
+  if (update_position_closure)
+    std::move(update_position_closure).Run();
 }
 
 ContinueSectionView* AppsContainerView::GetContinueSection() {

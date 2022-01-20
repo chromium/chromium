@@ -521,13 +521,29 @@ void AppListControllerImpl::ProcessScrollEvent(const ui::ScrollEvent& event) {
   fullscreen_presenter_->ProcessScrollOffset(event.location(), offset);
 }
 
-void AppListControllerImpl::OnTemporarySortOrderChanged(
-    const absl::optional<AppListSortOrder>& new_order) {
+void AppListControllerImpl::UpdateAppListWithNewSortingOrder(
+    const absl::optional<AppListSortOrder>& new_order,
+    bool animate,
+    base::OnceClosure update_position_closure) {
   DCHECK(features::IsProductivityLauncherEnabled());
   DCHECK(features::IsLauncherAppSortEnabled());
 
-  bubble_presenter_->OnTemporarySortOrderChanged(new_order);
-  fullscreen_presenter_->OnTemporarySortOrderChanged(new_order);
+  // Adapt the bubble app list to the new sorting order. NOTE: the bubble app
+  // list is visible only in clamshell mode. Therefore do not animate in tablet
+  // mode.
+  const bool is_tablet_mode = IsTabletMode();
+  bubble_presenter_->UpdateForNewSortingOrder(
+      new_order, !is_tablet_mode && animate,
+      is_tablet_mode ? base::NullCallback()
+                     : std::move(update_position_closure));
+
+  // Adapt the fullscreen app list to the new sorting order. NOTE: the full
+  // screen app list is visible only in tablet mode. Therefore do not animate in
+  // clamshell mode.
+  fullscreen_presenter_->UpdateForNewSortingOrder(
+      new_order, is_tablet_mode && animate,
+      is_tablet_mode ? std::move(update_position_closure)
+                     : base::NullCallback());
 }
 
 ShelfAction AppListControllerImpl::ToggleAppList(

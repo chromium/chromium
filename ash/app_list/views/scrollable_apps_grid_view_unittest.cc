@@ -151,11 +151,11 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   // Verifies the visible item index range.
   bool IsIndexRangeExpected(int first_index, int last_index) {
-    const AppsGridView::VisibleItemIndexRange index_range =
+    const absl::optional<AppsGridView::VisibleItemIndexRange> index_range =
         apps_grid_view_->GetVisibleItemIndexRange();
 
-    return index_range.first_index == first_index &&
-           index_range.last_index == last_index;
+    return index_range->first_index == first_index &&
+           index_range->last_index == last_index;
   }
 
   void AddPageBreakItem() { GetAppListTestHelper()->AddPageBreakItem(); }

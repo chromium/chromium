@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <queue>
 #include <set>
 #include <sstream>
 #include <string>
@@ -26,6 +27,7 @@
 #include "ui/base/models/list_model_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -272,6 +274,14 @@ class ASH_EXPORT AppsGridView : public views::View,
   // AshTestBase.
   bool IsTabletMode() const;
 
+  // Fades out visible items when reordering happens. Runs `done_callback` when
+  // the fade out animation ends.
+  using ReorderAnimationCallback = base::RepeatingCallback<void(bool)>;
+  void FadeOutVisibleItemsForReorder(ReorderAnimationCallback done_callback);
+
+  // Fades in items for reordering.
+  void FadeInVisibleItemsForReorder();
+
   // Whether the provided view is hidden to facilitate drag operation (for
   // example, the drag view for which a drag icon proxy has been created).
   bool IsViewHiddenForDrag(const views::View* view) const;
@@ -307,6 +317,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool FireFolderItemReparentTimerForTest();
   bool FireDragToShelfTimerForTest();
 
+  void AddReorderDoneCallbackForTest(ReorderAnimationCallback done_callback);
+
+  // Returns true if there is any waiting reorder animation test callback.
+  bool HasAnyWaitingReorderDoneCallbackForTest() const;
+
   // For test: Return if the drag and drop handler was set.
   bool has_drag_and_drop_host_for_test() {
     return nullptr != drag_and_drop_host_;
@@ -325,8 +340,20 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppsGridContextMenu* context_menu_for_test() { return context_menu_.get(); }
 
+  void set_enable_item_move_animation_for_test(bool enable) {
+    enable_item_move_animation_ = enable;
+  }
+
  protected:
   friend ScrollableAppsGridViewTest;
+
+  struct VisibleItemIndexRange {
+    // The view index of the first visible item on the apps grid.
+    int first_index = 0;
+
+    // The view index of the last visible item on the apps grid.
+    int last_index = 0;
+  };
 
   // The cardified apps grid should be scaled down by this factor.
   static constexpr float kCardifiedScale = 0.84f;
@@ -395,16 +422,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // list item view during the drag.
   virtual void SetFocusAfterEndDrag() = 0;
 
-  struct VisibleItemIndexRange {
-    // The view index of the first visible item on the apps grid.
-    int first_index = 0;
-
-    // The view index of the last visible item on the apps grid.
-    int last_index = 0;
-  };
-
   // Calculates the index range of the visible item views.
-  virtual VisibleItemIndexRange GetVisibleItemIndexRange() const = 0;
+  virtual absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
+      const = 0;
 
   // Sets the max number of columns that the grid can have.
   // For root apps grid view, the grid size depends on the space available to
@@ -533,6 +553,18 @@ class ASH_EXPORT AppsGridView : public views::View,
     ON_ITEM,
     NEAR_ITEM,
     BETWEEN_ITEMS,
+  };
+
+  // Indicate the type of the active reorder animation.
+  enum class ReorderAnimationStatus {
+    // No reorder animation is active.
+    kEmpty,
+
+    // The animation that fades out the obsolete layout is active.
+    kFadeOutAnimation,
+
+    // The animation that fades in the new layout after reordering is active.
+    kFadeInAnimation
   };
 
   class DragViewHider;
@@ -794,6 +826,23 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Invoked when |host_drag_start_timer_| fires.
   void OnHostDragStartTimerFired();
 
+  // Called at the end of the fade out animation. `callback_from_caller` comes
+  // from the caller that starts the fade out animation. `aborted` is true when
+  // the fade out animation gets aborted.
+  void OnFadeOutAnimationEnded(ReorderAnimationCallback callback_from_caller,
+                               bool aborted);
+
+  // Called at the end of the fade out animation. `aborted` is true when the
+  // fade in animation gets aborted.
+  void OnFadeInAnimationEnded(bool aborted);
+
+  // Aborts the active reordering animation if any.
+  void MaybeAbortReorderingAnimation();
+
+  // Runs the animation callback popped from the test callback queue if the
+  // queue is not empty.
+  void MaybeRunFrontReorderAnimationCallbackForTest(bool aborted);
+
   class ScopedModelUpdate;
 
   AppListModel* model_ = nullptr;         // Owned by AppListView.
@@ -928,6 +977,26 @@ class ASH_EXPORT AppsGridView : public views::View,
   GridIndex current_ghost_location_;
 
   std::unique_ptr<AppsGridContextMenu> context_menu_;
+
+  // Indicates the current reorder animation.
+  ReorderAnimationStatus reorder_animation_status_ =
+      ReorderAnimationStatus::kEmpty;
+
+  // A handle that aborts the active reorder animation.
+  std::unique_ptr<views::AnimationAbortHandle> reorder_animation_abort_handle_;
+
+  // If false, the animation to move an app list item when the item's target
+  // position changes is disabled. It is set to be false when we only care about
+  // app list items' final positions instead of animation process.
+  bool enable_item_move_animation_ = true;
+
+  // A queue of callbacks that run at the end of reordering animation (i.e. the
+  // end of the fade in animation). Each callback carries a boolean parameter to
+  // indicate whether the animation is aborted.
+  std::queue<ReorderAnimationCallback>
+      reorder_animation_callback_queue_for_test_;
+
+  base::WeakPtrFactory<AppsGridView> weak_factory_{this};
 };
 
 }  // namespace ash

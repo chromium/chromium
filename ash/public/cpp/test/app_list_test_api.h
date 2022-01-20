@@ -37,9 +37,9 @@ class ASH_EXPORT AppListTestApi {
   // productivity launcher in clamshell mode.
   void WaitForBubbleWindow(bool wait_for_opening_animation);
 
-  // Waits until all the animations on the app list widget end. No operations
+  // Waits until the animation to show the app list becomes idle. No operations
   // if the app list widget is already idle.
-  void WaitUntilAppListAnimationIdle();
+  void WaitForAppListShowAnimation(bool is_bubble_window);
 
   // Returns whether there is an item for |app_id|.
   bool HasApp(const std::string& app_id);
@@ -85,6 +85,7 @@ class ASH_EXPORT AppListTestApi {
   // Returns the top level apps grid view. Could be ScrollableAppsGridView if
   // bubble launcher is enabled or PagedAppsGridView otherwise.
   AppsGridView* GetTopLevelAppsGridView();
+  const AppsGridView* GetTopLevelAppsGridView() const;
 
   // Returns the apps grid view in the folder.
   AppsGridView* GetFolderAppsGridView();
@@ -112,6 +113,14 @@ class ASH_EXPORT AppListTestApi {
   // hide the folder view complete.
   void SetFolderViewAnimationCallback(
       base::OnceClosure folder_animation_done_callback);
+
+  // Adds a callback that runs at the end of the reorder animation. The callback
+  // carries a boolean parameter that is true if the animation is aborted.
+  void AddReorderAnimationCallback(
+      base::RepeatingCallback<void(bool)> callback);
+
+  // Returns true if there is any waiting reorder animation test callback.
+  bool HasAnyWaitingReorderDoneCallback() const;
 };
 
 }  // namespace ash

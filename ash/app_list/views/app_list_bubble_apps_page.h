@@ -86,10 +86,12 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // view to handle focus.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
-  // Called when the app list temporary sort order changes. If `new_order` is
-  // null, the temporary sort order is cleared.
-  void OnTemporarySortOrderChanged(
-      const absl::optional<AppListSortOrder>& new_order);
+  // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
+  // bubble launcher apps page.
+  void UpdateForNewSortingOrder(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool animate,
+      base::OnceClosure update_position_closure);
 
   // views::View:
   void Layout() override;
@@ -140,6 +142,15 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // Callback for when the apps grid view animation ends.
   void OnAppsGridViewAnimationEnded();
 
+  // Called when the animation to fade out app list items is completed.
+  // `aborted` indicates whether the fade out animation is aborted.
+  void OnAppsGridViewFadeOutAnimationEneded(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool aborted);
+
+  // Called when the animation to fade in app list items is completed.
+  void OnAppsGridViewFadeInAnimationEnded(bool is_aborted);
+
   // Animates `view` using a layer animation. Creates the layer if needed. The
   // layer is pushed down by `vertical_offset` at the start of the animation and
   // animates back to its original position.
@@ -154,6 +165,10 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
+
+  // A closure to update item positions. It should run at the end of the fade
+  // out animation when items are reordered.
+  base::OnceClosure update_position_closure_;
 
   base::WeakPtrFactory<AppListBubbleAppsPage> weak_factory_{this};
 };

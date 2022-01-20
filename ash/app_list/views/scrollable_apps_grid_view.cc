@@ -309,7 +309,7 @@ void ScrollableAppsGridView::EnsureViewVisible(const GridIndex& index) {
     view->ScrollViewToVisible();
 }
 
-ScrollableAppsGridView::VisibleItemIndexRange
+absl::optional<ScrollableAppsGridView::VisibleItemIndexRange>
 ScrollableAppsGridView::GetVisibleItemIndexRange() const {
   // Indicate the first row on which item views are visible.
   absl::optional<int> first_visible_row;
@@ -351,17 +351,16 @@ ScrollableAppsGridView::GetVisibleItemIndexRange() const {
     }
   }
 
+  if (!first_visible_row)
+    return absl::nullopt;
+
   VisibleItemIndexRange result;
+  result.first_index = *first_visible_row * cols();
 
-  // Expect that at least one row is within the visible area.
-  if (first_visible_row) {
-    result.first_index = *first_visible_row * cols();
-
-    // If `first_invisible_row` is not found, it means that the last item view
-    // in the view model is visible.
-    result.last_index = first_invisible_row ? *first_invisible_row * cols() - 1
-                                            : view_model()->view_size() - 1;
-  }
+  // If `first_invisible_row` is not found, it means that the last item view
+  // in the view model is visible.
+  result.last_index = first_invisible_row ? *first_invisible_row * cols() - 1
+                                          : view_model()->view_size() - 1;
 
   return result;
 }

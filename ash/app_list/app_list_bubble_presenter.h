@@ -71,9 +71,12 @@ class ASH_EXPORT AppListBubblePresenter
   // Switches to the assistant page. Requires the bubble to be open.
   void ShowEmbeddedAssistantUI();
 
-  // Called when the app list temporary sort order changes.
-  void OnTemporarySortOrderChanged(
-      const absl::optional<AppListSortOrder>& new_order);
+  // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
+  // bubble launcher.
+  void UpdateForNewSortingOrder(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool animate,
+      base::OnceClosure update_position_closure);
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

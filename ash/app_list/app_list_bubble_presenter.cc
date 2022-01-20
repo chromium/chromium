@@ -331,11 +331,21 @@ bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
   return bubble_view_->IsShowingEmbeddedAssistantUI();
 }
 
-void AppListBubblePresenter::OnTemporarySortOrderChanged(
-    const absl::optional<AppListSortOrder>& new_order) {
-  if (!bubble_view_)
+void AppListBubblePresenter::UpdateForNewSortingOrder(
+    const absl::optional<AppListSortOrder>& new_order,
+    bool animate,
+    base::OnceClosure update_position_closure) {
+  DCHECK_EQ(animate, !update_position_closure.is_null());
+
+  if (!bubble_view_) {
+    // A rare case. Still handle it for safety.
+    if (update_position_closure)
+      std::move(update_position_closure).Run();
     return;
-  bubble_view_->OnTemporarySortOrderChanged(new_order);
+  }
+
+  bubble_view_->UpdateForNewSortingOrder(new_order, animate,
+                                         std::move(update_position_closure));
 }
 
 void AppListBubblePresenter::ShowEmbeddedAssistantUI() {

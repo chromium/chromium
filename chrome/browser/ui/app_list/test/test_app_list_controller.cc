@@ -32,4 +32,17 @@ bool TestAppListController::IsVisible() {
   return false;
 }
 
+void TestAppListController::UpdateAppListWithNewSortingOrder(
+    const absl::optional<ash::AppListSortOrder>& new_order,
+    bool animate,
+    base::OnceClosure update_position_closure) {
+  if (!update_position_closure) {
+    DCHECK(!animate);
+    return;
+  }
+
+  DCHECK(animate);
+  std::move(update_position_closure).Run();
+}
+
 }  // namespace test

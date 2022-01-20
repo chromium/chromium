@@ -130,7 +130,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   const gfx::Vector2d CalculateTransitionOffset(
       int page_of_view) const override;
   void EnsureViewVisible(const GridIndex& index) override;
-  VisibleItemIndexRange GetVisibleItemIndexRange() const override;
+  absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
+      const override;
 
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;

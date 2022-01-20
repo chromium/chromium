@@ -168,10 +168,12 @@ class ASH_EXPORT AppsContainerView
   void MoveFocusUpFromRecents() override;
   void MoveFocusDownFromRecents(int column) override;
 
-  // Called when the app list temporary sort order changes. If `new_order` is
-  // null, the temporary sort order is cleared.
-  void OnTemporarySortOrderChanged(
-      const absl::optional<AppListSortOrder>& new_order);
+  // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
+  // app list container.
+  void UpdateForNewSortingOrder(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool animate,
+      base::OnceClosure update_position_closure);
 
   ContinueSectionView* GetContinueSection();
   RecentAppsView* GetRecentApps();

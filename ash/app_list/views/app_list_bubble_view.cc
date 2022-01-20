@@ -406,9 +406,12 @@ int AppListBubbleView::GetHeightToFitAllApps() const {
          search_box_view_->GetPreferredSize().height();
 }
 
-void AppListBubbleView::OnTemporarySortOrderChanged(
-    const absl::optional<AppListSortOrder>& new_order) {
-  apps_page_->OnTemporarySortOrderChanged(new_order);
+void AppListBubbleView::UpdateForNewSortingOrder(
+    const absl::optional<AppListSortOrder>& new_order,
+    bool animate,
+    base::OnceClosure update_position_closure) {
+  apps_page_->UpdateForNewSortingOrder(new_order, animate,
+                                       std::move(update_position_closure));
 }
 
 const char* AppListBubbleView::GetClassName() const {

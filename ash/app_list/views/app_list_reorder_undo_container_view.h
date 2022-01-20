@@ -35,7 +35,7 @@ class AppListReorderUndoContainerView : public views::View {
   // This function expects that `toast_view_` exists.
   views::LabelButton* GetToastDismissButtonForTest();
 
-  bool is_toast_visible_for_test() const { return toast_view_; }
+  bool is_toast_visible() const { return toast_view_; }
 
  private:
   // Called when the `toast_view_`'s dismiss button is clicked.

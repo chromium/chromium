@@ -66,7 +66,8 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   const gfx::Vector2d CalculateTransitionOffset(
       int page_of_view) const override;
   void EnsureViewVisible(const GridIndex& index) override;
-  VisibleItemIndexRange GetVisibleItemIndexRange() const override;
+  absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
+      const override;
 
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   base::OneShotTimer* auto_scroll_timer_for_test() {
