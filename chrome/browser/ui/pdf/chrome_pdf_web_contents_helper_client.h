@@ -21,6 +21,8 @@ class ChromePDFWebContentsHelperClient
 
  private:
   // pdf::PDFWebContentsHelperClient:
+  content::RenderFrameHost* FindPdfFrame(
+      content::WebContents* contents) override;
   void UpdateContentRestrictions(content::WebContents* contents,
                                  int content_restrictions) override;
   void OnPDFHasUnsupportedFeature(content::WebContents* contents) override;

@@ -6,6 +6,7 @@
 #define COMPONENTS_PDF_BROWSER_PDF_WEB_CONTENTS_HELPER_CLIENT_H_
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -13,7 +14,10 @@ namespace pdf {
 
 class PDFWebContentsHelperClient {
  public:
-  virtual ~PDFWebContentsHelperClient() {}
+  virtual ~PDFWebContentsHelperClient() = default;
+
+  virtual content::RenderFrameHost* FindPdfFrame(
+      content::WebContents* contents) = 0;
 
   virtual void UpdateContentRestrictions(content::WebContents* contents,
                                          int content_restrictions) = 0;

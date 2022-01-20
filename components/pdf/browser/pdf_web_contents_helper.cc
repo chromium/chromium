@@ -54,6 +54,9 @@ PDFWebContentsHelper::PDFWebContentsHelper(
       client_(std::move(client)) {}
 
 PDFWebContentsHelper::~PDFWebContentsHelper() {
+  if (pdf_rwh_)
+    pdf_rwh_->RemoveObserver(this);
+
   if (!touch_selection_controller_client_manager_)
     return;
 
@@ -73,19 +76,27 @@ void PDFWebContentsHelper::SetListener(
     mojo::PendingRemote<mojom::PdfListener> listener) {
   remote_pdf_client_.reset();
   remote_pdf_client_.Bind(std::move(listener));
+
+  if (pdf_rwh_)
+    pdf_rwh_->RemoveObserver(this);
+  pdf_rwh_ = client_->FindPdfFrame(&GetWebContents())->GetRenderWidgetHost();
+  pdf_rwh_->AddObserver(this);
 }
 
 gfx::PointF PDFWebContentsHelper::ConvertHelper(const gfx::PointF& point_f,
                                                 float scale) {
-  gfx::PointF origin_f;
-  content::RenderWidgetHostView* view =
-      GetWebContents().GetRenderWidgetHostView();
-  if (view) {
-    origin_f = view->TransformPointToRootCoordSpaceF(gfx::PointF());
-    origin_f.Scale(scale);
-  }
+  if (!pdf_rwh_)
+    return point_f;
 
-  return gfx::PointF(point_f.x() + origin_f.x(), point_f.y() + origin_f.y());
+  content::RenderWidgetHostView* view = pdf_rwh_->GetView();
+  if (!view)
+    return point_f;
+
+  gfx::Vector2dF offset =
+      view->TransformPointToRootCoordSpaceF(gfx::PointF()).OffsetFromOrigin();
+  offset.Scale(scale);
+
+  return point_f + offset;
 }
 
 gfx::PointF PDFWebContentsHelper::ConvertFromRoot(const gfx::PointF& point_f) {
@@ -161,6 +172,12 @@ void PDFWebContentsHelper::DidScroll() {
     touch_selection_controller_client_manager_->UpdateClientSelectionBounds(
         start, end, this, this);
   }
+}
+
+void PDFWebContentsHelper::RenderWidgetHostDestroyed(
+    content::RenderWidgetHost* widget_host) {
+  if (pdf_rwh_ == widget_host)
+    pdf_rwh_ = nullptr;
 }
 
 bool PDFWebContentsHelper::SupportsAnimation() const {

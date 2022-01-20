@@ -220,24 +220,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, TouchSelectionBounds) {
 
   gfx::SelectionBound start_bound = touch_selection_controller->start();
   EXPECT_EQ(gfx::SelectionBound::LEFT, start_bound.type());
-  if (IsParamFeatureEnabled()) {
-    // TODO(crbug.com/1270502): Fix unseasoned PDF selection bounds.
-  } else {
-    EXPECT_POINTF_NEAR(gfx::PointF(454.0f, 161.0f), start_bound.edge_start(),
-                       1.0f);
-    EXPECT_POINTF_NEAR(gfx::PointF(454.0f, 171.0f), start_bound.edge_end(),
-                       1.0f);
-  }
+  EXPECT_POINTF_NEAR(gfx::PointF(454.0f, 161.0f), start_bound.edge_start(),
+                     1.0f);
+  EXPECT_POINTF_NEAR(gfx::PointF(454.0f, 171.0f), start_bound.edge_end(), 1.0f);
 
   gfx::SelectionBound end_bound = touch_selection_controller->end();
   EXPECT_EQ(gfx::SelectionBound::RIGHT, end_bound.type());
-  if (IsParamFeatureEnabled()) {
-    // TODO(crbug.com/1270502): Fix unseasoned PDF selection bounds.
-  } else {
-    EXPECT_POINTF_NEAR(gfx::PointF(492.0f, 161.0f), end_bound.edge_start(),
-                       1.0f);
-    EXPECT_POINTF_NEAR(gfx::PointF(492.0f, 171.0f), end_bound.edge_end(), 1.0f);
-  }
+  EXPECT_POINTF_NEAR(gfx::PointF(492.0f, 161.0f), end_bound.edge_start(), 1.0f);
+  EXPECT_POINTF_NEAR(gfx::PointF(492.0f, 171.0f), end_bound.edge_end(), 1.0f);
 }
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 

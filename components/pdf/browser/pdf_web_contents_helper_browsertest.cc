@@ -10,9 +10,34 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "pdf/mojom/pdf.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/selection_bound.h"
 
 namespace pdf {
+
+namespace {
+
+using ::testing::NiceMock;
+
+class FakePdfListener : public pdf::mojom::PdfListener {
+ public:
+  FakePdfListener() = default;
+  FakePdfListener(const FakePdfListener&) = delete;
+  FakePdfListener& operator=(const FakePdfListener&) = delete;
+  ~FakePdfListener() override = default;
+
+  MOCK_METHOD(void, SetCaretPosition, (const gfx::PointF&), (override));
+  MOCK_METHOD(void, MoveRangeSelectionExtent, (const gfx::PointF&), (override));
+  MOCK_METHOD(void,
+              SetSelectionBounds,
+              (const gfx::PointF&, const gfx::PointF&),
+              (override));
+};
+
+}  // namespace
 
 // A mock PDFWebContentsHelperClient.
 class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
@@ -26,6 +51,11 @@ class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
 
  private:
   // PDFWebContentsHelperClient:
+  content::RenderFrameHost* FindPdfFrame(
+      content::WebContents* contents) override {
+    return contents->GetMainFrame();
+  }
+
   void UpdateContentRestrictions(content::WebContents* contents,
                                  int content_restrictions) override {}
   void OnPDFHasUnsupportedFeature(content::WebContents* contents) override {}
@@ -121,6 +151,20 @@ class PDFWebContentsHelperTest : public content::ContentBrowserTest {
   std::unique_ptr<TestTouchSelectionControllerClientManager>
       touch_selection_controller_client_manager_;
 };
+
+IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SetListenerTwice) {
+  NiceMock<FakePdfListener> listener;
+
+  {
+    mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
+    pdf_web_contents_helper()->SetListener(receiver.BindNewPipeAndPassRemote());
+  }
+
+  {
+    mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
+    pdf_web_contents_helper()->SetListener(receiver.BindNewPipeAndPassRemote());
+  }
+}
 
 // Tests that select-changed on a pdf text brings up selection handles and the
 // quick menu in the reasonable position.
