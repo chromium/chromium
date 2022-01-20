@@ -227,7 +227,7 @@ build_recipe(
 build_recipe(
     name = "recipe:presubmit",
     experiments = {
-        "luci.recipes.use_python3": 5,
+        "luci.recipes.use_python3": 25,
     },
 )
 
