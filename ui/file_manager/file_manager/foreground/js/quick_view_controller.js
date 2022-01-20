@@ -457,7 +457,7 @@ export class QuickViewController {
 
     try {
       const values = await Promise.all([
-        this.metadataModel_.get([entry], ['thumbnailUrl']),
+        this.metadataModel_.get([entry], ['thumbnailUrl', 'modificationTime']),
         this.taskController_.getEntryFileTasks(entry),
         this.canDeleteEntry_(entry),
       ]);
@@ -535,6 +535,8 @@ export class QuickViewController {
     const label = util.getEntryLabel(locationInfo, entry);
     const entryIsOnDrive = locationInfo && locationInfo.isDriveBased;
     const thumbnailUrl = items.length ? items[0].thumbnailUrl : undefined;
+    const modificationTime =
+        items.length ? items[0].modificationTime : undefined;
 
     /** @type {!QuickViewParams} */
     const params = {
@@ -559,7 +561,8 @@ export class QuickViewController {
       // Drive files: Try to fetch their thumbnail or fallback to read the whole
       // file.
       if (thumbnailUrl) {
-        const result = await this.loadThumbnailFromDrive_(thumbnailUrl);
+        const result =
+            await this.loadThumbnailFromDrive_(thumbnailUrl, modificationTime);
         if (result.status === LoadImageResponseStatus.SUCCESS) {
           if (params.type == 'video') {
             params.videoPoster = {
@@ -702,14 +705,17 @@ export class QuickViewController {
    * Loads a thumbnail from Drive.
    *
    * @param {string} url Thumbnail url
+   * @param {Date|undefined} modificationTime File's modification time.
    * @return !Promise<!LoadImageResponse>
    * @private
    */
-  async loadThumbnailFromDrive_(url) {
-    return new Promise(resolve => {
-      ImageLoaderClient.getInstance().load(
-          LoadImageRequest.createForUrl(url), resolve);
-    });
+  async loadThumbnailFromDrive_(url, modificationTime) {
+    const client = ImageLoaderClient.getInstance();
+    const request = LoadImageRequest.createForUrl(url);
+    request.cache = true;
+    request.timestamp =
+        modificationTime ? modificationTime.valueOf() : undefined;
+    return new Promise(resolve => client.load(request, resolve));
   }
 
   /**
