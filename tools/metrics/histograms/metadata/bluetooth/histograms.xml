@@ -51,45 +51,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".SystemTray"/>
 </variants>
 
-<histogram name="Bluetooth.Android.GATTConnection.Disconnected.Result"
-    enum="AndroidGATTConnectionErrorCodes" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1052931
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Disconnected GATT connection status codes. Used to better understand errors
-    seen in Android.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Android.GATTConnection.Failure.Result"
-    enum="AndroidGATTConnectionErrorCodes" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1052932
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Failed GATT connection error codes. Used to better understand errors seen in
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Android.GATTConnection.Success.Result"
-    enum="AndroidGATTConnectionErrorCodes" expires_after="2021-05-02">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1052933
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Successful GATT connection result codes. Used to better understand Android
-    results.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.Availability.v2" enum="BluetoothAvailability"
     expires_after="2022-12-31">
   <owner>kenrb@chromium.org</owner>
@@ -219,22 +180,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result"
-    enum="BooleanSuccess" expires_after="2022-06-20">
-  <obsolete>
-    Removed 2022/01/06 to add dimmensions for different pairing scenarios. See
-    `Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result.{FastPairPairingProtocol}`
-  </obsolete>
-  <owner>shanefitz@google.com</owner>
-  <owner>julietlevesque@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records success or failure of writing to the account-key Gatt characteristic
-    of the device during the pairing protocol. Emitted following the write
-    account key request in the FastPairPairer.
-  </summary>
-</histogram>
-
 <histogram
     name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result.{FastPairPairingProtocol}"
     enum="BooleanSuccess" expires_after="2022-09-20">
@@ -267,54 +212,6 @@ chromium-metrics-reviews@google.com.
     OnAccountKeyWrite event fires. If the account key write fails, then no value
     is logged to this metric.
   </summary>
-</histogram>
-
-<histogram
-    name="Bluetooth.ChromeOS.FastPair.AccountKeyFailure.{FastPairPairingProtocol}"
-    enum="FastPairAccountKeyFailure" expires_after="2022-09-20">
-  <obsolete>
-    Renamed to
-    'Bluetooth.ChromeOS.FastPair.AccountKey.Failure.{FastPairPairingProtocol}'
-    for consistency among metrics related to AccountKey. Removed 2022/01/05.
-  </obsolete>
-  <owner>shanefitz@google.com</owner>
-  <owner>julietlevesque@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Breaks down why a account key write attempt to a device failed (see
-    'Bluetooth.ChromeOS.FastPair.AccountKey.Result'). Suffixed by FastPair
-    pairing protocol type. Emitted on the OnWriteAccountKey event in the Fast
-    Pair flow.
-  </summary>
-  <token key="FastPairPairingProtocol">
-    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
-    <variant name="RetroactivePairingProtocol"
-        summary="retroactive pairing protocol"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result.{FastPairPairingProtocol}"
-    enum="BooleanSuccess" expires_after="2022-09-20">
-  <obsolete>
-    Renamed to
-    'Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result.{FastPairPairingProtocol}'
-    for consistency among metrics related to AccountKey. Removed 2022/01/05.
-  </obsolete>
-  <owner>shanefitz@google.com</owner>
-  <owner>julietlevesque@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records success or failure of writing an account key to a device. Emitted on
-    the OnPairFailure event and the OnDevicePaired event in the Fast Pair flow.
-  </summary>
-  <token key="FastPairPairingProtocol">
-    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
-    <variant name="RetroactivePairingProtocol"
-        summary="retroactive pairing protocol"/>
-    <variant name="SubsequentPairingProtocol"
-        summary="subsequent pairing protocol"/>
-  </token>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.ConfirmPasskey.Latency" units="ms"
@@ -1207,19 +1104,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.DiscoverySession.Start.Outcome"
-    enum="BluetoothDiscoveryOutcomes" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the outcome of calls to BluetoothAdapter::StartDiscoverySession.
-    Used to prioritize efforts to fix failures of this function.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.DiscoverySession.Stop.Outcome"
     enum="BluetoothDiscoveryOutcomes" expires_after="2021-03-01">
   <owner>reillyg@chromium.org</owner>
@@ -1251,11 +1135,6 @@ chromium-metrics-reviews@google.com.
     better error messages to the users. {WebBluetoothMacOSAPIs}
   </summary>
   <token key="WebBluetoothMacOSAPIs">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".DidDisconnectPeripheral"
         summary="Disconnected from peripheral"/>
     <variant name=".DidDiscoverCharacteristics"
@@ -1308,100 +1187,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the method used to pair each Bluetooth Device. Used to direct our
     testing efforts.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.PairingResult" enum="BluetoothPairingResult"
-    expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>adlr@chromium.org</owner>
-  <summary>
-    Records the result of pairing each Bluetooth Device. Used to understand
-    whether we are having significant problems with Bluetooth pairing and seeing
-    errors more commonly than we should.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.Android{AndroidGATTEvents}"
-    enum="AndroidGATTStatusResult" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/12. crbug.com/1052934
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    'status' values returned by Android GATT event. {AndroidGATTEvents}
-  </summary>
-  <token key="AndroidGATTEvents">
-    <variant name=""/>
-    <variant name=".onCharacteristicRead.Status" summary="">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-    <variant name=".onCharacteristicWrite.Status" summary="">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-    <variant name=".onConnectionStateChange.Status.Connected"
-        summary="While Connected">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-    <variant name=".onConnectionStateChange.Status.Disconnected"
-        summary="While Disonnected">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-    <variant name=".onConnectionStateChange.Status.InvalidState"
-        summary="While InvalidState">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-    <variant name=".onDescriptorRead.Status" summary="">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-    <variant name=".onDescriptorWrite.Status" summary="">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-    <variant name=".onServicesDiscovered.Status.Connected"
-        summary="While Connected">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-    <variant name=".onServicesDiscovered.Status.Disconnected"
-        summary="While Disconnected">
-      <obsolete>
-        Removed 2021/04/12. crbug.com/1052934
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
-<histogram name="Bluetooth.Web.Blocklist.ParsedNonEmptyString"
-    enum="BooleanSuccess" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the result of BluetoothBlocklist::Add parsing a non-empty string.
-    These strings will be updated dynamically by a server, and this histogram
-    provides feedback that parsing is functioning correctly on clients.
-
-    False values are BAD, a blocklist is failing to be applied correctly.
   </summary>
 </histogram>
 
@@ -1482,36 +1267,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.Web.Descriptor.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the outcome of a call to descriptor.readValue(). Used to know what
-    types of errors users are seeing. The results will be used to determine how
-    common these errors are and if we need to provide better error messages to
-    the users.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.Descriptor.WriteValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the outcome of a call to descriptor.writeValue(). Used to know what
-    types of errors users are seeing. The results will be used to determine how
-    common these errors are and if we need to provide better error messages to
-    the users.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.Web.GetCharacteristic.Characteristic"
     enum="GATTCharacteristicHash" expires_after="2021-01-31">
   <owner>reillyg@chromium.org</owner>
@@ -1523,20 +1278,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.Web.GetCharacteristic.Outcome"
-    enum="WebBluetoothGetCharacteristicOutcome" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the outcome of a call to getCharacteristic(). Used to understand
-    what errors developers are getting so we can target efforts toward the most
-    common ones.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.Web.GetCharacteristics.Characteristic"
     enum="GATTCharacteristicHash" expires_after="2021-01-31">
   <owner>reillyg@chromium.org</owner>
@@ -1545,76 +1286,6 @@ chromium-metrics-reviews@google.com.
     Records the UUIDs used when getting characteristics. The recorded value is a
     31-bit hash of the UUID. Used to know what types of characteristics to
     target when building libraries that use the Web Bluetooth API.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.GetCharacteristics.Outcome"
-    enum="WebBluetoothGetCharacteristicOutcome" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the outcome of a call to getCharacteristics(). Used to understand
-    what errors developers are getting so we can target efforts toward the most
-    common ones.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.GetDescriptor.Descriptor"
-    enum="GATTDescriptorHash" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the UUIDs used when getting a descriptor. The recorded value is a
-    31-bit hash of the UUID. Used to know what types of descriptors to target
-    when building libraries that use the Web Bluetooth API.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.GetDescriptor.Outcome"
-    enum="WebBluetoothGetDescriptorOutcome" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the outcome of a call to getDescriptor(). Used to understand what
-    errors developers are getting so we can target efforts toward the most
-    common ones.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.GetDescriptors.Descriptor"
-    enum="GATTDescriptorHash" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the UUIDs used when getting descriptors. The recorded value is a
-    31-bit hash of the UUID. Used to know what types of descriptors to target
-    when building libraries that use the Web Bluetooth API.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.GetDescriptors.Outcome"
-    enum="WebBluetoothGetDescriptorOutcome" expires_after="M85">
-  <obsolete>
-    Removed 2020/11/05. crbug.com/1088659
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the outcome of a call to getDescriptors(). Used to understand what
-    errors developers are getting so we can target efforts toward the most
-    common ones.
   </summary>
 </histogram>
 
@@ -1662,120 +1333,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.Web.RequestDevice.Filters.Count" units="filters"
-    expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records how many filters are used when scanning. These results will help us
-    better understand the uses of the API and make changes according to
-    developers' behavior.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.RequestDevice.Filters.Services"
-    enum="GATTServiceHash" expires_after="2021-04-04">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804 Use
-    Bluetooth.Web.RequestDevice.UnionOfServices.Services instead.
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records a 31-bit hash of the GATT Service UUIDs used when scanning. This
-    will help us know if we should build an API for specific services rather
-    than a general Bluetooth API.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.RequestDevice.FilterSize" units="services"
-    expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records how many services are used in a filter. These results will help us
-    better understand the uses of the API and make changes according to
-    developers' behavior.
-  </summary>
-</histogram>
-
-<histogram
-    name="Bluetooth.Web.RequestDevice.NumOfDevicesInChooserWhenNotAcceptingAllDevices"
-    units="devices" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    In the case of not accepting all devices, records the number of devices that
-    are in the chooser when a device is paired.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.RequestDevice.OptionalServices.Count"
-    units="filters" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records how many optional services are used when scanning. These results
-    will help us better understand the uses of the API and make changes
-    according to developers' behavior.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.RequestDevice.OptionalServices.Services"
-    enum="GATTServiceHash" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804 Use
-    Bluetooth.Web.RequestDevice.UnionOfServices.Services instead.
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records what optional services are used. The recorded value is a 31-bit hash
-    of the Service UUID. These results will help us better understand the uses
-    of the API and make changes according to developers' behavior.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.RequestDevice.Options.AcceptAllDevices"
-    enum="Boolean" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the value of 'acceptAllDevices' in RequestDeviceOptions. These
-    results will help us better understand the uses of the API and make changes
-    according to developers' behavior.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.RequestDevice.Outcome"
-    enum="WebBluetoothRequestDeviceOutcome" expires_after="2021-09-19">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804
-  </obsolete>
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Records the result of a navigator.bluetooth.requestDevice() call. Used to
-    understand what errors developers are getting so we can target efforts
-    toward the most common ones.
-  </summary>
-</histogram>
-
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrength" units="dBm"
     expires_after="2022-06-12">
   <owner>reillyg@chromium.org</owner>
@@ -1796,34 +1353,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Displayed RSSI levels, after processing and as displayed to users in the Web
     Bluetooth chooser.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.RequestDevice.ScanningDuration" units="ms"
-    expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160804
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records the duration scanning for devices is run, terminated by events such
-    as the chooser being closed with a selected device, cancelled, or the scan
-    duration timing out.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.Web.RequestDevice.UnionOfServices.Count"
-    units="services" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1036974
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
-  <summary>
-    Records how many services are used when scanning. This results will help us
-    better understand the uses of the API and make changes according to
-    developers' behavior.
   </summary>
 </histogram>
 
