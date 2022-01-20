@@ -244,7 +244,7 @@ LoginLaunchSharedManagedGuestSessionFunction::Run() {
 
   absl::optional<std::string> error =
       chromeos::SharedSessionHandler::Get()->LaunchSharedManagedGuestSession(
-          extension_id(), parameters->password);
+          parameters->password);
   if (error) {
     return RespondNow(Error(*error));
   }

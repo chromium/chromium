@@ -67,7 +67,6 @@ SharedSessionHandler::~SharedSessionHandler() = default;
 
 absl::optional<std::string>
 SharedSessionHandler::LaunchSharedManagedGuestSession(
-    const std::string& extension_id,
     const std::string& password) {
   if (!IsDeviceRestrictedManagedGuestSessionEnabled()) {
     return extensions::login_api_errors::
