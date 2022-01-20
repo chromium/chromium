@@ -151,7 +151,9 @@ constexpr char kArcPlaystoreLogoPath[] = "playstore.svg";
 constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
 constexpr char kCustomElementsHTMLPath[] = "custom_elements.html";
 constexpr char kCustomElementsJSPath[] = "custom_elements.js";
-constexpr char kDebuggerJSPath[] = "debug.js";
+constexpr char kDebuggerJSPath[] = "debug/debug.js";
+constexpr char kDebuggerMJSPath[] = "debug/debug.m.js";
+constexpr char kDebuggerUtilJSPath[] = "debug/debug_util.js";
 constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
 constexpr char kKeyboardUtilsForInjectionPath[] =
     "components/keyboard_utils_for_injection.js";
@@ -246,10 +248,19 @@ void AddDebuggerResources(content::WebUIDataSource* source) {
     LOG(WARNING) << "OOBE Debug overlay can only be used on test images";
     base::SysInfo::CrashIfChromeOSNonTestImage();
   }
+  const bool poly3_enabled = features::IsOobePolymer3Enabled();
   if (enable_debugger) {
-    source->AddResourcePath(kDebuggerJSPath, IDR_OOBE_DEBUGGER_JS);
+    source->AddResourcePath(kDebuggerUtilJSPath, IDR_OOBE_DEBUGGER_UTIL_JS);
+    if (poly3_enabled) {
+      source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_M_JS);
+    } else {
+      source->AddResourcePath(kDebuggerJSPath, IDR_OOBE_DEBUGGER_JS);
+    }
   } else {
+    // Serve empty files under all resource paths.
+    source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
     source->AddResourcePath(kDebuggerJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
+    source->AddResourcePath(kDebuggerUtilJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
   }
 }
 

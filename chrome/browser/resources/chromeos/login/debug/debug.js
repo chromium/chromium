@@ -10,6 +10,7 @@
 // #import {loadTimeData} from '../i18n_setup.js';
 // #import {Oobe} from '../cr_ui.m.js'
 // #import {$} from 'chrome://resources/js/util.m.js';
+// #import './debug_util.js';
 
 // #import {MessageType, ProblemType} from 'chrome://resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.m.js';
 
@@ -75,9 +76,6 @@ cr.define('cr.ui.login.debug', function() {
       border-color: #faa !important;
       color: #faa`;
 
-  const RECOMMENDED_APPS_CONTENT = `
-// <include src="../../arc_support/recommend_app_list_view.html">
-  `;
   /**
    * Indicates if screen is present in usual user flow, represents some error
    * state or is shown in some other cases. See KNOWN_SCREENS for more details.
