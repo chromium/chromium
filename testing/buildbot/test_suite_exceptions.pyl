@@ -1203,6 +1203,12 @@
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
       },
+      'Mac11 Tests (dbg)': { # https://crbug.com/1279504
+        'swarming': {
+          'shards': 7,
+        },
+      },
+
       'Marshmallow Tablet Tester': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.marshmallow_tablet_tester.content_browsertests.filter',
