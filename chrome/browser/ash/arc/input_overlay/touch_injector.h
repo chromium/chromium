@@ -77,8 +77,8 @@ class TouchInjector : public ui::EventRewriter {
   // If the window is destroying or focusing out, releasing the active touch
   // event.
   void DispatchTouchCancelEvent();
-  void SendTouchMoveEvent(const ui::EventRewriter::Continuation continuation,
-                          const ui::TouchEvent& event);
+  void SendExtraEvent(const ui::EventRewriter::Continuation continuation,
+                      const ui::Event& event);
   void DispatchTouchReleaseEventOnMouseUnLock();
   // Json format:
   // "mouse_lock": {

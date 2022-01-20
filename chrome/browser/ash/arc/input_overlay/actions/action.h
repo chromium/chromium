@@ -56,7 +56,8 @@ class Action {
   virtual bool RewriteEvent(const ui::Event& origin,
                             const gfx::RectF& content_bounds,
                             const bool is_mouse_locked,
-                            std::list<ui::TouchEvent>& touch_events) = 0;
+                            std::list<ui::TouchEvent>& touch_events,
+                            bool& keep_original_event) = 0;
   // Get the UI location in the content view.
   virtual gfx::PointF GetUIPosition(const gfx::RectF& content_bounds) = 0;
   virtual std::unique_ptr<ActionLabel> CreateView(

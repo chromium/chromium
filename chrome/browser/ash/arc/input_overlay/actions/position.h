@@ -24,10 +24,16 @@ class Position {
   // Json value format:
   // {
   //   "type": "position",
+  //   "anchor": [ // Optional.
+  //     0,
+  //     0
+  //   ],
   //   "anchor_to_target": [
   //     0.1796875,
   //     0.25
-  //   ]
+  //   ],
+  // "max_x": 50, // Optional.
+  // "max_y": 50 // Optional.
   // }
   virtual bool ParseFromJson(const base::Value& value);
   // Return the position coords in window. |content_bounds| is the window bounds
@@ -48,6 +54,8 @@ class Position {
   // position. The value may be negative if the direction is different from
   // original x and y.
   gfx::Vector2dF anchor_to_target_;
+  absl::optional<int> max_x_;
+  absl::optional<int> max_y_;
 };
 
 }  // namespace input_overlay

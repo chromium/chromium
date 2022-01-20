@@ -192,9 +192,9 @@ void TouchInjector::DispatchTouchReleaseEventOnMouseUnLock() {
   }
 }
 
-void TouchInjector::SendTouchMoveEvent(
+void TouchInjector::SendExtraEvent(
     const ui::EventRewriter::Continuation continuation,
-    const ui::TouchEvent& event) {
+    const ui::Event& event) {
   if (SendEventFinally(continuation, &event).dispatcher_destroyed) {
     VLOG(0) << "Undispatched event due to destroyed dispatcher for "
                "touch move event.";
@@ -231,25 +231,33 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   auto bounds = CalculateWindowContentBounds(target_window_);
   std::list<ui::TouchEvent> touch_events;
   for (auto& action : actions_) {
-    bool rewritten =
-        action->RewriteEvent(event, bounds, is_mouse_locked_, touch_events);
+    bool keep_original_event = false;
+    bool rewritten = action->RewriteEvent(event, bounds, is_mouse_locked_,
+                                          touch_events, keep_original_event);
     if (!rewritten)
       continue;
+    if (keep_original_event)
+      SendExtraEvent(continuation, event);
     if (touch_events.empty())
       return DiscardEvent(continuation);
     if (touch_events.size() == 1)
       return SendEventFinally(continuation, &touch_events.front());
     if (touch_events.size() == 2) {
-      // Some apps can't process correctly on the touch move event which follows
-      // touch press event immediately, so send the touch move event delayed
-      // here.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&TouchInjector::SendTouchMoveEvent,
-                         weak_ptr_factory_.GetWeakPtr(), continuation,
-                         touch_events.back()),
-          kSendTouchMoveDelay);
-      return SendEventFinally(continuation, &touch_events.front());
+      if (touch_events.back().type() == ui::EventType::ET_TOUCH_MOVED) {
+        // Some apps can't process correctly on the touch move event which
+        // follows touch press event immediately, so send the touch move event
+        // delayed here.
+        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&TouchInjector::SendExtraEvent,
+                           weak_ptr_factory_.GetWeakPtr(), continuation,
+                           touch_events.back()),
+            kSendTouchMoveDelay);
+        return SendEventFinally(continuation, &touch_events.front());
+      } else {
+        SendExtraEvent(continuation, touch_events.front());
+        return SendEventFinally(continuation, &touch_events.back());
+      }
     }
   }
 

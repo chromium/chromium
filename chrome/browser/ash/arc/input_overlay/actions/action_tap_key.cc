@@ -14,6 +14,31 @@
 
 namespace arc {
 namespace input_overlay {
+namespace {
+
+bool IsAlt(ui::DomCode code) {
+  return code == ui::DomCode::ALT_LEFT || code == ui::DomCode::ALT_RIGHT;
+}
+
+bool IsCtrl(ui::DomCode code) {
+  return code == ui::DomCode::CONTROL_LEFT ||
+         code == ui::DomCode::CONTROL_RIGHT;
+}
+
+bool IsShift(ui::DomCode code) {
+  return code == ui::DomCode::SHIFT_LEFT || code == ui::DomCode::SHIFT_RIGHT;
+}
+
+bool IsSameKeyCode(ui::DomCode a, ui::DomCode b) {
+  return a == b || (IsAlt(a) && IsAlt(b)) || (IsCtrl(a) && IsCtrl(b)) ||
+         (IsShift(a) && IsShift(b));
+}
+
+bool IsModifier(ui::DomCode code) {
+  return IsAlt(code) || IsCtrl(code) || IsShift(code);
+}
+
+}  // namespace
 
 ActionTapKey::ActionTapKey(aura::Window* window) : Action(window) {}
 
@@ -32,27 +57,32 @@ bool ActionTapKey::ParseFromJson(const base::Value& value) {
     return false;
   }
   key_ = key->first;
+  if (IsModifier(key_)) {
+    is_modifier_key_ = true;
+  }
   return true;
 }
 
 bool ActionTapKey::RewriteEvent(const ui::Event& origin,
                                 const gfx::RectF& content_bounds,
                                 const bool is_mouse_locked,
-                                std::list<ui::TouchEvent>& touch_events) {
+                                std::list<ui::TouchEvent>& touch_events,
+                                bool& keep_original_event) {
   if (!origin.IsKeyEvent())
     return false;
   LogEvent(origin);
   const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(origin);
-  bool rewritten = RewriteKeyEvent(key_event, touch_events, content_bounds);
+  bool rewritten = RewriteKeyEvent(key_event, touch_events, content_bounds,
+                                   keep_original_event);
   LogTouchEvents(touch_events);
   return rewritten;
 }
 
 bool ActionTapKey::RewriteKeyEvent(const ui::KeyEvent& key_event,
                                    std::list<ui::TouchEvent>& rewritten_events,
-                                   const gfx::RectF& content_bounds) {
-  if (key_event.source_device_id() == ui::ED_UNKNOWN_DEVICE ||
-      key_event.code() != key_) {
+                                   const gfx::RectF& content_bounds,
+                                   bool& keep_original_event) {
+  if (!IsSameKeyCode(key_event.code(), key_)) {
     return false;
   }
 
@@ -68,6 +98,9 @@ bool ActionTapKey::RewriteKeyEvent(const ui::KeyEvent& key_event,
     }
 
     touch_id_ = TouchIdManager::GetInstance()->ObtainTouchID();
+    DCHECK(touch_id_);
+    if (!touch_id_)
+      return false;
     auto pos = CalculateTouchPosition(content_bounds);
     if (!pos)
       return false;
@@ -79,7 +112,21 @@ bool ActionTapKey::RewriteKeyEvent(const ui::KeyEvent& key_event,
         ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_)));
     ui::Event::DispatcherApi(&(rewritten_events.back()))
         .set_target(target_window_);
-    keys_pressed_.emplace(key_event.code());
+    if (!is_modifier_key_) {
+      keys_pressed_.emplace(key_event.code());
+    } else {
+      // For modifier keys, EventRewriterChromeOS skips release event for other
+      // event rewriters but still keeps the press event, so AcceleratorHistory
+      // can still receive the release event. To avoid error in
+      // AcceleratorHistory, original press event is still sent.
+      keep_original_event = true;
+      rewritten_events.emplace_back(ui::TouchEvent(
+          ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
+          last_touch_root_location_, key_event.time_stamp(),
+          ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_)));
+      ui::Event::DispatcherApi(&(rewritten_events.back()));
+      OnTouchReleased();
+    }
   } else {
     if (!touch_id_) {
       LOG(ERROR) << "There should be a touch ID for the release {"

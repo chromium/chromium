@@ -78,9 +78,7 @@ void LogEvent(const ui::Event& event) {
             << ui::KeycodeConverter::DomKeyToKeyString(key_event.GetDomKey())
             << "}. DomCode{"
             << ui::KeycodeConverter::DomCodeToCodeString(key_event.code())
-            << "}. Type{" << key_event.type() << "}. Flags {"
-            << key_event.flags() << "}. Time stamp {" << key_event.time_stamp()
-            << "}.";
+            << "}. Type{" << key_event.type() << "}. " << key_event.ToString();
   } else if (event.IsTouchEvent()) {
     const ui::TouchEvent& touch_event =
         static_cast<const ui::TouchEvent&>(event);
@@ -107,6 +105,12 @@ std::string GetDisplayText(const std::string& dom_code_string) {
   auto lower = base::ToLowerASCII(dom_code_string);
   if (lower == "escape")
     return "esc";
+  if (lower == "shiftleft" || lower == "shiftright")
+    return "shift";
+  if (lower == "controlleft" || lower == "controlright")
+    return "ctrl";
+  if (lower == "altleft" || lower == "altright")
+    return "alt";
   // TODO(cuicuiruan): adjust more display text according to UX design
   // requirement.
   return lower;

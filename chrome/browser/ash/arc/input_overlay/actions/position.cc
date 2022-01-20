@@ -12,6 +12,8 @@ namespace {
 // Key strings in the Json file.
 constexpr char kAnchor[] = "anchor";
 constexpr char kAnchorToTarget[] = "anchor_to_target";
+constexpr char kMaxX[] = "max_x";
+constexpr char kMaxY[] = "max_y";
 
 absl::optional<gfx::PointF> ParseTwoElementsArray(const base::Value& value,
                                                   const char* key,
@@ -41,6 +43,20 @@ absl::optional<gfx::PointF> ParseTwoElementsArray(const base::Value& value,
   }
   return absl::make_optional<gfx::PointF>(x, y);
 }
+
+absl::optional<int> ParseIntValue(const base::Value& value, std::string key) {
+  auto val = value.FindIntKey(key);
+  if (val) {
+    if (*val <= 0) {
+      LOG(ERROR) << "Value for {" << key << "} should be positive, but got {"
+                 << *val << "}.";
+      return absl::nullopt;
+    }
+    return val;
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
 Position::Position() {}
@@ -70,12 +86,20 @@ bool Position::ParseFromJson(const base::Value& value) {
         << target.x() << ", " << target.y() << "}.";
     return false;
   }
+
+  max_x_ = ParseIntValue(value, kMaxX);
+  max_y_ = ParseIntValue(value, kMaxY);
+
   return true;
 }
 
 gfx::PointF Position::CalculatePosition(const gfx::RectF& content_bounds) {
   gfx::PointF res = anchor_ + anchor_to_target_;
   res.Scale(content_bounds.width(), content_bounds.height());
+  if (max_x_)
+    res.set_x(std::min((int)res.x(), *max_x_));
+  if (max_y_)
+    res.set_y(std::min((int)res.y(), *max_y_));
   return res;
 }
 

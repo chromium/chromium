@@ -105,7 +105,8 @@ bool ActionMoveMouse::ParseFromJson(const base::Value& value) {
 bool ActionMoveMouse::RewriteEvent(const ui::Event& origin,
                                    const gfx::RectF& content_bounds,
                                    const bool is_mouse_locked,
-                                   std::list<ui::TouchEvent>& touch_events) {
+                                   std::list<ui::TouchEvent>& touch_events,
+                                   bool& keep_original_event) {
   if (!origin.IsMouseEvent() || !is_mouse_locked)
     return false;
 
