@@ -6478,6 +6478,11 @@ test("unit_tests") {
     }
   }
 
+  if (is_chromeos) {
+    sources += [ "../browser/chromeos/arc/open_with_menu_unittest.cc" ]
+    deps += [ "//components/arc/common" ]
+  }
+
   if (is_chromeos_lacros) {
     assert(enable_system_notifications)
     sources += [

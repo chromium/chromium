@@ -43,6 +43,7 @@ bool ArcIconCache::RequestUrlHandlerList(
   auto* service = chromeos::LacrosService::Get();
   if (!service || !service->IsAvailable<crosapi::mojom::Arc>()) {
     LOG(WARNING) << "ARC is not supported in Lacros.";
+    std::move(callback).Run(std::vector<IntentHandlerInfo>());
     return false;
   }
 
@@ -50,6 +51,7 @@ bool ArcIconCache::RequestUrlHandlerList(
       int{crosapi::mojom::Arc::MethodMinVersions::
               kRequestUrlHandlerListMinVersion}) {
     LOG(WARNING) << "RequestUrlHandlerList is not supported in Lacros.";
+    std::move(callback).Run(std::vector<IntentHandlerInfo>());
     return false;
   }
 

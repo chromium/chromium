@@ -383,6 +383,7 @@ bool ArcIntentHelperBridge::RequestUrlHandlerList(
   }
   if (!instance) {
     LOG(ERROR) << "Failed to get instance for RequestUrlHandlerList().";
+    std::move(callback).Run(std::vector<IntentHandlerInfo>());
     return false;
   }
 

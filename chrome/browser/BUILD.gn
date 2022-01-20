@@ -5280,6 +5280,8 @@ static_library("browser") {
       "apps/intent_helper/chromeos_intent_picker_helpers.h",
       "apps/intent_helper/metrics/intent_handling_metrics.cc",
       "apps/intent_helper/metrics/intent_handling_metrics.h",
+      "chromeos/arc/open_with_menu.cc",
+      "chromeos/arc/open_with_menu.h",
       "download/notification/download_item_notification.cc",
       "download/notification/download_item_notification.h",
       "download/notification/download_notification_manager.cc",
@@ -5308,6 +5310,7 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/constants",
       "//chromeos/ui/wm",
+      "//components/arc/common",
     ]
     allow_circular_includes_from += [ "//chrome/browser/policy:onc" ]
   }

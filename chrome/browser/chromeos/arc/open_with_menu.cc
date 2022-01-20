@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/intent_helper/open_with_menu.h"
+#include "chrome/browser/chromeos/arc/open_with_menu.h"
 
 #include <algorithm>
 
 #include "base/strings/string_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/arc/common/intent_helper/link_handler_model_delegate.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
