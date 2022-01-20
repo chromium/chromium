@@ -105,6 +105,8 @@ class SearchControllerImplNew : public SearchController {
 
   void OnZeroStateTimedOut();
 
+  void OnBurnInPeriodElapsed();
+
   Profile* profile_;
 
   // The query associated with the most recent search.

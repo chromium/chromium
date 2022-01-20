@@ -56,10 +56,10 @@ void FilteringRanker::UpdateResultRanks(ResultsMap& results,
             });
 
   // Filter all results after the |kMaxOmniboxResults|th one out of the UI, but
-  // never remove top matches.
+  // never remove best matches.
   for (int i = kMaxOmniboxResults; i < omnibox_results.size(); ++i) {
     auto& scoring = omnibox_results[i]->scoring();
-    if (!scoring.top_match)
+    if (scoring.best_match_rank == -1)
       scoring.filter = true;
   }
 }

@@ -26,7 +26,9 @@ using ProviderType = ash::AppListSearchResultType;
 // TODO(crbug.com/1199206): Remove defunct members from this struct.
 struct Scoring {
   bool filter = false;
-  bool top_match = false;
+  // The rank (0, 1, 2, ...) of this result within the Best Match collection of
+  // results, or -1 if this result is not a Best Match.
+  int best_match_rank = -1;
   double normalized_relevance = 0.0f;
   double category_item_score = 0.0f;
   double category_usage_score = 0.0f;

@@ -55,6 +55,10 @@ class Ranker {
 
   // Called each time a user removes a result.
   virtual void Remove(ChromeSearchResult* result);
+
+  // Called via callback within SearchControllerImplNew when the burn-in period
+  // has elapsed and before the at-burn-in publish occurs.
+  virtual void OnBurnInPeriodElapsed();
 };
 
 }  // namespace app_list

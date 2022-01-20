@@ -51,4 +51,6 @@ void Ranker::Train(const LaunchData& launch) {}
 
 void Ranker::Remove(ChromeSearchResult* result) {}
 
+void Ranker::OnBurnInPeriodElapsed() {}
+
 }  // namespace app_list

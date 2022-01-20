@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -182,6 +183,10 @@ class ChromeSearchResult {
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   virtual void GetContextMenuModel(GetMenuModelCallback callback);
 
+  base::WeakPtr<ChromeSearchResult> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   // These id setters should be called in derived class constructors only.
   void set_id(const std::string& id) { metadata_->id = id; }
@@ -222,6 +227,8 @@ class ChromeSearchResult {
   std::unique_ptr<ash::SearchResultMetadata> metadata_;
 
   AppListModelUpdater* model_updater_ = nullptr;
+
+  base::WeakPtrFactory<ChromeSearchResult> weak_ptr_factory_{this};
 };
 
 ::std::ostream& operator<<(::std::ostream& os,

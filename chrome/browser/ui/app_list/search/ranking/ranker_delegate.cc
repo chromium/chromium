@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 
 #include "chrome/browser/ui/app_list/search/ranking/answer_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/best_match_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ftrl_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/query_highlighter.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
-#include "chrome/browser/ui/app_list/search/ranking/top_match_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/util/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/util/score_normalizer.pb.h"
@@ -105,7 +105,7 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
 
   // 5. Result post-processing.
   // Nb. the top-match ranker relies on score normalization.
-  AddRanker(std::make_unique<TopMatchRanker>());
+  AddRanker(std::make_unique<BestMatchRanker>());
 }
 
 RankerDelegate::~RankerDelegate() {}
