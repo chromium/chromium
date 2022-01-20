@@ -29,14 +29,14 @@ class TestResult : public ChromeSearchResult {
   void Open(int event_flags) override {}
 };
 
-std::unique_ptr<TestResult> make_result(const std::string& id) {
+std::unique_ptr<TestResult> MakeResult(const std::string& id) {
   return std::make_unique<TestResult>(id);
 }
 
-Results make_results(std::vector<std::string> ids) {
+Results MakeResults(std::vector<std::string> ids) {
   Results res;
   for (const std::string& id : ids) {
-    res.push_back(make_result(id));
+    res.push_back(MakeResult(id));
   }
   return res;
 }
@@ -90,7 +90,7 @@ TEST_F(RemovedResultsRankerTest, RemoveResults) {
 
   // Request to remove results.
   std::vector<std::string> ids{"A", "B", "C"};
-  auto results = make_results(ids);
+  auto results = MakeResults(ids);
   for (const auto& result : results)
     ranker.Remove(result.get());
   Wait();
@@ -111,7 +111,7 @@ TEST_F(RemovedResultsRankerTest, DuplicateRemoveRequests) {
 
   // Request to remove results, with a duplicate.
   std::vector<std::string> ids{"A", "B", "B"};
-  auto results = make_results(ids);
+  auto results = MakeResults(ids);
   for (const auto& result : results)
     ranker.Remove(result.get());
   Wait();
@@ -131,15 +131,15 @@ TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
   Wait();
 
   // Request to remove some results.
-  ranker.Remove(make_result("A").get());
-  ranker.Remove(make_result("C").get());
-  ranker.Remove(make_result("E").get());
+  ranker.Remove(MakeResult("A").get());
+  ranker.Remove(MakeResult("C").get());
+  ranker.Remove(MakeResult("E").get());
   Wait();
 
   ResultsMap results_map;
-  results_map[ResultType::kInstalledApp] = make_results({"A", "B"});
-  results_map[ResultType::kInternalApp] = make_results({"C", "D"});
-  results_map[ResultType::kOmnibox] = make_results({"E"});
+  results_map[ResultType::kInstalledApp] = MakeResults({"A", "B"});
+  results_map[ResultType::kInternalApp] = MakeResults({"C", "D"});
+  results_map[ResultType::kOmnibox] = MakeResults({"E"});
 
   // Installed apps: The 0th result ("A") is marked to be filtered.
   ranker.UpdateResultRanks(results_map, ResultType::kInstalledApp);
@@ -175,7 +175,7 @@ TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
 
   ResultsMap results_map;
   results_map[ResultType::kInstalledApp] =
-      make_results(std::vector<std::string>());
+      MakeResults(std::vector<std::string>());
 
   ranker.UpdateResultRanks(results_map, ResultType::kInstalledApp);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp].empty());
@@ -186,14 +186,14 @@ TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
   Wait();
 
   // Request to remove some results.
-  ranker.Remove(make_result("A").get());
-  ranker.Remove(make_result("C").get());
+  ranker.Remove(MakeResult("A").get());
+  ranker.Remove(MakeResult("C").get());
   Wait();
 
   ResultsMap results_map;
   // Include some duplicated results.
-  results_map[ResultType::kInstalledApp] = make_results({"A", "A", "B"});
-  results_map[ResultType::kInternalApp] = make_results({"C", "D"});
+  results_map[ResultType::kInstalledApp] = MakeResults({"A", "A", "B"});
+  results_map[ResultType::kInternalApp] = MakeResults({"C", "D"});
 
   // Installed apps: The 0th and 1st results ("A") are marked to be filtered.
   ranker.UpdateResultRanks(results_map, ResultType::kInstalledApp);
