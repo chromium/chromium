@@ -82,8 +82,8 @@ void GamepadPlatformDataFetcherMac::RegisterForNotifications() {
   IOHIDManagerScheduleWithRunLoop(hid_manager_ref_, CFRunLoopGetCurrent(),
                                   kCFRunLoopDefaultMode);
 
-  enabled_ = IOHIDManagerOpen(hid_manager_ref_, kIOHIDOptionsTypeNone) ==
-             kIOReturnSuccess;
+  const auto result = IOHIDManagerOpen(hid_manager_ref_, kIOHIDOptionsTypeNone);
+  enabled_ = (result == kIOReturnSuccess || result == kIOReturnExclusiveAccess);
 }
 
 void GamepadPlatformDataFetcherMac::UnregisterFromNotifications() {
