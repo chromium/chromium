@@ -1059,7 +1059,8 @@ void ExpectSyncConsentHistogram(
 // Tests that the sign-in promo disappear when sync is disabled and reappears
 // when sync is enabled again.
 // Related to crbug.com/1287465.
-- (void)testTurnOffSyncDisablePolicy {
+// TODO(crbug.com/1289275): Re-enable.
+- (void)DISABLED_testTurnOffSyncDisablePolicy {
   // Disable sync by policy.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey selectElementWithMatcher:
