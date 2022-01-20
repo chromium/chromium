@@ -116,6 +116,26 @@ action("updater_install_script") {
   ]
 }
 
+action("updater_test_install_script") {
+  script = "embed_variables.py"
+
+  inputs = [
+    script,
+    "setup/.install.sh",
+  ]
+
+  outputs = [ "$root_out_dir/.install" ]
+
+  args = [
+    "-i",
+    rebase_path("setup/.install.sh"),
+    "-o",
+    rebase_path(root_out_dir + "/.install"),
+    "-p",
+    updater_product_full_name + "_test",
+  ]
+}
+
 action("browser_install_script") {
   script = "embed_variables.py"
 

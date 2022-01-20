@@ -15,11 +15,14 @@
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/build_config.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
@@ -31,6 +34,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -103,12 +107,18 @@ void ExpectServiceAbsent(UpdaterScope scope, const std::string& service) {
 
 }  // namespace
 
+base::FilePath GetSetupExecutablePath() {
+  // There is no metainstaller on mac, use the main executable for setup.
+  return GetExecutablePath();
+}
+
 void EnterTestMode(const GURL& url) {
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetUpdateURL(std::vector<std::string>{url.spec()})
                   .SetUseCUP(false)
                   .SetInitialDelay(0.1)
                   .SetServerKeepAliveSeconds(1)
+                  .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .Overwrite());
 }
 
@@ -158,6 +168,23 @@ void Clean(UpdaterScope scope) {
                          CopyUpdateServiceLaunchdName(scope));
     RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
                          CopyUpdateServiceInternalLaunchdName(scope));
+  }
+
+  // Also clean up any other versions of the updater that are around.
+  base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
+  launchctl.AppendArg("list");
+  std::string out;
+  ASSERT_TRUE(base::GetAppOutput(launchctl, &out));
+  for (const auto& token : base::SplitStringPiece(out, base::kWhitespaceASCII,
+                                                  base::TRIM_WHITESPACE,
+                                                  base::SPLIT_WANT_NONEMPTY)) {
+    if (base::StartsWith(token, MAC_BUNDLE_IDENTIFIER_STRING)) {
+      std::string out_rm;
+      base::CommandLine launchctl_rm(base::FilePath("/bin/launchctl"));
+      launchctl_rm.AppendArg("remove");
+      launchctl_rm.AppendArg(token);
+      ASSERT_TRUE(base::GetAppOutput(launchctl_rm, &out_rm));
+    }
   }
 }
 
@@ -213,16 +240,6 @@ void ExpectInstalled(UpdaterScope scope) {
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(
       launchd_domain, launchd_type,
       CopyUpdateServiceInternalLaunchdName(scope)));
-}
-
-void Install(UpdaterScope scope) {
-  const base::FilePath path = GetExecutablePath();
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
-  command_line.AppendSwitch(kInstallSwitch);
-  int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(exit_code, 0);
 }
 
 void ExpectActiveUpdater(UpdaterScope scope) {
@@ -310,6 +327,30 @@ void WaitForUpdaterExit(UpdaterScope /*scope*/) {
     }
     return false;
   })));
+}
+
+void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+  base::FilePath source_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  base::FilePath old_updater_path =
+      source_path.Append("third_party").Append("updater");
+#if BUILDFLAG(CHROMIUM_BRANDING)
+#if defined(ARCH_CPU_ARM64)
+  old_updater_path = old_updater_path.Append("chromium_mac_arm64");
+#elif defined(ARCH_CPU_X86_64)
+  old_updater_path = old_updater_path.Append("chromium_mac_amd64");
+#endif
+#endif
+  base::CommandLine command_line(
+      old_updater_path.Append("updater")
+          .Append(PRODUCT_FULLNAME_STRING "_test.app")
+          .Append("Contents")
+          .Append("MacOS")
+          .Append(PRODUCT_FULLNAME_STRING "_test"));
+  command_line.AppendSwitch(kInstallSwitch);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  ASSERT_EQ(exit_code, 0);
 }
 
 }  // namespace test

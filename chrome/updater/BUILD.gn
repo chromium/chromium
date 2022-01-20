@@ -504,20 +504,26 @@ if (is_win || is_mac || is_linux) {
 
       if (is_mac) {
         inputs = [
-          "$root_build_dir/$updater_product_full_name.app/Contents/Info.plist",
-          "$root_build_dir/$updater_product_full_name.app/Contents/MacOS/$updater_product_full_name",
-          "$root_build_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
-          "$root_build_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
-          "$root_build_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
-          "$root_build_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
-          "$root_build_dir/$updater_product_full_name.app/Contents/PkgInfo",
+          "$root_build_dir/.install",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/Info.plist",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/MacOS/${updater_product_full_name}_test",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+          "$root_build_dir/${updater_product_full_name}_test.app/Contents/PkgInfo",
         ]
-        deps = [ "//chrome/updater/mac:updater_bundle" ]
+        deps = [
+          "//chrome/updater/mac:updater_bundle_test",
+          "//chrome/updater/mac:updater_test_install_script",
+        ]
       }
 
       if (is_win) {
-        inputs = [ "$root_build_dir/UpdaterSetup.exe" ]
-        deps = [ "//chrome/updater/win/installer" ]
+        inputs = [ "$root_build_dir/UpdaterSetup_test.exe" ]
+        deps = [ "//chrome/updater/win/installer:installer_test" ]
       }
     }
   }
@@ -581,11 +587,6 @@ if (is_win || is_mac || is_linux) {
       "//url",
     ]
 
-    # TODO(crbug.com/1276126) - enable building the CRX target.
-    if (!is_linux) {
-      deps += [ ":updater_selfupdate_test_crx" ]
-    }
-
     if (is_win) {
       sources += [
         "activity_impl_win_unittest.cc",
@@ -609,6 +610,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data_deps = [
+        ":updater_selfupdate_test_crx",
         "//chrome/updater/win:updater_test",
         "//chrome/updater/win/installer:installer_test",
         "//chrome/updater/win/installer:installer_unittest",
@@ -666,9 +668,36 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data_deps = [
+        ":updater_selfupdate_test_crx",
         "//chrome/updater/mac:ksadmin",
         "//chrome/updater/mac:updater_bundle_test",
       ]
+
+      if (target_cpu == "arm64") {
+        data += [
+          "//third_party/updater/chromium_mac_arm64/updater/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
+          "//third_party/updater/chromium_mac_arm64/updater/ChromiumUpdater_test.app/Contents/Info.plist",
+          "//third_party/updater/chromium_mac_arm64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
+          "//third_party/updater/chromium_mac_arm64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
+          "//third_party/updater/chromium_mac_arm64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/Info.plist",
+          "//third_party/updater/chromium_mac_arm64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+          "//third_party/updater/chromium_mac_arm64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+          "//third_party/updater/chromium_mac_arm64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
+        ]
+      }
+
+      if (target_cpu == "x64") {
+        data += [
+          "//third_party/updater/chromium_mac_amd64/updater/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
+          "//third_party/updater/chromium_mac_amd64/updater/ChromiumUpdater_test.app/Contents/Info.plist",
+          "//third_party/updater/chromium_mac_amd64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
+          "//third_party/updater/chromium_mac_amd64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
+          "//third_party/updater/chromium_mac_amd64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/Info.plist",
+          "//third_party/updater/chromium_mac_amd64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+          "//third_party/updater/chromium_mac_amd64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+          "//third_party/updater/chromium_mac_amd64/updater/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
+        ]
+      }
     }
 
     if (is_linux) {

@@ -23,6 +23,7 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -170,6 +171,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->SetupFakeUpdaterLowerVersion();
   }
 
+  void SetupRealUpdaterLowerVersion() {
+    test_commands_->SetupRealUpdaterLowerVersion();
+  }
+
   void SetActive(const std::string& app_id) {
     test_commands_->SetActive(app_id);
   }
@@ -204,6 +209,10 @@ class IntegrationTest : public ::testing::Test {
 
   void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
 
+  void RunWakeActive(int exit_code) {
+    test_commands_->RunWakeActive(exit_code);
+  }
+
   void Update(const std::string& app_id) { test_commands_->Update(app_id); }
 
   void UpdateAll() { test_commands_->UpdateAll(); }
@@ -232,6 +241,10 @@ class IntegrationTest : public ::testing::Test {
                             const base::Version& to_version) {
     test_commands_->ExpectUpdateSequence(test_server, app_id, from_version,
                                          to_version);
+  }
+
+  void ExpectSelfUpdateSequence(ScopedServer* test_server) {
+    test_commands_->ExpectSelfUpdateSequence(test_server);
   }
 
   void ExpectRegistrationEvent(ScopedServer* test_server,
@@ -578,6 +591,35 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   Uninstall();
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+// Windows and Google-branded builds will eventually support this test, but for
+// now only Chromium-branded macOS updaters are available in third_party.
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(CHROMIUM_BRANDING)
+TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
+  ScopedServer test_server(test_commands_);
+  ExpectRegistrationEvent(&test_server, kUpdaterAppId);
+  SetupRealUpdaterLowerVersion();
+  ExpectVersionNotActive(kUpdaterVersion);
+
+  // Trigger an old instance update check.
+  ExpectSelfUpdateSequence(&test_server);
+  RunWakeActive(0);
+
+  // Qualify the new instance.
+  ExpectRegistrationEvent(&test_server, kQualificationAppId);
+  ExpectUpdateSequence(&test_server, kQualificationAppId, base::Version("0.1"),
+                       base::Version("0.2"));
+  RunWake(0);
+  WaitForUpdaterExit();
+
+  // Activate the new instance. (It should not check itself for updates.)
+  RunWake(0);
+  WaitForUpdaterExit();
+
+  ExpectVersionActive(kUpdaterVersion);
+  Uninstall();
+}
+#endif
 
 TEST_F(IntegrationTest, UpdateServiceStress) {
   Install();

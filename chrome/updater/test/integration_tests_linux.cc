@@ -22,6 +22,11 @@ absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
   return absl::nullopt;
 }
 
+base::FilePath GetSetupExecutablePath() {
+  NOTREACHED();
+  return base::FilePath();
+}
+
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   NOTREACHED();
   return absl::nullopt;
@@ -41,10 +46,6 @@ void Uninstall(UpdaterScope scope) {
 }
 
 void ExpectActiveUpdater(UpdaterScope scope) {
-  NOTREACHED();
-}
-
-void Install(UpdaterScope scope) {
   NOTREACHED();
 }
 
@@ -77,6 +78,10 @@ void ExpectActive(UpdaterScope scope, const std::string& app_id) {
 }
 
 void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
+  NOTREACHED();
+}
+
+void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   NOTREACHED();
 }
 
