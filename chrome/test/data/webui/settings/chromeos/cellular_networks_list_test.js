@@ -301,6 +301,36 @@ suite('CellularNetworksList', function() {
   });
 
   test(
+      'Allow only managed cellular networks should hide pending eSIM networks',
+      async () => {
+        eSimManagerRemote.addEuiccForTest(1);
+        init();
+        addESimSlot();
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: false,
+        };
+        await flushAsync();
+        let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+        assertTrue(!!eSimNetworkList);
+
+        Polymer.dom.flush();
+
+        const listItem = eSimNetworkList.$$('network-list-item');
+        assertTrue(!!listItem);
+        const installButton = listItem.$$('#installButton');
+        assertTrue(!!installButton);
+
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: true,
+        };
+        eSimManagerRemote.addEuiccForTest(1);
+        addESimSlot();
+        await flushAsync();
+        eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+        assertFalse(!!eSimNetworkList);
+      });
+
+  test(
       'Fire show toast event if download profile clicked without' +
           'non-cellular connection.',
       async () => {

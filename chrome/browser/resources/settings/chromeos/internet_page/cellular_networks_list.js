@@ -232,7 +232,7 @@ Polymer({
   created() {
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-    this.fetchESimPendingProfileList_();
+    this.fetchEuiccAndESimPendingProfileList_();
   },
 
   /** @override */
@@ -258,7 +258,7 @@ Polymer({
    * ESimManagerListenerBehavior override
    */
   onAvailableEuiccListChanged() {
-    this.fetchESimPendingProfileList_();
+    this.fetchEuiccAndESimPendingProfileList_();
   },
 
   /**
@@ -282,12 +282,21 @@ Polymer({
   },
 
   /** @private */
-  fetchESimPendingProfileList_() {
+  fetchEuiccAndESimPendingProfileList_() {
     getEuicc().then(euicc => {
       if (!euicc) {
         return;
       }
       this.euicc_ = euicc;
+
+      // Restricting managed cellular network should not show pending eSIM
+      // profiles.
+      if (this.isESimPolicyEnabled_ && this.globalPolicy &&
+          this.globalPolicy.allowOnlyPolicyCellularNetworks) {
+        this.eSimPendingProfileItems_ = [];
+        return;
+      }
+
       this.fetchESimPendingProfileListForEuicc_(euicc);
     });
   },
