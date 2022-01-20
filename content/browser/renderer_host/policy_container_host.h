@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 
+#include "content/common/child_process_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -140,7 +141,9 @@ class CONTENT_EXPORT PolicyContainerHost
   // becomes owned by a RenderFrameHost. After this function is called, it
   // becomes possible to retrieve this PolicyContainerHost via
   // PolicyContainerHost::FromFrameToken. This function can be called only once.
-  void AssociateWithFrameToken(const blink::LocalFrameToken& token);
+  void AssociateWithFrameToken(
+      const blink::LocalFrameToken& token,
+      int process_id = ChildProcessHost::kInvalidUniqueID);
 
   const PolicyContainerPolicies& policies() const { return *policies_; }
 
@@ -211,6 +214,7 @@ class CONTENT_EXPORT PolicyContainerHost
       keep_alive_handles_receiver_set_;
 
   absl::optional<blink::LocalFrameToken> frame_token_ = absl::nullopt;
+  int process_id_ = ChildProcessHost::kInvalidUniqueID;
 };
 
 }  // namespace content

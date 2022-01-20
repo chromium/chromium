@@ -5,6 +5,9 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 
 #include "base/lazy_instance.h"
+#include "content/browser/renderer_host/frame_navigation_entry.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
@@ -150,10 +153,12 @@ PolicyContainerHost::~PolicyContainerHost() {
 }
 
 void PolicyContainerHost::AssociateWithFrameToken(
-    const blink::LocalFrameToken& frame_token) {
+    const blink::LocalFrameToken& frame_token,
+    int process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!frame_token_);
   frame_token_ = frame_token;
+  process_id_ = process_id;
   g_token_policy_container_map.Get().erase(frame_token);
   g_token_policy_container_map.Get().emplace(frame_token, this);
 }
@@ -170,6 +175,12 @@ PolicyContainerHost* PolicyContainerHost::FromFrameToken(
 void PolicyContainerHost::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
   policies_->referrer_policy = referrer_policy;
+  if (frame_token_) {
+    if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromFrameToken(
+            process_id_, frame_token_.value())) {
+      rfh->DidChangeReferrerPolicy(referrer_policy);
+    }
+  }
 }
 
 void PolicyContainerHost::AddContentSecurityPolicies(

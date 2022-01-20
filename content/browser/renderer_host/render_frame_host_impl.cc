@@ -2722,7 +2722,8 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
 void RenderFrameHostImpl::SetPolicyContainerHost(
     scoped_refptr<PolicyContainerHost> policy_container_host) {
   policy_container_host_ = std::move(policy_container_host);
-  policy_container_host_->AssociateWithFrameToken(GetFrameToken());
+  policy_container_host_->AssociateWithFrameToken(GetFrameToken(),
+                                                  GetProcess()->GetID());
 }
 
 void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
@@ -3208,6 +3209,21 @@ RenderFrameProxyHost* RenderFrameHostImpl::GetProxyToOuterDelegate() {
 
   return browsing_context_state_->GetRenderFrameProxyHost(
       outer_contents_frame_tree_node->parent()->GetSiteInstance()->group());
+}
+
+void RenderFrameHostImpl::DidChangeReferrerPolicy(
+    network::mojom::ReferrerPolicy referrer_policy) {
+  if (!IsActive())
+    return;
+  // The FrameNavigationEntry may want to change whether to protect its url
+  // in the appHistory API when the referrer policy changes.
+  if (FrameNavigationEntry* entry =
+          frame_tree_->controller().GetLastCommittedEntry()->GetFrameEntry(
+              frame_tree_node_)) {
+    entry->set_protect_url_in_app_history(
+        NavigationControllerImpl::ShouldProtectUrlInAppHistory(
+            referrer_policy));
+  }
 }
 
 void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {

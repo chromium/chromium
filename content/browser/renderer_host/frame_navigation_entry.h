@@ -56,7 +56,8 @@ class CONTENT_EXPORT FrameNavigationEntry
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
       std::unique_ptr<SubresourceWebBundleNavigationInfo>
           subresource_web_bundle_navigation_info,
-      std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
+      std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
+      bool protect_url_in_app_history);
 
   FrameNavigationEntry(const FrameNavigationEntry&) = delete;
   FrameNavigationEntry& operator=(const FrameNavigationEntry&) = delete;
@@ -85,7 +86,8 @@ class CONTENT_EXPORT FrameNavigationEntry
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
       std::unique_ptr<SubresourceWebBundleNavigationInfo>
           subresource_web_bundle_navigation_info,
-      std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
+      std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
+      bool protect_url_in_app_history);
 
   // The unique name of the frame this entry is for.  This is a stable name for
   // the frame based on its position in the tree and relation to other named
@@ -227,6 +229,11 @@ class CONTENT_EXPORT FrameNavigationEntry
   SubresourceWebBundleNavigationInfo* subresource_web_bundle_navigation_info()
       const;
 
+  bool protect_url_in_app_history() { return protect_url_in_app_history_; }
+  void set_protect_url_in_app_history(bool protect) {
+    protect_url_in_app_history_ = protect;
+  }
+
  private:
   friend class base::RefCounted<FrameNavigationEntry>;
   virtual ~FrameNavigationEntry();
@@ -283,6 +290,12 @@ class CONTENT_EXPORT FrameNavigationEntry
 
   // TODO(https://crbug.com/1140393): Persist these policies.
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies_;
+
+  // If the document represented by this FNE hid its full url from appearing
+  // in a referrer via a "no-referrer" or "origin" referrer policy, this URL
+  // will be hidden from appHistory API entries as well.
+  // TODO(japhet): This should be persisted.
+  bool protect_url_in_app_history_;
 };
 
 }  // namespace content

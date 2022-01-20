@@ -9,7 +9,7 @@
 ] interface AppHistoryEntry : EventTarget {
   readonly attribute DOMString key;
   readonly attribute DOMString id;
-  readonly attribute USVString url;
+  readonly attribute USVString? url;
   readonly attribute long long index;
   readonly attribute boolean sameDocument;
 

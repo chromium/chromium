@@ -397,6 +397,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // params.
   void PopulateAppHistoryEntryVectors(NavigationRequest* request);
 
+  // The appHistory API exposes the urls of some non-current same-origin
+  // FrameNavigationEntries to the renderer. This helper checks whether the
+  // given ReferrerPolicy makes an attempt to hide a page's URL (e.g., in
+  // referrer headers) and thus whether the URL should be hidden from appHistory
+  // entries as well.
+  static bool ShouldProtectUrlInAppHistory(
+      network::mojom::ReferrerPolicy referrer_policy);
+
   // Returns whether the last NavigationEntry encountered a post-commit error.
   bool has_post_commit_error_entry() const;
 
@@ -738,7 +746,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                                       const url::Origin& pending_origin,
                                       FrameTreeNode* node,
                                       SiteInstance* site_instance,
-                                      int64_t previous_item_sequence_number);
+                                      int64_t pending_item_sequence_number,
+                                      int64_t pending_document_sequence_number);
   // Helper for NavigateToAppHistoryKey(). Ensures that we only navigate to
   // |target_entry| if it matches |current_entry|'s origin and site instance, as
   // well as having |app_history_key| as its key.

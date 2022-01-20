@@ -35,7 +35,8 @@ FrameNavigationEntry::FrameNavigationEntry(
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
         subresource_web_bundle_navigation_info,
-    std::unique_ptr<PolicyContainerPolicies> policy_container_policies)
+    std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
+    bool protect_url_in_app_history)
     : frame_unique_name_(frame_unique_name),
       item_sequence_number_(item_sequence_number),
       document_sequence_number_(document_sequence_number),
@@ -55,7 +56,8 @@ FrameNavigationEntry::FrameNavigationEntry(
       web_bundle_navigation_info_(std::move(web_bundle_navigation_info)),
       subresource_web_bundle_navigation_info_(
           std::move(subresource_web_bundle_navigation_info)),
-      policy_container_policies_(std::move(policy_container_policies)) {}
+      policy_container_policies_(std::move(policy_container_policies)),
+      protect_url_in_app_history_(protect_url_in_app_history) {}
 
 FrameNavigationEntry::~FrameNavigationEntry() {}
 
@@ -71,7 +73,8 @@ scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
       nullptr /* web_bundle_navigation_info */,
       nullptr /* subresource_web_bundle_navigation_info */,
       policy_container_policies_ ? policy_container_policies_->Clone()
-                                 : nullptr);
+                                 : nullptr,
+      protect_url_in_app_history_);
   // |bindings_| gets only updated through the SetBindings API, not through
   // UpdateEntry, so make a copy of it explicitly here as part of cloning.
   copy->bindings_ = bindings_;
@@ -97,7 +100,8 @@ void FrameNavigationEntry::UpdateEntry(
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
         subresource_web_bundle_navigation_info,
-    std::unique_ptr<PolicyContainerPolicies> policy_container_policies) {
+    std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
+    bool protect_url_in_app_history) {
   frame_unique_name_ = frame_unique_name;
   item_sequence_number_ = item_sequence_number;
   document_sequence_number_ = document_sequence_number;
@@ -117,6 +121,7 @@ void FrameNavigationEntry::UpdateEntry(
   subresource_web_bundle_navigation_info_ =
       std::move(subresource_web_bundle_navigation_info);
   policy_container_policies_ = std::move(policy_container_policies);
+  protect_url_in_app_history_ = protect_url_in_app_history;
 }
 
 void FrameNavigationEntry::set_item_sequence_number(

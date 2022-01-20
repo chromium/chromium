@@ -2412,6 +2412,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameProxyHost* GetProxyToParent();
   RenderFrameProxyHost* GetProxyToOuterDelegate();
 
+  void DidChangeReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy);
+
  protected:
   friend class RenderFrameHostFactory;
 

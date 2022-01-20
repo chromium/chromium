@@ -100,7 +100,9 @@ void RecursivelyGenerateFrameEntries(
         nullptr /* subresource_web_bundle_navigation_info */,
         // TODO(https://crbug.com/1140393): We should restore the policy
         // container.
-        nullptr /* policy_container_policies */);
+        nullptr /* policy_container_policies */,
+        // TODO(japhet): We should restore protect_url_in_app_history.
+        false /* protect_url_in_app_history */);
     context->AddFrameNavigationEntry(entry.get());
   }
   node->frame_entry = std::move(entry);
@@ -399,7 +401,8 @@ NavigationEntryImpl::NavigationEntryImpl(
               std::move(blob_url_loader_factory),
               nullptr /* web_bundle_navigation_info */,
               nullptr /* subresource_web_bundle_navigation_info */,
-              nullptr /* policy_container_policies */))),
+              nullptr /* policy_container_policies */,
+              false /* protect_url_in_app_history */))),
       unique_id_(CreateUniqueEntryID()),
       page_type_(PAGE_TYPE_NORMAL),
       update_virtual_url_with_url_(false),
@@ -1003,6 +1006,10 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
         subresource_web_bundle_navigation_info,
     std::unique_ptr<PolicyContainerPolicies> policy_container_policies) {
+  bool protect_url_in_app_history =
+      policy_container_policies &&
+      NavigationControllerImpl::ShouldProtectUrlInAppHistory(
+          policy_container_policies->referrer_policy);
   // If this is called for the main frame, the FrameNavigationEntry is
   // guaranteed to exist, so just update it directly and return.
   if (frame_tree_node->IsMainFrame()) {
@@ -1030,7 +1037,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
         std::move(blob_url_loader_factory),
         std::move(web_bundle_navigation_info),
         std::move(subresource_web_bundle_navigation_info),
-        std::move(policy_container_policies));
+        std::move(policy_container_policies), protect_url_in_app_history);
     return;
   }
 
@@ -1066,7 +1073,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
           method, post_id, std::move(blob_url_loader_factory),
           std::move(web_bundle_navigation_info),
           std::move(subresource_web_bundle_navigation_info),
-          std::move(policy_container_policies));
+          std::move(policy_container_policies), protect_url_in_app_history);
       return;
     }
   }
@@ -1081,7 +1088,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
       post_id, std::move(blob_url_loader_factory),
       std::move(web_bundle_navigation_info),
       std::move(subresource_web_bundle_navigation_info),
-      std::move(policy_container_policies));
+      std::move(policy_container_policies), protect_url_in_app_history);
   parent_node->children.push_back(
       std::make_unique<NavigationEntryImpl::TreeNode>(parent_node,
                                                       std::move(frame_entry)));

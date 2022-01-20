@@ -1756,6 +1756,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   // entry instead of looking at the pending entry, because the pending entry
   // does not have any subframe history items.
   if (is_same_document && GetLastCommittedEntry()) {
+    FrameNavigationEntry* previous_frame_entry =
+        GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
     auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
         rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
         params.document_sequence_number, params.app_history_key,
@@ -1767,7 +1769,11 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         nullptr /* web_bundle_navigation_info */,
         request->GetSubresourceWebBundleNavigationInfo(),
         // We will set the document policies later in this function.
-        nullptr /* policy_container_policies */);
+        nullptr /* policy_container_policies */,
+        // Try to preserve protect_url_in_app_history from the previous
+        // FrameNavigationEntry.
+        previous_frame_entry &&
+            previous_frame_entry->protect_url_in_app_history());
 
     new_entry = GetLastCommittedEntry()->CloneAndReplace(
         frame_entry, true, request->frame_tree_node(), frame_tree_.root());
@@ -2055,6 +2061,25 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   // CloneAndReplace() call below, if a spot can't be found for it in the tree.
   const absl::optional<url::Origin>& initiator_origin =
       request->common_params().initiator_origin;
+  std::unique_ptr<PolicyContainerPolicies> policy_container_policies =
+      ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
+                                                  request->GetURL());
+  bool protect_url_in_app_history = false;
+  if (is_same_document) {
+    FrameNavigationEntry* previous_frame_entry =
+        GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
+    // Try to preserve protect_url_in_app_history from the previous
+    // FrameNavigationEntry.
+    protect_url_in_app_history =
+        previous_frame_entry &&
+        previous_frame_entry->protect_url_in_app_history();
+  } else {
+    protect_url_in_app_history =
+        policy_container_policies &&
+        ShouldProtectUrlInAppHistory(
+            policy_container_policies->referrer_policy);
+  }
+
   auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
       rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
       params.document_sequence_number, params.app_history_key,
@@ -2067,8 +2092,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
       request->GetSubresourceWebBundleNavigationInfo(),
-      ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
-                                                  request->GetURL()));
+      std::move(policy_container_policies), protect_url_in_app_history);
 
   std::unique_ptr<NavigationEntryImpl> new_entry =
       GetLastCommittedEntry()->CloneAndReplace(
@@ -2568,7 +2592,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         std::vector<GURL>(), blink::PageState(), method, -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
         nullptr /* subresource_web_bundle_navigation_info */,
-        nullptr /* policy_container_policies */);
+        nullptr /* policy_container_policies */,
+        false /* protect_url_in_app_history */);
   }
 
   LoadURLParams params(url);
@@ -4173,7 +4198,8 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
     const url::Origin& pending_origin,
     FrameTreeNode* node,
     SiteInstance* site_instance,
-    int64_t previous_item_sequence_number) {
+    int64_t pending_item_sequence_number,
+    int64_t pending_document_sequence_number) {
   std::vector<blink::mojom::AppHistoryEntryPtr> entries;
   if (GetLastCommittedEntry()->IsInitialEntry()) {
     // Don't process the initial entry.
@@ -4181,12 +4207,11 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
     return entries;
   }
   int offset = direction == Direction::kForward ? 1 : -1;
+  int64_t previous_item_sequence_number = pending_item_sequence_number;
   for (int i = entry_index + offset; i >= 0 && i < GetEntryCount();
        i += offset) {
     FrameNavigationEntry* frame_entry = GetEntryAtIndex(i)->GetFrameEntry(node);
     if (!frame_entry || !frame_entry->committed_origin())
-      break;
-    if (site_instance != frame_entry->site_instance())
       break;
     if (!pending_origin.IsSameOriginWith(*frame_entry->committed_origin()))
       break;
@@ -4196,16 +4221,28 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
     if (blink::DecodePageState(frame_entry->page_state().ToEncodedData(),
                                &exploded_page_state)) {
       blink::ExplodedFrameState frame_state = exploded_page_state.top;
+
+      // If the document represented by this FNE hid its full url from appearing
+      // in a referrer via a "no-referrer" or "origin" referrer policy, censor
+      // the url in appHistory as well (unless we're navigating to that
+      // document).
+      std::u16string url;
+      if (pending_document_sequence_number ==
+              frame_entry->document_sequence_number() ||
+          !frame_entry->protect_url_in_app_history()) {
+        url = frame_state.url_string.value_or(std::u16string());
+      }
+
       blink::mojom::AppHistoryEntryPtr entry =
           blink::mojom::AppHistoryEntry::New(
               frame_state.app_history_key.value_or(std::u16string()),
-              frame_state.app_history_id.value_or(std::u16string()),
-              frame_state.url_string.value_or(std::u16string()),
+              frame_state.app_history_id.value_or(std::u16string()), url,
               frame_state.item_sequence_number,
               frame_state.document_sequence_number,
               frame_state.app_history_state.value_or(std::u16string()));
 
-      DCHECK(pending_origin.CanBeDerivedFrom(GURL(entry->url)));
+      DCHECK(entry->url.empty() ||
+             pending_origin.CanBeDerivedFrom(GURL(entry->url)));
       entries.push_back(std::move(entry));
       previous_item_sequence_number = frame_entry->item_sequence_number();
     }
@@ -4245,21 +4282,26 @@ void NavigationControllerImpl::PopulateAppHistoryEntryVectors(
   }
 
   int64_t pending_item_sequence_number = 0;
+  int64_t pending_document_sequence_number = 0;
   if (auto* pending_entry = GetPendingEntry()) {
-    if (auto* frame_entry = pending_entry->GetFrameEntry(node))
+    if (auto* frame_entry = pending_entry->GetFrameEntry(node)) {
       pending_item_sequence_number = frame_entry->item_sequence_number();
+      pending_document_sequence_number =
+          frame_entry->document_sequence_number();
+    }
   }
 
   request->set_app_history_back_entries(PopulateSingleAppHistoryEntryVector(
       Direction::kBack, entry_index, pending_origin, node, site_instance.get(),
-      pending_item_sequence_number));
+      pending_item_sequence_number, pending_document_sequence_number));
 
   // Don't populate forward entries if they will be truncated by a new entry.
   if (!will_create_new_entry) {
     request->set_app_history_forward_entries(
         PopulateSingleAppHistoryEntryVector(
             Direction::kForward, entry_index, pending_origin, node,
-            site_instance.get(), pending_item_sequence_number));
+            site_instance.get(), pending_item_sequence_number,
+            pending_document_sequence_number));
   }
 }
 
@@ -4316,6 +4358,12 @@ void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
       return;
     }
   }
+}
+
+bool NavigationControllerImpl::ShouldProtectUrlInAppHistory(
+    network::mojom::ReferrerPolicy referrer_policy) {
+  return referrer_policy == network::mojom::ReferrerPolicy::kNever ||
+         referrer_policy == network::mojom::ReferrerPolicy::kOrigin;
 }
 
 bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(

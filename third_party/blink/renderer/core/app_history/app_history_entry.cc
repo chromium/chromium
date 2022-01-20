@@ -27,7 +27,7 @@ int64_t AppHistoryEntry::index() {
 }
 
 KURL AppHistoryEntry::url() {
-  return DomWindow() ? item_->Url() : NullURL();
+  return DomWindow() && !item_->Url().IsEmpty() ? item_->Url() : NullURL();
 }
 
 bool AppHistoryEntry::sameDocument() const {
