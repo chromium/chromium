@@ -31,10 +31,9 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsApp) {
 // via SystemFeaturesDisableList policy, but doesn't launch.
 IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsAppDisabled) {
   {
-    ListPrefUpdateDeprecated update(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
+                          policy::policy_prefs::kSystemFeaturesDisableList);
+    base::Value* list = update.Get();
     list->Append(policy::SystemFeature::kOsSettings);
   }
 
