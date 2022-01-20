@@ -152,11 +152,13 @@ void DesksTemplatesIconView::LoadDefaultIcon() {
 
   // Move `this` to the back of the visible icons, i.e. before any invisible
   // siblings and before the overflow counter,
-  size_t i = 0;
   auto siblings = parent()->children();
-  while (i < siblings.size() - 2 && siblings[i]->GetVisible())
-    ++i;
-  parent()->ReorderChildView(this, i);
+  if (siblings.size() >= 2) {
+    size_t i = 0;
+    while (i < siblings.size() - 2 && siblings[i]->GetVisible())
+      ++i;
+    parent()->ReorderChildView(this, i);
+  }
 }
 
 BEGIN_METADATA(DesksTemplatesIconView, views::View)
