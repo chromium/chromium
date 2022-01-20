@@ -75,8 +75,6 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbsposInRelpos) {
 
 // A legacy grid with another legacy grid inside, and some NG objects, too.
 TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithGrid) {
-  if (RuntimeEnabledFeatures::LayoutNGGridEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <div id="outer-grid" style="display:grid;">
       <div id="grid-as-item" style="display:grid;">
@@ -96,13 +94,12 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithGrid) {
   (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x16 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
-        Box (block-flow-root legacy-layout-root) offset:0,0 size:784x0 LayoutGrid DIV id='outer-grid'
-          (NG fragment root inside fragment-less or legacy subtree:)
-            Box (block-flow-root block-flow) offset:unplaced size:784x0 LayoutNGBlockFlow DIV id='inner-grid-item'
+        Box (block-flow-root) offset:0,0 size:784x0 LayoutNGGrid DIV id='outer-grid'
+          Box (block-flow-root) offset:0,0 size:784x0 LayoutNGGrid DIV id='grid-as-item'
+            Box (block-flow-root block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='inner-grid-item'
               Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='foo'
-          (NG fragment root inside fragment-less or legacy subtree:)
-            Box (block-flow-root block-flow) offset:unplaced size:784x0 LayoutNGBlockFlow DIV id='block-container-item'
-              Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='bar'
+          Box (block-flow-root block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='block-container-item'
+            Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='bar'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

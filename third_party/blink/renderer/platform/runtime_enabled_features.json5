@@ -1302,16 +1302,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNGGrid",
-      depends_on: ["LayoutNG"],
-      status: "stable",
-    },
-    {
-      name: "LayoutNGGridCaching",
-      depends_on: ["LayoutNGGrid"],
-      status: "stable"
-    },
-    {
       // Block fragmentation support in the grid layout algorithm.
       // https://drafts.csswg.org/css-grid-1/#pagination
       name: "LayoutNGGridFragmentation",
@@ -1322,7 +1312,7 @@
     },
     {
       name: "LayoutNGSubgrid",
-      depends_on: ["LayoutNGGrid"],
+      depends_on: ["LayoutNG"],
       status: "test"
     },
     {

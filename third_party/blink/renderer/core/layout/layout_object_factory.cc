@@ -153,11 +153,7 @@ LayoutBlock* LayoutObjectFactory::CreateFlexibleBox(Node& node,
 LayoutBlock* LayoutObjectFactory::CreateGrid(Node& node,
                                              const ComputedStyle& style,
                                              LegacyLayout legacy) {
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::LayoutNGGridEnabled();
-  if (disable_ng_for_type)
-    UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByGrid);
-  return CreateObject<LayoutBlock, LayoutNGGrid, LayoutGrid>(
-      node, legacy, disable_ng_for_type);
+  return CreateObject<LayoutBlock, LayoutNGGrid, LayoutGrid>(node, legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,

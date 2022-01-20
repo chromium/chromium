@@ -26,8 +26,7 @@ const Vector<GridArea>& NGGridNode::ResolveGridItemPositions(
     NGGridPlacement* grid_placement) const {
   LayoutNGGrid* layout_grid = To<LayoutNGGrid>(box_.Get());
 
-  if (layout_grid->HasCachedPlacementData() &&
-      RuntimeEnabledFeatures::LayoutNGGridCachingEnabled()) {
+  if (layout_grid->HasCachedPlacementData()) {
     const auto& cached_data = layout_grid->CachedPlacementData();
 
     if (cached_data.column_auto_repetitions ==

@@ -16,10 +16,9 @@ namespace {
 // Both have layout initially performed on them, however the "src" will have a
 // different |NGConstraintSpace| which is then used to test either a cache hit
 // or miss.
-class NGLayoutResultCachingTest : public NGLayoutTest,
-                                  private ScopedLayoutNGGridForTest {
+class NGLayoutResultCachingTest : public NGLayoutTest {
  protected:
-  NGLayoutResultCachingTest() : ScopedLayoutNGGridForTest(true) {}
+  NGLayoutResultCachingTest() {}
 };
 
 TEST_F(NGLayoutResultCachingTest, HitDifferentExclusionSpace) {

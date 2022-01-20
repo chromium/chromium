@@ -1440,7 +1440,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   };
 
   if (auto_repeat_track_sizes.IsEmpty()) {
-    if (!RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
+    if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
       // If it's legacy grid or there's no repeat(), just add all the line names
       // and track sizes.
       PopulateGridTrackList(list, collector, track_sizes, getTrackSize);

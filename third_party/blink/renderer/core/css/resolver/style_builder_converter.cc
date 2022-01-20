@@ -1127,7 +1127,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
         repeated_track_sizes.push_back(
             ConvertGridTrackSize(state, *auto_repeat_value));
       }
-      if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
+      if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
         track_sizes.NGTrackList().AddRepeater(
             repeated_track_sizes,
             static_cast<NGGridTrackRepeater::RepeatType>(auto_repeat_type));
@@ -1150,7 +1150,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
         }
       }
 
-      if (RuntimeEnabledFeatures::LayoutNGGridEnabled() &&
+      if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
           (grid_axis_type == GridAxisType::kStandaloneAxis)) {
         Vector<GridTrackSize, 1> repeater_track_sizes;
         for (auto integer_repeat_value : *grid_integer_repeat_value) {
@@ -1167,7 +1167,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     }
 
     ConvertLineNameOrTrackSize(**curr_value);
-    if (RuntimeEnabledFeatures::LayoutNGGridEnabled() &&
+    if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
         !curr_value->Get()->IsGridLineNamesValue()) {
       track_sizes.NGTrackList().AddRepeater(
           {ConvertGridTrackSize(state, **curr_value)});
