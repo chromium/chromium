@@ -620,7 +620,8 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
     } else if (base::FeatureList::IsEnabled(
                    ash::features::kUseAuthsessionAuthentication)) {
       authenticator_ = new AuthSessionAuthenticator(
-          consumer, std::make_unique<ChromeSafeModeDelegate>());
+          consumer, std::make_unique<ChromeSafeModeDelegate>(),
+          IsEphemeralMountForced());
     } else {
       authenticator_ =
           base::MakeRefCounted<ChromeCryptohomeAuthenticator>(consumer);
@@ -2315,6 +2316,14 @@ void UserSessionManager::InjectAuthenticatorBuilder(
   authenticator_.reset();
 }
 
+bool UserSessionManager::IsEphemeralMountForced() {
+  bool ephemeral_users_enabled = false;
+  auto* cros_settings = CrosSettings::Get();
+  cros_settings->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
+                            &ephemeral_users_enabled);
+  return ephemeral_users_enabled;
+}
+
 void UserSessionManager::OnTokenHandleObtained(const AccountId& account_id,
                                                bool success) {
   if (!success)
@@ -2325,14 +2334,11 @@ void UserSessionManager::OnTokenHandleObtained(const AccountId& account_id,
 bool UserSessionManager::TokenHandlesEnabled() {
   if (!should_obtain_handles_)
     return false;
-  bool ephemeral_users_enabled = false;
   bool show_names_on_signin = true;
   auto* cros_settings = CrosSettings::Get();
-  cros_settings->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
-                            &ephemeral_users_enabled);
   cros_settings->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                             &show_names_on_signin);
-  return show_names_on_signin && !ephemeral_users_enabled;
+  return show_names_on_signin && !IsEphemeralMountForced();
 }
 
 void UserSessionManager::Shutdown() {

@@ -54,7 +54,8 @@ void CreateKioskWildcardKey(const UserContext& context, cryptohome::Key* key) {
 user_data_auth::StartAuthSessionRequest ConfigureRegularSession(
     const UserContext& context,
     user_data_auth::StartAuthSessionRequest request) {
-  // TODO: Once ephemeral policy would be handled on Chrome side update flags.
+  // TODO(crbug.com/1288835): Once ephemeral policy would be handled on Chrome
+  // side update flags.
   request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_NONE);
   return request;
 }
@@ -128,8 +129,10 @@ void HashPassword(
 
 AuthSessionAuthenticator::AuthSessionAuthenticator(
     AuthStatusConsumer* consumer,
-    std::unique_ptr<SafeModeDelegate> safe_mode_delegate)
+    std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
+    bool is_ephemeral_mount_enforced)
     : Authenticator(consumer),
+      is_ephemeral_mount_enforced_(is_ephemeral_mount_enforced),
       safe_mode_delegate_(std::move(safe_mode_delegate)) {}
 
 AuthSessionAuthenticator::~AuthSessionAuthenticator() = default;

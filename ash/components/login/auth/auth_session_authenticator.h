@@ -48,9 +48,9 @@ class AuthStatusConsumer;
 class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
     : public Authenticator {
  public:
-  AuthSessionAuthenticator(
-      AuthStatusConsumer* consumer,
-      std::unique_ptr<SafeModeDelegate> safe_mode_delegate);
+  AuthSessionAuthenticator(AuthStatusConsumer* consumer,
+                           std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
+                           bool is_ephemeral_mount_enforced);
 
   // Authenticator overrides.
   void CompleteLogin(std::unique_ptr<UserContext> user_context) override;
@@ -272,6 +272,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
       std::unique_ptr<UserContext> user_context,
       absl::optional<user_data_auth::UnmountReply> reply);
 
+  const bool is_ephemeral_mount_enforced_;
   std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;
 
   base::WeakPtrFactory<AuthSessionAuthenticator> weak_factory_{this};
