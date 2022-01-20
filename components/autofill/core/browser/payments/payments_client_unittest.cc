@@ -1141,20 +1141,83 @@ TEST_F(PaymentsClientTest, UnmaskCardVariationsTest) {
   EXPECT_TRUE(HasVariationsHeader());
 }
 
-TEST_F(PaymentsClientTest, UploadSuccessWithoutServerId) {
+TEST_F(PaymentsClientTest, UploadSuccessEmptyResponse) {
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_TRUE(upload_card_response_details_.server_id.empty());
+  EXPECT_TRUE(upload_card_response_details_.instrument_id == 0);
+  EXPECT_TRUE(upload_card_response_details_.virtual_card_enrollment_state ==
+              CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
+  EXPECT_TRUE(upload_card_response_details_.card_art_url.is_empty());
 }
 
-TEST_F(PaymentsClientTest, UploadSuccessWithServerId) {
+TEST_F(PaymentsClientTest, UploadSuccessServerIdPresent) {
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"credit_card_id\": \"InstrumentData:1\" }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_EQ("InstrumentData:1", upload_card_response_details_.server_id);
+  EXPECT_EQ(upload_card_response_details_.server_id, "InstrumentData:1");
+}
+
+TEST_F(PaymentsClientTest, UploadSuccessInstrumentIdPresent) {
+  StartUploading(/*include_cvc=*/true);
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{ \"instrument_id\": 3 }");
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(upload_card_response_details_.instrument_id, 3);
+}
+
+TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
+  bool oauth_token_issued = false;
+  for (CreditCard::VirtualCardEnrollmentState virtual_card_enrollment_state :
+       {CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_NOT_ELIGIBLE,
+        CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE,
+        CreditCard::VirtualCardEnrollmentState::ENROLLED}) {
+    StartUploading(/*include_cvc=*/true);
+    // An OAuthToken needs to be issued to initiate the first UploadCard call
+    // from PaymentsClientTest::StartUploading(), but only for the first call.
+    // All future calls will use the first OAuthToken. If multiple OAuthTokens
+    // are issued this test will time out.
+    if (!oauth_token_issued) {
+      IssueOAuthToken();
+      oauth_token_issued = true;
+    }
+    switch (virtual_card_enrollment_state) {
+      case CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_NOT_ELIGIBLE:
+        ReturnResponse(net::HTTP_OK,
+                       "{ \"virtual_card_metadata\": { \"status\": "
+                       "\"ENROLLMENT_STATUS_UNSPECIFIED\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE:
+        ReturnResponse(net::HTTP_OK,
+                       "{ \"virtual_card_metadata\": { \"status\": "
+                       "\"ENROLLMENT_ELIGIBLE\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::ENROLLED:
+        ReturnResponse(
+            net::HTTP_OK,
+            "{ \"virtual_card_metadata\": { \"status\": \"ENROLLED\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::UNENROLLED:
+      case CreditCard::VirtualCardEnrollmentState::UNSPECIFIED:
+        break;
+    }
+    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+    EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
+              virtual_card_enrollment_state);
+  }
+}
+
+TEST_F(PaymentsClientTest, UploadSuccessCardArtUrlPresent) {
+  StartUploading(/*include_cvc=*/true);
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"card_art_url\": \"https://www.example.com/\" }");
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(upload_card_response_details_.card_art_url.spec(),
+            "https://www.example.com/");
 }
 
 TEST_F(PaymentsClientTest, UploadIncludesNonLocationData) {

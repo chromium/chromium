@@ -697,6 +697,36 @@ class UploadCardRequest : public PaymentsRequest {
         response.FindStringKey("credit_card_id");
     upload_card_response_details_.server_id =
         credit_card_id ? *credit_card_id : std::string();
+
+    const absl::optional<int> instrument_id =
+        response.FindIntKey("instrument_id");
+    upload_card_response_details_.instrument_id =
+        instrument_id.has_value() ? static_cast<int64_t>(instrument_id.value())
+                                  : 0;
+
+    const auto* virtual_card_metadata = response.FindKeyOfType(
+        "virtual_card_metadata", base::Value::Type::DICTIONARY);
+    if (virtual_card_metadata) {
+      const std::string* virtual_card_enrollment_status =
+          virtual_card_metadata->FindStringKey("status");
+      if (virtual_card_enrollment_status) {
+        if (*virtual_card_enrollment_status == "ENROLLED") {
+          upload_card_response_details_.virtual_card_enrollment_state =
+              CreditCard::VirtualCardEnrollmentState::ENROLLED;
+        } else if (*virtual_card_enrollment_status == "ENROLLMENT_ELIGIBLE") {
+          upload_card_response_details_.virtual_card_enrollment_state =
+              CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE;
+        } else {
+          upload_card_response_details_.virtual_card_enrollment_state =
+              CreditCard::VirtualCardEnrollmentState::
+                  UNENROLLED_AND_NOT_ELIGIBLE;
+        }
+      }
+    }
+
+    const std::string* card_art_url = response.FindStringKey("card_art_url");
+    upload_card_response_details_.card_art_url =
+        card_art_url ? GURL(*card_art_url) : GURL();
   }
 
   bool IsResponseComplete() override { return true; }
