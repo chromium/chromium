@@ -17,6 +17,7 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/partition_alloc_support.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/utility/content_utility_client.h"
@@ -25,6 +26,7 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -69,6 +71,17 @@ sandbox::TargetServices* g_utility_target_services = nullptr;
 #endif
 
 namespace content {
+namespace {
+
+base::ThreadPriority GetIOThreadPriority(const std::string& utility_sub_type) {
+  return (base::FeatureList::IsEnabled(
+              features::kNetworkServiceUsesDisplayThreadPriority) &&
+          utility_sub_type == network::mojom::NetworkService::Name_)
+             ? base::ThreadPriority::DISPLAY
+             : base::ThreadPriority::NORMAL;
+}
+
+}  // namespace
 
 // Mainline routine for running as the utility process.
 int UtilityMain(MainFunctionParams parameters) {
@@ -111,13 +124,14 @@ int UtilityMain(MainFunctionParams parameters) {
   base::SingleThreadTaskExecutor main_thread_task_executor(message_pump_type);
   base::PlatformThread::SetName("CrUtilityMain");
 
+  const std::string utility_sub_type =
+      parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType);
+
   if (parameters.command_line->HasSwitch(switches::kUtilityStartupDialog)) {
     auto dialog_match = parameters.command_line->GetSwitchValueASCII(
         switches::kUtilityStartupDialog);
-    auto sub_type =
-        parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType);
-    if (dialog_match.empty() || dialog_match == sub_type) {
-      WaitForDebugger(sub_type.empty() ? "Utility" : sub_type);
+    if (dialog_match.empty() || dialog_match == utility_sub_type) {
+      WaitForDebugger(utility_sub_type.empty() ? "Utility" : utility_sub_type);
     }
   }
 
@@ -184,7 +198,7 @@ int UtilityMain(MainFunctionParams parameters) {
   g_utility_target_services = parameters.sandbox_info->target_services;
 #endif
 
-  ChildProcess utility_process;
+  ChildProcess utility_process(GetIOThreadPriority(utility_sub_type));
   GetContentClient()->utility()->PostIOThreadCreated(
       utility_process.io_task_runner());
   base::RunLoop run_loop;

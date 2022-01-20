@@ -561,6 +561,13 @@ const base::Feature kNetworkServiceInProcess {
 #endif
 };
 
+// If enabled the io thread in the network service runs at display priority. If
+// not enabled, the io thread in the network services runs at the default
+// priority.
+const base::Feature kNetworkServiceUsesDisplayThreadPriority{
+    "NetworkServiceUsesDisplayThreadPriority",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kNeverSlowMode{"NeverSlowMode",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
