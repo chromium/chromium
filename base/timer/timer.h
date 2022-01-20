@@ -204,6 +204,10 @@ class BASE_EXPORT DelayTimerBase : public TimerBase {
   void StartInternal(const Location& posted_from, TimeDelta delay);
 
  private:
+  // DCHECKs that the user task is not null. Used to diagnose a recurring bug
+  // where Reset() is called on a OneShotTimer that has already fired.
+  virtual void EnsureNonNullUserTask() = 0;
+
   // Returns the current tick count.
   TimeTicks Now() const;
 
@@ -273,6 +277,7 @@ class BASE_EXPORT OneShotTimer : public internal::DelayTimerBase {
  private:
   void OnStop() final;
   void RunUserTask() final;
+  void EnsureNonNullUserTask() final;
 
   OnceClosure user_task_;
 };
@@ -319,8 +324,8 @@ class BASE_EXPORT RepeatingTimer : public internal::DelayTimerBase {
  private:
   // Mark this final, so that the destructor can call this safely.
   void OnStop() final;
-
   void RunUserTask() override;
+  void EnsureNonNullUserTask() final;
 
   RepeatingClosure user_task_;
 };
@@ -368,8 +373,8 @@ class BASE_EXPORT RetainingOneShotTimer : public internal::DelayTimerBase {
  private:
   // Mark this final, so that the destructor can call this safely.
   void OnStop() final;
-
   void RunUserTask() override;
+  void EnsureNonNullUserTask() final;
 
   RepeatingClosure user_task_;
 };

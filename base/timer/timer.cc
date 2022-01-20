@@ -184,6 +184,8 @@ void DelayTimerBase::AbandonAndStop() {
 void DelayTimerBase::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  EnsureNonNullUserTask();
+
   if (!g_is_always_abandon_scheduled_task_enabled) {
     // If there's no pending task, start one up and return.
     if (!task_destruction_detector_) {
@@ -320,6 +322,10 @@ void OneShotTimer::RunUserTask() {
   // No more member accesses here: |this| could be deleted at this point.
 }
 
+void OneShotTimer::EnsureNonNullUserTask() {
+  DCHECK(user_task_);
+}
+
 RepeatingTimer::RepeatingTimer() = default;
 RepeatingTimer::RepeatingTimer(const TickClock* tick_clock)
     : internal::DelayTimerBase(tick_clock) {}
@@ -354,6 +360,10 @@ void RepeatingTimer::RunUserTask() {
   // No more member accesses here: |this| could be deleted at this point.
 }
 
+void RepeatingTimer::EnsureNonNullUserTask() {
+  DCHECK(user_task_);
+}
+
 RetainingOneShotTimer::RetainingOneShotTimer() = default;
 RetainingOneShotTimer::RetainingOneShotTimer(const TickClock* tick_clock)
     : internal::DelayTimerBase(tick_clock) {}
@@ -386,6 +396,10 @@ void RetainingOneShotTimer::RunUserTask() {
   Stop();
   task.Run();
   // No more member accesses here: |this| could be deleted at this point.
+}
+
+void RetainingOneShotTimer::EnsureNonNullUserTask() {
+  DCHECK(user_task_);
 }
 
 DeadlineTimer::DeadlineTimer() = default;
