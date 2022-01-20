@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ash/components/phonehub/notification.h"
+#include "ash/components/phonehub/notification_access_manager.h"
 #include "ash/components/phonehub/recent_app_click_observer.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "base/gtest_prod_util.h"
@@ -24,13 +25,15 @@ namespace phonehub {
 // The handler that exposes APIs to interact with Phone Hub Recent Apps.
 class RecentAppsInteractionHandlerImpl
     : public RecentAppsInteractionHandler,
-      public multidevice_setup::MultiDeviceSetupClient::Observer {
+      public multidevice_setup::MultiDeviceSetupClient::Observer,
+      public NotificationAccessManager::Observer {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   explicit RecentAppsInteractionHandlerImpl(
       PrefService* pref_service,
-      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+      NotificationAccessManager* notification_access_manager);
   ~RecentAppsInteractionHandlerImpl() override;
 
   // RecentAppsInteractionHandler:
@@ -51,6 +54,9 @@ class RecentAppsInteractionHandlerImpl
       const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
           host_device_with_status) override;
 
+  // NotificationAccessManager::Observer:
+  void OnNotificationAccessChanged() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(RecentAppsInteractionHandlerTest, RecentAppsUpdated);
 
@@ -68,6 +74,7 @@ class RecentAppsInteractionHandlerImpl
       recent_app_metadata_list_;
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  NotificationAccessManager* notification_access_manager_;
 };
 
 }  // namespace phonehub

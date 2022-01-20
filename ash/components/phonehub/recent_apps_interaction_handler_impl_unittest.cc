@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/fake_notification_access_manager.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -53,7 +54,8 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     interaction_handler_ = std::make_unique<RecentAppsInteractionHandlerImpl>(
-        &pref_service_, fake_multidevice_setup_client_.get());
+        &pref_service_, fake_multidevice_setup_client_.get(),
+        &fake_notification_access_manager_);
     interaction_handler_->AddRecentAppClickObserver(&fake_click_handler_);
   }
 
@@ -93,9 +95,22 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
         chromeos::multidevice_setup::mojom::Feature::kEche, feature_state);
   }
 
+  void SetPhoneHubNotificationsFeatureState(FeatureState feature_state) {
+    fake_multidevice_setup_client_->SetFeatureState(
+        chromeos::multidevice_setup::mojom::Feature::kPhoneHubNotifications,
+        feature_state);
+  }
+
   void SetHostStatus(HostStatus host_status) {
     fake_multidevice_setup_client_->SetHostStatusWithDevice(
         std::make_pair(host_status, absl::nullopt /* host_device */));
+  }
+
+  void SetNotificationAccess(bool enabled) {
+    fake_notification_access_manager_.SetAccessStatusInternal(
+        enabled
+            ? NotificationAccessManager::AccessStatus::kAccessGranted
+            : NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
   }
 
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
@@ -105,6 +120,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   FakeClickHandler fake_click_handler_;
   std::unique_ptr<RecentAppsInteractionHandlerImpl> interaction_handler_;
   TestingPrefServiceSimple pref_service_;
+  FakeNotificationAccessManager fake_notification_access_manager_;
 };
 
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {
@@ -265,6 +281,45 @@ TEST_F(RecentAppsInteractionHandlerTest,
 TEST_F(RecentAppsInteractionHandlerTest,
        OnFeatureStatesChangedToEnabledWithEmptyRecentAppsList) {
   SetEcheFeatureState(FeatureState::kEnabledByUser);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  SetNotificationAccess(true);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
+            handler().ui_state());
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       DisableNotificationAccessWithEmptyRecentAppsList) {
+  SetEcheFeatureState(FeatureState::kEnabledByUser);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  SetNotificationAccess(true);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
+            handler().ui_state());
+
+  // Disable notification access permission on the host device.
+  SetNotificationAccess(false);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+
+  // Disable notification access permission on the local device.
+  SetNotificationAccess(true);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+
+  // Disable notification access permission on both devices.
+  SetNotificationAccess(false);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+
+  // Enable notification access permission back on both devices.
+  SetNotificationAccess(true);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
             handler().ui_state());
@@ -287,8 +342,46 @@ TEST_F(RecentAppsInteractionHandlerTest,
 }
 
 TEST_F(RecentAppsInteractionHandlerTest,
+       DisableNotificationAccessWithNonEmptyRecentAppsList) {
+  const base::Time now = base::Time::Now();
+  const char16_t app_visible_name1[] = u"Fake App";
+  const char package_name1[] = "com.fakeapp";
+  const int64_t expected_user_id1 = 1;
+  auto app_metadata1 = Notification::AppMetadata(
+      app_visible_name1, package_name1, gfx::Image(), expected_user_id1);
+
+  handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
+  SetEcheFeatureState(FeatureState::kEnabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE,
+            handler().ui_state());
+
+  // Disable notification access permission on the host device.
+  SetNotificationAccess(false);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE,
+            handler().ui_state());
+
+  // Disable notification access permission on the local device.
+  SetNotificationAccess(true);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE,
+            handler().ui_state());
+
+  // Disable notification access permission on both devices.
+  SetNotificationAccess(false);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE,
+            handler().ui_state());
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
        UiStateChangedToVisibleWhenRecentAppBeAdded) {
   SetEcheFeatureState(FeatureState::kEnabledByUser);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  SetNotificationAccess(true);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
             handler().ui_state());

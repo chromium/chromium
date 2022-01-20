@@ -31,14 +31,18 @@ void RecentAppsInteractionHandlerImpl::RegisterPrefs(
 
 RecentAppsInteractionHandlerImpl::RecentAppsInteractionHandlerImpl(
     PrefService* pref_service,
-    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+    NotificationAccessManager* notification_access_manager)
     : pref_service_(pref_service),
-      multidevice_setup_client_(multidevice_setup_client) {
+      multidevice_setup_client_(multidevice_setup_client),
+      notification_access_manager_(notification_access_manager) {
   multidevice_setup_client_->AddObserver(this);
+  notification_access_manager_->AddObserver(this);
 }
 
 RecentAppsInteractionHandlerImpl::~RecentAppsInteractionHandlerImpl() {
   multidevice_setup_client_->RemoveObserver(this);
+  notification_access_manager_->RemoveObserver(this);
 }
 
 void RecentAppsInteractionHandlerImpl::AddRecentAppClickObserver(
@@ -146,17 +150,38 @@ void RecentAppsInteractionHandlerImpl::OnHostStatusChanged(
     ClearRecentAppMetadataListAndPref();
 }
 
+void RecentAppsInteractionHandlerImpl::OnNotificationAccessChanged() {
+  ComputeAndUpdateUiState();
+}
+
 void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
-  // Hide the recent apps UI if the Eche feature is disabled by user.
-  FeatureState feature_state =
-      multidevice_setup_client_->GetFeatureState(Feature::kEche);
-  if (feature_state != FeatureState::kEnabledByUser) {
-    ui_state_ = RecentAppsUiState::HIDDEN;
+  ui_state_ = RecentAppsUiState::HIDDEN;
+
+  LoadRecentAppMetadataListFromPrefIfNeed();
+
+  // There are three cases we need to handle:
+  // 1. If no recent app in list and necessary permission be granted, the
+  // placeholder view will be shown.
+  // 2. If some recent apps in list and streaming is allowed, the recent apps
+  // view will be shown.
+  // 3. Otherwise, no recent apps view will be shown.
+  bool allow_streaming = multidevice_setup_client_->GetFeatureState(
+                             Feature::kEche) == FeatureState::kEnabledByUser;
+  if (!allow_streaming) {
+    NotifyRecentAppsViewUiStateUpdated();
+    return;
+  }
+  if (recent_app_metadata_list_.empty()) {
+    bool notifications_enabled =
+        multidevice_setup_client_->GetFeatureState(
+            Feature::kPhoneHubNotifications) == FeatureState::kEnabledByUser;
+    bool grant_notification_access_on_host =
+        notification_access_manager_->GetAccessStatus() ==
+        phonehub::NotificationAccessManager::AccessStatus::kAccessGranted;
+    if (notifications_enabled && grant_notification_access_on_host)
+      ui_state_ = RecentAppsUiState::PLACEHOLDER_VIEW;
   } else {
-    LoadRecentAppMetadataListFromPrefIfNeed();
-    ui_state_ = recent_app_metadata_list_.empty()
-                    ? RecentAppsUiState::PLACEHOLDER_VIEW
-                    : RecentAppsUiState::ITEMS_VISIBLE;
+    ui_state_ = RecentAppsUiState::ITEMS_VISIBLE;
   }
   NotifyRecentAppsViewUiStateUpdated();
 }
