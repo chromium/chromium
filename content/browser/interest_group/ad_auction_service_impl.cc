@@ -328,9 +328,6 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
     return;
   }
 
-  auto browser_signals = auction_worklet::mojom::BrowserSignals::New(
-      GetTopWindowOrigin(), config->seller);
-
   auto* auction_result_metrics = AdAuctionResultMetrics::GetOrCreateForPage(
       render_frame_host()->GetPage());
   if (!auction_result_metrics->ShouldRunAuction()) {
@@ -340,8 +337,7 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, this, &GetInterestGroupManager(),
-      std::move(config), std::move(filtered_buyers), std::move(browser_signals),
-      frame_origin,
+      std::move(config), std::move(filtered_buyers), frame_origin,
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback)));
   auctions_.insert(std::move(auction));

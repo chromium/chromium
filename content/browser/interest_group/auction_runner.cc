@@ -25,7 +25,6 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/interest_group_manager.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "net/base/escape.h"
@@ -130,14 +129,13 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     InterestGroupManager* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
     std::vector<url::Origin> filtered_buyers,
-    auction_worklet::mojom::BrowserSignalsPtr browser_signals,
     const url::Origin& frame_origin,
     RunAuctionCallback callback) {
   DCHECK(!filtered_buyers.empty());
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       auction_worklet_manager, auction_worklet_manager_delegate,
-      interest_group_manager, std::move(auction_config),
-      std::move(browser_signals), frame_origin, std::move(callback)));
+      interest_group_manager, std::move(auction_config), frame_origin,
+      std::move(callback)));
   instance->ReadInterestGroups(std::move(filtered_buyers));
   return instance;
 }
@@ -147,14 +145,12 @@ AuctionRunner::AuctionRunner(
     AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
     InterestGroupManager* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
-    auction_worklet::mojom::BrowserSignalsPtr browser_signals,
     const url::Origin& frame_origin,
     RunAuctionCallback callback)
     : auction_worklet_manager_(auction_worklet_manager),
       auction_worklet_manager_delegate_(auction_worklet_manager_delegate),
       interest_group_manager_(interest_group_manager),
       auction_config_(std::move(auction_config)),
-      browser_signals_(std::move(browser_signals)),
       frame_origin_(frame_origin),
       callback_(std::move(callback)) {}
 
@@ -287,7 +283,7 @@ void AuctionRunner::OnBidderWorkletReceived(BidState* bid_state) {
           interest_group.user_bidding_signals, interest_group.ads,
           interest_group.ad_components),
       auction_config_->auction_ad_config_non_shared_params->auction_signals,
-      PerBuyerSignals(bid_state), browser_signals_->seller,
+      PerBuyerSignals(bid_state), auction_config_->seller,
       bid_state->bidder.bidding_browser_signals.Clone(), auction_start_time_,
       base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
                      weak_ptr_factory_.GetWeakPtr(), bid_state));

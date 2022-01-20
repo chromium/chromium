@@ -19,7 +19,6 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -139,7 +138,6 @@ class CONTENT_EXPORT AuctionRunner {
       InterestGroupManager* interest_group_manager,
       blink::mojom::AuctionAdConfigPtr auction_config,
       std::vector<url::Origin> filtered_buyers,
-      auction_worklet::mojom::BrowserSignalsPtr browser_signals,
       const url::Origin& frame_origin,
       RunAuctionCallback callback);
 
@@ -202,7 +200,6 @@ class CONTENT_EXPORT AuctionRunner {
       AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
       InterestGroupManager* interest_group_manager,
       blink::mojom::AuctionAdConfigPtr auction_config,
-      auction_worklet::mojom::BrowserSignalsPtr browser_signals,
       const url::Origin& frame_origin,
       RunAuctionCallback callback);
 
@@ -329,7 +326,6 @@ class CONTENT_EXPORT AuctionRunner {
   // Decremented each time OnInterestGroupRead() is invoked. The auction is
   // started once this hits 0.
   size_t num_pending_buyers_ = 0;
-  auction_worklet::mojom::BrowserSignalsPtr browser_signals_;
   const url::Origin frame_origin_;
   RunAuctionCallback callback_;
 
