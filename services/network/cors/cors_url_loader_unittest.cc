@@ -3804,7 +3804,9 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnPreflightCorsError) {
   EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(CorsErrorStatus(
-                  mojom::CorsError::kPreflightMissingAllowOriginHeader)));
+                  mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                  network::mojom::IPAddressSpace::kPrivate,
+                  network::mojom::IPAddressSpace::kUnknown)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
               ElementsAre(MakeBucket(
@@ -3818,7 +3820,9 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyWarnPreflightCorsError) {
       *devtools_observer.cors_error_params();
   EXPECT_EQ(
       error_params.status,
-      CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowOriginHeader));
+      CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                      network::mojom::IPAddressSpace::kPrivate,
+                      network::mojom::IPAddressSpace::kUnknown));
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
@@ -4009,7 +4013,9 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyBlockCorsError) {
   EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(CorsErrorStatus(
-                  mojom::CorsError::kPreflightMissingAllowOriginHeader)));
+                  mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                  network::mojom::IPAddressSpace::kPrivate,
+                  network::mojom::IPAddressSpace::kUnknown)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
               ElementsAre(MakeBucket(
@@ -4023,7 +4029,9 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessPolicyBlockCorsError) {
       *devtools_observer.cors_error_params();
   EXPECT_EQ(
       error_params.status,
-      CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowOriginHeader));
+      CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                      network::mojom::IPAddressSpace::kPrivate,
+                      network::mojom::IPAddressSpace::kUnknown));
   EXPECT_FALSE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);

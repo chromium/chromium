@@ -3463,6 +3463,7 @@ enum WebFeature {
   kWindowProxyCrossOriginAccessFromOtherPageSelf = 4142,
   kWindowProxyCrossOriginAccessFromOtherPageTop = 4143,
   kWindowProxyCrossOriginAccessFromOtherPageWindow = 4144,
+  kPrivateNetworkAccessFetchedWorkerScript = 4145,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

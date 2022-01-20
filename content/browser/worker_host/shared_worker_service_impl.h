@@ -113,7 +113,6 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       const blink::MessagePortChannel& message_port,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
-      bool did_fetch_worker_script,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,

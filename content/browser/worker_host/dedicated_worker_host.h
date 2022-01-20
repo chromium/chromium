@@ -205,30 +205,29 @@ class DedicatedWorkerHost final
                            const ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  // Called from WorkerScriptFetchInitiator. Continues starting the dedicated
-  // worker in the renderer process.
+  // Called from `WorkerScriptFetcher`. Continues starting the dedicated worker
+  // in the renderer process.
   //
-  // |success| is true only when the script fetch succeeded.
+  // `main_script_load_params` is not nullptr iff the fetch succeeded. This is
+  // sent to the renderer process and to be used to load the dedicated worker
+  // main script pre-requested by the browser process.
   //
-  // Note: None of the following parameters are valid if |success| is false.
+  // The following parameters are valid iff `main_script_load_params` is not
+  // nullptr, i.e. iff the fetch succeeded.
   //
-  // |main_script_load_params| is sent to the renderer process and to be used to
-  // load the dedicated worker main script pre-requested by the browser process.
-  //
-  // |subresource_loader_factories| is sent to the renderer process and is to be
+  // `subresource_loader_factories` is sent to the renderer process and is to be
   // used to request subresources where applicable. For example, this allows the
   // dedicated worker to load chrome-extension:// URLs which the renderer's
   // default loader factory can't load.
   //
-  // |controller| contains information about the service worker controller. Once
+  // `controller` contains information about the service worker controller. Once
   // a ServiceWorker object about the controller is prepared, it is registered
-  // to |controller_service_worker_object_host|.
+  // to `controller_service_worker_object_host`.
   //
-  // |final_response_url| is the URL calculated from the initial request URL,
+  // `final_response_url` is the URL calculated from the initial request URL,
   // redirect chain, and URLs fetched via service worker.
   // https://fetch.spec.whatwg.org/#concept-response-url
   void DidStartScriptLoad(
-      bool success,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
@@ -236,6 +235,7 @@ class DedicatedWorkerHost final
       base::WeakPtr<ServiceWorkerObjectHost>
           controller_service_worker_object_host,
       const GURL& final_response_url);
+
   void ScriptLoadStartFailed(const GURL& url,
                              const network::URLLoaderCompletionStatus& status);
 

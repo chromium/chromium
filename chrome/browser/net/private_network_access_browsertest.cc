@@ -100,11 +100,52 @@ GURL LocalNonSecureWithCrossOriginCors(const net::EmbeddedTestServer& server) {
   return SecureURL(server, "/cors-ok.txt");
 }
 
+// Path to a worker script that posts a message to its creator once loaded.
+constexpr char kWorkerScriptPath[] = "/workers/post_ready.js";
+
+// Same as above, but with PNA headers set correctly for preflight requests.
+constexpr char kWorkerScriptWithPnaHeadersPath[] =
+    "/workers/post_ready_with_pna_headers.js";
+
 // The returned script evaluates to a boolean indicating whether the fetch
 // succeeded or not.
 std::string FetchScript(const GURL& url) {
   return content::JsReplace(
       "fetch($1).then(response => true).catch(error => false)", url);
+}
+
+std::string FetchWorkerScript(base::StringPiece relative_url) {
+  constexpr char kTemplate[] = R"(
+    new Promise((resolve) => {
+      const worker = new Worker($1);
+      worker.addEventListener("message", () => { resolve(true); });
+      worker.addEventListener("error", () => { resolve(false); });
+    });
+  )";
+  return content::JsReplace(kTemplate, relative_url);
+}
+
+// Path to a worker script that posts a message to each client that connects.
+constexpr char kSharedWorkerScriptPath[] = "/workers/shared_post_ready.js";
+
+// Same as above, but with PNA headers set correctly for preflight requests.
+constexpr char kSharedWorkerScriptWithPnaHeadersPath[] =
+    "/workers/shared_post_ready_with_pna_headers.js";
+
+// Instantiates a shared worker script from `path`.
+// If it loads successfully, the worker should post a message to each client
+// that connects to it to signal success.
+std::string FetchSharedWorkerScript(base::StringPiece path) {
+  constexpr char kTemplate[] = R"(
+    new Promise((resolve) => {
+      const worker = new SharedWorker($1);
+      worker.port.addEventListener("message", () => resolve(true));
+      worker.addEventListener("error", () => resolve(false));
+      worker.port.start();
+    })
+  )";
+
+  return content::JsReplace(kTemplate, path);
 }
 
 std::vector<WebFeature> AllAddressSpaceFeatures() {
@@ -130,6 +171,7 @@ std::vector<WebFeature> AllAddressSpaceFeatures() {
       WebFeature::kAddressSpaceUnknownSecureContextNavigatedToPrivate,
       WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToPrivate,
       WebFeature::kPrivateNetworkAccessIgnoredPreflightError,
+      WebFeature::kPrivateNetworkAccessFetchedWorkerScript,
   };
 }
 
@@ -215,6 +257,7 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
                 features::kPrivateNetworkAccessSendPreflights,
+                features::kPrivateNetworkAccessForWorkers,
                 dom_distiller::kReaderMode,
             },
             {}) {}
@@ -234,6 +277,20 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
           content::ISOLATED_WORLD_ID_CONTENT_END);
     }
   }
+};
+
+class PrivateNetworkAccessRespectPreflightResultsBrowserTest
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessRespectPreflightResultsBrowserTest()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kPrivateNetworkAccessSendPreflights,
+                features::kPrivateNetworkAccessRespectPreflightResults,
+                features::kPrivateNetworkAccessForWorkers,
+            },
+            {}) {}
 };
 
 // ================
@@ -676,6 +733,271 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
     fetch("/defaultresponse").then(response => response.ok)
   )"));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a worker script from a non-secure context,
+// even when the PNA for workers feature is disabled.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
+                       RecordsFeatureForWorkerScriptFetchFromNonSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  FetchWorkerScript(kWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a worker script from a non-secure context,
+// and the request fails due to PNA.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       RecordsFeatureForWorkerScriptFetchFromNonSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(false, content::EvalJs(web_contents(),
+                                   FetchWorkerScript(kWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a worker script from a secure context, even
+// when the PNA for workers feature is disabled.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
+                       RecordsFeatureForWorkerScriptFetchFromSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  FetchWorkerScript(kWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a worker script from a secure context,
+// sends a preflight request, ignores its failure, and loads the script anyway.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       RecordsFeatureForWorkerScriptFetchFromSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  FetchWorkerScript(kWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a worker script from a secure context,
+// sends a preflight request, and fails the request due to a preflight error.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessRespectPreflightResultsBrowserTest,
+                       RecordsFeatureForWorkerScriptFetchErrorFromSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(false, content::EvalJs(web_contents(),
+                                   FetchWorkerScript(kWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a worker script from a secure context,
+// sends a preflight request, and succeeds in loading the script.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessRespectPreflightResultsBrowserTest,
+                       RecordsFeatureForWorkerScriptFetchSuccessFromSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true, content::EvalJs(
+                      web_contents(),
+                      FetchWorkerScript(kWorkerScriptWithPnaHeadersPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a shared worker script from a non-secure
+// context, even when the PNA for workers feature is disabled.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
+                       RecordsFeatureForSharedWorkerScriptFetchFromNonSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents(),
+                            FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a shared worker script from a non-secure
+// context, and the request fails due to PNA.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       RecordsFeatureForSharedWorkerScriptFetchFromNonSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(false,
+            content::EvalJs(web_contents(),
+                            FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a shared worker script from a secure context,
+// even when the PNA for workers feature is disabled.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
+                       RecordsFeatureForSharedWorkerScriptFetchFromSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents(),
+                            FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a shared worker script from a secure context,
+// sends a preflight request, ignores its failure, and loads the script anyway.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       RecordsFeatureForSharedWorkerScriptFetchFromSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents(),
+                            FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a shared worker script from a secure context,
+// sends a preflight request, and fails the request due to a preflight error.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessRespectPreflightResultsBrowserTest,
+    RecordsFeatureForSharedWorkerScriptFetchErrorFromSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(false,
+            content::EvalJs(web_contents(),
+                            FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
+}
+
+// This test verifies that a UseCounter is recorded when a document makes a
+// private network request to load a shared worker script from a secure context,
+// sends a preflight request, and succeeds in loading the script.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessRespectPreflightResultsBrowserTest,
+    RecordsFeatureForSharedWorkerScriptFetchSuccessFromSecure) {
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  FetchSharedWorkerScript(
+                                      kSharedWorkerScriptWithPnaHeadersPath)));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+      }));
 }
 
 // ====================

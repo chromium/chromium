@@ -4139,10 +4139,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   const network::URLLoaderCompletionStatus& bidder_status =
       url_loader_monitor.WaitForRequestCompletion(bidder_url);
   EXPECT_EQ(net::ERR_FAILED, bidder_status.error_code);
-  EXPECT_THAT(
-      bidder_status.cors_error_status,
-      Optional(network::CorsErrorStatus(
-          network::mojom::CorsError::kPreflightMissingAllowOriginHeader)));
+  EXPECT_THAT(bidder_status.cors_error_status,
+              Optional(network::CorsErrorStatus(
+                  network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                  network::mojom::IPAddressSpace::kLocal,
+                  network::mojom::IPAddressSpace::kUnknown)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
@@ -4186,10 +4187,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   const network::URLLoaderCompletionStatus& seller_status =
       url_loader_monitor.WaitForRequestCompletion(seller_url);
   EXPECT_EQ(net::ERR_FAILED, seller_status.error_code);
-  EXPECT_THAT(
-      seller_status.cors_error_status,
-      Optional(network::CorsErrorStatus(
-          network::mojom::CorsError::kPreflightMissingAllowOriginHeader)));
+  EXPECT_THAT(seller_status.cors_error_status,
+              Optional(network::CorsErrorStatus(
+                  network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                  network::mojom::IPAddressSpace::kLocal,
+                  network::mojom::IPAddressSpace::kUnknown)));
 }
 
 // Have the auction and worklets server from public IPs, but send reports to a
@@ -4246,18 +4248,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   const network::URLLoaderCompletionStatus& bidder_report_status =
       url_loader_monitor.WaitForRequestCompletion(bidder_report_to_url);
   EXPECT_EQ(net::ERR_FAILED, bidder_report_status.error_code);
-  EXPECT_THAT(
-      bidder_report_status.cors_error_status,
-      Optional(network::CorsErrorStatus(
-          network::mojom::CorsError::kPreflightMissingAllowOriginHeader)));
+  EXPECT_THAT(bidder_report_status.cors_error_status,
+              Optional(network::CorsErrorStatus(
+                  network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                  network::mojom::IPAddressSpace::kLocal,
+                  network::mojom::IPAddressSpace::kUnknown)));
 
   const network::URLLoaderCompletionStatus& seller_report_status =
       url_loader_monitor.WaitForRequestCompletion(seller_report_to_url);
   EXPECT_EQ(net::ERR_FAILED, seller_report_status.error_code);
-  EXPECT_THAT(
-      seller_report_status.cors_error_status,
-      Optional(network::CorsErrorStatus(
-          network::mojom::CorsError::kPreflightMissingAllowOriginHeader)));
+  EXPECT_THAT(seller_report_status.cors_error_status,
+              Optional(network::CorsErrorStatus(
+                  network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                  network::mojom::IPAddressSpace::kLocal,
+                  network::mojom::IPAddressSpace::kUnknown)));
 }
 
 // Have all requests for an auction served from a public network, and all

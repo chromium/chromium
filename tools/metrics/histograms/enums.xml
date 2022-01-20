@@ -36825,6 +36825,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4142" label="WindowProxyCrossOriginAccessFromOtherPageSelf"/>
   <int value="4143" label="WindowProxyCrossOriginAccessFromOtherPageTop"/>
   <int value="4144" label="WindowProxyCrossOriginAccessFromOtherPageWindow"/>
+  <int value="4145" label="PrivateNetworkAccessFetchedWorkerScript"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

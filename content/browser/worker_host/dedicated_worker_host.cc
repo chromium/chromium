@@ -316,7 +316,6 @@ void DedicatedWorkerHost::ReportNoBinderForInterface(const std::string& error) {
 }
 
 void DedicatedWorkerHost::DidStartScriptLoad(
-    bool success,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
@@ -327,7 +326,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
 
-  if (!success) {
+  if (!main_script_load_params) {
     ScriptLoadStartFailed(final_response_url,
                           network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;

@@ -61,26 +61,44 @@ struct SubresourceLoaderParams;
 // use `unique_ptr` to create WorkerScriptFetcher in a caller side.
 class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
  public:
-  using CreateAndStartCallback =
-      base::OnceCallback<void(blink::mojom::WorkerMainScriptLoadParamsPtr,
-                              absl::optional<SubresourceLoaderParams>,
-                              bool /* success */)>;
+  // Called with the result of fetching a script upon completion.
+  //
+  // - `subresource_loader_factories` is never nullptr.
+  // - `main_script_load_params` is nullptr iff the fetch failed.
+  // - `controller` and `controller_service_worker_object_host` may be nullptr.
+  // - `final_response_url` specifies the script response URL.
   using CompletionCallback = base::OnceCallback<void(
-      bool success,
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>,
-      blink::mojom::WorkerMainScriptLoadParamsPtr,
-      blink::mojom::ControllerServiceWorkerInfoPtr,
-      base::WeakPtr<ServiceWorkerObjectHost>,
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          subresource_loader_factories,
+      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
+      blink::mojom::ControllerServiceWorkerInfoPtr controller,
+      base::WeakPtr<ServiceWorkerObjectHost>
+          controller_service_worker_object_host,
       const GURL& final_response_url)>;
 
   // Used for specifying how URLLoaderFactoryBundle is used.
   enum class LoaderType { kMainResource, kSubResource };
 
-  // PlzWorker:
-  // WorkerScriptFetcher::CreateAndStart() is the entry point of browser-side
-  // script fetch. Creates a worker script fetcher and starts it. Must be called
-  // on the UI thread. `callback` will be called with the result on the UI
-  // thread.
+  // Initiates a browser-side worker script fetch.
+  // Creates a `WorkerScriptFetcher` and starts it.
+  //
+  // Must be called on the UI thread.
+  //
+  // - `ancestor_render_frame_host` points to the ancestor frame, if any. If
+  //   the worker being created is nested, then this is the ancestor of the
+  //   creator worker. Otherwise, this is the creator frame. May be nullptr.
+  //   For dedicated workers, `ancestor_render_frame_host` *should* always exist
+  //   though due to the fact that `DedicatedWorkerHost` lifetimes do not align
+  //   exactly with their parents (they are destroyed asynchronously via mojo),
+  //   the ancestor frame might have been destroyed when the fetch starts.
+  //   TODO(https://crbug.com/1177652): Amend the above comment once
+  //   `DedicatedWorkerHost` lifetimes align with their creators'.
+  // - `creator_render_frame_host` points to the creator frame, if any. May
+  //   be nullptr if the worker being created is a nested dedicated worker.
+  //   Since nested shared workers are not supported, for shared workers
+  //   `ancestor_render_frame_host` and `creator_render_frame_host` are always
+  //   equal.
+  // - `callback` will be called with the result on the UI thread.
   static void CreateAndStart(
       int worker_process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
@@ -129,6 +147,24 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       blink::mojom::WorkerMainScriptLoadParams* main_script_load_params);
 
  private:
+  // Callback invoked by this instance when the load ends, successfully or not.
+  //
+  // In case of success:
+  //
+  // - `main_script_load_params` is not nullptr.
+  // - `subresource_loader_params` may be nullopt.
+  // - `completion_status` is nullptr.
+  //
+  // In case of error:
+  //
+  // - `main_script_load_params` is nullptr.
+  // - `subresource_loader_params` is nullopt.
+  // - `completion_status` is not nullptr.
+  using CreateAndStartCallback = base::OnceCallback<void(
+      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
+      absl::optional<SubresourceLoaderParams> subresource_loader_params,
+      const network::URLLoaderCompletionStatus* completion_status)>;
+
   WorkerScriptFetcher(
       std::unique_ptr<WorkerScriptLoaderFactory> script_loader_factory,
       std::unique_ptr<network::ResourceRequest> resource_request,
@@ -136,10 +172,12 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
 
   ~WorkerScriptFetcher() override;
 
+  // Helper for `CreateAndStart()`.
   static void CreateScriptLoader(
       int worker_process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       const GURL& initial_request_url,
+      RenderFrameHostImpl* ancestor_render_frame_host,
       RenderFrameHostImpl* creator_render_frame_host,
       const net::IsolationInfo& trusted_isolation_info,
       std::unique_ptr<network::ResourceRequest> resource_request,
