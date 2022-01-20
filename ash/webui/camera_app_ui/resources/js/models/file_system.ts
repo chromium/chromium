@@ -87,6 +87,7 @@ async function initCameraDirectory(): Promise<DirectoryAccessEntry|null> {
   if (isConsumedHandle !== null) {
     const storedHandle = await idb.get<FileSystemDirectoryHandle>(
         idb.KEY_CAMERA_DIRECTORY_HANDLE);
+    assert(storedHandle !== null);
     handle.signal(storedHandle);
   } else {
     const launchQueue = window.launchQueue;
@@ -127,6 +128,7 @@ export async function initialize(): Promise<void> {
  */
 export async function saveBlob(
     blob: Blob, name: string): Promise<FileAccessEntry> {
+  assert(cameraDir !== null);
   const file = await cameraDir.createFile(name);
   assert(file !== null);
 
@@ -141,6 +143,7 @@ export async function saveBlob(
  */
 export async function createVideoFile(videoType: VideoType):
     Promise<FileAccessEntry> {
+  assert(cameraDir !== null);
   const name = new Filenamer().newVideoName(videoType);
   const file = await cameraDir.createFile(name);
   if (file === null) {
@@ -171,6 +174,7 @@ export async function createPrivateTempVideoFile(): Promise<FileAccessEntry> {
  * @return Promise for the picture entries.
  */
 export async function getEntries(): Promise<FileAccessEntry[]> {
+  assert(cameraDir !== null);
   const entries = await cameraDir.getFiles();
   return entries.filter((entry) => {
     if (!hasVideoPrefix(entry) && !hasImagePrefix(entry) &&
