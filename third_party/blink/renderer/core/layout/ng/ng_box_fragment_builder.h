@@ -409,6 +409,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Return the number of line boxes laid out.
   int LineCount() const { return line_count_; }
+  void SetLineCount(int line_count) { line_count_ = line_count; }
 
   // Set when we have iterated over all the children. This means that all
   // children have been fully laid out, or have break tokens. No more children

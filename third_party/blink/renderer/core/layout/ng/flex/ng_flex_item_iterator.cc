@@ -53,6 +53,7 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
     if (child_token_idx_ < child_break_tokens.size()) {
       current_child_break_token =
           To<NGBlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
+      DCHECK(current_child_break_token);
       current_item = FindNextItem(current_child_break_token);
 
       current_item_idx = flex_item_idx_ - 1;
@@ -61,11 +62,16 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
       if (child_token_idx_ == child_break_tokens.size()) {
         // We reached the last child break token. Prepare for the next unstarted
         // sibling, and forget the parent break token.
-        if (is_horizontal_flow_ && flex_item_idx_ != 0) {
+        if (is_horizontal_flow_ && flex_item_idx_ != 0 &&
+            !current_child_break_token->IsBreakBefore()) {
           // All flex items in a row are processed before moving to the next
-          // fragmentainer. If the current item in the row has a break token,
-          // but the next item in the row doesn't, that means the next item has
-          // already finished layout. In this case, move to the next row.
+          // fragmentainer, unless the item broke before. If the current item in
+          // the row has a break token (and did not break before), but the next
+          // item in the row doesn't, that means the next item has already
+          // finished layout. In this case, move to the next row.
+          //
+          // If an item broke before, then that means that the entire row broke
+          // before, so continue processing items in the current row.
           flex_line_idx_++;
           flex_item_idx_ = 0;
           next_unstarted_item_ = FindNextItem();

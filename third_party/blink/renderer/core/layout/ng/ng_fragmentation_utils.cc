@@ -893,8 +893,10 @@ const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
 bool IsEarlyBreakTarget(const NGEarlyBreak& early_break,
                         const NGBoxFragmentBuilder& builder,
                         const NGLayoutInputNode& child) {
-  if (early_break.Type() == NGEarlyBreak::kLine)
-    return child.IsInline() && early_break.LineNumber() == builder.LineCount();
+  if (early_break.Type() == NGEarlyBreak::kLine) {
+    DCHECK(child.IsInline() || child.IsFlexItem());
+    return early_break.LineNumber() == builder.LineCount();
+  }
   return early_break.IsBreakBefore() && early_break.BlockNode() == child;
 }
 
