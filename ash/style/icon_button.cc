@@ -6,7 +6,7 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
-#include "ash/wm/haptics_util.h"
+#include "ash/utility/haptics_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"

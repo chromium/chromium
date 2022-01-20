@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/haptics_util.h"
+#include "ash/utility/haptics_util.h"
 
 #include <vector>
 
@@ -38,8 +38,12 @@ using ui::HapticTouchpadEffectStrength;
 
 class InputControllerForTesting : public ui::InputController {
  public:
-  InputControllerForTesting() = default;
-  ~InputControllerForTesting() override = default;
+  InputControllerForTesting() {
+    haptics_util::SetInputControllerForTesting(this);
+  }
+  ~InputControllerForTesting() override {
+    haptics_util::SetInputControllerForTesting(nullptr);
+  }
   InputControllerForTesting(const InputControllerForTesting&) = delete;
   InputControllerForTesting& operator=(const InputControllerForTesting&) =
       delete;
@@ -134,10 +138,9 @@ class InputControllerForTesting : public ui::InputController {
 
 using HapticsUtilTest = AshTestBase;
 
-// Test haptic feedback with all effect/strength combination.
+// Test haptic feedback with all effect/strength combinations.
 TEST_F(HapticsUtilTest, HapticFeedbackBasic) {
   auto input_controller = std::make_unique<InputControllerForTesting>();
-  haptics_util::SetInputControllerForTesting(input_controller.get());
 
   std::vector<HapticTouchpadEffect> effects = {
       HapticTouchpadEffect::kSnap,    HapticTouchpadEffect::kKnock,
@@ -161,11 +164,10 @@ TEST_F(HapticsUtilTest, HapticFeedbackBasic) {
   }
 }
 
-// Test haptic feedback for nornal window snapping. This covers drag to snap
+// Test haptic feedback for normal window snapping. This covers drag to snap
 // primary/secondary/maximize.
 TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
   auto input_controller = std::make_unique<InputControllerForTesting>();
-  haptics_util::SetInputControllerForTesting(input_controller.get());
 
   UpdateDisplay("800x600");
   gfx::Rect bounds(200, 200, 300, 300);
@@ -222,7 +224,6 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
 // in overview.
 TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
   auto input_controller = std::make_unique<InputControllerForTesting>();
-  haptics_util::SetInputControllerForTesting(input_controller.get());
   OverviewController* overview_controller = Shell::Get()->overview_controller();
 
   UpdateDisplay("800x600");
@@ -284,9 +285,8 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
 // Test haptic feedback for off limits desk switching, e.g. swiping left from
 // the first desk and swiping right from the last desk.
 TEST_F(HapticsUtilTest, HapticFeedbackForDeskSwitchingOffLimits) {
-  auto* desk_controller = DesksController::Get();
   auto input_controller = std::make_unique<InputControllerForTesting>();
-  haptics_util::SetInputControllerForTesting(input_controller.get());
+  auto* desk_controller = DesksController::Get();
 
   // Make sure to start with two desks.
   NewDesk();
@@ -318,7 +318,6 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDeskSwitchingOffLimits) {
 // visible desk changes.
 TEST_F(HapticsUtilTest, HapticFeedbackForContinuousDesksSwitching) {
   auto input_controller = std::make_unique<InputControllerForTesting>();
-  haptics_util::SetInputControllerForTesting(input_controller.get());
 
   // Add three desks for a total of four.
   auto* desks_controller = DesksController::Get();
@@ -388,7 +387,6 @@ TEST_F(HapticsUtilTest, HapticFeedbackForContinuousDesksSwitching) {
 TEST_F(HapticsUtilTest, HapticFeedbackForDragAndDrop) {
   auto input_controller = std::make_unique<InputControllerForTesting>();
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  haptics_util::SetInputControllerForTesting(input_controller.get());
 
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   ui::test::EventGenerator* event_generator = GetEventGenerator();

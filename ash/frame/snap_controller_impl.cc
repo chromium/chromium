@@ -4,7 +4,7 @@
 
 #include "ash/frame/snap_controller_impl.h"
 
-#include "ash/wm/haptics_util.h"
+#include "ash/utility/haptics_util.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"

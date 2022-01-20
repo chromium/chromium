@@ -17,7 +17,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
-#include "ash/wm/haptics_util.h"
+#include "ash/utility/haptics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"

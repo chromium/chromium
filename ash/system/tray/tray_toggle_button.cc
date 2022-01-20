@@ -6,7 +6,7 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/wm/haptics_util.h"
+#include "ash/utility/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_HAPTICS_UTIL_H_
-#define ASH_WM_HAPTICS_UTIL_H_
+#ifndef ASH_UTILITY_HAPTICS_UTIL_H_
+#define ASH_UTILITY_HAPTICS_UTIL_H_
 
 #include "ash/ash_export.h"
 
@@ -15,6 +15,9 @@ enum class HapticTouchpadEffectStrength;
 
 namespace ash {
 
+// Utility that provides methods to trigger haptic effects throughout Ash.
+// These call InputController functions that will play the effects if a haptic
+// touchpad is available.
 namespace haptics_util {
 
 // Sets test input controller for testing. When g_test_input_controller is not
@@ -38,4 +41,4 @@ ASH_EXPORT void PlayHapticToggleEffect(
 }  // namespace haptics_util
 }  // namespace ash
 
-#endif  // ASH_WM_HAPTICS_UTIL_H_
+#endif  // ASH_UTILITY_HAPTICS_UTIL_H_
