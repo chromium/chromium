@@ -12,8 +12,9 @@ async function init() { // Needed in order to use top-level await.
   //   2.) Nested iframes inside a fenced frame
   //   3.) Nested fenced frames
   //   4.) Top-level fenced frames after initial navigation
-  const referrer_key = KEYS["document.referrer"];
-  const referrer_ack_key = KEYS["document.referrer ACK"];
+  const [referrer_key, referrer_ack_key] = parseKeylist();
+  const referrer_url = generateURL("simple-report-document-referrer.html",
+      [referrer_key]);
 
   // Send the value of `document.referrer` to the server for checking.
   writeValueToServer(referrer_key, document.referrer);
@@ -24,7 +25,7 @@ async function init() { // Needed in order to use top-level await.
 
   // Now test `document.referrer` inside an iframe.
   const iframe = document.createElement('iframe');
-  iframe.src = "simple-report-document-referrer.html";
+  iframe.src = referrer_url;
   const load_promise = new Promise((resolve, reject) => {
     iframe.onload = resolve;
     iframe.onerror = reject;
@@ -38,14 +39,14 @@ async function init() { // Needed in order to use top-level await.
   // to it again.
   await nextValueFromServer(referrer_ack_key);
 
-  attachFencedFrame("simple-report-document-referrer.html");
+  attachFencedFrame(referrer_url);
 
   // Wait for ACK, so we know that the outer page has read the last value from
   // the `referrer_key` stash that the nested fenced frame wrote to, and we can
   // can write to it again.
   await nextValueFromServer(referrer_ack_key);
 
-  location.href = "simple-report-document-referrer.html";
+  location.href = referrer_url;
 }
 
 init();

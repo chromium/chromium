@@ -5,7 +5,7 @@
 
 <body>
 <script>
-  const referrer_key = KEYS["document.referrer"];
+  const [referrer_key] = parseKeylist();
 
   // Send the value of `document.referrer` to the server for checking.
   writeValueToServer(referrer_key, document.referrer);

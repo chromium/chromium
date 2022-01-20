@@ -27,22 +27,28 @@ messages have a unique key associated with them so that documents that want to
 receive messages can poll the server for a given message that can be identified
 by a unique key.
 
-**NB: any file that passes messages must run in a secure context (HTTPS).**
-
 Let's see an example of sending a message to the server that a fenced frame will
 receive and respond to.
 
 **outer-page.js:**
 ```js
 promise_test(async () => {
-  const important_message_key = stringToStashKey("important_message");
+  const important_message_key = token();
+  const fenced_frame_ack_key = token();
   const important_value = "Hello";
+
+  // First, let's embed a new fenced frame in our test, and pass the key we
+  // just created into it as a parameter.
+  const frame_url = generateURL("resources/page-inner.html",
+      [important_message_key, fenced_frame_ack_key]);
+  attachFencedFrame(frame_url);
+
+  // Then, let's send the message over to the fenced frame.
   writeValueToServer(important_message_key, important_value);
 
   // Now that the message has been sent to the fenced frame, let's wait for its
   // ACK, so that we don't exit the test before the fenced frame gets the
   // message.
-  const fenced_frame_ack_key = stringToStashKey("fenced_frame_ack");
   const response_from_fenced_frame = await
       nextValueFromServer(fenced_frame_ack_key);
   assert_equals(response_from_fenced_frame, "Hello to you too",
@@ -54,10 +60,9 @@ promise_test(async () => {
 
 ```js
 async function init() { // Needed in order to use top-level await.
-  const important_message_key = stringToStashKey("important_message");
+  const [important_message_key, fenced_frame_ack_key] = parseKeylist();
   const greeting_from_embedder = await nextValueFromServer(important_message_key);
 
-  const fenced_frame_ack_key = stringToStashKey("fenced_frame_ack");
   if (greeting_from_embedder == "Hello") {
     // Message that we received was expected.
     writeValueToServer(fenced_frame_ack_key, "Hello to you too");

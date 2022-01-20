@@ -9,10 +9,13 @@
 
 <script>
 promise_test(async () => {
-  const referrer_key = KEYS["document.referrer"];
-  const referrer_ack_key  = KEYS["document.referrer ACK"];
+  const referrer_key = token();
+  const referrer_ack_key = token();
 
-  attachFencedFrame("resources/document-referrer-inner.html");
+  const frame_url = generateURL("resources/document-referrer-inner.html",
+      [referrer_key, referrer_ack_key]);
+
+  attachFencedFrame(frame_url);
 
   const expected_document_referrer = "";
   const actual_document_referrer = await nextValueFromServer(referrer_key);
@@ -22,7 +25,7 @@ promise_test(async () => {
   writeValueToServer(referrer_ack_key, "ACK");
 
   const iframe_expected_document_referrer =
-      new URL("resources/document-referrer-inner.html", location.href).toString();
+      new URL(frame_url, location.href).toString();
   const iframe_actual_document_referrer = await nextValueFromServer(referrer_key);
   assert_equals(iframe_actual_document_referrer,
                 iframe_expected_document_referrer,
@@ -43,7 +46,7 @@ promise_test(async () => {
   // (i.e., it is its own initiator, so its `document.referrer` should not be
   // redacted).
   const navigate_self_expected_document_referrer =
-      new URL("resources/document-referrer-inner.html", location.href).toString();
+      new URL(frame_url, location.href).toString();
   const navigate_self_actual_subsequent_navigation_referrer =
       await nextValueFromServer(referrer_key);
   assert_equals(navigate_self_actual_subsequent_navigation_referrer,

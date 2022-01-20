@@ -14,9 +14,6 @@ const KEYS = {
   // This key is only used to test that the server-side stash works properly.
   "dummy"                                       : "00000000-0000-0000-0000-000000000000",
 
-  "document.referrer"                           : "00000000-0000-0000-0000-000000000001",
-  "document.referrer ACK"                       : "00000000-0000-0000-0000-000000000002",
-
   "window.top"                                  : "00000000-0000-0000-0000-000000000003",
   "window.top ACK"                              : "00000000-0000-0000-0000-000000000004",
 
@@ -120,6 +117,29 @@ const KEYS = {
 
   "maxframes_response"                          : "00000000-0000-0000-0000-000000000053",
   // Add keys above this list, incrementing the key UUID in hexadecimal
+}
+
+// Creates a URL that includes a list of stash key UUIDs that are being used
+// in the test. This allows us to generate UUIDs on the fly and let anything
+// (iframes, fenced frames, pop-ups, etc...) that wouldn't have access to the
+// original UUID variable know what the UUIDs are.
+// @param {string} href - The base url of the page being navigated to
+// @param {string list} keylist - The list of key UUIDs to be used. Note that
+//                                order matters when extracting the keys
+function generateURL(href, keylist) {
+  const ret_url = new URL(href, location.href);
+  ret_url.searchParams.append("keylist", keylist.join(','));
+  return ret_url.toString().replace(/%2C/g,",");
+}
+
+// Extracts a list of UUIDs from the from the current page's URL.
+// @returns {string list} - The list of UUIDs extracted from the page. This can
+//                          be read into multiple variables using the
+//                          [key1, key2, etc...] = parseKeyList(); pattern.
+function parseKeylist() {
+  const url = new URL(location.href);
+  const keylist = url.searchParams.get("keylist");
+  return keylist.split(',');
 }
 
 // Converts a key string into a key uuid using a cryptographic hash function.
