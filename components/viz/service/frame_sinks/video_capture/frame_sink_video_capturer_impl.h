@@ -287,7 +287,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // For ARGB format, ensures that every dimension of |size| is positive. For
   // I420 format, ensures that every dimension is even and at least 2.
-  gfx::Size AdjustSizeForPixelFormat(const gfx::Size& size);
+  gfx::Size AdjustSizeForPixelFormat(const gfx::Size& size) const;
 
   // Expands |rect| such that its x, y, right, and bottom values are even
   // numbers.

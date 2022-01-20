@@ -33,7 +33,8 @@ class GmbVideoFramePoolContext
     DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
 
     sequence_ = std::make_unique<gpu::SchedulerSequence>(
-        gpu_service_->GetGpuScheduler(), gpu_service_->main_runner());
+        gpu_service_->GetGpuScheduler(), gpu_service_->main_runner(),
+        /*target_thread_is_always_available=*/true);
 
     base::WaitableEvent event;
 

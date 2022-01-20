@@ -51,8 +51,11 @@ GpuMemoryBufferVideoFramePool::CloneHandleForDelivery(
     const media::VideoFrame& frame) {
   DCHECK(frame.HasGpuMemoryBuffer());
 
+  gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBuffer()->CloneHandle();
+  handle.id = gfx::GpuMemoryBufferId(-1);
+
   return media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
-      frame.GetGpuMemoryBuffer()->CloneHandle());
+      std::move(handle));
 }
 
 size_t GpuMemoryBufferVideoFramePool::GetNumberOfReservedFrames() const {

@@ -217,6 +217,87 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
   return true;
 }
 
+void LetterboxPlane(const gfx::Rect& view_area_in_bytes,
+                    uint8_t* ptr,
+                    int rows,
+                    int row_bytes,
+                    int stride,
+                    int bytes_per_element,
+                    uint8_t fill_byte) {
+  if (view_area_in_bytes.IsEmpty()) {
+    libyuv::SetPlane(ptr, stride, row_bytes, rows, fill_byte);
+    return;
+  }
+
+  if (view_area_in_bytes.y() > 0) {
+    libyuv::SetPlane(ptr, stride, row_bytes, view_area_in_bytes.y(), fill_byte);
+    ptr += stride * view_area_in_bytes.y();
+  }
+
+  if (view_area_in_bytes.width() < row_bytes) {
+    if (view_area_in_bytes.x() > 0) {
+      libyuv::SetPlane(ptr, stride, view_area_in_bytes.x(),
+                       view_area_in_bytes.height(), fill_byte);
+    }
+    if (view_area_in_bytes.right() < row_bytes) {
+      libyuv::SetPlane(ptr + view_area_in_bytes.right(), stride,
+                       row_bytes - view_area_in_bytes.right(),
+                       view_area_in_bytes.height(), fill_byte);
+    }
+  }
+
+  ptr += stride * view_area_in_bytes.height();
+
+  if (view_area_in_bytes.bottom() < rows) {
+    libyuv::SetPlane(ptr, stride, row_bytes, rows - view_area_in_bytes.bottom(),
+                     fill_byte);
+  }
+}
+
+void LetterboxPlane(VideoFrame* frame,
+                    int plane,
+                    uint8_t* ptr,
+                    const gfx::Rect& view_area_in_pixels,
+                    uint8_t fill_byte) {
+  const int rows = frame->rows(plane);
+  const int row_bytes = frame->row_bytes(plane);
+  const int stride = frame->stride(plane);
+  const int bytes_per_element =
+      VideoFrame::BytesPerElement(frame->format(), plane);
+
+  gfx::Rect view_area_in_bytes(view_area_in_pixels.x() * bytes_per_element,
+                               view_area_in_pixels.y(),
+                               view_area_in_pixels.width() * bytes_per_element,
+                               view_area_in_pixels.height());
+
+  CHECK_GE(stride, row_bytes);
+  CHECK_GE(view_area_in_bytes.x(), 0);
+  CHECK_GE(view_area_in_bytes.y(), 0);
+  CHECK_LE(view_area_in_bytes.right(), row_bytes);
+  CHECK_LE(view_area_in_bytes.bottom(), rows);
+
+  LetterboxPlane(view_area_in_bytes, ptr, rows, row_bytes, stride,
+                 bytes_per_element, fill_byte);
+}
+
+// Helper for `LetterboxVideoFrame()`, assumes that if |frame| is GMB-backed,
+// the GpuMemoryBuffer is already mapped (via a call to `Map()`).
+void LetterboxPlane(VideoFrame* frame,
+                    int plane,
+                    const gfx::Rect& view_area_in_pixels,
+                    uint8_t fill_byte) {
+  uint8_t* ptr = nullptr;
+  if (frame->IsMappable()) {
+    ptr = frame->data(plane);
+  } else if (frame->HasGpuMemoryBuffer()) {
+    ptr = static_cast<uint8_t*>(frame->GetGpuMemoryBuffer()->memory(plane));
+  }
+
+  DCHECK(ptr);
+
+  LetterboxPlane(frame, plane, ptr, view_area_in_pixels, fill_byte);
+}
+
 }  // namespace
 
 void FillYUV(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v) {
@@ -238,57 +319,13 @@ void FillYUVA(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v, uint8_t a) {
                    frame->rows(VideoFrame::kAPlane), a);
 }
 
-static void LetterboxPlane(VideoFrame* frame,
-                           int plane,
-                           const gfx::Rect& view_area_in_pixels,
-                           uint8_t fill_byte) {
-  uint8_t* ptr = frame->data(plane);
-  const int rows = frame->rows(plane);
-  const int row_bytes = frame->row_bytes(plane);
-  const int stride = frame->stride(plane);
-  const int bytes_per_element =
-      VideoFrame::BytesPerElement(frame->format(), plane);
-  gfx::Rect view_area(view_area_in_pixels.x() * bytes_per_element,
-                      view_area_in_pixels.y(),
-                      view_area_in_pixels.width() * bytes_per_element,
-                      view_area_in_pixels.height());
-
-  CHECK_GE(stride, row_bytes);
-  CHECK_GE(view_area.x(), 0);
-  CHECK_GE(view_area.y(), 0);
-  CHECK_LE(view_area.right(), row_bytes);
-  CHECK_LE(view_area.bottom(), rows);
-
-  if (view_area.IsEmpty()) {
-    libyuv::SetPlane(ptr, stride, row_bytes, rows, fill_byte);
-    return;
-  }
-
-  if (view_area.y() > 0) {
-    libyuv::SetPlane(ptr, stride, row_bytes, view_area.y(), fill_byte);
-    ptr += stride * view_area.y();
-  }
-
-  if (view_area.width() < row_bytes) {
-    if (view_area.x() > 0) {
-      libyuv::SetPlane(ptr, stride, view_area.x(), view_area.height(),
-                       fill_byte);
-    }
-    if (view_area.right() < row_bytes) {
-      libyuv::SetPlane(ptr + view_area.right(), stride,
-                       row_bytes - view_area.right(), view_area.height(),
-                       fill_byte);
-    }
-  }
-  ptr += stride * view_area.height();
-
-  if (view_area.bottom() < rows) {
-    libyuv::SetPlane(ptr, stride, row_bytes, rows - view_area.bottom(),
-                     fill_byte);
-  }
-}
-
 void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
+  bool gmb_mapped = false;
+  if (!frame->IsMappable() && frame->HasGpuMemoryBuffer()) {
+    gmb_mapped = frame->GetGpuMemoryBuffer()->Map();
+    DCHECK(gmb_mapped);
+  }
+
   switch (frame->format()) {
     case PIXEL_FORMAT_ARGB:
       LetterboxPlane(frame, VideoFrame::kARGBPlane, view_area, 0x00);
@@ -299,6 +336,7 @@ void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
       DCHECK(!(view_area.y() & 1));
       DCHECK(!(view_area.width() & 1));
       DCHECK(!(view_area.height() & 1));
+
       LetterboxPlane(frame, VideoFrame::kYPlane, view_area, 0x00);
       gfx::Rect half_view_area(view_area.x() / 2, view_area.y() / 2,
                                view_area.width() / 2, view_area.height() / 2);
@@ -306,8 +344,25 @@ void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
       LetterboxPlane(frame, VideoFrame::kVPlane, half_view_area, 0x80);
       break;
     }
+    case PIXEL_FORMAT_NV12: {
+      DCHECK(!(view_area.x() & 1));
+      DCHECK(!(view_area.y() & 1));
+      DCHECK(!(view_area.width() & 1));
+      DCHECK(!(view_area.height() & 1));
+
+      LetterboxPlane(frame, VideoFrame::kYPlane, view_area, 0x00);
+      gfx::Rect half_view_area(view_area.x() / 2, view_area.y() / 2,
+                               view_area.width() / 2, view_area.height() / 2);
+
+      LetterboxPlane(frame, VideoFrame::kUVPlane, half_view_area, 0x80);
+      break;
+    }
     default:
       NOTREACHED();
+  }
+
+  if (gmb_mapped) {
+    frame->GetGpuMemoryBuffer()->Unmap();
   }
 }
 

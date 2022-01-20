@@ -353,7 +353,8 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
         MockChangeTarget(absl::optional<viz::VideoCaptureTarget>(target)));
     EXPECT_CALL(
         capturer_,
-        MockStart(NotNull(), viz::mojom::BufferFormatPreference::kDefault));
+        MockStart(NotNull(),
+                  viz::mojom::BufferFormatPreference::kPreferGpuMemoryBuffer));
 
     EXPECT_FALSE(capturer_.is_bound());
     POST_DEVICE_METHOD_CALL(OnTargetChanged, target);

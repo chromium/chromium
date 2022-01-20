@@ -46,11 +46,13 @@ void SchedulerSequence::DefaultDisallowScheduleTaskOnCurrentThread() {
 
 SchedulerSequence::SchedulerSequence(
     Scheduler* scheduler,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    bool target_thread_is_always_available)
     : SingleTaskSequence(),
       scheduler_(scheduler),
       sequence_id_(scheduler->CreateSequence(SchedulingPriority::kHigh,
-                                             std::move(task_runner))) {}
+                                             std::move(task_runner))),
+      target_thread_is_always_available_(target_thread_is_always_available) {}
 
 // Note: this drops tasks not executed yet.
 SchedulerSequence::~SchedulerSequence() {
@@ -73,14 +75,17 @@ void SchedulerSequence::ScheduleTask(base::OnceClosure task,
   // ScheduleGpuTask at a point that cannot be supported by Android Webview.
   // Consider using ScheduleOrRetainGpuTask which will delay (not reorder) the
   // task in Android Webview until the next DrawAndSwap.
+  if (!target_thread_is_always_available_) {
 #if DCHECK_IS_ON()
-  DCHECK(!GetScheduleTaskDisallowed()->Get())
-      << "If your CL is failing this DCHECK, then that means you are probably "
-         "calling ScheduleGpuTask at a point that cannot be supported by "
-         "Android Webview. Consider using ScheduleOrRetainGpuTask which will "
-         "delay (not reorder) the task in Android Webview until the next "
-         "DrawAndSwap.";
+    DCHECK(!GetScheduleTaskDisallowed()->Get())
+        << "If your CL is failing this DCHECK, then that means you are "
+           "probably calling ScheduleGpuTask at a point that cannot be "
+           "supported by Android Webview. Consider using "
+           "ScheduleOrRetainGpuTask, which will delay (not reorder) the task "
+           "in Android Webview until the next DrawAndSwap.";
 #endif
+  }
+
   ScheduleOrRetainTask(std::move(task), std::move(sync_token_fences),
                        std::move(report_callback));
 }

@@ -353,7 +353,8 @@ void FrameSinkVideoCaptureDevice::MaybeStartConsuming() {
     return;
   }
 
-  capturer_->Start(this, viz::mojom::BufferFormatPreference::kDefault);
+  capturer_->Start(this,
+                   viz::mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
 }
 
 void FrameSinkVideoCaptureDevice::MaybeStopConsuming() {

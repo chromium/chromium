@@ -64,10 +64,23 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
   // Enable DCHECKs for Android WebView restrictions for ScheduleTask for
   // current thread. Then use ScopedAllowScheduleGpuTask to selectively
   // allow ScheduleTask.
+  //
+  // Context: in WebView, display compositor tasks are scheduled on thread
+  // created by Android framework, so we cannot post tasks to it at arbitrary
+  // times. Calling this function signifies that by default, we should only
+  // allow |ScheduleTask()| calls during specific moments (namely, when an
+  // instance of `ScopedAllowScheduleGpuTask` is alive). If you are creating a
+  // `SchedulerSequence` using a task runner that does not have any posting
+  // restrictions, you can suppress the DCHECK by setting the
+  // |target_thread_is_always_available| to `true` in the constructor.
   static void DefaultDisallowScheduleTaskOnCurrentThread();
 
+  // Set |target_thread_is_always_available| to true to communicate that
+  // ScheduleTask is always possible. This will suppress the DCHECKs enabled by
+  // |DefaultDisallowScheduleTaskOnCurrentThread()|.
   SchedulerSequence(Scheduler* scheduler,
-                    scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+                    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                    bool target_thread_is_always_available = false);
 
   SchedulerSequence(const SchedulerSequence&) = delete;
   SchedulerSequence& operator=(const SchedulerSequence&) = delete;
@@ -91,6 +104,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
  private:
   const raw_ptr<Scheduler> scheduler_;
   const SequenceId sequence_id_;
+  const bool target_thread_is_always_available_;
 };
 
 }  // namespace gpu
