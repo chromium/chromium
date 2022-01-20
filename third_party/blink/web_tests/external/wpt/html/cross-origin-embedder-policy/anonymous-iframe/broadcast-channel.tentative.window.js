@@ -17,15 +17,22 @@ const emit_script = (key, message) => `
   bc.postMessage("${message}");
 `;
 
-// For incorrect web browser implementations, some tests are failing by timing
-// out. Calling this function turns timeout into errors. This informs developers
-// about which precise test is failing.
-const errorOnTimeout = test =>
-  test.step_timeout(test.unreached_func("Timeout"), 9000);
+// When using BroadcastChannel with Firefox, in [5%,10%] of the runs, it does
+// not complete. It ends up with a timeout instead of a failure. It doesn't
+// complete, even when reaching the end of every tests. For instance, there was
+// previously an error triggered for every tests after 9 seconds, guaranteeing
+// every tests to complete with an error at worst. Even with this, it was still
+// failing with a timeout. This suggests a problem in the test runner and maybe
+// how window contexts are released when BroadcastChannel is used. Maybe there
+// are some code to delay their deletion to ensure pending messages are sent?
+//
+// TODO(arthursonzogni@chromium.org) Investigate and re-enable this test.
+setup(() => {
+  assert_true(navigator.userAgent.search("Firefox") == -1,
+    "Disabled for Firefox, because it fails in a flaky manner");
+});
 
 promise_test_parallel(async test => {
-  errorOnTimeout(test);
-
   const origin = get_host_info().HTTPS_REMOTE_ORIGIN;
   const key_1 = token();
   const key_2 = token();
@@ -65,8 +72,6 @@ promise_test_parallel(async test => {
 }, "Anonymous iframe and normal iframe aren't in the same partition")
 
 promise_test_parallel(async test => {
-  errorOnTimeout(test);
-
   const origin = get_host_info().HTTPS_REMOTE_ORIGIN;
   const key = token();
 
@@ -81,8 +86,6 @@ promise_test_parallel(async test => {
 }, "Two sibling same-origin anonymous iframes are in the same partition");
 
 promise_test_parallel(async test => {
-  errorOnTimeout(test);
-
   const origin = get_host_info().HTTPS_REMOTE_ORIGIN;
   const key = token();
   const queue = token();
@@ -106,14 +109,12 @@ promise_test_parallel(async test => {
 }, "Nested same-origin anonymous iframe are in the same partition");
 
 promise_test_parallel(async test => {
-  errorOnTimeout(test);
-
   const origin = get_host_info().HTTPS_REMOTE_ORIGIN;
   const key = token();
   const queue = token();
 
   const iframe_anonymous_1 = newAnonymousIframe(origin);
-  const popup = newPopup(origin);
+  const popup = newPopup(test, origin);
   send(popup, `
     const importScript = ${importScript};
     await importScript("/common/utils.js");
