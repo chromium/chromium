@@ -62,8 +62,7 @@ class PageContentAnnotationsWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
 
   // Callback invoked when a text dump has been received for the |visit|.
-  void OnTextDumpReceived(const HistoryVisit& visit,
-                          const PageTextDumpResult& result);
+  void OnTextDumpReceived(HistoryVisit visit, const PageTextDumpResult& result);
 
   // Callback invoked when the page entities have been received from
   // |optimization_guide_decider_| for |visit|.

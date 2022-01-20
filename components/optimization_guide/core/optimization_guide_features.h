@@ -253,6 +253,11 @@ bool PageVisibilityBatchAnnotationsEnabled();
 // Whether to use the leveldb-based page entities metadata provider.
 bool UseLocalPageEntitiesMetadataProvider();
 
+// The number of visits batch before running the page content annotation
+// models. A size of 1 is equivalent to annotating one page load at time
+// immediately after requested.
+size_t AnnotateVisitBatchSize();
+
 }  // namespace features
 }  // namespace optimization_guide
 

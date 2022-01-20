@@ -525,5 +525,11 @@ bool UseLocalPageEntitiesMetadataProvider() {
   return base::FeatureList::IsEnabled(kUseLocalPageEntitiesMetadataProvider);
 }
 
+size_t AnnotateVisitBatchSize() {
+  return std::max(
+      1, GetFieldTrialParamByFeatureAsInt(kPageContentAnnotations,
+                                          "annotate_visit_batch_size", 1));
+}
+
 }  // namespace features
 }  // namespace optimization_guide

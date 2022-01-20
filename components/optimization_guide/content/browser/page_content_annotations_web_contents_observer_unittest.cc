@@ -68,8 +68,8 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
                                       nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 
-  void Annotate(const HistoryVisit& visit, const std::string& text) override {
-    last_annotation_request_.emplace(std::make_pair(visit, text));
+  void Annotate(const HistoryVisit& visit) override {
+    last_annotation_request_.emplace(visit);
   }
 
   void ExtractRelatedSearches(const HistoryVisit& visit,
@@ -78,8 +78,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
         std::make_pair(visit, web_contents));
   }
 
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request()
-      const {
+  absl::optional<HistoryVisit> last_annotation_request() const {
     return last_annotation_request_;
   }
 
@@ -107,7 +106,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
   }
 
  private:
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request_;
+  absl::optional<HistoryVisit> last_annotation_request_;
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
       last_related_searches_extraction_request_;
   absl::optional<
@@ -325,11 +324,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   result.AddFrameTextDumpResult(frame_result);
   std::move(request->callback).Run(std::move(result));
 
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url, GURL("http://test.com"));
-  EXPECT_EQ(last_annotation_request->second, "some text");
+  EXPECT_EQ(last_annotation_request->url, GURL("http://test.com"));
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "some text");
 
   service()->ClearLastAnnotationRequest();
 
@@ -358,11 +357,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   navigation_simulator->CommitSameDocument();
 
   // The title should be what is requested to be annotated.
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url, url2);
-  EXPECT_EQ(last_annotation_request->second, "Title");
+  EXPECT_EQ(last_annotation_request->url, url2);
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -372,12 +371,12 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
       web_contents(), GURL("http://default-engine.com/search?q=a"));
 
   // The search query should be what is requested to be annotated.
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   ASSERT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url,
+  EXPECT_EQ(last_annotation_request->url,
             GURL("http://default-engine.com/search?q=a"));
-  EXPECT_EQ(last_annotation_request->second, "a");
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -463,11 +462,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverAnnotateTitleTest,
   navigation_simulator->CommitSameDocument();
 
   // The title should be what is requested to be annotated.
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url, url2);
-  EXPECT_EQ(last_annotation_request->second, "Title");
+  EXPECT_EQ(last_annotation_request->url, url2);
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
 
   service()->ClearLastAnnotationRequest();
 
@@ -492,12 +491,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverAnnotateTitleTest,
                                       title);
 
   // The title should be what is requested to be annotated.
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url,
-            GURL("http://www.foo.com/someurl"));
-  EXPECT_EQ(last_annotation_request->second, "Title");
+  EXPECT_EQ(last_annotation_request->url, GURL("http://www.foo.com/someurl"));
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
 
   service()->ClearLastAnnotationRequest();
 

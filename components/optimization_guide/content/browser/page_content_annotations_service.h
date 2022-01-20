@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -52,9 +53,15 @@ class PageContentAnnotationsWebContentsObserver;
 
 // The information used by HistoryService to identify a visit to a URL.
 struct HistoryVisit {
+  HistoryVisit();
+  HistoryVisit(base::Time nav_entry_timestamp, GURL url, int64_t navigation_id);
+  ~HistoryVisit();
+  HistoryVisit(const HistoryVisit&);
+
   base::Time nav_entry_timestamp;
   GURL url;
-  int64_t navigation_id;
+  int64_t navigation_id = 0;
+  absl::optional<std::string> text_to_annotate;
 
   struct Comp {
     bool operator()(const HistoryVisit& lhs, const HistoryVisit& rhs) const {
@@ -115,7 +122,20 @@ class PageContentAnnotationsService : public KeyedService,
       const absl::optional<history::VisitContentModelAnnotations>&
           content_annotations);
 
+  // Runs the page annotation models available to |model_manager_| on all the
+  // visits within |current_visit_annotation_batch_|.
+  void AnnotateVisitBatch();
+
+  // Callback run after the annotations for a |visit| of a batch has been
+  // determined. |current_visit_annotation_batch_| is updated to remove
+  // the annotated visit and will trigger the next visit to be annotated.
+  void OnBatchVisitAnnotated(
+      const HistoryVisit& visit,
+      const absl::optional<history::VisitContentModelAnnotations>&
+          content_annotations);
+
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
+
 #endif
 
   // The annotator to use for requests to |BatchAnnotate|. In prod, this is
@@ -133,7 +153,7 @@ class PageContentAnnotationsService : public KeyedService,
   friend class PageContentAnnotationsWebContentsObserver;
   friend class PageContentAnnotationsServiceBrowserTest;
   // Virtualized for testing.
-  virtual void Annotate(const HistoryVisit& visit, const std::string& text);
+  virtual void Annotate(const HistoryVisit& visit);
 
   // Creates a HistoryVisit based on the current state of |web_contents|.
   static HistoryVisit CreateHistoryVisitFromWebContents(
@@ -196,6 +216,15 @@ class PageContentAnnotationsService : public KeyedService,
   // requested for another annotation on the same visit.
   base::LRUCache<HistoryVisit, bool, HistoryVisit::Comp>
       last_annotated_history_visits_;
+
+  // The set of visits to be annotated, this is added to by Annotate requests
+  // from the web content observer. These will be annotated when the set is full
+  // and annotations can be scheduled with minimal impact to browsing.
+  std::vector<HistoryVisit> visits_to_annotate_;
+
+  // The batch of visits being annotated. If this is empty, it is assumed that
+  // no visits are actively be annotated and a new batch can be started.
+  std::vector<HistoryVisit> current_visit_annotation_batch_;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
 };
