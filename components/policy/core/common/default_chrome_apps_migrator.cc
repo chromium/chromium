@@ -12,7 +12,11 @@ namespace policy {
 namespace {
 
 std::map<std::string, std::string> GetChromeAppToWebAppMapping() {
-  return std::map<std::string, std::string>();
+  return std::map<std::string, std::string>({
+      // Maps
+      {"lneaknkopdijkpnocmklfnjbeapigfbh",
+       "https://www.google.com/maps?force=tt&source=ttpwa"},
+  });
 }
 
 }  // namespace
