@@ -273,12 +273,6 @@ void SubmenuView::OnDragExited() {
   parent_menu_item_->GetMenuController()->OnDragExited(this);
 }
 
-ui::mojom::DragOperation SubmenuView::OnPerformDrop(
-    const ui::DropTargetEvent& event) {
-  DCHECK(parent_menu_item_->GetMenuController());
-  return parent_menu_item_->GetMenuController()->OnPerformDrop(this, event);
-}
-
 views::View::DropCallback SubmenuView::GetDropCallback(
     const ui::DropTargetEvent& event) {
   DCHECK(parent_menu_item_->GetMenuController());

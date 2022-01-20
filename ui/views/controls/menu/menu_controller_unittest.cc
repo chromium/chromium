@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -1683,7 +1684,9 @@ TEST_F(MenuControllerTest, AsynchronousPerformDrop) {
   gfx::PointF location(target->origin());
   ui::DropTargetEvent target_event(drop_data, location, location,
                                    ui::DragDropTypes::DRAG_MOVE);
-  controller->OnPerformDrop(source, target_event);
+  auto drop_cb = controller->GetDropCallback(source, target_event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(target_event, output_drag_op);
 
   TestMenuDelegate* menu_delegate =
       static_cast<TestMenuDelegate*>(target->GetDelegate());

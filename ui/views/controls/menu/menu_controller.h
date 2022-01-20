@@ -190,8 +190,6 @@ class VIEWS_EXPORT MenuController
   void OnDragEntered(SubmenuView* source, const ui::DropTargetEvent& event);
   int OnDragUpdated(SubmenuView* source, const ui::DropTargetEvent& event);
   void OnDragExited(SubmenuView* source);
-  ui::mojom::DragOperation OnPerformDrop(SubmenuView* source,
-                                         const ui::DropTargetEvent& event);
   views::View::DropCallback GetDropCallback(SubmenuView* source,
                                             const ui::DropTargetEvent& event);
 
