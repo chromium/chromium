@@ -822,6 +822,12 @@ crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conf
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 
+# Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
+crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
+
+# Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
+crbug.com/1289303 [ android ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+
 ############
 # ChromeOS #
 ############

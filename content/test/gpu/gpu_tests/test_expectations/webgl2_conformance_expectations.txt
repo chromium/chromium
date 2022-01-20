@@ -1020,6 +1020,9 @@ crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.
 # Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
+# Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
+crbug.com/1289303 [ android ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+
 # This test is failing on Android Pixel 2 and 3 (Qualcomm)
 # Seems to be an OpenGL ES bug.
 crbug.com/695742 [ android qualcomm angle-disabled ] deqp/functional/gles3/multisample/default_fbo.html [ RetryOnFailure ]

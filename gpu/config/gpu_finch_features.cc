@@ -320,10 +320,6 @@ bool IsDrDcEnabled() {
     return false;
   }
 
-  // Currently not supported for vulkan.
-  if (IsUsingVulkan())
-    return false;
-
   // DrDc is supported on android MediaPlayer and MCVD path only when
   // AImageReader is enabled.
   if (!IsAImageReaderEnabled())
