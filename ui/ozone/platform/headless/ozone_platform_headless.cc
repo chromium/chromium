@@ -28,7 +28,7 @@
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/base/ime/fuchsia/input_method_fuchsia.h"
 #endif
 

@@ -15,6 +15,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
@@ -60,7 +61,7 @@
 #include "ui/ozone/platform/wayland/host/linux_ui_delegate_wayland.h"  // nogncheck
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #else
 #include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
@@ -228,7 +229,7 @@ class OzonePlatformWayland : public OzonePlatform,
 
     buffer_manager_connector_ = std::make_unique<WaylandBufferManagerConnector>(
         connection_->buffer_manager_host());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 #else
     cursor_factory_ = std::make_unique<WaylandCursorFactory>(connection_.get());

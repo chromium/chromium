@@ -441,7 +441,7 @@ TEST_F(X11TopmostWindowFinderTest, NonRectangularEmptyShape) {
 
 // Test that setting a Null shape removes the shape.
 // crbug.com/955316: flaky on Linux
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NonRectangularNullShape DISABLED_NonRectangularNullShape
 #else
 #define MAYBE_NonRectangularNullShape NonRectangularNullShape

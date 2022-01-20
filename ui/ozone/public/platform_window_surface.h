@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <fuchsia/images/cpp/fidl.h>
 
 #include "base/callback.h"
@@ -19,7 +19,7 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/public/overlay_plane.h"
 
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace ui {
 
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformWindowSurface {
  public:
   virtual ~PlatformWindowSurface() = default;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   using BufferPresentedCallback =
       base::OnceCallback<void(const gfx::PresentationFeedback& feedback)>;
   using SwapCompletionCallback =
@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformWindowSurface {
                        std::vector<gfx::GpuFenceHandle> release_fences,
                        SwapCompletionCallback completion_callback,
                        BufferPresentedCallback presentation_callback) {}
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Note: GL surface may be created through the GLOzone interface.
   // However, you must still create a PlatformWindowSurface and keep it alive in

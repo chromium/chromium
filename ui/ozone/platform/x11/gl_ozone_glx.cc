@@ -16,7 +16,7 @@ namespace ui {
 
 namespace {
 
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 const char kGLLibraryName[] = "libGL.so";
 #else
 const char kGLLibraryName[] = "libGL.so.1";
