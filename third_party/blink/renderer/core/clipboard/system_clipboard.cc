@@ -106,12 +106,22 @@ String SystemClipboard::ReadPlainText() {
   return ReadPlainText(buffer_);
 }
 
-String SystemClipboard::ReadPlainText(mojom::ClipboardBuffer buffer) {
+String SystemClipboard::ReadPlainText(mojom::blink::ClipboardBuffer buffer) {
   if (!IsValidBufferType(buffer) || !clipboard_.is_bound())
     return String();
   String text;
   clipboard_->ReadText(buffer, &text);
   return text;
+}
+
+void SystemClipboard::ReadPlainText(
+    mojom::blink::ClipboardBuffer buffer,
+    mojom::blink::ClipboardHost::ReadTextCallback callback) {
+  if (!IsValidBufferType(buffer) || !clipboard_.is_bound()) {
+    std::move(callback).Run(String());
+    return;
+  }
+  clipboard_->ReadText(buffer_, std::move(callback));
 }
 
 void SystemClipboard::WritePlainText(const String& plain_text,
@@ -141,6 +151,15 @@ String SystemClipboard::ReadHTML(KURL& url,
     fragment_end = 0;
   }
   return html;
+}
+
+void SystemClipboard::ReadHTML(
+    mojom::blink::ClipboardHost::ReadHtmlCallback callback) {
+  if (!IsValidBufferType(buffer_) || !clipboard_.is_bound()) {
+    std::move(callback).Run(String(), KURL(), 0, 0);
+    return;
+  }
+  clipboard_->ReadHtml(buffer_, std::move(callback));
 }
 
 void SystemClipboard::WriteHTML(const String& markup,

@@ -42,7 +42,9 @@ class CORE_EXPORT SystemClipboard final
   bool IsFormatAvailable(mojom::ClipboardFormat format);
 
   String ReadPlainText();
-  String ReadPlainText(mojom::ClipboardBuffer buffer);
+  String ReadPlainText(mojom::blink::ClipboardBuffer buffer);
+  void ReadPlainText(mojom::blink::ClipboardBuffer buffer,
+                     mojom::blink::ClipboardHost::ReadTextCallback callback);
   void WritePlainText(const String&, SmartReplaceOption = kCannotSmartReplace);
 
   // If no data is read, an empty string will be returned and all out parameters
@@ -52,6 +54,7 @@ class CORE_EXPORT SystemClipboard final
   // no additional context, fragmentStart will be zero and fragmentEnd will be
   // the same as the length of the markup.
   String ReadHTML(KURL&, unsigned& fragment_start, unsigned& fragment_end);
+  void ReadHTML(mojom::blink::ClipboardHost::ReadHtmlCallback callback);
   void WriteHTML(const String& markup,
                  const KURL& document_url,
                  SmartReplaceOption = kCannotSmartReplace);

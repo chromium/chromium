@@ -68,8 +68,13 @@ class ClipboardTextReader final : public ClipboardReader {
 
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    String plain_text =
-        system_clipboard()->ReadPlainText(mojom::ClipboardBuffer::kStandard);
+    system_clipboard()->ReadPlainText(
+        mojom::blink::ClipboardBuffer::kStandard,
+        WTF::Bind(&ClipboardTextReader::OnRead, WrapPersistent(this)));
+  }
+
+ private:
+  void OnRead(const String& plain_text) {
     if (plain_text.IsEmpty()) {
       NextRead(Vector<uint8_t>());
       return;
@@ -82,7 +87,6 @@ class ClipboardTextReader final : public ClipboardReader {
                        std::move(clipboard_task_runner_)));
   }
 
- private:
   static void EncodeOnBackgroundThread(
       String plain_text,
       ClipboardTextReader* reader,
@@ -120,26 +124,33 @@ class ClipboardHtmlReader final : public ClipboardReader {
       : ClipboardReader(system_clipboard, promise) {}
   ~ClipboardHtmlReader() override = default;
 
-  // This must be called on the main thread because HTML DOM nodes can
-  // only be used on the main thread.
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     promise_->GetExecutionContext()->CountUse(
         WebFeature::kHtmlClipboardApiRead);
+    system_clipboard()->ReadHTML(
+        WTF::Bind(&ClipboardHtmlReader::OnRead, WrapPersistent(this)));
+  }
 
-    KURL url;
-    unsigned fragment_start = 0;
-    unsigned fragment_end = 0;
+ private:
+  void OnRead(const String& html_string,
+              const KURL& url,
+              unsigned fragment_start,
+              unsigned fragment_end) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    String html_string =
-        system_clipboard()->ReadHTML(url, fragment_start, fragment_end);
+    LocalFrame* frame = promise_->GetLocalFrame();
+    if (html_string.IsEmpty()) {
+      NextRead(Vector<uint8_t>());
+      return;
+    }
 
     // Now sanitize the HTML string.
-    LocalFrame* frame = promise_->GetLocalFrame();
+    // This must be called on the main thread because HTML DOM nodes can
+    // only be used on the main thread.
     DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
-        *frame->GetDocument(), html_string, fragment_start,
-        html_string.length(), url);
+        *frame->GetDocument(), html_string, fragment_start, fragment_end, url);
     String sanitized_html =
         CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
 
@@ -154,8 +165,6 @@ class ClipboardHtmlReader final : public ClipboardReader {
                             WrapCrossThreadPersistent(this),
                             std::move(clipboard_task_runner_)));
   }
-
- private:
   static void EncodeOnBackgroundThread(
       String plain_text,
       ClipboardHtmlReader* reader,
