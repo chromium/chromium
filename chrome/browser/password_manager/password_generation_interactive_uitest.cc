@@ -408,16 +408,8 @@ class PasswordGenerationPopupViewPrerenderingTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-// TODO(https://crbug.com/1287785): Fails on the linux-wayland-rel bot.
-#if defined(OZONE_PLATFORM_WAYLAND)
-#define MAYBE_PasswordGenerationPopupControllerInPrerendering \
-  DISABLED_PasswordGenerationPopupControllerInPrerendering
-#else
-#define MAYBE_PasswordGenerationPopupControllerInPrerendering \
-  PasswordGenerationPopupControllerInPrerendering
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
-                       MAYBE_PasswordGenerationPopupControllerInPrerendering) {
+                       PasswordGenerationPopupControllerInPrerendering) {
   // Open popup.
   FocusPasswordField();
   EXPECT_TRUE(GenerationPopupShowing());
