@@ -19,7 +19,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMinZwpPointerGesturesVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }
 
 // static
@@ -34,11 +34,12 @@ void WaylandZwpPointerGestures::Instantiate(WaylandConnection* connection,
   DCHECK_EQ(interface, kInterfaceName);
 
   if (connection->wayland_zwp_pointer_gestures_ ||
-      version < kMinZwpPointerGesturesVersion)
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
   auto zwp_pointer_gestures_v1 =
-      wl::Bind<struct zwp_pointer_gestures_v1>(registry, name, version);
+      wl::Bind<struct zwp_pointer_gestures_v1>(registry, name, kMinVersion);
   if (!zwp_pointer_gestures_v1) {
     LOG(ERROR) << "Failed to bind wp_pointer_gestures_v1";
     return;

@@ -14,7 +14,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMinZwpRelativePointerManagerVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }
 
 // static
@@ -30,11 +30,13 @@ void WaylandZwpRelativePointerManager::Instantiate(
   DCHECK_EQ(interface, kInterfaceName);
 
   if (connection->wayland_zwp_relative_pointer_manager_ ||
-      version < kMinZwpRelativePointerManagerVersion)
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
   auto zwp_relative_pointer_manager_v1 =
-      wl::Bind<struct zwp_relative_pointer_manager_v1>(registry, name, version);
+      wl::Bind<struct zwp_relative_pointer_manager_v1>(registry, name,
+                                                       kMinVersion);
   if (!zwp_relative_pointer_manager_v1) {
     LOG(ERROR) << "Failed to bind zwp_relative_pointer_manager_v1";
     return;

@@ -13,7 +13,7 @@ namespace ui {
 
 namespace {
 
-constexpr uint32_t kMaxOrgKdeKwinIdleVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 
 // After the system has gone idle, it will wait for this time before notifying
 // us.  This reduces "jitter" of the idle/active state, but also adds some lag
@@ -58,11 +58,12 @@ void OrgKdeKwinIdle::Instantiate(WaylandConnection* connection,
                                  uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->org_kde_kwin_idle_)
+  if (connection->org_kde_kwin_idle_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
-  auto idle = wl::Bind<struct org_kde_kwin_idle>(
-      registry, name, std::min(version, kMaxOrgKdeKwinIdleVersion));
+  auto idle = wl::Bind<struct org_kde_kwin_idle>(registry, name, kMinVersion);
   if (!idle) {
     LOG(ERROR) << "Failed to bind to org_kde_kwin_idle global";
     return;

@@ -16,7 +16,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }  // namespace
 
 // static
@@ -31,12 +31,13 @@ void ZwpPrimarySelectionDeviceManager::Instantiate(
     uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->zwp_primary_selection_device_manager_)
+  if (connection->zwp_primary_selection_device_manager_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
   auto manager = wl::Bind<zwp_primary_selection_device_manager_v1>(
-      registry, name,
-      std::min(version, kMaxGtkPrimarySelectionDeviceManagerVersion));
+      registry, name, kMinVersion);
   if (!manager) {
     LOG(ERROR) << "Failed to bind zwp_primary_selection_device_manager_v1";
     return;

@@ -79,6 +79,17 @@ struct ObjectTraits<wl_proxy> {
   static void (*deleter)(void*);
 };
 
+// Checks the given |available_version| exposed by the server against
+// |min_version| and |max_version| supported by the client.
+// Returns false (with rendering a warning) if |available_version| is less than
+// the minimum supported version.
+// Returns true otherwise, renders an info message if |available_version| is
+// greater than the maximum supported one.
+bool CanBind(const std::string& interface,
+             uint32_t available_version,
+             uint32_t min_version,
+             uint32_t max_version);
+
 }  // namespace wl
 
 // Puts the forward declaration for struct TYPE and declares the template

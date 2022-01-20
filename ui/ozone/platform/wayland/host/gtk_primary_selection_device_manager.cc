@@ -16,7 +16,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }
 
 // static
@@ -31,12 +31,13 @@ void GtkPrimarySelectionDeviceManager::Instantiate(
     uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->gtk_primary_selection_device_manager())
+  if (connection->gtk_primary_selection_device_manager() ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
-  auto manager = wl::Bind<gtk_primary_selection_device_manager>(
-      registry, name,
-      std::min(version, kMaxGtkPrimarySelectionDeviceManagerVersion));
+  auto manager = wl::Bind<gtk_primary_selection_device_manager>(registry, name,
+                                                                kMinVersion);
   if (!manager) {
     LOG(ERROR) << "Failed to bind gtk_primary_selection_device_manager";
     return;

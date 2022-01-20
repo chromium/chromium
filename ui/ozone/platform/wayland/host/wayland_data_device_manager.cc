@@ -14,7 +14,8 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxDeviceManagerVersion = 3;
+constexpr uint32_t kMinVersion = 1;
+constexpr uint32_t kMaxVersion = 3;
 }
 
 // static
@@ -28,11 +29,13 @@ void WaylandDataDeviceManager::Instantiate(WaylandConnection* connection,
                                            uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->data_device_manager_)
+  if (connection->data_device_manager_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMaxVersion)) {
     return;
+  }
 
   auto data_device_manager = wl::Bind<wl_data_device_manager>(
-      registry, name, std::min(version, kMaxDeviceManagerVersion));
+      registry, name, std::min(version, kMaxVersion));
   if (!data_device_manager) {
     LOG(ERROR) << "Failed to bind to wl_data_device_manager global";
     return;

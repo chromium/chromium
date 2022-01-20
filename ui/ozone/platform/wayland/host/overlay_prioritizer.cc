@@ -12,7 +12,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxOverlayPrioritizerVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }
 
 // static
@@ -26,11 +26,12 @@ void OverlayPrioritizer::Instantiate(WaylandConnection* connection,
                                      uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->overlay_prioritizer_)
+  if (connection->overlay_prioritizer_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
-  auto prioritizer = wl::Bind<overlay_prioritizer>(
-      registry, name, std::min(version, kMaxOverlayPrioritizerVersion));
+  auto prioritizer = wl::Bind<overlay_prioritizer>(registry, name, kMinVersion);
   if (!prioritizer) {
     LOG(ERROR) << "Failed to bind overlay_prioritizer";
     return;

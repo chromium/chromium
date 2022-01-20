@@ -14,7 +14,8 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxLinuxDmabufVersion = 3;
+constexpr uint32_t kMinVersion = 1;
+constexpr uint32_t kMaxVersion = 3;
 }
 
 // static
@@ -28,11 +29,13 @@ void WaylandZwpLinuxDmabuf::Instantiate(WaylandConnection* connection,
                                         uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->zwp_dmabuf())
+  if (connection->zwp_dmabuf() ||
+      !wl::CanBind(interface, version, kMinVersion, kMaxVersion)) {
     return;
+  }
 
   auto zwp_linux_dmabuf = wl::Bind<zwp_linux_dmabuf_v1>(
-      registry, name, std::min(version, kMaxLinuxDmabufVersion));
+      registry, name, std::min(version, kMaxVersion));
   if (!zwp_linux_dmabuf) {
     LOG(ERROR) << "Failed to bind zwp_linux_dmabuf_v1";
     return;

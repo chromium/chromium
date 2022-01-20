@@ -15,7 +15,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMinZwpPointerConstraintsVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }
 
 // static
@@ -30,12 +30,12 @@ void WaylandZwpPointerConstraints::Instantiate(WaylandConnection* connection,
   DCHECK_EQ(interface, kInterfaceName);
 
   if (connection->wayland_zwp_pointer_constraints_ ||
-      version < kMinZwpPointerConstraintsVersion) {
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
   }
 
   auto zwp_pointer_constraints_v1 =
-      wl::Bind<struct zwp_pointer_constraints_v1>(registry, name, version);
+      wl::Bind<struct zwp_pointer_constraints_v1>(registry, name, kMinVersion);
   if (!zwp_pointer_constraints_v1) {
     LOG(ERROR) << "Failed to bind wp_pointer_constraints_v1";
     return;
