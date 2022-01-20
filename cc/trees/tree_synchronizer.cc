@@ -69,7 +69,7 @@ static bool LayerWillPushProperties(const LayerTreeImpl* tree,
 
 template <typename LayerType>
 std::unique_ptr<LayerImpl> ReuseOrCreateLayerImpl(OwnedLayerImplMap* old_layers,
-                                                  LayerType* layer,
+                                                  const LayerType* layer,
                                                   LayerTreeImpl* tree_impl) {
   if (!layer)
     return nullptr;
@@ -85,7 +85,7 @@ void PushLayerList(OwnedLayerImplMap* old_layers,
                    LayerTreeImpl* tree_impl,
                    const PropertyTrees& property_trees) {
   DCHECK(tree_impl->LayerListIsEmpty());
-  for (auto* layer : *host) {
+  for (const auto* layer : *host) {
     std::unique_ptr<LayerImpl> layer_impl(
         ReuseOrCreateLayerImpl(old_layers, layer, tree_impl));
     // TODO(crbug.com/1229805): remove diagnostic CHECK

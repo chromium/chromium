@@ -37,7 +37,8 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
   VideoLayerImpl& operator=(const VideoLayerImpl&) = delete;
 
   // LayerImpl implementation.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,

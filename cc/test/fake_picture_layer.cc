@@ -4,6 +4,8 @@
 
 #include "cc/test/fake_picture_layer.h"
 
+#include <utility>
+
 #include "cc/test/fake_picture_layer_impl.h"
 
 namespace cc {
@@ -24,7 +26,7 @@ FakePictureLayer::FakePictureLayer(ContentLayerClient* client,
 FakePictureLayer::~FakePictureLayer() = default;
 
 std::unique_ptr<LayerImpl> FakePictureLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   auto layer_impl = FakePictureLayerImpl::Create(tree_impl, id());
 
   if (!fixed_tile_size_.IsEmpty())

@@ -258,7 +258,7 @@ TEST_F(WindowTreeHostWithReleaseTest, ToggleOccluded) {
                   IsNativeWindowOcclusionTrackingAlwaysEnabled(host()));
   cc::Layer* host_window_cc_layer =
       ccLayerFromUiLayer(host()->window()->layer());
-  cc::Layer* compositor_root_layer = host_window_cc_layer->parent();
+  const cc::Layer* compositor_root_layer = host_window_cc_layer->parent();
   EXPECT_NE(nullptr, compositor_root_layer);
   host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
   // The compositor shouldn't actually hide immediately, it needs a frame to
@@ -281,7 +281,7 @@ TEST_F(WindowTreeHostWithReleaseTest, ShowWhileTransitioningToHidden) {
                   IsNativeWindowOcclusionTrackingAlwaysEnabled(host()));
   cc::Layer* host_window_cc_layer =
       ccLayerFromUiLayer(host()->window()->layer());
-  cc::Layer* compositor_root_layer = host_window_cc_layer->parent();
+  const cc::Layer* compositor_root_layer = host_window_cc_layer->parent();
   EXPECT_NE(nullptr, compositor_root_layer);
   host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
   // The compositor shouldn't actually hide immediately, it needs a frame to

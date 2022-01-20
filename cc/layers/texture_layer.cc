@@ -44,7 +44,7 @@ void TextureLayer::ClearTexture() {
 }
 
 std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return TextureLayerImpl::Create(tree_impl, id());
 }
 

@@ -298,6 +298,16 @@ bool LayerTreeHost::IsImplThread() const {
   return task_runner_provider_ && task_runner_provider_->IsImplThread();
 }
 
+bool LayerTreeHost::IsOwnerThread() const {
+  return !task_runner_provider_->MainThreadTaskRunner() ||
+         task_runner_provider_->MainThreadTaskRunner()
+             ->RunsTasksInCurrentSequence();
+}
+
+bool LayerTreeHost::InProtectedSequence() const {
+  return in_commit();
+}
+
 SwapPromiseManager* LayerTreeHost::GetSwapPromiseManager() {
   DCHECK(IsMainThread());
   return &swap_promise_manager_;
@@ -422,7 +432,13 @@ std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
   return active_commit_state;
 }
 
-void LayerTreeHost::WaitForCommitCompletion() {
+void LayerTreeHost::WaitForProtectedSequenceCompletion() const {
+  if (compositor_mode_ == CompositorMode::SINGLE_THREADED)
+    return;
+  WaitForCommitCompletion();
+}
+
+void LayerTreeHost::WaitForCommitCompletion() const {
   DCHECK(IsMainThread());
   if (commit_completion_event_) {
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
@@ -444,7 +460,7 @@ bool LayerTreeHost::IsUsingLayerLists() const {
 
 void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
   DCHECK(IsMainThread());
-  // This DCHECK ensures that WaitForCommitCompletion() will not block.
+  // This DCHECK ensures that commit_completion_event_.Wait() will not block.
   DCHECK(IsMainThread());
   DCHECK(!in_commit());
   WaitForCommitCompletion();
@@ -1159,7 +1175,7 @@ void LayerTreeHost::SetRootLayer(scoped_refptr<Layer> new_root_layer) {
     return;
 
   if (root_layer()) {
-    WaitForCommitCompletion();
+    WaitForProtectedSequenceCompletion();
     root_layer()->SetLayerTreeHost(nullptr);
   }
   thread_unsafe_commit_state().root_layer = new_root_layer;
@@ -1169,7 +1185,7 @@ void LayerTreeHost::SetRootLayer(scoped_refptr<Layer> new_root_layer) {
   }
 
   if (hud_layer()) {
-    WaitForCommitCompletion();
+    WaitForProtectedSequenceCompletion();
     hud_layer()->RemoveFromParent();
   }
 

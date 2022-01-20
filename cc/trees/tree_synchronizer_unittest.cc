@@ -75,7 +75,7 @@ class MockLayer : public Layer {
   }
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) override {
+      LayerTreeImpl* tree_impl) const override {
     return MockLayerImpl::Create(tree_impl, id());
   }
 

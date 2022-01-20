@@ -16,7 +16,6 @@ namespace cc {
 
 class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
  public:
-  // LayerTreeHostImplClient implementation.
   void DidLoseLayerTreeFrameSinkOnImplThread() override {}
   void SetBeginFrameSource(viz::BeginFrameSource* source) override {}
   void DidReceiveCompositorFrameAckOnImplThread() override {}

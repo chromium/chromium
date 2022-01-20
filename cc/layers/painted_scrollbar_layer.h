@@ -21,7 +21,8 @@ namespace cc {
 // well as non-overlay scrollbars on Win/Linux.
 class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
  public:
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
 
   static scoped_refptr<PaintedScrollbarLayer> CreateOrReuse(
       scoped_refptr<Scrollbar> scrollbar,

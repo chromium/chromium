@@ -31,6 +31,7 @@ cc_component("base") {
     "list_container_helper.h",
     "math_util.cc",
     "math_util.h",
+    "protected_sequence_synchronizer.h",
     "region.cc",
     "region.h",
     "reverse_spiral_iterator.cc",

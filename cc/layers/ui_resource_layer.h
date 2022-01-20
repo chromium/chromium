@@ -58,7 +58,8 @@ class CC_EXPORT UIResourceLayer : public Layer {
   UIResourceId resource_id() const { return resource_id_; }
 
  private:
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void RecreateUIResourceIdFromBitmap();
   void SetUIResourceIdInternal(UIResourceId resource_id);
 

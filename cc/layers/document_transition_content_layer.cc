@@ -30,7 +30,7 @@ DocumentTransitionContentLayer::DocumentTransitionResourceId() const {
 }
 
 std::unique_ptr<LayerImpl> DocumentTransitionContentLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return DocumentTransitionContentLayerImpl::Create(tree_impl, id(),
                                                     resource_id_);
 }

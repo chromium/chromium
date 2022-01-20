@@ -127,7 +127,7 @@ void LayerTreeView::Disconnect() {
   DCHECK(delegate_);
   // Drop compositor resources immediately, while keeping the compositor alive
   // until after this class is destroyed.
-  layer_tree_host_->WaitForCommitCompletion();
+  layer_tree_host_->WaitForProtectedSequenceCompletion();
   layer_tree_host_->SetVisible(false);
   layer_tree_host_->ReleaseLayerTreeFrameSink();
   delegate_ = nullptr;

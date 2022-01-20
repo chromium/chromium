@@ -33,7 +33,8 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
 
   // Layer overrides.
   void PushPropertiesTo(LayerImpl* layer,

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <utility>
 #include <vector>
 
 #include "cc/animation/animation_host.h"
@@ -187,8 +188,11 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   EXPECT_TRUE(layer->contents_opaque());
 
   auto& unsafe_state = host->GetUnsafeStateForCommit();
+  auto completion_event_ptr = std::make_unique<CompletionEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL);
+  auto* completion_event = completion_event_ptr.get();
   std::unique_ptr<CommitState> commit_state =
-      host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
+      host->WillCommit(std::move(completion_event_ptr), /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
     host->host_impl()->FinishCommit(*commit_state, unsafe_state);
@@ -211,6 +215,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     EXPECT_FALSE(render_pass->quad_list.front()->needs_blending);
     EXPECT_TRUE(
         render_pass->quad_list.front()->shared_quad_state->are_contents_opaque);
+    completion_event->Signal();
   }
   host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
@@ -218,10 +223,15 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   layer->SetBackgroundColor(SkColorSetARGB(254, 10, 20, 30));
   EXPECT_FALSE(layer->contents_opaque());
 
-  commit_state = host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
+  completion_event_ptr = std::make_unique<CompletionEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL);
+  completion_event = completion_event_ptr.get();
+  commit_state =
+      host->WillCommit(std::move(completion_event_ptr), /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
     host->host_impl()->FinishCommit(*commit_state, unsafe_state);
+    completion_event->Signal();
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 

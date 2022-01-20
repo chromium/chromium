@@ -110,10 +110,13 @@ class TestLayer {
 class TestHostClient : public MutatorHostClient {
  public:
   explicit TestHostClient(ThreadInstance thread_instance);
-  ~TestHostClient();
+  ~TestHostClient() override;
 
   void ClearMutatedProperties();
 
+  bool IsOwnerThread() const override;
+  bool InProtectedSequence() const override;
+  void WaitForProtectedSequenceCompletion() const override {}
   bool IsElementInPropertyTrees(ElementId element_id,
                                 ElementListType list_type) const override;
 
