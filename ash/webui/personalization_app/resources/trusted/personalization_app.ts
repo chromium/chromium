@@ -11,6 +11,7 @@
 import '/strings.m.js';
 import './ambient/ambient_preview_element.js';
 import './ambient/ambient_subpage_element.js';
+import './ambient/toggle_row.js';
 import './personalization_router_element.js';
 import './personalization_test_api.js';
 import './personalization_toast_element.js';

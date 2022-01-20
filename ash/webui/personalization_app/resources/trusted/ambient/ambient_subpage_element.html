@@ -1,5 +1,8 @@
 <style></style>
 <div id="container">
   <h2>Ambient</h2>
-  <ambient-preview></ambient-preview>
+  <toggle-row  on-click="onClickAmbientModeButton_"
+      description="[[description_]]" checked="[[ambientModeEnabled_]]">
+  </toggle-row>
+  <ambient-preview>Image Preview</ambient-preview>
 </div>

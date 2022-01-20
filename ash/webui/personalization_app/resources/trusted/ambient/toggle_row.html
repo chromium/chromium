@@ -1,0 +1,29 @@
+<style>
+  #container {
+    border-radius: 8px;
+    display: block;
+    height: 48px;
+    outline: 1px solid rgb(154, 160, 166);
+    width: 100%;
+  }
+  #row {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-flow: row nowrap;
+    height: 100%;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+</style>
+<div id="container">
+  <div id="row">
+    <div id="leftContent" aria-hidden="true">
+      <div id="description">[[description]]</div>
+    </div>
+    <div id="rightContent">
+      <cr-toggle id="toggle" checked="[[checked]]">
+      </cr-toggle>
+    </div>
+  </div>
+</div>

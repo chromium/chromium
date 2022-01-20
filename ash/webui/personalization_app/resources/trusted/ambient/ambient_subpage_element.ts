@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The ambient-main component displays the main content of
+ * @fileoverview The ambient-subpage component displays the main content of
  * the ambient mode settings.
  */
 
@@ -19,7 +19,23 @@ export class AmbientSubpage extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      // TODO: Toggle row related, initial values will be read by a provider.
+      ambientModeEnabled_: {type: Boolean, value: false},
+      description_: {
+        type: String,
+        value:
+            'When your screen is idle, show photos, time, weather, and media info'
+      },
+    };
+  }
+
+  private ambientModeEnabled_: boolean;
+  private description_: string;
+
+  private onClickAmbientModeButton_(event: Event) {
+    event.stopPropagation();
+    this.ambientModeEnabled_ = !this.ambientModeEnabled_;
   }
 }
 
