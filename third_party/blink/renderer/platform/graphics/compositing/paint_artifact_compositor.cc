@@ -782,6 +782,8 @@ void PaintArtifactCompositor::Update(
   for (auto& entry : synthesized_clip_cache_)
     entry.in_use = false;
 
+  host->property_trees()
+      ->document_transition_layer_to_effect_node_index.clear();
   cc::LayerSelection layer_selection;
   for (const auto& pending_layer : pending_layers_) {
     const auto& property_state = pending_layer.GetPropertyTreeState();
@@ -847,6 +849,13 @@ void PaintArtifactCompositor::Update(
         pending_layer.PropertyTreeStateChanged()) {
       layer->SetSubtreePropertyChanged();
       root_layer_->SetNeedsCommit();
+    }
+
+    auto shared_element_id = layer->DocumentTransitionResourceId();
+    if (shared_element_id.IsValid()) {
+      host->property_trees()
+          ->document_transition_layer_to_effect_node_index[shared_element_id] =
+          effect_id;
     }
   }
 

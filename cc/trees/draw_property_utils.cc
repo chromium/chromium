@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -27,6 +28,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/display/de_jelly.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc {
@@ -777,6 +779,11 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
 
 void UpdateRenderTarget(EffectTree* effect_tree) {
   int last_backdrop_filter = kInvalidNodeId;
+
+  // A list of EffectNodes which induce a render surface to generate and cache
+  // content for a SharedElement.
+  std::vector<EffectNode*> shared_element_render_pass_nodes;
+
   for (int i = EffectTree::kContentsRootNodeId;
        i < static_cast<int>(effect_tree->size()); ++i) {
     EffectNode* node = effect_tree->Node(i);
@@ -792,6 +799,50 @@ void UpdateRenderTarget(EffectTree* effect_tree) {
         node->has_potential_backdrop_filter_animation)
       last_backdrop_filter = node->id;
     node->affected_by_backdrop_filter = false;
+
+    if (node->shared_element_resource_id.IsValid())
+      shared_element_render_pass_nodes.push_back(node);
+  }
+
+  // A SharedElement's render surface draws into the
+  // DocumentTransitionContentLayer, not into its parent layer in the regular
+  // effect tree. This is because during a shared element transition animation,
+  // the SharedElement doesn't paint, but instead delegates its paint to the
+  // DocumentTransitionContentLayer that paints on top of everything else.
+  //
+  // Update the target_id for each SharedElement to the render target where its
+  // corresponding DocumentTransitionContentLayer generates quads. This is the
+  // DocumentTransitionContentLayer's effect if it generates a render surface,
+  // or its target_id if it doesn't. This must be done after a traversal of the
+  // complete EffectTree to ensure render targets for nodes corresponding to the
+  // DocumentTransitionContentLayer have been set up.
+  //
+  // TODO(vmpstr): there is bespoke viz code to draw the surface for the
+  // SharedElement into the DocumentTransitionContentLayer target. Now that
+  // we're also setting the target id here, some of that viz code can be
+  // removed.
+  const auto& document_transition_layer_to_effect_node_index =
+      effect_tree->property_trees()
+          ->document_transition_layer_to_effect_node_index;
+  for (auto* effect_node : shared_element_render_pass_nodes) {
+    auto it = document_transition_layer_to_effect_node_index.find(
+        effect_node->shared_element_resource_id);
+
+    // It's possible for a shared element to not have a corresponding document
+    // transition layer. For example if the element which displays this layer is
+    // marked display:none.
+    if (it == document_transition_layer_to_effect_node_index.end())
+      continue;
+
+    auto shared_element_layer_node_id = it->second;
+    if (effect_tree->GetRenderSurface(shared_element_layer_node_id)) {
+      effect_node->target_id = shared_element_layer_node_id;
+    } else {
+      auto* shared_element_layer_node =
+          effect_tree->Node(shared_element_layer_node_id);
+      DCHECK(shared_element_layer_node);
+      effect_node->target_id = shared_element_layer_node->target_id;
+    }
   }
 
   if (last_backdrop_filter == kInvalidNodeId)

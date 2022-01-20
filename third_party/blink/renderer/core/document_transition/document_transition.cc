@@ -363,6 +363,12 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   DCHECK(start_promise_resolver_);
   start_promise_resolver_->Resolve();
   start_promise_resolver_ = nullptr;
+
+  // Resolve the promise to notify script when animations finish but don't
+  // remove the pseudo element tree.
+  if (disable_end_transition_)
+    return;
+
   state_ = State::kIdle;
   SetActiveSharedElements({});
 

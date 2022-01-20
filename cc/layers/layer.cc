@@ -33,6 +33,7 @@
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -210,6 +211,10 @@ void Layer::SetDebugName(const std::string& name) {
   if (name.empty() && !debug_info_)
     return;
   EnsureDebugInfo().name = name;
+}
+
+viz::SharedElementResourceId Layer::DocumentTransitionResourceId() const {
+  return viz::SharedElementResourceId();
 }
 
 void Layer::SetNeedsFullTreeSync() {

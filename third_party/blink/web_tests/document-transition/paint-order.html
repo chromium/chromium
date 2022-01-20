@@ -1,0 +1,49 @@
+<style>
+body { background: lightgrey; }
+div {
+  position: fixed;
+  top: 100px;
+  left: 100px;
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+  contain: paint;
+}
+html::transition-container(shared-0) { isolation: isolate; }
+html::transition-old-content(shared-0) {
+  opacity: 1;
+}
+html::transition-new-content(shared-0) {
+  opacity: 1;
+  mix-blend-mode: multiply;
+}
+</style>
+
+<div></div>
+
+<script type="text/javascript">
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+  testRunner.disableEndDocumentTransition();
+}
+
+async function doTransition() {
+  let elem = document.getElementsByTagName("div")[0];
+
+  await document.documentTransition.prepare({
+    rootTransition: "none",
+    sharedElements: [elem]
+  });
+
+  elem.style.backgroundColor = "red";
+  await document.documentTransition.start({
+    sharedElements: [elem]
+  });
+
+  if (window.testRunner) {
+    requestAnimationFrame(() => requestAnimationFrame(() => testRunner.notifyDone()));
+  }
+}
+
+onload = doTransition;
+</script>

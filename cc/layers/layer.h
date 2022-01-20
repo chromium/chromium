@@ -30,6 +30,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/target_property.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -779,6 +780,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   void SetNeedsCommit();
 
   void SetDebugName(const std::string& name);
+
+  // If the content of this layer is provided by a cached or live render
+  // surface, returns the ID of that resource.
+  virtual viz::SharedElementResourceId DocumentTransitionResourceId() const;
 
  protected:
   friend class LayerImpl;

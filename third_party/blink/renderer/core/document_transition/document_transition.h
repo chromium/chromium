@@ -98,6 +98,11 @@ class CORE_EXPORT DocumentTransition
   // transition.
   const String& UAStyleSheet() const;
 
+  // Used by web tests to retain the pseudo-element tree after a
+  // DocumentTransition finishes. This is used to capture a static version of
+  // the last rendered frame.
+  void DisableEndTransition() { disable_end_transition_ = true; }
+
  private:
   friend class DocumentTransitionTest;
 
@@ -165,6 +170,7 @@ class CORE_EXPORT DocumentTransition
 
   // Set only for tests.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing_;
+  bool disable_end_transition_ = false;
 };
 
 }  // namespace blink

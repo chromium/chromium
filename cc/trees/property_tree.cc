@@ -1778,6 +1778,8 @@ bool PropertyTrees::operator==(const PropertyTrees& other) const {
              other.element_id_to_scroll_node_index &&
          element_id_to_transform_node_index ==
              other.element_id_to_transform_node_index &&
+         document_transition_layer_to_effect_node_index ==
+             other.document_transition_layer_to_effect_node_index &&
          needs_rebuild == other.needs_rebuild && changed == other.changed &&
          full_tree_damaged == other.full_tree_damaged &&
          is_main_thread == other.is_main_thread &&
@@ -1794,6 +1796,8 @@ PropertyTrees& PropertyTrees::operator=(const PropertyTrees& from) {
   element_id_to_effect_node_index = from.element_id_to_effect_node_index;
   element_id_to_scroll_node_index = from.element_id_to_scroll_node_index;
   element_id_to_transform_node_index = from.element_id_to_transform_node_index;
+  document_transition_layer_to_effect_node_index =
+      from.document_transition_layer_to_effect_node_index;
   needs_rebuild = from.needs_rebuild;
   changed = from.changed;
   full_tree_damaged = from.full_tree_damaged;
@@ -1820,6 +1824,7 @@ void PropertyTrees::clear() {
   element_id_to_effect_node_index.clear();
   element_id_to_scroll_node_index.clear();
   element_id_to_transform_node_index.clear();
+  document_transition_layer_to_effect_node_index.clear();
 
   needs_rebuild = true;
   full_tree_damaged = false;

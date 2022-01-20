@@ -186,6 +186,7 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 #  canvas, fast/canvas
 #  transforms
 #  display-lock
+#  document-transition
 # Some additional bugs that are caused by painting problems are also within this section.
 
 # --- CanvasFormattedText tests ---
@@ -264,6 +265,10 @@ crbug.com/1225630 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Sk
 crbug.com/1225630 fast/multicol/insane-column-count-and-padding-nested-crash.html [ Skip ]
 crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip ]
+
+# Document transition tests
+crbug.com/1276999 document-transition/* [ Skip ]
+crbug.com/1276999 virtual/document-transition/* [ Pass ]
 
 ########## Ref tests can't be rebaselined ##########
 crbug.com/504613 crbug.com/524248 [ Mac ] paint/images/image-backgrounds-not-antialiased.html [ Failure ]

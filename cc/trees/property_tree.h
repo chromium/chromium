@@ -24,6 +24,7 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/sticky_position_constraint.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -640,6 +641,12 @@ class CC_EXPORT PropertyTrees final {
   base::flat_map<ElementId, int> element_id_to_effect_node_index;
   base::flat_map<ElementId, int> element_id_to_scroll_node_index;
   base::flat_map<ElementId, int> element_id_to_transform_node_index;
+
+  // If an element is being rendered as a "live snapshot" using a
+  // DocumentTransitionLayer, this maps the layer's SharedElementResourceId to
+  // the EffectNode id associated with that layer.
+  base::flat_map<viz::SharedElementResourceId, int>
+      document_transition_layer_to_effect_node_index;
 
   TransformTree transform_tree;
   EffectTree effect_tree;

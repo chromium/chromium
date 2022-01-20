@@ -52,6 +52,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   void SynchronouslyCompositeAfterTest() override;
   void UpdateAllLifecyclePhasesAndComposite(
       base::OnceClosure completion_callback) override;
+  void DisableEndDocumentTransition() override;
 
   // WebFrameWidget overrides.
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
