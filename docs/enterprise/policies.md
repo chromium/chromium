@@ -107,7 +107,7 @@ policies (e.g. background wallpapers or printer configuration).
 
 ## Adding new policies
 
-See [adding new policies HowTo](https://www.chromium.org/developers/how-tos/enterprise/adding-new-policies).
+See the [adding new policies guide](add_new_policy.md#adding-a-new-policy).
 
 ## Policy Ownership
 
