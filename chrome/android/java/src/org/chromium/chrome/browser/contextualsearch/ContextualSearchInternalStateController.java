@@ -73,6 +73,7 @@ class ContextualSearchInternalStateController {
             InternalState.SHOWING_TAP_SEARCH,
             InternalState.RESOLVING_LONG_PRESS_RECOGNIZED,
             InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH,
+            InternalState.SEARCH_COMPLETED,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface InternalState {
@@ -86,11 +87,11 @@ class ContextualSearchInternalStateController {
          */
         int IDLE = 1;
         /**
-         * This starts a transition that leads to the SHOWING_LITERAL_SEARCH resting state.
+         * This starts a transition that leads to the SHOWING_LITERAL_SEARCH state.
          */
         int LONG_PRESS_RECOGNIZED = 2;
         /**
-         * Resting state when showing the panel in response to a literal non-resolving search.
+         * State showing the panel in response to a literal non-resolving search.
          */
         int SHOWING_LITERAL_SEARCH = 3;
         /**
@@ -106,7 +107,7 @@ class ContextualSearchInternalStateController {
          */
         int WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS = 5;
         /**
-         * This starts a sequence of states needed to get to the SHOWING_TAP_SEARCH resting state.
+         * This starts a sequence of states needed to get to the SHOWING_TAP_SEARCH state.
          */
         int TAP_RECOGNIZED = 6;
         /**
@@ -143,18 +144,22 @@ class ContextualSearchInternalStateController {
          */
         int RESOLVING = 13;
         /**
-         * Resting state when showing the panel in response to a Tap gesture.
+         * State when showing the panel in response to a Tap gesture.
          */
         int SHOWING_TAP_SEARCH = 14;
         /**
-         * This starts resolving transition that leads to the SHOWING_LITERAL_SEARCH resting
-         * state.
+         * This starts the resolving transition that leads to the
+         * SHOWING_RESOLVED_LONG_PRESS_SEARCH.
          */
         int RESOLVING_LONG_PRESS_RECOGNIZED = 15;
         /**
-         * Resting state when showing the panel in response to a longpress gesture that resolved.
+         * State when showing the panel in response to a longpress gesture that resolved.
          */
         int SHOWING_RESOLVED_LONG_PRESS_SEARCH = 16;
+        /**
+         * The final resting state for all searches once they have completed.
+         */
+        int SEARCH_COMPLETED = 17;
     }
 
     // The current state of this instance.
@@ -262,6 +267,14 @@ class ContextualSearchInternalStateController {
     }
 
     /**
+     * Notifies that the given state has been started and completed. Useful when no work is needed.
+     */
+    void notifyStartedAndFinished(@InternalState int state) {
+        notifyStartingWorkOn(state);
+        notifyFinishedWorkOn(state);
+    }
+
+    /**
      * @return The current internal state for testing purposes.
      */
     @VisibleForTesting
@@ -287,6 +300,7 @@ class ContextualSearchInternalStateController {
     private void transitionTo(
             final @InternalState int state, final @Nullable @StateChangeReason Integer reason) {
         if (state == mState && !mPolicy.shouldRetryCurrentState(state)) return;
+        Log.v(TAG, "State transition " + String.valueOf(mState) + " => " + String.valueOf(state));
 
         // This should be the only part of the code that changes the state (other than #enter)!
         mPreviousState = mState;
@@ -339,8 +353,13 @@ class ContextualSearchInternalStateController {
                 mStateHandler.resolveSearchTerm();
                 break;
             case InternalState.SHOWING_TAP_SEARCH:
+                mStateHandler.showingTapSearch();
                 break;
             case InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH:
+                mStateHandler.showingIntelligentLongpress();
+                break;
+            case InternalState.SEARCH_COMPLETED:
+                mStateHandler.completeSearch();
                 break;
             default:
                 Log.w(TAG, "Warning: unexpected startWorkingOn " + String.valueOf(state));
@@ -370,6 +389,7 @@ class ContextualSearchInternalStateController {
                 transitionTo(InternalState.GATHERING_SURROUNDINGS);
                 break;
             case InternalState.SHOWING_LITERAL_SEARCH:
+                transitionTo(InternalState.SEARCH_COMPLETED);
                 break;
             case InternalState.SELECTION_CLEARED_RECOGNIZED:
                 if (mPreviousState != InternalState.UNDEFINED
@@ -429,6 +449,13 @@ class ContextualSearchInternalStateController {
                 transitionTo(InternalState.GATHERING_SURROUNDINGS);
                 break;
             case InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH:
+                transitionTo(InternalState.SEARCH_COMPLETED);
+                break;
+            case InternalState.SHOWING_TAP_SEARCH:
+                transitionTo(InternalState.SEARCH_COMPLETED);
+                break;
+            case InternalState.SEARCH_COMPLETED:
+                // Resting state
                 break;
             default:
                 Log.e(TAG, "The state " + String.valueOf(state) + " is not transitional!");

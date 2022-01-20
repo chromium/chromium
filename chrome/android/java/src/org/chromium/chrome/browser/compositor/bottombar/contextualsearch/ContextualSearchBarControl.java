@@ -15,7 +15,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -211,9 +210,6 @@ public class ContextualSearchBarControl {
         // The space will be freed when the panel closes.
         if (percentage == TRANSPARENT_OPACITY) {
             mQuickActionControl.reset();
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)) {
-                mCaptionControl.hide();
-            }
             getImageControl().hideCustomImage(false);
         }
     }
@@ -247,7 +243,6 @@ public class ContextualSearchBarControl {
      */
     public void setContextDetails(String selection, String end) {
         cancelSearchTermResolutionAnimation();
-        hideCaption();
         mQuickActionControl.reset();
         mContextControl.setContextDetails(selection, end);
         resetSearchBarContextOpacity();
@@ -273,7 +268,6 @@ public class ContextualSearchBarControl {
      */
     public void setSearchTerm(String searchTerm) {
         cancelSearchTermResolutionAnimation();
-        hideCaption();
         mQuickActionControl.reset();
         mSearchTermControl.setSearchTerm(searchTerm);
         resetSearchBarTermOpacity();
@@ -285,6 +279,20 @@ public class ContextualSearchBarControl {
      */
     public void setCaption(String caption) {
         mCaptionControl.setCaption(caption);
+    }
+
+    /**
+     * Hides the caption so it will not be displayed in the control.
+     */
+    void hideCaption() {
+        mCaptionControl.hide();
+    }
+
+    /**
+     * Hides the caption so it will not be displayed in the control.
+     */
+    boolean hasCaption() {
+        return mCaptionControl.hasCaption();
     }
 
     /**
@@ -394,13 +402,6 @@ public class ContextualSearchBarControl {
     private void resetSearchBarTermOpacity() {
         mSearchBarContextOpacity = TRANSPARENT_OPACITY;
         mSearchBarTermOpacity = FULL_OPACITY;
-    }
-
-    /**
-     * Hides the caption so it will not be displayed in the control.
-     */
-    private void hideCaption() {
-        mCaptionControl.hide();
     }
 
     // ============================================================================================

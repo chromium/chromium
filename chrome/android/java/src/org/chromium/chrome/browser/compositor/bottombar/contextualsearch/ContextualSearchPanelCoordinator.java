@@ -176,6 +176,9 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     public void ensureCaption() {}
 
     @Override
+    public void hideCaption() {}
+
+    @Override
     public void setManagementDelegate(ContextualSearchManagementDelegate delegate) {
         mManagementDelegate = delegate;
     }

@@ -8,6 +8,7 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
 
@@ -134,6 +136,28 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
         }
         maximizePanel();
         // TODO(donnd): consider asserting that no caption or other intelligent UI is showing.
+        closePanel();
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // Forced Caption Feature tests.
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * Tests that a caption is shown on a non intelligent search when the force-caption feature is
+     * enabled.
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    public void testNonResolveCaption(@EnabledFeature int enabledFeature) throws Exception {
+        // Simulate a non-resolve search and make sure a Caption is shown if appropriate.
+        simulateNonResolveSearch(SEARCH_NODE);
+        Assert.assertEquals(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION),
+                mPanel.getSearchBarControl().getCaptionVisible());
         closePanel();
     }
 }

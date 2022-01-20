@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -97,9 +98,6 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      *        e.g. a Quick Answer.
      */
     public void setCaption(String caption) {
-        // If the peeking caption has already been set return early rather than changing it.
-        if (mHasPeekingCaption) return;
-
         mPeekingCaptionText = sanitizeText(caption);
         mHasPeekingCaption = true;
 
@@ -187,6 +185,11 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      */
     public CharSequence getCaptionText() {
         return mCaption.getText();
+    }
+
+    /** Returns whether there's already a visible caption. */
+    boolean hasCaption() {
+        return getIsVisible() && !TextUtils.isEmpty(getCaptionText());
     }
 
     //========================================================================================

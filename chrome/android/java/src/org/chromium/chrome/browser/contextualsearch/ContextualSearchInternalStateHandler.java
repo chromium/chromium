@@ -76,4 +76,22 @@ public interface ContextualSearchInternalStateHandler {
      * @see ContextualSearchInternalStateController.InternalState#RESOLVING
      */
     void resolveSearchTerm();
+
+    /**
+     * Called when a Search has been shown that was triggered by a tap gesture.
+     * @see ContextualSearchInternalStateController.InternalState#SHOWING_TAP_SEARCH
+     */
+    void showingTapSearch();
+
+    /**
+     * Called when a Search has been shown that was triggered by an intelligent longpress gesture.
+     * @see ContextualSearchInternalStateController.InternalState#SHOWING_RESOLVED_LONG_PRESS_SEARCH
+     */
+    void showingIntelligentLongpress();
+
+    /**
+     * Completes any search.
+     * @see ContextualSearchInternalStateController.InternalState#SEARCH_COMPLETED
+     */
+    void completeSearch();
 }

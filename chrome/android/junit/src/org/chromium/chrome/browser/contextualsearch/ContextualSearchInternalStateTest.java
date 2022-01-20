@@ -77,6 +77,21 @@ public class ContextualSearchInternalStateTest {
         }
 
         @Override
+        public void showingTapSearch() {
+            stubForWorkOnState(InternalState.SHOWING_TAP_SEARCH);
+        }
+
+        @Override
+        public void showingIntelligentLongpress() {
+            stubForWorkOnState(InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH);
+        }
+
+        @Override
+        public void completeSearch() {
+            stubForWorkOnState(InternalState.SEARCH_COMPLETED);
+        }
+
+        @Override
         public void waitForPossibleTapNearPrevious() {
             stubForWorkOnState(InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS);
         }
