@@ -51,7 +51,6 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   void ConstructView();
   void OnDialogAccepted();
   void OnDialogCancelled();
-  void OnWindowClosing();
   bool GetEnableOkButton() const;
 
   std::u16string GetOkButtonLabel() const;

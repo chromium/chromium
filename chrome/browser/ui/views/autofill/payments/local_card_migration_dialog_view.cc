@@ -399,8 +399,6 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
                      base::Unretained(this)));
   SetAcceptCallback(base::BindOnce(
       &LocalCardMigrationDialogView::OnDialogAccepted, base::Unretained(this)));
-  RegisterWindowClosingCallback(base::BindOnce(
-      &LocalCardMigrationDialogView::OnWindowClosing, base::Unretained(this)));
   // This should be a modal dialog blocking the browser since we don't want
   // users to lose progress in the migration workflow until they are done.
   SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -411,7 +409,12 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
   SetShowCloseButton(false);
 }
 
-LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {}
+LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {
+  if (controller_) {
+    controller_->OnDialogClosed();
+    controller_ = nullptr;
+  }
+}
 
 void LocalCardMigrationDialogView::ShowDialog() {
   if (!web_contents_) {
@@ -454,13 +457,6 @@ void LocalCardMigrationDialogView::OnDialogCancelled() {
     case LocalCardMigrationDialogState::kActionRequired:
       controller_->OnViewCardsButtonClicked();
       break;
-  }
-}
-
-void LocalCardMigrationDialogView::OnWindowClosing() {
-  if (controller_) {
-    controller_->OnDialogClosed();
-    controller_ = nullptr;
   }
 }
 
