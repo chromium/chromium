@@ -24,6 +24,10 @@ void QueryHighlighter::UpdateResultRanks(ResultsMap& results,
   DCHECK(it != results.end());
 
   for (const auto& result : it->second) {
+    // Don't perform query highlighting on answer cards.
+    if (result->display_type() == ChromeSearchResult::DisplayType::kAnswerCard)
+      continue;
+
     result->SetTitleTags(CalculateTags(last_query_, result->title()));
     result->SetDetailsTags(CalculateTags(last_query_, result->details()));
   }
