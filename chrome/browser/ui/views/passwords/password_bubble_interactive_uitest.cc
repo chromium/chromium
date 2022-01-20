@@ -29,9 +29,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using net::test_server::BasicHttpResponse;
@@ -72,17 +69,6 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
       const PasswordBubbleInteractiveUiTest&) = delete;
 
   ~PasswordBubbleInteractiveUiTest() override {}
-
-  MOCK_METHOD0(OnIconRequestDone, void());
-
-  // Called on the server background thread.
-  std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
-    std::unique_ptr<BasicHttpResponse> response(new BasicHttpResponse);
-    if (request.relative_url == "/icon.png") {
-      OnIconRequestDone();
-    }
-    return std::move(response);
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
@@ -314,7 +300,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        TwoTabsWithBubbleClose) {
   // Set up the second tab and bring the bubble there.
-  AddTabAtIndex(1, GURL("http://example.com/"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/empty.html"),
+                            ui::PAGE_TRANSITION_TYPED));
   TabStripModel* tab_model = browser()->tab_strip_model();
   tab_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
   EXPECT_FALSE(IsBubbleShowing());
@@ -363,10 +350,6 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSignin) {
-  // Set up the test server to handle the form icon request.
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &PasswordBubbleInteractiveUiTest::HandleRequest, base::Unretained(this)));
-  ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
   test_form()->url = GURL("https://example.com");
   test_form()->display_name = u"Peter";
   test_form()->username_value = u"pet12@gmail.com";
@@ -375,10 +358,6 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSignin) {
       local_credentials;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(*test_form()));
-
-  // Prepare to capture the network request.
-  EXPECT_CALL(*this, OnIconRequestDone());
-  embedded_test_server()->StartAcceptingConnections();
 
   SetupAutoSignin(std::move(local_credentials));
   EXPECT_TRUE(IsBubbleShowing());

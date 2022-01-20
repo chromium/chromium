@@ -42,37 +42,10 @@ using testing::ReturnRef;
 
 namespace {
 constexpr char16_t kTestUsername[] = u"test_username";
-constexpr char kTestOrigin[] = "https://www.example.com";
 }  // namespace
 
 ManagePasswordsTest::ManagePasswordsTest() {
   fetcher_.Fetch();
-
-  password_form_.signon_realm = kTestOrigin;
-  password_form_.url = GURL(kTestOrigin);
-  password_form_.username_value = kTestUsername;
-  password_form_.password_value = u"test_password";
-  password_form_.password_issues =
-      base::flat_map<password_manager::InsecureType,
-                     password_manager::InsecurityMetadata>();
-
-  federated_form_.signon_realm =
-      "federation://example.com/somelongeroriginurl.com";
-  federated_form_.url = GURL(kTestOrigin);
-  federated_form_.federation_origin =
-      url::Origin::Create(GURL("https://somelongeroriginurl.com/"));
-  federated_form_.username_value = u"test_federation_username";
-
-  // Create a simple sign-in form.
-  observed_form_.url = password_form_.url;
-  autofill::FormFieldData field;
-  field.form_control_type = "text";
-  observed_form_.fields.push_back(field);
-  field.form_control_type = "password";
-  observed_form_.fields.push_back(field);
-
-  submitted_form_ = observed_form_;
-  submitted_form_.fields[1].value = u"password";
 
   // Turn off waiting for server predictions in order to avoid dealing with
   // posted tasks in PasswordFormManager.
@@ -82,7 +55,15 @@ ManagePasswordsTest::ManagePasswordsTest() {
 ManagePasswordsTest::~ManagePasswordsTest() = default;
 
 void ManagePasswordsTest::SetUpOnMainThread() {
-  AddTabAtIndex(0, GURL(kTestOrigin), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+
+  password_form_.signon_realm = test_url.GetWithEmptyPath().spec();
+  password_form_.url = test_url;
+  password_form_.username_value = kTestUsername;
+  password_form_.password_value = u"test_password";
+
+  ASSERT_TRUE(AddTabAtIndex(0, test_url, ui::PAGE_TRANSITION_TYPED));
 }
 
 void ManagePasswordsTest::SetUpInProcessBrowserTestFixture() {
@@ -111,12 +92,18 @@ void ManagePasswordsTest::ExecuteManagePasswordsCommand() {
 }
 
 void ManagePasswordsTest::SetupManagingPasswords() {
-  std::vector<const password_manager::PasswordForm*> forms;
-  for (auto* form : {&password_form_, &federated_form_}) {
-    forms.push_back(form);
-    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(form->url),
-                                          nullptr);
-  }
+  password_manager::PasswordForm federated_form;
+  federated_form.signon_realm = "federation://" +
+                                embedded_test_server()->GetOrigin().host() +
+                                "/somelongeroriginurl.com";
+  federated_form.url = embedded_test_server()->GetURL("/empty.html");
+  federated_form.federation_origin =
+      url::Origin::Create(GURL("https://somelongeroriginurl.com/"));
+  federated_form.username_value = u"test_federation_username";
+  std::vector<const password_manager::PasswordForm*> forms = {&password_form_,
+                                                              &federated_form};
+  GetController()->OnPasswordAutofilled(
+      forms, embedded_test_server()->GetOrigin(), nullptr);
 }
 
 void ManagePasswordsTest::SetupPendingPassword() {
@@ -215,13 +202,21 @@ ManagePasswordsUIController* ManagePasswordsTest::GetController() {
 }
 
 std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
+  autofill::FormData observed_form;
+  observed_form.url = password_form_.url;
+  autofill::FormFieldData field;
+  field.form_control_type = "text";
+  observed_form.fields.push_back(field);
+  field.form_control_type = "password";
+  observed_form.fields.push_back(field);
+
   auto form_manager = std::make_unique<PasswordFormManager>(
-      &client_, driver_.AsWeakPtr(), observed_form_, &fetcher_,
+      &client_, driver_.AsWeakPtr(), observed_form, &fetcher_,
       std::make_unique<password_manager::PasswordSaveManagerImpl>(
           /*profile_form_saver=*/std::make_unique<
               password_manager::StubFormSaver>(),
           /*account_form_saver=*/nullptr),
-      nullptr /*  metrics_recorder */);
+      /*metrics_recorder=*/nullptr);
 
   password_manager::InsecureCredential credential(
       password_form_.signon_realm, password_form_.username_value, base::Time(),
@@ -231,7 +226,9 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
 
   fetcher_.NotifyFetchCompleted();
 
-  form_manager->ProvisionallySave(submitted_form_, &driver_,
+  autofill::FormData submitted_form = observed_form;
+  submitted_form.fields[1].value = u"new_password";
+  form_manager->ProvisionallySave(submitted_form, &driver_,
                                   nullptr /* possible_username */);
 
   return form_manager;
