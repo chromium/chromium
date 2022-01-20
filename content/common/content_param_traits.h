@@ -14,17 +14,18 @@
 #ifndef CONTENT_COMMON_CONTENT_PARAM_TRAITS_H_
 #define CONTENT_COMMON_CONTENT_PARAM_TRAITS_H_
 
-#include "base/memory/ref_counted.h"
-#include "cc/ipc/cc_param_traits_macros.h"
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits_macros.h"
 #include "ipc/ipc_mojo_param_traits.h"
-#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
-class PolicyValue;
 class MessagePortChannel;
 class MessagePortDescriptor;
+class PolicyValue;
+}  // namespace blink
+
+namespace ui {
+class AXMode;
 }
 
 namespace viz {
