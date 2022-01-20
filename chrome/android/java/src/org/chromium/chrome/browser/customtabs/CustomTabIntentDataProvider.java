@@ -573,10 +573,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return mAnimationBundle != null && getClientPackageName() != null;
     }
 
-    @Override
-    public String getClientPackageName() {
+    public String getInsecureClientPackageNameForOnFinishAnimation() {
         if (mAnimationBundle == null) return null;
         return mAnimationBundle.getString(BUNDLE_PACKAGE_NAME);
+    }
+
+    @Override
+    @Nullable
+    public String getClientPackageName() {
+        return CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
     }
 
     @Override
