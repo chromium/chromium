@@ -3325,6 +3325,64 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.StatusArea.TrayBackgroundView.BounceIn" units="%"
+    expires_after="2023-01-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the bounce in animation of tray background view. 100%
+    represents ideally smooth 60 frames per second. Emitted when animation is
+    completed (when the shelf pod/tray background view is completely bounced in
+    and shown the tray).
+  </summary>
+</histogram>
+
+<histogram name="Ash.StatusArea.TrayBackgroundView.FadeIn" units="%"
+    expires_after="2023-01-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the fade in animation of tray background view. 100%
+    represents ideally smooth 60 frames per second. Emitted when animation is
+    completed (when the shelf pod/tray background view is completely faded in
+    and shown the tray).
+  </summary>
+</histogram>
+
+<histogram name="Ash.StatusArea.TrayBackgroundView.Hide" units="%"
+    expires_after="2023-01-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the fade in animation of tray background view. 100%
+    represents ideally smooth 60 frames per second. Emitted when animation is
+    completed (when the shelf pod/tray background view is completely hidden in
+    the tray).
+  </summary>
+</histogram>
+
+<histogram name="Ash.StatusArea.TrayItemView.Hide" units="%"
+    expires_after="2023-01-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the hide animation of tray item view. 100% represents
+    ideally smooth 60 frames per second. Emitted when animation is completed
+    (when the tray item is completely hidden in the tray).
+  </summary>
+</histogram>
+
+<histogram name="Ash.StatusArea.TrayItemView.Show" units="%"
+    expires_after="2023-01-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the show animation of tray item view. 100% represents
+    ideally smooth 60 frames per second. Emitted when animation is completed
+    (when the tray item is completely shown in the tray).
+  </summary>
+</histogram>
+
 <histogram name="Ash.StatusAreaShowBubble.PresentationTime" units="ms"
     expires_after="2022-06-15">
   <owner>leandre@chromium.org</owner>
