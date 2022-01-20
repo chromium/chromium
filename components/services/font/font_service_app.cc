@@ -8,10 +8,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/font/fontconfig_matching.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -77,11 +79,24 @@ font_service::mojom::RenderStyleSwitch ConvertSubpixelRendering(
   return font_service::mojom::RenderStyleSwitch::NO_PREFERENCE;
 }
 
+// A feature that controls whether we use a cache for font family matching.
+const base::Feature kCacheFontFamilyMatching {
+  "CacheFontFamilyMatching",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
+
+// The maximum number of entries to keep in the font family matching cache.
+constexpr int kCacheFontFamilyMaxSize = 10000;
+
 }  // namespace
 
 namespace font_service {
 
-FontServiceApp::FontServiceApp() = default;
+FontServiceApp::FontServiceApp() : match_cache_(kCacheFontFamilyMaxSize) {}
 
 FontServiceApp::~FontServiceApp() = default;
 
@@ -100,37 +115,59 @@ void FontServiceApp::MatchFamilyName(const std::string& family_name,
   SkFontStyle result_style;
   SkFontConfigInterface* fc =
       SkFontConfigInterface::GetSingletonDirectInterface();
-  const bool r = fc->matchFamilyName(
-      family_name.data(),
-      SkFontStyle(requested_style->weight, requested_style->width,
-                  static_cast<SkFontStyle::Slant>(requested_style->slant)),
-      &result_identity, &result_family, &result_style);
+  SkFontStyle font_style(
+      requested_style->weight, requested_style->width,
+      static_cast<SkFontStyle::Slant>(requested_style->slant));
 
-  if (!r) {
-    mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
+  MatchCacheKey key;
+  if (base::FeatureList::IsEnabled(kCacheFontFamilyMatching)) {
+    key.family_name = family_name;
+    key.font_style = font_style;
+    auto it = match_cache_.Get(key);
+    if (it != match_cache_.end()) {
+      std::move(callback).Run(
+          it->second.identity ? it->second.identity.Clone() : nullptr,
+          it->second.family_name, it->second.style.Clone());
+      return;
+    }
+  }
+  const bool r =
+      fc->matchFamilyName(family_name.data(), font_style, &result_identity,
+                          &result_family, &result_style);
+
+  mojom::FontIdentityPtr identity = nullptr;
+  mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
+  std::string result_family_cppstring = result_family.c_str();
+
+  if (r) {
+    // Stash away the returned path, so we can give it an ID (index)
+    // which will later be given to us in a request to open the file.
+    base::FilePath path(result_identity.fString.c_str());
+    size_t index = FindOrAddPath(path);
+
+    identity = mojom::FontIdentity::New();
+    identity->id = static_cast<uint32_t>(index);
+    identity->ttc_index = result_identity.fTTCIndex;
+    identity->filepath = path;
+
+    style->weight = result_style.weight();
+    style->width = result_style.width();
+    style->slant = static_cast<mojom::TypefaceSlant>(result_style.slant());
+  } else {
     style->weight = SkFontStyle().weight();
     style->width = SkFontStyle().width();
     style->slant = static_cast<mojom::TypefaceSlant>(SkFontStyle().slant());
-    std::move(callback).Run(nullptr, "", std::move(style));
-    return;
   }
 
-  // Stash away the returned path, so we can give it an ID (index)
-  // which will later be given to us in a request to open the file.
-  base::FilePath path(result_identity.fString.c_str());
-  size_t index = FindOrAddPath(path);
+  if (base::FeatureList::IsEnabled(kCacheFontFamilyMatching)) {
+    MatchCacheValue value;
+    value.family_name = result_family_cppstring;
+    value.identity = identity ? identity.Clone() : nullptr;
+    value.style = style.Clone();
+    match_cache_.Put(key, std::move(value));
+  }
 
-  mojom::FontIdentityPtr identity(mojom::FontIdentity::New());
-  identity->id = static_cast<uint32_t>(index);
-  identity->ttc_index = result_identity.fTTCIndex;
-  identity->filepath = path;
-
-  mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
-  style->weight = result_style.weight();
-  style->width = result_style.width();
-  style->slant = static_cast<mojom::TypefaceSlant>(result_style.slant());
-
-  std::move(callback).Run(std::move(identity), result_family.c_str(),
+  std::move(callback).Run(std::move(identity), result_family_cppstring,
                           std::move(style));
 }
 
@@ -255,5 +292,9 @@ size_t FontServiceApp::FindOrAddPath(const base::FilePath& path) {
   paths_.emplace_back(path);
   return count;
 }
+
+FontServiceApp::MatchCacheValue::MatchCacheValue() = default;
+FontServiceApp::MatchCacheValue::~MatchCacheValue() = default;
+FontServiceApp::MatchCacheValue::MatchCacheValue(MatchCacheValue&&) = default;
 
 }  // namespace font_service

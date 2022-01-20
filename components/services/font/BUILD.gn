@@ -16,6 +16,7 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/services/font/public/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
