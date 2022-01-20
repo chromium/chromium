@@ -266,19 +266,6 @@ void AnimationHost::SetMutatorHostClient(MutatorHostClient* client) {
     mutator_host_client()->SetMutatorsNeedCommit();
 }
 
-bool AnimationHost::IsOwnerThread() const {
-  return mutator_host_client_ && mutator_host_client_->IsOwnerThread();
-}
-
-bool AnimationHost::InProtectedSequence() const {
-  return mutator_host_client_ && mutator_host_client_->InProtectedSequence();
-}
-
-void AnimationHost::WaitForProtectedSequenceCompletion() const {
-  if (mutator_host_client_)
-    mutator_host_client_->WaitForProtectedSequenceCompletion();
-}
-
 void AnimationHost::SetNeedsCommit() {
   DCHECK(mutator_host_client());
   mutator_host_client()->SetMutatorsNeedCommit();

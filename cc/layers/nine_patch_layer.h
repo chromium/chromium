@@ -51,8 +51,7 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
  private:
   NinePatchLayer();
   ~NinePatchLayer() override;
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
   gfx::Rect border_;
   bool fill_center_;

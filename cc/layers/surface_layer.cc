@@ -132,7 +132,7 @@ void SurfaceLayer::SetMayContainVideo(bool may_contain_video) {
 }
 
 std::unique_ptr<LayerImpl> SurfaceLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   auto layer_impl = SurfaceLayerImpl::Create(tree_impl, id(),
                                              update_submission_state_callback_);
   return layer_impl;

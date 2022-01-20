@@ -30,7 +30,7 @@ FakePictureLayerImpl::FakePictureLayerImpl(
 }
 
 std::unique_ptr<LayerImpl> FakePictureLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return base::WrapUnique(new FakePictureLayerImpl(tree_impl, id()));
 }
 

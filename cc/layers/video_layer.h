@@ -29,8 +29,7 @@ class CC_EXPORT VideoLayer : public Layer {
   VideoLayer(const VideoLayer&) = delete;
   VideoLayer& operator=(const VideoLayer&) = delete;
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
   bool Update() override;
 

@@ -111,7 +111,7 @@ class WindowTreeHost::HideHelper {
   explicit HideHelper(WindowTreeHost* host)
       : host_(host),
         compositor_root_layer_(
-            ccLayerFromUiLayer(host->window()->layer())->mutable_parent()),
+            ccLayerFromUiLayer(host->window()->layer())->parent()),
         layer_for_transition_(
             std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)) {
     layer_for_transition_->SetColor(SK_ColorWHITE);

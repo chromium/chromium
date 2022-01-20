@@ -40,7 +40,7 @@ TextureLayerImpl::~TextureLayerImpl() {
 }
 
 std::unique_ptr<LayerImpl> TextureLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return TextureLayerImpl::Create(tree_impl, id());
 }
 

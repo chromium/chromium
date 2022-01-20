@@ -11,7 +11,7 @@
 namespace cc {
 
 std::unique_ptr<LayerImpl> MirrorLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return MirrorLayerImpl::Create(tree_impl, id());
 }
 

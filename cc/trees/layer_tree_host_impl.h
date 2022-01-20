@@ -431,11 +431,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return need_update_gpu_rasterization_status_;
   }
 
-  // ProtectedSequenceSynchronizer implementation.
-  bool IsOwnerThread() const override;
-  bool InProtectedSequence() const override;
-  void WaitForProtectedSequenceCompletion() const override;
-
   // MutatorHostClient implementation.
   bool IsElementInPropertyTrees(ElementId element_id,
                                 ElementListType list_type) const override;

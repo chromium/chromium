@@ -71,7 +71,7 @@ bool HeadsUpDisplayLayer::HasDrawableContent() const {
 }
 
 std::unique_ptr<LayerImpl> HeadsUpDisplayLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return HeadsUpDisplayLayerImpl::Create(tree_impl, id());
 }
 

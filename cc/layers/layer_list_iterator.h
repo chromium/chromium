@@ -50,11 +50,11 @@ class CC_EXPORT LayerListIterator {
 class CC_EXPORT LayerListConstIterator {
  public:
   explicit LayerListConstIterator(const Layer* root_layer);
-  LayerListConstIterator(const LayerListConstIterator& other);
+  LayerListConstIterator(const LayerListConstIterator& other) = default;
   ~LayerListConstIterator();
 
   bool operator==(const LayerListConstIterator& other) const {
-    return current_layer_ == other.current_layer_;
+    return iterator_ == other.iterator_;
   }
 
   bool operator!=(const LayerListConstIterator& other) const {
@@ -63,12 +63,11 @@ class CC_EXPORT LayerListConstIterator {
 
   // We will only support prefix increment.
   LayerListConstIterator& operator++();
-  const Layer* operator->() const { return current_layer_; }
-  const Layer* operator*() const { return current_layer_; }
+  const Layer* operator->() const { return *iterator_; }
+  const Layer* operator*() const { return *iterator_; }
 
  private:
-  const Layer* current_layer_;
-  std::vector<size_t> list_indices_;
+  LayerListIterator iterator_;
 };
 
 class CC_EXPORT LayerListReverseIterator {
@@ -100,11 +99,12 @@ class CC_EXPORT LayerListReverseIterator {
 class CC_EXPORT LayerListReverseConstIterator {
  public:
   explicit LayerListReverseConstIterator(const Layer* root_layer);
-  LayerListReverseConstIterator(const LayerListReverseConstIterator& other);
+  LayerListReverseConstIterator(const LayerListReverseConstIterator& other) =
+      default;
   ~LayerListReverseConstIterator();
 
   bool operator==(const LayerListReverseConstIterator& other) const {
-    return current_layer_ == other.current_layer_;
+    return iterator_ == other.iterator_;
   }
 
   bool operator!=(const LayerListReverseConstIterator& other) const {
@@ -113,14 +113,11 @@ class CC_EXPORT LayerListReverseConstIterator {
 
   // We will only support prefix increment.
   LayerListReverseConstIterator& operator++();
-  const Layer* operator->() const { return current_layer_; }
-  const Layer* operator*() const { return current_layer_; }
+  const Layer* operator->() const { return *iterator_; }
+  const Layer* operator*() const { return *iterator_; }
 
  private:
-  void DescendToRightmostInSubtree();
-
-  raw_ptr<const Layer> current_layer_;
-  std::vector<size_t> list_indices_;
+  LayerListReverseIterator iterator_;
 };
 }  // namespace cc
 

@@ -19,7 +19,7 @@ MirrorLayerImpl::MirrorLayerImpl(LayerTreeImpl* tree_impl, int id)
 MirrorLayerImpl::~MirrorLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> MirrorLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return MirrorLayerImpl::Create(tree_impl, id());
 }
 

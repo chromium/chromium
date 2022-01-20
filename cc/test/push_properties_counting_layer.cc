@@ -30,7 +30,7 @@ void PushPropertiesCountingLayer::PushPropertiesTo(
 }
 
 std::unique_ptr<LayerImpl> PushPropertiesCountingLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return PushPropertiesCountingLayerImpl::Create(tree_impl, Layer::id());
 }
 

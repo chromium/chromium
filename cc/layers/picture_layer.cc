@@ -47,7 +47,7 @@ PictureLayer::PictureLayer(ContentLayerClient* client,
 PictureLayer::~PictureLayer() = default;
 
 std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return PictureLayerImpl::Create(tree_impl, id());
 }
 

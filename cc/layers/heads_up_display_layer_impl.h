@@ -48,8 +48,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   HeadsUpDisplayLayerImpl& operator=(const HeadsUpDisplayLayerImpl&) = delete;
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;

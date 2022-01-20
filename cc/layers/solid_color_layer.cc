@@ -11,7 +11,7 @@
 namespace cc {
 
 std::unique_ptr<LayerImpl> SolidColorLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return SolidColorLayerImpl::Create(tree_impl, id());
 }
 

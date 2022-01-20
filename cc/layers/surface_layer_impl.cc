@@ -54,7 +54,7 @@ SurfaceLayerImpl::~SurfaceLayerImpl() {
 }
 
 std::unique_ptr<LayerImpl> SurfaceLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return SurfaceLayerImpl::Create(tree_impl, id(),
                                   std::move(update_submission_state_callback_));
 }

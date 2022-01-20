@@ -31,8 +31,7 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
       delete;
 
   // LayerImpl implementation.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer) override;
 
   bool WillDraw(DrawMode draw_mode,

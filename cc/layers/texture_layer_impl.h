@@ -32,7 +32,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   TextureLayerImpl& operator=(const TextureLayerImpl&) = delete;
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* layer_tree_impl) const override;
+      LayerTreeImpl* layer_tree_impl) override;
   bool IsSnappedToPixelGridInTarget() override;
   void PushPropertiesTo(LayerImpl* layer) override;
 

@@ -5,7 +5,6 @@
 #include "cc/layers/solid_color_layer_impl.h"
 
 #include <algorithm>
-#include <limits>
 
 #include "cc/layers/append_quads_data.h"
 #include "cc/trees/effect_node.h"
@@ -22,7 +21,7 @@ SolidColorLayerImpl::SolidColorLayerImpl(LayerTreeImpl* tree_impl, int id)
 SolidColorLayerImpl::~SolidColorLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> SolidColorLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return SolidColorLayerImpl::Create(tree_impl, id());
 }
 

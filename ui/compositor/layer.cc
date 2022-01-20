@@ -787,7 +787,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
 
   cc_layer_->RemoveAllChildren();
   if (cc_layer_->parent()) {
-    cc_layer_->mutable_parent()->ReplaceChild(cc_layer_, new_layer);
+    cc_layer_->parent()->ReplaceChild(cc_layer_, new_layer);
   }
   cc_layer_->ClearDebugInfo();
 

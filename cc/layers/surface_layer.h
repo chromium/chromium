@@ -62,8 +62,7 @@ class CC_EXPORT SurfaceLayer : public Layer {
   void SetMayContainVideo(bool may_contain_video);
 
   // Layer overrides.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
   void PushPropertiesTo(LayerImpl* layer,
                         const CommitState& commit_state,

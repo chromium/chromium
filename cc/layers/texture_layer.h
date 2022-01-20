@@ -95,8 +95,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // Resets the texture.
   void ClearTexture();
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
   // Sets whether this texture should be Y-flipped at draw time. Defaults to
   // true.

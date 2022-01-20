@@ -5,7 +5,6 @@
 #ifndef CC_LAYERS_UI_RESOURCE_LAYER_IMPL_H_
 #define CC_LAYERS_UI_RESOURCE_LAYER_IMPL_H_
 
-#include <memory>
 #include <string>
 
 #include "base/memory/ptr_util.h"
@@ -43,8 +42,7 @@ class CC_EXPORT UIResourceLayerImpl : public LayerImpl {
   // opacity value.
   void SetVertexOpacity(const float vertex_opacity[4]);
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer) override;
 
   bool WillDraw(DrawMode draw_mode,

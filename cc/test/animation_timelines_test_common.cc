@@ -91,13 +91,6 @@ void TestHostClient::ClearMutatedProperties() {
     kv.second->ClearMutatedProperties();
 }
 
-bool TestHostClient::IsOwnerThread() const {
-  return true;
-}
-bool TestHostClient::InProtectedSequence() const {
-  return false;
-}
-
 bool TestHostClient::IsElementInPropertyTrees(ElementId element_id,
                                               ElementListType list_type) const {
   return list_type == ElementListType::ACTIVE

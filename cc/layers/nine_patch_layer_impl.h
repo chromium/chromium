@@ -5,7 +5,6 @@
 #ifndef CC_LAYERS_NINE_PATCH_LAYER_IMPL_H_
 #define CC_LAYERS_NINE_PATCH_LAYER_IMPL_H_
 
-#include <memory>
 #include <string>
 
 #include "base/memory/ptr_util.h"
@@ -37,8 +36,7 @@ class CC_EXPORT NinePatchLayerImpl : public UIResourceLayerImpl {
                  bool fill_center,
                  bool nearest_neighbor);
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer) override;
 
   void AppendQuads(viz::CompositorRenderPass* render_pass,

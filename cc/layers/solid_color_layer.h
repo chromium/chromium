@@ -6,8 +6,6 @@
 #ifndef CC_LAYERS_SOLID_COLOR_LAYER_H_
 #define CC_LAYERS_SOLID_COLOR_LAYER_H_
 
-#include <memory>
-
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 
@@ -22,8 +20,7 @@ class CC_EXPORT SolidColorLayer : public Layer {
   SolidColorLayer(const SolidColorLayer&) = delete;
   SolidColorLayer& operator=(const SolidColorLayer&) = delete;
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
   void SetBackgroundColor(SkColor color) override;
 

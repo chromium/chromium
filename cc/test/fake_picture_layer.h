@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <memory>
-#include <utility>
 
 #include "base/memory/ref_counted.h"
 #include "cc/layers/picture_layer.h"
@@ -29,8 +28,7 @@ class FakePictureLayer : public PictureLayer {
   }
 
   // Layer implementation.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   bool Update() override;
 
   int update_count() const { return update_count_; }

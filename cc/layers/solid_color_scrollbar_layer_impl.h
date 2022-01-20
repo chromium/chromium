@@ -5,8 +5,6 @@
 #ifndef CC_LAYERS_SOLID_COLOR_SCROLLBAR_LAYER_IMPL_H_
 #define CC_LAYERS_SOLID_COLOR_SCROLLBAR_LAYER_IMPL_H_
 
-#include <memory>
-
 #include "cc/cc_export.h"
 #include "cc/layers/scrollbar_layer_impl_base.h"
 
@@ -24,8 +22,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
   ~SolidColorScrollbarLayerImpl() override;
 
   // LayerImpl overrides.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer) override;
 
   void AppendQuads(viz::CompositorRenderPass* render_pass,

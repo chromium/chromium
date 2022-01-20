@@ -24,7 +24,7 @@ VideoLayer::VideoLayer(VideoFrameProvider* provider,
 VideoLayer::~VideoLayer() = default;
 
 std::unique_ptr<LayerImpl> VideoLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return VideoLayerImpl::Create(tree_impl, id(), provider_, transform_);
 }
 

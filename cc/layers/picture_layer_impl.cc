@@ -135,7 +135,7 @@ const char* PictureLayerImpl::LayerTypeAsString() const {
 }
 
 std::unique_ptr<LayerImpl> PictureLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return PictureLayerImpl::Create(tree_impl, id());
 }
 

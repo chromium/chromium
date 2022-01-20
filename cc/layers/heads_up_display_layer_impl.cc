@@ -138,7 +138,7 @@ HeadsUpDisplayLayerImpl::~HeadsUpDisplayLayerImpl() {
 }
 
 std::unique_ptr<LayerImpl> HeadsUpDisplayLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return HeadsUpDisplayLayerImpl::Create(tree_impl, id());
 }
 

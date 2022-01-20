@@ -61,8 +61,7 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   bool is_reflection() const { return is_reflection_; }
 
   // LayerImpl overrides.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer) override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;

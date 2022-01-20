@@ -35,8 +35,7 @@ class CC_EXPORT SolidColorLayerImpl : public LayerImpl {
   ~SolidColorLayerImpl() override;
 
   // LayerImpl overrides.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) const override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 

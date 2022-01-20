@@ -12,7 +12,7 @@
 namespace cc {
 
 std::unique_ptr<LayerImpl> SolidColorScrollbarLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) const {
+    LayerTreeImpl* tree_impl) {
   return SolidColorScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), thumb_thickness_, track_start_,
       is_left_side_vertical_scrollbar());
