@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -256,29 +255,19 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     base::TimeTicks image_paint_time,
     uint64_t image_paint_size,
-    ImageRecord* image_record,
+    bool is_animated,
     double image_bpp) {
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
 
-  largest_contentful_paint_type_ = 0;
-  if (image_record) {
-    Node* image_node = DOMNodeIds::NodeForId(image_record->node_id);
-    HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
-    if (!image_node->IsInShadowTree() && element &&
-        element->IsChangedShortlyAfterMouseover()) {
-      largest_contentful_paint_type_ |=
-          LargestContentfulPaintType::kLCPTypeAfterMouseover;
-    }
-    // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
-    // default, we'd be able to use the value of
-    // largest_image_record->first_animated_frame_time directly.
-    if (image_record && image_record->cached_image &&
-        image_record->cached_image->IsAnimatedImageWithPaintedFirstFrame()) {
-      // Set the animated image flag.
-      largest_contentful_paint_type_ |=
-          LargestContentfulPaintType::kLCPTypeAnimatedImage;
-    }
+  if (is_animated) {
+    // Set the animated image flag.
+    largest_contentful_paint_type_ |=
+        LargestContentfulPaintType::kLCPTypeAnimatedImage;
+  } else {
+    // Unset the animated image flag.
+    largest_contentful_paint_type_ &=
+        ~LargestContentfulPaintType::kLCPTypeAnimatedImage;
   }
   largest_image_paint_time_ = image_paint_time;
   largest_image_paint_size_ = image_paint_size;

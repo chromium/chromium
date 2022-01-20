@@ -158,11 +158,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   void OnRestoredFromBackForwardCache();
 
-  // Indicates whether a mouseover event was recently dispatched over an
-  // HTMLImageElement LCP element.
-  bool IsLCPMouseoverDispatchedRecently();
-  void SetLCPMouseoverDispatched();
-
   void Trace(Visitor*) const override;
 
  private:
@@ -225,8 +220,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks first_eligible_to_paint_;
 
   base::TimeTicks last_portal_activated_presentation_;
-
-  base::TimeTicks lcp_mouse_over_dispatch_time_;
 
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
 

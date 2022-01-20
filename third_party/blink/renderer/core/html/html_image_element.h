@@ -183,14 +183,6 @@ class CORE_EXPORT HTMLImageElement final
   void SetIsAdRelated() { is_ad_related_ = true; }
   bool IsAdRelated() const override { return is_ad_related_; }
 
-  // Keeps track whether this image is an LCP element.
-  void SetIsLCPElement() { is_lcp_element_ = true; }
-  bool IsLCPElement() const { return is_lcp_element_; }
-
-  bool IsChangedShortlyAfterMouseover() const {
-    return is_changed_shortly_after_mouseover_;
-  }
-
   void InvalidateAttributeMapping();
 
   static bool SupportedImageType(const String& type,
@@ -279,8 +271,6 @@ class CORE_EXPORT HTMLImageElement final
   // placeholder image.
   bool is_legacy_format_or_unoptimized_image_ : 1;
   bool is_ad_related_ : 1;
-  bool is_lcp_element_ : 1;
-  bool is_changed_shortly_after_mouseover_ : 1;
 
   network::mojom::ReferrerPolicy referrer_policy_;
 
