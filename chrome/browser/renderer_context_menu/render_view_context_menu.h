@@ -348,12 +348,12 @@ class RenderViewContextMenu
 #if BUILDFLAG(IS_CHROMEOS)
   // An observer that handles "Open with <app>" items.
   std::unique_ptr<RenderViewContextMenuObserver> open_with_menu_observer_;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // An observer that handles smart text selection action items.
   std::unique_ptr<RenderViewContextMenuObserver>
       start_smart_selection_action_menu_observer_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<QuickAnswersMenuObserver> quick_answers_menu_observer_;
 #endif
 

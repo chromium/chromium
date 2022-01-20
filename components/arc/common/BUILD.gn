@@ -13,6 +13,8 @@ static_library("common") {
     "intent_helper/link_handler_model.cc",
     "intent_helper/link_handler_model.h",
     "intent_helper/link_handler_model_delegate.h",
+    "intent_helper/text_selection_action_delegate.cc",
+    "intent_helper/text_selection_action_delegate.h",
   ]
 
   deps = [

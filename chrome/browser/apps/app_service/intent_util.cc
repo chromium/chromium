@@ -419,28 +419,6 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
                                     share_title);
 }
 
-apps::mojom::IntentPtr CreateIntentForArcIntentAndActivity(
-    arc::mojom::IntentInfoPtr arc_intent,
-    arc::mojom::ActivityNamePtr activity) {
-  auto intent = apps::mojom::Intent::New();
-  if (arc_intent) {
-    intent->action = std::move(arc_intent->action);
-    intent->data = std::move(arc_intent->data);
-    intent->mime_type = std::move(arc_intent->type);
-    intent->categories = std::move(arc_intent->categories);
-    intent->ui_bypassed = arc_intent->ui_bypassed
-                              ? apps::mojom::OptionalBool::kTrue
-                              : apps::mojom::OptionalBool::kFalse;
-    intent->extras = std::move(arc_intent->extras);
-  }
-
-  if (activity) {
-    intent->activity_name = std::move(activity->activity_name);
-  }
-
-  return intent;
-}
-
 base::flat_map<std::string, std::string> CreateArcIntentExtras(
     const apps::mojom::IntentPtr& intent) {
   auto extras = base::flat_map<std::string, std::string>();

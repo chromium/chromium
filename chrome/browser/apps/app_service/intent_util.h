@@ -81,11 +81,6 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
     const std::string& share_text,
     const std::string& share_title);
 
-// Create an intent struct from the arc intent and arc activity.
-apps::mojom::IntentPtr CreateIntentForArcIntentAndActivity(
-    arc::mojom::IntentInfoPtr arc_intent,
-    arc::mojom::ActivityNamePtr activity);
-
 base::flat_map<std::string, std::string> CreateArcIntentExtras(
     const apps::mojom::IntentPtr& intent);
 

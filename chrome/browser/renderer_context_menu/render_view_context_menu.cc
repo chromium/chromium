@@ -242,13 +242,14 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/arc/open_with_menu.h"
+#include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/arc/intent_helper/start_smart_selection_action_menu.h"
+#include "chrome/browser/ash/arc/intent_helper/text_selection_action_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
@@ -257,6 +258,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/arc/text_selection_action_lacros.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/window.h"
@@ -987,12 +989,21 @@ void RenderViewContextMenu::InitMenu() {
   }
 
   bool supports_smart_text_selection = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_SMART_SELECTION)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  supports_smart_text_selection =
-      content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) &&
-      arc::IsArcPlayStoreEnabledForProfile(GetProfile());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    supports_smart_text_selection =
+        arc::IsArcPlayStoreEnabledForProfile(GetProfile());
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto* service = chromeos::LacrosService::Get();
+    // AppService and ARC are not supporting non-primary profile.
+    // Also check if Lacros supports ARC.
+    supports_smart_text_selection = GetProfile()->IsMainProfile() && service &&
+                                    service->IsAvailable<crosapi::mojom::Arc>();
+#endif
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (supports_smart_text_selection)
     AppendSmartSelectionActionItems();
 
@@ -1489,9 +1500,16 @@ void RenderViewContextMenu::AppendQuickAnswersItems() {
 }
 
 void RenderViewContextMenu::AppendSmartSelectionActionItems() {
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  using TextSelectionActionDelegate = arc::TextSelectionActionAsh;
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS_
+  using TextSelectionActionDelegate = arc::TextSelectionActionLacros;
+#endif
   start_smart_selection_action_menu_observer_ =
-      std::make_unique<arc::StartSmartSelectionActionMenu>(this);
+      std::make_unique<arc::StartSmartSelectionActionMenu>(
+          browser_context_, this,
+          std::make_unique<TextSelectionActionDelegate>());
   observers_.AddObserver(start_smart_selection_action_menu_observer_.get());
 
   if (menu_model_.GetItemCount())

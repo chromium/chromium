@@ -130,28 +130,6 @@ class IntentUtilsTest : public testing::Test {
   }
 };
 
-TEST_F(IntentUtilsTest, CreateIntentForArcIntentAndActivity) {
-  arc::mojom::IntentInfoPtr arc_intent = CreateArcIntent();
-  arc::mojom::ActivityNamePtr src_activity = CreateActivity();
-  apps::mojom::IntentPtr intent =
-      apps_util::CreateIntentForArcIntentAndActivity(arc_intent.Clone(),
-                                                     src_activity.Clone());
-
-  std::string intent_str =
-      apps_util::CreateLaunchIntent("com.android.vending", intent);
-  EXPECT_TRUE(intent_str.empty());
-
-  arc::mojom::ActivityNamePtr dst_activity = arc::mojom::ActivityName::New();
-  if (intent->activity_name.has_value() &&
-      !intent->activity_name.value().empty()) {
-    dst_activity->activity_name = intent->activity_name.value();
-  }
-
-  EXPECT_TRUE(IsEqual(std::move(arc_intent),
-                      apps_util::ConvertAppServiceToArcIntent(intent)));
-  EXPECT_TRUE(IsEqual(std::move(src_activity), std::move(dst_activity)));
-}
-
 TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   const std::string& activity_name = "com.android.vending.AssetBrowserActivity";
   const std::string& start_type = "initialStart";
