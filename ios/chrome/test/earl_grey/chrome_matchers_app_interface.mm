@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
@@ -641,8 +642,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsMenuPasswordsButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:(IDS_IOS_PASSWORDS)];
+  return grey_accessibilityID(kSettingsPasswordsCellId);
 }
 
 // TODO(crbug.com/1021752): Remove this stub.
@@ -1135,6 +1135,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)useSuggestedPasswordMatcher {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    return grey_allOf([self buttonWithAccessibilityLabelID:
+                                IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD],
+                      grey_interactable(), nullptr);
+  }
+
   return grey_allOf(
       [self buttonWithAccessibilityLabelID:IDS_IOS_USE_SUGGESTED_PASSWORD],
       grey_interactable(), nullptr);

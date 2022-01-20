@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/infobars/core",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common",
     "//components/strings:components_strings_grit",
     "//components/url_formatter",
     "//ios/chrome/app/strings:ios_strings_grit",

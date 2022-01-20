@@ -298,8 +298,15 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestCompromisedPassword) {
   CheckEditCellText(kMaskedPassword, 0, 2);
 
   CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 1, 0);
-  CheckDetailItemTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION, 1,
-                            1);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    CheckDetailItemTextWithId(
+        IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 1, 1);
+  } else {
+    CheckDetailItemTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION,
+                              1, 1);
+  }
 }
 
 // Tests that password is shown/hidden.
@@ -467,8 +474,15 @@ TEST_F(PasswordDetailsTableViewControllerTest,
   CheckEditCellText(@"test@egmail.com", 0, 1);
   CheckEditCellText(kMaskedPassword, 0, 2);
 
-  CheckDetailItemTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION, 1,
-                            0);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    CheckDetailItemTextWithId(
+        IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 1, 0);
+  } else {
+    CheckDetailItemTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION,
+                              1, 0);
+  }
 }
 
 // Tests federated credential is shown without password value and editing
@@ -612,6 +626,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAdd) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kSupportForAddPasswordsInSettings);
+
   SetCredentialType(CredentialTypeNew);
   PasswordDetailsTableViewController* passwords_controller =
       static_cast<PasswordDetailsTableViewController*>(controller());
@@ -621,14 +636,28 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAdd) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
   EXPECT_EQ(2, NumberOfItemsInSection(2));
-  CheckSectionFooter(
-      [NSString
-          stringWithFormat:
-              @"%@\n\n%@",
-              l10n_util::GetNSString(IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-              l10n_util::GetNSString(
-                  IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING)],
-      3);
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    CheckSectionFooter(
+        [NSString stringWithFormat:
+                      @"%@\n\n%@",
+                      l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED),
+                      l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING)],
+        3);
+  } else {
+    CheckSectionFooter(
+        [NSString stringWithFormat:
+                      @"%@\n\n%@",
+                      l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                      l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING)],
+        3);
+  }
 }
 
 // Tests the layout of the view controller when adding a new credential with
@@ -662,6 +691,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestFooterTextWithSyncingEmail) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kSupportForAddPasswordsInSettings);
+
   SetCredentialType(CredentialTypeNew);
   SetUserSyncingEmail(@"example@gmail.com");
 
@@ -669,12 +699,27 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestFooterTextWithSyncingEmail) {
       static_cast<PasswordDetailsTableViewController*>(controller());
   [passwords_controller loadModel];
 
-  CheckSectionFooter(
-      [NSString stringWithFormat:@"%@\n\n%@",
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-                                 l10n_util::GetNSStringF(
-                                     IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER,
-                                     u"example@gmail.com")],
-      3);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    CheckSectionFooter(
+        [NSString
+            stringWithFormat:@"%@\n\n%@",
+                             l10n_util::GetNSString(
+                                 IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                             l10n_util::GetNSStringF(
+                                 IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
+                                 u"example@gmail.com")],
+        3);
+  } else {
+    CheckSectionFooter(
+        [NSString
+            stringWithFormat:@"%@\n\n%@",
+                             l10n_util::GetNSString(
+                                 IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                             l10n_util::GetNSStringF(
+                                 IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER,
+                                 u"example@gmail.com")],
+        3);
+  }
 }

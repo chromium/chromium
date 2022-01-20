@@ -10,6 +10,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/infobars/core/infobar.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -71,6 +72,15 @@ TEST_F(UpdatePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.buttonText);
   EXPECT_NSEQ(title, consumer.titleText);
   EXPECT_NSEQ(subtitle, consumer.subtitleText);
-  EXPECT_NSEQ([UIImage imageNamed:@"legacy_password_key"], consumer.iconImage);
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    EXPECT_NSEQ([UIImage imageNamed:@"password_key"], consumer.iconImage);
+  } else {
+    EXPECT_NSEQ([UIImage imageNamed:@"legacy_password_key"],
+                consumer.iconImage);
+  }
+
   EXPECT_TRUE(consumer.presentsModal);
 }

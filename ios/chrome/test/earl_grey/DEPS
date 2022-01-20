@@ -15,6 +15,10 @@ specific_include_rules = {
     "+third_party/metrics_proto",
   ],
 
+  "chrome_matchers_app_interface\.mm":[
+    "+components/password_manager/core/common/password_manager_features.h",
+  ],
+
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
   "web_http_server_chrome_test_case\.mm": [
