@@ -27,6 +27,14 @@ void GpuArcProtectedBufferManagerProxy::
 
   auto region = protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
       std::move(unwrapped_fd));
+  if (!region.IsValid()) {
+    // Note: this will just cause the remote endpoint to reject the message with
+    // VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE, but we don't have another way
+    // to indicate that we couldn't find the protected shared memory region.
+    std::move(callback).Run(mojo::ScopedHandle());
+    return;
+  }
+
   // This ScopedFDPair dance is chromeos-specific.
   base::subtle::ScopedFDPair fd_pair = region.PassPlatformHandle();
   std::move(callback).Run(mojo::WrapPlatformFile(std::move(fd_pair.fd)));
