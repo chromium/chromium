@@ -1482,6 +1482,14 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
   std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
       std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),
                                               mapped_memory_.get());
+
+  if (!scoped_shared_memory->valid()) {
+    // Note, that this runs callback out of order.
+    if (readback_done)
+      std::move(readback_done).Run(kTopLeft_GrSurfaceOrigin, /*success=*/false);
+    return;
+  }
+
   GLint shm_id = scoped_shared_memory->shm_id();
   GLuint shm_offset = scoped_shared_memory->offset();
   void* shm_address = scoped_shared_memory->address();
