@@ -245,6 +245,13 @@ stage_install_common() {
     install -m 644 "${OUTPUTDIR}/vk_swiftshader_icd.json" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
+  # Optimization Guide Internal
+  if [ -f "${OUTPUTDIR}/liboptimization_guide_internal.so" ]; then
+    file="liboptimization_guide_internal.so"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
+    install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+  fi
+
   # libc++
   if [ -f "${OUTPUTDIR}/lib/libc++.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/lib/"

@@ -20,6 +20,7 @@ import("//chrome/process_version_rc_template.gni")
 import("//components/exo/buildflags.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -1038,6 +1039,20 @@ if (is_win) {
     }
   }
 
+  if (build_with_internal_optimization_guide) {
+    # Add the optimization guide .dylib in the MODULE_DIR of Chromium.app
+    bundle_data("optimization_guide_library") {
+      sources = [
+        "$root_out_dir/og_intermediates/liboptimization_guide_internal.dylib",
+      ]
+      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+      public_deps = [ "//components/optimization_guide/core:optimization_guide_internal_library_copy" ]
+    }
+  } else {
+    group("optimization_guide_library") {
+    }
+  }
+
   tweak_info_plist("chrome_framework_plist") {
     info_plist = "app/framework-Info.plist"
     args = [
@@ -1146,6 +1161,7 @@ if (is_win) {
       ":chrome_framework_plugins",
       ":chrome_framework_resources",
       ":keystone_registration_framework",
+      ":optimization_guide_library",
       ":swiftshader_library",
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
@@ -1239,6 +1255,10 @@ if (is_win) {
       "$root_out_dir/libvk_swiftshader.dylib",
       _framework_binary_path,
     ]
+    if (build_with_internal_optimization_guide) {
+      _chrome_symbols_sources +=
+          [ "$root_out_dir/liboptimization_guide_internal.dylib" ]
+    }
 
     foreach(helper_params, chrome_mac_helpers) {
       _chrome_symbols_sources += [ "$root_out_dir/${chrome_helper_name}${helper_params[2]}.app/Contents/MacOS/${chrome_helper_name}${helper_params[2]}" ]
@@ -1273,6 +1293,9 @@ if (is_win) {
         "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
         "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
       ]
+      if (build_with_internal_optimization_guide) {
+        deps += [ "//components/optimization_guide/internal:optimization_guide_internal" ]
+      }
 
       foreach(helper_params, chrome_mac_helpers) {
         deps += [ ":chrome_helper_app_${helper_params[0]}" ]
@@ -1296,6 +1319,9 @@ if (is_win) {
         "$root_out_dir/libswiftshader_libGLESv2.dylib.dSYM",
         "$root_out_dir/libvk_swiftshader.dylib.dSYM",
       ]
+      if (build_with_internal_optimization_guide) {
+        _dsyms += [ "$root_out_dir/liboptimization_guide_internal.dylib.dSYM" ]
+      }
 
       deps = [
         ":chrome_app",
@@ -1307,6 +1333,9 @@ if (is_win) {
         "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
         "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
       ]
+      if (build_with_internal_optimization_guide) {
+        deps += [ "//components/optimization_guide/internal:optimization_guide_internal" ]
+      }
 
       foreach(helper_params, chrome_mac_helpers) {
         _dsyms +=
@@ -1725,6 +1754,9 @@ if (is_linux || is_chromeos) {
       if (!is_chromeos) {
         deps += [ ":angle_libvulkan_symbols" ]
       }
+      if (build_with_internal_optimization_guide) {
+        deps += [ ":optimization_guide_symbols" ]
+      }
     }
     extract_symbols("chrome_symbols") {
       binary = "$root_out_dir/chrome"
@@ -1825,6 +1857,19 @@ if (is_linux || is_chromeos) {
         }
 
         deps = [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+      }
+    }
+    if (build_with_internal_optimization_guide) {
+      extract_symbols("optimization_guide_symbols") {
+        binary = "$root_out_dir/liboptimization_guide_internal.so"
+        if (current_cpu == "x86") {
+          # GYP used "ia32" so keep that naming for back-compat.
+          symbol_file = "$root_out_dir/optimization_guide.breakpad.ia32"
+        } else {
+          symbol_file = "$root_out_dir/optimization_guide.breakpad.$current_cpu"
+        }
+
+        deps = [ "//components/optimization_guide/internal:optimization_guide_internal" ]
       }
     }
   }

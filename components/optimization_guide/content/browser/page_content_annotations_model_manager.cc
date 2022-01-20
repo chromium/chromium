@@ -17,7 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-#include "components/optimization_guide/internal/page_entities_model_executor_impl.h"
+#include "components/optimization_guide/core/page_entities_model_executor_impl.h"
 #endif
 
 namespace optimization_guide {

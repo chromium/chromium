@@ -13,6 +13,7 @@ import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//build/util/version.gni")
 import("//components/nacl/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//ui/gl/features.gni")
@@ -77,6 +78,11 @@ if (enable_swiftshader) {
     "$root_out_dir/swiftshader_libGLESv2.so",
     "$root_out_dir/libvk_swiftshader.so",
   ]
+}
+
+if (build_with_internal_optimization_guide) {
+  packaging_files_shlibs +=
+      [ "$root_out_dir/liboptimization_guide_internal.so" ]
 }
 
 packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
@@ -231,6 +237,15 @@ if (enable_nacl) {
   strip_binary("strip_nacl_helper_bootstrap") {
     binary_input = "$root_out_dir/nacl_helper_bootstrap"
     deps = [ "//native_client/src/trusted/service_runtime/linux:bootstrap" ]
+  }
+}
+
+if (build_with_internal_optimization_guide) {
+  strip_binary("strip_optimization_guide") {
+    binary_input = "$root_out_dir/liboptimization_guide_internal.so"
+    deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
   }
 }
 
@@ -419,6 +434,12 @@ group("installer_deps") {
   }
   if (!is_chromeos_ash) {
     public_deps += [ ":rpm_packaging_files" ]
+  }
+  if (build_with_internal_optimization_guide) {
+    public_deps += [
+      ":strip_optimization_guide",
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
   }
 }
 

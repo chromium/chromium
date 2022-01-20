@@ -173,6 +173,14 @@ static_library("core") {
       "page_visibility_model_executor.cc",
       "page_visibility_model_executor.h",
     ]
+    if (build_with_internal_optimization_guide) {
+      sources += [
+        "entity_annotator_native_library.cc",
+        "entity_annotator_native_library.h",
+        "page_entities_model_executor_impl.cc",
+        "page_entities_model_executor_impl.h",
+      ]
+    }
   }
 
   public_deps = [
@@ -209,6 +217,11 @@ static_library("core") {
     "//ui/base:base",
     "//url:url",
   ]
+  if (build_with_tflite_lib && build_with_internal_optimization_guide) {
+    data_deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
+  }
 }
 
 static_library("test_support") {
@@ -313,6 +326,12 @@ source_set("unit_tests") {
       "page_visibility_model_executor_unittest.cc",
       "tflite_model_executor_unittest.cc",
     ]
+    if (build_with_internal_optimization_guide) {
+      sources += [
+        "entity_annotator_native_library_unittest.cc",
+        "page_entities_model_executor_impl_unittest.cc",
+      ]
+    }
   }
 
   deps = [
@@ -351,5 +370,19 @@ if (is_android) {
   java_cpp_enum("optimization_guide_generated_enums") {
     sources = [ "optimization_guide_decision.h" ]
     visibility = [ "//chrome/browser/optimization_guide/android:*" ]
+  }
+}
+
+if (is_mac && build_with_internal_optimization_guide) {
+  # We need to copy the optimization guide shared library so that the
+  # bundle_data dependencies have a "copy" target type. Otherwise for
+  # "shared_library" target types it will try to link things into
+  # Chromium Framework when we want to keep it separate instead.
+  copy("optimization_guide_internal_library_copy") {
+    sources = [ "$root_out_dir/liboptimization_guide_internal.dylib" ]
+    outputs = [ "$root_out_dir/og_intermediates/{{source_file_part}}" ]
+    deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
   }
 }

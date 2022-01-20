@@ -17,6 +17,7 @@ proto_library("optimization_guide_proto") {
     "loading_predictor_metadata.proto",
     "models.proto",
     "page_entities_metadata.proto",
+    "page_entities_model_metadata.proto",
     "page_topics_model_metadata.proto",
     "performance_hints_metadata.proto",
     "public_image_metadata.proto",

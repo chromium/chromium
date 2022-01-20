@@ -13,8 +13,6 @@ declare_args() {
   # You can set the variable 'build_with_internal_optimization_guide' to true
   # even in a developer build in args.gn.  Setting this variable explicitly to true will
   # cause your build to fail if the internal files are missing.
-  build_with_internal_optimization_guide = false
-
-  # TODO(crbug/1266935): Add this back when the API boundary is sane again.
-  #   is_chrome_branded && !is_android && !is_ios
+  build_with_internal_optimization_guide =
+      is_chrome_branded && !is_android && !is_ios
 }
