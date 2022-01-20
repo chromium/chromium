@@ -157,16 +157,15 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
                           kRecentAppButtonDefaultSpacing);
   }
 
-  int x_delta = child_area.x();
+  int child_x = child_area.x();
   int child_y = child_area.y() + kRecentAppButtonsViewTopPadding +
                 kRecentAppButtonFocusPadding.bottom();
   for (auto* child : visible_children) {
-    // Most recent apps be added to the right and shift left as the other apps
+    // Most recent apps be added to the left and shift right as the other apps
     // are streamed.
-    int child_x = child_area.width() - x_delta - kRecentAppButtonSize;
     int width = child->GetPreferredSize().width();
     child->SetBounds(child_x, child_y, width, child->GetHeightForWidth(width));
-    x_delta += width + spacing;
+    child_x += width + spacing;
   }
 }
 
