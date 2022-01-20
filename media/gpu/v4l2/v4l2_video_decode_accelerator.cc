@@ -2142,18 +2142,22 @@ bool V4L2VideoDecodeAccelerator::CreateBuffersForFormat(
 
   coded_size_.SetSize(format.fmt.pix_mp.width, format.fmt.pix_mp.height);
   visible_size_ = visible_size;
+  egl_image_size_ = coded_size_;
   if (image_processor_device_) {
-    egl_image_size_ = visible_size_;
     egl_image_planes_count = 0;
+    auto output_size = coded_size_;
     if (!V4L2ImageProcessorBackend::TryOutputFormat(
             output_format_fourcc_->ToV4L2PixFmt(),
-            egl_image_format_fourcc_->ToV4L2PixFmt(), coded_size_,
-            &egl_image_size_, &egl_image_planes_count)) {
+            egl_image_format_fourcc_->ToV4L2PixFmt(), coded_size_, &output_size,
+            &egl_image_planes_count)) {
       VLOGF(1) << "Fail to get output size and plane count of processor";
       return false;
     }
+    // This is very restrictive because it assumes the IP has the same alignment
+    // criteria as the video decoder that will produce the input video frames.
+    // In practice, this applies to all Image Processors, i.e. Mediatek devices.
+    DCHECK_EQ(coded_size_, output_size);
   } else {
-    egl_image_size_ = coded_size_;
     egl_image_planes_count = format.fmt.pix_mp.num_planes;
   }
   VLOGF(2) << "new resolution: " << coded_size_.ToString()
@@ -2340,9 +2344,10 @@ bool V4L2VideoDecodeAccelerator::CreateImageProcessor() {
 
   image_processor_ = v4l2_vda_helpers::CreateImageProcessor(
       *output_format_fourcc_, *egl_image_format_fourcc_, coded_size_,
-      egl_image_size_, visible_size_, VideoFrame::StorageType::STORAGE_DMABUFS,
-      output_buffer_map_.size(), image_processor_device_,
-      image_processor_output_mode, decoder_thread_.task_runner(),
+      coded_size_, gfx::Rect(visible_size_),
+      VideoFrame::StorageType::STORAGE_DMABUFS, output_buffer_map_.size(),
+      image_processor_device_, image_processor_output_mode,
+      decoder_thread_.task_runner(),
       // Unretained(this) is safe for ErrorCB because |decoder_thread_| is owned
       // by this V4L2VideoDecodeAccelerator and |this| must be valid when
       // ErrorCB is executed.
@@ -2440,7 +2445,7 @@ bool V4L2VideoDecodeAccelerator::CreateOutputBuffers() {
     buffer_count += kDpbOutputBufferExtraCountForImageProcessor;
 
   DVLOGF(3) << "buffer_count=" << buffer_count
-            << ", coded_size=" << egl_image_size_.ToString();
+            << ", coded_size=" << coded_size_.ToString();
 
   // With ALLOCATE mode the client can sample it as RGB and doesn't need to
   // know the precise format.

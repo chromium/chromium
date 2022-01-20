@@ -44,17 +44,6 @@ namespace media {
 
 namespace {
 
-enum v4l2_buf_type ToSingleV4L2Planar(enum v4l2_buf_type type) {
-  switch (type) {
-    case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
-      return V4L2_BUF_TYPE_VIDEO_OUTPUT;
-    case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
-      return V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    default:
-      return type;
-  }
-}
-
 absl::optional<gfx::GpuMemoryBufferHandle> CreateHandle(
     const VideoFrame* frame) {
   gfx::GpuMemoryBufferHandle handle = CreateGpuMemoryBufferHandle(frame);
@@ -244,6 +233,19 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
+  // Most of the users of this class are decoders that only want a pixel format
+  // conversion (with the same coded dimensions and visible rectangles). Video
+  // encoding, however, can try and ask for cropping (this is common for camera
+  // capture for example). Although the V4L2 ImageProcessor might support it,
+  // it's a better idea to use libyuv instead.
+  if (input_config.size != output_config.size ||
+      input_config.visible_rect != output_config.visible_rect) {
+    VLOGF(2) << "V4L2ImageProcessor cannot adapt size/visible_rects, input "
+             << input_config.ToString() << ", output "
+             << output_config.ToString();
+    return nullptr;
+  }
+
   for (const auto& output_mode : preferred_output_modes) {
     auto image_processor = V4L2ImageProcessorBackend::CreateWithOutputMode(
         device, num_buffers, input_config, output_config, output_mode,
@@ -595,7 +597,7 @@ void V4L2ImageProcessorBackend::ProcessJobsTask() {
           *(input_job_queue_.front()->input_frame.get());
       const gfx::Size input_buffer_size(input_frame.stride(0),
                                         input_frame.coded_size().height());
-      if (!ReconfigureV4L2Format(input_buffer_size, input_frame.visible_rect(),
+      if (!ReconfigureV4L2Format(input_buffer_size,
                                  V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)) {
         NotifyError();
         return;
@@ -610,7 +612,6 @@ void V4L2ImageProcessorBackend::ProcessJobsTask() {
       const gfx::Size output_buffer_size(output_frame.stride(0),
                                          output_frame.coded_size().height());
       if (!ReconfigureV4L2Format(output_buffer_size,
-                                 output_frame.visible_rect(),
                                  V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)) {
         NotifyError();
         return;
@@ -657,68 +658,8 @@ void V4L2ImageProcessorBackend::Reset() {
   running_jobs_ = {};
 }
 
-bool V4L2ImageProcessorBackend::ApplyCrop(const gfx::Rect& visible_rect,
-                                          enum v4l2_buf_type type) {
-  struct v4l2_rect rect;
-  memset(&rect, 0, sizeof(rect));
-  rect.left = visible_rect.x();
-  rect.top = visible_rect.y();
-  rect.width = visible_rect.width();
-  rect.height = visible_rect.height();
-
-  struct v4l2_selection selection_arg;
-  memset(&selection_arg, 0, sizeof(selection_arg));
-  // Multiplanar buffer types are messed up in S_SELECTION API, so all drivers
-  // don't necessarily work with MPLANE types. This issue is resolved with
-  // kernel 4.13. As we use kernel < 4.13 today, we use single planar buffer
-  // types. See
-  // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/vidioc-g-selection.html.
-  selection_arg.type = ToSingleV4L2Planar(type);
-  selection_arg.target =
-      V4L2_TYPE_IS_OUTPUT(type) ? V4L2_SEL_TGT_CROP : V4L2_SEL_TGT_COMPOSE;
-
-  selection_arg.r = rect;
-  if (device_->Ioctl(VIDIOC_S_SELECTION, &selection_arg) == 0) {
-    DVLOGF(2) << "VIDIOC_S_SELECTION is supported";
-    rect = selection_arg.r;
-  } else {
-    DVLOGF(2) << "Fallback to VIDIOC_S/G_CROP";
-    struct v4l2_crop crop;
-    memset(&crop, 0, sizeof(crop));
-    crop.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-    crop.c = rect;
-    if (device_->Ioctl(VIDIOC_S_CROP, &crop) != 0) {
-      VPLOGF(1) << "VIDIOC_S_CROP failed: ";
-      return false;
-    }
-    rect = crop.c;
-  }
-
-  const gfx::Rect adjusted_visible_rect(rect.left, rect.top, rect.width,
-                                        rect.height);
-
-  // The adjusted visible rectangle might not be exactly as we requested due to
-  // hardware constraints (e.g. hardware not supporting odd resolutions).
-  // This is ok as long as the top-left point is the same as the request, and
-  // the adjusted rect is bigger than the requested one. Even though we will be
-  // delivered more pixels than we requested, we will pass the actual visible
-  // rectangle to the rest of the pipeline, so the buffer will be displayed
-  // correctly.
-  if (visible_rect.origin() != adjusted_visible_rect.origin() ||
-      visible_rect.width() > adjusted_visible_rect.width() ||
-      visible_rect.height() > adjusted_visible_rect.height()) {
-    VLOGF(1) << "Unsupported visible rectangle: " << visible_rect.ToString()
-             << ", the rectangle adjusted by the driver: "
-             << adjusted_visible_rect.ToString();
-    return false;
-  }
-  return true;
-}
-
-bool V4L2ImageProcessorBackend::ReconfigureV4L2Format(
-    const gfx::Size& size,
-    const gfx::Rect& visible_rect,
-    enum v4l2_buf_type type) {
+bool V4L2ImageProcessorBackend::ReconfigureV4L2Format(const gfx::Size& size,
+                                                      enum v4l2_buf_type type) {
   struct v4l2_format format;
   memset(&format, 0, sizeof(format));
   format.type = type;
@@ -735,9 +676,6 @@ bool V4L2ImageProcessorBackend::ReconfigureV4L2Format(
   format.fmt.pix_mp.height = size.height();
   if (device_->Ioctl(VIDIOC_S_FMT, &format) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_FMT";
-    return false;
-  }
-  if (!ApplyCrop(visible_rect, type)) {
     return false;
   }
 
@@ -776,11 +714,6 @@ bool V4L2ImageProcessorBackend::CreateInputBuffers() {
   if (device_->Ioctl(VIDIOC_S_CTRL, &control) != 0)
     DVLOGF(4) << "V4L2_CID_ALPHA_COMPONENT is not supported";
 
-  if (!ApplyCrop(input_config_.visible_rect, V4L2_BUF_TYPE_VIDEO_OUTPUT)) {
-    VLOGF(2) << "Failed to apply crop to input queue";
-    return false;
-  }
-
   input_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
   return input_queue_ && AllocateV4L2Buffers(input_queue_.get(), num_buffers_,
                                              input_memory_type_);
@@ -790,10 +723,6 @@ bool V4L2ImageProcessorBackend::CreateOutputBuffers() {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
   DCHECK_EQ(output_queue_, nullptr);
-
-  if (!ApplyCrop(output_config_.visible_rect, V4L2_BUF_TYPE_VIDEO_CAPTURE)) {
-    return false;
-  }
 
   output_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
   return output_queue_ && AllocateV4L2Buffers(output_queue_.get(), num_buffers_,

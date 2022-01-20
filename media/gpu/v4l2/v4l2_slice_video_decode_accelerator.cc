@@ -601,7 +601,7 @@ bool V4L2SliceVideoDecodeAccelerator::CreateImageProcessor() {
 
   image_processor_ = v4l2_vda_helpers::CreateImageProcessor(
       *output_format_fourcc_, *gl_image_format_fourcc_, coded_size_,
-      gl_image_size_, GetRectSizeFromOrigin(decoder_->GetVisibleRect()),
+      coded_size_, decoder_->GetVisibleRect(),
       VideoFrame::StorageType::STORAGE_DMABUFS, output_buffer_map_.size(),
       image_processor_device_, image_processor_output_mode,
       // Unretained(this) is safe for ErrorCB because |decoder_thread_| is owned
@@ -696,18 +696,21 @@ bool V4L2SliceVideoDecodeAccelerator::CreateOutputBuffers() {
 
   // Now that we know the desired buffers resolution, ask the image processor
   // what it supports so we can request the correct picture buffers.
+  gl_image_size_ = coded_size_;
   if (image_processor_device_) {
-    // Try to get an image size as close as possible to the final one (i.e.
-    // coded_size_ may include padding required by the decoder).
-    gl_image_size_ = GetRectSizeFromOrigin(decoder_->GetVisibleRect());
     size_t planes_count;
+    auto output_size = coded_size_;
     if (!V4L2ImageProcessorBackend::TryOutputFormat(
             output_format_fourcc_->ToV4L2PixFmt(),
-            gl_image_format_fourcc_->ToV4L2PixFmt(), coded_size_,
-            &gl_image_size_, &planes_count)) {
+            gl_image_format_fourcc_->ToV4L2PixFmt(), coded_size_, &output_size,
+            &planes_count)) {
       VLOGF(1) << "Failed to get output size and plane count of IP";
       return false;
     }
+    // This is very restrictive because it assumes the IP has the same alignment
+    // criteria as the video decoder that will produce the input video frames.
+    // In practice, this applies to all Image Processors, i.e. Mediatek devices.
+    DCHECK_EQ(coded_size_, output_size);
     if (gl_image_planes_count_ != planes_count) {
       VLOGF(1) << "IP buffers planes count returned by V4L2 (" << planes_count
                << ") doesn't match the computed number ("
@@ -715,7 +718,6 @@ bool V4L2SliceVideoDecodeAccelerator::CreateOutputBuffers() {
       return false;
     }
   } else {
-    gl_image_size_ = coded_size_;
   }
 
   if (!gfx::Rect(coded_size_).Contains(gfx::Rect(pic_size))) {
