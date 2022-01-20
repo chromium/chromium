@@ -50,8 +50,7 @@ WebLayerRenderFrameObserver::WebLayerRenderFrameObserver(
   // TODO(crbug.com/1073370): Handle case where subframe translation is enabled.
   DCHECK(!translate::IsSubFrameTranslationEnabled());
   translate_agent_ =
-      new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE,
-                                    /*extension_scheme=*/"");
+      new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE);
 }
 
 WebLayerRenderFrameObserver::~WebLayerRenderFrameObserver() = default;

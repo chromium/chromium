@@ -22,7 +22,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
-#include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -105,9 +104,7 @@ base::FilePath model_file_path() {
 class TestTranslateAgent : public translate::TranslateAgent {
  public:
   explicit TestTranslateAgent(content::RenderFrame* render_frame)
-      : translate::TranslateAgent(render_frame,
-                                  ISOLATED_WORLD_ID_TRANSLATE,
-                                  extensions::kExtensionScheme) {}
+      : translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE) {}
 
   TestTranslateAgent(const TestTranslateAgent&) = delete;
   TestTranslateAgent& operator=(const TestTranslateAgent&) = delete;

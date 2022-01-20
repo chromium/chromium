@@ -40,7 +40,6 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/renderer/window_features_converter.h"
-#include "extensions/common/constants.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "skia/ext/image_operations.h"
@@ -147,9 +146,8 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
     SetClientSidePhishingDetection();
 #endif
   if (!translate::IsSubFrameTranslationEnabled()) {
-    translate_agent_ =
-        new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE,
-                                      extensions::kExtensionScheme);
+    translate_agent_ = new translate::TranslateAgent(
+        render_frame, ISOLATED_WORLD_ID_TRANSLATE);
   }
 }
 
