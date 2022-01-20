@@ -34,7 +34,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -47,6 +47,10 @@
 #include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
 #else
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
 #endif
 
 namespace {
@@ -158,6 +162,7 @@ bool TabUnderNavigationThrottle::IsSuspiciousClientRedirect() const {
     return false;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Exempt navigating to or from extension URLs, as they will redirect pages in
   // the background. By exempting in both directions, extensions can always
   // round-trip a page through an extension URL in order to perform arbitrary
@@ -166,6 +171,7 @@ bool TabUnderNavigationThrottle::IsSuspiciousClientRedirect() const {
       previous_main_frame_url.SchemeIs(extensions::kExtensionScheme)) {
     return false;
   }
+#endif
   return true;
 }
 
