@@ -68,11 +68,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // Creates a WebDataService. If not invoked, the web data service is null.
   void CreateWebDataService();
 
-  // !!!!!!!! WARNING: THIS IS GENERALLY NOT SAFE TO CALL! !!!!!!!!
-  // Creates the history service.
-  // TODO(crbug.com/1106699): Remove when all callers are migrated.
-  [[nodiscard]] bool CreateHistoryService();
-
   // Returns the preferences as a TestingPrefServiceSyncable if possible or
   // null. Returns null for off-the-record TestChromeBrowserState and also
   // for TestChromeBrowserState initialized with a custom pref service.

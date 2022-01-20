@@ -19,11 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/history/core/browser/history_database_params.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/top_sites.h"
-#include "components/history/core/browser/visit_delegate.h"
-#include "components/history/ios/browser/history_database_helper.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -32,13 +27,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
-#include "ios/chrome/browser/history/history_client_impl.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/history/top_sites_factory.h"
-#include "ios/chrome/browser/history/web_history_service_factory.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
@@ -51,14 +40,6 @@
 #endif
 
 namespace {
-std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<history::HistoryService>(
-      base::WrapUnique(new HistoryClientImpl(
-          ios::BookmarkModelFactory::GetForBrowserState(browser_state))),
-      nullptr);
-}
 
 std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
   const base::FilePath& browser_state_path = context->GetStatePath();
@@ -259,35 +240,6 @@ void TestChromeBrowserState::CreateWebDataService() {
   // initialisation of the database is complete which leads to SQL init errors).
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
-}
-
-bool TestChromeBrowserState::CreateHistoryService() {
-  // Should never be created multiple times.
-  DCHECK(!ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-      this, ServiceAccessType::EXPLICIT_ACCESS));
-
-  // Create and initialize the HistoryService, but destroy it if the init fails.
-  history::HistoryService* history_service =
-      static_cast<history::HistoryService*>(
-          ios::HistoryServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              this, base::BindRepeating(&BuildHistoryService)));
-  if (!history_service->Init(
-          history::HistoryDatabaseParamsForPath(
-              GetOriginalChromeBrowserState()->GetStatePath()))) {
-    ios::HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        this, BrowserStateKeyedServiceFactory::TestingFactory());
-    return false;
-  }
-
-  // Some tests expect that CreateHistoryService() will also make the
-  // InMemoryURLIndex available.
-  ios::InMemoryURLIndexFactory::GetInstance()->SetTestingFactory(
-      this, ios::InMemoryURLIndexFactory::GetDefaultFactory());
-  // Disable WebHistoryService by default, since it makes network requests.
-  ios::WebHistoryServiceFactory::GetInstance()->SetTestingFactory(
-      this, BrowserStateKeyedServiceFactory::TestingFactory());
-
-  return true;
 }
 
 sync_preferences::TestingPrefServiceSyncable*
