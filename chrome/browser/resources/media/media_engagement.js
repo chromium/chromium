@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/origin.mojom-lite.js';
-import './media_engagement_score_details.mojom-lite.js';
-
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
+import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
+
+import {MediaEngagementConfig, MediaEngagementScoreDetails, MediaEngagementScoreDetailsProvider} from './media_engagement_score_details.mojom-webui.js';
 
 // Allow a function to be provided by tests, which will be called when
 // the page has been populated with media engagement details.
@@ -29,7 +26,7 @@ let showNoPlaybacks = false;
 
 /**
  * Creates a single row in the engagement table.
- * @param {!media.mojom.MediaEngagementScoreDetails} rowInfo The info to create
+ * @param {!MediaEngagementScoreDetails} rowInfo The info to create
  *     the row.
  * @return {!HTMLElement}
  */
@@ -76,8 +73,8 @@ function sortInfo() {
 /**
  * Compares two MediaEngagementScoreDetails objects based on |sortKey|.
  * @param {string} sortKey The name of the property to sort by.
- * @param {Object|url.mojom.Origin} a The first object to compare.
- * @param {Object|url.mojom.Origin} b The second object to compare.
+ * @param {Object|Origin} a The first object to compare.
+ * @param {Object|Origin} b The second object to compare.
  * @return {number} A negative number if |a| should be ordered before
  *     |b|, a positive number otherwise.
  */
@@ -119,7 +116,7 @@ function createConfigRow(name, value) {
 
 /**
  * Regenerates the config table.
- * @param {!media.mojom.MediaEngagementConfig} config The config of the MEI
+ * @param {!MediaEngagementConfig} config The config of the MEI
  *     service.
  */
 
@@ -195,7 +192,7 @@ function updateEngagementTable() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  detailsProvider = media.mojom.MediaEngagementScoreDetailsProvider.getRemote();
+  detailsProvider = MediaEngagementScoreDetailsProvider.getRemote();
   updateEngagementTable();
 
   engagementTableBody = $('engagement-table-body');

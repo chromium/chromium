@@ -46,7 +46,8 @@ MediaHistoryStatsWebUIBrowserTest.prototype = {
   browsePreload: 'chrome://media-history#tab-stats',
 };
 
-TEST_F('MediaHistoryStatsWebUIBrowserTest', 'MAYBE_All', function() {
+TEST_F('MediaHistoryStatsWebUIBrowserTest', 'MAYBE_All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suiteSetup(function() {
     return whenPageIsPopulatedForTest();
   });
@@ -84,7 +85,8 @@ MediaHistoryOriginsWebUIBrowserTest.prototype = {
   browsePreload: 'chrome://media-history#tab-origins',
 };
 
-TEST_F('MediaHistoryOriginsWebUIBrowserTest', 'MAYBE_All', function() {
+TEST_F('MediaHistoryOriginsWebUIBrowserTest', 'MAYBE_All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suiteSetup(function() {
     return whenPageIsPopulatedForTest();
   });
@@ -117,7 +119,8 @@ MediaHistoryPlaybacksWebUIBrowserTest.prototype = {
   browsePreload: 'chrome://media-history#tab-playbacks',
 };
 
-TEST_F('MediaHistoryPlaybacksWebUIBrowserTest', 'MAYBE_All', function() {
+TEST_F('MediaHistoryPlaybacksWebUIBrowserTest', 'MAYBE_All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suiteSetup(function() {
     return whenPageIsPopulatedForTest();
   });
@@ -147,7 +150,8 @@ MediaHistorySessionsWebUIBrowserTest.prototype = {
   browsePreload: 'chrome://media-history#tab-sessions',
 };
 
-TEST_F('MediaHistorySessionsWebUIBrowserTest', 'MAYBE_All', function() {
+TEST_F('MediaHistorySessionsWebUIBrowserTest', 'MAYBE_All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suiteSetup(function() {
     return whenPageIsPopulatedForTest();
   });
