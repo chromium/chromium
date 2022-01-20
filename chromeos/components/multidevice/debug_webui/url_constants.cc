@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/multidevice_debug/url_constants.h"
+#include "chromeos/components/multidevice/debug_webui/url_constants.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace multidevice {
 
@@ -13,4 +13,4 @@ const char kChromeUIProximityAuthURL[] = "chrome://proximity-auth/";
 
 }  // namespace multidevice
 
-}  // namespace ash
+}  // namespace chromeos

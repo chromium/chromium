@@ -1,6 +1,7 @@
 include_rules = [
-  "+chromeos/services/device_sync/proto",
-  "+chromeos/services/device_sync/public/cpp",
+  "+chromeos/grit/chromeos_resources.h",
   "+chromeos/services/multidevice_setup/public/mojom",
+  "+content/public/browser",
   "+device/bluetooth",
+  "+ui/webui",
 ]

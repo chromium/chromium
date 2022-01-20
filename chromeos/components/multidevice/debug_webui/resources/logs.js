@@ -23,12 +23,12 @@ const Logs = {
   init: function() {
     Logs.controller_ = new LogsListController();
 
-    const clearLogsButton = document.querySelector('#clear-logs-button');
+    var clearLogsButton = document.getElementById('clear-logs-button');
     clearLogsButton.onclick = function() {
       WebUI.clearLogs();
     };
 
-    const saveLogsButton = document.querySelector('#save-logs-button');
+    var saveLogsButton = document.getElementById('save-logs-button');
     saveLogsButton.onclick = () => {
       Logs.saveLogs();
     };
@@ -37,12 +37,12 @@ const Logs = {
   },
 
   saveLogs: function() {
-    const blob = new Blob(
-        [document.querySelector('#logs-list').innerText],
+    var blob = new Blob(
+        [document.getElementById('logs-list').innerText],
         {type: 'text/plain;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
+    var url = URL.createObjectURL(blob);
 
-    const anchorEl = document.createElement('a');
+    var anchorEl = document.createElement('a');
     anchorEl.href = url;
     anchorEl.download = 'proximity_auth_logs_' + new Date().toJSON() + '.txt';
     document.body.appendChild(anchorEl);
@@ -98,8 +98,8 @@ const LogBufferInterface = {
  */
 class LogsListController {
   constructor() {
-    this.logsList_ = document.querySelector('#logs-list');
-    this.itemTemplate_ = document.querySelector('#item-template');
+    this.logsList_ = document.getElementById('logs-list');
+    this.itemTemplate_ = document.getElementById('item-template');
     this.shouldSnapToBottom_ = true;
 
     this.logsList_.onscroll = this.onScroll_.bind(this);
@@ -119,8 +119,8 @@ class LogsListController {
    * Clears all log items from the logs list.
    */
   clear() {
-    const items = this.logsList_.querySelectorAll('.log-item');
-    for (let i = 0; i < items.length; ++i) {
+    var items = this.logsList_.querySelectorAll('.log-item');
+    for (var i = 0; i < items.length; ++i) {
       items[i].remove();
     }
     this.shouldSnapToBottom_ = true;
@@ -131,16 +131,16 @@ class LogsListController {
    * @param {!Log} log
    */
   add(log) {
-    const directories = log.file.split('/');
-    const source = directories[directories.length - 1] + ':' + log.line;
+    var directories = log.file.split('/');
+    var source = directories[directories.length - 1] + ':' + log.line;
 
-    const t = this.itemTemplate_.content;
+    var t = this.itemTemplate_.content;
     t.querySelector('.log-item').attributes.severity.value = log.severity;
     t.querySelector('.item-time').textContent = log.time;
     t.querySelector('.item-source').textContent = source;
     t.querySelector('.item-text').textContent = log.text;
 
-    const newLogItem = document.importNode(this.itemTemplate_.content, true);
+    var newLogItem = document.importNode(this.itemTemplate_.content, true);
     this.logsList_.appendChild(newLogItem);
     if (this.shouldSnapToBottom_) {
       this.logsList_.scrollTop = this.logsList_.scrollHeight;
@@ -153,7 +153,7 @@ class LogsListController {
    */
   set(logs) {
     this.clear();
-    for (let i = 0; i < logs.length; ++i) {
+    for (var i = 0; i < logs.length; ++i) {
       this.add(logs[i]);
     }
   }

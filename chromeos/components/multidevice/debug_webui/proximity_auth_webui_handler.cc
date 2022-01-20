@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/multidevice_debug/proximity_auth_webui_handler.h"
+#include "chromeos/components/multidevice/debug_webui/proximity_auth_webui_handler.h"
 
 #include <algorithm>
 #include <memory>
@@ -24,14 +24,11 @@
 #include "content/public/browser/web_ui.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace multidevice {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove when device_sync moved to ash
-namespace device_sync = ::chromeos::device_sync;
 
 constexpr const multidevice::SoftwareFeature kAllSoftareFeatures[] = {
     multidevice::SoftwareFeature::kBetterTogetherHost,
@@ -436,4 +433,4 @@ void ProximityAuthWebUIHandler::NotifyGotLocalState(
 
 }  // namespace multidevice
 
-}  // namespace ash
+}  // namespace chromeos

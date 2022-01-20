@@ -172,8 +172,6 @@
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/media_app_ui/url_constants.h"
-#include "ash/webui/multidevice_debug/proximity_auth_ui.h"
-#include "ash/webui/multidevice_debug/url_constants.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
@@ -256,6 +254,8 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
+#include "chromeos/components/multidevice/debug_webui/proximity_auth_ui.h"
+#include "chromeos/components/multidevice/debug_webui/url_constants.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"  // nogncheck
@@ -543,11 +543,12 @@ void BindMultiDeviceSetup(
 
 // Special case for chrome://proximity_auth.
 template <>
-WebUIController* NewWebUI<ash::multidevice::ProximityAuthUI>(WebUI* web_ui,
-                                                             const GURL& url) {
+WebUIController* NewWebUI<chromeos::multidevice::ProximityAuthUI>(
+    WebUI* web_ui,
+    const GURL& url) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
-  return new ash::multidevice::ProximityAuthUI(
+  return new chromeos::multidevice::ProximityAuthUI(
       web_ui,
       ash::device_sync::DeviceSyncClientFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context)),
@@ -911,9 +912,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == ash::kChromeUIFirmwareUpdateAppHost)
       return &NewWebUI<ash::FirmwareUpdateAppUI>;
   }
-  if (url.host_piece() == ash::multidevice::kChromeUIProximityAuthHost &&
+  if (url.host_piece() == chromeos::multidevice::kChromeUIProximityAuthHost &&
       !profile->IsOffTheRecord()) {
-    return &NewWebUI<ash::multidevice::ProximityAuthUI>;
+    return &NewWebUI<chromeos::multidevice::ProximityAuthUI>;
   }
   if (url.host_piece() == chrome::kChromeUIInternetConfigDialogHost)
     return &NewWebUI<chromeos::InternetConfigDialogUI>;
@@ -1444,7 +1445,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kChromeUIOSCreditsURL), GURL(chrome::kOsUIOSSettingsURL),
       GURL(chrome::kChromeUIPowerUrl),
       GURL(chrome::kChromeUIPrintManagementUrl),
-      GURL(ash::multidevice::kChromeUIProximityAuthURL),
+      GURL(chromeos::multidevice::kChromeUIProximityAuthURL),
       GURL(chrome::kOsUIRestartURL), GURL(chrome::kChromeUIScanningAppURL),
       GURL(chrome::kOsUIScanningAppURL), GURL(chrome::kChromeUISetTimeURL),
       GURL(chrome::kChromeUIOSSettingsURL), GURL(chrome::kChromeUISettingsURL),

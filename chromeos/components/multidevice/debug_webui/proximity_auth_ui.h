@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_UI_H_
-#define ASH_WEBUI_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_UI_H_
+#ifndef CHROMEOS_COMPONENTS_MULTIDEVICE_DEBUG_WEBUI_PROXIMITY_AUTH_UI_H_
+#define CHROMEOS_COMPONENTS_MULTIDEVICE_DEBUG_WEBUI_PROXIMITY_AUTH_UI_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace ash {
+namespace chromeos {
+
+namespace device_sync {
+class DeviceSyncClient;
+}  // namespace device_sync
 
 namespace multidevice {
 
@@ -20,8 +22,7 @@ namespace multidevice {
 class ProximityAuthUI : public ui::MojoWebUIController {
  public:
   using MultiDeviceSetupBinder = base::RepeatingCallback<void(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup>)>;
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>)>;
 
   // Note: |web_ui| is not owned by this instance and must outlive this
   // instance.
@@ -37,8 +38,8 @@ class ProximityAuthUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver);
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+          receiver);
 
  private:
   const MultiDeviceSetupBinder multidevice_setup_binder_;
@@ -48,6 +49,6 @@ class ProximityAuthUI : public ui::MojoWebUIController {
 
 }  // namespace multidevice
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_WEBUI_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_UI_H_
+#endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_DEBUG_WEBUI_PROXIMITY_AUTH_UI_H_

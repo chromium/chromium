@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_WEBUI_HANDLER_H_
-#define ASH_WEBUI_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_WEBUI_HANDLER_H_
+#ifndef CHROMEOS_COMPONENTS_MULTIDEVICE_DEBUG_WEBUI_PROXIMITY_AUTH_WEBUI_HANDLER_H_
+#define CHROMEOS_COMPONENTS_MULTIDEVICE_DEBUG_WEBUI_PROXIMITY_AUTH_WEBUI_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -17,7 +17,7 @@ namespace base {
 class ListValue;
 }
 
-namespace ash {
+namespace chromeos {
 
 namespace multidevice {
 
@@ -64,9 +64,8 @@ class ProximityAuthWebUIHandler
   void OnForceSyncNow(bool success);
   void OnSetSoftwareFeatureState(
       const std::string public_key,
-      chromeos::device_sync::mojom::NetworkRequestResult result_code);
-  void OnGetDebugInfo(
-      chromeos::device_sync::mojom::DebugInfoPtr debug_info_ptr);
+      device_sync::mojom::NetworkRequestResult result_code);
+  void OnGetDebugInfo(device_sync::mojom::DebugInfoPtr debug_info_ptr);
 
   void NotifyOnEnrollmentFinished(
       bool success,
@@ -100,6 +99,6 @@ class ProximityAuthWebUIHandler
 
 }  // namespace multidevice
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_WEBUI_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_WEBUI_HANDLER_H_
+#endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_DEBUG_WEBUI_PROXIMITY_AUTH_WEBUI_HANDLER_H_
