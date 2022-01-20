@@ -57,6 +57,7 @@
 #include "chromeos/crosapi/mojom/system_display.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
@@ -337,6 +338,9 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::TaskManager,
                   &crosapi::mojom::Crosapi::BindTaskManager,
                   Crosapi::MethodMinVersions::kBindTaskManagerMinVersion>();
+  ConstructRemote<crosapi::mojom::TimeZoneService,
+                  &crosapi::mojom::Crosapi::BindTimeZoneService,
+                  Crosapi::MethodMinVersions::kBindTimeZoneServiceMinVersion>();
   ConstructRemote<crosapi::mojom::Tts, &crosapi::mojom::Crosapi::BindTts,
                   Crosapi::MethodMinVersions::kBindTtsMinVersion>();
   ConstructRemote<crosapi::mojom::UrlHandler,

@@ -50,6 +50,7 @@ import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/system_display.mojom";
 import "chromeos/crosapi/mojom/task_manager.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
+import "chromeos/crosapi/mojom/timezone.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
@@ -92,8 +93,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 61
-// Next method id: 65
+// Next version: 62
+// Next method id: 66
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -398,6 +399,11 @@ interface Crosapi {
   // is not available on production devices.
   [MinVersion=9] BindTestController@14(
       pending_receiver<TestController> receiver);
+
+  // Binds the TimeZoneService which notifies system timezone change.
+  // Added in M99.
+  [MinVersion=61] BindTimeZoneService@65(
+      pending_receiver<TimeZoneService> receiver);
 
   // Binds the Tts service which process speech synthesis requests.
   [MinVersion=54] BindTts@58(pending_receiver<Tts> receiver);

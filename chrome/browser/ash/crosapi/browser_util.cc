@@ -210,7 +210,7 @@ Channel GetStatefulLacrosChannel() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 60,
+    crosapi::mojom::Crosapi::Version_ == 61,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 
 }  // namespace

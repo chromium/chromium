@@ -58,6 +58,7 @@ mojom("mojom") {
     "system_display.mojom",
     "task_manager.mojom",
     "test_controller.mojom",
+    "timezone.mojom",
     "tts.mojom",
     "url_handler.mojom",
     "video_capture.mojom",

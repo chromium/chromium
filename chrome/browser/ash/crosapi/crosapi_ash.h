@@ -64,6 +64,7 @@ class SelectFileAsh;
 class StructuredMetricsServiceAsh;
 class SystemDisplayAsh;
 class TaskManagerAsh;
+class TimeZoneServiceAsh;
 class TtsAsh;
 class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
@@ -199,6 +200,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::TaskManager> receiver) override;
   void BindTestController(
       mojo::PendingReceiver<mojom::TestController> receiver) override;
+  void BindTimeZoneService(
+      mojo::PendingReceiver<mojom::TimeZoneService> receiver) override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> receiver) override;
   void BindUrlHandler(
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
@@ -314,6 +317,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SystemDisplayAsh> system_display_ash_;
   std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
+  std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
   std::unique_ptr<TtsAsh> tts_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
   std::unique_ptr<VideoCaptureDeviceFactoryAsh>
