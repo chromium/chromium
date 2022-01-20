@@ -576,6 +576,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
         ],
       },
+      'Linux Tests': {
+        'swarming': {
+          'quickrun_shards': 15,
+        },
+      },
       # https://crbug.com/1084469
       'Linux Tests (Wayland)': {
         'args': [
@@ -1093,6 +1098,11 @@
           'shards': 2,
         },
       },
+      'android-marshmallow-arm64-rel': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
+      },
     },
   },
   'components_unittests': {
@@ -1198,6 +1208,7 @@
       'Linux TSan Tests': {
         'swarming': {
           'shards': 15,
+          'quickrun_shards': 30,
         },
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
@@ -1898,7 +1909,7 @@
       },
       'Win10 Tests x64': {
         'swarming': {
-          'quickrun_shards': 8
+          'quickrun_shards': 8,
         },
       },
       # temporary, https://crbug.com/818832
@@ -3527,6 +3538,11 @@
       'android-11-x86-rel', # crbug.com/1165280
     ],
     'modifications': {
+      'android-marshmallow-arm64-rel': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
+      },
       'android-pie-arm64-rel': {
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.

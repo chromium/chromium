@@ -9650,6 +9650,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
+          "quickrun_shards": 30,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
