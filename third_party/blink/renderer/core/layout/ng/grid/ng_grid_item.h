@@ -34,42 +34,6 @@ struct CORE_EXPORT GridItemData {
   explicit GridItemData(const NGBlockNode node)
       : node(node), is_sizing_dependent_on_block_size(false) {}
 
-  bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
-  bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
-
-  const GridSpan& Span(GridTrackSizingDirection track_direction) const {
-    return resolved_position.Span(track_direction);
-  }
-  wtf_size_t StartLine(GridTrackSizingDirection track_direction) const {
-    return resolved_position.StartLine(track_direction);
-  }
-  wtf_size_t EndLine(GridTrackSizingDirection track_direction) const {
-    return resolved_position.EndLine(track_direction);
-  }
-  wtf_size_t SpanSize(GridTrackSizingDirection track_direction) const {
-    return resolved_position.SpanSize(track_direction);
-  }
-
-  const TrackSpanProperties& GetTrackSpanProperties(
-      const GridTrackSizingDirection track_direction) const;
-  void SetTrackSpanProperty(const TrackSpanProperties::PropertyId property,
-                            const GridTrackSizingDirection track_direction);
-
-  bool IsSpanningFlexibleTrack(
-      const GridTrackSizingDirection track_direction) const;
-  bool IsSpanningIntrinsicTrack(
-      const GridTrackSizingDirection track_direction) const;
-  bool IsSpanningAutoMinimumTrack(
-      const GridTrackSizingDirection track_direction) const;
-  bool IsSpanningFixedMinimumTrack(
-      const GridTrackSizingDirection track_direction) const;
-  bool IsSpanningFixedMaximumTrack(
-      const GridTrackSizingDirection track_direction) const;
-
-  bool IsBaselineAlignedForDirection(
-      const GridTrackSizingDirection track_direction) const;
-  bool IsBaselineSpecifiedForDirection(
-      const GridTrackSizingDirection track_direction) const;
   void SetAlignmentFallback(const GridTrackSizingDirection track_direction,
                             const ComputedStyle& container_style,
                             const bool has_synthesized_baseline);
@@ -81,14 +45,24 @@ struct CORE_EXPORT GridItemData {
     return block_axis_alignment_fallback.value_or(block_axis_alignment);
   }
 
+  bool IsBaselineAlignedForDirection(
+      const GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns)
+               ? InlineAxisAlignment() == AxisEdge::kBaseline
+               : BlockAxisAlignment() == AxisEdge::kBaseline;
+  }
+  bool IsBaselineSpecifiedForDirection(
+      const GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns)
+               ? inline_axis_alignment == AxisEdge::kBaseline
+               : block_axis_alignment == AxisEdge::kBaseline;
+  }
+
   // For this item and track direction, computes the pair of indices |begin| and
   // |end| such that the item spans every set from the respective collection's
   // |sets_| with an index in the range [begin, end).
   void ComputeSetIndices(
       const NGGridLayoutAlgorithmTrackCollection& track_collection);
-  const GridItemIndices& SetIndices(
-      const GridTrackSizingDirection track_direction) const;
-  GridItemIndices& RangeIndices(const GridTrackSizingDirection track_direction);
 
   // For this out of flow item and track collection, computes and stores its
   // first and last spanned ranges, as well as the start and end track offset.
@@ -96,6 +70,72 @@ struct CORE_EXPORT GridItemData {
   void ComputeOutOfFlowItemPlacement(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
       const NGGridPlacement& grid_placement);
+
+  const GridItemIndices& SetIndices(
+      const GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? column_set_indices
+                                            : row_set_indices;
+  }
+  GridItemIndices& RangeIndices(
+      const GridTrackSizingDirection track_direction) {
+    return (track_direction == kForColumns) ? column_range_indices
+                                            : row_range_indices;
+  }
+
+  const GridSpan& Span(const GridTrackSizingDirection track_direction) const {
+    return resolved_position.Span(track_direction);
+  }
+  wtf_size_t StartLine(const GridTrackSizingDirection track_direction) const {
+    return resolved_position.StartLine(track_direction);
+  }
+  wtf_size_t EndLine(const GridTrackSizingDirection track_direction) const {
+    return resolved_position.EndLine(track_direction);
+  }
+  wtf_size_t SpanSize(const GridTrackSizingDirection track_direction) const {
+    return resolved_position.SpanSize(track_direction);
+  }
+
+  bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
+  bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
+
+  const TrackSpanProperties& GetTrackSpanProperties(
+      const GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? column_span_properties
+                                            : row_span_properties;
+  }
+  void SetTrackSpanProperty(const TrackSpanProperties::PropertyId property,
+                            const GridTrackSizingDirection track_direction) {
+    if (track_direction == kForColumns)
+      column_span_properties.SetProperty(property);
+    else
+      row_span_properties.SetProperty(property);
+  }
+
+  bool IsSpanningFlexibleTrack(
+      const GridTrackSizingDirection track_direction) const {
+    return GetTrackSpanProperties(track_direction)
+        .HasProperty(TrackSpanProperties::kHasFlexibleTrack);
+  }
+  bool IsSpanningIntrinsicTrack(
+      const GridTrackSizingDirection track_direction) const {
+    return GetTrackSpanProperties(track_direction)
+        .HasProperty(TrackSpanProperties::kHasIntrinsicTrack);
+  }
+  bool IsSpanningAutoMinimumTrack(
+      const GridTrackSizingDirection track_direction) const {
+    return GetTrackSpanProperties(track_direction)
+        .HasProperty(TrackSpanProperties::kHasAutoMinimumTrack);
+  }
+  bool IsSpanningFixedMinimumTrack(
+      const GridTrackSizingDirection track_direction) const {
+    return GetTrackSpanProperties(track_direction)
+        .HasProperty(TrackSpanProperties::kHasFixedMinimumTrack);
+  }
+  bool IsSpanningFixedMaximumTrack(
+      const GridTrackSizingDirection track_direction) const {
+    return GetTrackSpanProperties(track_direction)
+        .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
+  }
 
   NGBlockNode node;
   GridArea resolved_position;
@@ -175,8 +215,14 @@ struct CORE_EXPORT GridItems {
   }
   Iterator end() { return Iterator(&item_data, reordered_item_indices.end()); }
 
-  void Append(const GridItemData& new_item_data);
-  void ReserveCapacity(wtf_size_t capacity);
+  void Append(const GridItemData& new_item_data) {
+    reordered_item_indices.push_back(item_data.size());
+    item_data.emplace_back(new_item_data);
+  }
+  void ReserveCapacity(const wtf_size_t capacity) {
+    reordered_item_indices.ReserveCapacity(capacity);
+    item_data.ReserveCapacity(capacity);
+  }
 
   wtf_size_t Size() const { return item_data.size(); }
   bool IsEmpty() const { return item_data.IsEmpty(); }

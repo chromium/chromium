@@ -8,65 +8,6 @@
 
 namespace blink {
 
-const TrackSpanProperties& GridItemData::GetTrackSpanProperties(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns) ? column_span_properties
-                                          : row_span_properties;
-}
-
-void GridItemData::SetTrackSpanProperty(
-    const TrackSpanProperties::PropertyId property,
-    const GridTrackSizingDirection track_direction) {
-  if (track_direction == kForColumns)
-    column_span_properties.SetProperty(property);
-  else
-    row_span_properties.SetProperty(property);
-}
-
-bool GridItemData::IsSpanningFlexibleTrack(
-    const GridTrackSizingDirection track_direction) const {
-  return GetTrackSpanProperties(track_direction)
-      .HasProperty(TrackSpanProperties::kHasFlexibleTrack);
-}
-
-bool GridItemData::IsSpanningIntrinsicTrack(
-    const GridTrackSizingDirection track_direction) const {
-  return GetTrackSpanProperties(track_direction)
-      .HasProperty(TrackSpanProperties::kHasIntrinsicTrack);
-}
-
-bool GridItemData::IsSpanningAutoMinimumTrack(
-    const GridTrackSizingDirection track_direction) const {
-  return GetTrackSpanProperties(track_direction)
-      .HasProperty(TrackSpanProperties::kHasAutoMinimumTrack);
-}
-
-bool GridItemData::IsSpanningFixedMinimumTrack(
-    const GridTrackSizingDirection track_direction) const {
-  return GetTrackSpanProperties(track_direction)
-      .HasProperty(TrackSpanProperties::kHasFixedMinimumTrack);
-}
-
-bool GridItemData::IsSpanningFixedMaximumTrack(
-    const GridTrackSizingDirection track_direction) const {
-  return GetTrackSpanProperties(track_direction)
-      .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
-}
-
-bool GridItemData::IsBaselineAlignedForDirection(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns)
-             ? InlineAxisAlignment() == AxisEdge::kBaseline
-             : BlockAxisAlignment() == AxisEdge::kBaseline;
-}
-
-bool GridItemData::IsBaselineSpecifiedForDirection(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns)
-             ? inline_axis_alignment == AxisEdge::kBaseline
-             : block_axis_alignment == AxisEdge::kBaseline;
-}
-
 void GridItemData::SetAlignmentFallback(
     const GridTrackSizingDirection track_direction,
     const ComputedStyle& container_style,
@@ -164,18 +105,6 @@ void GridItemData::ComputeSetIndices(
   DCHECK_LT(set_indices.begin, set_indices.end);
 }
 
-const GridItemIndices& GridItemData::SetIndices(
-    const GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns) ? column_set_indices
-                                          : row_set_indices;
-}
-
-GridItemIndices& GridItemData::RangeIndices(
-    const GridTrackSizingDirection track_direction) {
-  return (track_direction == kForColumns) ? column_range_indices
-                                          : row_range_indices;
-}
-
 void GridItemData::ComputeOutOfFlowItemPlacement(
     const NGGridLayoutAlgorithmTrackCollection& track_collection,
     const NGGridPlacement& grid_placement) {
@@ -251,16 +180,6 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
       end_offset -= track_collection.RangeTrackNumber(end_range_index);
     }
   }
-}
-
-void GridItems::Append(const GridItemData& new_item_data) {
-  reordered_item_indices.push_back(item_data.size());
-  item_data.emplace_back(new_item_data);
-}
-
-void GridItems::ReserveCapacity(wtf_size_t capacity) {
-  reordered_item_indices.ReserveCapacity(capacity);
-  item_data.ReserveCapacity(capacity);
 }
 
 }  // namespace blink
