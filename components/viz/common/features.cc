@@ -156,7 +156,7 @@ const base::Feature kUseRealVideoColorSpaceForDisplay{
 // Browser to batch SurfaceSync calls sent to the Renderer for properties can
 // change in close proximity to each other.
 const base::Feature kSurfaceSyncThrottling{"SurfaceSyncThrottling",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDrawPredictedInkPoint{"DrawPredictedInkPoint",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
