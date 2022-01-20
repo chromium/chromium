@@ -41,6 +41,12 @@ bool ShouldIgnoreProvider(ProviderType type) {
   }
 }
 
+bool ShouldIgnoreResult(const ChromeSearchResult* result) {
+  // TODO(crbug.com/1199206): We should have a more robust way of determining
+  // omnibox subtypes than using the metrics type.
+  return result->metrics_type() == ash::OMNIBOX_WEB_QUERY;
+}
+
 }  // namespace
 
 BestMatchRanker::BestMatchRanker() {}
@@ -88,6 +94,9 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
   }
 
   for (const auto& result : it->second) {
+    if (ShouldIgnoreResult(result.get()))
+      continue;
+
     if (seen_ids.find(result->id()) != seen_ids.end()) {
       // Omnibox provider can return more than once. Don't add duplicate results
       // to best_matches_.
