@@ -14,10 +14,10 @@
 // "alpha" is a temporary name until a convention is defined.
 const char kWidevineKeySystem[] = "com.widevine.alpha";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // An sub key system of `kWidevineKeySystem` only used in experiments.
 const char kWidevineExperimentKeySystem[] = "com.widevine.alpha.experiment";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Widevine CDM files are in a directory with this name. This path is also
 // hardcoded in some build files and changing it requires changing the build
@@ -49,7 +49,7 @@ const media::CdmType kWidevineCdmType{
     "application_x-ppapi-widevine-cdm"};
 
 // Constants specific to Windows MediaFoundation-based Widevine CDM library.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kMediaFoundationWidevineCdmLibraryName[] = "Google.Widevine.CDM";
 const char kMediaFoundationWidevineCdmDisplayName[] =
     "Google Widevine Windows CDM";
@@ -57,6 +57,6 @@ const char kMediaFoundationWidevineCdmDisplayName[] =
 // of the PluginPrivateFileSystem.
 const media::CdmType kMediaFoundationWidevineCdmType{
     base::Token{0x8e73dec793bf5adcull, 0x27e572c9a1fd930eull}, ""};
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
