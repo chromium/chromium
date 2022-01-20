@@ -225,11 +225,6 @@ const base::Feature kBorealisLinuxMode{"BorealisLinuxMode",
 const base::Feature kManagedTermsOfService{"ManagedTermsOfService",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable display of button on Arc provisioning failure dialog for network
-// tests.
-const base::Feature kButtonARCNetworkDiagnostics{
-    "ButtonARCNetworkDiagnostics", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable or disable calendar view from the system tray. Also enables the system
 // tray to show date in the shelf when the screen is sufficiently large.
 const base::Feature kCalendarView{"CalendarView",
@@ -1409,8 +1404,7 @@ bool IsArcInputOverlayEnabled() {
 }
 
 bool IsArcNetworkDiagnosticsButtonEnabled() {
-  return IsNetworkingInDiagnosticsAppEnabled() &&
-         base::FeatureList::IsEnabled(kButtonARCNetworkDiagnostics);
+  return IsNetworkingInDiagnosticsAppEnabled();
 }
 
 bool IsAssistiveMultiWordEnabled() {

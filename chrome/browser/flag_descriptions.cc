@@ -4080,11 +4080,6 @@ const char kBluetoothUseFlossDescription[] =
     "instead of Bluez. This is meant to be used by developers and is not "
     "guaranteed to be stable";
 
-const char kButtonARCNetworkDiagnosticsName[] = "ARC Network Tests Button";
-const char kButtonARCNetworkDiagnosticsDescription[] =
-    "Enables the display of a button on the ARC Provisioning failure dialog "
-    "that opens the connectivity section of the diagnostics app.";
-
 const char kCalendarViewName[] =
     "Productivity experiment: Monthly Calendar View";
 const char kCalendarViewDescription[] =

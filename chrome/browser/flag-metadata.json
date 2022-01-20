@@ -613,11 +613,6 @@
     "expiry_milestone": 103
   },
   {
-    "name": "button-arc-network-diagnostics",
-    "owners": [ "arc-core@google.com"],
-    "expiry_milestone": 100
-  },
-  {
     "name": "bypass-app-banner-engagement-checks",
     "owners": [ "dmurph" ],
     "expiry_milestone": 95
