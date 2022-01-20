@@ -719,7 +719,7 @@ void AshNotificationView::UpdateWithNotification(
   is_grouped_parent_view_ = notification.group_parent();
 
   if (!is_grouped_child_view_)
-    grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
+    grouped_notifications_scroll_view_->SetVisible(is_grouped_parent_view_);
 
   header_row()->SetVisible(!is_grouped_child_view_);
   UpdateMessageViewInExpandedState(notification);
