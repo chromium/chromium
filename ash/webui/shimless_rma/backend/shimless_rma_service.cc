@@ -604,9 +604,9 @@ void ShimlessRmaService::GetOriginalDramPartNumber(
 
 void ShimlessRmaService::SetDeviceInformation(
     const std::string& serial_number,
-    uint8_t region_index,
-    uint8_t sku_index,
-    uint8_t white_label_index,
+    int32_t region_index,
+    int32_t sku_index,
+    int32_t white_label_index,
     const std::string& dram_part_number,
     SetDeviceInformationCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {

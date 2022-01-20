@@ -101,9 +101,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void GetOriginalDramPartNumber(
       GetOriginalDramPartNumberCallback callback) override;
   void SetDeviceInformation(const std::string& serial_number,
-                            uint8_t region_index,
-                            uint8_t sku_index,
-                            uint8_t white_label_index,
+                            int32_t region_index,
+                            int32_t sku_index,
+                            int32_t white_label_index,
                             const std::string& dram_part_number,
                             SetDeviceInformationCallback callback) override;
 

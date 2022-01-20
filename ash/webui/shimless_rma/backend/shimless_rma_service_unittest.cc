@@ -1723,7 +1723,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalRegion) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetOriginalRegion(
-      base::BindLambdaForTesting([&](uint8_t region) {
+      base::BindLambdaForTesting([&](int32_t region) {
         EXPECT_EQ(region, 3);
         run_loop.Quit();
       }));
@@ -1744,7 +1744,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalRegionFromWrongStateEmpty) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetOriginalRegion(
-      base::BindLambdaForTesting([&](uint8_t region) {
+      base::BindLambdaForTesting([&](int32_t region) {
         EXPECT_EQ(region, 0);
         run_loop.Quit();
       }));
@@ -1775,7 +1775,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSku) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetOriginalSku(
-      base::BindLambdaForTesting([&](uint8_t sku) {
+      base::BindLambdaForTesting([&](int32_t sku) {
         EXPECT_EQ(sku, 4);
         run_loop.Quit();
       }));
@@ -1796,7 +1796,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSkuFromWrongStateEmpty) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetOriginalSku(
-      base::BindLambdaForTesting([&](uint8_t sku) {
+      base::BindLambdaForTesting([&](int32_t sku) {
         EXPECT_EQ(sku, 0);
         run_loop.Quit();
       }));
@@ -1827,7 +1827,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabel) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetOriginalWhiteLabel(
-      base::BindLambdaForTesting([&](uint8_t white_label) {
+      base::BindLambdaForTesting([&](int32_t white_label) {
         EXPECT_EQ(white_label, 3);
         run_loop.Quit();
       }));
@@ -1848,7 +1848,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabelFromWrongStateEmpty) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetOriginalWhiteLabel(
-      base::BindLambdaForTesting([&](uint8_t white_label) {
+      base::BindLambdaForTesting([&](int32_t white_label) {
         EXPECT_EQ(white_label, 0);
         run_loop.Quit();
       }));
