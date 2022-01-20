@@ -354,8 +354,6 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   const base::Value* create_desktop_shortcut =
       entry.FindKey(kCreateDesktopShortcutKey);
   const base::Value* fallback_app_name = entry.FindKey(kFallbackAppNameKey);
-  const base::Value* custom_name = entry.FindKey(kCustomNameKey);
-  const base::Value* custom_icon = entry.FindKey(kCustomIconKey);
 
   DCHECK(!default_launch_container ||
          default_launch_container->GetString() ==
@@ -392,6 +390,8 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   if (fallback_app_name)
     install_options.fallback_app_name = fallback_app_name->GetString();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  const base::Value* custom_name = entry.FindKey(kCustomNameKey);
   if (custom_name) {
     install_options.override_name = custom_name->GetString();
     if (install_gurl.is_valid())
@@ -399,6 +399,7 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
           custom_name->GetString());
   }
 
+  const base::Value* custom_icon = entry.FindKey(kCustomIconKey);
   if (custom_icon && custom_icon->is_dict()) {
     const std::string* icon_url = custom_icon->FindStringKey(kCustomIconURLKey);
     if (icon_url) {
@@ -408,12 +409,13 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
         if (install_gurl.is_valid())
           custom_manifest_values_by_url_[install_gurl].SetIcon(icon_gurl);
       } else {
-        LOG(WARNING) << "Policy-installed web app " << install_url
-                     << " has non-https custom icon URL " << icon_url
+        LOG(WARNING) << "Policy-installed web app " << *install_url
+                     << " has non-https custom icon URL " << *icon_url
                      << ", ignoring custom icon.";
       }
     }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return install_options;
 }

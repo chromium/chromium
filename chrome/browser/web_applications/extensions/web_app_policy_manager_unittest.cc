@@ -75,14 +75,17 @@ const char kWebAppSettingWithDefaultConfiguration[] = R"({
 })";
 
 const char kDefaultFallbackAppName[] = "fallback app name";
-const char kDefaultCustomAppName[] = "custom app name";
 
 constexpr char kWindowedUrl[] = "https://windowed.example/";
 constexpr char kTabbedUrl[] = "https://tabbed.example/";
 constexpr char kNoContainerUrl[] = "https://no-container.example/";
+
+#if BUILDFLAG(IS_CHROMEOS)
+const char kDefaultCustomAppName[] = "custom app name";
 constexpr char kDefaultCustomIconUrl[] = "https://windowed.example/icon.png";
 constexpr char kUnsecureIconUrl[] = "http://windowed.example/icon.png";
 constexpr char kDefaultCustomIconHash[] = "abcdef";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::Value GetWindowedItem() {
   base::Value item(base::Value::Type::DICTIONARY);
@@ -232,6 +235,7 @@ ExternalInstallOptions GetFallbackAppNameInstallOptions() {
   return options;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 base::Value GetCustomAppNameItem(std::string name) {
   base::Value item(base::Value::Type::DICTIONARY);
   item.SetKey(kUrlKey, base::Value(kWindowedUrl));
@@ -279,6 +283,7 @@ ExternalInstallOptions GetCustomAppIconInstallOptions() {
   options.override_icon_url = GURL(kDefaultCustomIconUrl);
   return options;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 Source::Type ConvertExternalInstallSourceToSourceType(
     ExternalInstallSource external_install_source) {
@@ -713,6 +718,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
   EXPECT_EQ(install_requests, expected_install_options_list);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppIcon) {
   if (ShouldSkipPWASpecificTest())
     return;
@@ -815,6 +821,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppNameRefresh) {
   EXPECT_EQ(kPrefix + kDefaultCustomAppName,
             app_registrar().GetAppShortName(apps.begin()->first));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(WebAppPolicyManagerTest, DynamicRefresh) {
   if (ShouldSkipPWASpecificTest())
