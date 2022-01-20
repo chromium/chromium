@@ -39,7 +39,7 @@ const BURST_COVER_SUFFIX = '_COVER';
  * @return Transformed datetime name.
  */
 function timestampToDatetimeName(timestamp: number): string {
-  const pad = (n) => (n < 10 ? '0' : '') + n;
+  const pad = (n: number) => (n < 10 ? '0' : '') + n;
   const date = new Date(timestamp);
   return date.getFullYear() + pad(date.getMonth() + 1) + pad(date.getDate()) +
       '_' + pad(date.getHours()) + pad(date.getMinutes()) +
@@ -72,9 +72,8 @@ export class Filenamer {
    * @return New filename.
    */
   newBurstName(isCover: boolean): string {
-    const prependZeros = (n, width) => {
-      n = n + '';
-      return new Array(Math.max(0, width - n.length) + 1).join('0') + n;
+    const prependZeros = (n: number, width: number) => {
+      return String(n).padStart(width, '0');
     };
     return IMAGE_PREFIX + timestampToDatetimeName(this.timestamp) +
         BURST_SUFFIX + prependZeros(++this.burstCount, 5) +
