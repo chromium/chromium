@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialTypography.h>
 
 #include "base/check_op.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_view.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
@@ -55,7 +56,7 @@ const CGFloat kIconSize = 24;
 }
 
 + (NSString*)accessibilityIdentifier {
-  return @"ContentSuggestionsWhatsNewIdentifier";
+  return kContentSuggestionsWhatsNewIdentifier;
 }
 
 @end

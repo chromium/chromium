@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -11,10 +12,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-const CGSize regularCellSize = {/*width=*/343, /*height=*/72};
-}
 
 @implementation ContentSuggestionsReturnToRecentTabItem
 @synthesize metricsRecorded;
@@ -39,7 +36,7 @@ const CGSize regularCellSize = {/*width=*/343, /*height=*/72};
 }
 
 - (CGFloat)cellHeightForWidth:(CGFloat)width {
-  return [ContentSuggestionsReturnToRecentTabCell defaultSize].height;
+  return kReturnToRecentTabSize.height;
 }
 
 @end
@@ -78,7 +75,7 @@ const CGSize regularCellSize = {/*width=*/343, /*height=*/72};
 }
 
 + (CGSize)defaultSize {
-  return regularCellSize;
+  return kReturnToRecentTabSize;
 }
 
 - (void)setIconImage:(UIImage*)image {

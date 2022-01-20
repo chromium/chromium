@@ -65,3 +65,15 @@ CGFloat CenteredTilesMarginForWidth(UITraitCollection* trait_collection,
   NOTREACHED();
   return 0;
 }
+
+CGFloat MostVisitedTilesContentHorizontalSpace(
+    UITraitCollection* trait_collection) {
+  CGFloat horizontalSpace =
+      ContentSuggestionsTilesHorizontalSpacing(trait_collection);
+  CGSize cellSize =
+      MostVisitedCellSize(trait_collection.preferredContentSizeCategory);
+  // Sum up the space taken up by all the tiles and space between them.
+  CGFloat width = (kMaxNumberOfTilesPerRow * cellSize.width) +
+                  ((kMaxNumberOfTilesPerRow - 1) * horizontalSpace);
+  return width;
+}

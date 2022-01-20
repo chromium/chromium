@@ -34,6 +34,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeMostVisited,
   ItemTypePromo,
   ItemTypeReturnToRecentTab,
+  ItemTypeSingleCell,
   ItemTypeUnknown,
 };
 
@@ -44,6 +45,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierLogo,
   SectionIdentifierReturnToRecentTab,
   SectionIdentifierPromo,
+  SectionIdentifierSingleCell,
   SectionIdentifierDefault,
 };
 

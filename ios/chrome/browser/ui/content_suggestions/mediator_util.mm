@@ -58,6 +58,10 @@ ContentSuggestionsSectionInformation* MostVisitedSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionMostVisited);
 }
 
+ContentSuggestionsSectionInformation* SingleCellSectionInformation() {
+  return EmptySectionInfo(ContentSuggestionsSectionSingleCell);
+}
+
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(
     const ntp_tiles::NTPTile& tile,
     ContentSuggestionsSectionInformation* sectionInfo) {

@@ -10,6 +10,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
@@ -442,13 +443,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   // Tap the promo.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContentSuggestionsWhatsNewIdentifier")]
+                                   kContentSuggestionsWhatsNewIdentifier)]
       performAction:grey_tap()];
 
   // Promo dismissed.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContentSuggestionsWhatsNewIdentifier")]
+                                   kContentSuggestionsWhatsNewIdentifier)]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   [NewTabPageAppInterface resetWhatsNewPromo];

@@ -34,4 +34,8 @@ CGSize MostVisitedCellSize(UIContentSizeCategory category);
 CGFloat CenteredTilesMarginForWidth(UITraitCollection* trait_collection,
                                     CGFloat width);
 
+// Returns horizontal space needed to show the Most Visited tiles.
+CGFloat MostVisitedTilesContentHorizontalSpace(
+    UITraitCollection* trait_collection);
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_TILE_LAYOUT_UTIL_H_

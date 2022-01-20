@@ -4,13 +4,19 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_view.h"
 
-#import <MaterialComponents/MaterialCollectionCells.h>
+#import <MaterialComponents/MaterialTypography.h>
 
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_item.h"
+#include "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 const CGFloat kLabelMargin = 14;
+const CGFloat kLabelLineSpacing = 4;
 const CGFloat kLabelIconMargin = 8;
+const CGFloat kLabelFontSize = 14;
 const CGFloat kIconSize = 24;
 const CGFloat kIconTopMargin = 10;
 }  // namespace
@@ -66,4 +72,42 @@ const CGFloat kIconTopMargin = 10;
   }
   return self;
 }
+
+- (instancetype)initWithConfiguration:(ContentSuggestionsWhatsNewItem*)config {
+  self = [self initWithFrame:CGRectZero];
+  if (self) {
+    [_iconView setImage:config.icon];
+    [self configureLabelWithText:config.text];
+    self.accessibilityIdentifier = kContentSuggestionsWhatsNewIdentifier;
+  }
+  return self;
+}
+
+// Configures |promoLabel| with |text|.
+- (void)configureLabelWithText:(NSString*)text {
+  _promoLabel.font =
+      [[MDCTypography fontLoader] regularFontOfSize:kLabelFontSize];
+  _promoLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  _promoLabel.numberOfLines = 0;
+
+  // Sets the line spacing on the attributed string.
+  NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+  [style setLineSpacing:kLabelLineSpacing];
+  NSDictionary* textAttributes = @{
+    NSParagraphStyleAttributeName : style,
+  };
+
+  // Sets the styling to mimic a link.
+  NSDictionary* linkAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+    NSUnderlineColorAttributeName : [UIColor colorNamed:kBlueColor],
+  };
+
+  NSAttributedString* attributedText =
+      AttributedStringFromStringWithLink(text, textAttributes, linkAttributes);
+
+  [_promoLabel setAttributedText:attributedText];
+}
+
 @end

@@ -27,6 +27,9 @@ ContentSuggestionsSectionInformation* PromoSectionInformation();
 // Creates and returns a SectionInfo for the Most Visited section.
 ContentSuggestionsSectionInformation* MostVisitedSectionInformation();
 
+// Creates and returns a SectionInfo for the single cell parent item.
+ContentSuggestionsSectionInformation* SingleCellSectionInformation();
+
 // Converts a ntp_tiles::NTPTile |tile| to a ContentSuggestionsMostVisitedItem
 // with a |sectionInfo|.
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(

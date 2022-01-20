@@ -15,3 +15,5 @@ NSString* const kContentSuggestionsLearnMoreIdentifier = @"Learn more";
 
 NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     @"contentSuggestionsMostVisitedAccessibilityIdentifierPrefix";
+
+const CGFloat kMostVisitedBottomMargin = 13;

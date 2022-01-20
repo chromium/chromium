@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_parent_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
@@ -98,12 +99,17 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Item for the "Return to Recent Tab" tile.
 @property(nonatomic, strong)
     ContentSuggestionsReturnToRecentTabItem* returnToRecentTabItem;
+// Parent Item for single cell layout.
+@property(nonatomic, strong) ContentSuggestionsParentItem* parentItem;
 // Section Info for the What's New promo section.
 @property(nonatomic, strong)
     ContentSuggestionsSectionInformation* promoSectionInfo;
 // Section Info for the Most Visited section.
 @property(nonatomic, strong)
     ContentSuggestionsSectionInformation* mostVisitedSectionInfo;
+// Section Info for the single cell parent item section.
+@property(nonatomic, strong)
+    ContentSuggestionsSectionInformation* singleCellSectionInfo;
 // Whether the page impression has been recorded.
 @property(nonatomic, assign) BOOL recordedPageImpression;
 // Map the section information created to the relevant category.
@@ -154,8 +160,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
                   largeIconCache:largeIconCache];
 
     _logoSectionInfo = LogoSectionInformation();
-    _promoSectionInfo = PromoSectionInformation();
-    _mostVisitedSectionInfo = MostVisitedSectionInformation();
+    if (IsSingleCellContentSuggestionsEnabled()) {
+      _singleCellSectionInfo = SingleCellSectionInformation();
+    } else {
+      _promoSectionInfo = PromoSectionInformation();
+      _mostVisitedSectionInfo = MostVisitedSectionInformation();
+    }
 
     _notificationPromo = std::make_unique<NotificationPromoWhatsNew>(
         GetApplicationContext()->GetLocalState());
@@ -274,7 +284,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image {
   if (self.returnToRecentTabItem) {
     self.returnToRecentTabItem.icon = image;
-    [self.consumer itemHasChanged:self.returnToRecentTabItem];
+    if (IsSingleCellContentSuggestionsEnabled()) {
+      self.parentItem.returnToRecentItem = self.returnToRecentTabItem;
+      [self.consumer itemHasChanged:self.parentItem];
+    } else {
+      [self.consumer itemHasChanged:self.returnToRecentTabItem];
+    }
   }
 }
 
@@ -354,16 +369,20 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
   [sectionsInfo addObject:self.logoSectionInfo];
 
-  if (self.showMostRecentTabStartSurfaceTile) {
-    DCHECK(IsStartSurfaceEnabled());
-    [sectionsInfo addObject:self.returnToRecentTabSectionInfo];
-  }
+  if (IsSingleCellContentSuggestionsEnabled()) {
+    [sectionsInfo addObject:self.singleCellSectionInfo];
+  } else {
+    if (self.showMostRecentTabStartSurfaceTile) {
+      DCHECK(IsStartSurfaceEnabled());
+      [sectionsInfo addObject:self.returnToRecentTabSectionInfo];
+    }
 
-  if (_notificationPromo->CanShow()) {
-    [sectionsInfo addObject:self.promoSectionInfo];
-  }
+    if (_notificationPromo->CanShow()) {
+      [sectionsInfo addObject:self.promoSectionInfo];
+    }
 
-  [sectionsInfo addObject:self.mostVisitedSectionInfo];
+    [sectionsInfo addObject:self.mostVisitedSectionInfo];
+  }
 
   return sectionsInfo;
 }
@@ -391,6 +410,23 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     if (!ShouldHideShortcutsForStartSurface()) {
       [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
     }
+  } else if (sectionInfo == self.singleCellSectionInfo) {
+    self.parentItem = [[ContentSuggestionsParentItem alloc] initWithType:0];
+    if (_notificationPromo->CanShow()) {
+      ContentSuggestionsWhatsNewItem* item =
+          [[ContentSuggestionsWhatsNewItem alloc] initWithType:0];
+      item.icon = _notificationPromo->GetIcon();
+      item.text = base::SysUTF8ToNSString(_notificationPromo->promo_text());
+      self.parentItem.whatsNewItem = item;
+    }
+    if (self.showMostRecentTabStartSurfaceTile) {
+      self.parentItem.returnToRecentItem = self.returnToRecentTabItem;
+    }
+    self.parentItem.mostVisitedItems = self.mostVisitedItems;
+    if (!ShouldHideShortcutsForStartSurface()) {
+      self.parentItem.shortcutsItems = self.actionButtonItems;
+    }
+    [convertedSuggestions addObject:self.parentItem];
   }
 
   return convertedSuggestions;
