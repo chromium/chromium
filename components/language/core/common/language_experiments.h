@@ -64,7 +64,6 @@ extern const base::Feature kUseULPLanguagesInChrome;
 
 enum class OverrideLanguageModel {
   DEFAULT,
-  FLUENT,
   GEO,
 };
 

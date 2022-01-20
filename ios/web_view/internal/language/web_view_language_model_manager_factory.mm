@@ -12,7 +12,6 @@
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
-#include "components/language/core/language_model/baseline_language_model.h"
 #include "components/language/core/language_model/fluent_language_model.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -29,27 +28,12 @@ namespace {
 
 void PrepareLanguageModels(WebViewBrowserState* const web_view_browser_state,
                            language::LanguageModelManager* const manager) {
-  // Set the primary Language Model to use based on the state of experiments.
-  switch (language::GetOverrideLanguageModel()) {
-    case language::OverrideLanguageModel::FLUENT:
-      manager->AddModel(language::LanguageModelManager::ModelType::FLUENT,
-                        std::make_unique<language::FluentLanguageModel>(
-                            web_view_browser_state->GetPrefs()));
-      manager->SetPrimaryModel(
-          language::LanguageModelManager::ModelType::FLUENT);
-      break;
-    case language::OverrideLanguageModel::DEFAULT:
-    default:
-      manager->AddModel(
-          language::LanguageModelManager::ModelType::BASELINE,
-          std::make_unique<language::BaselineLanguageModel>(
-              web_view_browser_state->GetPrefs(),
-              ApplicationContext::GetInstance()->GetApplicationLocale(),
-              language::prefs::kAcceptLanguages));
-      manager->SetPrimaryModel(
-          language::LanguageModelManager::ModelType::BASELINE);
-      break;
-  }
+  // Create and set the primary Language Model to use based on the state of
+  // experiments. Note: there are currently no such experiments on iOS.
+  manager->AddModel(language::LanguageModelManager::ModelType::FLUENT,
+                    std::make_unique<language::FluentLanguageModel>(
+                        web_view_browser_state->GetPrefs()));
+  manager->SetPrimaryModel(language::LanguageModelManager::ModelType::FLUENT);
 }
 
 }  // namespace
