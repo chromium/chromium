@@ -115,8 +115,13 @@ void HTMLFrameElementBase::ParseAttribute(
       SetLocation(SrcdocURL().GetString());
     } else {
       const AtomicString& src_value = FastGetAttribute(html_names::kSrcAttr);
-      if (!src_value.IsNull())
+      if (!src_value.IsNull()) {
         SetLocation(StripLeadingAndTrailingHTMLSpaces(src_value));
+      } else if (!params.old_value.IsNull()) {
+        // We're resetting kSrcdocAttr, but kSrcAttr has no value, so load
+        // about:blank. https://crbug.com/1233143
+        SetLocation(BlankURL());
+      }
     }
   } else if (name == html_names::kSrcAttr &&
              !FastHasAttribute(html_names::kSrcdocAttr)) {
