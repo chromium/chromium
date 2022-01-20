@@ -2,6 +2,7 @@
 <div id="container">
   <p>Avatar list</p>
   <template is="dom-repeat" items="[[defaultUserImages_]]">
-    <img src="[[item.url.url]]">
+    <img src="[[item.url.url]]" data-id$="[[item.index]]"
+        on-click="onSelectDefaultImage_" on-keypress="onSelectDefaultImage_">
   </template>
 </div>

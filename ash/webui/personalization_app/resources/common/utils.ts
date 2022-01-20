@@ -65,11 +65,11 @@ export function promisifyOnload(
 }
 
 
-type WallpaperSelectionEvent =
+type PersonalizationAppSelectionEvent =
     MouseEvent&{type: 'click'}|KeyboardEvent&{key: 'Enter'};
 /** Returns true if this event is a user action to select an item. */
 export function isSelectionEvent(event: Event):
-    event is WallpaperSelectionEvent {
+    event is PersonalizationAppSelectionEvent {
   return (event instanceof MouseEvent && event.type === 'click') ||
       (event instanceof KeyboardEvent && event.key === 'Enter');
 }

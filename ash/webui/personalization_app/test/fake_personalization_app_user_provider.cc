@@ -40,4 +40,6 @@ void FakePersonalizationAppUserProvider::GetUserInfo(
 void FakePersonalizationAppUserProvider::GetDefaultUserImages(
     GetDefaultUserImagesCallback callback) {}
 
+void FakePersonalizationAppUserProvider::SelectDefaultImage(int index) {}
+
 }  // namespace ash

@@ -28,6 +28,7 @@ export class TestUserProvider extends TestBrowserProxy implements
       'setUserImageObserver',
       'getDefaultUserImages',
       'getUserInfo',
+      'selectDefaultImage',
     ]);
   }
 
@@ -44,5 +45,9 @@ export class TestUserProvider extends TestBrowserProxy implements
       Promise<{defaultUserImages: Array<DefaultUserImage>}> {
     this.methodCalled('getDefaultUserImages');
     return Promise.resolve({defaultUserImages: this.defaultUserImages});
+  }
+
+  selectDefaultImage(index: number) {
+    this.methodCalled('selectDefaultImage', index);
   }
 }

@@ -189,3 +189,18 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserAvatarImage) {
                                image_index),
             current_user_image());
 }
+
+TEST_F(PersonalizationAppUserProviderImplTest, SelectDefaultImage) {
+  SetUserImageObserver();
+
+  // Select a default image.
+  int image_index = ash::default_user_image::GetRandomDefaultImageIndex();
+  user_provider_remote()->get()->SelectDefaultImage(image_index);
+  user_provider_remote()->FlushForTesting();
+
+  // Observer received the updated image url. Because it is a default image,
+  // receives the chrome://theme url.
+  EXPECT_EQ(base::StringPrintf("chrome://theme/IDR_LOGIN_DEFAULT_USER_%d",
+                               image_index),
+            current_user_image());
+}

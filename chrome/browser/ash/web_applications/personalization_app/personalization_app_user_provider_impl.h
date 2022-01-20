@@ -46,6 +46,8 @@ class PersonalizationAppUserProviderImpl
 
   void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
 
+  void SelectDefaultImage(int index) override;
+
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;
 

@@ -9,6 +9,7 @@
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isSelectionEvent} from '../../common/utils.js';
 import {DefaultUserImage} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -38,6 +39,20 @@ export class AvatarList extends WithPersonalizationStore {
         'defaultUserImages_', state => state.user.defaultUserImages);
     this.updateFromStore();
     fetchDefaultUserImages(getUserProvider(), this.getStore());
+  }
+
+  private onSelectDefaultImage_(event: Event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
+
+    const id = (event.currentTarget as HTMLElement).dataset['id'];
+    if (!id) {
+      return;
+    }
+
+    const index = parseInt(id, 10);
+    getUserProvider().selectDefaultImage(index);
   }
 }
 

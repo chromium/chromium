@@ -4,7 +4,7 @@
 
 import {AvatarList} from 'chrome://personalization/trusted/user/avatar_list_element.js';
 import {UserActionName} from 'chrome://personalization/trusted/user/user_actions.js';
-import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -42,5 +42,20 @@ export function AvatarListTest() {
         },
         action,
     );
+  });
+
+  test('calls selectDefaultImage with correct index on click', async () => {
+    testPersonalizationStore.data.user.defaultUserImages =
+        testUserProvider.defaultUserImages;
+    avatarListElement = initElement(AvatarList);
+
+    const image =
+        avatarListElement!.shadowRoot!.querySelector(
+            `img[data-id="${testUserProvider.defaultUserImages[0]!.index}"]`) as
+        HTMLImageElement;
+
+    image.click();
+    const index = await testUserProvider.whenCalled('selectDefaultImage');
+    assertEquals(testUserProvider.defaultUserImages[0]!.index, index);
   });
 }

@@ -270,4 +270,7 @@ interface UserProvider {
 
   // Returns an array of default user images to choose from.
   GetDefaultUserImages() => (array<DefaultUserImage> default_user_images);
+
+  // Select one of the default images from the provided default user images.
+  SelectDefaultImage(int32 index);
 };

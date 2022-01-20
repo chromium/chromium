@@ -8,12 +8,15 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
@@ -69,6 +72,20 @@ void PersonalizationAppUserProviderImpl::GetDefaultUserImages(
   std::vector<ash::default_user_image::DefaultUserImage> images =
       ash::default_user_image::GetCurrentImageSet();
   std::move(callback).Run(std::move(images));
+}
+
+void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
+  if (!ash::default_user_image::IsInCurrentImageSet(index)) {
+    mojo::ReportBadMessage("Invalid user image selected");
+    return;
+  }
+
+  auto* user_image_manager = ash::ChromeUserManager::Get()->GetUserImageManager(
+      chromeos::ProfileHelper::Get()
+          ->GetUserByProfile(profile_)
+          ->GetAccountId());
+
+  user_image_manager->SaveUserDefaultImageIndex(index);
 }
 
 void PersonalizationAppUserProviderImpl::OnUserImageChanged(
