@@ -40,11 +40,15 @@ class OmniboxAnswerResult : public ChromeSearchResult,
 
  private:
   void UpdateIcon();
+  // Updates title and details for the productivity launcher.
   void UpdateTitleAndDetails();
+  // Updates title and details for the classic launcher.
+  void UpdateClassicTitleAndDetails();
 
   void FetchImage(const GURL& url);
 
   bool IsCalculatorResult() const;
+  bool IsWeatherResult() const;
 
   Profile* profile_;
   AppListControllerDelegate* list_controller_;

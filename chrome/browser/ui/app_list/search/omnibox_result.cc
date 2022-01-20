@@ -84,6 +84,8 @@ const IconType MatchTypeToIconType(AutocompleteMatchType::Type type) {
       return IconType::kHistory;
 
     case AutocompleteMatchType::CALCULATOR:
+      return IconType::kCalculator;
+
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
