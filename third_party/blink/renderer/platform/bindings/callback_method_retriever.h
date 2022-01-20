@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_METHOD_RETRIEVER_H_
 
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {

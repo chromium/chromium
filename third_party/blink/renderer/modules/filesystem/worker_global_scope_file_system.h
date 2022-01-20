@@ -28,7 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_WORKER_GLOBAL_SCOPE_FILE_SYSTEM_H_
 
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system_sync.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

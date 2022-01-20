@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_GC_CONTROLLER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8-profiler.h"
 #include "v8/include/v8.h"

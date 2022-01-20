@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace blink {

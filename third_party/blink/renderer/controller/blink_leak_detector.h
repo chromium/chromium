@@ -9,7 +9,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom-blink.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {

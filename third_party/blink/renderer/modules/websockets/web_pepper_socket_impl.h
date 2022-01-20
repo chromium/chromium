@@ -36,7 +36,7 @@
 #include "third_party/blink/public/web/web_pepper_socket.h"
 #include "third_party/blink/public/web/web_pepper_socket_client.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

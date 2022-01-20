@@ -9,7 +9,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"

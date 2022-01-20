@@ -12,7 +12,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

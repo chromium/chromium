@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_INSPECTOR_WEBSOCKET_EVENTS_H_
 
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"

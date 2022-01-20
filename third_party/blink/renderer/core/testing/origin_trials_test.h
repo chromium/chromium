@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_dictionary_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_origin_trials_test_dictionary.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 

@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"

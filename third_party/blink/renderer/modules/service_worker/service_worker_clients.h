@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_client_query_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
