@@ -193,7 +193,19 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
   bool success = false;
   sk_sp<SkTypeface> typeface =
       CreateSkTypeface(style & Font::ITALIC, weight, &family, &success);
-  CHECK(success);
+
+  // It's possible that the Skia interface is not longer able to proxy queries
+  // to the browser process which make all requests to fail. Calling
+  // MakeDefault() will try to get the default typeface; in case of failure it
+  // returns an instance of SkEmptyTypeface. MakeDefault() should never fail.
+  // See https://crbug.com/1287371 for details.
+  if (!success) {
+    typeface = SkTypeface::MakeDefault();
+  }
+
+  // Ensure there is a typeface available. If none is available, there is
+  // nothing we can do about it and Chrome won't be able to work.
+  CHECK(typeface.get()) << "No typeface available";
 
   g_default_font.Get() = new PlatformFontSkia(
       std::move(typeface), family, size_pixels, style, weight, params);
