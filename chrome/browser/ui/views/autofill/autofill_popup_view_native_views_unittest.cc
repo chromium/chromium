@@ -161,8 +161,9 @@ TEST_F(AutofillPopupViewNativeViewsTest, ShowHideTest) {
 TEST_F(AutofillPopupViewNativeViewsTest,
        ShowViewWithOnlyFooterItemsShouldNotCrash) {
   // Set suggestions to have only a footer item.
-  autofill_popup_controller_.set_suggestions(
-      {autofill::PopupItemId::POPUP_ITEM_ID_CLEAR_FORM});
+  std::vector<int> suggestion_ids = {
+      autofill::PopupItemId::POPUP_ITEM_ID_CLEAR_FORM};
+  autofill_popup_controller_.set_suggestions(suggestion_ids);
   view_ = std::make_unique<autofill::AutofillPopupViewNativeViews>(
       autofill_popup_controller_.GetWeakPtr(), widget_.get());
   widget_->SetContentsView(view_.get());
