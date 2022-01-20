@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_SCORE_NORMALIZING_RANKER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_SCORE_NORMALIZING_RANKER_H_
 
-#include "base/containers/flat_map.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "chrome/browser/ui/app_list/search/util/score_normalizer.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PRIVACY_BUDGET_SURFACE_SET_VALUATION_H_
 #define CHROME_BROWSER_PRIVACY_BUDGET_SURFACE_SET_VALUATION_H_
 
-#include "base/containers/flat_map.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"

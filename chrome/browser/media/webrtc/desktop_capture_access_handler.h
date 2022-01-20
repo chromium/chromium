@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/flat_map.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
