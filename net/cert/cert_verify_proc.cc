@@ -17,6 +17,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -48,7 +49,7 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "url/url_canon.h"
 
-#if BUILDFLAG(IS_FUCHSIA) || defined(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_builtin.h"
 #endif
 
@@ -487,7 +488,7 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
 }
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA) || defined(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {

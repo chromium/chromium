@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 
@@ -72,7 +73,7 @@ class NET_EXPORT CertVerifyProc
       scoped_refptr<CertNetFetcher> cert_net_fetcher);
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA) || defined(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
   // Creates and returns a CertVerifyProcBuiltin using the SSL SystemTrustStore.
   static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher);

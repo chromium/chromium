@@ -5,13 +5,14 @@
 #include "net/cert/internal/system_trust_store.h"
 
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/net_buildflags.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "net/cert/internal/system_trust_store_nss.h"
-#endif  // defined(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include <cert.h>
 #include <pk11pub.h>
 #elif BUILDFLAG(IS_MAC)
@@ -34,7 +35,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "crypto/nss_util.h"
 #include "net/cert/internal/trust_store_nss.h"
 #include "net/cert/known_roots_nss.h"
@@ -102,7 +103,7 @@ class SystemTrustStoreChrome : public SystemTrustStore {
 };
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 namespace {
 
 class SystemTrustStoreNSS : public SystemTrustStore {

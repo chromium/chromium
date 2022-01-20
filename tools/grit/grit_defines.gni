@@ -4,7 +4,6 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/crypto.gni")
 import("//build/config/devtools.gni")
 import("//build/config/ui.gni")
 
@@ -96,13 +95,6 @@ if (use_aura) {
   grit_defines += [
     "-D",
     "use_aura",
-  ]
-}
-
-if (use_nss_certs) {
-  grit_defines += [
-    "-D",
-    "use_nss_certs",
   ]
 }
 

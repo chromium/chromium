@@ -116,6 +116,7 @@
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
+#include "crypto/crypto_buildflags.h"
 #include "device/fido/hid/fido_hid_discovery.h"
 #include "device/gamepad/gamepad_service.h"
 #include "media/audio/audio_manager.h"
@@ -226,7 +227,7 @@
 #include "content/browser/media/cdm_registry_impl.h"
 #endif
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "crypto/nss_util.h"
 #endif
 
@@ -599,7 +600,7 @@ int BrowserMainLoop::EarlyInitialization() {
   net::EnsureWinsockInit();
 #endif
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
   // We want to be sure to init NSPR on the main thread.
   crypto::EnsureNSPRInit();
 #endif

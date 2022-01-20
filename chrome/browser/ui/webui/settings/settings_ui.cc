@@ -76,6 +76,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "crypto/crypto_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/resources/grit/webui_resources.h"
 
@@ -134,11 +135,11 @@
 #include "chrome/browser/ui/webui/settings/system_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/webui/settings/native_certificates_handler.h"
-#endif  // defined(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -177,12 +178,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   AddSettingsPageUIHandler(std::make_unique<AppearanceHandler>(web_ui));
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
   AddSettingsPageUIHandler(
       std::make_unique<certificate_manager::CertificatesHandler>());
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   AddSettingsPageUIHandler(std::make_unique<NativeCertificatesHandler>());
-#endif  // defined(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AddSettingsPageUIHandler(
       chromeos::cert_provisioning::CertificateProvisioningUiHandler::

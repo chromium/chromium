@@ -89,6 +89,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_utils.h"
+#include "crypto/crypto_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -321,7 +322,7 @@
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 #endif
 
-#if defined(USE_NSS_CERTS) && defined(USE_AURA)
+#if BUILDFLAG(USE_NSS_CERTS) && defined(USE_AURA)
 #include "chrome/browser/ui/webui/certificate_viewer_ui.h"
 #endif
 
@@ -1065,7 +1066,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUITabModalConfirmDialogHost)
     return &NewWebUI<ConstrainedWebDialogUI>;
 #endif
-#if defined(USE_NSS_CERTS) && defined(USE_AURA)
+#if BUILDFLAG(USE_NSS_CERTS) && defined(USE_AURA)
   if (url.host_piece() == chrome::kChromeUICertificateViewerHost)
     return &NewWebUI<CertificateViewerUI>;
 #endif  // USE_NSS_CERTS && USE_AURA

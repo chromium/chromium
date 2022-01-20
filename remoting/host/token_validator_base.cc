@@ -16,19 +16,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/base/escape.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/ssl/client_cert_store.h"
-#if defined(USE_NSS_CERTS)
-#include "net/ssl/client_cert_store_nss.h"
-#elif BUILDFLAG(IS_WIN)
-#include "net/ssl/client_cert_store_win.h"
-#elif BUILDFLAG(IS_APPLE)
-#include "net/ssl/client_cert_store_mac.h"
-#endif
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_info.h"
@@ -37,6 +31,14 @@
 #include "remoting/base/logging.h"
 #include "remoting/protocol/authenticator.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(USE_NSS_CERTS)
+#include "net/ssl/client_cert_store_nss.h"
+#elif BUILDFLAG(IS_WIN)
+#include "net/ssl/client_cert_store_win.h"
+#elif BUILDFLAG(IS_APPLE)
+#include "net/ssl/client_cert_store_mac.h"
+#endif
 
 namespace remoting {
 
@@ -206,7 +208,7 @@ void TokenValidatorBase::OnCertificateRequested(
   DCHECK_EQ(request_.get(), source);
 
   net::ClientCertStore* client_cert_store;
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
   client_cert_store = new net::ClientCertStoreNSS(
       net::ClientCertStoreNSS::PasswordDelegateFactory());
 #elif BUILDFLAG(IS_WIN)

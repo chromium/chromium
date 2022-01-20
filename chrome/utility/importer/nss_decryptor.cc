@@ -18,13 +18,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/importer/importer_data_types.h"
+#include "crypto/crypto_buildflags.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include <pk11pub.h>
 #include <pk11sdr.h>
-#endif  // defined(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 
 // This method is based on some Firefox code in
 //   security/manager/ssl/src/nsSDR.cpp
@@ -126,11 +127,11 @@ std::u16string NSSDecryptor::Decrypt(const std::string& crypt) const {
     SECItem reply;
     reply.data = nullptr;
     reply.len = 0;
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
     result = PK11SDR_DecryptWithSlot(slot, &request, &reply, NULL);
 #else
     result = PK11SDR_Decrypt(&request, &reply, NULL);
-#endif  // defined(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CERTS)
     if (result == SECSuccess)
       plain.assign(reinterpret_cast<char*>(reply.data), reply.len);
 

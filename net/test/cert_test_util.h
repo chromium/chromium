@@ -11,11 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "net/cert/scoped_nss_types.h"
 
 // From <pk11pub.h>
@@ -32,7 +33,7 @@ namespace net {
 
 class EVRootCAMetadata;
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 // Imports a private key from file |key_filename| in |dir| into |slot|. The file
 // must contain a PKCS#8 PrivateKeyInfo in DER encoding. Returns true on success
 // and false on failure.

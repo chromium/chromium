@@ -11,6 +11,7 @@ GEN('#include "chrome/browser/browser_features.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/chromeos_buildflags.h"');
+GEN('#include "crypto/crypto_buildflags.h"');
 
 /* eslint-disable no-var */
 
@@ -50,7 +51,7 @@ TEST_F('CrComponentsManagedFootnoteTest', 'All', function() {
   mocha.run();
 });
 
-GEN('#if defined(USE_NSS_CERTS)');
+GEN('#if BUILDFLAG(USE_NSS_CERTS)');
 
 /**
  * Test fixture for chrome://settings/certificates. This tests the
@@ -67,10 +68,10 @@ TEST_F('CrComponentsCertificateManagerTest', 'All', function() {
   mocha.run();
 });
 
-GEN('#endif  // defined(USE_NSS_CERTS)');
+GEN('#endif  // BUILDFLAG(USE_NSS_CERTS)');
 
 
-GEN('#if defined(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
+GEN('#if BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
 
 /**
  * ChromeOS specific test fixture for chrome://settings/certificates, testing
@@ -89,7 +90,7 @@ TEST_F('CrComponentsCertificateManagerProvisioningTest', 'All', function() {
   mocha.run();
 });
 
-GEN('#endif  // defined(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
+GEN('#endif  // BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
 
 var CrComponentsManagedDialogTest = class extends CrComponentsBrowserTest {
   /** @override */

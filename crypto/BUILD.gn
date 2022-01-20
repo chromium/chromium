@@ -2,9 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/crypto.gni")
+import("//crypto/features.gni")
 import("//testing/test.gni")
+
+buildflag_header("buildflags") {
+  header = "crypto_buildflags.h"
+  flags = [ "USE_NSS_CERTS=$use_nss_certs" ]
+}
 
 component("crypto") {
   output_name = "crcrypto"  # Avoid colliding with OpenSSL's libcrypto.
@@ -56,7 +62,10 @@ component("crypto") {
     "//base/third_party/dynamic_annotations",
   ]
 
-  public_deps = [ "//third_party/boringssl" ]
+  public_deps = [
+    ":buildflags",
+    "//third_party/boringssl",
+  ]
 
   if (is_apple) {
     sources += [

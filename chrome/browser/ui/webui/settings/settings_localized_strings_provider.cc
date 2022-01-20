@@ -82,6 +82,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "crypto/crypto_buildflags.h"
 #include "device/fido/features.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
@@ -132,7 +133,7 @@
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_WIN)
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
 #endif
 
@@ -2938,7 +2939,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddImportDataStrings(html_source);
 #endif
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
   certificate_manager::AddLocalizedStrings(html_source);
 #endif
 

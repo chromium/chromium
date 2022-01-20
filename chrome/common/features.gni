@@ -10,6 +10,7 @@ import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
 import("//components/feed/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -96,4 +97,5 @@ chrome_grit_defines = [
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",
   "enable_feed_v2=$enable_feed_v2",
+  "use_nss_certs=$use_nss_certs",
 ]
