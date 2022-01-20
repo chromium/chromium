@@ -12,11 +12,11 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_TOTAL_EMOJI_WIDTH, EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX, EMOJI_PICKER_WIDTH, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, EMOJI_SPACING_PX, GROUP_ICON_SIZE, GROUP_PER_ROW, V2_EMOJI_GROUP_SPACING_PX, V2_EMOJI_ICON_SIZE, V2_EMOJI_ICON_SIZE_PX, V2_EMOJI_PICKER_HEIGHT_PX, V2_EMOJI_PICKER_SIDE_PADDING_PX, V2_EMOJI_PICKER_TOTAL_EMOJI_WIDTH, V2_EMOJI_PICKER_WIDTH_PX, V2_EMOJI_SPACING_PX, V2_TAB_BUTTON_MARGIN, V2_TAB_BUTTON_MARGIN_PX} from './constants.js';
+import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_TOTAL_EMOJI_WIDTH, EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX, EMOJI_PICKER_WIDTH, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, EMOJI_SPACING_PX, GROUP_ICON_SIZE, GROUP_PER_ROW, V2_EMOJI_GROUP_SPACING_PX, V2_EMOJI_ICON_SIZE, V2_EMOJI_ICON_SIZE_PX, V2_EMOJI_PICKER_HEIGHT_PX, V2_EMOJI_PICKER_SIDE_PADDING_PX, V2_EMOJI_PICKER_TOTAL_EMOJI_WIDTH, V2_EMOJI_PICKER_WIDTH_PX, V2_EMOJI_SPACING_PX, V2_TAB_BUTTON_MARGIN, V2_TAB_BUTTON_MARGIN_PX, V2_TEXT_GROUP_BUTTON_PADDING, V2_TEXT_GROUP_BUTTON_PADDING_PX} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
-import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
+import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK, V2_CONTENT_LOADED} from './events.js';
 import {EMPTY_EMOTICON_DATA, V2_SUBCATEGORY_TABS} from './metadata_extension.js';
 import {RecentEmojiStore} from './store.js';
 import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji, SubcategoryData} from './types.js';
@@ -264,6 +264,7 @@ export class EmojiPicker extends PolymerElement {
           // TODO(b/211520561): remove below line after the emoticon loading
           // logic is finished.
           this.emojiData = this.emojiData.concat(EMPTY_EMOTICON_DATA);
+          this.dispatchEvent(createCustomEvent(V2_CONTENT_LOADED));
         }
       });
     });
@@ -283,6 +284,7 @@ export class EmojiPicker extends PolymerElement {
       '--v2-emoji-size': V2_EMOJI_ICON_SIZE_PX,
       '--v2-emoji-group-spacing': V2_EMOJI_GROUP_SPACING_PX,
       '--v2-tab-button-margin': V2_TAB_BUTTON_MARGIN_PX,
+      '--v2-text-group-button-padding': V2_TEXT_GROUP_BUTTON_PADDING_PX,
       '--v2-emoji-spacing': V2_EMOJI_SPACING_PX,
     });
   }
@@ -392,6 +394,9 @@ export class EmojiPicker extends PolymerElement {
       const offsetByLeftChevron = V2_EMOJI_ICON_SIZE + chevronMargin;
       const maxPagination = this.getPaginationArray(this.emojiGroupTabs).pop();
       this.pagination = Math.min(this.pagination + 1, maxPagination);
+      const nextTab =
+          this.emojiGroupTabs.find((tab) => tab.pagination === this.pagination);
+      this.scrollToGroup(nextTab.groupId);
       this.$.tabs.scrollLeft =
           (this.pagination - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
       this.groupTabsMoving = true;
@@ -413,6 +418,9 @@ export class EmojiPicker extends PolymerElement {
       const chevronMargin = V2_TAB_BUTTON_MARGIN;
       const offsetByLeftChevron = V2_EMOJI_ICON_SIZE + chevronMargin;
       this.pagination = Math.max(this.pagination - 1, 1);
+      const nextTab =
+          this.emojiGroupTabs.find((tab) => tab.pagination === this.pagination);
+      this.scrollToGroup(nextTab.groupId);
       this.$.tabs.scrollLeft = this.pagination === 1 ?
           0 :
           (this.pagination - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
@@ -573,13 +581,19 @@ export class EmojiPicker extends PolymerElement {
 
         // for text group button, the highlight bar only spans its inner width,
         // which excludes both padding and margin.
-        const barInlineGap = 9;
-        this.$.bar.style.left = `${
-            subcategoryTabs[index].offsetLeft - EMOJI_PICKER_SIDE_PADDING -
-            this.$.tabs.scrollLeft}px`;
-        this.$.bar.style.width =
-            `${subcategoryTabs[index].clientWidth - barInlineGap * 2}px`;
-
+        if (index < subcategoryTabs.length) {
+          const barInlineGap =
+              V2_TAB_BUTTON_MARGIN + V2_TEXT_GROUP_BUTTON_PADDING;
+          const currentTab = subcategoryTabs[index];
+          this.$.bar.style.left = `${
+              currentTab.offsetLeft - EMOJI_PICKER_SIDE_PADDING -
+              this.$.tabs.scrollLeft}px`;
+          this.$.bar.style.width =
+              `${subcategoryTabs[index].clientWidth - barInlineGap * 2}px`;
+        } else {
+          this.$.bar.style.left = `0px`;
+          this.$.bar.style.width = `0px`;
+        }
         // TODO(b/213230435): fix the bar width and left position when the
         // history tab is active
       }
@@ -695,11 +709,8 @@ export class EmojiPicker extends PolymerElement {
       this.set('emojiGroupTabs', [historyTab, ...categoryTabs]);
       this.set('pagination', 1);
       this.updateChevrons();
-      this.scrollToGroup(this.emojiGroupTabs[0].groupId);
-      afterNextRender(this, () => {
-        this.updateActiveGroup(true);
-        this.$.tabs.scrollLeft = 0;
-      });
+      this.scrollToGroup(this.emojiGroupTabs[1].groupId);
+      this.$.tabs.scrollLeft = 0;
     }
   }
 
