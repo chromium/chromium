@@ -397,6 +397,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // params.
   void PopulateAppHistoryEntryVectors(NavigationRequest* request);
 
+  // Returns whether the last NavigationEntry encountered a post-commit error.
+  bool has_post_commit_error_entry() const;
+
  private:
   friend class RestoreHelper;
 

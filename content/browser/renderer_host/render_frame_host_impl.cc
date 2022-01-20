@@ -10247,6 +10247,19 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     return false;
   }
 
+  // Same document navigations should not be possible on post-commit error pages
+  // and would leave the NavigationController in a weird state. Kill the
+  // renderer before getting to NavigationController::RendererDidNavigate if
+  // that happens.
+  if (is_same_document_navigation && frame_tree_node_->navigator()
+                                         .controller()
+                                         .has_post_commit_error_entry()) {
+    bad_message::ReceivedBadMessage(
+        frame_tree_node_->render_manager()->current_frame_host()->GetProcess(),
+        bad_message::NC_SAME_DOCUMENT_POST_COMMIT_ERROR);
+    return false;
+  }
+
   return true;
 }
 

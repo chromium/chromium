@@ -60,6 +60,7 @@
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -1138,6 +1139,10 @@ bool NavigationControllerImpl::PendingEntryMatchesRequest(
          pending_entry_->GetUniqueID() == request->nav_entry_id();
 }
 
+bool NavigationControllerImpl::has_post_commit_error_entry() const {
+  return entry_replaced_by_post_commit_error_ != nullptr;
+}
+
 bool NavigationControllerImpl::RendererDidNavigate(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
@@ -1147,6 +1152,12 @@ bool NavigationControllerImpl::RendererDidNavigate(
     bool previous_document_was_activated,
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
+
+  // Note: validation checks and renderer kills due to invalid commit messages
+  // must happen before getting here, in
+  // RenderFrameHostImpl::ValidateDidCommitParams. By the time we get here, some
+  // effects of the navigation have already occurred.
+
   if (ShouldMaintainTrivialSessionHistory(rfh->frame_tree_node()) &&
       GetLastCommittedEntry()) {
     // Ensure that this navigation does not add a navigation entry, since
@@ -1163,13 +1174,11 @@ bool NavigationControllerImpl::RendererDidNavigate(
   bool overriding_user_agent_changed = false;
   if (GetLastCommittedEntry()) {
     if (entry_replaced_by_post_commit_error_) {
-      if (is_same_document_navigation) {
-        // Same document navigations should not be possible on error pages and
-        // would leave the controller in a weird state. Kill the renderer if
-        // that happens.
-        bad_message::ReceivedBadMessage(
-            rfh->GetProcess(), bad_message::NC_SAME_DOCUMENT_POST_COMMIT_ERROR);
-      }
+      // Same document navigation events with a post-commit error should already
+      // be blocked by RenderFrameHostImpl::ValidateDidCommitParams() before
+      // reaching here.
+      CHECK(!is_same_document_navigation);
+
       // Any commit while a post-commit error page is showing should put the
       // original entry back, replacing the error page's entry.  This includes
       // reloads, where the original entry was used as the pending entry and
