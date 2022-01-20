@@ -49,6 +49,7 @@ public abstract class BookmarkRow
     private PopupMenuShownListener mPopupListener;
     @Location
     private int mLocation;
+    private boolean mFromFilterView;
 
     @IntDef({Location.TOP, Location.MIDDLE, Location.BOTTOM, Location.SOLO})
     @Retention(RetentionPolicy.SOURCE)
@@ -75,11 +76,15 @@ public abstract class BookmarkRow
      *
      * @param bookmarkId The BookmarkId that this BookmarkRow now contains.
      * @param location   The location of this BookmarkRow.
+     * @param fromFilterView The Bookmark is being displayed in a filter view, determines if the row
+     *         is selectable.
      * @return The BookmarkItem corresponding to BookmarkId.
      */
-    BookmarkItem setBookmarkId(BookmarkId bookmarkId, @Location int location) {
+    BookmarkItem setBookmarkId(
+            BookmarkId bookmarkId, @Location int location, boolean fromFilterView) {
         mLocation = location;
         mBookmarkId = bookmarkId;
+        mFromFilterView = fromFilterView;
         BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(bookmarkId);
         mMoreIcon.dismiss();
         SelectableListUtils.setContentDescriptionContext(getContext(), mMoreIcon,
@@ -114,7 +119,8 @@ public abstract class BookmarkRow
         mMoreIcon.setVisibility(GONE);
 
         if (mDelegate.getDragStateDelegate().getDragActive()) {
-            mDragHandle.setVisibility(bookmarkItem.isReorderable() ? VISIBLE : GONE);
+            mDragHandle.setVisibility(
+                    bookmarkItem.isReorderable() && !mFromFilterView ? VISIBLE : GONE);
             mDragHandle.setEnabled(isItemSelected());
         } else {
             mMoreIcon.setVisibility(bookmarkItem.isEditable() ? VISIBLE : GONE);
@@ -151,6 +157,7 @@ public abstract class BookmarkRow
 
     private ModelList getItems() {
         // Rebuild listItems, cause mLocation may be changed anytime.
+        boolean canReorder = false;
         boolean canMove = false;
         BookmarkItem bookmarkItem = null;
         if (mDelegate != null && mDelegate.getModel() != null) {
@@ -158,8 +165,8 @@ public abstract class BookmarkRow
             if (bookmarkItem != null) {
                 // Reading list items can sometimes be movable (for type swapping purposes), but for
                 // UI purposes they shouldn't be movable.
-                canMove = bookmarkItem.isMovable()
-                        && mBookmarkId.getType() != BookmarkType.READING_LIST;
+                canMove = bookmarkItem.isMovable();
+                canReorder = bookmarkItem.isReorderable() && !mFromFilterView;
             }
         }
         ModelList listItems = new ModelList();
@@ -172,6 +179,7 @@ public abstract class BookmarkRow
             listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
             if (ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) {
                 listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
+                listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0));
             }
         } else {
             listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
@@ -183,7 +191,7 @@ public abstract class BookmarkRow
         if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
         } else if (mDelegate.getCurrentState() == BookmarkUIState.STATE_FOLDER
-                && mLocation != Location.SOLO && canMove) {
+                && mLocation != Location.SOLO && canReorder) {
             // Only add move up / move down buttons if there is more than 1 item
             if (mLocation != Location.TOP) {
                 listItems.add(buildMenuListItem(R.string.menu_item_move_up, 0, 0));

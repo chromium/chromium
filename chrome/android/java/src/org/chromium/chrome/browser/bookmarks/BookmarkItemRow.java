@@ -74,8 +74,9 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     }
 
     @Override
-    BookmarkItem setBookmarkId(BookmarkId bookmarkId, @Location int location) {
-        BookmarkItem item = super.setBookmarkId(bookmarkId, location);
+    BookmarkItem setBookmarkId(
+            BookmarkId bookmarkId, @Location int location, boolean fromFilterView) {
+        BookmarkItem item = super.setBookmarkId(bookmarkId, location, fromFilterView);
         mUrl = item.getUrl();
         mStartIconView.setImageDrawable(null);
         mTitleView.setText(item.getTitle());

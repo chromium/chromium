@@ -282,7 +282,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         } else if (BookmarkListEntry.isBookmarkEntry(holder.getItemViewType())) {
             BookmarkRow row = ((BookmarkRow) holder.itemView);
             BookmarkId id = getIdByPosition(position);
-            row.setBookmarkId(id, getLocationFromPosition(position));
+            row.setBookmarkId(id, getLocationFromPosition(position),
+                    BookmarkId.SHOPPING_FOLDER.equals(mCurrentFolder));
             row.setDragHandleOnTouchListener((v, event) -> {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     mItemTouchHelper.startDrag(holder);

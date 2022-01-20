@@ -73,8 +73,9 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
 
     // BookmarkItemRow overrides:
     @Override
-    BookmarkItem setBookmarkId(BookmarkId bookmarkId, @Location int location) {
-        BookmarkItem bookmarkItem = super.setBookmarkId(bookmarkId, location);
+    BookmarkItem setBookmarkId(
+            BookmarkId bookmarkId, @Location int location, boolean fromFilterView) {
+        BookmarkItem bookmarkItem = super.setBookmarkId(bookmarkId, location, fromFilterView);
         PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
         assert meta != null;
 
