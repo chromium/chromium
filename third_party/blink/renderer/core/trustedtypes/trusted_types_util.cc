@@ -241,9 +241,8 @@ TrustedTypePolicy* GetDefaultPolicy(const ExecutionContext* execution_context) {
 // and has a number of additional parameters to enable proper error reporting
 // for each case.
 String GetStringFromScriptHelper(
-    String script,
+    const String& script,
     ExecutionContext* context,
-
     // Parameters to customize error messages:
     const char* element_name_for_exception,
     const char* attribute_name_for_exception,
@@ -313,7 +312,7 @@ bool RequireTrustedTypesCheck(const ExecutionContext* execution_context) {
              execution_context);
 }
 
-String TrustedTypesCheckForHTML(String html,
+String TrustedTypesCheckForHTML(const String& html,
                                 const ExecutionContext* execution_context,
                                 ExceptionState& exception_state) {
   bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
@@ -362,7 +361,7 @@ String TrustedTypesCheckForHTML(String html,
   return result->toString();
 }
 
-String TrustedTypesCheckForScript(String script,
+String TrustedTypesCheckForScript(const String& script,
                                   const ExecutionContext* execution_context,
                                   ExceptionState& exception_state) {
   bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
@@ -412,7 +411,7 @@ String TrustedTypesCheckForScript(String script,
   return result->toString();
 }
 
-String TrustedTypesCheckForScriptURL(String script_url,
+String TrustedTypesCheckForScriptURL(const String& script_url,
                                      const ExecutionContext* execution_context,
                                      ExceptionState& exception_state) {
   bool require_trusted_type =
@@ -570,7 +569,7 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
 }
 
 String CORE_EXPORT
-GetStringForScriptExecution(String script,
+GetStringForScriptExecution(const String& script,
                             const ScriptElementBase::Type type,
                             ExecutionContext* context) {
   String value = GetStringFromScriptHelper(
@@ -586,7 +585,7 @@ GetStringForScriptExecution(String script,
 }
 
 String TrustedTypesCheckForJavascriptURLinNavigation(
-    String javascript_url,
+    const String& javascript_url,
     ExecutionContext* context) {
   return GetStringFromScriptHelper(
       std::move(javascript_url), context, "Location", "href",
@@ -594,7 +593,7 @@ String TrustedTypesCheckForJavascriptURLinNavigation(
 }
 
 String TrustedTypesCheckForExecCommand(
-    String html,
+    const String& html,
     const ExecutionContext* execution_context,
     ExceptionState& exception_state) {
   return TrustedTypesCheckForHTML(html, execution_context, exception_state);

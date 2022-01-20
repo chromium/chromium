@@ -49,27 +49,34 @@ TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
                                           const ExecutionContext*,
                                           ExceptionState&);
 [[nodiscard]] CORE_EXPORT String
-TrustedTypesCheckForHTML(String, const ExecutionContext*, ExceptionState&);
+TrustedTypesCheckForHTML(const String&,
+                         const ExecutionContext*,
+                         ExceptionState&);
 [[nodiscard]] CORE_EXPORT String
-TrustedTypesCheckForScript(String, const ExecutionContext*, ExceptionState&);
+TrustedTypesCheckForScript(const String&,
+                           const ExecutionContext*,
+                           ExceptionState&);
 [[nodiscard]] CORE_EXPORT String
-TrustedTypesCheckForScriptURL(String, const ExecutionContext*, ExceptionState&);
+TrustedTypesCheckForScriptURL(const String&,
+                              const ExecutionContext*,
+                              ExceptionState&);
 
 // Functionally equivalent to TrustedTypesCheckForScript(const String&, ...),
 // but with setup & error handling suitable for the asynchronous execution
 // cases.
-String TrustedTypesCheckForJavascriptURLinNavigation(String, ExecutionContext*);
-CORE_EXPORT String GetStringForScriptExecution(String,
+String TrustedTypesCheckForJavascriptURLinNavigation(const String&,
+                                                     ExecutionContext*);
+CORE_EXPORT String GetStringForScriptExecution(const String&,
                                                ScriptElementBase::Type,
                                                ExecutionContext*);
 
 // Functionally equivalent to TrustedTypesCheckForHTML(const String&, ...),
 // but with separate enable flag and use counter, to ensure this won't break
 // existing sites before enabling it in full.
-CORE_EXPORT String TrustedTypesCheckForExecCommand(String,
-                                                   const ExecutionContext*,
-                                                   ExceptionState&)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckForExecCommand(const String&,
+                                const ExecutionContext*,
+                                ExceptionState&);
 
 // Determine whether a Trusted Types check is needed in this execution context.
 //
