@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/weblayer_security_blocking_page_factory.h"
 
+#include "build/build_config.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
@@ -15,7 +16,7 @@
 #include "weblayer/browser/insecure_form_controller_client.h"
 #include "weblayer/browser/ssl_error_controller_client.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -26,7 +27,7 @@ namespace weblayer {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 GURL GetCaptivePortalLoginPageUrlInternal() {
   // NOTE: This is taken from the default login URL in //chrome's
   // CaptivePortalHelper.java, which is used in the implementation referenced
@@ -40,7 +41,7 @@ void OpenLoginPage(content::WebContents* web_contents) {
   // Android implementation from //chrome's
   // ChromeSecurityBlockingPageFactory::OpenLoginPage(), from which this is
   // adapted.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   content::OpenURLParams params(GetCaptivePortalLoginPageUrlInternal(),
                                 content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -218,7 +219,7 @@ WebLayerSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // static
 GURL WebLayerSecurityBlockingPageFactory::
     GetCaptivePortalLoginPageUrlForTesting() {

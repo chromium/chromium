@@ -16,11 +16,11 @@
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/browser/weblayer_variations_service_client.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace switches {
 const char kDisableBackgroundNetworking[] = "disable-background-networking";
 }  // namespace switches
@@ -56,7 +56,7 @@ void FeatureListCreator::SetSystemNetworkContextManager(
 }
 
 void FeatureListCreator::SetUpFieldTrials() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The FieldTrialList should have been instantiated in
   // AndroidMetricsServiceClient::Initialize().
   DCHECK(base::FieldTrialList::GetInstance());
@@ -87,14 +87,14 @@ void FeatureListCreator::SetUpFieldTrials() {
 }
 
 void FeatureListCreator::CreateFeatureListAndFieldTrials() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   WebLayerMetricsServiceClient::GetInstance()->Initialize(local_state_);
 #endif
   SetUpFieldTrials();
 }
 
 void FeatureListCreator::PerformPreMainMessageLoopStartup() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // It is expected this is called after SetUpFieldTrials().
   DCHECK(variations_service_);
   variations_service_->PerformPreMainMessageLoopStartup();

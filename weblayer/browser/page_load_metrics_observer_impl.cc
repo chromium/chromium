@@ -22,7 +22,7 @@ PageLoadMetricsObserverImpl::ObservePolicy
 PageLoadMetricsObserverImpl::OnCommit(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!ukm::UkmRecorder::Get())
     return CONTINUE_OBSERVING;
 

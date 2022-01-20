@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "components/background_sync/background_sync_controller_impl.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/client_hints/browser/client_hints.h"
@@ -48,18 +49,18 @@
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
 #include "weblayer/public/common/switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/path_utils.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/unified_consent/pref_names.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <KnownFolders.h>
 #include <shlobj.h>
 #include "base/win/scoped_co_mem.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "base/nix/xdg_util.h"
 #endif
 
@@ -129,9 +130,9 @@ base::FilePath BrowserContextImpl::GetDefaultDownloadDirectory() {
   // Note: if we wanted to productionize this on Windows/Linux, refactor
   // src/chrome's GetDefaultDownloadDirectory.
   base::FilePath download_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::GetDownloadsDirectory(&download_dir);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   base::win::ScopedCoMem<wchar_t> path_buf;
   if (SUCCEEDED(
           SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &path_buf))) {
@@ -227,7 +228,7 @@ BrowserContextImpl::RetriveInProgressDownloadManager() {
       base::BindRepeating(&content::DownloadRequestUtils::IsURLSafe),
       base::BindRepeating(&BindWakeLockProvider));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   download_manager->set_default_download_dir(GetDefaultDownloadDirectory());
 #endif
 
@@ -286,7 +287,7 @@ void BrowserContextImpl::RegisterPrefs(
   pref_registry->RegisterBooleanPref(
       translate::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(pref_registry);
   permissions::GeolocationPermissionContextAndroid::RegisterProfilePrefs(
       pref_registry);

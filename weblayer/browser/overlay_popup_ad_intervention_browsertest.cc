@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
 }
 
 // TODO(https://crbug.com/1287783): Fails on the linux and android.
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_OverlayPopupAd_AdInterventionTriggered \
   DISABLED_OverlayPopupAd_AdInterventionTriggered
 #else

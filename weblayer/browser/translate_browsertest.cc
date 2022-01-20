@@ -24,7 +24,7 @@
 #include "weblayer/test/weblayer_browser_test.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/infobars/android/infobar_android.h"  // nogncheck
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_manager.h"  // nogncheck
@@ -103,7 +103,7 @@ std::unique_ptr<translate::TranslateWaiter> CreateTranslateWaiter(
 
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
  public:
   TestInfoBarManagerObserver() = default;
@@ -130,7 +130,7 @@ class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
   base::OnceClosure on_infobar_added_callback_;
   base::OnceClosure on_infobar_removed_callback_;
 };
-#endif  // if defined(OS_ANDROID)
+#endif  // if BUILDFLAG(IS_ANDROID)
 
 class TranslateBrowserTest : public WebLayerBrowserTest {
  public:
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, Autotranslation) {
   EXPECT_EQ("zh-CN", translate_client->GetLanguageState().current_language());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that the translation infobar is presented when visiting a page with a
 // translation opportunity and removed when navigating away.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslateInfoBarPresentation) {
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslateInfoBarPresentation) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that the translation infobar is not presented when visiting a page with
 // a translation opportunity but where the page has specified that it should not
 // be translated.
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that the translation can be successfully initiated via infobar.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslationViaInfoBar) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslationViaInfoBar) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that translation occurs when a target language is set.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
                        TranslationViaPredefinedTargetLanguage) {
@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that the infobar appears on pages in the user's locale iff a target
 // language is set.
 IN_PROC_BROWSER_TEST_F(
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that when a predefined target language is set, the infobar does not
 // appear on pages in that language.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that the translation infobar stays present when the "never translate
 // language" item is clicked. Note that this behavior is intentionally different
 // from that of Chrome, where the infobar is removed in this case and a snackbar
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
   infobar_manager->RemoveObserver(&infobar_observer);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that the infobar shows when a predefined target language is set even if
 // the source language is in the "never translate" set.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
   infobar_manager->RemoveObserver(&infobar_observer);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that the infobar shows when a predefined target language is set even if
 // the site is in the "never translate" set.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
@@ -1053,6 +1053,6 @@ INSTANTIATE_TEST_SUITE_P(
         TranslateTestBridge::OverflowMenuItemId::NEVER_TRANSLATE_LANGUAGE,
         TranslateTestBridge::OverflowMenuItemId::NEVER_TRANSLATE_SITE));
 
-#endif  // #if defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace weblayer

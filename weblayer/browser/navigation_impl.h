@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "weblayer/public/navigation.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -71,7 +71,7 @@ class NavigationImpl : public Navigation {
 
   void set_finished() { finished_ = true; }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int GetState(JNIEnv* env) { return static_cast<int>(GetState()); }
   base::android::ScopedJavaLocalRef<jstring> GetUri(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobjectArray> GetRedirectChain(JNIEnv* env);
@@ -177,7 +177,7 @@ class NavigationImpl : public Navigation {
   // Whether this navigation has finished.
   bool finished_ = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_;
   std::unique_ptr<embedder_support::WebResourceResponse> response_;
 #endif

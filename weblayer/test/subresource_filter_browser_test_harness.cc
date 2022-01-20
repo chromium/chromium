@@ -4,6 +4,7 @@
 
 #include "weblayer/test/subresource_filter_browser_test_harness.h"
 
+#include "build/build_config.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
@@ -50,7 +51,7 @@ void WaitForHeavyAdBlocklistToBeLoaded(content::WebContents* web_contents) {
   run_loop.Run();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Installs a fake database manager so that the safe browsing activation
 // throttle will be created (WebLayer currently has a safe browsing database
 // available in production only on Android).
@@ -89,7 +90,7 @@ void SubresourceFilterBrowserTest::SetUpOnMainThread() {
   // interferes with the operation of those tests.
   WaitForHeavyAdBlocklistToBeLoaded(web_contents());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Install a fake database manager so that the safe browsing activation
   // throttle will be created, as that throttle is a core requirement for the
   // operation of the subresource filter.

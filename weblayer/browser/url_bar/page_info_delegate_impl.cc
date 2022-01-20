@@ -18,7 +18,7 @@
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/weblayer_impl_android.h"
 #endif
 
@@ -62,7 +62,7 @@ permissions::PermissionResult PageInfoDelegateImpl::GetPermissionStatus(
       ->GetPermissionStatus(type, site_url, site_url);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool PageInfoDelegateImpl::CreateInfoBarDelegate() {
   NOTREACHED();
   return false;
@@ -161,7 +161,7 @@ PageInfoDelegateImpl::GetPageSpecificContentSettingsDelegate() {
   return std::make_unique<PageSpecificContentSettingsDelegate>(web_contents_);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const std::u16string PageInfoDelegateImpl::GetClientApplicationName() {
   return weblayer::GetClientApplicationName();
 }

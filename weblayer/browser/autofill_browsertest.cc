@@ -47,7 +47,7 @@ class AutofillBrowserTest : public WebLayerBrowserTest {
   ~AutofillBrowserTest() override = default;
 
   void SetUp() override {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     TabImpl::DisableAutofillSystemIntegrationForTesting();
 #endif
 

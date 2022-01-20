@@ -52,7 +52,7 @@ class AutofillClientImpl
       base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::vector<std::string> GetAllowedMerchantsForVirtualCards() override;
   std::vector<std::string> GetAllowedBinRangesForVirtualCards() override;
 
@@ -82,14 +82,14 @@ class AutofillClientImpl
   void OfferVirtualCardOptions(
       const std::vector<autofill::CreditCard*>& candidates,
       base::OnceCallback<void(const std::string&)> callback) override;
-#else  // if defined(OS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(
       const autofill::CreditCard& card,
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           callback) override;
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
   void ConfirmSaveCreditCardLocally(
       const autofill::CreditCard& card,
       SaveCreditCardOptions options,

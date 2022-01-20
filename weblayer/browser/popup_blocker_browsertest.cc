@@ -32,7 +32,7 @@ class PopupBlockerBrowserTest : public WebLayerBrowserTest,
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     original_tab_ = shell()->tab();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Android does this in Java.
     original_tab_->SetNewTabDelegate(this);
 #endif

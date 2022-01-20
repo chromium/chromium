@@ -55,7 +55,7 @@ class ContentRendererClientImpl : public content::ContentRendererClient {
                       base::OnceClosure closure) override;
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<service_manager::LocalInterfaceProvider>
       local_interface_provider_;
   std::unique_ptr<SpellCheck> spellcheck_;

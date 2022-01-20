@@ -18,7 +18,7 @@
 #include "weblayer/browser/profile_disk_operations.h"
 #include "weblayer/public/profile.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 #include "base/android/scoped_java_ref.h"
 #endif
@@ -118,7 +118,7 @@ class ProfileImpl : public Profile {
       base::OnceCallback<void(gfx::Image)> callback) override;
   void PrepareForPossibleCrossOriginNavigation() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ProfileImpl(JNIEnv* env,
               const base::android::JavaParamRef<jstring>& path,
               const base::android::JavaParamRef<jobject>& java_profile,
@@ -207,7 +207,7 @@ class ProfileImpl : public Profile {
   std::unique_ptr<CookieManagerImpl> cookie_manager_;
   std::unique_ptr<PrerenderControllerImpl> prerender_controller_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_profile_;
 #endif
 

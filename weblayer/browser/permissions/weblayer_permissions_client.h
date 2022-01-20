@@ -35,7 +35,7 @@ class WebLayerPermissionsClient : public permissions::PermissionsClient {
   permissions::ObjectPermissionContextBase* GetChooserContext(
       content::BrowserContext* browser_context,
       ContentSettingsType type) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void RepromptForAndroidPermissions(
       content::WebContents* web_contents,
       const std::vector<ContentSettingsType>& content_settings_types,

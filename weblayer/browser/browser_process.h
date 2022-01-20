@@ -59,7 +59,7 @@ class BrowserProcess {
   // Browsing subresource filter. May be null.
   subresource_filter::RulesetService* subresource_filter_ruleset_service();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SafeBrowsingService* GetSafeBrowsingService();
   void StopSafeBrowsingService();
 #endif
@@ -81,7 +81,7 @@ class BrowserProcess {
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SafeBrowsingService> safe_browsing_service_;
 #endif
 

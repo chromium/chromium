@@ -24,7 +24,7 @@
 #include "weblayer/browser/webui/weblayer_internals.mojom.h"
 #include "weblayer/browser/webui/weblayer_internals_ui.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
@@ -95,7 +95,7 @@ void BindPrerenderCanceler(
   no_state_prefetch_contents->AddPrerenderCancelerReceiver(std::move(receiver));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 template <typename Interface>
 void ForwardToJavaWebContents(content::RenderFrameHost* frame_host,
                               mojo::PendingReceiver<Interface> receiver) {
@@ -129,7 +129,7 @@ void PopulateWebLayerFrameBinders(
   map->Add<prerender::mojom::PrerenderCanceler>(
       base::BindRepeating(&BindPrerenderCanceler));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::InstalledAppProvider>(base::BindRepeating(
       &ForwardToJavaFrame<blink::mojom::InstalledAppProvider>));
   map->Add<blink::mojom::ShareService>(base::BindRepeating(

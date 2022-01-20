@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -41,7 +41,7 @@ struct MainParams {
 };
 
 int Main(MainParams params
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #if !defined(WIN_CONSOLE_APP)
          ,
          HINSTANCE instance

@@ -12,7 +12,7 @@
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "weblayer/public/url_bar_controller.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -33,7 +33,7 @@ class UrlBarControllerImpl : public UrlBarController,
   UrlBarControllerImpl(const UrlBarControllerImpl&) = delete;
   UrlBarControllerImpl& operator=(const UrlBarControllerImpl&) = delete;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jstring> GetUrlForDisplay(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetPublisherUrl(JNIEnv* env);
   jint GetConnectionSecurityLevel(JNIEnv* env);

@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/webui/weblayer_internals_ui.h"
 
+#include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "weblayer/browser/devtools_server_android.h"
@@ -27,7 +28,7 @@ WebLayerInternalsUI::WebLayerInternalsUI(content::WebUI* web_ui)
 
 WebLayerInternalsUI::~WebLayerInternalsUI() = default;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebLayerInternalsUI::GetRemoteDebuggingEnabled(
     GetRemoteDebuggingEnabledCallback callback) {
   std::move(callback).Run(DevToolsServerAndroid::GetRemoteDebuggingEnabled());

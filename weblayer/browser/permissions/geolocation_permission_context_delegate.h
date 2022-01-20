@@ -28,7 +28,7 @@ class GeolocationPermissionContextDelegate
       bool user_gesture,
       permissions::BrowserPermissionCallback* callback,
       permissions::GeolocationPermissionContext* context) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool IsInteractable(content::WebContents* web_contents) override;
   PrefService* GetPrefs(content::BrowserContext* browser_context) override;
   bool IsRequestingOriginDSE(content::BrowserContext* browser_context,

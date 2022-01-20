@@ -51,9 +51,9 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   std::unique_ptr<BrowserProcess> browser_process_;
   std::unique_ptr<performance_manager::PerformanceManagerLifetime>
       performance_manager_lifetime_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<metrics::MemoryMetricsLogger> memory_metrics_logger_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // For running weblayer_browsertests.
   content::MainFunctionParams main_function_params_;

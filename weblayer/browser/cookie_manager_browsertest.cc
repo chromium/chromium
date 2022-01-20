@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest,
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1204901): Disabled due to flakiness on Windows.
 #define MAYBE_FlushCookiesAfterSet DISABLED_FlushCookiesAfterSet
 #else
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest, MAYBE_FlushCookiesAfterSet) {
   EXPECT_GT(GetCookieDbModifiedTime(), original_modified_time);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1204901): Disabled due to flakiness on Windows.
 #define MAYBE_FlushCookiesAfterSetMultiple DISABLED_FlushCookiesAfterSetMultiple
 #else

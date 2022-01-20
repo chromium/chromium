@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/android/permission_request_utils.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/tab_impl.h"
@@ -24,7 +24,7 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
   return false;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool GeolocationPermissionContextDelegate::IsInteractable(
     content::WebContents* web_contents) {
   auto* tab = TabImpl::FromWebContents(web_contents);

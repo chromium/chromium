@@ -16,7 +16,7 @@
 #include "weblayer/browser/navigation_impl.h"
 #include "weblayer/public/navigation_controller.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -69,7 +69,7 @@ class NavigationControllerImpl : public NavigationController,
   void OnPageDestroyed(Page* page);
   void OnPageLanguageDetermined(Page* page, const std::string& language);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetNavigationControllerImpl(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_controller);
@@ -176,7 +176,7 @@ class NavigationControllerImpl : public NavigationController,
   // Set to non-null while in WillRedirectRequest().
   NavigationThrottleImpl* active_throttle_ = nullptr;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_controller_;
 #endif
 

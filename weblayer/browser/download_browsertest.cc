@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, Basic) {
 }
 
 // Test consistently failing on android: crbug.com/1273105
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_OverrideDownloadDirectory DISABLED_OverrideDownloadDirectory
 #else
 #define MAYBE_OverrideDownloadDirectory OverrideDownloadDirectory

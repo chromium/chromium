@@ -38,7 +38,7 @@ Shell::Shell(std::unique_ptr<Browser> browser)
   if (tab()) {
     tab()->AddObserver(this);
     tab()->GetNavigationController()->AddObserver(this);
-#if !defined(OS_ANDROID)  // Android does this in Java.
+#if !BUILDFLAG(IS_ANDROID)  // Android does this in Java.
     static_cast<TabImpl*>(tab())->profile()->SetDownloadDelegate(this);
 #endif
   }
@@ -48,7 +48,7 @@ Shell::~Shell() {
   if (tab()) {
     tab()->GetNavigationController()->RemoveObserver(this);
     tab()->RemoveObserver(this);
-#if !defined(OS_ANDROID)  // Android does this in Java.
+#if !BUILDFLAG(IS_ANDROID)  // Android does this in Java.
     static_cast<TabImpl*>(tab())->profile()->SetDownloadDelegate(nullptr);
 #endif
   }
@@ -112,7 +112,7 @@ Tab* Shell::tab() {
 }
 
 Browser* Shell::browser() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(jam): this won't work if we need more than one Shell in a test.
   const auto& browsers = BrowserList::GetInstance()->browsers();
   if (browsers.empty())
@@ -170,7 +170,7 @@ gfx::Size Shell::AdjustWindowSize(const gfx::Size& initial_size) {
   return GetShellDefaultSize();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 Shell* Shell::CreateNewWindow(const GURL& url, const gfx::Size& initial_size) {
   // On Android, the browser is owned by the Java side.
   return CreateNewWindowWithBrowser(nullptr, url, initial_size);

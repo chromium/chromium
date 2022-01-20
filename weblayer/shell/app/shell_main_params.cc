@@ -28,7 +28,7 @@ GURL GetStartupURL() {
   if (command_line->HasSwitch(switches::kNoInitialNavigation))
     return GURL();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Delay renderer creation on Android until surface is ready.
   return GURL();
 #else
@@ -37,7 +37,7 @@ GURL GetStartupURL() {
   if (args.empty())
     return GURL("https://www.google.com/");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   GURL url(base::WideToUTF16(args[0]));
 #else
   GURL url(args[0]);
@@ -55,13 +55,13 @@ class MainDelegateImpl : public MainDelegate {
   void PreMainMessageLoopRun() override {
     // On Android the Profile is created and owned in Java via an
     // embedder-specific call to WebLayer.createBrowserFragment().
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     InitializeProfile();
 #endif
 
     Shell::Initialize();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     Shell::CreateNewWindow(GetStartupURL(), gfx::Size());
 #else
     Shell::CreateNewWindow(profile_.get(), GetStartupURL(), gfx::Size());
@@ -69,7 +69,7 @@ class MainDelegateImpl : public MainDelegate {
   }
 
   void PostMainMessageLoopRun() override {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     DestroyProfile();
 #endif
   }
@@ -79,7 +79,7 @@ class MainDelegateImpl : public MainDelegate {
   }
 
  private:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void InitializeProfile() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     const bool is_incognito =

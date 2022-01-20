@@ -10,7 +10,7 @@
 
 namespace weblayer {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kImmediatelyHideBrowserControlsForTest;
 #endif
 

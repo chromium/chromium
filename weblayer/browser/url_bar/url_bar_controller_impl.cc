@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/security_state/content/content_utils.h"
@@ -18,7 +19,7 @@
 #include "weblayer/public/browser.h"
 #include "weblayer/public/navigation_controller.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "weblayer/browser/java/jni/UrlBarControllerImpl_jni.h"
 #include "weblayer/browser/url_bar/trusted_cdn_observer.h"
@@ -31,7 +32,7 @@ std::unique_ptr<UrlBarController> UrlBarController::Create(Browser* browser) {
       static_cast<BrowserImpl*>(browser));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static jlong JNI_UrlBarControllerImpl_CreateUrlBarController(
     JNIEnv* env,
     jlong native_browser) {
@@ -56,7 +57,7 @@ UrlBarControllerImpl::UrlBarControllerImpl(BrowserImpl* browser)
 
 UrlBarControllerImpl::~UrlBarControllerImpl() = default;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jstring>
 UrlBarControllerImpl::GetUrlForDisplay(JNIEnv* env) {
   return base::android::ScopedJavaLocalRef<jstring>(

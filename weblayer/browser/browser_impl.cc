@@ -9,6 +9,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "components/base32/base32.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -24,7 +25,7 @@
 #include "weblayer/public/browser_observer.h"
 #include "weblayer/public/browser_restore_observer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -39,7 +40,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace weblayer {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // This MUST match the values defined in
 // org.chromium.weblayer_private.interfaces.DarkModeStrategy.
 enum class DarkModeStrategy {
@@ -64,7 +65,7 @@ std::unique_ptr<Browser> Browser::Create(
 }
 
 BrowserImpl::~BrowserImpl() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android side should always remove tabs first (because the Java Tab class
   // owns the C++ Tab). See BrowserImpl.destroy() (in the Java BrowserImpl
   // class).
@@ -75,7 +76,7 @@ BrowserImpl::~BrowserImpl() {
 #endif
   BrowserList::GetInstance()->RemoveBrowser(this);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (BrowserList::GetInstance()->browsers().empty())
     BrowserProcess::GetInstance()->StopSafeBrowsingService();
 #endif
@@ -91,7 +92,7 @@ TabImpl* BrowserImpl::CreateTabForSessionRestore(
   }
   std::unique_ptr<TabImpl> tab =
       std::make_unique<TabImpl>(profile_, std::move(web_contents), guid);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Java_BrowserImpl_createJavaTabForNativeTab(
       AttachCurrentThread(), java_impl_, reinterpret_cast<jlong>(tab.get()));
 #endif
@@ -103,7 +104,7 @@ TabImpl* BrowserImpl::CreateTab(
   return CreateTabForSessionRestore(std::move(web_contents), std::string());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool BrowserImpl::CompositorHasSurface() {
   return Java_BrowserImpl_compositorHasSurface(AttachCurrentThread(),
                                                java_impl_);
@@ -228,7 +229,7 @@ std::vector<uint8_t> BrowserImpl::GetMinimalPersistenceState(
 }
 
 void BrowserImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   prefs->password_echo_enabled = Java_BrowserImpl_getPasswordEchoEnabled(
       AttachCurrentThread(), java_impl_);
   prefs->font_scale_factor =
@@ -269,7 +270,7 @@ void BrowserImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BrowserImpl::RemoveTabBeforeDestroyingFromJava(Tab* tab) {
   // The java side owns the Tab, and is going to delete it shortly. See
   // JNI_TabImpl_DeleteTab.
@@ -289,7 +290,7 @@ void BrowserImpl::AddTab(Tab* tab) {
 }
 
 void BrowserImpl::DestroyTab(Tab* tab) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Route destruction through the java side.
   Java_BrowserImpl_destroyTabImpl(AttachCurrentThread(), java_impl_,
                                   static_cast<TabImpl*>(tab)->GetJavaTab());
@@ -306,7 +307,7 @@ void BrowserImpl::SetActiveTab(Tab* tab) {
   // TODO: currently the java side sets visibility, this code likely should
   // too and it should be removed from the java side.
   active_tab_ = static_cast<TabImpl*>(tab);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Java_BrowserImpl_onActiveTabChanged(
       AttachCurrentThread(), java_impl_,
       active_tab_ ? active_tab_->GetJavaTab() : nullptr);
@@ -336,7 +337,7 @@ Tab* BrowserImpl::CreateTab() {
 void BrowserImpl::OnRestoreCompleted() {
   for (BrowserRestoreObserver& obs : browser_restore_observers_)
     obs.OnRestoreCompleted();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Java_BrowserImpl_onRestoreCompleted(AttachCurrentThread(), java_impl_);
 #endif
 }
@@ -379,7 +380,7 @@ void BrowserImpl::VisibleSecurityStateOfActiveTabChanged() {
   if (visible_security_state_changed_callback_for_tests_)
     std::move(visible_security_state_changed_callback_for_tests_).Run();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_BrowserImpl_onVisibleSecurityStateOfActiveTabChanged(env, java_impl_);
 #endif
@@ -403,7 +404,7 @@ TabImpl* BrowserImpl::AddTab(std::unique_ptr<Tab> tab) {
   DCHECK(!tab_impl->browser());
   tabs_.push_back(std::move(tab));
   tab_impl->set_browser(this);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Java_BrowserImpl_onTabAdded(AttachCurrentThread(), java_impl_,
                               tab_impl->GetJavaTab());
 #endif
@@ -425,7 +426,7 @@ std::unique_ptr<Tab> BrowserImpl::RemoveTab(Tab* tab) {
   if (active_tab_changed)
     SetActiveTab(nullptr);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Java_BrowserImpl_onTabRemoved(AttachCurrentThread(), java_impl_,
                                 tab ? tab_impl->GetJavaTab() : nullptr);
 #endif
@@ -439,7 +440,7 @@ base::FilePath BrowserImpl::GetBrowserPersisterDataPath() {
       profile_->GetBrowserPersisterDataBaseDir(), GetPersistenceId());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BrowserImpl::UpdateFragmentResumedState(bool state) {
   const bool old_has_at_least_one_active_browser =
       BrowserList::GetInstance()->HasAtLeastOneResumedBrowser();

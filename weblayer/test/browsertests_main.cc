@@ -11,9 +11,9 @@
 #include "weblayer/test/test_launcher_delegate_impl.h"
 #include "weblayer/utility/content_utility_client_impl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
@@ -21,11 +21,11 @@ int main(int argc, char** argv) {
   if (parallel_jobs == 0U)
     return 1;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Load and pin user32.dll to avoid having to load it once tests start while
   // on the main thread loop where blocking calls are disallowed.
   base::win::PinUser32();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Set up a working test environment for the network service in case it's
   // used. Only create this object in the utility process, so that its members

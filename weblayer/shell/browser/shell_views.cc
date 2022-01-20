@@ -38,13 +38,13 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "weblayer/public/tab.h"
 
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/wm/core/wm_state.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <fcntl.h>
 #include <io.h>
 #endif
@@ -295,7 +295,7 @@ END_METADATA
 
 }  // namespace
 
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
 // static
 wm::WMState* Shell::wm_state_ = nullptr;
 display::Screen* Shell::screen_ = nullptr;
@@ -305,11 +305,11 @@ views::ViewsDelegate* Shell::views_delegate_ = nullptr;
 
 // static
 void Shell::PlatformInitialize(const gfx::Size& default_window_size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   _setmode(_fileno(stdout), _O_BINARY);
   _setmode(_fileno(stderr), _O_BINARY);
 #endif
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   wm_state_ = new wm::WMState;
   CHECK(!display::Screen::GetScreen());
   screen_ = views::CreateDesktopScreen().release();

@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
 }
 
 // TODO(crbug.com/654704): Android does not support PRE_ tests.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
                        PRE_IsolatedSitesPersistAcrossRestarts) {
   // There shouldn't be any saved isolated origins to start with.

@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, NavigationOverflow) {
 }
 
 // crbug.com/1240904: test is flaky on linux and win.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_Overflow DISABLED_Overflow
 #else
 #define MAYBE_Overflow Overflow

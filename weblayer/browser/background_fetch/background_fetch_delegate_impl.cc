@@ -32,7 +32,7 @@ BackgroundFetchDelegateImpl::~BackgroundFetchDelegateImpl() = default;
 void BackgroundFetchDelegateImpl::MarkJobComplete(const std::string& job_id) {
   BackgroundFetchDelegateBase::MarkJobComplete(job_id);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   background_fetch::JobDetails* job_details =
       GetJobDetails(job_id, /*allow_null=*/true);
   if (job_details && job_details->job_state ==

@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_export_ui_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -18,7 +19,7 @@
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/grit/weblayer_resources.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/share/android/intent_helper.h"
 #endif
 
@@ -103,7 +104,7 @@ class NetExportMessageHandler
  private:
   // Send NetLog data via email.
   static void SendEmail(const base::FilePath& file_to_send) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (file_to_send.empty())
       return;
     std::string email;

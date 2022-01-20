@@ -18,7 +18,7 @@
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageBrowserTest, NameNotResolved) {
   NavigateAndWaitForFailure(error_page_url, shell());
 
   // Currently, interstitials for error pages are displayed only on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_ANDROID_ERROR_PAGE_WEBPAGE_NOT_AVAILABLE);
   EXPECT_EQ(expected_title, GetTitle(shell()));

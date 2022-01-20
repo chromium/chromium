@@ -15,7 +15,7 @@ namespace weblayer {
 class BrowserImpl;
 class BrowserListObserver;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class BrowserListProxy;
 #endif
 
@@ -29,7 +29,7 @@ class BrowserList {
 
   const base::flat_set<BrowserImpl*>& browsers() { return browsers_; }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns true if there is at least one Browser in a resumed state.
   bool HasAtLeastOneResumedBrowser();
 #endif
@@ -47,13 +47,13 @@ class BrowserList {
   void AddBrowser(BrowserImpl* browser);
   void RemoveBrowser(BrowserImpl* browser);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void NotifyHasAtLeastOneResumedBrowserChanged();
 #endif
 
   base::flat_set<BrowserImpl*> browsers_;
   base::ObserverList<BrowserListObserver> observers_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserListProxy> browser_list_proxy_;
 #endif
 };

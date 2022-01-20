@@ -75,7 +75,7 @@ class WebLayerSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
   CreateHttpsOnlyModeBlockingPage(content::WebContents* web_contents,
                                   const GURL& request_url) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the URL that will be navigated to when the user clicks on the
   // "Connect" button of the captive portal interstitial. Used by tests to
   // verify this flow.

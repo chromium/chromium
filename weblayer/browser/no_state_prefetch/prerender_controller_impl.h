@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "weblayer/public/prerender_controller.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -29,7 +29,7 @@ class PrerenderControllerImpl : public PrerenderController {
   PrerenderControllerImpl(const PrerenderControllerImpl&) = delete;
   PrerenderControllerImpl& operator=(const PrerenderControllerImpl&) = delete;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void Prerender(JNIEnv* env, const base::android::JavaParamRef<jstring>& url);
 #endif
 

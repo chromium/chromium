@@ -31,7 +31,7 @@
 namespace weblayer {
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Waits for a new tab to be created, and then load |url|.
 class NewTabWaiter : public BrowserObserver {
  public:
@@ -222,7 +222,7 @@ class SSLBrowserTest : public WebLayerBrowserTest {
     EXPECT_TRUE(IsShowingSSLInterstitial(shell()->tab()));
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SendInterstitialOpenLoginCommandAndWait() {
     ASSERT_TRUE(IsShowingCaptivePortalInterstitial(shell()->tab()));
 
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTest, Reload) {
 // across restarts.
 // TODO(crbug.com/654704): Android does not support PRE_ tests. For Android just
 // run only the PRE_ version of this test.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define PRE_Proceed Proceed
 #endif
 IN_PROC_BROWSER_TEST_F(SSLBrowserTest, PRE_Proceed) {
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTest, PRE_Proceed) {
   NavigateToPageWithMismatchedCertExpectNotBlocked();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The proceed decision is perpetuated across WebLayer sessions, i.e.  WebLayer
 // will not block again when navigating to the same bad page that was previously
 // proceeded through.
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTest, OSReportsCaptivePortal) {
   NavigateToPageWithMismatchedCertExpectSSLInterstitial();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Tests that after reaching a captive portal interstitial, clicking on the
 // connect link will cause a navigation to the login page.
 IN_PROC_BROWSER_TEST_F(SSLBrowserTest, CaptivePortalConnectToLoginPage) {

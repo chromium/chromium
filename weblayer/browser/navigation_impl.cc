@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/navigation_impl.h"
 
+#include "build/build_config.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -14,14 +15,14 @@
 #include "weblayer/browser/navigation_ui_data_impl.h"
 #include "weblayer/browser/page_impl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
 #include "weblayer/browser/java/jni/NavigationImpl_jni.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 #endif
@@ -38,7 +39,7 @@ NavigationImpl::NavigationImpl(content::NavigationHandle* navigation_handle)
 }
 
 NavigationImpl::~NavigationImpl() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_navigation_) {
     Java_NavigationImpl_onNativeDestroyed(AttachCurrentThread(),
                                           java_navigation_);
@@ -46,7 +47,7 @@ NavigationImpl::~NavigationImpl() {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 ScopedJavaLocalRef<jstring> NavigationImpl::GetUri(JNIEnv* env) {
   return ScopedJavaLocalRef<jstring>(
       base::android::ConvertUTF8ToJavaString(env, GetURL().spec()));
@@ -298,7 +299,7 @@ GURL NavigationImpl::GetReferrer() {
   return navigation_handle_->GetReferrer().url;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static jboolean JNI_NavigationImpl_IsValidRequestHeaderName(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& name) {

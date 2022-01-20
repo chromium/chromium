@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SetUserAgentString) {
                            net::HttpRequestHeaders::kUserAgent));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        SetUserAgentStringDoesntChangeViewportMetaTag) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -983,7 +983,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest2, SetXClientDataHeaderInRedirect) {
   EXPECT_EQ(header_value, last_header_value);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Verifies setting the 'referer' to an android-app url works.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AndroidAppReferer) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),

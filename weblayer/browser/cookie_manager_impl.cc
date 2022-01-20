@@ -4,11 +4,12 @@
 
 #include "weblayer/browser/cookie_manager_impl.h"
 
+#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/cookies/cookie_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -26,7 +27,7 @@ void GetCookieComplete(CookieManager::GetCookieCallback callback,
   std::move(callback).Run(net::CanonicalCookie::BuildCookieLine(cookie_list));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void OnCookieChangedAndroid(
     base::android::ScopedJavaGlobalRef<jobject> callback,
     const net::CookieChangeInfo& change) {
@@ -96,7 +97,7 @@ base::CallbackListSubscription CookieManagerImpl::AddCookieChangedCallback(
   return callback_list_ptr->Add(std::move(callback));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool CookieManagerImpl::SetCookie(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& url,

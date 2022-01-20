@@ -23,11 +23,11 @@ class BackgroundSyncDelegateImpl
   explicit BackgroundSyncDelegateImpl(content::BrowserContext* browser_context);
   ~BackgroundSyncDelegateImpl() override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<
       content::BackgroundSyncController::BackgroundSyncEventKeepAlive>
   CreateBackgroundSyncEventKeepAlive() override;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void GetUkmSourceId(const url::Origin& origin,
                       base::OnceCallback<void(absl::optional<ukm::SourceId>)>
@@ -38,14 +38,14 @@ class BackgroundSyncDelegateImpl
   void NoteSuspendedPeriodicSyncOrigins(
       std::set<url::Origin> suspended_origins) override;
   int GetSiteEngagementPenalty(const GURL& url) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ScheduleBrowserWakeUpWithDelay(
       blink::mojom::BackgroundSyncType sync_type,
       base::TimeDelta delay) override;
   void CancelBrowserWakeup(blink::mojom::BackgroundSyncType sync_type) override;
   bool ShouldDisableBackgroundSync() override;
   bool ShouldDisableAndroidNetworkDetection() override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;

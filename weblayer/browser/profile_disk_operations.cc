@@ -55,14 +55,14 @@ base::FilePath GetDataPathFromDirName(const std::string& dir_name) {
   return GetProfileRootDataDir().AppendASCII(dir_name.c_str());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 base::FilePath GetCachePathFromDirName(const std::string& dir_name) {
   base::FilePath cache_path;
   CHECK(base::PathService::Get(base::DIR_CACHE, &cache_path));
   cache_path = cache_path.AppendASCII("profiles").AppendASCII(dir_name.c_str());
   return cache_path;
 }
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace
 
@@ -96,7 +96,7 @@ ProfileInfo CreateProfileInfo(const std::string& name, bool is_incognito) {
   base::FilePath data_path = GetDataPathFromDirName(dir_name);
   base::CreateDirectory(data_path);
   base::FilePath cache_path = data_path;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   cache_path = GetCachePathFromDirName(dir_name);
   base::CreateDirectory(cache_path);
 #endif
@@ -147,7 +147,7 @@ void TryNukeProfileFromDisk(const ProfileInfo& info) {
 
   // This may fail, but that is ok since the marker is not deleted.
   base::DeletePathRecursively(info.data_path);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::DeletePathRecursively(info.cache_path);
 #endif
 }
@@ -177,10 +177,10 @@ void NukeProfilesMarkedForDeletion() {
     if (!internal::CheckDirNameAndExtractName(dir_name).empty()) {
       // Delete cache and data directory first before deleting marker.
       bool delete_success = true;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       delete_success |=
           base::DeletePathRecursively(GetCachePathFromDirName(dir_name));
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
       delete_success |=
           base::DeletePathRecursively(GetDataPathFromDirName(dir_name));
       // Only delete the marker if deletion is successful.

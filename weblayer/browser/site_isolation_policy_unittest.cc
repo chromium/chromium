@@ -93,7 +93,7 @@ TEST_F(SiteIsolationPolicyTest, IsolationAboveMemoryThreshold) {
   SetMemoryThreshold("128");
   // Android should only use the preloaded origin list, while desktop should
   // isolate all sites.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
   EXPECT_TRUE(

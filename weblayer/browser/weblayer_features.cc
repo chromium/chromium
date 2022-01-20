@@ -4,9 +4,11 @@
 
 #include "weblayer/browser/weblayer_features.h"
 
+#include "build/build_config.h"
+
 namespace weblayer {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Used to disable browser-control animations.
 const base::Feature kImmediatelyHideBrowserControlsForTest{
     "ImmediatelyHideBrowserControlsForTest", base::FEATURE_DISABLED_BY_DEFAULT};

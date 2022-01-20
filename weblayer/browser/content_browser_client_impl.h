@@ -177,16 +177,17 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       override;
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(IS_ANDROID)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) ||
-        // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) ||
+        // BUILDFLAG(IS_ANDROID)
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* frame,
@@ -215,7 +216,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       override;
   bool ShouldObserveContainerViewLocationForDialogOverlays() override;
   content::BluetoothDelegate* GetBluetoothDelegate() override;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
 #if BUILDFLAG(ENABLE_ARCORE)
@@ -233,7 +234,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
  private:
   std::unique_ptr<PrefService> CreateLocalState();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SafeBrowsingService* GetSafeBrowsingService();
 
   std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;

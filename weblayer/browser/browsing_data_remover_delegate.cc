@@ -95,7 +95,7 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
   // between UNPROTECTED_WEB and PROTECTED_WEB.
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) {
     network::mojom::NetworkContext* safe_browsing_context = nullptr;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     safe_browsing_context = BrowserProcess::GetInstance()
                                 ->GetSafeBrowsingService()
                                 ->GetNetworkContext();

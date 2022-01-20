@@ -36,7 +36,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
       ContentSettingsType type,
       const GURL& site_url) override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool CreateInfoBarDelegate() override;
   void ShowSiteSettings(const GURL& site_url) override;
   void OpenCookiesDialog() override;
@@ -60,7 +60,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
   security_state::SecurityLevel GetSecurityLevel() override;
   security_state::VisibleSecurityState GetVisibleSecurityState() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const std::u16string GetClientApplicationName() override;
 #endif
 

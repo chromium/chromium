@@ -21,7 +21,7 @@ namespace weblayer {
 class ProfileDiskOperationsTest : public testing::Test {
  protected:
   base::ScopedPathOverride data_dir_override_{DIR_USER_DATA};
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::ScopedPathOverride cache_dir_override_{base::DIR_CACHE};
 #endif
 };
