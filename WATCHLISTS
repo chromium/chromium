@@ -677,7 +677,9 @@
                   '|net/cert/sct_status_flags.h'\
                   '|net/cert/signed_certificate_timestamp'\
                   '|net/cert/signed_tree_head'\
-                  '|net/test/ct_',
+                  '|net/services/network/sct_auditing/'\
+                  '|net/services/network/ct_'\
+                  '|net/test/ct_'
     },
     'chrome_camera_app': {
       'filepath': # Exclude string translation .xtb files.
@@ -2376,7 +2378,7 @@
     'cc-animation': ['gerchiko@microsoft.com'],
     'cc-display': ['penghuang+viz@chromium.org'],
     'cc-scheduler': ['scheduler-bugs+cc@chromium.org'],
-    'certificate_transparency': ['certificate-transparency-chrome@googlegroups.com',
+    'certificate_transparency': ['jdeblasio+watch@chromium.org',
                                  'martijn+crwatch@martijnc.be',
                                  'rsleevi+watch@chromium.org'],
     'chrome_camera_app': ['chromeos-camera-app-eng@google.com'],
