@@ -80,12 +80,6 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
                          WriteCallback callback);
 
  protected:
-  enum HidReportType {
-    kInput,
-    kOutput,
-    kFeature,
-  };
-
   friend class base::RefCountedThreadSafe<HidConnection>;
 
   HidConnection(scoped_refptr<HidDeviceInfo> device_info,

@@ -14,6 +14,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/win/object_watcher.h"
 #include "components/device_event_log/device_event_log.h"
+#include "services/device/hid/hid_report_type.h"
 
 #define INITGUID
 

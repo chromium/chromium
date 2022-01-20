@@ -4,12 +4,30 @@
 
 #include "services/device/hid/hid_device_info.h"
 
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "build/build_config.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
 
 namespace device {
+
+namespace {
+
+const std::vector<mojom::HidReportDescriptionPtr>& ReportsForType(
+    const mojom::HidCollectionInfoPtr& collection,
+    HidReportType report_type) {
+  switch (report_type) {
+    case HidReportType::kInput:
+      return collection->input_reports;
+    case HidReportType::kOutput:
+      return collection->output_reports;
+    case HidReportType::kFeature:
+      return collection->feature_reports;
+  }
+}
+
+}  // namespace
 
 HidDeviceInfo::PlatformDeviceIdEntry::PlatformDeviceIdEntry(
     base::flat_set<uint8_t> report_ids,
@@ -160,6 +178,48 @@ void HidDeviceInfo::AppendDeviceInfo(scoped_refptr<HidDeviceInfo> device_info) {
       HidBlocklist::Get().GetProtectedReportIds(
           HidBlocklist::kReportTypeFeature, device_->vendor_id,
           device_->product_id, device_->collections);
+}
+
+const mojom::HidCollectionInfo* HidDeviceInfo::FindCollectionWithReport(
+    uint8_t report_id,
+    HidReportType report_type) {
+  if (!device_->has_report_id) {
+    // `report_id` must be zero if the device does not use numbered reports.
+    if (report_id != 0)
+      return nullptr;
+
+    // Return the first collection with a report of type `report_type`, or
+    // nullptr if there is no report of that type.
+    auto find_it = base::ranges::find_if(
+        device_->collections, [=](const auto& collection) {
+          const auto& reports = ReportsForType(collection, report_type);
+          return !reports.empty();
+        });
+    if (find_it == device_->collections.end())
+      return nullptr;
+
+    DCHECK(find_it->get());
+    return find_it->get();
+  }
+
+  // `report_id` must be non-zero if the device uses numbered reports.
+  if (report_id == 0)
+    return nullptr;
+
+  // Return the collection containing a report with `report_id` and type
+  // `report_type`, or nullptr if it is not in any collection.
+  auto find_it =
+      base::ranges::find_if(device_->collections, [=](const auto& collection) {
+        const auto& reports = ReportsForType(collection, report_type);
+        return base::Contains(reports, report_id, [](const auto& report) {
+          return report->report_id;
+        });
+      });
+  if (find_it == device_->collections.end())
+    return nullptr;
+
+  DCHECK(find_it->get());
+  return find_it->get();
 }
 
 }  // namespace device
