@@ -36786,6 +36786,39 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4112" label="WebTransportServerCertificateHashes"/>
   <int value="4113" label="HiddenAttribute"/>
   <int value="4114" label="HiddenUntilFoundAttribute"/>
+  <int value="4115" label="WindowProxyCrossOriginAccessBlur"/>
+  <int value="4116" label="WindowProxyCrossOriginAccessClose"/>
+  <int value="4117" label="WindowProxyCrossOriginAccessClosed"/>
+  <int value="4118" label="WindowProxyCrossOriginAccessFocus"/>
+  <int value="4119" label="WindowProxyCrossOriginAccessFrames"/>
+  <int value="4120" label="WindowProxyCrossOriginAccessIndexedGetter"/>
+  <int value="4121" label="WindowProxyCrossOriginAccessLength"/>
+  <int value="4122" label="WindowProxyCrossOriginAccessLocation"/>
+  <int value="4123" label="WindowProxyCrossOriginAccessNamedGetter"/>
+  <int value="4124" label="WindowProxyCrossOriginAccessOpener"/>
+  <int value="4125" label="WindowProxyCrossOriginAccessParent"/>
+  <int value="4126" label="WindowProxyCrossOriginAccessPostMessage"/>
+  <int value="4127" label="WindowProxyCrossOriginAccessSelf"/>
+  <int value="4128" label="WindowProxyCrossOriginAccessTop"/>
+  <int value="4129" label="WindowProxyCrossOriginAccessWindow"/>
+  <int value="4130" label="WindowProxyCrossOriginAccessFromOtherPageBlur"/>
+  <int value="4131" label="WindowProxyCrossOriginAccessFromOtherPageClose"/>
+  <int value="4132" label="WindowProxyCrossOriginAccessFromOtherPageClosed"/>
+  <int value="4133" label="WindowProxyCrossOriginAccessFromOtherPageFocus"/>
+  <int value="4134" label="WindowProxyCrossOriginAccessFromOtherPageFrames"/>
+  <int value="4135"
+      label="WindowProxyCrossOriginAccessFromOtherPageIndexedGetter"/>
+  <int value="4136" label="WindowProxyCrossOriginAccessFromOtherPageLength"/>
+  <int value="4137" label="WindowProxyCrossOriginAccessFromOtherPageLocation"/>
+  <int value="4138"
+      label="WindowProxyCrossOriginAccessFromOtherPageNamedGetter"/>
+  <int value="4139" label="WindowProxyCrossOriginAccessFromOtherPageOpener"/>
+  <int value="4140" label="WindowProxyCrossOriginAccessFromOtherPageParent"/>
+  <int value="4141"
+      label="WindowProxyCrossOriginAccessFromOtherPagePostMessage"/>
+  <int value="4142" label="WindowProxyCrossOriginAccessFromOtherPageSelf"/>
+  <int value="4143" label="WindowProxyCrossOriginAccessFromOtherPageTop"/>
+  <int value="4144" label="WindowProxyCrossOriginAccessFromOtherPageWindow"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

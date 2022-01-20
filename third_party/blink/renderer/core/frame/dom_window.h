@@ -9,6 +9,7 @@
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -88,15 +89,15 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
 
   // Self-referential attributes
   DOMWindow* self() const;
-  DOMWindow* window() const { return self(); }
-  DOMWindow* frames() const { return self(); }
+  DOMWindow* window() const;
+  DOMWindow* frames() const;
 
   DOMWindow* opener() const;
   DOMWindow* parent() const;
   DOMWindow* top() const;
 
   void focus(v8::Isolate*);
-  virtual void blur() = 0;
+  void blur();
   void close(v8::Isolate*);
   void Close(LocalDOMWindow* incumbent_window);
 
@@ -113,6 +114,9 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
 
   // Indexed properties
   DOMWindow* AnonymousIndexedGetter(uint32_t index);
+
+  // Returns the opener and collects cross-origin access metrics.
+  DOMWindow* OpenerWithMetrics() const;
 
   String SanitizedCrossDomainAccessErrorMessage(
       const LocalDOMWindow* accessing_window,
@@ -152,6 +156,11 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   void ReportCoopAccess(const char* property_name);
 
   bool anonymous() const { return anonymous_; }
+
+  // Records metrics for cross-origin access to the WindowProxy properties,
+  void RecordWindowProxyAccessMetrics(
+      mojom::blink::WebFeature property_access,
+      mojom::blink::WebFeature property_access_from_other_page) const;
 
  protected:
   explicit DOMWindow(Frame&);

@@ -1202,8 +1202,6 @@ Element* LocalDOMWindow::frameElement() const {
   return DynamicTo<HTMLFrameOwnerElement>(owner);
 }
 
-void LocalDOMWindow::blur() {}
-
 void LocalDOMWindow::print(ScriptState* script_state) {
   // Don't try to print if there's no frame attached anymore.
   if (!GetFrame())
