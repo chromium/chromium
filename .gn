@@ -79,8 +79,6 @@ no_check_targets = [
   "//headless:headless_shell_browser_lib",  # 10 errors
   "//headless:headless_shell_lib",  # 10 errors
 
-  "//third_party/libwebp:*",  # 7 errors, https://crbug.com/800762
-
   # //v8, https://crbug.com/v8/7330
   "//v8/src/inspector:inspector",  # 20 errors
   "//v8/test/cctest:cctest_sources",  # 2 errors

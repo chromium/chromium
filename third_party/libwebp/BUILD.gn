@@ -73,15 +73,12 @@ static_library("libwebp_dec") {
   }
 
   deps = [
-    ":libwebp_dsp",
+    ":libwebp_dsp_headers",
     ":libwebp_utils",
     ":libwebp_webp",
   ]
   all_dependent_configs = [ ":libwebp_config" ]
-  if (use_dsp_neon) {
-    deps += [ ":libwebp_dsp_neon" ]
-  }
-  allow_circular_includes_from = [ ":libwebp_dsp" ]
+  allow_circular_includes_from = [ ":libwebp_dsp_headers" ]
 }
 
 static_library("libwebp_demux") {
@@ -116,6 +113,19 @@ static_library("libwebp_mux") {
   ]
 }
 
+source_set("libwebp_dsp_headers") {
+  public = [
+    "src/dsp/dsp.h",
+    "src/dsp/lossless.h",
+    "src/dsp/lossless_common.h",
+    "src/dsp/mips_macro.h",
+    "src/dsp/msa_macro.h",
+    "src/dsp/neon.h",
+    "src/dsp/quant.h",
+    "src/dsp/yuv.h",
+  ]
+}
+
 static_library("libwebp_dsp") {
   sources = [
     "src/dsp/alpha_processing.c",
@@ -129,7 +139,6 @@ static_library("libwebp_dsp") {
     "src/dsp/dec_mips32.c",
     "src/dsp/dec_mips_dsp_r2.c",
     "src/dsp/dec_msa.c",
-    "src/dsp/dsp.h",
     "src/dsp/enc.c",
     "src/dsp/enc_mips32.c",
     "src/dsp/enc_mips_dsp_r2.c",
@@ -138,18 +147,12 @@ static_library("libwebp_dsp") {
     "src/dsp/filters_mips_dsp_r2.c",
     "src/dsp/filters_msa.c",
     "src/dsp/lossless.c",
-    "src/dsp/lossless.h",
-    "src/dsp/lossless_common.h",
     "src/dsp/lossless_enc.c",
     "src/dsp/lossless_enc_mips32.c",
     "src/dsp/lossless_enc_mips_dsp_r2.c",
     "src/dsp/lossless_enc_msa.c",
     "src/dsp/lossless_mips_dsp_r2.c",
     "src/dsp/lossless_msa.c",
-    "src/dsp/mips_macro.h",
-    "src/dsp/msa_macro.h",
-    "src/dsp/neon.h",
-    "src/dsp/quant.h",
     "src/dsp/rescaler.c",
     "src/dsp/rescaler_mips32.c",
     "src/dsp/rescaler_mips_dsp_r2.c",
@@ -159,7 +162,6 @@ static_library("libwebp_dsp") {
     "src/dsp/upsampling_mips_dsp_r2.c",
     "src/dsp/upsampling_msa.c",
     "src/dsp/yuv.c",
-    "src/dsp/yuv.h",
     "src/dsp/yuv_mips32.c",
     "src/dsp/yuv_mips_dsp_r2.c",
   ]
@@ -173,11 +175,14 @@ static_library("libwebp_dsp") {
 
   all_dependent_configs = [ ":libwebp_config" ]
   deps = [
+    ":libwebp_dec",
     ":libwebp_dsp_sse2",
     ":libwebp_dsp_sse41",
+    ":libwebp_enc",
     ":libwebp_utils",
     ":libwebp_webp",
   ]
+  public_deps = [ ":libwebp_dsp_headers" ]
   if (is_android) {
     deps += [ "//third_party/android_ndk:cpu_features" ]
   }
@@ -253,7 +258,12 @@ static_library("libwebp_dsp_sse2") {
       cflags = [ "-msse2" ]
     }
   }
-  public_deps = [ ":libwebp_utils" ]
+  public_deps = [
+    ":libwebp_dec",
+    ":libwebp_dsp_headers",
+    ":libwebp_enc",
+    ":libwebp_utils",
+  ]
 }
 
 if (use_dsp_neon) {
@@ -269,6 +279,13 @@ if (use_dsp_neon) {
       "src/dsp/rescaler_neon.c",
       "src/dsp/upsampling_neon.c",
       "src/dsp/yuv_neon.c",
+    ]
+
+    deps = [
+      ":libwebp_dec",
+      ":libwebp_dsp",
+      ":libwebp_enc",
+      ":libwebp_utils",
     ]
 
     configs += [ ":libwebp_config_internal" ]
@@ -332,12 +349,12 @@ static_library("libwebp_enc") {
 
   deps = [
     ":libwebp_dec",
-    ":libwebp_dsp",
+    ":libwebp_dsp_headers",
     ":libwebp_utils",
     ":libwebp_webp",
   ]
 
-  allow_circular_includes_from = [ ":libwebp_dsp" ]
+  allow_circular_includes_from = [ ":libwebp_dsp_headers" ]
 }
 
 config("libwebp_utils_warnings") {
@@ -388,7 +405,10 @@ static_library("libwebp_utils") {
 
   public_configs = [ ":libwebp_utils_warnings" ]
 
-  deps = [ ":libwebp_webp" ]
+  deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_webp",
+  ]
 }
 
 group("libwebp") {
@@ -600,6 +620,7 @@ fuzzer_test("libwebp_animation_api_fuzzer") {
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
+    ":libwebp_utils",
     ":libwebp_webp",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
