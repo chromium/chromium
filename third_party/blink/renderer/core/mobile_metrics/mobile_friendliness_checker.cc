@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
@@ -45,12 +46,6 @@ static constexpr int kMaxTapTargets = 1000;
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
-      enabled_(frame_view_->GetFrame().GetWidgetForLocalRoot()),
-      viewport_scalar_(
-          enabled_ ? frame_view_->GetPage()
-                         ->GetChromeClient()
-                         .WindowToViewportScalar(&frame_view_->GetFrame(), 1)
-                   : 0),
       timer_(frame_view_->GetFrame().GetTaskRunner(TaskType::kInternalDefault),
              this,
              &MobileFriendlinessChecker::Activate) {}
@@ -58,7 +53,9 @@ MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
 MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
 void MobileFriendlinessChecker::NotifyPaint() {
-  if (timer_.IsActive() || !enabled_ ||
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsLocalRoot());
+  if (timer_.IsActive() ||
       base::TimeTicks::Now() - last_evaluated_ < kEvaluationInterval) {
     return;
   }
@@ -210,7 +207,6 @@ int ExtractAndCountAllTapTargets(
     Vector<int>& x_positions,
     const base::Time& started,
     Vector<std::pair<int, EdgeOrCenter>>& vertices) {
-  vertices.clear();
   LayoutObject* const root =
       frame_view.GetFrame().GetDocument()->GetLayoutView();
   WTF::HashSet<Member<const LayoutObject>> tap_targets;
@@ -318,6 +314,7 @@ int CountBadTapTargets(wtf_size_t rightmost_position,
 // with region tracking by Fenwick tree. The detail of the algorithm is
 // go/bad-tap-target-ukm
 int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
+  DCHECK(frame_view_->GetFrame().IsLocalRoot());
   base::Time started = base::Time::Now();
   constexpr float kOneDipInMm = 0.15875;
   double initial_scale = frame_view_->GetPage()
@@ -325,16 +322,32 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
                              .FinalConstraints()
                              .initial_scale;
   DCHECK_GT(initial_scale, 0);
+
   const int finger_radius =
       std::floor((3 / kOneDipInMm) / initial_scale);  // 3mm in logical pixel.
 
   Vector<std::pair<int, EdgeOrCenter>> vertices;
   Vector<int> x_positions;
 
-  // Scan full DOM tree and extract every corner and center position of tap
-  // targets.
-  const int all_tap_targets = ExtractAndCountAllTapTargets(
-      *frame_view_, finger_radius, x_positions, started, vertices);
+  // Recursively evaluate MF values into subframes.
+  int all_tap_targets = 0;
+  for (const Frame* frame = &frame_view_->GetFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    const auto* local_frame = DynamicTo<LocalFrame>(frame);
+    if (!local_frame)
+      continue;
+
+    const LocalFrameView* view = local_frame->View();
+
+    // Scan full DOM tree and extract every corner and center position of tap
+    // targets.
+    const int got_tap_targets = ExtractAndCountAllTapTargets(
+        *view, finger_radius, x_positions, started, vertices);
+    if (got_tap_targets < 0)
+      return got_tap_targets;
+
+    all_tap_targets += got_tap_targets;
+  }
   if (all_tap_targets <= 0)
     return all_tap_targets;  // Means there is no tap target or timeout.
 
@@ -365,6 +378,8 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
 }
 
 void MobileFriendlinessChecker::Activate(TimerBase*) {
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+
   // If detached, there's no need to calculate any metrics.
   if (!frame_view_->GetChromeClient())
     return;
@@ -375,6 +390,9 @@ void MobileFriendlinessChecker::Activate(TimerBase*) {
 
 void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
     const LocalFrameView&) {
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsLocalRoot());
+
   mobile_friendliness_.bad_tap_targets_ratio = ComputeBadTapTargetsRatio();
   mobile_friendliness_.small_text_ratio = text_area_sizes_.SmallTextRatio();
   mobile_friendliness_.text_content_outside_viewport_percentage =
@@ -387,7 +405,10 @@ void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
 
 void MobileFriendlinessChecker::NotifyViewportUpdated(
     const ViewportDescription& viewport) {
-  if (viewport.type != ViewportDescription::Type::kViewportMeta || !enabled_)
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsLocalRoot());
+
+  if (viewport.type != ViewportDescription::Type::kViewportMeta)
     return;
 
   const double zoom = viewport.zoom_is_explicit ? viewport.zoom : 1.0;
@@ -397,8 +418,11 @@ void MobileFriendlinessChecker::NotifyViewportUpdated(
     mobile_friendliness_.viewport_hardcoded_width =
         viewport.max_width.GetFloatValue();
     // Convert value from Blink space to device-independent pixels.
-    if (viewport_scalar_ != 0)
-      mobile_friendliness_.viewport_hardcoded_width /= viewport_scalar_;
+    const double viewport_scalar =
+        frame_view_->GetPage()->GetChromeClient().WindowToViewportScalar(
+            &frame_view_->GetFrame(), 1);
+    if (viewport_scalar != 0)
+      mobile_friendliness_.viewport_hardcoded_width /= viewport_scalar;
   }
 
   if (viewport.zoom_is_explicit) {
@@ -423,12 +447,10 @@ int MobileFriendlinessChecker::TextAreaWithFontSize::SmallTextRatio() const {
 
 void MobileFriendlinessChecker::NotifyInvalidatePaint(
     const LayoutObject& object) {
-  if (enabled_)
-    ComputeSmallTextRatio(object);
-}
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsLocalRoot());
 
-void MobileFriendlinessChecker::ComputeSmallTextRatio(
-    const LayoutObject& object) {
+  // Compute small text ratio.
   if (const auto* text = DynamicTo<LayoutText>(object)) {
     const auto& style = text->StyleRef();
 
@@ -442,13 +464,18 @@ void MobileFriendlinessChecker::ComputeSmallTextRatio(
         style.ClipBottom().IsZero())
       return;
 
+    const double viewport_scalar =
+        frame_view_->GetPage()->GetChromeClient().WindowToViewportScalar(
+            &frame_view_->GetFrame(), 1);
+
     double initial_scale = frame_view_->GetPage()
                                ->GetPageScaleConstraintsSet()
                                .FinalConstraints()
                                .initial_scale;
     DCHECK_GT(initial_scale, 0);
+
     double actual_font_size =
-        style.FontSize() * initial_scale / viewport_scalar_;
+        style.FontSize() * initial_scale / viewport_scalar;
     double area = text->PhysicalAreaSize();
     if (actual_font_size < kSmallFontThreshold)
       text_area_sizes_.small_font_area += area;

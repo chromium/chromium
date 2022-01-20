@@ -280,7 +280,17 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       layout_shift_tracker_(MakeGarbageCollected<LayoutShiftTracker>(this)),
       paint_timing_detector_(MakeGarbageCollected<PaintTimingDetector>(this)),
       mobile_friendliness_checker_(
-          MakeGarbageCollected<MobileFriendlinessChecker>(*this))
+          // Only run the mobile friendliness checker for the local main frame.
+          // The checker will iterate through all local frames in the current
+          // blink::Page. Also skip the mobile friendliness checks for
+          // "non-ordinary" pages by checking IsLocalFrameClientImpl(), since
+          // it's not useful to generate mobile friendliness metrics for
+          // devtools.
+          //
+          GetFrame().Client()->IsLocalFrameClientImpl() &&
+                  GetFrame().Client()->IsLocalFrameClientImpl()
+              ? MakeGarbageCollected<MobileFriendlinessChecker>(*this)
+              : nullptr)
 #if DCHECK_IS_ON()
       ,
       is_updating_descendant_dependent_flags_(false),
@@ -1956,7 +1966,9 @@ Color LocalFrameView::DocumentBackgroundColor() {
 }
 
 void LocalFrameView::WillBeRemovedFromFrame() {
-  mobile_friendliness_checker_->WillBeRemovedFromFrame();
+  if (mobile_friendliness_checker_)
+    mobile_friendliness_checker_->WillBeRemovedFromFrame();
+
   if (paint_artifact_compositor_)
     paint_artifact_compositor_->WillBeRemovedFromFrame();
 

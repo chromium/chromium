@@ -190,7 +190,11 @@ void PaintTiming::NotifyPaint(bool is_first_paint,
   if (image_painted)
     MarkFirstImagePaint();
   fmp_detector_->NotifyPaint();
-  GetFrame()->View()->GetMobileFriendlinessChecker()->NotifyPaint();
+  if (auto* local_frame = DynamicTo<LocalFrame>(GetFrame()->Top())) {
+    if (auto* mf_checker = local_frame->View()->GetMobileFriendlinessChecker())
+      mf_checker->NotifyPaint();
+  }
+
   if (is_first_paint)
     GetFrame()->OnFirstPaint(text_painted, image_painted);
 }

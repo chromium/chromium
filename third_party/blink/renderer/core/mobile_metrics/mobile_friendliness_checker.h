@@ -18,10 +18,6 @@ namespace blink {
 class LocalFrameView;
 class LayoutObject;
 
-namespace mobile_metrics_test_helpers {
-struct MobileFriendlinessTree;
-}  // namespace mobile_metrics_test_helpers
-
 struct ViewportDescription;
 
 // Calculates the mobile usability of current page, especially friendliness on
@@ -55,8 +51,6 @@ class CORE_EXPORT MobileFriendlinessChecker
  private:
   void Activate(TimerBase*);
 
-  void ComputeSmallTextRatio(const LayoutObject& object);
-
   // Returns the percentage of the width of the content that overflows the
   // viewport.
   // Returns 0 if all content fits in the viewport.
@@ -67,13 +61,9 @@ class CORE_EXPORT MobileFriendlinessChecker
   int ComputeBadTapTargetsRatio();
 
  private:
-  friend struct mobile_metrics_test_helpers::MobileFriendlinessTree;
-
   TextAreaWithFontSize text_area_sizes_;
   Member<LocalFrameView> frame_view_;
   MobileFriendliness mobile_friendliness_;
-  bool enabled_;
-  float viewport_scalar_;
   HeapTaskRunnerTimer<MobileFriendlinessChecker> timer_;
   base::TimeTicks last_evaluated_;
 };
