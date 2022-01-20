@@ -3201,6 +3201,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, RemovePseudoContent) {
   RunRegressionTest(FILE_PATH_LITERAL("remove-pseudo-content.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, RemoveAriaOwner) {
+  RunRegressionTest(FILE_PATH_LITERAL("remove-aria-owner.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMap) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map.html"));
 }
