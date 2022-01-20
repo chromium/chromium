@@ -155,20 +155,11 @@ struct IEOrderBookmarkComparator {
 //   };
 // where each item_id should correspond to a favorites link file (*.url) in
 // the current folder.
-// gcc, in its infinite wisdom, only allows WARN_UNUSED_RESULT for prototypes.
-// Clang, to be compatible with gcc, warns if WARN_UNUSED_RESULT is used in a
-// non-gcc compatible manner (-Wgcc-compat). So even though gcc isn't used to
-// build on Windows, declare some prototypes anyway to satisfy Clang's gcc
-// compatibility warnings.
 [[nodiscard]] bool ParseFavoritesOrderBlob(
     const Importer* importer,
     const std::vector<uint8_t>& blob,
     const base::FilePath& path,
-    std::map<base::FilePath, uint32_t>* sort_index);
-bool ParseFavoritesOrderBlob(const Importer* importer,
-                             const std::vector<uint8_t>& blob,
-                             const base::FilePath& path,
-                             std::map<base::FilePath, uint32_t>* sort_index) {
+    std::map<base::FilePath, uint32_t>* sort_index) {
   static const int kItemCountOffset = 16;
   static const int kItemListStartOffset = 20;
 
