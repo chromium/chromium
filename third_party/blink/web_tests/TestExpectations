@@ -5030,10 +5030,6 @@ crbug.com/1179186 http/tests/inspector-protocol/network/blocked-setcookie-same-p
 crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Pass ]
 crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party-issue.js [ Pass ]
 
-# Temporarily disabled to allow a change to DebuggerModel#scriptsForSourceUrl to land.
-crbug.com/1277403 http/tests/devtools/bindings/inline-styles-binding.js [ Pass Failure ]
-crbug.com/1277403 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Pass Failure ]
-
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
 crbug.com/833658 media/video-controls-focus-movement-on-hide.html [ Failure Pass ]

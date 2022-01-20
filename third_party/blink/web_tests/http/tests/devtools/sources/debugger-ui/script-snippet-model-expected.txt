@@ -64,19 +64,19 @@ VM Snippet1:1 undefined
 Snippet2:1 ƒ doesNothing() {
   var i = 2+2;
 }
-Snippet1:1 undefined
+VM Snippet1:1 undefined
 Run Snippet3..
 VM Snippet1:1 undefined
 Snippet2:1 ƒ doesNothing() {
   var i = 2+2;
 }
-Snippet1:1 undefined
+VM Snippet1:1 undefined
 Snippet3:1 1
 
 Running: testEvaluateEditReload
 Run Snippet1..
 script-snippet-model.js:142 Console was cleared
-Snippet1:1 undefined
+VM Snippet1:1 undefined
 Page reloaded.
 
 Running: testEvaluateWithWorker
