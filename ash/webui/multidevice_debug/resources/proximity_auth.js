@@ -53,7 +53,7 @@ const ProximityAuth = {
   init: function() {
     ProximityAuth.cryptauthController_ = new CryptAuthController();
     ProximityAuth.remoteDevicesController_ = new DeviceListController(
-        document.getElementById('remote-devices-control'));
+        document.querySelector('#remote-devices-control'));
     WebUI.getLocalState();
   }
 };
@@ -64,22 +64,22 @@ const ProximityAuth = {
 class CryptAuthController {
   constructor() {
     this.elements_ = {
-      localDeviceId: document.getElementById('local-device-id'),
-      gcmRegistration: document.getElementById('gcm-registration'),
-      currentEid: document.getElementById('current-eid'),
-      enrollmentTitle: document.getElementById('enrollment-title'),
-      lastEnrollment: document.getElementById('last-enrollment'),
-      nextEnrollment: document.getElementById('next-enrollment'),
-      enrollmentButton: document.getElementById('force-enrollment'),
-      deviceSyncTitle: document.getElementById('device-sync-title'),
-      lastDeviceSync: document.getElementById('last-device-sync'),
-      nextDeviceSync: document.getElementById('next-device-sync'),
-      deviceSyncButton: document.getElementById('force-device-sync'),
-      newUserNotifButton: document.getElementById('show-new-user-notif'),
+      localDeviceId: document.querySelector('#local-device-id'),
+      gcmRegistration: document.querySelector('#gcm-registration'),
+      currentEid: document.querySelector('#current-eid'),
+      enrollmentTitle: document.querySelector('#enrollment-title'),
+      lastEnrollment: document.querySelector('#last-enrollment'),
+      nextEnrollment: document.querySelector('#next-enrollment'),
+      enrollmentButton: document.querySelector('#force-enrollment'),
+      deviceSyncTitle: document.querySelector('#device-sync-title'),
+      lastDeviceSync: document.querySelector('#last-device-sync'),
+      nextDeviceSync: document.querySelector('#next-device-sync'),
+      deviceSyncButton: document.querySelector('#force-device-sync'),
+      newUserNotifButton: document.querySelector('#show-new-user-notif'),
       existingUserNewHostNotifButton:
-          document.getElementById('show-existing-user-new-host-notif'),
+          document.querySelector('#show-existing-user-new-host-notif'),
       existingUserNewChromebookNotifButton:
-          document.getElementById('show-existing-user-new-chromebook-notif'),
+          document.querySelector('#show-existing-user-new-chromebook-notif'),
     };
 
     this.elements_.enrollmentButton.onclick = this.forceEnrollment_.bind(this);
@@ -148,9 +148,10 @@ class CryptAuthController {
    * @return {string}
    */
   getLastSyncTimeString_(syncState, neverSyncedString) {
-    if (syncState.lastSuccessTime == 0)
+    if (syncState.lastSuccessTime == 0) {
       return neverSyncedString;
-    var date = new Date(syncState.lastSuccessTime);
+    }
+    const date = new Date(syncState.lastSuccessTime);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   }
 
@@ -160,25 +161,30 @@ class CryptAuthController {
    * @return {string}
    */
   getNextRefreshString_(syncState) {
-    var deltaMillis = syncState.nextRefreshTime;
-    if (deltaMillis == null)
+    const deltaMillis = syncState.nextRefreshTime;
+    if (deltaMillis == null) {
       return 'unknown';
-    if (deltaMillis == 0)
+    }
+    if (deltaMillis == 0) {
       return 'sync in progress...';
+    }
 
-    var seconds = deltaMillis / 1000;
-    if (seconds < 60)
+    const seconds = deltaMillis / 1000;
+    if (seconds < 60) {
       return Math.round(seconds) + ' seconds to refresh';
+    }
 
-    var minutes = seconds / 60;
-    if (minutes < 60)
+    const minutes = seconds / 60;
+    if (minutes < 60) {
       return Math.round(minutes) + ' minutes to refresh';
+    }
 
-    var hours = minutes / 60;
-    if (hours < 24)
+    const hours = minutes / 60;
+    if (hours < 24) {
       return Math.round(hours) + ' hours to refresh';
+    }
 
-    var days = hours / 24;
+    const days = hours / 24;
     return Math.round(days) + ' days to refresh';
   }
 
@@ -201,8 +207,8 @@ class CryptAuthController {
    */
   showNewUserNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        chromeos.multideviceSetup.mojom.EventTypeForDebugging.
-            kNewUserPotentialHostExists);
+        chromeos.multideviceSetup.mojom.EventTypeForDebugging
+            .kNewUserPotentialHostExists);
   }
 
   /**
@@ -210,8 +216,8 @@ class CryptAuthController {
    */
   showExistingUserNewHostNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        chromeos.multideviceSetup.mojom.EventTypeForDebugging.
-            kExistingUserConnectedHostSwitched);
+        chromeos.multideviceSetup.mojom.EventTypeForDebugging
+            .kExistingUserConnectedHostSwitched);
   }
 
   /**
@@ -219,8 +225,8 @@ class CryptAuthController {
    */
   showExistingUserNewChromebookNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        chromeos.multideviceSetup.mojom.EventTypeForDebugging.
-            kExistingUserNewChromebookAdded);
+        chromeos.multideviceSetup.mojom.EventTypeForDebugging
+            .kExistingUserNewChromebookAdded);
   }
 
   /**
@@ -228,20 +234,22 @@ class CryptAuthController {
    * @param {!chromeos.multideviceSetup.mojom.EventTypeForDebugging} type
    */
   showMultiDeviceSetupPromoNotification_(type) {
-    this.multiDeviceSetup.triggerEventForDebugging(type).then(
-        function(responseParams) {
+    this.multiDeviceSetup.triggerEventForDebugging(type)
+        .then(function(responseParams) {
           if (responseParams.success) {
-            console.log('Successfully triggered notification for type ' +
-                type + '.');
+            console.log(
+                'Successfully triggered notification for type ' + type + '.');
           } else {
-            console.error('Failed to trigger notification for type ' + type +
+            console.error(
+                'Failed to trigger notification for type ' + type +
                 '; no NotificationPresenter has been registered.');
           }
-        }).catch(function(error) {
+        })
+        .catch(function(error) {
           console.error('Failed to trigger notification type. ' + error);
         });
   }
-};
+}
 
 /**
  * Controller for a list of remote devices. These lists are displayed in a
@@ -251,7 +259,7 @@ class DeviceListController {
   constructor(rootElement) {
     this.rootElement_ = rootElement;
     this.remoteDeviceTemplate_ =
-        document.getElementById('remote-device-template');
+        document.querySelector('#remote-device-template');
   }
 
   /**
@@ -259,13 +267,12 @@ class DeviceListController {
    * @param {!Array<!RemoteDevice>} remoteDevices
    */
   updateRemoteDevices(remoteDevices) {
-    var existingItems =
-        this.rootElement_.querySelectorAll('.remote-device');
-    for (var i = 0; i < existingItems.length; ++i) {
+    const existingItems = this.rootElement_.querySelectorAll('.remote-device');
+    for (let i = 0; i < existingItems.length; ++i) {
       existingItems[i].remove();
     }
 
-    for (var i = 0; i < remoteDevices.length; ++i) {
+    for (let i = 0; i < remoteDevices.length; ++i) {
       this.rootElement_.appendChild(
           this.createRemoteDeviceItem_(remoteDevices[i]));
     }
@@ -279,20 +286,18 @@ class DeviceListController {
    * @return {!Node}
    */
   createRemoteDeviceItem_(remoteDevice) {
-    var isUnlockKey = !!remoteDevice.unlockKey;
-    var hasMobileHotspot = !!remoteDevice.hasMobileHotspot;
-    var isArcPlusPlusEnrollment = !!remoteDevice.isArcPlusPlusEnrollment;
-    var isPixelPhone = !!remoteDevice.isPixelPhone;
+    const isUnlockKey = !!remoteDevice.unlockKey;
+    const hasMobileHotspot = !!remoteDevice.hasMobileHotspot;
+    const isArcPlusPlusEnrollment = !!remoteDevice.isArcPlusPlusEnrollment;
+    const isPixelPhone = !!remoteDevice.isPixelPhone;
 
-    var t = this.remoteDeviceTemplate_.content;
-    t.querySelector('.device-connection-status').setAttribute(
-        'state', remoteDevice.connectionStatus);
+    const t = this.remoteDeviceTemplate_.content;
+    t.querySelector('.device-connection-status')
+        .setAttribute('state', remoteDevice.connectionStatus);
     t.querySelector('.device-name').textContent =
         remoteDevice.friendlyDeviceName;
-    t.querySelector('.no-pii-name').textContent =
-        remoteDevice.noPiiName;
-    t.querySelector('.device-id').textContent =
-        remoteDevice.publicKeyTruncated;
+    t.querySelector('.no-pii-name').textContent = remoteDevice.noPiiName;
+    t.querySelector('.device-id').textContent = remoteDevice.publicKeyTruncated;
     t.querySelector('.software-features').textContent =
         remoteDevice.featureStates;
     t.querySelector('.is-unlock-key').textContent = isUnlockKey;
@@ -300,7 +305,7 @@ class DeviceListController {
     t.querySelector('.is-arc-plus-plus-enrollment').textContent =
         isArcPlusPlusEnrollment;
     t.querySelector('.is-pixel-phone').textContent = isPixelPhone;
-    if (!!remoteDevice.bluetoothAddress) {
+    if (remoteDevice.bluetoothAddress) {
       t.querySelector('.bluetooth-address-row').classList.remove('hidden');
       t.querySelector('.bluetooth-address').textContent =
           remoteDevice.bluetoothAddress;

@@ -555,6 +555,9 @@
   "ash/webui/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
     "includes": [3420],
   },
+  "ash/webui/multidevice_debug/resources/multidevice_debug_resources.grd": {
+    "includes": [3440],
+  },
   # END chromeos/ section.
 
   # START components/ section.

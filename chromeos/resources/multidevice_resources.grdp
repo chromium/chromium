@@ -31,27 +31,4 @@
       resource_path="mojo/chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-lite.js"
       use_base_dir="false"
       type="BINDATA" />
-
-  <!-- Resources for ProximityAuth debug page. -->
-  <include name="IDR_MULTIDEVICE_INDEX_HTML"
-      file="../components/multidevice/debug_webui/resources/index.html"
-      type="BINDATA" />
-  <include name="IDR_MULTIDEVICE_COMMON_CSS"
-      file="../components/multidevice/debug_webui/resources/common.css"
-      type="BINDATA" />
-  <include name="IDR_MULTIDEVICE_LOGS_JS"
-      file="../components/multidevice/debug_webui/resources/logs.js"
-      type="BINDATA" />
-  <include name="IDR_MULTIDEVICE_WEBUI_JS"
-      file="../components/multidevice/debug_webui/resources/webui.js"
-      type="BINDATA" />
-  <include name="IDR_MULTIDEVICE_PROXIMITY_AUTH_HTML"
-      file="../components/multidevice/debug_webui/resources/proximity_auth.html"
-      type="BINDATA" />
-  <include name="IDR_MULTIDEVICE_PROXIMITY_AUTH_CSS"
-      file="../components/multidevice/debug_webui/resources/proximity_auth.css"
-      type="BINDATA" />
-  <include name="IDR_MULTIDEVICE_PROXIMITY_AUTH_JS"
-      file="../components/multidevice/debug_webui/resources/proximity_auth.js"
-      type="BINDATA" />
 </grit-part>

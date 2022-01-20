@@ -199,6 +199,7 @@
 #include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.mojom.h"
+#include "ash/webui/multidevice_debug/proximity_auth_ui.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
@@ -240,7 +241,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/user_action_recorder.mojom.h"
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
-#include "chromeos/components/multidevice/debug_webui/proximity_auth_ui.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
@@ -863,7 +863,7 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::multidevice_setup::mojom::MultiDeviceSetup, chromeos::OobeUI,
-      chromeos::multidevice::ProximityAuthUI,
+      ash::multidevice::ProximityAuthUI,
       chromeos::multidevice_setup::MultiDeviceSetupDialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
