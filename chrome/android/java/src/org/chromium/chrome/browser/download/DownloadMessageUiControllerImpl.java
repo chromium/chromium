@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -135,6 +136,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int SCHEDULED = 3;
     }
 
+    @IntDef({IconType.DRAWABLE, IconType.VECTOR_DRAWABLE, IconType.ANIMATED_VECTOR_DRAWABLE})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface IconType {
+        int DRAWABLE = 0;
+        int VECTOR_DRAWABLE = 1;
+        int ANIMATED_VECTOR_DRAWABLE = 2;
+    }
+
     /**
      * Represents the data required to show UI elements of the message.
      */
@@ -147,8 +156,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public String link;
         public int icon;
 
-        // Whether the icon corresponds to a vector drawable.
-        public boolean hasVectorDrawable;
+        @IconType
+        public int iconType = IconType.DRAWABLE;
 
         // Whether the the message must be shown, even though it was dismissed earlier. This
         // usually means there is a significant download update, e.g. download completed.
@@ -193,7 +202,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             message = other.message;
             link = other.link;
             icon = other.icon;
-            hasVectorDrawable = other.hasVectorDrawable;
+            iconType = other.iconType;
             forceShow = other.forceShow;
             downloadCount = other.downloadCount;
             resultState = other.resultState;
@@ -587,11 +596,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int stringRes = -1;
         if (uiState == UiState.DOWNLOADING) {
             stringRes = R.plurals.download_message_multiple_download_in_progress;
-            info.icon = R.drawable.infobar_downloading;
+            info.icon = R.drawable.downloading_fill_animation_24dp;
+            info.iconType = IconType.ANIMATED_VECTOR_DRAWABLE;
         } else if (resultState == ResultState.COMPLETE) {
             stringRes = R.plurals.download_message_multiple_download_complete;
             info.icon = R.drawable.infobar_download_complete;
-            info.hasVectorDrawable = true;
+            info.iconType = IconType.VECTOR_DRAWABLE;
         } else if (resultState == ResultState.FAILED) {
             stringRes = R.plurals.download_message_multiple_download_failed;
             info.icon = R.drawable.ic_error_outline_googblue_24dp;
@@ -738,10 +748,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         if (!shouldShowMessage) return;
 
         recordMessageState(state, info);
-        Drawable drawable = info.hasVectorDrawable
-                ? VectorDrawableCompat.create(
-                        getContext().getResources(), info.icon, getContext().getTheme())
-                : ApiCompatibilityUtils.getDrawable(getContext().getResources(), info.icon);
+
+        Drawable drawable = createDrawable(info);
 
         boolean updateOnly = mPropertyModel != null;
         if (mPropertyModel == null) {
@@ -749,6 +757,13 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                                      .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
                                              MessageIdentifier.DOWNLOAD_PROGRESS)
                                      .build();
+        }
+
+        if (info.iconType == IconType.ANIMATED_VECTOR_DRAWABLE) {
+            mPropertyModel.set(
+                    MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE);
+            drawable = drawable.mutate();
+            ((AnimatedVectorDrawableCompat) drawable).start();
         }
 
         mPropertyModel.set(MessageBannerProperties.ICON, drawable);
@@ -787,6 +802,21 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     private Context getContext() {
         return mContext;
+    }
+
+    private Drawable createDrawable(DownloadProgressMessageUiData info) {
+        switch (info.iconType) {
+            case IconType.DRAWABLE:
+                return ApiCompatibilityUtils.getDrawable(getContext().getResources(), info.icon);
+            case IconType.VECTOR_DRAWABLE:
+                return VectorDrawableCompat.create(
+                        getContext().getResources(), info.icon, getContext().getTheme());
+            case IconType.ANIMATED_VECTOR_DRAWABLE:
+                return AnimatedVectorDrawableCompat.create(getContext(), info.icon);
+            default:
+                assert false : "Unexpected icon type: " + info.iconType;
+                return null;
+        }
     }
 
     private DownloadCount getDownloadCount() {
