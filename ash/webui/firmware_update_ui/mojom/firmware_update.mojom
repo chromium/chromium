@@ -85,6 +85,10 @@ interface UpdateProvider {
   // remote.
   PrepareForUpdate(string device_id) =>
     (pending_remote<InstallController>? controller);
+
+  // Returns the update if there is a firmware update in progress. If not update
+  // is in progress, |update| will be empty.
+  FetchInProgressUpdate() => (FirmwareUpdate? update);
 };
 
 // Enables clients to begin the install flow and receive progress updates.

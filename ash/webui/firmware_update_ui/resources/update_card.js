@@ -45,6 +45,10 @@ export class UpdateCardElement extends UpdateCardElementBase {
       update: {
         type: Object,
       },
+
+      disabled: {
+        type: Boolean,
+      },
     };
   }
 
@@ -58,9 +62,11 @@ export class UpdateCardElement extends UpdateCardElementBase {
 
   /** @protected */
   onUpdateButtonClicked_() {
-    this.dispatchEvent(new CustomEvent(
-        'open-update-dialog',
-        {bubbles: true, composed: true, detail: {update: this.update}}));
+    this.dispatchEvent(new CustomEvent('open-update-dialog', {
+      bubbles: true,
+      composed: true,
+      detail: {update: this.update, inflight: false}
+    }));
   }
 
   /**

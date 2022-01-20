@@ -28,7 +28,8 @@
   }
 </style>
 <template is="dom-if"
-    if="[[shouldShowUpdateDialog_(installationProgress.*)]]" restamp>
+    if="[[shouldShowUpdateDialog_(installationProgress.*,
+        isInitiallyInflight_)]]" restamp>
   <cr-dialog id="updateDialog" show-on-attach
       on-close="closeDialog_">
     <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font">
