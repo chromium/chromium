@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
@@ -54,6 +55,7 @@ TEST_F(NoisyClusterFinalizerTest, FilterHighEngagementClusters) {
 }
 
 TEST_F(NoisyClusterFinalizerTest, HideClusterWithOnlyOneInterestingVisit) {
+  base::HistogramTester histogram_tester;
   history::ClusterVisit visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://bar.com/")));
   visit.engagement_score = 5.0;
@@ -67,9 +69,12 @@ TEST_F(NoisyClusterFinalizerTest, HideClusterWithOnlyOneInterestingVisit) {
   cluster.visits = {visit, visit2};
   FinalizeCluster(cluster);
   EXPECT_FALSE(cluster.should_show_on_prominent_ui_surfaces);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.WasClusterFiltered.NoisyCluster", true, 1);
 }
 
 TEST_F(NoisyClusterFinalizerTest, KeepClusterWitihAtLeastTwoInterestingVisits) {
+  base::HistogramTester histogram_tester;
   history::ClusterVisit visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://bar.com/")));
   visit.engagement_score = 5.0;
@@ -87,6 +92,8 @@ TEST_F(NoisyClusterFinalizerTest, KeepClusterWitihAtLeastTwoInterestingVisits) {
   cluster.visits = {visit, visit2, visit3};
   FinalizeCluster(cluster);
   EXPECT_TRUE(cluster.should_show_on_prominent_ui_surfaces);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.WasClusterFiltered.NoisyCluster", false, 1);
 }
 
 }  // namespace

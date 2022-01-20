@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/single_visit_cluster_finalizer.h"
 
+#include "components/history_clusters/core/cluster_metrics_utils.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 namespace history_clusters {
@@ -12,8 +13,10 @@ SingleVisitClusterFinalizer::SingleVisitClusterFinalizer() = default;
 SingleVisitClusterFinalizer::~SingleVisitClusterFinalizer() = default;
 
 void SingleVisitClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
+  ScopedFilterClusterMetricsRecorder metrics_recorder("SingleVisit");
   if (cluster.visits.size() <= 1) {
     cluster.should_show_on_prominent_ui_surfaces = false;
+    metrics_recorder.set_was_filtered(true);
     return;
   }
 
@@ -35,6 +38,7 @@ void SingleVisitClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   // If we get here, then we have only seen at most 1 canonical visit. Do not
   // show this cluster on prominent UI surfaces.
   cluster.should_show_on_prominent_ui_surfaces = false;
+  metrics_recorder.set_was_filtered(true);
 }
 
 }  // namespace history_clusters

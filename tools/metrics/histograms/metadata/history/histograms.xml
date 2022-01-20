@@ -600,15 +600,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.PercentClustersFilteredByQuery"
-    units="percent clusters filtered" expires_after="2022-05-15">
+<histogram
+    name="History.Clusters.Backend.WasClusterFiltered.{ClusterFilterReason}"
+    enum="BooleanFiltered" expires_after="2022-05-15">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
-    Logs the percentage of clusters that were filtered by the specified queried.
-    Logged when any request to cluster visits is made and a query has been
-    specified in the UI.
+    Logs whether a cluster was filtered for having {ClusterFilterReason}. Logged
+    when finalizing each individual cluster which occurs at the end of every
+    clustering backend request.
   </summary>
+  <token key="ClusterFilterReason">
+    <variant name="NoisyCluster" summary="all noisy visits"/>
+    <variant name="SingleVisit" summary="only a single visit"/>
+    <variant name="VisibilityScore" summary="low visibility score"/>
+  </token>
 </histogram>
 
 <histogram name="History.Clusters.ProcessClustersDuration" units="ms"

@@ -34,6 +34,7 @@ static_library("core") {
   if (build_with_on_device_clustering_backend) {
     sources += [
       "cluster_finalizer.h",
+      "cluster_metrics_utils.h",
       "cluster_processor.h",
       "clusterer.cc",
       "clusterer.h",
