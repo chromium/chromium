@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// So that mojo is defined.
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 
 import {assertDeepEquals, assertEquals} from '../chai_assert.js';
