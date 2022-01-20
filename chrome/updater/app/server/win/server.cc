@@ -79,9 +79,9 @@ bool SwapUninstallCmdLine(UpdaterScope scope,
   uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);
   uninstall_if_unused_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                                 kLoggingModuleSwitchValue);
-  list->AddCreateRegKeyWorkItem(root, UPDATER_KEY, Wow6432(0));
+  list->AddCreateRegKeyWorkItem(root, UPDATER_KEY, KEY_WOW64_32KEY);
   list->AddSetRegValueWorkItem(
-      root, UPDATER_KEY, Wow6432(0), kRegValueUninstallCmdLine,
+      root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
       uninstall_if_unused_command.GetCommandLineString(), true);
 
   return true;

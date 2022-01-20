@@ -581,6 +581,8 @@ std::wstring GetServiceDisplayName(bool is_internal_service) {
 }
 
 REGSAM Wow6432(REGSAM access) {
+  CHECK(access);
+
   return KEY_WOW64_32KEY | access;
 }
 

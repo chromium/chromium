@@ -104,7 +104,7 @@ bool ProcessUserActiveBit(ProcessActiveBitUnderKeyCallback callback,
 bool ProcessSystemActiveBit(ProcessActiveBitUnderKeyCallback callback,
                             const std::string& id) {
   // Clear the active bit under each user in HKU\<sid>.
-  for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", Wow6432(0));
+  for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", KEY_WOW64_32KEY);
        it.Valid(); ++it) {
     const std::wstring sid = it.Name();
     if (ProcessActiveBit(callback, HKEY_USERS, sid, id))
