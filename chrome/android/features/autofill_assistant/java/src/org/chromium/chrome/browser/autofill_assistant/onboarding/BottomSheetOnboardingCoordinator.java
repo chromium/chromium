@@ -48,7 +48,7 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     private final BrowserControlsStateProvider mBrowserControls;
     private final View mRootView;
     private final ScrimCoordinator mScrimCoordinator;
-    private final AccessibilityUtil mAccessibilityUtil;
+    protected final AccessibilityUtil mAccessibilityUtil;
 
     @Nullable
     AssistantOverlayCoordinator mOverlayCoordinator;
