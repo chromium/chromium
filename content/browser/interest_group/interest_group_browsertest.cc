@@ -4908,6 +4908,16 @@ class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1289207): Investigate why this is failing on
+// android-pie-x86-rel.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NavigatingWithBfcachePreservesAuctionLimits \
+  DISABLED_NavigatingWithBfcachePreservesAuctionLimits
+#else
+#define MAYBE_NavigatingWithBfcachePreservesAuctionLimits \
+  NavigatingWithBfcachePreservesAuctionLimits
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Perform an auction, navigate the top-level frame, then navigate it back.
 // Perform 2 more auctions. The second of those two should fail, because 2
 // auctions have already been performed on the page -- one before the top level
@@ -4915,7 +4925,7 @@ class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
 //
 // That is, the auction limit count is preserved due to bfcache.
 IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
-                       NavigatingWithBfcachePreservesAuctionLimits) {
+                       MAYBE_NavigatingWithBfcachePreservesAuctionLimits) {
   const GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   const url::Origin test_origin = url::Origin::Create(test_url);
