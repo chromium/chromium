@@ -68,7 +68,7 @@ AX_BASE_EXPORT extern const base::Feature kAutoDisableAccessibility;
 // accessibility API usage in that time.
 AX_BASE_EXPORT bool IsAutoDisableAccessibilityEnabled();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Enables an experimental Chrome-specific accessibility COM API
 AX_BASE_EXPORT extern const base::Feature kIChromeAccessible;
 
@@ -82,7 +82,7 @@ AX_BASE_EXPORT extern const base::Feature kSelectiveUIAEnablement;
 // the accessibility system.
 AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables ability to choose new continuous mouse following mode in Magnifier
@@ -159,14 +159,14 @@ AX_BASE_EXPORT extern const base::Feature kEnableAriaElementReflection;
 // Returns true if ARIA element reflection is enabled.
 AX_BASE_EXPORT bool IsAriaElementReflectionEnabled();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Compute the AXMode based on AccessibilityServiceInfo. If disabled,
 // the AXMode is either entirely on or entirely off.
 AX_BASE_EXPORT extern const base::Feature kComputeAXMode;
 
 // Returns true if the IChromeAccessible COM API is enabled.
 AX_BASE_EXPORT bool IsComputeAXModeEnabled();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 AX_BASE_EXPORT extern const base::Feature kReaderModeSidePanel;
 

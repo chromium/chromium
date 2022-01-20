@@ -67,14 +67,14 @@ bool IsSwitchAccessMultistepAutomationEnabled() {
           kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Enables UI Automation platform API in addition to the IAccessible API.
 const char kEnableExperimentalUIAutomation[] =
     "enable-experimental-ui-automation";
 #endif
 
 bool IsExperimentalAccessibilityPlatformUIAEnabled() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalUIAutomation);
 #else

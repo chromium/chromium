@@ -19,7 +19,7 @@ namespace ui {
 class AXTree;
 class AXNode;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define AX_EXTRA_MAC_NODES 1
 #endif
 

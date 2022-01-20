@@ -1186,7 +1186,7 @@ std::vector<AXNodeID> AXNode::GetTableRowNodeIds() const {
   return row_node_ids;
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 //
 // Table column-like nodes. These nodes are only present on macOS.
@@ -1213,7 +1213,7 @@ absl::optional<int> AXNode::GetTableColColIndex() const {
   return index;
 }
 
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 //
 // Table cell-like nodes.
@@ -1634,7 +1634,7 @@ bool AXNode::IsLeaf() const {
   if (!child_count)
     return true;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, we want to hide the subtree of a collapsed <select> element.
   // Otherwise, ATs are always going to announce its options whether it's
   // collapsed or expanded. In the AXTree, this element corresponds to a node
@@ -1642,7 +1642,7 @@ bool AXNode::IsLeaf() const {
   // role ax::mojom::Role::kMenuListPopup.
   if (IsCollapsedMenuListPopUpButton())
     return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // These types of objects may have children that we use as internal
   // implementation details, but we want to expose them as leaves to platform

@@ -88,7 +88,7 @@ bool IsAutoDisableAccessibilityEnabled() {
   return base::FeatureList::IsEnabled(::features::kAutoDisableAccessibility);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::Feature kIChromeAccessible{"IChromeAccessible",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -105,7 +105,7 @@ const base::Feature kSelectiveUIAEnablement{"SelectiveUIAEnablement",
 bool IsSelectiveUIAEnablementEnabled() {
   return base::FeatureList::IsEnabled(::features::kSelectiveUIAEnablement);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kMagnifierContinuousMouseFollowingModeSetting{
@@ -187,14 +187,14 @@ bool IsAriaElementReflectionEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnableAriaElementReflection);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kComputeAXMode{"ComputeAXMode",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsComputeAXModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kComputeAXMode);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const base::Feature kReaderModeSidePanel{"ReaderModeSidePanel",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

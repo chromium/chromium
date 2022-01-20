@@ -38,7 +38,7 @@ AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
 // is enabled.
 AX_BASE_EXPORT bool IsSwitchAccessMultistepAutomationEnabled();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 AX_BASE_EXPORT extern const char kEnableExperimentalUIAutomation[];
 #endif
 

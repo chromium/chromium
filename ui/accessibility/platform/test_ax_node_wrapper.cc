@@ -10,6 +10,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_table_info.h"
@@ -897,7 +898,7 @@ TestAXNodeWrapper::TestAXNodeWrapper(AXTree* tree, AXNode* node)
     : tree_(tree),
       node_(node),
       platform_node_(AXPlatformNode::Create(this)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   native_event_target_ = gfx::kMockAcceleratedWidget;
 #else
   native_event_target_ = gfx::kNullAcceleratedWidget;

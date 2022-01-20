@@ -17,7 +17,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace gfx {
 const AcceleratedWidget kMockAcceleratedWidget = reinterpret_cast<HWND>(-1);
 }

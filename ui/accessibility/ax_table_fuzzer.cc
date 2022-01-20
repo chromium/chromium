@@ -116,7 +116,7 @@ void TestTableAPIs(const ui::AXNode* node) {
 
   std::ignore = node->IsTableRow();
   std::ignore = node->GetTableRowRowIndex();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   std::ignore = node->IsTableColumn();
   std::ignore = node->GetTableColColIndex();
 #endif
