@@ -263,7 +263,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     // `reorder_undo_container_` when the app list starts temporary sorting.
     if (features::IsLauncherAppSortEnabled()) {
       reorder_undo_container_ = scrollable_container_->AddChildView(
-          std::make_unique<AppListReorderUndoContainerView>());
+          std::make_unique<AppListReorderUndoContainerView>(
+              /*tablet_mode=*/true));
       reorder_undo_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     }
   } else {

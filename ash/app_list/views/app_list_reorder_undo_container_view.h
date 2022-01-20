@@ -20,7 +20,7 @@ enum class AppListSortOrder;
 // sorting order when the toast dismiss button is clicked.
 class AppListReorderUndoContainerView : public views::View {
  public:
-  AppListReorderUndoContainerView();
+  explicit AppListReorderUndoContainerView(bool tablet_mode);
   AppListReorderUndoContainerView(const AppListReorderUndoContainerView&) =
       delete;
   AppListReorderUndoContainerView& operator=(
@@ -44,6 +44,9 @@ class AppListReorderUndoContainerView : public views::View {
   // Calculates the toast text based on the temporary sorting order.
   [[nodiscard]] std::u16string CalculateToastTextFromOrder(
       AppListSortOrder order) const;
+
+  // Whether the toast container is part of the tablet mode app list UI.
+  const bool tablet_mode_;
 
   AppListToastView* toast_view_ = nullptr;
 };

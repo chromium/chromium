@@ -11,18 +11,22 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
 constexpr int kCornerRadius = 16;
 constexpr gfx::Insets kInteriorMargin(7, 8, 7, 16);
 
+constexpr int kIconMargins = 8;
 constexpr int kToastHeight = 32;
 constexpr int kToastMaximumWidth = 512;
 constexpr int kToastMinimumWidth = 288;
@@ -35,6 +39,9 @@ AppListToastView::Builder::~Builder() = default;
 std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
   std::unique_ptr<AppListToastView> toast =
       std::make_unique<AppListToastView>(title_);
+
+  if (style_for_tablet_mode_)
+    toast->StyleForTabletMode();
 
   if (dark_icon_ && light_icon_)
     toast->SetThemingIcons(dark_icon_, light_icon_);
@@ -51,21 +58,21 @@ std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
 }
 
 AppListToastView::Builder& AppListToastView::Builder::SetIcon(
-    const gfx::VectorIcon& icon) {
+    const gfx::VectorIcon* icon) {
   DCHECK(!dark_icon_);
   DCHECK(!light_icon_);
 
-  icon_ = &icon;
+  icon_ = icon;
   return *this;
 }
 
 AppListToastView::Builder& AppListToastView::Builder::SetThemingIcons(
-    const gfx::VectorIcon& dark_icon,
-    const gfx::VectorIcon& light_icon) {
+    const gfx::VectorIcon* dark_icon,
+    const gfx::VectorIcon* light_icon) {
   DCHECK(!icon_);
 
-  dark_icon_ = &dark_icon;
-  light_icon_ = &light_icon;
+  dark_icon_ = dark_icon;
+  light_icon_ = light_icon;
   return *this;
 }
 
@@ -83,6 +90,12 @@ AppListToastView::Builder& AppListToastView::Builder::SetButton(
   has_button_ = true;
   button_text_ = button_text;
   button_callback_ = button_callback;
+  return *this;
+}
+
+AppListToastView::Builder& AppListToastView::Builder::SetStyleForTabletMode(
+    bool style_for_tablet_mode) {
+  style_for_tablet_mode_ = style_for_tablet_mode;
   return *this;
 }
 
@@ -106,6 +119,16 @@ AppListToastView::AppListToastView(const std::u16string title) {
 
 AppListToastView::~AppListToastView() = default;
 
+void AppListToastView::StyleForTabletMode() {
+  style_for_tablet_mode_ = true;
+
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
+}
+
 void AppListToastView::OnThemeChanged() {
   views::View::OnThemeChanged();
   if (title_label_)
@@ -114,10 +137,18 @@ void AppListToastView::OnThemeChanged() {
     bubble_utils::ApplyStyle(subtitle_label_,
                              bubble_utils::LabelStyle::kSubtitle);
 
-  SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
-      kCornerRadius));
+  if (style_for_tablet_mode_) {
+    SetBackground(views::CreateRoundedRectBackground(
+        ColorProvider::Get()->GetBaseLayerColor(
+            ColorProvider::BaseLayerType::kTransparent80),
+        kCornerRadius));
+  } else {
+    SetBackground(views::CreateRoundedRectBackground(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::
+                kControlBackgroundColorInactive),
+        kCornerRadius));
+  }
 
   UpdateIconImage();
 }
@@ -181,7 +212,10 @@ void AppListToastView::UpdateIconImage() {
     return;
 
   if (default_icon_) {
-    icon_->SetImage(ui::ImageModel::FromVectorIcon(*default_icon_));
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        *default_icon_,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
     return;
   }
 
@@ -194,11 +228,13 @@ void AppListToastView::UpdateIconImage() {
 }
 
 void AppListToastView::CreateIconView() {
-  DCHECK(!icon_);
+  if (icon_)
+    return;
 
   icon_ = AddChildViewAt(std::make_unique<views::ImageView>(), 0);
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   icon_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+  icon_->SetProperty(views::kMarginsKey, gfx::Insets(kIconMargins));
 }
 
 }  // namespace ash

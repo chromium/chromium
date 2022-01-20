@@ -43,13 +43,14 @@ class ASH_EXPORT AppListToastView : public views::View {
     // Nevertheless there might be a case when different icons need to be used
     // with dark/light mode (i.e. non-monochromatic icons) and a single icon is
     // not enough. For this case, use SetThemingIcons().
-    Builder& SetIcon(const gfx::VectorIcon& icon);
-    Builder& SetThemingIcons(const gfx::VectorIcon& dark_icon,
-                             const gfx::VectorIcon& light_icon);
+    Builder& SetIcon(const gfx::VectorIcon* icon);
+    Builder& SetThemingIcons(const gfx::VectorIcon* dark_icon,
+                             const gfx::VectorIcon* light_icon);
 
     Builder& SetSubtitle(const std::u16string subtitle);
     Builder& SetButton(std::u16string button_text,
                        views::Button::PressedCallback button_callback);
+    Builder& SetStyleForTabletMode(bool style_for_tablet_mode);
 
    private:
     std::u16string title_;
@@ -60,6 +61,7 @@ class ASH_EXPORT AppListToastView : public views::View {
     const gfx::VectorIcon* light_icon_ = nullptr;
     views::Button::PressedCallback button_callback_;
     bool has_button_ = false;
+    bool style_for_tablet_mode_ = false;
   };
 
   explicit AppListToastView(const std::u16string title);
@@ -81,6 +83,10 @@ class ASH_EXPORT AppListToastView : public views::View {
   void SetTitle(const std::u16string title);
   void SetSubtitle(const std::u16string subtitle);
 
+  // Styles the toast for display in tablet mode launcher UI - for example, adds
+  // background blur, and sets rounded corners on the toast layer.
+  void StyleForTabletMode();
+
   views::LabelButton* toast_button() const { return toast_button_; }
 
  private:
@@ -95,6 +101,9 @@ class ASH_EXPORT AppListToastView : public views::View {
 
   // Vector icon to use if there are not dark or light mode specific icons.
   const gfx::VectorIcon* default_icon_ = nullptr;
+
+  // Whether the toast UI should be style for tablet mode app list UI.
+  bool style_for_tablet_mode_ = false;
 
   // Toast icon view.
   views::ImageView* icon_ = nullptr;

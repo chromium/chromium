@@ -159,7 +159,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // `reorder_undo_container_` when the app list starts temporary sorting.
   if (features::IsLauncherAppSortEnabled()) {
     reorder_undo_container_ = scroll_contents->AddChildView(
-        std::make_unique<AppListReorderUndoContainerView>());
+        std::make_unique<AppListReorderUndoContainerView>(
+            /*tablet_mode=*/false));
   }
 
   // All apps section.
