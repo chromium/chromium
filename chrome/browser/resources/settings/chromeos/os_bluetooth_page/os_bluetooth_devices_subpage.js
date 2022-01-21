@@ -19,6 +19,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
 import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
@@ -29,9 +30,10 @@ const mojom = chromeos.bluetoothConfig.mojom;
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  * @implements {RouteObserverBehaviorInterface}
+ * @implements {DeepLinkingBehaviorInterface}
  */
-const SettingsBluetoothDevicesSubpageElementBase =
-    mixinBehaviors([I18nBehavior, RouteObserverBehavior], PolymerElement);
+const SettingsBluetoothDevicesSubpageElementBase = mixinBehaviors(
+    [I18nBehavior, RouteObserverBehavior, DeepLinkingBehavior], PolymerElement);
 
 /** @polymer */
 class SettingsBluetoothDevicesSubpageElement extends
@@ -58,6 +60,15 @@ class SettingsBluetoothDevicesSubpageElement extends
       systemProperties: {
         type: Object,
         observer: 'onSystemPropertiesChanged_',
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([chromeos.settings.mojom.Setting.kBluetoothOnOff]),
       },
 
       /**
@@ -136,6 +147,8 @@ class SettingsBluetoothDevicesSubpageElement extends
     }
     recordBluetoothUiSurfaceMetrics(
         BluetoothUiSurface.SETTINGS_DEVICE_LIST_SUBPAGE);
+
+    this.attemptDeepLink();
 
     // If a backwards navigation occurred from a Bluetooth device's detail page,
     // focus the list item corresponding to that device.

@@ -31,7 +31,8 @@
   <cr-toggle id="enableBluetoothToggle"
       checked="{{isBluetoothToggleOn_}}"
       disabled="[[isToggleDisabled_(systemProperties.systemState)]]"
-      aria-label="$i18n{bluetoothToggleA11yLabel}">
+      aria-label="$i18n{bluetoothToggleA11yLabel}"
+      deep-link-focus-id$="[[Setting.kBluetoothOnOff]]">
   </cr-toggle>
 </div>
 <div class="device-lists-separator"></div>

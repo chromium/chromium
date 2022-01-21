@@ -37,6 +37,7 @@ js_library("os_bluetooth_devices_subpage") {
   deps = [
     ":os_paired_bluetooth_list",
     ":settings_fast_pair_toggle",
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "..:route_observer_behavior",
     "../..:router",
