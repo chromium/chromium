@@ -28,6 +28,7 @@
 namespace {
 
 const char kCreditsJsPath[] = "credits.js";
+const char kCreditsCssPath[] = "credits.css";
 const char kStringsJsPath[] = "strings.js";
 
 class AboutUIHTMLSource : public web::URLDataSourceIOS {
@@ -122,6 +123,8 @@ void AboutUIHTMLSource::StartDataRequest(
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath)
       idr = IDR_ABOUT_UI_CREDITS_JS;
+    else if (path == kCreditsCssPath)
+      idr = IDR_ABOUT_UI_CREDITS_CSS;
     ui::ResourceBundle& resource_instance =
         ui::ResourceBundle::GetSharedInstance();
     response = resource_instance.LoadDataResourceString(idr);
@@ -163,6 +166,11 @@ std::string AboutUIHTMLSource::GetMimeType(const std::string& path) const {
   if (path == kCreditsJsPath || path == kStringsJsPath) {
     return "application/javascript";
   }
+
+  if (path == kCreditsCssPath) {
+    return "text/css";
+  }
+
   return "text/html";
 }
 

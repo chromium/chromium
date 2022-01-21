@@ -92,6 +92,7 @@ using content::BrowserThread;
 namespace {
 
 constexpr char kCreditsJsPath[] = "credits.js";
+constexpr char kCreditsCssPath[] = "credits.css";
 constexpr char kStatsJsPath[] = "stats.js";
 constexpr char kStringsJsPath[] = "strings.js";
 
@@ -702,6 +703,8 @@ void AboutUIHTMLSource::StartDataRequest(
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath)
       idr = IDR_ABOUT_UI_CREDITS_JS;
+    else if (path == kCreditsCssPath)
+      idr = IDR_ABOUT_UI_CREDITS_CSS;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     else if (path == kKeyboardUtilsPath)
       idr = IDR_KEYBOARD_UTILS_JS;
@@ -756,6 +759,11 @@ std::string AboutUIHTMLSource::GetMimeType(const std::string& path) {
       path == kStatsJsPath || path == kStringsJsPath) {
     return "application/javascript";
   }
+
+  if (path == kCreditsCssPath) {
+    return "text/css";
+  }
+
   return "text/html";
 }
 
