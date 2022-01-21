@@ -236,6 +236,8 @@ BrowserAccessibilityFuchsia::GetFuchsiaStates() const {
   if (HasState(ax::mojom::State::kFocusable))
     states.set_focusable(true);
 
+  states.set_has_input_focus(IsFocused());
+
   return states;
 }
 

@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Table example - thead, tbody, tfoot'
+UNKNOWN focusable has_input_focus label='Table example - thead, tbody, tfoot'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++TABLE number_of_rows=4 number_of_columns=2

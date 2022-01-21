@@ -2,7 +2,7 @@ UNKNOWN focusable
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN
-++++++++UNKNOWN focusable label='tab1' actions='{DEFAULT}'
+++++++++UNKNOWN focusable has_input_focus label='tab1' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='tab1'
 ++++++++++++UNKNOWN label='tab1'
 ++++++++UNKNOWN focusable label='tab2' actions='{DEFAULT}'

@@ -34,7 +34,7 @@ UNKNOWN focusable
 ++++++++++++++UNKNOWN
 ++++++++++++++++UNKNOWN actions='{DEFAULT}'
 ++++++++++++++++++UNKNOWN hidden
-++++++++++++++++++++UNKNOWN focusable label='Hours' actions='{DEFAULT}'
+++++++++++++++++++++UNKNOWN focusable has_input_focus label='Hours' actions='{DEFAULT}'
 ++++++++++++++++++++++UNKNOWN focusable selected label='01' actions='{DEFAULT}'
 ++++++++++++++++++++++++STATIC_TEXT label='01'
 ++++++++++++++++++++++UNKNOWN focusable label='02' actions='{DEFAULT}'

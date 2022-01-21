@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++STATIC_TEXT label='Test that elements respawn in the accessibility tree after a modal dialog closes.'

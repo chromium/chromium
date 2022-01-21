@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++IMAGE label='animate should not be exposed'

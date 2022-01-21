@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++LINK focusable label='Header 1 List element 1 List element 2 List element 3' actions='{DEFAULT}'

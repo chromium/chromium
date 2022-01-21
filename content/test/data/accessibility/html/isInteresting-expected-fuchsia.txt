@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN label='A non focusable child of a control should not be interesting on Android'

@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++CHECK_BOX focusable label='Title0' actions='{DEFAULT}' checked_state='UNCHECKED'

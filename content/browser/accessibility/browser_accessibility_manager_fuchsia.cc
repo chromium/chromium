@@ -72,14 +72,11 @@ void BrowserAccessibilityManagerFuchsia::FireFocusEvent(
   BrowserAccessibilityFuchsia* old_focus_fuchsia =
       ToBrowserAccessibilityFuchsia(GetLastFocusedNode());
 
-  if (old_focus_fuchsia) {
-    GetAccessibilityBridge()->UnfocusNode(
-        old_focus_fuchsia->GetFuchsiaNodeID());
-  }
+  if (old_focus_fuchsia)
+    old_focus_fuchsia->OnDataChanged();
 
-  if (new_focus_fuchsia) {
-    GetAccessibilityBridge()->FocusNode(new_focus_fuchsia->GetFuchsiaNodeID());
-  }
+  if (new_focus_fuchsia)
+    new_focus_fuchsia->OnDataChanged();
 }
 
 // static

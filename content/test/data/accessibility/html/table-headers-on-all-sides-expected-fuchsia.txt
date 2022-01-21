@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Table example - headers on all sides'
+UNKNOWN focusable has_input_focus label='Table example - headers on all sides'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++TABLE number_of_rows=4 number_of_columns=4

@@ -32,7 +32,7 @@ UNKNOWN focusable
 ++++++++++++++++++++++IMAGE actions='{DEFAULT}'
 ++++++++++++++++++++BUTTON focusable label='Show next month' actions='{DEFAULT}'
 ++++++++++++++++++++++IMAGE actions='{DEFAULT}'
-++++++++++++++++++GRID focusable actions='{DEFAULT}' number_of_rows=6 number_of_columns=7
+++++++++++++++++++GRID focusable has_input_focus actions='{DEFAULT}' number_of_rows=6 number_of_columns=7
 ++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
 ++++++++++++++++++++++UNKNOWN actions='{DEFAULT}'
 ++++++++++++++++++++++++STATIC_TEXT label='S'

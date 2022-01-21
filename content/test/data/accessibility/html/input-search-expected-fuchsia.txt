@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++SEARCH_BOX focusable actions='{DEFAULT, SET_VALUE}' value='Search terms'

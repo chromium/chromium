@@ -1,7 +1,7 @@
 UNKNOWN focusable
 ++UNKNOWN hidden
 ++++UNKNOWN
-++++++BUTTON focusable label='GrowButton' actions='{DEFAULT}'
+++++++BUTTON focusable has_input_focus label='GrowButton' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='GrowButton'
 ++++++++++UNKNOWN label='GrowButton'
 ++++++STATIC_TEXT label='Done'

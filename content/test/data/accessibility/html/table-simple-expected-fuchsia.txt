@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Table example'
+UNKNOWN focusable has_input_focus label='Table example'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++TABLE number_of_rows=3 number_of_columns=2

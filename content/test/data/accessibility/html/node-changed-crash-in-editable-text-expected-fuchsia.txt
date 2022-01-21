@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN focusable label='Done' actions='{DEFAULT}'
 ++++++UNKNOWN actions='{DEFAULT}'

@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Checking nodes marked as clickable'
+UNKNOWN focusable has_input_focus label='Checking nodes marked as clickable'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN

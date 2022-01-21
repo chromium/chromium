@@ -68,14 +68,6 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
     node_deletions_.push_back(node_id);
   }
 
-  void FocusNode(uint32_t new_focus) override {
-    new_focus_.emplace(std::move(new_focus));
-  }
-
-  void UnfocusNode(uint32_t old_focus) override {
-    old_focus_.emplace(std::move(old_focus));
-  }
-
   void OnAccessibilityHitTestResult(int hit_test_request_id,
                                     absl::optional<uint32_t> result) override {
     hit_test_results_[hit_test_request_id] = result;
@@ -359,10 +351,15 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
     EXPECT_TRUE(manager_->OnAccessibilityEvents(event));
   }
 
-  ASSERT_FALSE(mock_accessibility_bridge_->old_focus());
-  ASSERT_TRUE(mock_accessibility_bridge_->new_focus());
-  EXPECT_EQ(*mock_accessibility_bridge_->new_focus(),
-            node_1->GetFuchsiaNodeID());
+  {
+    const std::vector<fuchsia::accessibility::semantics::Node>& node_updates =
+        mock_accessibility_bridge_->node_updates();
+    ASSERT_FALSE(node_updates.empty());
+    EXPECT_EQ(node_updates.back().node_id(), node_1->GetFuchsiaNodeID());
+    ASSERT_TRUE(node_updates.back().has_states());
+    ASSERT_TRUE(node_updates.back().states().has_has_input_focus());
+    EXPECT_TRUE(node_updates.back().states().has_input_focus());
+  }
 
   // Set focus to node 2, and check that focus was updated from node 1 to node
   // 2.
@@ -378,12 +375,21 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
     EXPECT_TRUE(manager_->OnAccessibilityEvents(event));
   }
 
-  ASSERT_TRUE(mock_accessibility_bridge_->old_focus());
-  EXPECT_EQ(*mock_accessibility_bridge_->old_focus(),
-            node_1->GetFuchsiaNodeID());
-  ASSERT_TRUE(mock_accessibility_bridge_->new_focus());
-  EXPECT_EQ(*mock_accessibility_bridge_->new_focus(),
-            node_2->GetFuchsiaNodeID());
+  {
+    const std::vector<fuchsia::accessibility::semantics::Node>& node_updates =
+        mock_accessibility_bridge_->node_updates();
+    ASSERT_GT(node_updates.size(), 2u);
+    const fuchsia::accessibility::semantics::Node& old_focus_node =
+        node_updates[node_updates.size() - 2];
+    EXPECT_EQ(old_focus_node.node_id(), node_1->GetFuchsiaNodeID());
+    ASSERT_TRUE(old_focus_node.has_states());
+    ASSERT_TRUE(old_focus_node.states().has_has_input_focus());
+    EXPECT_FALSE(old_focus_node.states().has_input_focus());
+    EXPECT_EQ(node_updates.back().node_id(), node_2->GetFuchsiaNodeID());
+    ASSERT_TRUE(node_updates.back().has_states());
+    ASSERT_TRUE(node_updates.back().states().has_has_input_focus());
+    EXPECT_TRUE(node_updates.back().states().has_input_focus());
+  }
 }
 
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeviceScale) {

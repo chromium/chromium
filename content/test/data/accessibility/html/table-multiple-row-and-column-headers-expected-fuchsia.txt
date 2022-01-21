@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Table example - multiple row and column headers'
+UNKNOWN focusable has_input_focus label='Table example - multiple row and column headers'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++TABLE number_of_rows=6 number_of_columns=6

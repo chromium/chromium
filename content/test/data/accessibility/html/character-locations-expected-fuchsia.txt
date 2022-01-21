@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Character Locations'
+UNKNOWN focusable has_input_focus label='Character Locations'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN label='Heading'

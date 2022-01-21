@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Table example #2'
+UNKNOWN focusable has_input_focus label='Table example #2'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN

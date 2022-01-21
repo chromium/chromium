@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Table example - headers with empty first cell'
+UNKNOWN focusable has_input_focus label='Table example - headers with empty first cell'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++TABLE label='Delivery slots:' number_of_rows=5 number_of_columns=6

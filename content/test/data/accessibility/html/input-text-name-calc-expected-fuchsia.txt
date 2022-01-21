@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++TEXT_FIELD focusable label='Title0' actions='{DEFAULT, SET_VALUE}'

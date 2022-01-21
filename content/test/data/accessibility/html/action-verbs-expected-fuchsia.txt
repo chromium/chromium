@@ -1,4 +1,4 @@
-UNKNOWN focusable label='Action verbs'
+UNKNOWN focusable has_input_focus label='Action verbs'
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN

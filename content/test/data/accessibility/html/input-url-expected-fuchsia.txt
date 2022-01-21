@@ -1,4 +1,4 @@
-UNKNOWN focusable
+UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='example.com'
