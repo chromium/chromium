@@ -56,7 +56,7 @@ TEST(BrowserDataMigratorTest, NoPathOverlaps) {
   base::span<const char* const> deletable_paths =
       base::make_span(kDeletablePaths);
   base::span<const char* const> common_data_paths =
-      base::make_span(kCommonDataPaths);
+      base::make_span(kNeedCopyDataPaths);
 
   std::vector<base::span<const char* const>> paths_groups{
       remain_in_ash_paths, lacros_data_paths, deletable_paths,
@@ -177,15 +177,25 @@ TEST_F(BrowserDataMigratorImplTest, ManipulateMigrationAttemptCount) {
             0);
 }
 
-TEST_F(BrowserDataMigratorImplTest, GetTargetInfo) {
-  BrowserDataMigratorImpl::TargetInfo target_info =
-      BrowserDataMigratorImpl::GetTargetInfo(from_dir_);
+TEST_F(BrowserDataMigratorImplTest, GetTargetItems) {
+  BrowserDataMigratorImpl::TargetItems lacros_items =
+      BrowserDataMigratorImpl::GetTargetItems(
+          from_dir_, BrowserDataMigratorImpl::ItemType::kLacros);
+  BrowserDataMigratorImpl::TargetItems need_copy_items =
+      BrowserDataMigratorImpl::GetTargetItems(
+          from_dir_, BrowserDataMigratorImpl::ItemType::kNeedCopy);
+  BrowserDataMigratorImpl::TargetItems remain_in_ash_items =
+      BrowserDataMigratorImpl::GetTargetItems(
+          from_dir_, BrowserDataMigratorImpl::ItemType::kRemainInAsh);
+  BrowserDataMigratorImpl::TargetItems deletable_items =
+      BrowserDataMigratorImpl::GetTargetItems(
+          from_dir_, BrowserDataMigratorImpl::ItemType::kDeletable);
 
-  EXPECT_EQ(target_info.remain_in_ash_data_size,
+  EXPECT_EQ(remain_in_ash_items.total_size,
             kFileSize * 2 /* expect two files */);
-  EXPECT_EQ(target_info.deletable_data_size, kFileSize /* expect one file */);
-  EXPECT_EQ(target_info.lacros_data_size, kFileSize * 2 /* expect two files */);
-  EXPECT_EQ(target_info.common_data_size, kFileSize * 2 /* expect two file */);
+  EXPECT_EQ(deletable_items.total_size, kFileSize /* expect one file */);
+  EXPECT_EQ(lacros_items.total_size, kFileSize * 2 /* expect two files */);
+  EXPECT_EQ(need_copy_items.total_size, kFileSize * 2 /* expect two file */);
 
   // Check for ash data.
   std::vector<BrowserDataMigratorImpl::TargetItem>
@@ -194,44 +204,50 @@ TEST_F(BrowserDataMigratorImplTest, GetTargetInfo) {
            BrowserDataMigratorImpl::TargetItem::ItemType::kDirectory},
           {from_dir_.Append(kFullRestoreData), kFileSize,
            BrowserDataMigratorImpl::TargetItem::ItemType::kFile}};
-  std::sort(target_info.remain_in_ash_items.begin(),
-            target_info.remain_in_ash_items.end(), TargetItemComparator());
-  ASSERT_EQ(target_info.remain_in_ash_items.size(),
+  std::sort(remain_in_ash_items.items.begin(), remain_in_ash_items.items.end(),
+            TargetItemComparator());
+  ASSERT_EQ(remain_in_ash_items.items.size(),
             expected_remain_in_ash_items.size());
-  for (int i = 0; i < target_info.remain_in_ash_items.size(); i++) {
-    SCOPED_TRACE(target_info.remain_in_ash_items[i].path.value());
-    EXPECT_EQ(target_info.remain_in_ash_items[i],
-              expected_remain_in_ash_items[i]);
+  for (int i = 0; i < remain_in_ash_items.items.size(); i++) {
+    SCOPED_TRACE(remain_in_ash_items.items[i].path.value());
+    EXPECT_EQ(remain_in_ash_items.items[i], expected_remain_in_ash_items[i]);
   }
 
   // Check for lacros data.
-  std::vector<BrowserDataMigratorImpl::TargetItem> expected_lacros_data_items =
-      {
-          {from_dir_.Append(kBookmarks), kFileSize,
-           BrowserDataMigratorImpl::TargetItem::ItemType::kFile},
-          {from_dir_.Append(kCookies), kFileSize,
-           BrowserDataMigratorImpl::TargetItem::ItemType::kFile},
-      };
-  ASSERT_EQ(target_info.lacros_data_items.size(),
-            expected_lacros_data_items.size());
-  std::sort(target_info.lacros_data_items.begin(),
-            target_info.lacros_data_items.end(), TargetItemComparator());
-  for (int i = 0; i < target_info.common_data_items.size(); i++) {
-    SCOPED_TRACE(target_info.lacros_data_items[i].path.value());
-    EXPECT_EQ(target_info.lacros_data_items[i], expected_lacros_data_items[i]);
+  std::vector<BrowserDataMigratorImpl::TargetItem> expected_lacros_items = {
+      {from_dir_.Append(kBookmarks), kFileSize,
+       BrowserDataMigratorImpl::TargetItem::ItemType::kFile},
+      {from_dir_.Append(kCookies), kFileSize,
+       BrowserDataMigratorImpl::TargetItem::ItemType::kFile},
+  };
+  ASSERT_EQ(lacros_items.items.size(), expected_lacros_items.size());
+  std::sort(lacros_items.items.begin(), lacros_items.items.end(),
+            TargetItemComparator());
+  for (int i = 0; i < lacros_items.items.size(); i++) {
+    SCOPED_TRACE(lacros_items.items[i].path.value());
+    EXPECT_EQ(lacros_items.items[i], expected_lacros_items[i]);
   }
 
   // Check for common data.
-  std::vector<BrowserDataMigratorImpl::TargetItem> expected_common_data_items =
-      {{from_dir_.Append(kAffiliationDatabase), kFileSize * 2,
-        BrowserDataMigratorImpl::TargetItem::ItemType::kDirectory}};
-  ASSERT_EQ(target_info.common_data_items.size(),
-            expected_common_data_items.size());
-  std::sort(target_info.common_data_items.begin(),
-            target_info.common_data_items.end(), TargetItemComparator());
-  for (int i = 0; i < target_info.common_data_items.size(); i++) {
-    SCOPED_TRACE(target_info.common_data_items[i].path.value());
-    EXPECT_EQ(target_info.common_data_items[i], expected_common_data_items[i]);
+  std::vector<BrowserDataMigratorImpl::TargetItem> expected_need_copy_items = {
+      {from_dir_.Append(kAffiliationDatabase), kFileSize * 2,
+       BrowserDataMigratorImpl::TargetItem::ItemType::kDirectory}};
+  ASSERT_EQ(need_copy_items.items.size(), expected_need_copy_items.size());
+  std::sort(need_copy_items.items.begin(), need_copy_items.items.end(),
+            TargetItemComparator());
+  for (int i = 0; i < need_copy_items.items.size(); i++) {
+    SCOPED_TRACE(need_copy_items.items[i].path.value());
+    EXPECT_EQ(need_copy_items.items[i], expected_need_copy_items[i]);
+  }
+
+  // Check for deletable items.
+  std::vector<BrowserDataMigratorImpl::TargetItem> expected_deletable_items = {
+      {from_dir_.Append(kCache), kFileSize,
+       BrowserDataMigratorImpl::TargetItem::ItemType::kFile}};
+  ASSERT_EQ(deletable_items.items.size(), expected_deletable_items.size());
+  for (int i = 0; i < deletable_items.items.size(); i++) {
+    SCOPED_TRACE(deletable_items.items[i].path.value());
+    EXPECT_EQ(deletable_items.items[i], expected_deletable_items[i]);
   }
 }
 
@@ -343,69 +359,19 @@ TEST_F(BrowserDataMigratorImplTest, DryRunToCollectUMA) {
       kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace, 1);
 }
 
-TEST_F(BrowserDataMigratorImplTest, RecordStatus) {
-  {
-    // If `FinalStatus::kSkipped`, only record the status and do not record
-    // copied data size or total time.
-    base::HistogramTester histogram_tester;
-
-    BrowserDataMigratorImpl::RecordStatus(
-        BrowserDataMigratorImpl::FinalStatus::kSkipped);
-
-    histogram_tester.ExpectTotalCount(kFinalStatus, 1);
-    histogram_tester.ExpectTotalCount(kCopiedDataSize, 0);
-    histogram_tester.ExpectTotalCount(kTotalTime, 0);
-
-    histogram_tester.ExpectBucketCount(
-        kFinalStatus, BrowserDataMigratorImpl::FinalStatus::kSkipped, 1);
-  }
-
-  {
-    // If `FInalStatus::kSuccess`, the three UMA `kFinalStatus`,
-    // `kCopiedDataSize`, `kTotalTime` should be recorded.
-    base::HistogramTester histogram_tester;
-
-    BrowserDataMigratorImpl::TargetInfo target_info;
-    target_info.remain_in_ash_data_size = /* 300 MBs */ 300 * 1024 * 1024;
-    target_info.lacros_data_size = /* 400 MBs */ 400 * 1024 * 1024;
-    target_info.common_data_size = /* 500 MBs */ 500 * 1024 * 1024;
-    target_info.deletable_data_size = /* 600 MBs */ 600 * 1024 * 1024;
-
-    base::ElapsedTimer timer;
-
-    BrowserDataMigratorImpl::RecordStatus(
-        BrowserDataMigratorImpl::FinalStatus::kSuccess, &target_info, &timer);
-
-    histogram_tester.ExpectTotalCount(kFinalStatus, 1);
-    histogram_tester.ExpectTotalCount(kCopiedDataSize, 1);
-    histogram_tester.ExpectTotalCount(kAshDataSize, 1);
-    histogram_tester.ExpectTotalCount(kLacrosDataSize, 1);
-    histogram_tester.ExpectTotalCount(kCommonDataSize, 1);
-    histogram_tester.ExpectTotalCount(kTotalTime, 1);
-
-    histogram_tester.ExpectBucketCount(
-        kFinalStatus, BrowserDataMigratorImpl::FinalStatus::kSuccess, 1);
-    histogram_tester.ExpectBucketCount(
-        kCopiedDataSize, target_info.TotalCopySize() / (1024 * 1024), 1);
-    histogram_tester.ExpectBucketCount(
-        kAshDataSize, target_info.remain_in_ash_data_size / (1024 * 1024), 1);
-    histogram_tester.ExpectBucketCount(
-        kLacrosDataSize, target_info.lacros_data_size / (1024 * 1024), 1);
-    histogram_tester.ExpectBucketCount(
-        kCommonDataSize, target_info.common_data_size / (1024 * 1024), 1);
-    histogram_tester.ExpectBucketCount(
-        kNoCopyDataSize, target_info.deletable_data_size / (1024 * 1024), 1);
-  }
-}
-
 TEST_F(BrowserDataMigratorImplTest, SetupTmpDir) {
   base::FilePath tmp_dir = from_dir_.Append(kTmpDir);
   scoped_refptr<CancelFlag> cancel_flag = base::MakeRefCounted<CancelFlag>();
-  BrowserDataMigratorImpl::TargetInfo target_info =
-      BrowserDataMigratorImpl::GetTargetInfo(from_dir_);
+  BrowserDataMigratorImpl::TargetItems lacros_items =
+      BrowserDataMigratorImpl::GetTargetItems(
+          from_dir_, BrowserDataMigratorImpl::ItemType::kLacros);
+  BrowserDataMigratorImpl::TargetItems need_copy_items =
+      BrowserDataMigratorImpl::GetTargetItems(
+          from_dir_, BrowserDataMigratorImpl::ItemType::kNeedCopy);
   FakeMigrationProgressTracker progress_tracker;
   EXPECT_TRUE(BrowserDataMigratorImpl::SetupTmpDir(
-      target_info, from_dir_, tmp_dir, cancel_flag.get(), &progress_tracker));
+      lacros_items, need_copy_items, tmp_dir, cancel_flag.get(),
+      &progress_tracker));
 
   EXPECT_TRUE(base::PathExists(tmp_dir));
   EXPECT_TRUE(base::PathExists(tmp_dir.Append(kFirstRun)));
@@ -429,13 +395,17 @@ TEST_F(BrowserDataMigratorImplTest, CancelSetupTmpDir) {
   base::FilePath tmp_dir = from_dir_.Append(kTmpDir);
   scoped_refptr<CancelFlag> cancel_flag = base::MakeRefCounted<CancelFlag>();
   FakeMigrationProgressTracker progress_tracker;
-  BrowserDataMigratorImpl::TargetInfo target_info =
-      BrowserDataMigratorImpl::GetTargetInfo(from_dir_);
+  BrowserDataMigratorImpl::TargetItems lacros_items =
+      BrowserDataMigratorImpl::GetTargetItems(
+          from_dir_, BrowserDataMigratorImpl::ItemType::kLacros);
+  BrowserDataMigratorImpl::TargetItems need_copy_items =
+      BrowserDataMigratorImpl::GetTargetItems(
+          from_dir_, BrowserDataMigratorImpl::ItemType::kNeedCopy);
 
   // Set cancel_flag to cancel migrationl.
   cancel_flag->Set();
   EXPECT_FALSE(BrowserDataMigratorImpl::SetupTmpDir(
-      target_info, user_data_dir_.GetPath(), tmp_dir, cancel_flag.get(),
+      lacros_items, need_copy_items, tmp_dir, cancel_flag.get(),
       &progress_tracker));
 
   // These files should not exist.
@@ -494,10 +464,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateInternal) {
 
   histogram_tester.ExpectTotalCount(kFinalStatus, 1);
   histogram_tester.ExpectTotalCount(kCopiedDataSize, 1);
-  histogram_tester.ExpectTotalCount(kAshDataSize, 1);
   histogram_tester.ExpectTotalCount(kLacrosDataSize, 1);
   histogram_tester.ExpectTotalCount(kCommonDataSize, 1);
-  histogram_tester.ExpectTotalCount(kNoCopyDataSize, 1);
   histogram_tester.ExpectTotalCount(kTotalTime, 1);
   histogram_tester.ExpectTotalCount(kLacrosDataTime, 1);
   histogram_tester.ExpectTotalCount(kCommonDataTime, 1);

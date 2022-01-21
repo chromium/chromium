@@ -159,12 +159,12 @@ constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
 // The base names of files/dirs that are required by both ash and lacros and
 // thus should be copied to lacros while keeping the original files/dirs in ash
 // data dir.
-constexpr const char* const kCommonDataPaths[]{"Affiliation Database",
-                                               "Login Data",
-                                               "Platform Notifications",
-                                               "Policy",
-                                               "Preferences",
-                                               "shared_proto_db"};
+constexpr const char* const kNeedCopyDataPaths[]{"Affiliation Database",
+                                                 "Login Data",
+                                                 "Platform Notifications",
+                                                 "Policy",
+                                                 "Preferences",
+                                                 "shared_proto_db"};
 
 // Local state pref name, which is used to keep track of what step migration is
 // at. This ensures that ash does not get repeatedly for migration.
@@ -215,7 +215,8 @@ class BrowserDataMigrator {
 // from ash-chrome to lacros-chrome.
 class BrowserDataMigratorImpl : public BrowserDataMigrator {
  public:
-  // Used to describe a file/dir that has to be migrated.
+  // This is used to describe top level entries inside ash-chrome's profile data
+  // directory.
   struct TargetItem {
     enum class ItemType { kFile, kDirectory };
     TargetItem(base::FilePath path, int64_t size, ItemType item_type);
@@ -229,37 +230,15 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
     bool is_directory;
   };
 
-  // Used to describe what files/dirs have to be migrated to the new location
-  // and the total byte size of those files.
-  struct TargetInfo {
-    TargetInfo();
-    ~TargetInfo();
-    TargetInfo(TargetInfo&&);
+  // `TargetItems` should hold `TargetItem`s of the same `ItemType`.
+  struct TargetItems {
+    TargetItems();
+    ~TargetItems();
+    TargetItems(TargetItems&&);
 
-    // Items that should stay in ash data dir.
-    std::vector<TargetItem> remain_in_ash_items;
-    // Items that should be moved to lacros data dir.
-    std::vector<TargetItem> lacros_data_items;
-    // Items that will be duplicated in both ash and lacros data dir.
-    std::vector<TargetItem> common_data_items;
-    // Items that can be deleted from both ash and lacros data dir.
-    std::vector<TargetItem> deletable_items;
-    // The total size of `remain_in_ash_items`.
-    int64_t remain_in_ash_data_size;
-    // The total size of items that can be deleted during the migration.
-    int64_t deletable_data_size;
-    // The total size of `lacros_data_items`.
-    int64_t lacros_data_size;
-    // The total size of `common_data_items`.
-    int64_t common_data_size;
-    // The size of data that are duplicated. Equivalent to the extra space
-    // needed for the migration. Currently this is equal to `lacros_data_size +
-    // common_data_size` since we are copying lacros data rather than moving
-    // them.
-    int64_t TotalCopySize() const;
-    // The total size of the profile data directory. It is the sum of ash,
-    // no_copy, lacros and common sizes.
-    int64_t TotalDirSize() const;
+    std::vector<TargetItem> items;
+    // The sum of the sizes of `TargetItem`s in `items`.
+    int64_t total_size;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -310,6 +289,14 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                          // TargetInfo::no_copy_items to make extra space.
   };
 
+  // Specifies the type of `TargetItem`
+  enum class ItemType {
+    kLacros = 0,       // Item that should be moved to lacros profile directory.
+    kRemainInAsh = 1,  // Item that should remain in ash.
+    kNeedCopy = 2,     // Item that should be copied to lacros.
+    kDeletable = 3,    // Item that can be deleted to free up space i.e. cache.
+  };
+
   // `BrowserDataMigratorImpl` migrates browser data from `original_profile_dir`
   // to a new profile location for lacros chrome. `progress_callback` is called
   // to update the progress bar on the screen. `completion_callback` passed as
@@ -351,11 +338,10 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
                            ManipulateMigrationAttemptCount);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, GetTargetInfo);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, GetTargetItems);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, CopyDirectory);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, SetupTmpDir);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, CancelSetupTmpDir);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, RecordStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateInternal);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, Migrate);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateCancelled);
@@ -388,7 +374,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // wipe and migration. `progress_callback` gets posted on UI thread whenever
   // an update to the UI is required
   static MigrationResult MigrateInternal(
-      const base::FilePath& original_user_dir,
+      const base::FilePath& original_profile_dir,
       std::unique_ptr<MigrationProgressTracker> progress_tracker,
       scoped_refptr<CancelFlag> cancel_flag);
 
@@ -400,36 +386,28 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // Called on UI thread once migration is finished.
   void MigrateInternalFinishedUIThread(MigrationResult result);
 
-  // Records to UMA histograms. Note that if `target_info` is nullptr, timer
-  // will be ignored.
-  static void RecordStatus(const FinalStatus& final_status,
-                           const TargetInfo* target_info = nullptr,
-                           const base::ElapsedTimer* timer = nullptr);
+  // It enumerates the file/dirs in the given directory and returns items of
+  // `type`. E.g. `GetTargetItems(path, ItemType::kLacros)` will get all items
+  // that should be moved to lacros.
+  static TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
+                                    const ItemType type);
 
-  // Create `TargetInfo` from `original_user_dir`. `TargetInfo` will include
-  // paths of files/dirs that needs to be migrated.
-  static TargetInfo GetTargetInfo(const base::FilePath& original_user_dir);
-
-  // Compares space available for `to_dir` against total byte size that
-  // needs to be copied.
-  static bool HasEnoughDiskSpace(const TargetInfo& target_info,
-                                 const base::FilePath& original_user_dir,
-                                 Mode mode);
+  // Compares space available for `original_profile_dir` against total byte size
+  // that needs to be copied.
+  static bool HasEnoughDiskSpace(const int64_t total_copy_size,
+                                 const base::FilePath& original_profile_dir);
 
   // Set up the temporary directory `tmp_dir` by copying items into it.
-  static bool SetupTmpDir(const TargetInfo& target_info,
-                          const base::FilePath& from_dir,
+  static bool SetupTmpDir(const TargetItems& lacros_items,
+                          const TargetItems& common_items,
                           const base::FilePath& tmp_dir,
                           CancelFlag* cancel_flag,
                           MigrationProgressTracker* progress_tracker);
 
-  // Copies `items` to `to_dir`. `items_size` and `category_name` are used for
-  // logging.
+  // Copies `items` to `to_dir`.
   static bool CopyTargetItems(const base::FilePath& to_dir,
-                              const std::vector<TargetItem>& items,
+                              const TargetItems& items,
                               CancelFlag* cancel_flag,
-                              int64_t items_size,
-                              base::StringPiece category_name,
                               MigrationProgressTracker* progress_tracker);
 
   // Copies `item` to location pointed by `dest`. Returns true on success and
