@@ -17,7 +17,6 @@
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
@@ -37,6 +36,7 @@ namespace ui {
 class WaylandConnection;
 class WaylandWindow;
 class WaylandWindowManager;
+class WaylandEventWatcher;
 
 // Wayland implementation of ui::PlatformEventSource. It polls for events
 // through WaylandEventWatcher and centralizes the input and focus handling
@@ -80,9 +80,6 @@ class WaylandEventSource : public PlatformEventSource,
   // pointer state is modified by a button pressed event, but the respective
   // button released event is not delivered (e.g: window moving, drag and drop).
   void ResetPointerFlags();
-
-  // See the comment near WaylandEventWatcher::use_dedicated_polling_thread_.
-  void UseSingleThreadedPollingForTesting();
 
  protected:
   // WaylandKeyboard::Delegate

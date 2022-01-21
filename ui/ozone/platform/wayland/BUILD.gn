@@ -352,6 +352,18 @@ source_set("wayland") {
 
   deps += [ ":wayland_proxy" ]
 
+  if (use_glib) {
+    sources += [
+      "host/wayland_event_watcher_glib.cc",
+      "host/wayland_event_watcher_glib.h",
+    ]
+  } else {
+    sources += [
+      "host/wayland_event_watcher_fdwatch.cc",
+      "host/wayland_event_watcher_fdwatch.h",
+    ]
+  }
+
   configs += [ "//third_party/khronos:khronos_headers" ]
 }
 

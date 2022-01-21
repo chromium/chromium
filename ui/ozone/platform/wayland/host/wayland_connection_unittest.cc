@@ -23,7 +23,6 @@ TEST(WaylandConnectionTest, Ping) {
   ASSERT_TRUE(server.Start({.shell_version = wl::ShellVersion::kStable}));
   WaylandConnection connection;
   ASSERT_TRUE(connection.Initialize());
-  connection.event_source()->UseSingleThreadedPollingForTesting();
   connection.event_source()->StartProcessingEvents();
 
   base::RunLoop().RunUntilIdle();

@@ -27,7 +27,6 @@ TEST(WaylandZAuraShellTest, BugFix) {
 
   WaylandConnection connection;
   ASSERT_TRUE(connection.Initialize());
-  connection.event_source()->UseSingleThreadedPollingForTesting();
   connection.event_source()->StartProcessingEvents();
 
   base::RunLoop().RunUntilIdle();
