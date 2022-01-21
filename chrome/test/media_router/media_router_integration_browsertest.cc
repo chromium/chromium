@@ -159,10 +159,10 @@ void MediaRouterIntegrationBrowserTest::TearDownOnMainThread() {
 
 void MediaRouterIntegrationBrowserTest::SetUpInProcessBrowserTestFixture() {
   InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-  ON_CALL(provider_, IsInitializationComplete(testing::_))
-      .WillByDefault(testing::Return(true));
-  ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+      .WillRepeatedly(testing::Return(true));
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 
