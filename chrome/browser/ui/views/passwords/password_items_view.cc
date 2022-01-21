@@ -28,6 +28,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/range/range.h"
@@ -41,9 +42,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -71,10 +72,8 @@ PasswordItemsViewColumnSetType InferColumnSetTypeFromCredentials(
   return PASSWORD_COLUMN_SET;
 }
 
-void BuildColumnSet(views::GridLayout* layout,
+void BuildColumnSet(views::TableLayout* table_layout,
                     PasswordItemsViewColumnSetType type_id) {
-  DCHECK(!layout->GetColumnSet(type_id));
-  views::ColumnSet* column_set = layout->AddColumnSet(type_id);
   // Passwords are split 60/40 (6:4) as the username is more important
   // than obscured password digits. Otherwise two columns are 50/50 (1:1).
   constexpr float kFirstColumnWeight = 60.0f;
@@ -82,55 +81,44 @@ void BuildColumnSet(views::GridLayout* layout,
   const int between_column_padding =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
-  // Add favicon column
-  if (type_id == PASSWORD_COLUMN_SET ||
-      type_id == MULTI_STORE_PASSWORD_COLUMN_SET) {
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                          views::GridLayout::kFixedSize,
-                          views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                 between_column_padding);
-  }
+  table_layout
+      // favicon column
+      ->AddColumn(views::LayoutAlignment::kStretch,
+                  views::LayoutAlignment::kStretch,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, between_column_padding)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStretch, kFirstColumnWeight,
+                 views::TableLayout::ColumnSize::kFixed, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, between_column_padding)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStretch, kSecondColumnWeight,
+                 views::TableLayout::ColumnSize::kFixed, 0, 0);
 
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                        kFirstColumnWeight,
-                        views::GridLayout::ColumnSize::kFixed, 0, 0);
-
-  if (type_id == PASSWORD_COLUMN_SET ||
-      type_id == MULTI_STORE_PASSWORD_COLUMN_SET) {
-    column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                 between_column_padding);
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                          kSecondColumnWeight,
-                          views::GridLayout::ColumnSize::kFixed, 0, 0);
-  }
   if (type_id == MULTI_STORE_PASSWORD_COLUMN_SET) {
     // All rows show a store indicator or leave the space blank.
-    column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                 between_column_padding);
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                          views::GridLayout::kFixedSize,
-                          views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    // Add a column for the vertical bar.
-    column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                 between_column_padding);
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                          views::GridLayout::kFixedSize,
-                          views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    table_layout
+        ->AddPaddingColumn(views::TableLayout::kFixedSize,
+                           between_column_padding)
+        .AddColumn(views::LayoutAlignment::kStretch,
+                   views::LayoutAlignment::kStretch,
+                   views::TableLayout::kFixedSize,
+                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+        // Add a column for the vertical bar.
+        .AddPaddingColumn(views::TableLayout::kFixedSize,
+                          between_column_padding)
+        .AddColumn(views::LayoutAlignment::kStretch,
+                   views::LayoutAlignment::kCenter,
+                   views::TableLayout::kFixedSize,
+                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   }
   // All rows end with a trailing column for the undo/trash button.
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                               between_column_padding);
-  column_set->AddColumn(views::GridLayout::TRAILING, views::GridLayout::FILL,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-}
-
-void StartRow(views::GridLayout* layout,
-              PasswordItemsViewColumnSetType type_id) {
-  if (!layout->GetColumnSet(type_id))
-    BuildColumnSet(layout, type_id);
-  layout->StartRow(views::GridLayout::kFixedSize, type_id);
+  table_layout
+      ->AddPaddingColumn(views::TableLayout::kFixedSize, between_column_padding)
+      .AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kStretch,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 }
 
 }  // namespace
@@ -145,12 +133,13 @@ class PasswordItemsView::PasswordRow {
   PasswordRow(const PasswordRow&) = delete;
   PasswordRow& operator=(const PasswordRow&) = delete;
 
-  void AddToLayout(views::GridLayout* layout,
+  void AddToLayout(views::TableLayout* table_layout,
                    PasswordItemsViewColumnSetType type_id);
 
  private:
-  void AddUndoRow(views::GridLayout* layout);
-  void AddPasswordRow(views::GridLayout* layout,
+  void AddUndoRow(views::TableLayout* table_layout,
+                  PasswordItemsViewColumnSetType type_id);
+  void AddPasswordRow(views::TableLayout* table_layout,
                       PasswordItemsViewColumnSetType type_id);
 
   void DeleteButtonPressed();
@@ -167,51 +156,56 @@ PasswordItemsView::PasswordRow::PasswordRow(
     : parent_(parent), password_form_(password_form) {}
 
 void PasswordItemsView::PasswordRow::AddToLayout(
-    views::GridLayout* layout,
+    views::TableLayout* table_layout,
     PasswordItemsViewColumnSetType type_id) {
   if (deleted_)
-    AddUndoRow(layout);
+    AddUndoRow(table_layout, type_id);
   else
-    AddPasswordRow(layout, type_id);
+    AddPasswordRow(table_layout, type_id);
 }
 
-void PasswordItemsView::PasswordRow::AddUndoRow(views::GridLayout* layout) {
-  StartRow(layout, UNDO_COLUMN_SET);
-  layout
-      ->AddView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_DELETED),
-          views::style::CONTEXT_DIALOG_BODY_TEXT))
-      ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  auto* undo_button = layout->AddView(std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&PasswordRow::UndoButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UNDO)));
+void PasswordItemsView::PasswordRow::AddUndoRow(
+    views::TableLayout* table_layout,
+    PasswordItemsViewColumnSetType type_id) {
+  table_layout->AddRows(1, views::TableLayout::kFixedSize);
+  auto* undo_label = parent_->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_DELETED),
+      views::style::CONTEXT_DIALOG_BODY_TEXT));
+  undo_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  undo_label->SetProperty(
+      views::kTableColAndRowSpanKey,
+      gfx::Size(type_id == MULTI_STORE_PASSWORD_COLUMN_SET ? 9 : 5, 1));
+  auto* undo_button =
+      parent_->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&PasswordRow::UndoButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UNDO)));
   undo_button->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_MANAGE_PASSWORDS_UNDO_TOOLTIP, GetDisplayUsername(*password_form_)));
 }
 
 void PasswordItemsView::PasswordRow::AddPasswordRow(
-    views::GridLayout* layout,
+    views::TableLayout* table_layout,
     PasswordItemsViewColumnSetType type_id) {
-  StartRow(layout, type_id);
-
+  table_layout->AddRows(1, views::TableLayout::kFixedSize);
   if (parent_->favicon_.IsEmpty()) {
     // Use a globe fallback until the actual favicon is loaded.
-    layout->AddView(
+    parent_->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             kGlobeIcon, ui::kColorIcon, gfx::kFaviconSize)));
   } else {
-    layout->AddView(std::make_unique<views::ImageView>())
+    parent_->AddChildView(std::make_unique<views::ImageView>())
         ->SetImage(parent_->favicon_.AsImageSkia());
   }
 
-  layout->AddView(CreateUsernameLabel(*password_form_));
-  layout->AddView(CreatePasswordLabel(*password_form_));
+  parent_->AddChildView(CreateUsernameLabel(*password_form_));
+  parent_->AddChildView(CreatePasswordLabel(*password_form_));
 
   if (type_id == MULTI_STORE_PASSWORD_COLUMN_SET) {
     if (password_form_->in_store ==
         password_manager::PasswordForm::Store::kAccountStore) {
-      auto* image_view = layout->AddView(std::make_unique<views::ImageView>());
+      auto* image_view =
+          parent_->AddChildView(std::make_unique<views::ImageView>());
       image_view->SetImage(gfx::CreateVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           kGoogleGLogoIcon,
@@ -222,10 +216,11 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
       image_view->SetAccessibleName(l10n_util::GetStringUTF16(
           IDS_MANAGE_PASSWORDS_ACCOUNT_STORE_ICON_DESCRIPTION));
     } else {
-      layout->SkipColumns(1);
+      parent_->AddChildView(std::make_unique<views::View>());
     }
 
-    auto* separator = layout->AddView(std::make_unique<views::Separator>());
+    auto* separator =
+        parent_->AddChildView(std::make_unique<views::Separator>());
     separator->SetFocusBehavior(
         LocationBarBubbleDelegateView::FocusBehavior::NEVER);
     separator->SetPreferredHeight(views::style::GetLineHeight(
@@ -233,13 +228,13 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
     separator->SetCanProcessEventsWithinSubtree(false);
   }
 
-  auto* delete_button =
-      layout->AddView(views::CreateVectorImageButtonWithNativeTheme(
+  parent_
+      ->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&PasswordRow::DeleteButtonPressed,
                               base::Unretained(this)),
-          kTrashCanIcon));
-  delete_button->SetTooltipText(l10n_util::GetStringFUTF16(
-      IDS_MANAGE_PASSWORDS_DELETE, GetDisplayUsername(*password_form_)));
+          kTrashCanIcon))
+      ->SetTooltipText(l10n_util::GetStringFUTF16(
+          IDS_MANAGE_PASSWORDS_DELETE, GetDisplayUsername(*password_form_)));
 }
 
 void PasswordItemsView::PasswordRow::DeleteButtonPressed() {
@@ -274,21 +269,22 @@ PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON)));
 
-  if (controller_.local_credentials().empty()) {
+  auto& local_credentials = controller_.local_credentials();
+
+  if (local_credentials.empty()) {
     // A LayoutManager is required for GetHeightForWidth() even without
     // content.
-    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetUseDefaultFillLayout(true);
   } else {
     // The request is cancelled when the |controller_| is destructed.
     // |controller_| has the same life time as |this| and hence it's safe to use
     // base::Unretained(this).
     controller_.RequestFavicon(base::BindOnce(
         &PasswordItemsView::OnFaviconReady, base::Unretained(this)));
-    for (auto& password_form : controller_.local_credentials()) {
+    for (auto& password_form : local_credentials) {
       password_rows_.push_back(
           std::make_unique<PasswordRow>(this, &password_form));
     }
-
     RecreateLayout();
   }
 }
@@ -311,21 +307,21 @@ void PasswordItemsView::RecreateLayout() {
 
   RemoveAllChildViews();
 
-  views::GridLayout* grid_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  auto* table_layout = SetLayoutManager(std::make_unique<views::TableLayout>());
+  BuildColumnSet(table_layout, InferColumnSetTypeFromCredentials(
+                                   controller_.local_credentials()));
 
   const int vertical_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTROL_LIST_VERTICAL);
-  bool first_row = true;
-  PasswordItemsViewColumnSetType row_column_set_type =
-      InferColumnSetTypeFromCredentials(controller_.local_credentials());
+  bool first = true;
   for (auto& row : password_rows_) {
-    if (!first_row)
-      grid_layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                                 vertical_padding);
-
-    row->AddToLayout(grid_layout, row_column_set_type);
-    first_row = false;
+    if (!first) {
+      table_layout->AddPaddingRow(views::TableLayout::kFixedSize,
+                                  vertical_padding);
+    }
+    row->AddToLayout(table_layout, InferColumnSetTypeFromCredentials(
+                                       controller_.local_credentials()));
+    first = false;
   }
 
   PreferredSizeChanged();
