@@ -9,6 +9,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -25,7 +26,7 @@ using chrome_test_util::ManageSyncSettingsButton;
 
 // Tests that Sync settings is dismissed when the primary account is removed.
 - (void)testSignoutWhileManageSyncSettingsOpened {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:ManageSyncSettingsButton()];

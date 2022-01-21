@@ -95,7 +95,7 @@ NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
 // Tests that the sign-in promo is not visible at start-up once
 // the user has signed in to their account previously.
 - (void)testStartupSigninPromoUserSignedIn {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey
       setCapabilities:GetCapabilitiesDictionary(
@@ -113,7 +113,7 @@ NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
 // Tests that the sign-in promo is not visible at start-up for an account
 // with minor mode restrictions.
 - (void)testStartupSigninPromoNotShownForMinor {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey
       setCapabilities:GetCapabilitiesDictionary(
@@ -129,7 +129,7 @@ NSDictionary<NSString*, NSNumber*>* GetCapabilitiesDictionary(
 
 // Tests that the sign-in promo is visible at start-up for regular user.
 - (void)testStartupSigninPromoShownForNoneMinor {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey
       setCapabilities:GetCapabilitiesDictionary(

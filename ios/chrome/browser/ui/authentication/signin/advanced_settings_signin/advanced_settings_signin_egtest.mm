@@ -85,7 +85,7 @@ void WaitForSettingDoneButton() {
 // and closing the advanced sign-in settings correctly leaves the user signed
 // in.
 - (void)testSignInOpenSyncSettings {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -102,7 +102,7 @@ void WaitForSettingDoneButton() {
 // out through the "Sign out and Turn Off Sync" > "Clear Data" option in Sync
 // settings.
 - (void)testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithClearData {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -149,7 +149,7 @@ void WaitForSettingDoneButton() {
 // out through the "Sign out and Turn Off Sync" > "Keep Data" option in Sync
 // setting.
 - (void)testSignInOpenSyncSettingsSignOutAndTurnOffSyncWithKeepData {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -194,7 +194,7 @@ void WaitForSettingDoneButton() {
 
 // Tests that "Sign out and Turn Off Sync" is not present in advanced settings.
 - (void)testSignInOpenSyncSettingsNoSignOut {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -214,7 +214,7 @@ void WaitForSettingDoneButton() {
 // message after sign-in.
 - (void)testSigninOpenSyncSettingsWithPasswordError {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -250,7 +250,7 @@ void WaitForSettingDoneButton() {
 // passphrase correctly from Advanced Settings and then signs in.
 - (void)testSigninWithPassword {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -279,7 +279,7 @@ void WaitForSettingDoneButton() {
 // Sign-in opened from: setting menu.
 // Interrupted at: advanced sign-in.
 - (void)testInterruptAdvancedSigninSettingsFromAdvancedSigninSettings {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -298,7 +298,7 @@ void WaitForSettingDoneButton() {
 // Sign-in opened from: bookmark view.
 // Interrupted at: advanced sign-in.
 - (void)testInterruptAdvancedSigninBookmarksFromAdvancedSigninSettings {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openToolsMenu];
@@ -317,7 +317,7 @@ void WaitForSettingDoneButton() {
 // Sign-in opened from: recent tabs.
 // Interrupted at: advanced sign-in.
 - (void)testInterruptSigninFromRecentTabsFromAdvancedSigninSettings {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
@@ -333,7 +333,7 @@ void WaitForSettingDoneButton() {
 // Sign-in opened from: tab switcher.
 // Interrupted at: advanced sign-in.
 - (void)testInterruptSigninFromTabSwitcherFromAdvancedSigninSettings {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGreyUI tapPrimarySignInButtonInTabSwitcher];
@@ -348,7 +348,7 @@ void WaitForSettingDoneButton() {
 // Tests that canceling sign-in from advanced sign-in settings will
 // return the user to their prior sign-in state.
 - (void)testCancelSigninFromAdvancedSigninSettings {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];

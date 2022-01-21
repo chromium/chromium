@@ -24,15 +24,6 @@ enum class ConsentLevel;
 // TODO(crbug.com/974833): Consider moving these into ChromeEarlGrey.
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
 
-// Returns a fake identity.
-- (FakeChromeIdentity*)fakeIdentity1;
-
-// Returns a second fake identity.
-- (FakeChromeIdentity*)fakeIdentity2;
-
-// Returns a fake managed identity.
-- (FakeChromeIdentity*)fakeManagedIdentity;
-
 // Adds |fakeIdentity| to the fake identity service.
 - (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 

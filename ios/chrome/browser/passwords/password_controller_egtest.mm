@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -180,7 +181,7 @@ BOOL WaitForKeyboardToAppear() {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (test is flaky)");
   }
 #endif
-  [SigninEarlGreyUI signinWithFakeIdentity:[SigninEarlGrey fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];

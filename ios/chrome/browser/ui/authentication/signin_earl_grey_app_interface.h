@@ -19,15 +19,6 @@ enum class ConsentLevel;
 // compiled into the app binary and can be called from either app or test code.
 @interface SigninEarlGreyAppInterface : NSObject
 
-// Returns a fake identity.
-+ (FakeChromeIdentity*)fakeIdentity1;
-
-// Returns a second fake identity.
-+ (FakeChromeIdentity*)fakeIdentity2;
-
-// Returns a fake managed identity.
-+ (FakeChromeIdentity*)fakeManagedIdentity;
-
 // Adds |fakeIdentity| to the fake identity service.
 + (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 

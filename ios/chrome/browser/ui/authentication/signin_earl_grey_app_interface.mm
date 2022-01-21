@@ -34,24 +34,6 @@
 
 @implementation SigninEarlGreyAppInterface
 
-+ (FakeChromeIdentity*)fakeIdentity1 {
-  return [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
-                                        gaiaID:@"foo1ID"
-                                          name:@"Fake Foo 1"];
-}
-
-+ (FakeChromeIdentity*)fakeIdentity2 {
-  return [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
-                                        gaiaID:@"foo2ID"
-                                          name:@"Fake Foo 2"];
-}
-
-+ (FakeChromeIdentity*)fakeManagedIdentity {
-  return [FakeChromeIdentity identityWithEmail:@"foo@google.com"
-                                        gaiaID:@"fooManagedID"
-                                          name:@"Fake Managed"];
-}
-
 + (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
       fakeIdentity);

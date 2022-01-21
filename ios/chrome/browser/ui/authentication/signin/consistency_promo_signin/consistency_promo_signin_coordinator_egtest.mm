@@ -14,6 +14,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -40,7 +41,7 @@
 
 // Tests that ConsistencyPromoSigninCoordinator shows up, and then skips it.
 - (void)testDismissConsistencyPromoSignin {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyAppInterface triggerConsistencyPromoSigninDialog];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
@@ -59,7 +60,7 @@
                  @"The default dismissal max value should be more than 0");
   [ChromeEarlGrey setIntegerValue:kDefaultWebSignInDismissalCount - 1
                       forUserPref:prefs::kSigninWebSignDismissalCount];
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Show the web sign-in consistency dialog for the last time.
   [SigninEarlGreyAppInterface triggerConsistencyPromoSigninDialog];
@@ -84,7 +85,7 @@
 // Removes the only identity while the error dialog is opened. Once the identity
 // is removed, the web sign-in dialog is removed.
 - (void)testRemoveLastIdentityWithSigninErrorDialog {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyAppInterface triggerConsistencyPromoSigninDialog];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
@@ -107,7 +108,7 @@
 
 // Display an error dialog and then dismiss the web sign-in dialog.
 - (void)testGetErrorDialogAndSkipWebSigninDialog {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyAppInterface triggerConsistencyPromoSigninDialog];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];

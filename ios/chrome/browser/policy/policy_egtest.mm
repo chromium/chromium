@@ -38,6 +38,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #include "ios/chrome/test/earl_grey/chrome_test_case.h"
 #include "ios/chrome/test/earl_grey/test_switches.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #include "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -457,7 +458,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 // Tests that when the BrowserSignin policy is updated while the app is not
 // launched, a policy screen is displayed at startup.
 - (void)testBrowserSignInDisabledAtStartup {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Create the config to relaunch Chrome.
@@ -501,7 +502,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 // Tests that the UI notifying the user of their sign out is displayed when the
 // policy changes while the app is launched.
 - (void)testBrowserSignInDisabledWhileAppVisible {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Force sign out.
@@ -525,7 +526,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 // Tests that the UI notifying the user of their sign out is displayed when the
 // primary account is restricted.
 - (void)testBrowserAccountRestrictedAlert {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Set restrictions.

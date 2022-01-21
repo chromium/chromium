@@ -31,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -185,7 +186,7 @@ void WaitForSettingDoneButton() {
        forUserPref:password_manager::prefs::kPasswordLeakDetectionEnabled];
 
   // Sign in.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   // Open "Google Services" settings.
   [self openGoogleServicesSettings];
@@ -312,7 +313,7 @@ void WaitForSettingDoneButton() {
 // re-enabled.
 - (void)testToggleAllowChromeSigninWithPromoSignin {
   // User is signed-in only
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
@@ -365,7 +366,7 @@ void WaitForSettingDoneButton() {
 // re-enabled.
 - (void)testToggleAllowChromeSigninWithPromoSigninClearData {
   // User is signed-in and syncing.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
@@ -433,7 +434,7 @@ void WaitForSettingDoneButton() {
 // re-enabled.
 - (void)testToggleAllowChromeSigninWithPromoSigninKeepData {
   // User is signed-in and syncing.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
@@ -547,7 +548,7 @@ void WaitForSettingDoneButton() {
 // Tests that canceling the "Allow Chrome sign-in" option does not change the
 // user's sign-in state.
 - (void)testCancelAllowChromeSignin {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 

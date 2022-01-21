@@ -171,7 +171,7 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGreyUI openBookmarks];
 
   // Set up a fake identity.
-  [SigninEarlGrey addFakeIdentity:[SigninEarlGrey fakeIdentity1]];
+  [SigninEarlGrey addFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
 
   // Check that promo is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
@@ -203,7 +203,7 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
 
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Check that sign-in promo view are visible.

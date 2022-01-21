@@ -10,6 +10,15 @@
 // A fake ChromeIdentity used for testing.
 @interface FakeChromeIdentity : ChromeIdentity <NSSecureCoding>
 
+// Returns a fake identity.
++ (FakeChromeIdentity*)fakeIdentity1;
+
+// Returns a second fake identity.
++ (FakeChromeIdentity*)fakeIdentity2;
+
+// Returns a fake managed identity.
++ (FakeChromeIdentity*)fakeManagedIdentity;
+
 // Returns a ChromeIdentity based on |email|, |gaiaID| and |name|.
 // The |hashedGaiaID| property will be derived from |name|.
 // For simplicity, both |userGivenName| and |userFullName| properties use

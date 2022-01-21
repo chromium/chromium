@@ -21,18 +21,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation SigninEarlGreyImpl
 
-- (FakeChromeIdentity*)fakeIdentity1 {
-  return [SigninEarlGreyAppInterface fakeIdentity1];
-}
-
-- (FakeChromeIdentity*)fakeIdentity2 {
-  return [SigninEarlGreyAppInterface fakeIdentity2];
-}
-
-- (FakeChromeIdentity*)fakeManagedIdentity {
-  return [SigninEarlGreyAppInterface fakeManagedIdentity];
-}
-
 - (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
   [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity];
 }
