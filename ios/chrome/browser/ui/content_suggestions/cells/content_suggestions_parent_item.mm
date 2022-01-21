@@ -101,6 +101,7 @@
       ContentSuggestionsMostVisitedTileView* view =
           [[ContentSuggestionsMostVisitedTileView alloc]
               initWithConfiguration:item];
+      view.menuProvider = self.menuProvider;
       UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
           initWithTarget:self.tapTarget
                   action:@selector(contentSuggestionsElementTapped:)];

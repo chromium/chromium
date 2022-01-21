@@ -367,6 +367,7 @@ const CGFloat kCardBorderRadius = 11;
           static_cast<ContentSuggestionsParentItem*>(
               items[@(sectionInfo.sectionID)][0]);
       item.tapTarget = self;
+      item.menuProvider = self.menuProvider;
     }
     [self addSuggestionsToModel:items[@(sectionInfo.sectionID)]
                 withSectionInfo:sectionInfo];

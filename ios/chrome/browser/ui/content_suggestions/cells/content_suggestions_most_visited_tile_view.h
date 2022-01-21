@@ -7,11 +7,13 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_view.h"
 
+@protocol ContentSuggestionsMenuProvider;
 @class ContentSuggestionsMostVisitedItem;
 @class FaviconView;
 
 // NTP Tile representing a most visited website. Displays a favicon and a title.
-@interface ContentSuggestionsMostVisitedTileView : ContentSuggestionsTileView
+@interface ContentSuggestionsMostVisitedTileView
+    : ContentSuggestionsTileView <UIContextMenuInteractionDelegate>
 
 // Initializes and configures the view with |config|.
 - (instancetype)initWithConfiguration:
@@ -19,6 +21,9 @@
 
 // FaviconView displaying the favicon.
 @property(nonatomic, strong, readonly) FaviconView* faviconView;
+
+// Provider of menu configurations for this tile.
+@property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 
 // Configuration for this view.
 @property(nonatomic, strong, readonly)

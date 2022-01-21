@@ -401,6 +401,20 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
                             incognito:(BOOL)incognito
+                              atIndex:(NSInteger)index
+                            fromPoint:(CGPoint)point {
+  if (incognito &&
+      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+    // This should only happen when the policy changes while the option is
+    // presented.
+    return;
+  }
+  [self logMostVisitedOpening:item atIndex:index];
+  [self openNewTabWithURL:item.URL incognito:incognito originPoint:point];
+}
+
+- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
+                            incognito:(BOOL)incognito
                               atIndex:(NSInteger)index {
   if (incognito &&
       IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
@@ -495,8 +509,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 #pragma mark - Private
 
 // Returns the center of the cell associated with |item| in the window
-// coordinates. Returns CGPointZero is the cell isn't visible.
-- (CGPoint)cellCenterForItem:(CollectionViewItem<SuggestedContent>*)item {
+// coordinates. Returns CGPointZero if the cell isn't visible.
+- (CGPoint)cellCenterForItem:(ContentSuggestionsMostVisitedItem*)item {
   NSIndexPath* indexPath = [self.suggestionsViewController.collectionViewModel
       indexPathForItem:item];
   if (!indexPath)
