@@ -191,8 +191,6 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, NetworkError) {
       URLLoaderCompletionStatus(
           net::ERR_CONNECTION_REFUSED /* chosen arbitrarily */));
 
-  TrustTokenKeyCommitmentController::Status result_status;
-  mojom::TrustTokenKeyCommitmentResultPtr result;
   CommitmentWaiter waiter;
 
   auto url_request = MakeURLRequest("https://issuer.com/");
@@ -203,7 +201,7 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, NetworkError) {
       TRAFFIC_ANNOTATION_FOR_TESTS, &factory,
       std::make_unique<FixedKeyCommitmentParser>());
 
-  std::tie(result_status, result) = waiter.WaitForResult();
+  auto [result_status, result] = waiter.WaitForResult();
   EXPECT_EQ(result_status.value,
             TrustTokenKeyCommitmentController::Status::Value::kNetworkError);
   EXPECT_EQ(result_status.net_error, net::ERR_CONNECTION_REFUSED);
@@ -216,8 +214,6 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, NetworkSuccessParseFailure) {
   TestURLLoaderFactory factory;
   factory.AddResponse(IssuerDotComKeyCommitmentPath().spec(), "");
 
-  TrustTokenKeyCommitmentController::Status result_status;
-  mojom::TrustTokenKeyCommitmentResultPtr result;
   CommitmentWaiter waiter;
 
   auto url_request = MakeURLRequest("https://issuer.com/");
@@ -228,7 +224,7 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, NetworkSuccessParseFailure) {
       TRAFFIC_ANNOTATION_FOR_TESTS, &factory,
       std::make_unique<FailingKeyCommitmentParser>());
 
-  std::tie(result_status, result) = waiter.WaitForResult();
+  auto [result_status, result] = waiter.WaitForResult();
   EXPECT_EQ(result_status.value,
             TrustTokenKeyCommitmentController::Status::Value::kCouldntParse);
 }
@@ -248,8 +244,6 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, Redirect) {
                       /*content=*/"", network::URLLoaderCompletionStatus(),
                       std::move(redirects));
 
-  TrustTokenKeyCommitmentController::Status result_status;
-  mojom::TrustTokenKeyCommitmentResultPtr result;
   CommitmentWaiter waiter;
 
   auto url_request = MakeURLRequest("https://issuer.com/");
@@ -260,7 +254,7 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, Redirect) {
       TRAFFIC_ANNOTATION_FOR_TESTS, &factory,
       std::make_unique<FailingKeyCommitmentParser>());
 
-  std::tie(result_status, result) = waiter.WaitForResult();
+  auto [result_status, result] = waiter.WaitForResult();
   EXPECT_EQ(result_status.value,
             TrustTokenKeyCommitmentController::Status::Value::kGotRedirected);
 }
@@ -271,8 +265,6 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, Success) {
   TestURLLoaderFactory factory;
   factory.AddResponse(IssuerDotComKeyCommitmentPath().spec(), "", net::HTTP_OK);
 
-  TrustTokenKeyCommitmentController::Status result_status;
-  mojom::TrustTokenKeyCommitmentResultPtr result;
   CommitmentWaiter waiter;
 
   auto url_request = MakeURLRequest("https://issuer.com/");
@@ -283,7 +275,7 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, Success) {
       TRAFFIC_ANNOTATION_FOR_TESTS, &factory,
       std::make_unique<FixedKeyCommitmentParser>());
 
-  std::tie(result_status, result) = waiter.WaitForResult();
+  auto [result_status, result] = waiter.WaitForResult();
   EXPECT_EQ(result_status.value,
             TrustTokenKeyCommitmentController::Status::Value::kOk);
   ASSERT_TRUE(result);

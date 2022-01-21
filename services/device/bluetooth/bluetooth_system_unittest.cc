@@ -160,9 +160,7 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
       const std::string& object_path_str = kDefaultAdapterObjectPathStr) {
     dbus::ObjectPath object_path(object_path_str);
 
-    ObjectPathToProperties::iterator it;
-    bool was_inserted;
-    std::tie(it, was_inserted) = adapter_object_paths_to_properties_.emplace(
+    auto [it, was_inserted] = adapter_object_paths_to_properties_.emplace(
         object_path, std::make_unique<Properties>(base::BindRepeating(
                          &TestBluetoothAdapterClient::OnPropertyChanged,
                          base::Unretained(this), object_path)));
@@ -494,9 +492,7 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothDeviceClient
   ~TestBluetoothDeviceClient() override = default;
 
   void SimulateDeviceAdded(const FakeDeviceOptions& options) {
-    ObjectPathToProperties::iterator it;
-    bool was_inserted;
-    std::tie(it, was_inserted) = device_object_paths_to_properties_.emplace(
+    auto [it, was_inserted] = device_object_paths_to_properties_.emplace(
         options.object_path,
         std::make_unique<Properties>(
             base::BindLambdaForTesting([&](const std::string& property_name) {
@@ -672,9 +668,7 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdminPolicyClient
 
   void SimulateAdminPolicyAdded(const dbus::ObjectPath& object_path,
                                 bool is_blocked_by_policy) {
-    ObjectPathToProperties::iterator it;
-    bool was_inserted;
-    std::tie(it, was_inserted) = device_object_paths_to_properties_.emplace(
+    auto [it, was_inserted] = device_object_paths_to_properties_.emplace(
         object_path,
         std::make_unique<Properties>(
             base::BindLambdaForTesting([&](const std::string& property_name) {

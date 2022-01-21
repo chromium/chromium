@@ -229,9 +229,7 @@ void HidConnection::ProcessReadQueue() {
   while (pending_reads_.size() && pending_reports_.size()) {
     ReadCallback callback = std::move(pending_reads_.front());
 
-    scoped_refptr<base::RefCountedBytes> buffer;
-    size_t size;
-    std::tie(buffer, size) = std::move(pending_reports_.front());
+    auto [buffer, size] = std::move(pending_reports_.front());
 
     pending_reads_.pop();
     pending_reports_.pop();
