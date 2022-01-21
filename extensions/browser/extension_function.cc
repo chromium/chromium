@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -136,7 +137,7 @@ class ExtensionFunctionMemoryDumpProvider
 };
 
 void EnsureMemoryDumpProviderExists() {
-  ALLOW_UNUSED_LOCAL(ExtensionFunctionMemoryDumpProvider::GetInstance());
+  std::ignore = ExtensionFunctionMemoryDumpProvider::GetInstance();
 }
 
 // Logs UMA about the performance for a given extension function run.
