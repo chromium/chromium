@@ -226,7 +226,8 @@ public class BuildInfo {
 
         // Otherwise lexically compare them.  Return true if the build codename is equal to or
         // greater than the requested codename.
-        return buildCodename.toUpperCase(Locale.ROOT).compareTo(codename) >= 0;
+        return buildCodename.toUpperCase(Locale.ROOT).compareTo(codename.toUpperCase(Locale.ROOT))
+                >= 0;
     }
 
     // The markers Begin:BuildCompat and End:BuildCompat delimit code
