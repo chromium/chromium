@@ -288,11 +288,8 @@
         "js_poster_circle": {
             "DEFAULT": "rendering_mobile_009.wprgo"
         },
-        "js_scroll_200_layer_grid": {
-            "DEFAULT": "rendering_mobile_009.wprgo"
-        },
         "js_scroll_text_only": {
-            "DEFAULT": "rendering_mobile_009.wprgo"
+            "DEFAULT": "rendering_mobile_56d3267d43.wprgo"
         },
         "kevs_3d": {
             "DEFAULT": "rendering_mobile_004.wprgo"
