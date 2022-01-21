@@ -324,6 +324,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   DCHECK(notificationPromo);
   notificationPromo->HandleClosed();
   [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_PROMO];
+  if (IsSingleCellContentSuggestionsEnabled()) {
+    [self.suggestionsMediator hidePromo];
+  }
 
   if (notificationPromo->IsURLPromo()) {
     UrlLoadParams params = UrlLoadParams::InNewTab(notificationPromo->url());
@@ -378,8 +381,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
 }
 
-- (void)openMostRecentTab:(CollectionViewItem*)item {
-  DCHECK([item isKindOfClass:[ContentSuggestionsReturnToRecentTabItem class]]);
+- (void)openMostRecentTab {
   base::RecordAction(
       base::UserMetricsAction("IOS.StartSurface.OpenMostRecentTab"));
   [self.suggestionsMediator hideRecentTabTile];

@@ -33,6 +33,9 @@
 // Reading list count passed to the most visited cell.
 @property(nonatomic, assign) NSInteger count;
 
+// Index position of this item.
+@property(nonatomic, assign) NTPCollectionShortcutType index;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_MOST_VISITED_ACTION_ITEM_H_

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_header_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
@@ -163,7 +164,7 @@ const CGFloat kCardBorderRadius = 11;
                                                  atIndex:indexPath.item];
       break;
     case ContentSuggestionTypeReturnToRecentTab:
-      [self.suggestionCommandHandler openMostRecentTab:item];
+      [self.suggestionCommandHandler openMostRecentTab];
       break;
     case ContentSuggestionTypePromo:
       [self dismissSection:indexPath.section];
@@ -460,13 +461,24 @@ const CGFloat kCardBorderRadius = 11;
 - (void)contentSuggestionsElementTapped:(UIGestureRecognizer*)sender {
   if ([sender.view
           isKindOfClass:[ContentSuggestionsMostVisitedTileView class]]) {
-    // TODO(crbug.com/1285378): Call command.
+    ContentSuggestionsMostVisitedTileView* mostVisitedView =
+        static_cast<ContentSuggestionsMostVisitedTileView*>(sender.view);
+    [self.suggestionCommandHandler
+        openMostVisitedItem:mostVisitedView.config
+                    atIndex:mostVisitedView.config.index];
+  } else if ([sender.view
+                 isKindOfClass:[ContentSuggestionsShortcutTileView class]]) {
+    ContentSuggestionsShortcutTileView* shortcutView =
+        static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
+    int index = static_cast<int>(shortcutView.config.index);
+    [self.suggestionCommandHandler openMostVisitedItem:shortcutView.config
+                                               atIndex:index];
   } else if ([sender.view isKindOfClass:[ContentSuggestionsReturnToRecentTabView
                                             class]]) {
-    // TODO(crbug.com/1285378): Call command.
+    [self.suggestionCommandHandler openMostRecentTab];
   } else if ([sender.view
                  isKindOfClass:[ContentSuggestionsWhatsNewView class]]) {
-    // TODO(crbug.com/1285378): Call command.
+    [self.suggestionCommandHandler handlePromoTapped];
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_cell.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,6 +20,22 @@
   self = [super initWithType:0];
   if (self) {
     _collectionShortcutType = type;
+    switch (_collectionShortcutType) {
+      case NTPCollectionShortcutTypeBookmark:
+        _index = NTPCollectionShortcutTypeBookmark;
+        break;
+      case NTPCollectionShortcutTypeReadingList:
+        _index = NTPCollectionShortcutTypeReadingList;
+        break;
+      case NTPCollectionShortcutTypeRecentTabs:
+        _index = NTPCollectionShortcutTypeRecentTabs;
+        break;
+      case NTPCollectionShortcutTypeHistory:
+        _index = NTPCollectionShortcutTypeHistory;
+        break;
+      default:
+        break;
+    }
     self.cellClass = [ContentSuggestionsMostVisitedActionCell class];
     self.title = TitleForCollectionShortcutType(_collectionShortcutType);
   }
