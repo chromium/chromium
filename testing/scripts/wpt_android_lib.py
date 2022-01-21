@@ -433,7 +433,6 @@ def get_devices(args):
       for _ in range(max(args.processes, 1)):
         instance = avd_config.CreateInstance()
         instance.Start(writable_system=True, window=args.emulator_window)
-        device_utils.DeviceUtils(instance.serial).WaitUntilFullyBooted()
         instances.append(instance)
 
     #TODO(weizhong): when choose device, make sure abi matches with target

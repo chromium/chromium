@@ -41,6 +41,10 @@ _DEFAULT_GPU_MODE = 'swiftshader_indirect'
 # The snapshot name to load/save when writable_system=False.
 # This is the default name used by the emulator binary.
 _DEFAULT_SNAPSHOT_NAME = 'default_boot'
+
+# Set long press timeout for clicking to 1000ms.
+_LONG_PRESS_TIMEOUT = '1000'
+
 # The snapshot name to load/save when writable_system=True
 _SYSTEM_SNAPSHOT_NAME = 'boot_with_system'
 
@@ -300,7 +304,8 @@ class AvdConfig:
       debug_tags = 'init,snapshot' if snapshot else None
       # Installing privileged apks requires modifying the system image.
       writable_system = bool(privileged_apk_tuples)
-      instance.Start(read_only=False,
+      instance.Start(ensure_system_settings=False,
+                     read_only=False,
                      writable_system=writable_system,
                      gpu_mode=_DEFAULT_GPU_MODE,
                      debug_tags=debug_tags)
@@ -574,6 +579,7 @@ class _AvdInstance:
     return '%s|%s' % (self._avd_name, (self._emulator_serial or id(self)))
 
   def Start(self,
+            ensure_system_settings=True,
             read_only=True,
             window=False,
             writable_system=False,
@@ -581,6 +587,7 @@ class _AvdInstance:
             wipe_data=False,
             debug_tags=None):
     """Starts the emulator running an instance of the given AVD."""
+    is_slow_start = False
     # Force to load system snapshot if detected.
     if self.HasSystemSnapshot():
       if not writable_system:
@@ -592,6 +599,7 @@ class _AvdInstance:
                      'to load it properly.')
         read_only = False
     elif writable_system:
+      is_slow_start = True
       logging.warning('Emulator will be slow to start, as '
                       '"writable_system=True" but system snapshot not found.')
 
@@ -676,6 +684,15 @@ class _AvdInstance:
         # pylint: disable=W0707
         raise AvdException('Emulator failed to start: %s' % str(e))
 
+    assert self.device is not None, '`instance.device` not initialized.'
+    self.device.WaitUntilFullyBooted(timeout=120 if is_slow_start else 30)
+
+    # Set the system settings in "Start" here instead of setting in "Create"
+    # because "Create" is used during AVD creation, and we want to avoid extra
+    # turn-around on rolling AVD.
+    if ensure_system_settings:
+      _EnsureSystemSettings(self.device)
+
   def Stop(self):
     """Stops the emulator process."""
     if self._emulator_proc:
@@ -727,3 +744,22 @@ class _AvdInstance:
     if not self._emulator_device and self._emulator_serial:
       self._emulator_device = device_utils.DeviceUtils(self._emulator_serial)
     return self._emulator_device
+
+
+# TODO(crbug.com/1275767): Refactor it to a dict-based approach.
+def _EnsureSystemSettings(device):
+  set_long_press_timeout_cmd = [
+      'settings', 'put', 'secure', 'long_press_timeout', _LONG_PRESS_TIMEOUT
+  ]
+  device.RunShellCommand(set_long_press_timeout_cmd, check_return=True)
+
+  # Verify if long_press_timeout is set correctly.
+  get_long_press_timeout_cmd = [
+      'settings', 'get', 'secure', 'long_press_timeout'
+  ]
+  adb_output = device.RunShellCommand(get_long_press_timeout_cmd,
+                                      check_return=True)
+  if _LONG_PRESS_TIMEOUT in adb_output:
+    logging.info('long_press_timeout set to %r', _LONG_PRESS_TIMEOUT)
+  else:
+    logging.warning('long_press_timeout is not set correctly')

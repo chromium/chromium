@@ -20,7 +20,6 @@ sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
 # pylint: disable=wrong-import-position,import-error
 import devil_chromium  # pylint: disable=unused-import
-from devil.android import device_utils
 from devil.android.ndk import abis
 from devil.android.sdk import version_codes
 from devil.android.tools import script_common
@@ -327,7 +326,6 @@ def GetDevice(args):
       # Start the emulator w/ -writable-system s.t. we can remount the system
       # partition r/w and install our own webview provider.
       emulator_instance.Start(writable_system=True)
-      device_utils.DeviceUtils(emulator_instance.serial).WaitUntilFullyBooted()
 
     devices = script_common.GetDevices(args.devices, args.denylist_file)
     device = devices[0]

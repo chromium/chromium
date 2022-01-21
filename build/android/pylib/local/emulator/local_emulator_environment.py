@@ -8,7 +8,6 @@ import logging
 from six.moves import range  # pylint: disable=redefined-builtin
 from devil import base_error
 from devil.android import device_errors
-from devil.android import device_utils
 from devil.utils import parallelizer
 from devil.utils import reraiser_thread
 from devil.utils import timeout_retry
@@ -62,8 +61,6 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
         except avd.AvdException:
           logging.exception('Failed to start emulator instance.')
           return None
-        try:
-          device_utils.DeviceUtils(e.serial).WaitUntilFullyBooted()
         except base_error.BaseError:
           e.Stop()
           raise
