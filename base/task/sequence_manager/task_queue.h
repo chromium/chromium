@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/sequence_manager/lazy_now.h"
@@ -422,8 +423,8 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // not be a null callback. Must be called on the thread this task queue is
   // associated with, and the handle returned must be destroyed on the same
   // thread.
-  [[nodiscard]] std::unique_ptr<OnTaskPostedCallbackHandle>
-  AddOnTaskPostedHandler(OnTaskPostedHandler handler);
+  std::unique_ptr<OnTaskPostedCallbackHandle> AddOnTaskPostedHandler(
+      OnTaskPostedHandler handler) WARN_UNUSED_RESULT;
 
   // Set a callback to fill trace event arguments associated with the task
   // execution.
