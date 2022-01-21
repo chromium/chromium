@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,12 +22,6 @@
 
 #include "build/build_config.h"
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
-
-#if BUILDFLAG(IS_WIN)
-static const wchar_t* const log_file_name = L"webrtc_logging.log";
-#else
-static const char* const log_file_name = "webrtc_logging.log";
-#endif
 
 static const int kDefaultVerbosity = 0;
 
@@ -52,39 +47,43 @@ static bool ContainsString(const std::string& original,
   return original.find(string_to_match) != std::string::npos;
 }
 
-static bool Initialize(int verbosity_level) {
-  if (verbosity_level != kDefaultVerbosity) {
-    // Update the command line with specified verbosity level for this file.
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    std::ostringstream value_stream;
-    value_stream << "logging_unittest=" << verbosity_level;
-    const std::string& value = value_stream.str();
-    command_line->AppendSwitchASCII("vmodule", value);
+class WebRtcTextLogTest : public testing::Test {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(log_dir_.CreateUniqueTempDir());
+    log_file_path_ = log_dir_.GetPath().AppendASCII("webrtc_log");
   }
 
-  // The command line flags are parsed here and the log file name is set.
-  logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_FILE;
-  settings.log_file_path = log_file_name;
-  settings.lock_log = logging::DONT_LOCK_LOG_FILE;
-  settings.delete_old = logging::DELETE_OLD_LOG_FILE;
-  if (!logging::InitLogging(settings)) {
-    return false;
+ protected:
+  bool Initialize(int verbosity_level) {
+    if (verbosity_level != kDefaultVerbosity) {
+      // Update the command line with specified verbosity level for this file.
+      base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+      std::ostringstream value_stream;
+      value_stream << "logging_unittest=" << verbosity_level;
+      const std::string& value = value_stream.str();
+      command_line->AppendSwitchASCII("vmodule", value);
+    }
+
+    // The command line flags are parsed here and the log file name is set.
+    logging::LoggingSettings settings;
+    settings.logging_dest = logging::LOG_TO_FILE;
+    settings.log_file_path = log_file_path_.value().data();
+    settings.lock_log = logging::DONT_LOCK_LOG_FILE;
+    settings.delete_old = logging::DELETE_OLD_LOG_FILE;
+    if (!logging::InitLogging(settings)) {
+      return false;
+    }
+    EXPECT_TRUE(VLOG_IS_ON(verbosity_level));
+    EXPECT_FALSE(VLOG_IS_ON(verbosity_level + 1));
+    return true;
   }
-  EXPECT_TRUE(VLOG_IS_ON(verbosity_level));
-  EXPECT_FALSE(VLOG_IS_ON(verbosity_level + 1));
-  return true;
-}
 
-// LibjingleLogTest fail on Android (crbug.com/843104) and Fuchsia
-// (crbug.com/1241660).
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_WebRtcTextLogTest DISABLED_WebRtcTextLogTest
-#else
-#define MAYBE_WebRtcTextLogTest WebRtcTextLogTest
-#endif
+  base::ScopedTempDir log_dir_;
+  base::FilePath log_file_path_;
+};
 
-TEST(MAYBE_WebRtcTextLogTest, DefaultConfiguration) {
+TEST_F(WebRtcTextLogTest, DefaultConfiguration) {
   ASSERT_TRUE(Initialize(kDefaultVerbosity));
 
   // In the default configuration only warnings and errors should be logged.
@@ -95,9 +94,8 @@ TEST(MAYBE_WebRtcTextLogTest, DefaultConfiguration) {
   RTC_LOG_V(rtc::LS_SENSITIVE) << AsString(rtc::LS_SENSITIVE);
 
   // Read file to string.
-  base::FilePath file_path(log_file_name);
   std::string contents_of_file;
-  base::ReadFileToString(file_path, &contents_of_file);
+  base::ReadFileToString(log_file_path_, &contents_of_file);
 
   // Make sure string contains the expected values.
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_ERROR)));
@@ -107,7 +105,7 @@ TEST(MAYBE_WebRtcTextLogTest, DefaultConfiguration) {
   EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_SENSITIVE)));
 }
 
-TEST(MAYBE_WebRtcTextLogTest, InfoConfiguration) {
+TEST_F(WebRtcTextLogTest, InfoConfiguration) {
   ASSERT_TRUE(Initialize(0));  // 0 == Chrome's 'info' level.
 
   // In this configuration everything lower or equal to LS_INFO should be
@@ -119,9 +117,8 @@ TEST(MAYBE_WebRtcTextLogTest, InfoConfiguration) {
   RTC_LOG_V(rtc::LS_SENSITIVE) << AsString(rtc::LS_SENSITIVE);
 
   // Read file to string.
-  base::FilePath file_path(log_file_name);
   std::string contents_of_file;
-  base::ReadFileToString(file_path, &contents_of_file);
+  base::ReadFileToString(log_file_path_, &contents_of_file);
 
   // Make sure string contains the expected values.
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_ERROR)));
@@ -136,7 +133,7 @@ TEST(MAYBE_WebRtcTextLogTest, InfoConfiguration) {
   EXPECT_FALSE(ContainsString(contents_of_file, "logging.cc"));
 }
 
-TEST(MAYBE_WebRtcTextLogTest, LogEverythingConfiguration) {
+TEST_F(WebRtcTextLogTest, LogEverythingConfiguration) {
   ASSERT_TRUE(Initialize(2));  // verbosity at level 2 allows LS_SENSITIVE.
 
   // In this configuration everything should be logged.
@@ -150,9 +147,8 @@ TEST(MAYBE_WebRtcTextLogTest, LogEverythingConfiguration) {
   RTC_LOG_V(rtc::LS_SENSITIVE) << AsString(rtc::LS_SENSITIVE);
 
   // Read file to string.
-  base::FilePath file_path(log_file_name);
   std::string contents_of_file;
-  base::ReadFileToString(file_path, &contents_of_file);
+  base::ReadFileToString(log_file_path_, &contents_of_file);
 
   // Make sure string contains the expected values.
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_ERROR)));
