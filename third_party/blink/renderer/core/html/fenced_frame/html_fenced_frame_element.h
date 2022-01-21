@@ -47,6 +47,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 
     virtual void DidGetInserted() = 0;
     virtual void Navigate(const KURL&) = 0;
+    virtual void DidGetRemoved() {}
 
    protected:
     HTMLFencedFrameElement& GetElement() const { return *outer_element_; }

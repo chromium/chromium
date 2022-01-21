@@ -93,7 +93,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromScriptAndDestroy) {
   EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
 
   EXPECT_TRUE(ExecJs(primary_rfh.get(),
-                     "document.querySelector('fencedframe').remove();"));
+                     "const ff = document.querySelector('fencedframe');\
+                     ff.remove();"));
   ASSERT_TRUE(fenced_frame_rfh.WaitUntilRenderFrameDeleted());
 
   EXPECT_TRUE(primary_rfh->GetFencedFrames().empty());

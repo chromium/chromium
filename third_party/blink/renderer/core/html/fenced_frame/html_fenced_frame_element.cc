@@ -113,6 +113,7 @@ void HTMLFencedFrameElement::DidNotifySubtreeInsertionsToDocument() {
 void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
   // We should verify that the underlying frame has already been disconnected.
   DCHECK_EQ(ContentFrame(), nullptr);
+  frame_delegate_->DidGetRemoved();
   HTMLFrameOwnerElement::RemovedFrom(node);
 }
 
