@@ -1523,6 +1523,10 @@ bool ServiceWorkerRegistry::ShouldPurgeOnShutdownForTesting(
 
 mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&
 ServiceWorkerRegistry::GetRemoteStorageControl() {
+  // TODO(https://crbug.com/1282869): Replace CHECK with DCHECK_CURRENTLY_ON
+  // once the cause is identified.
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
   DCHECK(!(remote_storage_control_.is_bound() &&
            !remote_storage_control_.is_connected()))
       << "Rebinding is not supported yet.";
@@ -1542,7 +1546,9 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
 void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
   const size_t kMaxRetryCounts = 100;
 
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(https://crbug.com/1282869): Replace CHECK with DCHECK_CURRENTLY_ON
+  // once the cause is identified.
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   remote_storage_control_.reset();
 
