@@ -254,3 +254,9 @@ ul {
   padding: 20px;
   width: 50%;
 }
+
+.download-button {
+  vertical-align: middle;
+  margin-left: 8px;
+  fill: #1a73e8;
+}

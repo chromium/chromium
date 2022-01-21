@@ -150,6 +150,9 @@ async function loadSizeFile(isBefore, fetcher) {
   console.log(
       'Loaded size file in ' + (Date.now() - start_time) / 1000.0 + ' seconds');
   Module._free(heapBuffer.byteOffset);
+  const urlBlob = URL.createObjectURL(new Blob([sizeBuffer.buffer],
+                                      {type: 'application/octet-stream'}));
+  return urlBlob;
 }
 
 async function loadSizeProperties() {
@@ -171,19 +174,20 @@ async function buildTree(
   onProgress({percent: 0.1, id: 0});
   /** @type {Metadata} */
   return await LoadWasm.then(async () => {
+    let beforeBlobUrl = null;
+    let loadBlobUrl = null;
     if (!g_sizeFileLoaded) {
-      const load_promises = [];
-      load_promises.push(loadSizeFile(false, g_fetcher));
-      if (g_beforeFetcher !== null) {
-        load_promises.push(loadSizeFile(true, g_beforeFetcher));
-      }
       try {
-        await Promise.all(load_promises).then(loadSizeProperties);
+        if (g_beforeFetcher !== null) {
+          beforeBlobUrl = await loadSizeFile(true, g_beforeFetcher);
+        }
+        loadBlobUrl = await loadSizeFile(false, g_fetcher);
+        await loadSizeProperties();
       } catch (e) {
-        onProgress({percent: 1, id: 0});
+        onProgress({ percent: 1, id: 0 });
         throw e;
       }
-      onProgress({percent: 0.4, id: 0});
+      onProgress({ percent: 0.4, id: 0 });
       g_sizeFileLoaded = true;
     }
 
@@ -198,13 +202,14 @@ async function buildTree(
         'Constructed tree in ' + (Date.now() - start_time) / 1000.0 +
         ' seconds');
     onProgress({percent: 0.8, id: 0});
-
     const root = await Open('');
     return {
       root,
       percent: 1.0,
       diffMode,
       isMultiContainer: g_size_properties.isMultiContainer,
+      beforeBlobUrl,
+      loadBlobUrl
     };
   });
 }

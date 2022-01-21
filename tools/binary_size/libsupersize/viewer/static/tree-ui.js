@@ -453,6 +453,26 @@ const newTreeElement = (() => {
     );
   }
 
+  /**
+   * Display/hide download buttons for loadUrl.size and beforeUrl.size
+   * @param {DOMString} beforeUrl
+   * @param {DOMString} loadUrl
+   */
+  function displayOrHideDownloadButton(beforeUrl=null, loadUrl=null) {
+    const beforeAnchor = document.getElementById('before-anchor');
+    const loadAnchor = document.getElementById('load-anchor');
+
+    beforeAnchor.style.display = beforeUrl ? '' : 'none';
+    beforeAnchor.href = beforeUrl;
+    loadAnchor.style.display = loadUrl ? '' : 'none';
+    loadAnchor.href = loadUrl;
+
+    if (_dataUrlInput.value.includes('.sizediff')) {
+      loadAnchor.title = 'Download .sizediff file';
+      loadAnchor.download = 'load_size.sizediff';
+    }
+  }
+
   window.supersize.treeReady.then((message) => {
     if (message.isMultiContainer) {
       document.getElementById('group-by-container').checked = true;
@@ -465,6 +485,7 @@ const newTreeElement = (() => {
         .toggleAttribute('disabled', true);
       displayTree(message);
     }
+    displayOrHideDownloadButton(message.beforeBlobUrl, message.loadBlobUrl);
   });
   window.supersize.worker.setOnProgressHandler(displayTree);
 
@@ -476,6 +497,8 @@ const newTreeElement = (() => {
 
     _dataUrlInput.value = '';
     _dataUrlInput.dispatchEvent(new Event('change'));
+
+    displayOrHideDownloadButton();
 
     window.supersize.worker.loadTree(fileUrl).then(displayTree);
     // Clean up afterwards so new files trigger event
