@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 
-#include "base/notreached.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_view_controller.h"
@@ -102,17 +101,14 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 - (void)confirmationAlertSecondaryAction {
   switch (self.promptType) {
     case EnterprisePromptTypeRestrictAccountSignedOut:
-      NOTREACHED();
+    case EnterprisePromptTypeSyncDisabled:
+      [self.delegate enterprisePromptCoordinatorDidDismiss];
       break;
     case EnterprisePromptTypeForceSignOut:
       [self.delegate hideEnterprisePrompForLearnMore:YES];
-      [self openManagementPage];
-      break;
-    case EnterprisePromptTypeSyncDisabled:
-      [self.delegate enterprisePromptCoordinatorDidDismiss];
-      [self openManagementPage];
       break;
   }
+  [self openManagementPage];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

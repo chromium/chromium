@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_view_controller.h"
 
-#include "base/notreached.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -42,6 +41,8 @@
 
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
+  self.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
 
   switch (self.promptType) {
     case EnterprisePromptTypeRestrictAccountSignedOut:
@@ -80,8 +81,6 @@
   self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
   self.subtitleString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT);
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
 }
 
 // Updates the view with sync disabled informations.
@@ -89,8 +88,6 @@
   self.titleString = l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED);
   self.subtitleString =
       l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_DESCRIPTION);
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
 }
 
 @end
