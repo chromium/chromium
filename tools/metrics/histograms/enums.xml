@@ -64701,6 +64701,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Suggestions"/>
 </enum>
 
+<enum name="NtpPhotosModuleOptInStatus">
+  <int value="0" label="hard opt-out"/>
+  <int value="1" label="opt-in"/>
+  <int value="2" label="soft opt-out"/>
+</enum>
+
 <enum name="NtpPromoAction">
   <int value="0" label="NTP Promo viewed"/>
   <int value="1" label="NTP Promo closed"/>

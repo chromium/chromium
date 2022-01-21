@@ -42,7 +42,11 @@ class PhotosService : public KeyedService,
   static const char kLastDismissedTimePrefName[];
   static const char kOptInAcknowledgedPrefName[];
   static const char kLastMemoryOpenTimePrefName[];
+  static const char kSoftOptOutCountPrefName[];
+  static const char kLastSoftOptedOutTimePrefName[];
   static const base::TimeDelta kDismissDuration;
+  static const base::TimeDelta kSoftOptOutDuration;
+  static const int kMaxSoftOptOuts;
 
   PhotosService(const PhotosService&) = delete;
   PhotosService(
@@ -70,6 +74,13 @@ class PhotosService : public KeyedService,
   void OnUserOptIn(bool accept);
   // Stores the last time the user opened a memory.
   void OnMemoryOpen();
+  // Returns whether to show the soft opt out button.
+  bool ShouldShowSoftOptOutButton();
+  // Dismisses the module for fixed amount of time before asking the user
+  // to opt in again.
+  void SoftOptOut();
+  // Returns if the user soft opted out.
+  bool IsModuleSoftOptedOut();
 
  private:
   void OnTokenReceived(GoogleServiceAuthError error,

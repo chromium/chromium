@@ -344,8 +344,15 @@
               on-click="onOptInClick_">
             [[i18n('modulesPhotosMemoriesWelcomeButtonOptIn')]]
           </cr-button>
-          <cr-button id="optOutButton" on-click="onOptOutClick_">
+          <cr-button id="optOutButton"
+              on-click="onOptOutClick_"
+              hidden="[[showSoftOptOutButton]]">
             [[i18n('modulesPhotosMemoriesWelcomeButtonOptOut')]]
+          </cr-button>
+          <cr-button id="softOptOutButton"
+            on-click="onSoftOptOutClick_"
+            hidden="[[!showSoftOptOutButton]]">
+              [[i18n('modulesPhotosMemoriesWelcomeButtonSoftOptOut')]]
           </cr-button>
         </div>
       </div>
