@@ -522,7 +522,7 @@ struct SchemaData;
             'configuration resides.\n'
             'extern const wchar_t kRegistryChromePolicyKey[];\n')
 
-  f.write('''#if defined(OS_CHROMEOS)
+  f.write('''#if BUILDFLAG(IS_CHROMEOS)
 // Sets default profile policies values for enterprise users.
 void SetEnterpriseUsersProfileDefaults(PolicyMap* policy_map);
 // Sets default system-wide policies values for enterprise users.
@@ -1208,7 +1208,7 @@ namespace policy {
       else:
         system_wide_policy_enterprise_defaults += setting_enterprise_default
 
-  f.write('#if defined(OS_CHROMEOS)')
+  f.write('#if BUILDFLAG(IS_CHROMEOS)')
   f.write('''
 void SetEnterpriseUsersProfileDefaults(PolicyMap* policy_map) {
 %s

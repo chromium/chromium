@@ -351,7 +351,7 @@ def get_tests_in_browsertest(file: str) -> Dict[str, Set[TestPlatform]]:
     In the above case, the test will be considered disabled on all platforms.
     This is what a test disabled by a sheriff on a specific platform looks like:
 
-    #if defined(OS_WIN)
+    #if BUILDFLAG(IS_WIN)
     #define MAYBE_NavSiteA_InstallIconShown DISABLED_NavSiteA_InstallIconShown
     #else
     #define MAYBE_NavSiteA_InstallIconShown NavSiteA_InstallIconShown

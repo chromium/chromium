@@ -200,7 +200,7 @@ namespace internal {
 struct SchemaData;
 }
 %(windows_only_part)s
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Sets default profile policies values for enterprise users.
 void SetEnterpriseUsersProfileDefaults(PolicyMap* policy_map);
 // Sets default system-wide policies values for enterprise users.
@@ -392,7 +392,7 @@ bool CompareKeys(const internal::PropertyNode& node,
 
 }  // namespace
 %(windows_only_part)s
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void SetEnterpriseUsersProfileDefaults(PolicyMap* policy_map) {
 
 }

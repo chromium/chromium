@@ -643,7 +643,7 @@ void foo();
     # test is ensuring that the new header will be inserted into the
     # unconditional part of the file.
     old_contents = '''
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "foo_win.h"
 #endif
 
@@ -652,7 +652,7 @@ void foo();
     expected_new_contents = '''
 #include "new/header.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "foo_win.h"
 #endif
 

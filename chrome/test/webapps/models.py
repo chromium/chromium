@@ -43,10 +43,10 @@ class TestPlatform(Enum):
         suffix: The suffix applied to browsertest files to specify that the
                 file runs on that platform.
     """
-    MAC = ("defined(OS_MAC)", "M", "mac")
-    WINDOWS = ("defined(OS_WIN)", "W", "win")
-    LINUX = ("defined(OS_LINUX)", "L", "linux")
-    CHROME_OS = ("defined(OS_CHROMEOS)", "C", "cros")
+    MAC = ("BUILDFLAG(IS_MAC)", "M", "mac")
+    WINDOWS = ("BUILDFLAG(IS_WIN)", "W", "win")
+    LINUX = ("BUILDFLAG(IS_LINUX)", "L", "linux")
+    CHROME_OS = ("BUILDFLAG(IS_CHROMEOS)", "C", "cros")
 
     def __init__(self, macro: str, char: str, suffix: str):
         self.macro: str = macro
