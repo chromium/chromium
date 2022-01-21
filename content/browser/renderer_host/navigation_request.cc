@@ -6674,7 +6674,7 @@ NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
   // Note: we only check the outer document for fenced frames, because it's
   // unclear if other embedded cases like Portals should inherit COEP from
   // the embedder as well.
-  // TODO(https://crbug.com/1278207): add other embedded cases if needed.
+  // TODO(https://crbug.com/1278207) add other embedded cases if needed.
   RenderFrameHostImpl* const parent =
       GetNavigatingFrameType() == FrameType::kFencedFrameRoot
           ? GetParentFrameOrOuterDocument()
@@ -6740,7 +6740,7 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
   // Note: we only check the outer document for fenced frames, because it's
   // unclear if other embedded cases like Portals should inherit COEP from
   // the embedder as well.
-  // TODO(https://crbug.com/1278207): add other embedded cases if needed.
+  // TODO(https://crbug.com/1278207) add other embedded cases if needed.
   RenderFrameHostImpl* const parent =
       GetNavigatingFrameType() == FrameType::kFencedFrameRoot
           ? GetParentFrameOrOuterDocument()
@@ -6787,15 +6787,7 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
 absl::optional<network::mojom::BlockedByResponseReason>
 NavigationRequest::EnforceCOEP() {
   // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
-
-  // Fenced frame should not be recognized as a top frame. COEP must be applied.
-  // Note: we only check the outer document for fenced frames, because it's
-  // unclear if other embedded cases like Portals should behave the same.
-  // TODO(https://crbug.com/1278207): add other embedded cases if needed.
-  RenderFrameHostImpl* const parent_frame =
-      GetNavigatingFrameType() == FrameType::kFencedFrameRoot
-          ? GetParentFrameOrOuterDocument()
-          : GetParentFrame();
+  auto* parent_frame = GetParentFrame();
   if (!parent_frame) {
     return absl::nullopt;
   }

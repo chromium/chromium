@@ -116,8 +116,6 @@ const KEYS = {
   "frame_navigation ACK"                        : "00000000-0000-0000-0000-000000000052",
 
   "maxframes_response"                          : "00000000-0000-0000-0000-000000000053",
-
-  "embed_coep_require_corp_cross"               : "00000000-0000-0000-0000-000000000054",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
