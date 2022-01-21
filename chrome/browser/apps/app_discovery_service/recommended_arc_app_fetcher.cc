@@ -16,6 +16,8 @@ RecommendedArcAppFetcher::RecommendedArcAppFetcher() = default;
 RecommendedArcAppFetcher::~RecommendedArcAppFetcher() = default;
 
 void RecommendedArcAppFetcher::GetApps(ResultCallback callback) {
+  // Only one request can ever be made at a time.
+  DCHECK(!callback_);
   callback_ = std::move(callback);
   recommend_apps_fetcher_ = ash::RecommendAppsFetcher::Create(this);
   recommend_apps_fetcher_->Start();
@@ -83,16 +85,21 @@ void RecommendedArcAppFetcher::OnLoadSuccess(const base::Value& app_list) {
     }
   }
   std::move(callback_).Run(std::move(results));
+  recommend_apps_fetcher_.reset();
 }
 
 void RecommendedArcAppFetcher::OnLoadError() {
-  if (callback_)
+  if (callback_) {
     std::move(callback_).Run({});
+    recommend_apps_fetcher_.reset();
+  }
 }
 
 void RecommendedArcAppFetcher::OnParseResponseError() {
-  if (callback_)
+  if (callback_) {
     std::move(callback_).Run({});
+    recommend_apps_fetcher_.reset();
+  }
 }
 
 void RecommendedArcAppFetcher::SetCallbackForTesting(ResultCallback callback) {
