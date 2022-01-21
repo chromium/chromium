@@ -583,6 +583,10 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kCompositedCaret;
 
+// Allows pages that support App Install Banners to stay eligible for the
+// back/forward cache.
+BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheAppBanner;
+
 }  // namespace features
 }  // namespace blink
 

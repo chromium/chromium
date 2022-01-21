@@ -1187,5 +1187,8 @@ const base::Feature kLazyInitializeTimeZoneController{
 const base::Feature kCompositedCaret{"CompositedCaret",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kBackForwardCacheAppBanner{
+    "BackForwardCacheAppBanner", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

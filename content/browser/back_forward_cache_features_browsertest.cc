@@ -2018,7 +2018,23 @@ class MockAppBannerService : public blink::mojom::AppBannerService {
   mojo::Remote<blink::mojom::AppBannerController> controller_;
 };
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfAppBanner) {
+// The parameter to this test class is whether or not App Banner is supported
+// for BFCache.
+class AppBannerBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam()) {
+      EnableFeatureAndSetParams(blink::features::kBackForwardCacheAppBanner, "",
+                                "");
+    }
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(AppBannerBackForwardCacheBrowserTest,
+                       TestAppBannerCaching) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to A and request a PWA app banner.
@@ -2037,15 +2053,25 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfAppBanner) {
   // 2) Navigate away. Page A requested a PWA app banner, and thus not cached.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-  delete_observer_rfh.WaitUntilDeleted();
+  if (!GetParam()) {
+    delete_observer_rfh.WaitUntilDeleted();
+  }
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kAppBanner}, {}, {}, {},
-      FROM_HERE);
+  if (GetParam()) {
+    ExpectRestored(FROM_HERE);
+  } else {
+    ExpectNotRestored(
+        {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+        {blink::scheduler::WebSchedulerTrackedFeature::kAppBanner}, {}, {}, {},
+        FROM_HERE);
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppBannerBackForwardCacheBrowserTest,
+                         testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebDatabase) {
   ASSERT_TRUE(embedded_test_server()->Start());
