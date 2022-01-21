@@ -582,6 +582,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_VIRTUAL_CARD_MANUAL_FALLBACK:
       ShowVirtualCardManualFallbackBubble(browser_);
       break;
+    case IDC_VIRTUAL_CARD_ENROLL:
+      ShowVirtualCardEnrollBubble(browser_);
+      break;
     case IDC_TRANSLATE_PAGE:
       Translate(browser_);
       break;

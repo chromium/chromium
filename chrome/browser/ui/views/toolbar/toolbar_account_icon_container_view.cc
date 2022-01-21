@@ -41,6 +41,7 @@ ToolbarAccountIconContainerView::ToolbarAccountIconContainerView(
       PageActionIconType::kLocalCardMigration,
       PageActionIconType::kSaveCard,
       PageActionIconType::kVirtualCardManualFallback,
+      PageActionIconType::kVirtualCardEnroll,
   };
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAddressProfileSavePrompt)) {

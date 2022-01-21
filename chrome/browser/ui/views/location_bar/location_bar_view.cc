@@ -326,6 +326,8 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kLocalCardMigration);
     params.types_enabled.push_back(
         PageActionIconType::kVirtualCardManualFallback);
+    params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
+
     if (base::FeatureList::IsEnabled(
             autofill::features::kAutofillAddressProfileSavePrompt)) {
       // TODO(crbug.com/1167060): Place this in the proper order upon having

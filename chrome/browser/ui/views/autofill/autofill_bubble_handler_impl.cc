@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_upi_offer_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
@@ -226,6 +228,28 @@ AutofillBubbleHandlerImpl::ShowVirtualCardManualFallbackBubble(
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kVirtualCardManualFallback);
+  if (icon_view)
+    bubble->SetHighlightedButton(icon_view);
+
+  return bubble;
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowVirtualCardEnrollBubble(
+    content::WebContents* web_contents,
+    VirtualCardEnrollBubbleController* controller,
+    bool is_user_gesture) {
+  VirtualCardEnrollBubbleViews* bubble = new VirtualCardEnrollBubbleViews(
+      toolbar_button_provider_->GetAnchorView(
+          PageActionIconType::kVirtualCardEnroll),
+      web_contents, controller);
+
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(is_user_gesture
+                            ? VirtualCardEnrollBubbleViews::USER_GESTURE
+                            : VirtualCardEnrollBubbleViews::AUTOMATIC);
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kVirtualCardEnroll);
   if (icon_view)
     bubble->SetHighlightedButton(icon_view);
 
