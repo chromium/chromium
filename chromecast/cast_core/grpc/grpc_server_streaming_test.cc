@@ -14,9 +14,7 @@
 #include "base/time/time.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/grpc/status_matchers.h"
-#include "chromecast/cast_core/grpc/test_service.grpc.pb.h"
-#include "chromecast/cast_core/grpc/test_service_handlers.h"
-#include "chromecast/cast_core/grpc/test_service_stubs.h"
+#include "chromecast/cast_core/grpc/test_service.castcore.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

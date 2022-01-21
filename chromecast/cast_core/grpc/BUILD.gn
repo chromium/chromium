@@ -3,27 +3,15 @@
 # found in the LICENSE file.
 
 import("//chromecast/chromecast.gni")
-import("//third_party/grpc/grpc_library.gni")
+import("//third_party/cast_core/public/src/proto/proto.gni")
 
-cast_source_set("calls") {
+cast_source_set("grpc") {
   sources = [
     "grpc_call.h",
     "grpc_client_reactor.h",
     "grpc_server_streaming_call.h",
     "grpc_stub.h",
     "grpc_unary_call.h",
-  ]
-
-  public_deps = [
-    ":grpc_call_options",
-    ":grpc_status_or",
-    "//base",
-    "//third_party/grpc:grpc++",
-  ]
-}
-
-cast_source_set("handlers") {
-  sources = [
     "cancellable_reactor.h",
     "grpc_handler.cc",
     "grpc_handler.h",
@@ -35,39 +23,16 @@ cast_source_set("handlers") {
     "server_reactor_tracker.cc",
     "server_reactor_tracker.h",
     "trackable_reactor.h",
-  ]
-
-  public_deps = [
-    ":grpc_call_options",
-    ":grpc_status_or",
-    "//base",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/grpc:grpc++",
-  ]
-}
-
-cast_source_set("grpc_call_options") {
-  sources = [
     "grpc_call_options.cc",
     "grpc_call_options.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//third_party/grpc:grpc++",
-  ]
-}
-
-cast_source_set("grpc_status_or") {
-  sources = [
     "grpc_status_or.cc",
     "grpc_status_or.h",
   ]
 
   public_deps = [
     "//base",
-    "//third_party/abseil-cpp:absl",
     "//third_party/grpc:grpc++",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -82,31 +47,19 @@ cast_source_set("status_matchers") {
   deps = [ "//testing/gmock" ]
 }
 
-grpc_library("test_service_proto") {
-  sources = [ "test_service.proto" ]
+cast_core_proto_library("test_service_messages_proto") {
+  sources = [ "test_service_messages.proto" ]
 }
 
-cast_source_set("test_service_handlers") {
-  testonly = true
-
+cast_core_grpc_library("test_service_proto") {
   sources = [
-    "test_service_handlers.cc",
-    "test_service_handlers.h",
+    "test_service.proto",
+    "test_service_extra.proto",
   ]
 
-  deps = [
-    ":handlers",
-    ":test_service_proto",
-  ]
-}
+  deps = [ ":test_service_messages_proto" ]
 
-cast_source_set("test_service_stubs") {
-  sources = [ "test_service_stubs.h" ]
-
-  deps = [
-    ":calls",
-    ":test_service_proto",
-  ]
+  generate_castcore_stubs = true
 }
 
 cast_source_set("unit_tests") {
@@ -119,12 +72,9 @@ cast_source_set("unit_tests") {
   ]
 
   deps = [
-    ":calls",
-    ":handlers",
+    ":grpc",
     ":status_matchers",
-    ":test_service_handlers",
-    ":test_service_proto",
-    ":test_service_stubs",
+    ":test_service_proto_castcore",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",
