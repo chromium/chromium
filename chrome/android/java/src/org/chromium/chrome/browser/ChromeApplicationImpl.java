@@ -15,7 +15,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
-import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppModule;
@@ -70,7 +70,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
 
             if (VersionConstants.CHANNEL == Channel.CANARY) {
                 GURL.setReportDebugThrowableCallback(
-                        PureJavaExceptionReporter::reportJavaException);
+                        ChromePureJavaExceptionReporter::reportJavaException);
             }
 
             // Set Chrome factory for mapping BackgroundTask classes to TaskIds.

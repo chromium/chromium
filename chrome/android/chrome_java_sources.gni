@@ -427,7 +427,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/crash/LogcatExtractionRunnable.java",
   "java/src/org/chromium/chrome/browser/crash/MinidumpUploadRetry.java",
   "java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java",
-  "java/src/org/chromium/chrome/browser/crash/PureJavaExceptionReporter.java",
   "java/src/org/chromium/chrome/browser/cryptids/ProbabilisticCryptidRenderer.java",
   "java/src/org/chromium/chrome/browser/customtabs/BaseCustomTabActivity.java",
   "java/src/org/chromium/chrome/browser/customtabs/BaseCustomTabRootUiCoordinator.java",

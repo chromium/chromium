@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionInitializer;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -1047,7 +1047,7 @@ public class RootUiCoordinator
                     mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
             AppMenuCoordinatorFactory.setExceptionReporter(
                     (throwable)
-                            -> PureJavaExceptionReporter.reportJavaException(
+                            -> ChromePureJavaExceptionReporter.reportJavaException(
                                     (Throwable) throwable));
 
             mAppMenuCoordinator.registerAppMenuBlocker(this);
@@ -1143,7 +1143,8 @@ public class RootUiCoordinator
                 () -> mActivity.findViewById(R.id.sheet_container));
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable)
-                        -> PureJavaExceptionReporter.reportJavaException((Throwable) throwable));
+                        -> ChromePureJavaExceptionReporter.reportJavaException(
+                                (Throwable) throwable));
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,

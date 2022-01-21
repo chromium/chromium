@@ -26,7 +26,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -171,7 +171,7 @@ public class WarmupManager {
             // exceptions to monitor any spikes or stacks that point to Chrome code.
             Throwable throwable = new Throwable(
                     "This is not a crash. See https://crbug.com/1259276 for details.", e);
-            PureJavaExceptionReporter.postReportJavaException(throwable);
+            ChromePureJavaExceptionReporter.postReportJavaException(throwable);
             return null;
         }
     }

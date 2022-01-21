@@ -25,7 +25,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -248,7 +248,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                 Log.w(TAG, logMessage);
                 PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
                         ()
-                                -> PureJavaExceptionReporter.reportJavaException(
+                                -> ChromePureJavaExceptionReporter.reportJavaException(
                                         new Throwable(logMessage)));
                 return;
             }
@@ -313,7 +313,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                             Log.w(TAG, logMessage);
                             PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
                                     ()
-                                            -> PureJavaExceptionReporter.reportJavaException(
+                                            -> ChromePureJavaExceptionReporter.reportJavaException(
                                                     new Throwable(logMessage)));
                             mMessageDispatcher.dismissMessage(
                                     message, DismissReason.DISMISSED_BY_FEATURE);
