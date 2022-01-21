@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -87,7 +86,7 @@ namespace forwarder2 {
 //     DCHECK_EQ(object_, object);
 //     // Do some extra work with |object| before it gets deleted...
 //     object_.reset();
-//     ignore_result(object.release());
+//     std::ignore = object.release();
 //   }
 //
 //   base::ThreadChecker thread_checker_;

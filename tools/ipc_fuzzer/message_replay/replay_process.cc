@@ -7,12 +7,12 @@
 #include <limits.h>
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -49,7 +49,7 @@ class FakeChildProcessImpl
     : public content::mojom::ChildProcessInterceptorForTesting {
  public:
   FakeChildProcessImpl() {
-    ignore_result(disconnected_process_.BindNewPipeAndPassReceiver());
+    std::ignore = disconnected_process_.BindNewPipeAndPassReceiver();
   }
 
   // content::mojom::ChildProcessInterceptorForTesting overrides:
