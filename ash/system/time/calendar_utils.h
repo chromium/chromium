@@ -40,11 +40,11 @@ constexpr base::TimeDelta kAnimationDurationForVisibility =
 constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
 
 // Checks if the `selected_date` is local time today.
-bool IsToday(const base::Time::Exploded& selected_date);
+bool IsToday(const base::Time selected_date);
 
 // Checks if the two exploded are in the same day.
-bool IsTheSameDay(absl::optional<base::Time::Exploded> date_a,
-                  absl::optional<base::Time::Exploded> date_b);
+bool IsTheSameDay(absl::optional<base::Time> date_a,
+                  absl::optional<base::Time> date_b);
 
 // Gets the given `date`'s `Exploded` instance, in local time.
 base::Time::Exploded GetExplodedLocal(const base::Time& date);
