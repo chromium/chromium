@@ -1285,7 +1285,12 @@ Element* Node::FlatTreeParentForChildDirty() const {
       return data->AssignedSlot();
     return nullptr;
   }
-  return ParentOrShadowHostElement();
+  Element* parent = ParentOrShadowHostElement();
+  if (HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(parent)) {
+    if (slot->HasAssignedNodesNoRecalc())
+      return nullptr;
+  }
+  return parent;
 }
 
 void Node::MarkAncestorsWithChildNeedsReattachLayoutTree() {

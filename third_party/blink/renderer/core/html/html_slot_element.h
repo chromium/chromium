@@ -90,6 +90,11 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   // dirty.  e.g. To detect a slotchange event in DOM mutations.
   bool HasAssignedNodesSlow() const;
 
+  // Returns true if the slot has assigned nodes, without doing assignment
+  // recalc. Used by FlatTreeParentForChildDirty() which needs to avoid doing
+  // slot assignments while marking the tree style-dirty.
+  bool HasAssignedNodesNoRecalc() const { return !assigned_nodes_.IsEmpty(); }
+
   bool SupportsAssignment() const { return IsInShadowTree(); }
 
   void CheckFallbackAfterInsertedIntoShadowTree();

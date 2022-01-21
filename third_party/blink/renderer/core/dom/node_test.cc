@@ -505,4 +505,41 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlottingDirtyNode) {
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_F(NodeTest, FlatTreeParentForChildDirty) {
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <div id="host">
+      <template shadowroot="open">
+        <slot id="slot1">
+          <span id="fallback1"></span>
+        </slot>
+        <slot id="slot2">
+          <span id="fallback2"></span>
+        </slot>
+      </template>
+      <div id="slotted"></div>
+      <div id="not_slotted" slot="notfound"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().getElementById("host");
+  Element* slotted = GetDocument().getElementById("slotted");
+  Element* not_slotted = GetDocument().getElementById("not_slotted");
+
+  ShadowRoot* shadow_root = host->GetShadowRoot();
+  Element* slot1 = shadow_root->getElementById("slot1");
+  Element* slot2 = shadow_root->getElementById("slot2");
+  Element* fallback1 = shadow_root->getElementById("fallback1");
+  Element* fallback2 = shadow_root->getElementById("fallback2");
+
+  EXPECT_EQ(host->FlatTreeParentForChildDirty(), GetDocument().body());
+  EXPECT_EQ(slot1->FlatTreeParentForChildDirty(), host);
+  EXPECT_EQ(slot2->FlatTreeParentForChildDirty(), host);
+  EXPECT_EQ(slotted->FlatTreeParentForChildDirty(), slot1);
+  EXPECT_EQ(not_slotted->FlatTreeParentForChildDirty(), nullptr);
+  EXPECT_EQ(fallback1->FlatTreeParentForChildDirty(), nullptr);
+  EXPECT_EQ(fallback2->FlatTreeParentForChildDirty(), slot2);
+}
+
 }  // namespace blink
