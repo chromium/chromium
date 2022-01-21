@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
@@ -182,6 +183,11 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     @BrowserControlsState
     private int getConstraints() {
         return mVisibilityDelegate == null ? BrowserControlsState.BOTH : mVisibilityDelegate.get();
+    }
+
+    @VisibleForTesting
+    public static void setForTesting(Tab tab, TabBrowserControlsConstraintsHelper helper) {
+        tab.getUserDataHost().setUserData(USER_DATA_KEY, helper);
     }
 
     @NativeMethods
