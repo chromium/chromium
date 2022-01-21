@@ -126,6 +126,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:celab",
+    use_python3 = True,
 )
 
 build_recipe(
