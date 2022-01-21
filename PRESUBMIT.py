@@ -2767,7 +2767,7 @@ def _GetOwnersFilesToCheckForIpcOwners(input_api):
 
   def AddPatternToCheck(input_file, pattern):
     owners_file = input_api.os_path.join(
-        input_api.os_path.dirname(input_file.LocalPath()), 'OWNERS')
+        input_api.os_path.dirname(input_file.AbsoluteLocalPath()), 'OWNERS')
     if owners_file not in to_check:
       to_check[owners_file] = {}
     if pattern not in to_check[owners_file]:
