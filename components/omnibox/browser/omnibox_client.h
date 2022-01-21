@@ -122,6 +122,7 @@ class OmniboxClient {
   // will be called when the bitmap has been fetched.
   virtual void OnResultChanged(const AutocompleteResult& result,
                                bool default_match_changed,
+                               bool should_prerender,
                                const BitmapFetchedCallback& on_bitmap_fetched) {
   }
 

@@ -6,9 +6,11 @@
 
 #include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/page_transition_types.h"
 
 namespace prerender_utils {
 
+const char kDefaultSearchEngineMetricSuffix[] = "DefaultSearchEngine";
 const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";
 
 bool IsDirectUrlInputPrerenderEnabled() {

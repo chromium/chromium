@@ -12,6 +12,7 @@
 
 namespace prerender_utils {
 
+extern const char kDefaultSearchEngineMetricSuffix[];
 extern const char kDirectUrlInputMetricSuffix[];
 
 bool IsDirectUrlInputPrerenderEnabled();

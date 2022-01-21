@@ -24,3 +24,14 @@ source_set("browser_tests") {
 
   data = [ "//chrome/test/data/" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "prerender_manager_unittest.cc" ]
+
+  deps = [
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}

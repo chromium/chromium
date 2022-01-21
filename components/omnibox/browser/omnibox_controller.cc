@@ -80,8 +80,11 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
 
   // Note: The client outlives |this|, so bind a weak pointer to the callback
   // passed in to eliminate the potential for crashes on shutdown.
+  // `should_prerender` is set to `controller->done()` as prerender may only
+  // want to start prerendering a result after all Autocomplete results are
+  // ready.
   client_->OnResultChanged(
-      result(), default_match_changed,
+      result(), default_match_changed, /*should_prerender=*/controller->done(),
       base::BindRepeating(&OmniboxController::SetRichSuggestionBitmap,
                           weak_ptr_factory_.GetWeakPtr()));
 }

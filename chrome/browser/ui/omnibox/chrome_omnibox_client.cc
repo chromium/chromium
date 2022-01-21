@@ -31,6 +31,8 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/prerender/prerender_manager.h"
+#include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
@@ -48,6 +50,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -248,6 +251,7 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
 void ChromeOmniboxClient::OnResultChanged(
     const AutocompleteResult& result,
     bool default_match_changed,
+    bool should_prerender,
     const BitmapFetchedCallback& on_bitmap_fetched) {
   auto now = base::TimeTicks::Now();
 
@@ -261,8 +265,17 @@ void ChromeOmniboxClient::OnResultChanged(
   request_ids_.clear();
   // Create new requests.
   int result_index = -1;
-  for (const auto& match : result) {
+  for (const AutocompleteMatch& match : result) {
     ++result_index;
+
+    // Trigger prerendering only if `should_prerender` is set to true, which
+    // means all AutocompeleteProviders have done their work, so the results
+    // will not change for the given input, to ensure we do not prerender one
+    // AutocompleteMatch twice.
+    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
+        should_prerender && BaseSearchProvider::ShouldPrerender(match)) {
+      DoPrerender(match);
+    }
     if (match.ImageUrl().is_empty()) {
       continue;
     }
@@ -395,11 +408,24 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents))
     return;
 
-  gfx::Rect container_bounds = web_contents->GetContainerBounds();
-
-  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->StartPrerendering(match.destination_url, *web_contents,
-                          container_bounds.size());
+  // Treat search hint differently. Since AutocompleteActionPredictor does not
+  // prerender search results, this logic won't take its traffic away.
+  // TODO(https://crbug.com/1278634): Refactor relevant code to reuse common
+  // code, and ensure metrics are correctly recorded.
+  if (AutocompleteMatch::IsSearchType(match.type)) {
+    DCHECK(prerender_utils::IsSearchSuggestionPrerenderEnabled());
+    DCHECK(BaseSearchProvider::ShouldPrerender(match));
+    PrerenderManager::CreateForWebContents(web_contents);
+    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+    prerender_manager->Start(
+        match.destination_url,
+        PrerenderManager::TriggerReason::kSearchSuggestion);
+  } else {
+    gfx::Rect container_bounds = web_contents->GetContainerBounds();
+    predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
+        ->StartPrerendering(match.destination_url, *web_contents,
+                            container_bounds.size());
+  }
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {

@@ -63,6 +63,7 @@ class ChromeOmniboxClient : public OmniboxClient {
                       OmniboxFocusChangeReason reason) override;
   void OnResultChanged(const AutocompleteResult& result,
                        bool default_match_changed,
+                       bool should_prerender,
                        const BitmapFetchedCallback& on_bitmap_fetched) override;
   gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
