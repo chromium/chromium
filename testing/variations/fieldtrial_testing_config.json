@@ -84,24 +84,6 @@
             ]
         }
     ],
-    "AgsaGoogleAppBrowserFinchDrivenStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "key": "value"
-                    },
-                    "enable_features": [
-                        "ExperimentsForAgsa"
-                    ]
-                }
-            ]
-        }
-    ],
     "AmpBackgroundTab": [
         {
             "platforms": [
