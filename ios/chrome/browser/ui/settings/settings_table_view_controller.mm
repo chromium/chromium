@@ -1741,6 +1741,21 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [_signinPromoViewMediator disconnect];
   _signinPromoViewMediator = nil;
   [self stopBrowserStateServiceObservers];
+
+  // Stop observing preferences.
+  [_showMemoryDebugToolsEnabled stop];
+  _showMemoryDebugToolsEnabled = nil;
+  [_articlesEnabled stop];
+  _articlesEnabled = nil;
+  [_allowChromeSigninPreference stop];
+  _allowChromeSigninPreference = nil;
+  [_contentSuggestionPolicyEnabled stop];
+  _contentSuggestionPolicyEnabled = nil;
+
+  _voiceLocaleCode.Destroy();
+
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
 }
 
 #pragma mark SyncObserverModelBridge

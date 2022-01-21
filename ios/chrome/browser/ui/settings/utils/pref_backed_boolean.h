@@ -20,6 +20,11 @@ class PrefService;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Stop observing the pref. Can be called before -dealloc to ensure
+// that the pref is no longer observed, even if the object survives
+// the PrefService (e.g. if the reference is captured by a block).
+- (void)stop;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_PREF_BACKED_BOOLEAN_H_
