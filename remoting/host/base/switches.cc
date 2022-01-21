@@ -49,6 +49,6 @@ const char kCheckAccessibilityPermissionSwitchName[] =
 const char kCheckScreenRecordingPermissionSwitchName[] =
     "check-screen-recording-permission";
 const char kListAudioDevicesSwitchName[] = "list-audio-devices";
-#endif  // defined OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace remoting

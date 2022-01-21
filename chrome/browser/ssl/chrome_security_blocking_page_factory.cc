@@ -90,7 +90,7 @@ bool IsEnterpriseManaged() {
   if (g_browser_process->platform_part()->browser_policy_connector_ash()) {
     return true;
   }
-#endif  // #if defined OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   return false;
 }

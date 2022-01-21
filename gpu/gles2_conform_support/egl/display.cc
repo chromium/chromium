@@ -122,7 +122,7 @@ EGLBoolean Display::GetConfigs(ThreadState* ts,
 }
 
 bool Display::IsValidNativeWindow(EGLNativeWindowType win) {
-#if defined OS_WIN
+#if BUILDFLAG(IS_WIN)
   return ::IsWindow(win) != FALSE;
 #else
   // TODO(alokp): Validate window handle.

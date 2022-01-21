@@ -262,7 +262,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // the navigation to complete, and show the browser's window.
   void AddBlankTabAndShow(Browser* browser);
 
-#if !defined OS_MAC && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Return a CommandLine object that is used to relaunch the browser_test
   // binary as a browser process. This function is deliberately not defined on
   // the Mac because re-using an existing browser process when launching from

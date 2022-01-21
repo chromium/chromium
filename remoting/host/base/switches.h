@@ -78,7 +78,7 @@ extern const char kCheckScreenRecordingPermissionSwitchName[];
 
 // Command line switch to list all audio devices and their UID.
 extern const char kListAudioDevicesSwitchName[];
-#endif  // defined OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace remoting
 
