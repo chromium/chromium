@@ -47,7 +47,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadNetworkQualityEstimatorWebHoldback(
           &out->network_quality_estimator_web_holdback) ||
       !data.ReadWebAppScope(&out->web_app_scope)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       || !data.ReadDefaultVideoPosterUrl(&out->default_video_poster_url)
 #endif
   )
@@ -165,7 +165,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->double_tap_to_zoom_enabled = data.double_tap_to_zoom_enabled();
   out->fullscreen_supported = data.fullscreen_supported();
   out->text_autosizing_enabled = data.text_autosizing_enabled();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   out->font_scale_factor = data.font_scale_factor();
   out->device_scale_adjustment = data.device_scale_adjustment();
   out->force_enable_zoom = data.force_enable_zoom();

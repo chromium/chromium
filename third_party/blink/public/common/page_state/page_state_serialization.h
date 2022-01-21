@@ -93,7 +93,7 @@ BLINK_COMMON_EXPORT void LegacyEncodePageStateForTesting(
     int version,
     std::string* encoded);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 BLINK_COMMON_EXPORT bool DecodePageStateWithDeviceScaleFactorForTesting(
     const std::string& encoded,
     float device_scale_factor,

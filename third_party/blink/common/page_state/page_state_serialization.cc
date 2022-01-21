@@ -29,7 +29,7 @@ namespace blink {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 float g_device_scale_factor_for_testing = 0.0;
 #endif
 
@@ -565,7 +565,7 @@ void ReadFrameState(
   if (obj->version < 14)
     ReadString(obj);  // Skip unused referrer string.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (obj->version == 11) {
     // Now-unused values that shipped in this version of Chrome for Android when
     // it was on a private branch.
@@ -1016,7 +1016,7 @@ void LegacyEncodePageStateForTesting(const ExplodedPageState& exploded,
   *encoded = obj.GetAsString();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool DecodePageStateWithDeviceScaleFactorForTesting(
     const std::string& encoded,
     float device_scale_factor,

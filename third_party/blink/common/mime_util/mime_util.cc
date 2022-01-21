@@ -15,7 +15,7 @@
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // iOS doesn't use and must not depend on //media
 #include "media/base/mime_util.h"
 #endif
@@ -164,7 +164,7 @@ bool MimeUtil::IsSupportedImageMimeType(const std::string& mime_type) const {
 bool MimeUtil::IsSupportedNonImageMimeType(const std::string& mime_type) const {
   return non_image_types_.find(base::ToLowerASCII(mime_type)) !=
              non_image_types_.end() ||
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
          media::IsSupportedMediaMimeType(mime_type) ||
 #endif
          (base::StartsWith(mime_type, "text/",

@@ -419,7 +419,7 @@ class BLINK_PLATFORM_EXPORT Platform {
     return nullptr;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // This is called after the compositor thread is created, so the embedder
   // can initiate an IPC to change its thread priority (on Linux we can't
   // increase the nice value, so we need to ask the browser process). This
@@ -578,7 +578,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // called by platform/graphics/ is fine.
   virtual bool IsGpuCompositingDisabled() const { return true; }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns if synchronous compositing is enabled. Only used for Android
   // webview.
   virtual bool IsSynchronousCompositingEnabledForAndroidWebView() {

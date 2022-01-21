@@ -188,7 +188,7 @@ class WebThemeEngine {
     std::map<SystemThemeColor, uint32_t> colors;
   };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   enum ScrollbarOrientation {
     // Vertical scrollbar on the right side of content.
     kVerticalOnRight,
@@ -217,7 +217,7 @@ class WebThemeEngine {
     ProgressBarExtraParams progress_bar;
     ScrollbarThumbExtraParams scrollbar_thumb;
     ScrollbarButtonExtraParams scrollbar_button;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ScrollbarExtraParams scrollbar_extra;
 #endif
   };

@@ -64,11 +64,11 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   if (!data.ReadAcceptLanguages(&out->accept_languages))
     return false;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (!data.ReadSystemFontFamilyName(&out->system_font_family_name))
     return false;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!data.ReadCaptionFontFamilyName(&out->caption_font_family_name))
     return false;
   out->caption_font_height = data.caption_font_height();

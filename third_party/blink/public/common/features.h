@@ -574,7 +574,7 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintThirdPartyDelegation;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 BLINK_COMMON_EXPORT extern const base::Feature kPrefetchAndroidFonts;
 #endif
 

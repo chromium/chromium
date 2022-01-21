@@ -39,7 +39,7 @@ WebPreferences::WebPreferences()
       minimum_font_size(0),
       minimum_logical_font_size(6),
       default_encoding("ISO-8859-1"),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       context_menu_on_mouse_up(true),
 #else
       context_menu_on_mouse_up(false),
@@ -104,22 +104,22 @@ WebPreferences::WebPreferences()
       dont_send_key_events_to_javascript(false),
       sync_xhr_in_documents_enabled(true),
       number_of_cpu_cores(1),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       editing_behavior(mojom::EditingBehavior::kEditingMacBehavior),
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
       editing_behavior(mojom::EditingBehavior::kEditingWindowsBehavior),
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
       editing_behavior(mojom::EditingBehavior::kEditingAndroidBehavior),
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
       editing_behavior(mojom::EditingBehavior::kEditingChromeOSBehavior),
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
       editing_behavior(mojom::EditingBehavior::kEditingUnixBehavior),
 #else
       editing_behavior(mojom::EditingBehavior::kEditingMacBehavior),
 #endif
       supports_multiple_windows(true),
       viewport_enabled(false),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       viewport_meta_enabled(true),
       shrinks_viewport_contents_to_fit(true),
       viewport_style(mojom::ViewportStyle::kMobile),
@@ -135,7 +135,7 @@ WebPreferences::WebPreferences()
       main_frame_resizes_are_orientation_changes(false),
 #endif
       initialize_at_minimum_page_scale(true),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       smart_insert_delete_enabled(true),
 #else
       smart_insert_delete_enabled(false),
@@ -153,13 +153,13 @@ WebPreferences::WebPreferences()
       text_tracks_enabled(false),
       text_track_margin_percentage(0.0f),
       immersive_mode_enabled(false),
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
       double_tap_to_zoom_enabled(true),
 #else
       double_tap_to_zoom_enabled(false),
 #endif
       fullscreen_supported(true),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       text_autosizing_enabled(false),
 #else
       text_autosizing_enabled(true),
@@ -185,11 +185,11 @@ WebPreferences::WebPreferences()
       css_hex_alpha_color_enabled(true),
       scroll_top_left_interop_enabled(true),
       disable_accelerated_small_canvases(false),
-#endif  // defined(OS_ANDROID)
-#if defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       default_minimum_page_scale_factor(0.25f),
       default_maximum_page_scale_factor(5.f),
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
       default_minimum_page_scale_factor(1.f),
       default_maximum_page_scale_factor(3.f),
 #else

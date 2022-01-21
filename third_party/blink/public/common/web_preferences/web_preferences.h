@@ -219,7 +219,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Representation of the Web App Manifest scope if any.
   GURL web_app_scope;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   float font_scale_factor;
   float device_scale_adjustment;
   bool force_enable_zoom;
@@ -257,7 +257,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Enable forcibly modifying content rendering to result in a light on dark
   // color scheme.

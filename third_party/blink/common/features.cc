@@ -63,7 +63,7 @@ const base::Feature kPaintHolding{"PaintHolding",
 // Desktop platforms.
 const base::Feature kPaintHoldingCrossOrigin {
   "PaintHoldingCrossOrigin",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -160,7 +160,7 @@ const base::Feature kViewportHeightClientHintHeader{
 // future navigations faster.
 const base::Feature kNavigationPredictor {
   "NavigationPredictor",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -218,7 +218,7 @@ const base::FeatureParam<int>
 // command line or a valid Origin Trial token in the page.
 const base::Feature kPrerender2 {
   "Prerender2",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -254,7 +254,7 @@ const base::Feature kPreviewsResourceLoadingHintsSpecificResourceTypes{
 // reasons. Consider enabling by default if experiment results are positive.
 const base::Feature kPurgeRendererMemoryWhenBackgrounded {
   "PurgeRendererMemoryWhenBackgrounded",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -367,7 +367,7 @@ const base::Feature kServiceWorkerUpdateDelay{
 // https://crbug.com/1190167
 const base::Feature kSpeculationRulesPrefetchProxy {
   "SpeculationRulesPrefetchProxy",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -378,7 +378,7 @@ const base::Feature kSpeculationRulesPrefetchProxy {
 // "stop" is a legacy name.
 const base::Feature kStopInBackground {
   "stop-in-background",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -443,7 +443,7 @@ const base::Feature kDecodeLossyWebPImagesToYUV{
 // https://crbug.com/942440.
 const base::Feature kWebFontsCacheAwareTimeoutAdaption {
   "WebFontsCacheAwareTimeoutAdaption",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -464,7 +464,7 @@ const base::Feature kAudioWorkletThreadRealtimePriority{
 // A feature to reduce the set of resources fetched by No-State Prefetch.
 const base::Feature kLightweightNoStatePrefetch {
   "LightweightNoStatePrefetch",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -567,7 +567,7 @@ const base::Feature kBlinkHeapIncrementalMarkingStress{
 // compositor & IO threads.
 const base::Feature kBlinkCompositorUseDisplayThreadPriority {
   "BlinkCompositorUseDisplayThreadPriority",
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -610,7 +610,7 @@ const base::Feature kLowLatencyCanvas2dImageChromium {
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 // Enables the use of shared image swap chains for low latency 2d canvas.
@@ -706,7 +706,7 @@ const base::Feature kResamplingScrollEvents{"ResamplingScrollEvents",
 // receiving client hints, regardless of Permissions Policy.
 const base::Feature kAllowClientHintsToThirdParty {
   "AllowClientHintsToThirdParty",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -1174,7 +1174,7 @@ const base::Feature kOriginAgentClusterDefaultWarning{
 const base::Feature kClientHintThirdPartyDelegation{
     "ClientHintThirdPartyDelegation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Enables prefetching Android fonts on renderer startup.
 const base::Feature kPrefetchAndroidFonts{"PrefetchAndroidFonts",
                                           base::FEATURE_DISABLED_BY_DEFAULT};

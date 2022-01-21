@@ -203,9 +203,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
  private:
   friend class WebMediaPlayerMSTest;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const gfx::Size kUseGpuMemoryBufferVideoFramesMinResolution;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   bool IsInPictureInPicture() const;
 
