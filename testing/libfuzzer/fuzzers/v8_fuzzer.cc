@@ -7,6 +7,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <tuple>
 
 #include "base/compiler_specific.h"
 #include "v8/include/libplatform/libplatform.h"
@@ -161,7 +162,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   env->start_time = steady_clock::now();
   env->mtx.unlock();
 
-  ALLOW_UNUSED_LOCAL(local_script->Run(context));
+  std::ignore = local_script->Run(context);
 
   lock_guard<mutex> mtx_locker(env->mtx);
   env->is_running = false;
