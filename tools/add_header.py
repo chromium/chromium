@@ -267,11 +267,19 @@ def MarkPrimaryInclude(includes, filename):
   if filename.endswith('.h'):
     return
 
+  # First pass. Looking for exact match primary header.
+  exact_match_primary_header = f'{os.path.splitext(filename)[0]}.h'
+  for include in includes:
+    if IsUserHeader(include.decorated_name) and UndecoratedName(
+        include.decorated_name) == exact_match_primary_header:
+      include.is_primary_header = True
+      return
+
   basis = _DecomposePath(filename)
 
-  # The list of includes is searched in reverse order of length. Even though
-  # matching is fuzzy, moo_posix.h should take precedence over moo.h when
-  # considering moo_posix.cc.
+  # Second pass. The list of includes is searched in reverse order of length.
+  # Even though matching is fuzzy, moo_posix.h should take precedence over moo.h
+  # when considering moo_posix.cc.
   includes.sort(key=lambda i: -len(i.decorated_name))
   for include in includes:
     if include.header_type != _HEADER_TYPE_USER:

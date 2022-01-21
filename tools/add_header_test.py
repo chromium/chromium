@@ -293,6 +293,17 @@ class MarkPrimaryIncludeTest(unittest.TestCase):
     self.assertEqual(self._extract_primary_name(includes),
                      '"farm/public/animal/cow.h"')
 
+  def testSubstantiallySimilarPathsAndExactMatch(self):
+    includes = [
+        add_header.Include('"ui/gfx/ipc/geometry/gfx_param_traits.h"',
+                           'include', [], None),
+        add_header.Include('"ui/gfx/ipc/gfx_param_traits.h"', 'include', [],
+                           None),
+    ]
+    add_header.MarkPrimaryInclude(includes, 'ui/gfx/ipc/gfx_param_traits.cc')
+    self.assertEqual(self._extract_primary_name(includes),
+                     '"ui/gfx/ipc/gfx_param_traits.h"')
+
   def testNoMatchingSubdirectories(self):
     includes = [add_header.Include('"base/zfs/cow.h"', 'include', [], None)]
     add_header.MarkPrimaryInclude(includes, 'base/animal/cow.cc')
