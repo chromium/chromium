@@ -521,6 +521,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5896576662943111387">Conçu pour iOS</translation>
 <translation id="5897956970858271241">Consulter le lien copié</translation>
 <translation id="5899314093904173337">Pour partager du contenu avec des personnes à proximité, faites-leur numériser ce code QR avec leur appareil photo ou une application de numérisation de code QR</translation>
+<translation id="5902639236448164449">Gérer les autorisations relatives aux sites pour la page <ph name="URL" />. Ces autorisations seront réinitialisées lorsque vous fermerez l'onglet.</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5913600720976431809">Options pour traduire la page</translation>
 <translation id="5938160824633642847">Votre appareil est presque plein. Libérez de l'espace et réessayez.</translation>

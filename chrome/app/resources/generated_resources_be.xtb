@@ -2008,7 +2008,6 @@
 <translation id="3009300415590184725">Сапраўды скасаваць наладжванне сэрвісу мабільнай перадачы даных?</translation>
 <translation id="3009779501245596802">Індэксаваныя базы даных</translation>
 <translation id="3010279545267083280">Пароль выдалены.</translation>
-<translation id="301080557829842765">Дапаможнік па прыватнасці</translation>
 <translation id="3011384993885886186">Бэжава-шэры</translation>
 <translation id="3011488081941333749">Файлы з дамена <ph name="DOMAIN" /> будуць выдалены пры выхадзе</translation>
 <translation id="3012631534724231212">(акно iframe)</translation>
@@ -6906,7 +6905,6 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{Не знойдзена раскрытых пароляў}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="8157248655669507702">Каб усталяваць профіль eSIM-карты, уключыце мабільную перадачу даных</translation>
 <translation id="8157704005178149728">Наладжваецца кантроль</translation>
-<translation id="8157954703669743215">Прагледжана <ph name="RELATIVE_TIME" /></translation>
 <translation id="8158117992543756526">Месяц, у якім прылада перастала атрымліваць аўтаматычныя абнаўленні праграмнага забеспячэння і сістэмы бяспекі: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Не ўдалося наладзіць давер сертыфіката</translation>
 <translation id="8160775796528709999">Дазвольце ствараць субцітры для аўдыя і відэа, уключыўшы функцыю "Імгненныя субцітры" ў наладах</translation>

@@ -976,6 +976,7 @@
 <translation id="1965624977906726414">특별한 권한이 필요하지 않습니다.</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">동영상 모드 시작됨</translation>
+<translation id="1972325230031091483">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
 <translation id="197288927597451399">계속</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> 파일은 안전하게 다운로드할 수 없습니다. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="1974043046396539880">CRL 배포 지점</translation>
@@ -1200,6 +1201,7 @@
 <translation id="2191754378957563929">사용</translation>
 <translation id="2192505247865591433">웹 브라우저</translation>
 <translation id="2193365732679659387">신뢰 설정</translation>
+<translation id="2194856509914051091">고려사항</translation>
 <translation id="2195331105963583686">이후로도 이 <ph name="DEVICE_TYPE" /> 기기를 계속 사용할 수는 있지만, 소프트웨어 및 보안 업데이트를 자동으로 받을 수 없게 됩니다.</translation>
 <translation id="2195729137168608510">이메일 보호</translation>
 <translation id="2198625180564913276">프로필을 추가하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
@@ -1344,6 +1346,7 @@
 <translation id="2326931316514688470">앱 새로고침(&amp;R)</translation>
 <translation id="2327492829706409234">앱 사용</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 다시 시작해 주세요.</translation>
+<translation id="2328636661627946415">시크릿 모드에서 사이트는 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다. 시크릿 세션이 종료되면 쿠키가 삭제됩니다.</translation>
 <translation id="2329597144923131178">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 사용할 수 있습니다.</translation>
 <translation id="2332131598580221120">스토어에서 보기</translation>
 <translation id="2332192922827071008">환경설정 열기</translation>
@@ -2021,7 +2024,6 @@
 <translation id="3009300415590184725">모바일 데이터 서비스 설정 과정을 취소하시겠습니까?</translation>
 <translation id="3009779501245596802">색인화된 데이터베이스</translation>
 <translation id="3010279545267083280">비밀번호 삭제됨</translation>
-<translation id="301080557829842765">개인 정보 보호 가이드</translation>
 <translation id="3011384993885886186">따뜻한 회색</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" />의 쿠키가 종료 시 삭제됩니다</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2656,6 +2658,7 @@
 <translation id="3694027410380121301">이전 탭 선택</translation>
 <translation id="369489984217678710">비밀번호 및 기타 로그인 데이터</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{보안 확인이 완료되었습니다. 데이터가 업로드됩니다.}=1{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}other{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}}</translation>
+<translation id="3698471669415859717">검토 완료</translation>
 <translation id="3699624789011381381">이메일 주소</translation>
 <translation id="3699920817649120894">동기화 및 맞춤설정을 사용 중지하시겠습니까?</translation>
 <translation id="3700888195348409686">표시 중(<ph name="PAGE_ORIGIN" />)</translation>
@@ -2962,6 +2965,7 @@
 <translation id="3975565978598857337">영역 서버에 연락을 취하지 못했습니다.</translation>
 <translation id="3976108569178263973">사용 가능한 프린터가 없습니다.</translation>
 <translation id="397703832102027365">완료 중...</translation>
+<translation id="3977145907578671392">시크릿 모드에서는 일부 사이트의 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="3977886311744775419">이러한 네트워크 유형에서는 자동 업데이트가 다운로드되지 않지만 수동으로 업데이트를 확인할 수 있습니다.</translation>
 <translation id="3979395879372752341">새 확장 프로그램이 추가됨(<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> 사용</translation>
@@ -3903,6 +3907,7 @@
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
 <translation id="5018526990965779848">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="5021750053540820849">아직 업데이트되지 않음</translation>
+<translation id="5024511550058813796">동기화된 모든 기기에 방문 기록이 유지되므로 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="5026492829171796515">로그인하여 Google 계정 추가</translation>
 <translation id="5026806129670917316">Wi-Fi 사용</translation>
 <translation id="5026874946691314267">이 메시지를 다시 표시하지 않음</translation>
@@ -4423,6 +4428,7 @@
 <translation id="5571066253365925590">블루투스를 사용함</translation>
 <translation id="5571092938913434726">전체 미디어 컨트롤</translation>
 <translation id="5571832155627049070">프로필 맞춤설정</translation>
+<translation id="5572648434713976849">주소 표시줄에 더 개선된 추천 항목이 표시됩니다.</translation>
 <translation id="5572851009514199876">이 사이트에 액세스할 수 있는지 확인할 수 있도록 Chrome을 시작하고 로그인하세요.</translation>
 <translation id="5575473780076478375">시크릿 모드 확장 프로그램: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">데모 등록 요청에 문제가 발생했습니다.</translation>
@@ -5397,6 +5403,7 @@
 <translation id="6602937173026466876">프린터에 액세스</translation>
 <translation id="6602956230557165253">오른쪽/왼쪽 화살표 키를 사용하여 탐색합니다.</translation>
 <translation id="6602998402703530379">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, <ph name="DEVICE_NAME" />, 비디오 카메라.</translation>
+<translation id="6603185457265641428">방문 기록 동기화 여부 선택</translation>
 <translation id="6605847144724004692">아직 사용자 평가가 없습니다.</translation>
 <translation id="6606671997164410857">이미 다른 기기에서 Google 어시스턴트를 설정한 것 같습니다. 이 기기에서 화면 컨텍스트를 사용 설정하여 어시스턴트를 더 유용하게 활용하세요.</translation>
 <translation id="6607831829715835317">도구 더보기</translation>
@@ -5435,6 +5442,7 @@
 <translation id="6644846457769259194">기기 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">선택한 Google 클라우드 프린트 기기는 더 이상 지원되지 않습니다. <ph name="BR" /> 컴퓨터의 시스템 설정에서 프린터를 설정해 보세요.</translation>
 <translation id="6647228709620733774">Netscape 인증 기관 취소 URL</translation>
+<translation id="6647441008198474441">다음에 방문할 사이트를 예측하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="6648911618876616409">중요 업데이트를 설치할 준비가 되었습니다. 시작하려면 로그인하세요.</translation>
 <translation id="6649018507441623493">잠시 기다려 주세요.</translation>
 <translation id="6650234781371031356"><ph name="WEBSITE" />의 비밀번호가 이 기기와 Google 계정에 저장되어 있습니다. 어디에서 삭제하시겠습니까?</translation>
@@ -5745,6 +5753,7 @@
 <translation id="6972887130317925583">유출된 비밀번호를 변경했습니다. 비밀번호는 언제든지 <ph name="SETTINGS" />에서 확인할 수 있습니다.</translation>
 <translation id="697312151395002334">팝업 전송 및 리디렉션 사용이 허용됨</translation>
 <translation id="6973611239564315524">Debian 10(Buster)으로 업그레이드할 수 있습니다.</translation>
+<translation id="69739764870135975">Google이 기본 검색엔진이기도 하면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>
 <translation id="6974609594866392343">오프라인 데모 모드</translation>
 <translation id="697508444536771064">Linux 종료</translation>
 <translation id="6977739184256564679">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, <ph name="DEVICE_NAME" />, 태블릿.</translation>
@@ -5986,6 +5995,7 @@
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" />에서 전송을 취소함</translation>
 <translation id="7240339475467890413">새 핫스팟에 연결하시겠습니까?</translation>
 <translation id="7241389281993241388"><ph name="TOKEN_NAME" />에 로그인하여 클라이언트 인증서를 가져오세요.</translation>
+<translation id="7241763419756062043">검색 및 탐색 품질 선택</translation>
 <translation id="7243632151880336635">지우기 및 로그아웃</translation>
 <translation id="7243784282103630670">Linux를 업그레이드하는 중에 오류가 발생했습니다. 백업을 사용해 컨테이너를 복원합니다.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />(최고)</translation>
@@ -6091,6 +6101,7 @@
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" />에서 <ph name="PAGE_NUMBER" />페이지 인쇄</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />을(를) 실행하려면 오른쪽 마우스 버튼을 클릭하세요.</translation>
 <translation id="7362387053578559123">사이트에서 블루투스 기기에 연결하도록 요청할 수 있음</translation>
+<translation id="7363349185727752629">개인 정보 보호 선택 가이드</translation>
 <translation id="7364591875953874521">액세스가 요청됨</translation>
 <translation id="7364745943115323529">전송...</translation>
 <translation id="7364796246159120393">파일 선택</translation>
@@ -6643,6 +6654,7 @@
 <translation id="7885253890047913815">최근 대상</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{항목 1개}other{항목 #개}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
+<translation id="7887174313503389866">주요 개인 정보 보호 및 보안 제어 기능을 둘러보세요. 추가 옵션을 알아보려면 개별 설정으로 이동합니다</translation>
 <translation id="7887334752153342268">새 탭에서 보기</translation>
 <translation id="7887864092952184874">블루투스 마우스 페어링됨</translation>
 <translation id="7889371445710865055">음성기록 언어 변경</translation>
@@ -6921,7 +6933,6 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{유출된 비밀번호가 없습니다.}=1{유출된 비밀번호가 {COUNT}개 있습니다.}other{유출된 비밀번호가 {COUNT}개 있습니다.}}</translation>
 <translation id="8157248655669507702">eSIM 프로필을 설치하려면 모바일 데이터 사용 설정</translation>
 <translation id="8157704005178149728">감독 기능 설정 중</translation>
-<translation id="8157954703669743215"><ph name="RELATIVE_TIME" />에 조회함</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" />부터 이 기기의 자동 소프트웨어 및 보안 업데이트가 중단되었습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">인증서 신뢰를 설정하던 중 오류 발생</translation>
 <translation id="8160775796528709999">설정에서 실시간 자막을 사용 설정하여 음성 및 영상 자막 생성하기</translation>
@@ -7186,6 +7197,7 @@
 <translation id="8457451314607652708">북마크 가져오기</translation>
 <translation id="8458341576712814616">바로가기</translation>
 <translation id="8458627787104127436">새 창에서 모두(<ph name="URL_COUNT" />개) 열기</translation>
+<translation id="8460448946170646641">주요 개인 정보 보호 및 보안 제어 기능 검토</translation>
 <translation id="8460490661223303637">메모리 절약을 위해 Chrome에서 일부 콘텐츠를 삭제했습니다.</translation>
 <translation id="8460932807646981183">검색엔진 및 사이트 검색 관리</translation>
 <translation id="84613761564611563">네트워크 구성 UI를 요청했습니다. 잠시만 기다려 주세요.</translation>
@@ -7507,6 +7519,7 @@
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8800004011501252845">해당 목적지 사용자 표시</translation>
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
+<translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8803953437405899238">클릭 한 번으로 새 탭을 열 수 있습니다.</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{탭을 다른 창으로 이동}other{탭을 다른 창으로 이동}}</translation>
 <translation id="8805140816472474147">동기화를 시작하려면 동기화 설정을 확인하세요.</translation>

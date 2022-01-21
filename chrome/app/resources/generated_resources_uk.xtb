@@ -2024,7 +2024,6 @@
 <translation id="3009300415590184725">Дійсно скасувати процес налаштування служби передавання мобільних даних?</translation>
 <translation id="3009779501245596802">Проіндексовані бази даних</translation>
 <translation id="3010279545267083280">Пароль видалено</translation>
-<translation id="301080557829842765">Посібник щодо конфіденційності</translation>
 <translation id="3011384993885886186">Теплий сірий</translation>
 <translation id="3011488081941333749">Файли cookie з домену <ph name="DOMAIN" /> буде очищено під час виходу</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -6927,7 +6926,6 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{Немає зламаних паролів}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
 <translation id="8157248655669507702">Щоб установити профіль eSIM-карти, увімкніть мобільний Інтернет</translation>
 <translation id="8157704005178149728">Налаштування батьківського контролю</translation>
-<translation id="8157954703669743215">Переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" />: цей пристрій перестав отримувати автоматичні оновлення програмного забезпечення й системи безпеки. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Помилка під час налаштування довіри сертифікату</translation>
 <translation id="8160775796528709999">Щоб переглядати живі субтитри до аудіо чи відео, увімкніть їх у налаштуваннях</translation>

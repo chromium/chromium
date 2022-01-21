@@ -2031,7 +2031,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3009300415590184725">Jeste li sigurni da želite otkazati uslugu postavljanja prijenosa podataka na mobilnoj mreži?</translation>
 <translation id="3009779501245596802">Baza indeksa</translation>
 <translation id="3010279545267083280">Lozinka je izbrisana</translation>
-<translation id="301080557829842765">Vodič za privatnost</translation>
 <translation id="3011384993885886186">Toplosiva</translation>
 <translation id="3011488081941333749">Kolačići iz domene <ph name="DOMAIN" /> brišu se prilikom izlaska</translation>
 <translation id="3012631534724231212">(umetnuti okvir)</translation>
@@ -6940,7 +6939,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8155676038687609779">{COUNT,plural, =0{Nisu pronađene ugrožene lozinke}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="8157248655669507702">Omogućite prijenos podataka na mobilnoj mreži da instalirate eSIM profil</translation>
 <translation id="8157704005178149728">Postavljanje nadzora</translation>
-<translation id="8157954703669743215">Pregledano <ph name="RELATIVE_TIME" /></translation>
 <translation id="8158117992543756526">Ovaj uređaj je prestao primati automatska ažuriranja softvera i sigurnosna ažuriranja (<ph name="MONTH_AND_YEAR" />). <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Greška prilikom postavljanja pouzdanosti potvrde</translation>
 <translation id="8160775796528709999">Omogućite Automatske titlove u postavkama da preuzmete titlove za audio i videozapise</translation>

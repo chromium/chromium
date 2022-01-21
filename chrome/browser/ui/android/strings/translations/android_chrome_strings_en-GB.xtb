@@ -260,7 +260,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2512164632052122970">Content languages</translation>
 <translation id="2513403576141822879">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Sync and Google services<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Scan</translation>
-<translation id="2518590038762162553">In Lite mode, Chrome loads pages faster and uses up to 60 per cent less data. To optimise the pages that you visit, Chrome sends your web traffic to Google. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Sends URLs of pages that you visit to Google</translation>
 <translation id="2527209463677295330">By including more of a page’s text, you might see better results</translation>
 <translation id="2527497042232966453">Switched to Incognito tabs</translation>
@@ -314,7 +313,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2800066122460699237">The tab <ph name="TAB_TITLE" /> will be closed</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2806840421670364300">FLoC</translation>
-<translation id="2809150421034843096">Info about your Chrome usage that can\u2019t be tied to you\n\nRelevant data from rare Chrome crashes, which may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs that you visit</translation>
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">To get your bookmarks on all your devices, sign in and turn on sync</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -379,7 +377,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3123734510202723619">Announcements</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
-<translation id="3154863790776532719">New features and improved performance</translation>
 <translation id="3157842584138209013">See how much data you've saved from the More Options button</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="316694332262407393">Chrome is already running here.</translation>
@@ -413,7 +410,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3285080554353377245">Videos about how to use Chrome</translation>
 <translation id="3288003805934695103">Reloading the page</translation>
 <translation id="3290991969712132877">To get here quicker, add this page to your home screen from the 'More options' button</translation>
-<translation id="3295530008794733555">Browse faster. Use less data.</translation>
 <translation id="3297344142967351106">Voice assistance</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
@@ -432,6 +428,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3407392651057365886">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="3421726884497337397">Choose when to block third-party cookies</translation>
+<translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3429160811076349561">Trial features are off</translation>
 <translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
 <translation id="3440975416244667276">Touch &amp; hold for more relevant info</translation>
@@ -470,6 +467,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3658159451045945436">Resetting wipes your history of data savings, including the list of visited sites.</translation>
 <translation id="3677911431265050325">Request mobile site</translation>
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
+<translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
 <translation id="3714981814255182093">Open the Find Bar</translation>
@@ -588,9 +586,9 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4472118726404937099">To sync and personalise across devices, sign in and turn on sync</translation>
 <translation id="4479839115899251637">Delete from reading list</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
+<translation id="4484496141267039529">No connection. Try again later.</translation>
 <translation id="4487967297491345095">All Chrome’s app data will be deleted permanently. This includes all files, settings, accounts, databases, etc.</translation>
 <translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
-<translation id="4493497663118223949">Lite mode is on</translation>
 <translation id="4504667196171871375">On Wi-Fi and mobile data</translation>
 <translation id="4508528996305412043">Feed card menu is opened</translation>
 <translation id="4508642716788467538">Pick your language</translation>
@@ -600,7 +598,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 
 Your Google Account may have other forms of browsing history such as searches and activity from other Google services at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4532845899244822526">Choose folder</translation>
-<translation id="4538018662093857852">Turn on Lite mode</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4550003330909367850">To view or copy your password here, set screen lock on this device.</translation>
@@ -632,7 +629,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
 <translation id="4696983787092045100">Send text to Your Devices</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
-<translation id="4714588616299687897">Save up to 60% of your data</translation>
 <translation id="471759387343966120">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" /> and <ph name="BEGIN_PRIVACY_LINK" />Privacy\u00A0Policy<ph name="END_PRIVACY_LINK" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Offer to translate</translation>
 <translation id="4720023427747327413">Open in <ph name="PRODUCT_NAME" /></translation>
@@ -786,6 +782,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="555816257274242153">Stopped tracking price</translation>
+<translation id="5561162485081632007">Detects and warns you about dangerous events when they happen</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>
 <translation id="5568069709869097550">Can't sign in</translation>
 <translation id="5578795271662203820">Search <ph name="SEARCH_ENGINE" /> for this image</translation>
@@ -982,7 +979,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6560414384669816528">Search with Sogou</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6565959834589222080">Wi-Fi is used when available</translation>
-<translation id="6566259936974865419">Chrome has saved you <ph name="GIGABYTES" /> GB</translation>
 <translation id="6569373978618239158">You'll now see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="6573096386450695060">Always allow</translation>
 <translation id="6573431926118603307">Tabs that you've opened in Chrome on your other devices will appear here.</translation>
@@ -1015,7 +1011,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
 <translation id="6684809838922667136">Make Chrome better</translation>
 <translation id="6698801883190606802">Manage synced data</translation>
-<translation id="6699370405921460408">Google servers will optimise the pages that you visit.</translation>
 <translation id="670498945988402717">Checked yesterday</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="671481426037969117">Your <ph name="FQDN" /> timer ran out. It will start again tomorrow.</translation>
@@ -1026,6 +1021,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6751521182688001123">Quickly open a new tab. To edit this shortcut, touch and hold.</translation>
 <translation id="6756507620369789050">Share feedback</translation>
 <translation id="6767294960381293877">List of devices to share a tab with, opened at half height.</translation>
+<translation id="6770602306803890733">Improves security for you and everyone on the web</translation>
 <translation id="6783942555455976443">Save this page for later and get a reminder</translation>
 <translation id="6795633245022906657">Quickly open a new tab. To edit this shortcut, go to Settings.</translation>
 <translation id="6802555630140434547">The window will be closed</translation>
@@ -1073,6 +1069,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7027549951530753705">Restored <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Position QR code/barcode in this frame.</translation>
 <translation id="7029809446516969842">Passwords</translation>
+<translation id="7030304022046916278">Sends URLs to Safe Browsing to check them</translation>
 <translation id="7037830628447527439">Sign in to Chrome with your Google Account</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Get image descriptions?</translation>
@@ -1165,7 +1162,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="752220631458524187">Disconnect when you’ve finished</translation>
 <translation id="7523960634226602883">Search with your camera using Google Lens</translation>
 <translation id="753225086557513863">Scheduled for later</translation>
-<translation id="7559975015014302720">Lite mode is off</translation>
 <translation id="7560448309733608642">Clears history from all synced devices. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Clear browsing data</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
@@ -1178,7 +1174,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7594687499944811403">Let <ph name="EMBEDDED_ORIGIN" /> verify that it's you for <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operating system</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
-<translation id="7606077192958116810">Lite mode is on. Manage it in Settings.</translation>
 <translation id="7612619742409846846">Signed in to Google as</translation>
 <translation id="7616551326690708776">Select a template for your highlight.</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> download failed due to network failures.</translation>
@@ -1322,6 +1317,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8368001212524806591">Track price</translation>
 <translation id="8387617938027387193">Verify that it’s you</translation>
 <translation id="8393700583063109961">Send message</translation>
+<translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="8410695015584479363">Track prices</translation>
 <translation id="8413126021676339697">Show full history</translation>
 <translation id="8419244640277402268">Include</translation>
@@ -1426,7 +1422,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
 <translation id="8942627711005830162">Open in other window</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – This language couldn't be downloaded. Try again later.</translation>
-<translation id="8951232171465285730">Chrome has saved you <ph name="MEGABYTES" /> MB</translation>
 <translation id="8955719471735800169">Back to top</translation>
 <translation id="8964479563882643397">To open a new incognito tab, open the menu</translation>
 <translation id="8965591936373831584">pending</translation>

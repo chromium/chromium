@@ -20,7 +20,7 @@
 <translation id="1507198376417198979">మీ కొత్త Chrome ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="1516530951338665275">పెయిరింగ్‌ను కొనసాగించడానికి Google Chromeకు 
  బ్లూటూత్ యాక్సెస్ అవసరం. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
-<translation id="1553358976309200471">Chromeని నవీకరించు</translation>
+<translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ఇప్పటికే ఈ Chrome ప్రొఫైల్‌కు సైన్ ఇన్ చేసి ఉన్నారు. ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chrome ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="1587223624401073077">Google Chrome మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> హానికరం, కావున Chrome దాన్ని బ్లాక్ చేసింది.</translation>
@@ -86,6 +86,7 @@
 <translation id="2926952073016206995">ఈ సైట్ కోసం Chromeకు కెమెరా అనుమతి అవసరం</translation>
 <translation id="2929907241665500097">Chrome అప్‌డేట్ అవ్వలేదు, ఏదో తప్పు జరిగింది. <ph name="BEGIN_LINK" />Chrome అప్‌డేట్ సమస్యలు, విఫలమైన అప్‌డేట్‌లను పరిష్కరించండి.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - నెట్‌వర్క్ సైన్ ఇన్ - Chrome</translation>
+<translation id="303514781271618814">Chrome మీ డేటాను తక్కువగా ఉపయోగిస్తూ అదే బ్రౌజింగ్ అనుభవాన్ని అందించడానికి సైట్‌లను అనుమతించే కొత్త ఫీచర్‌లను అన్వేషిస్తోంది</translation>
 <translation id="3037838751736561277">Google Chrome నేపథ్య మోడ్‌లో ఉంది.</translation>
 <translation id="3059710691562604940">సురక్షిత బ్రౌజింగ్ ఆఫ్ చేయబడింది. దాన్ని ఆన్ చేయమని Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="3065168410429928842">Chrome ట్యాబ్</translation>
@@ -157,6 +158,7 @@
 <translation id="4754614261631455953">Google Chrome కెనరీ (mDNS-In)</translation>
 <translation id="4771048833395599659">ఈ ఫైల్ అపాయకరం కావచ్చు, కాబట్టి Chrome దీన్ని బ్లాక్ చేసింది.</translation>
 <translation id="479167709087336770">Google Searchలో ఉపయోగించే స్పెల్ చెకర్‌నే ఇది ఉపయోగిస్తుంది. మీరు బ్రౌజర్‌లో టైప్ చేసే టెక్స్ట్‌ను Googleకు పంపుతుంది. ఈ ఆప్షన్‌ను తర్వాత ఎప్పుడైనా మీరు సెట్టింగ్‌లలో మార్చవచ్చు.</translation>
+<translation id="4873783916118289636">Chromeలోని ముఖ్య గోప్యతా, సెక్యూరిటీ కంట్రోల్స్‌ను రివ్యూ చేయండి</translation>
 <translation id="4891791193823137474">Google Chromeను నేపథ్యంలో అమలు అయ్యేలా అనుమతించండి</translation>
 <translation id="4895437082222824641">కొత్త Chrome &amp;ట్యాబ్‌లో లింక్‌ను తెరువు</translation>
 <translation id="4953650215774548573">Google Chromeను మీ డిఫాల్ట్ బ్రౌజర్‌గా సెట్ చేయండి</translation>

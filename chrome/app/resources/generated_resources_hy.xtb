@@ -1214,6 +1214,9 @@
 <translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Անանուն մեդիա աղբյուր</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Լավագույն որակն ապահովելու համար <ph name="DEVICE_OS" />-ը հավաքում է սարքակազմի տվյալները և տրամադրում Google-ին, որն այդ տվյալների հիման վրա որոշում է, թե ինչ թարմացումներ է անհրաժեշտ տրամադրել։ Ցանկության դեպքում կարող եք նաև թույլատրել Google-ին օգտագործել այս տվյալներն այլ նպատակներով, օրինակ՝ <ph name="DEVICE_OS" />-ի աշխատանքի և սպասարկման որակը բարձրացնելու համար։<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Մտեք հաշիվ այս սարքում, անցեք chrome://system էջ և բացեք CLOUDREADY_HARDWARE_INFO բաժինը՝ տեսնելու, թե ինչ տվյալներ եք ուղարկում Google-ին, որպեսզի դրանց հիման վրա թարմացումներ ստանաք, և թե ինչ այլ նպատակներով կարող եք տվյալներ փոխանցել Google-ին։<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Եթե ուզում եք ավելին իմանալ, թե <ph name="DEVICE_OS" />-ն ինչ տվյալներ կարող է տրամադրել Google-ին, և ինչպես են դրանք օգտագործվում, այցելեք g.co/CR2/HWDataCollection էջ։<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Այս կարգավորման հեղինակը <ph name="OWNER_EMAIL" />-ն է:</translation>
 <translation id="222447520299472966">Անհրաժեշտ է ընտրել ցուցասրահի առնվազն մեկ ալբոմ</translation>
 <translation id="2224551243087462610">Պանակի անվան փոփոխում</translation>
@@ -1760,6 +1763,15 @@
 <translation id="2766161002040448006">Հարցնել ծնողին</translation>
 <translation id="2767077837043621282">Չհաջողվեց թարմացնել ձեր Chromebook-ը։ Փորձեք ավելի ուշ։</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել <ph name="FILENAME" /> ֆայլը, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Փորձեք կատարել անսարքությունների վերացման հետևյալ քայլերը․
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Համոզվեք, որ ձեր սարքն ունի աշխատող ներքին հիշողություն (HDD, SSD կամ eMMC)։
+    <ph name="LIST_ITEM" />Համոզվեք, որ ներքին հիշողության ծավալն առնվազն 16 ԳԲ է։
+    <ph name="LIST_ITEM" />Ստուգեք ներքին հիշողության հետ կապը՝ համոզվելու, որ այն ֆիզիկապես հասանելի է։
+    <ph name="LIST_ITEM" />Համոզվեք, որ օգտագործում եք հավաստագրված մոդել և ստուգեք տեղադրման նշումները։
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Լրացուցիչ օգնության համար այցելեք g.co/CR2/InstallErrors էջ։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Հեռացնել ցանկից</translation>
 <translation id="2770690685823456775">Արտահանեք ձեր գաղտնաբառերը այլ պանակ</translation>
 <translation id="2770929488047004208">Էկրանի լուծաչափը</translation>
@@ -2007,7 +2019,6 @@
 <translation id="3009300415590184725">Չեղարկե՞լ տվյալների բջջային փոխանցման կարգավորումը:</translation>
 <translation id="3009779501245596802">Ցուցակավորված տվյալների շտեմարաններ</translation>
 <translation id="3010279545267083280">Գաղտնաբառը ջնջվեց</translation>
-<translation id="301080557829842765">Տվյալների պաշտպանության ուղեցույց</translation>
 <translation id="3011384993885886186">Ջերմ մոխրագույն</translation>
 <translation id="3011488081941333749">Աշխատաշրջանը փակելուց հետո <ph name="DOMAIN" /> տիրույթի քուքիները կջնջվեն</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -2980,6 +2991,7 @@
 <translation id="4005817994523282006">Ժամային գոտու որոշման եղանակ</translation>
 <translation id="4007856537951125667">Թաքցնել դյուրանցումները</translation>
 <translation id="4008291085758151621">Կայքի մասին տեղեկությունները հասանելի չեն VR ռեժիմում</translation>
+<translation id="4009955655170295852">Սկսելուց առաջ համոզվեք, որ ձեր տվյալները պահուստավորված են։ <ph name="DEVICE_OS" />-ը տեղադրելու դեպքում կոշտ սկավառակում առկա բոլոր տվյալները կվրագրվեն։ Իմացեք ավելին g.co/CR2/InstallGuide էջում։</translation>
 <translation id="4010917659463429001">Ձեր էջանիշները ձեր շարժական սարքում օգտագործելու համար <ph name="GET_IOS_APP_LINK" />:</translation>
 <translation id="4014432863917027322">Վերանորոգե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="4015163439792426608">Օգտվո՞ւմ եք ընդլայնումներից: <ph name="BEGIN_LINK" />Կառավարեք ձեր ընդլայնումները<ph name="END_LINK" /> մեկ վայրում:</translation>
@@ -3702,6 +3714,9 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 էջանիշ ջնջվեց}one{{COUNT} էջանիշ ջնջվեց}other{{COUNT} էջանիշ ջնջվեց}}</translation>
 <translation id="4819607494758673676">Google Օգնականի ծանուցումներ</translation>
 <translation id="4820236583224459650">Նշել որպես ակտիվ տոմս</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Գրանցվելուց առաջ անհրաժեշտ է մաքրել TPM-ը, որպեսզի <ph name="DEVICE_OS" />-ը կարողանա կառավարել սարքը։<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Դուք կարող եք նաև TPM սարքն ամբողջությամբ անջատել։ Ձեր տվյալները ապահով կերպով կպահվեն ծրագրի գաղտնագրման միջոցով, սակայն անվտանգության որոշ գործառույթներ, օրինակ՝ սարքակազմի հավաստագրերը, կանջատվեն։<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Դուք կարող եք փոխել ձեր TPM-ի կարգավորումները՝ վերաբեռնելով համակարգը և մտնելով BIOS/UEFI-ի կարգավորումներ։ Կախված սարքի մոդելից՝ քայլերը կարող են տարբեր լինել։ Նախքան վերաբեռնելը կարող եք ծանոթանալ <ph name="DEVICE_OS" />-ի փաստաթղթերին՝ բացելով դրանք առանձին սարքում՝ g.co/CR2/TPMHelp։<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Տվյալների հավաքումը միացված է</translation>
 <translation id="4823484602432206655">Կարդալ և փոփոխել օգտատիրոջ և սարքի կարգավորումները</translation>
 <translation id="4824037980212326045">Լինուքսի պահուստավորում և վերականգնում</translation>
@@ -5609,6 +5624,7 @@
 <translation id="6834652994408928492">Մութն ընկնելուն պես մուգ ռեժիմը ավտոմատ կմիանա</translation>
 <translation id="6835762382653651563">Ձեր <ph name="DEVICE_TYPE" /> սարքը թարմացնելու համար կապակցվեք համացանցին:</translation>
 <translation id="6839225236531462745">Վկայագիրը ջնջելիս սխալ առաջացավ</translation>
+<translation id="6839882458129755986">Google-ը պատասխանատվություն չի կրում տվյալների կորստի համար, իսկ <ph name="DEVICE_OS" />-ը կարող է չաշխատել չստուգված մոդելների վրա։ Իմացեք ավելին g.co/CR2/InstallGuide էջում։</translation>
 <translation id="6839916869147598086">Մուտքի էջը փոխվել է</translation>
 <translation id="6840155290835956714">Հարցնել՝ մինչ ուղարկելը</translation>
 <translation id="6840184929775541289">Հավաստագրման կենտրոն չէ</translation>
@@ -5925,6 +5941,7 @@
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7180865173735832675">Հարմարեցնել</translation>
 <translation id="7182791023900310535">Գաղտնաբառի տեղափոխում</translation>
+<translation id="7183193772170782394">Թույլ տվեք Google-ին օգտագործել ձեր սարքակազմի տվյալները՝ <ph name="DEVICE_OS" />-ը բարելավելու նպատակով։ Եթե մերժեք, այս տվյալները միևնույն է կուղարկվեն Google-ին, որպեսզի այն կարողանա տրամադրել համապատասխան թարմացումներ, սակայն չեն պահվի կամ այլ կերպ չեն օգտագործվի։ Իմացեք ավելին g.co/CR2/HWDataCollection էջում։</translation>
 <translation id="7183420126213758623">Ցույց տալ/թաքցնել որոնման կողագոտին։ Որոնման կողագոտին ակտիվացված չէ։</translation>
 <translation id="7186088072322679094">Պահել գործիքագոտիում</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> կայքը չի կարող բացել այս պանակը, քանի որ այն պարունակում է համակարգի ֆայլեր</translation>
@@ -6909,7 +6926,6 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{Կոտրված գաղտնաբառեր չեն գտնվել}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="8157248655669507702">eSIM պրոֆիլ տեղադրելու համար միացրեք բջջային ինտերնետը</translation>
 <translation id="8157704005178149728">Ծնողական վերահսկողության կարգավորում</translation>
-<translation id="8157954703669743215">Դիտել եք <ph name="RELATIVE_TIME" /></translation>
 <translation id="8158117992543756526">Այս սարքն այլևս չի ստանում ծրագրակազմի և անվտանգության համակարգի ավտոմատ թարմացումներ (վերջին անգամ՝ <ph name="MONTH_AND_YEAR" />)։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Վկայագրի վստահության որոշման սխալ</translation>
 <translation id="8160775796528709999">Միացրեք «Կենդանի ենթագրերը» կարգավորումներում և ստացեք ենթագրեր մեդիա բովանդակության համար</translation>
@@ -7007,6 +7023,8 @@
 <translation id="8260864402787962391">Մկնիկ</translation>
 <translation id="8261378640211443080">Այս ընդլայնումը նշված չէ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ում և կարող է ավելացվել առանց ձեր իմացության:</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Սխալի պատճառով չհաջողվեց տեղադրել <ph name="DEVICE_OS" />-ը։<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Լրացուցիչ օգնության համար այցելեք g.co/CR2/InstallErrors էջ։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Անվանեք այս խումբը</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />-ն անջատել է մկնիկի նշորդը:</translation>
 <translation id="8264024885325823677">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
@@ -7480,6 +7498,7 @@
 <translation id="8777259617149177596">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="8777628254805677039">արմատային գաղտնաբառ</translation>
 <translation id="8778328560035799409">Ընթացիկ նշանակված փոխանջատիչները կհեռացվեն</translation>
+<translation id="8779944680596936487">Կայքերը կարող են օգտագործել քուքիներ՝ միայն իրենց կայքերում ձեր գործողությունները հետագծելու համար։</translation>
 <translation id="8780123805589053431">Ստացեք պատկերների նկարագրությունները Google-ից</translation>
 <translation id="8780443667474968681">Ձայնային որոնումն անջատվել է:</translation>
 <translation id="8781834595282316166">Նոր ներդիր խմբում</translation>

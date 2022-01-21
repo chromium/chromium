@@ -2023,7 +2023,6 @@
 <translation id="3009300415590184725">您確定要取消流動數據服務設定程序嗎？</translation>
 <translation id="3009779501245596802">索引數據庫</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
-<translation id="301080557829842765">私隱權指南</translation>
 <translation id="3011384993885886186">暖灰色</translation>
 <translation id="3011488081941333749">系統將在您離開時清除來自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="3012631534724231212">(iFrame)</translation>
@@ -4897,7 +4896,6 @@
 <translation id="6072442788591997866">此裝置不支援 <ph name="APP_NAME" />。請聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="6073903501322152803">新增無障礙功能</translation>
-<translation id="6075418785668063462">查看隱私權指南</translation>
 <translation id="6075731018162044558">糟糕！系統無法為這部裝置取得長期 API 存取憑證。</translation>
 <translation id="6075907793831890935">與名稱為「<ph name="HOSTNAME" />」的裝置交換數據</translation>
 <translation id="6076175485108489240">使用定位服務。允許擁有位置資訊存取權的應用程式和服務使用此裝置的位置資訊。Google 可能會定期收集位置資訊資料，並以匿名方式使用這些資料，以提高定位的精確度及改善適地性服務。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
@@ -6937,7 +6935,6 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{找不到被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
 <translation id="8157248655669507702">啟用流動數據以安裝 eSIM 卡設定檔</translation>
 <translation id="8157704005178149728">正在設定監控功能</translation>
-<translation id="8157954703669743215"><ph name="RELATIVE_TIME" />曾查看</translation>
 <translation id="8158117992543756526">此裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟件和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">憑證信任設定錯誤</translation>
 <translation id="8160775796528709999">去設定度開著即時字幕，就可以為音訊同影片產生字幕</translation>
