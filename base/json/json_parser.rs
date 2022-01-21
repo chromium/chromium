@@ -70,7 +70,7 @@ mod ffi {
 fn decode_json(
     json: &[u8],
     options: ffi::JsonOptions,
-    mut value_slot: ValueSlotRef,
+    value_slot: ValueSlotRef,
 ) -> Result<(), serde_jsonrc::Error> {
     let mut to_parse = json;
     if to_parse.len() >= 3 && to_parse[0..3] == UTF8_BOM {
@@ -94,7 +94,7 @@ fn decode_json(
     // absl::optional<base::Value> and also count the outermost dict,
     // therefore we start with -2 to match C++ behavior.
     let result =
-        deserializer.deserialize_any(ValueVisitor::new(&mut value_slot, options.max_depth - 2))?;
+        deserializer.deserialize_any(ValueVisitor::new(value_slot, options.max_depth - 2))?;
     deserializer.end()?;
     Ok(result)
 }

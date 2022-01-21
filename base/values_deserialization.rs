@@ -24,7 +24,7 @@ impl RecursionDepthCheck {
 /// What type of `base::Value` container we're deserializing into.
 enum DeserializationTarget<'elem, 'container> {
     /// Deserialize into a brand new root `base::Value`.
-    NewValue { slot: &'elem mut ValueSlotRef<'container> },
+    NewValue { slot: ValueSlotRef<'container> },
     /// Deserialize by appending to a list.
     List { list: &'elem mut ListValueRef<'container> },
     /// Deserialize by setting a dictionary key.
@@ -64,7 +64,7 @@ impl<'elem, 'container> ValueVisitor<'elem, 'container> {
     /// `base::Value`, then this visitor can be passed to serde deserialization
     /// libraries to populate it with a tree of contents.
     /// Any existing `base::Value` in the slot will be replaced.
-    pub fn new(slot: &'elem mut ValueSlotRef<'container>, mut max_depth: usize) -> Self {
+    pub fn new(slot: ValueSlotRef<'container>, mut max_depth: usize) -> Self {
         max_depth += 1; // we will increment this counter when deserializing
         // the initial `base::Value`. To match C++ behavior, we should
         // only start counting for subsequent layers, hence decrement
@@ -86,7 +86,7 @@ impl<'de, 'elem, 'container> Visitor<'de> for ValueVisitor<'elem, 'container> {
 
     fn visit_i32<E: serde::de::Error>(self, value: i32) -> Result<Self::Value, E> {
         match self.container {
-            DeserializationTarget::NewValue { slot } => slot.construct_integer(value),
+            DeserializationTarget::NewValue { mut slot } => slot.construct_integer(value),
             DeserializationTarget::List { list } => list.append_integer(value),
             DeserializationTarget::Dict { dict, key } => dict.set_integer_key(&key, value),
         };
@@ -99,7 +99,7 @@ impl<'de, 'elem, 'container> Visitor<'de> for ValueVisitor<'elem, 'container> {
 
     fn visit_bool<E: serde::de::Error>(self, value: bool) -> Result<Self::Value, E> {
         match self.container {
-            DeserializationTarget::NewValue { slot } => slot.construct_bool(value),
+            DeserializationTarget::NewValue { mut slot } => slot.construct_bool(value),
             DeserializationTarget::List { list } => list.append_bool(value),
             DeserializationTarget::Dict { dict, key } => dict.set_bool_key(&key, value),
         };
@@ -128,7 +128,7 @@ impl<'de, 'elem, 'container> Visitor<'de> for ValueVisitor<'elem, 'container> {
 
     fn visit_f64<E: serde::de::Error>(self, value: f64) -> Result<Self::Value, E> {
         match self.container {
-            DeserializationTarget::NewValue { slot } => slot.construct_double(value),
+            DeserializationTarget::NewValue { mut slot } => slot.construct_double(value),
             DeserializationTarget::List { list } => list.append_double(value),
             DeserializationTarget::Dict { dict, key } => dict.set_double_key(&key, value),
         };
@@ -137,7 +137,7 @@ impl<'de, 'elem, 'container> Visitor<'de> for ValueVisitor<'elem, 'container> {
 
     fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Self::Value, E> {
         match self.container {
-            DeserializationTarget::NewValue { slot } => slot.construct_string(value),
+            DeserializationTarget::NewValue { mut slot } => slot.construct_string(value),
             DeserializationTarget::List { list } => list.append_string(value),
             DeserializationTarget::Dict { dict, key } => dict.set_string_key(&key, value),
         };
@@ -146,7 +146,7 @@ impl<'de, 'elem, 'container> Visitor<'de> for ValueVisitor<'elem, 'container> {
 
     fn visit_borrowed_str<E: serde::de::Error>(self, value: &'de str) -> Result<Self::Value, E> {
         match self.container {
-            DeserializationTarget::NewValue { slot } => slot.construct_string(value),
+            DeserializationTarget::NewValue { mut slot } => slot.construct_string(value),
             DeserializationTarget::List { list } => list.append_string(value),
             DeserializationTarget::Dict { dict, key } => dict.set_string_key(&key, value),
         };
@@ -159,7 +159,7 @@ impl<'de, 'elem, 'container> Visitor<'de> for ValueVisitor<'elem, 'container> {
 
     fn visit_none<E: serde::de::Error>(self) -> Result<Self::Value, E> {
         match self.container {
-            DeserializationTarget::NewValue { slot } => slot.construct_none(),
+            DeserializationTarget::NewValue { mut slot } => slot.construct_none(),
             DeserializationTarget::List { list } => list.append_none(),
             DeserializationTarget::Dict { dict, key } => dict.set_none_key(&key),
         };
@@ -170,12 +170,12 @@ impl<'de, 'elem, 'container> Visitor<'de> for ValueVisitor<'elem, 'container> {
         self.visit_none()
     }
 
-    fn visit_map<M>(self, mut access: M) -> Result<Self::Value, M::Error>
+    fn visit_map<M>(mut self, mut access: M) -> Result<Self::Value, M::Error>
     where
         M: MapAccess<'de>,
     {
         let mut value = match self.container {
-            DeserializationTarget::NewValue { slot } => slot.construct_dict(),
+            DeserializationTarget::NewValue { ref mut slot } => slot.construct_dict(),
             DeserializationTarget::List { list } => list.append_dict(),
             DeserializationTarget::Dict { dict, key } => dict.set_dict_key(&key),
         };
@@ -190,12 +190,12 @@ impl<'de, 'elem, 'container> Visitor<'de> for ValueVisitor<'elem, 'container> {
         Ok(())
     }
 
-    fn visit_seq<S>(self, mut access: S) -> Result<Self::Value, S::Error>
+    fn visit_seq<S>(mut self, mut access: S) -> Result<Self::Value, S::Error>
     where
         S: SeqAccess<'de>,
     {
         let mut value = match self.container {
-            DeserializationTarget::NewValue { slot } => slot.construct_list(),
+            DeserializationTarget::NewValue { ref mut slot } => slot.construct_list(),
             DeserializationTarget::List { list } => list.append_list(),
             DeserializationTarget::Dict { dict, key } => dict.set_list_key(&key),
         };
@@ -231,8 +231,8 @@ mod test {
     #[test]
     fn test_create() {
         let mut value_slot = NewValueSlot();
-        let mut value_slot = ValueSlotRef::from(&mut value_slot);
-        let _ = ValueVisitor::new(&mut value_slot, 12);
+        let value_slot = ValueSlotRef::from(&mut value_slot);
+        let _ = ValueVisitor::new(value_slot, 12);
         // Without introducing extra dependencies such as serde_test,
         // we can't do much to test the actual deserialization.
         // In any case, when deserializing JSON, this code will be
