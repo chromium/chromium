@@ -7078,7 +7078,13 @@ void Element::RecalcTransitionPseudoTreeStyle(
     container_pseudo->UpdatePseudoElement(
         kPseudoIdTransitionNewContent, style_recalc_change,
         style_recalc_context, document_transition_tag);
+    container_pseudo->ClearChildNeedsStyleRecalc();
   }
+
+  // Regular pseudo update doesn't clear child style, since there are
+  // (typically) no children / dirty child style. However, here we do need to
+  // clear the child dirty bit.
+  transition_pseudo->ClearChildNeedsStyleRecalc();
 }
 
 void Element::RebuildTransitionPseudoLayoutTree(
