@@ -5218,13 +5218,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
 
 // Tests that prerendering is cancelled when a mixed content subframe is
 // detected.
-// TODO(crbug.com/1282218): Flaky on Linux and Windows
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_MixedContent DISABLED_MixedContent
-#else
-#define MAYBE_MixedContent MixedContent
-#endif
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MAYBE_MixedContent) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
@@ -5241,10 +5235,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MAYBE_MixedContent) {
   test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   // Make a mixed content iframe.
-  EXPECT_TRUE(
+  std::ignore =
       ExecJs(prerendered_rfh,
              "add_iframe_async('http://a.test/empty.html?prerendering')",
-             EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+             EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
 
   host_observer.WaitForDestroyed();
   EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
