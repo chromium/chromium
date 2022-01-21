@@ -9,6 +9,7 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
@@ -27,7 +28,7 @@ var HistoryToolbarFocusTest = class extends HistoryFocusTest {
   }
 };
 
-GEN('#if defined(OS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC)');
 GEN('// Flaky, https://crbug.com/1200678');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');

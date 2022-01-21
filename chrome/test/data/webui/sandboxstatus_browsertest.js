@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /**
@@ -27,7 +28,7 @@ SandboxStatusUITest.prototype = {
 //   sandbox. See:
 //     https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md
 // - PLEASE DO NOT GLOBALLY DISABLE THIS TEST.
-GEN('#if defined(OS_LINUX) || defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)');
 GEN('# define MAYBE_testSUIDorNamespaceSandboxEnabled \\');
 GEN('     testSUIDorNamespaceSandboxEnabled');
 GEN('#else');
@@ -53,7 +54,7 @@ TEST_F(
     });
 
 // The seccomp-bpf sandbox is also not compatible with ASAN.
-GEN('#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)');
 GEN('# define MAYBE_testBPFSandboxEnabled \\');
 GEN('     DISABLED_testBPFSandboxEnabled');
 GEN('#else');
@@ -142,7 +143,7 @@ SandboxStatusWindowsUITest.prototype = {
 };
 
 // This test is for Windows only.
-GEN('#if defined(OS_WIN)');
+GEN('#if BUILDFLAG(IS_WIN)');
 GEN('# define MAYBE_testSandboxStatus \\');
 // TODO(https://crbug.com/1045564) Flaky on Windows.
 GEN('     DISABLED_testSandboxStatus');

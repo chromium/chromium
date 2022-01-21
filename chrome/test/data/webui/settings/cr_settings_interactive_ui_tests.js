@@ -7,6 +7,7 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
@@ -71,7 +72,7 @@ var SettingsUIInteractiveTest = class extends CrSettingsInteractiveUITest {
 };
 
 // Times out on Mac. See https://crbug.com/1060981.
-GEN('#if defined(OS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_SettingsUIToolbarAndDrawer DISABLED_SettingsUIToolbarAndDrawer');
 GEN('#else');
 GEN('#define MAYBE_SettingsUIToolbarAndDrawer SettingsUIToolbarAndDrawer');
@@ -83,7 +84,7 @@ TEST_F(
     });
 
 // Times out on Mac. See https://crbug.com/1060981.
-GEN('#if defined(OS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_SettingsUIAdvanced DISABLED_SettingsUIAdvanced');
 GEN('#else');
 GEN('#define MAYBE_SettingsUIAdvanced SettingsUIAdvanced');
@@ -93,7 +94,7 @@ TEST_F('SettingsUIInteractiveTest', 'MAYBE_SettingsUIAdvanced', function() {
 });
 
 // Times out on Mac. See https://crbug.com/1060981.
-GEN('#if defined(OS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_SettingsUISearch DISABLED_SettingsUISearch');
 GEN('#else');
 GEN('#define MAYBE_SettingsUISearch SettingsUISearch');

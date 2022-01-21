@@ -27,7 +27,7 @@ MediaHistoryWebUIBrowserTest.prototype = {
 };
 
 // https://crbug.com/1045500: Flaky on Windows.
-GEN('#if defined(OS_WIN)');
+GEN('#if BUILDFLAG(IS_WIN)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');

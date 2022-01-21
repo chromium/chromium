@@ -7,6 +7,7 @@
  */
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/ui/webui/bookmarks/bookmarks_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -66,7 +67,7 @@ var BookmarksDNDManagerTest = class extends BookmarksBrowserTest {
 };
 
 // http://crbug.com/803570 : Flaky on Win 7 (dbg)
-GEN('#if defined(OS_WIN) && !defined(NDEBUG)');
+GEN('#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');

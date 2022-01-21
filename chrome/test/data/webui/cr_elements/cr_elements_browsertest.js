@@ -7,6 +7,7 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/chromeos_buildflags.h"');
@@ -90,7 +91,7 @@ var CrElementsDrawerTest = class extends CrElementsBrowserTest {
 };
 
 // https://crbug.com/1008122 - Flaky on Mac 10.10.
-GEN('#if defined(OS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_Drawer DISABLED_Drawer');
 GEN('#else');
 GEN('#define MAYBE_Drawer Drawer');
@@ -148,7 +149,7 @@ var CrElementsFingerprintProgressArcTest = class extends CrElementsBrowserTest {
 };
 
 // https://crbug.com/1044390 - maybe flaky on Mac?
-GEN('#if defined(OS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_Fingerprint DISABLED_Fingerprint');
 GEN('#else');
 GEN('#define MAYBE_Fingerprint Fingerprint');

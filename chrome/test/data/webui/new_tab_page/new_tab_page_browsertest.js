@@ -350,7 +350,7 @@ TEST_F('NewTabPageModulesPhotosModuleTest', 'All', function() {
 GEN('#endif  // !defined(OFFICIAL_BUILD)');
 
 // https://crbug.com/1227564: Flaky on Chrome OS.
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');

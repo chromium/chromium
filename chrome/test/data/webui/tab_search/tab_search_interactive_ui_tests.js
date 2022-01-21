@@ -6,6 +6,7 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "services/network/public/cpp/features.h"');
 
@@ -17,7 +18,7 @@ var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   }
 };
 
-GEN('#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)');
+GEN('#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');
