@@ -496,20 +496,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.AudioMixer.NumIncomingActiveStreams"
-    units="count" expires_after="M77">
-  <obsolete>
-    Removed as of 2021-05-10.
-  </obsolete>
-  <owner>aleloi@chromium.org</owner>
-  <summary>
-    Reports the number of active incoming streams in the WebRTC audio mixer. An
-    incoming stream is active if it is not muted. When multiple streams are
-    active, adding them can result in saturation and limiting is needed. Logged
-    every second during a WebRTC call.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.Audio.AudioMixer.NumIncomingActiveStreams2"
     units="streams" expires_after="2022-04-30">
   <owner>alessiob@chromium.org</owner>
@@ -570,20 +556,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.EchoCanceller.ActiveRender" enum="Boolean"
-    expires_after="2020-12-01">
-  <obsolete>
-    No longer in use. Removed on 2020-10-19.
-  </obsolete>
-  <owner>peah@chromium.org</owner>
-  <owner>saza@chromium.org</owner>
-  <summary>
-    This histogram logs a value indicating whether the WebRTC echo canceller
-    detects that there is active content in the render signal. A new value is
-    logged every 10 seconds and the logged value is averaged over this period.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.Audio.EchoCanceller.BufferDelay" units="Blocks"
     expires_after="2022-09-13">
   <owner>peah@chromium.org</owner>
@@ -638,62 +610,6 @@ chromium-metrics-reviews@google.com.
     seen by the delay estimator in the WebRTC echo canceller. A new value is
     logged every 10 seconds and the logged value is the estimate of the delay of
     the echo path at the time when the value is logged.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.EchoCanceller.ErlBand0" units="dB (shifted)"
-    expires_after="2020-12-01">
-  <obsolete>
-    No longer in use, EchoCanceller.Erl considered sufficient. Removed on
-    2020-10-19.
-  </obsolete>
-  <owner>peah@chromium.org</owner>
-  <owner>saza@chromium.org</owner>
-  <summary>
-    This histogram logs the echo return loss achieved by the WebRTC echo
-    canceller in the lower 4 kHz. A new value is logged every 10 seconds.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.EchoCanceller.ErlBand1" units="dB (shifted)"
-    expires_after="2020-12-01">
-  <obsolete>
-    No longer in use, EchoCanceller.Erl considered sufficient. Removed on
-    2020-10-19.
-  </obsolete>
-  <owner>peah@chromium.org</owner>
-  <owner>saza@chromium.org</owner>
-  <summary>
-    This histogram logs the echo return loss achieved by the WebRTC echo
-    canceller between 4 and 8 kHz. A new value is logged every 10 seconds.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.EchoCanceller.ErleBand0" units="dB (shifted)"
-    expires_after="2020-12-01">
-  <obsolete>
-    No longer in use, EchoCanceller.Erle considered sufficient. Removed on
-    2020-10-19.
-  </obsolete>
-  <owner>peah@chromium.org</owner>
-  <owner>saza@chromium.org</owner>
-  <summary>
-    This histogram logs the echo return loss enhancement achieved by the WebRTC
-    echo canceller in the lower 4 kHz. A new value is logged every 10 seconds.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.EchoCanceller.ErleBand1" units="dB (shifted)"
-    expires_after="2020-12-01">
-  <obsolete>
-    No longer in use, EchoCanceller.Erle considered sufficient. Removed on
-    2020-10-19.
-  </obsolete>
-  <owner>peah@chromium.org</owner>
-  <owner>saza@chromium.org</owner>
-  <summary>
-    This histogram logs the echo return loss enhancement achieved by the WebRTC
-    echo canceller between 4 and 8 kHz. A new value is logged every 10 seconds.
   </summary>
 </histogram>
 
@@ -800,21 +716,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.EchoCanceller.ModelBasedAecFeasible"
-    enum="Boolean" expires_after="2020-12-01">
-  <obsolete>
-    No longer reported. Removed on 2020-10-19.
-  </obsolete>
-  <owner>peah@chromium.org</owner>
-  <owner>saza@chromium.org</owner>
-  <summary>
-    This histogram logs a value every time the WebRTC echo canceller deems that
-    echo path is possible to model using any of the the echo canceller echo path
-    models. A new value is logged every 10 seconds and the logged value is the
-    feasibility assessment at the time when the value is logged.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.Audio.EchoCanceller.ReliableDelayEstimates"
     enum="WebRTCAecDelayEstimateReliability" expires_after="2022-09-13">
   <owner>peah@chromium.org</owner>
@@ -909,22 +810,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The jitter buffer delay for the receiving side. Sampled once every 10 ms
     when WebRTC audio is playing.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.ResidualEchoDetector.EchoLikelihood" units="%"
-    expires_after="2021-05-09">
-  <obsolete>
-    No longer reported. Removed in M84.
-  </obsolete>
-  <owner>hlundin@chromium.org</owner>
-  <owner>ivoc@chromium.org</owner>
-  <summary>
-    The estimated likelihood percentage of echo as detected by the residual echo
-    detector. The residual echo detector can be used to detect cases where the
-    AEC (hardware or software) is not functioning properly. The detector can be
-    non-causal and operates on larger timescales with more delay than the
-    regular AEC.
   </summary>
 </histogram>
 
@@ -1275,22 +1160,6 @@ chromium-metrics-reviews@google.com.
     retransmissions that are attempted in unreliable mode. It is set to the
     value used in the configuration when a RTCDataChannel is created. Expired in
     M86. Revived in M93.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.DataChannelMaxRetransmitTime" units="ms"
-    expires_after="2021-12-31">
-  <obsolete>
-    Replaced by WebRTC.DataChannelMaxPacketLifeTime to align better with the
-    specification in M93.
-  </obsolete>
-  <owner>orphis@chromium.org</owner>
-  <owner>toprice@chromium.org</owner>
-  <summary>
-    Recorded when a data channel is created. The length of the time window
-    during which transmissions and retransmissions may occur in unreliable mode.
-    It is set to the value used in the configuration when a RTCDataChannel is
-    created. Expired in M78.
   </summary>
 </histogram>
 
@@ -1650,20 +1519,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.KeyProtocolByMedia"
-    enum="PeerConnectionKeyProtocolByMedia" expires_after="2022-01-09">
-  <obsolete>
-    Support removed 2022-01-13
-  </obsolete>
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    What key exchange protocol (DTLS or SDES) is used to establish the crypto
-    keys for a PeerConnection's RTP transport, specified per media type. Note:
-    This histogram was expired after M82, and resurrected in M89.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.Latency.Network" units="microseconds"
     expires_after="2022-05-24">
   <owner>handellm@chromium.org</owner>
@@ -1719,20 +1574,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the length of the SDP mid attribute in order to limit its length to
     16 characters.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.OfferExtmapAllowMixed"
-    enum="PeerConnectionOfferExtmapAllowMixed" expires_after="2022-01-02">
-  <obsolete>
-    Removed as of 2021-08-03.
-  </obsolete>
-  <owner>kron@chromium.org</owner>
-  <summary>
-    What setting for the SDP attribute extmap-allow-mixed has been asked for by
-    the creator of a PeerConnection. This is specified to the constructor
-    through the dictionary property offerExtmapAllowMixed which can be set to
-    either true or false. A default value will be used if it's not specified.
   </summary>
 </histogram>
 
@@ -2471,11 +2312,6 @@ chromium-metrics-reviews@google.com.
     after each frame has been decoded. {CodecInfo}
   </summary>
   <token key="CodecInfo">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".H264.4k.Hw" summary=""/>
     <variant name=".H264.4k.Sw" summary=""/>
     <variant name=".H264.Hd.Hw" summary=""/>
@@ -2744,11 +2580,6 @@ chromium-metrics-reviews@google.com.
     for a received video stream. {WebRtcCodecs}
   </summary>
   <token key="WebRtcCodecs">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".Av1" summary=""/>
     <variant name=".Generic" summary=""/>
     <variant name=".H264" summary=""/>
@@ -4200,11 +4031,6 @@ chromium-metrics-reviews@google.com.
     event. {WebRtcLoggingEvent}
   </summary>
   <token key="WebRtcLoggingEvent">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".Discard" summary="Discard"/>
     <variant name=".Start" summary="Start"/>
     <variant name=".UploadFailed" summary="Upload failed"/>

@@ -42,73 +42,6 @@ chromium-metrics-reviews@google.com.
   <variant name="WiFi.SecurityPasswordProtected"/>
 </variants>
 
-<histogram name="Network.3G.Gobi.Activation" units="ms" expires_after="M85">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <summary>The time the Gobi modem takes to complete activation.</summary>
-</histogram>
-
-<histogram name="Network.3G.Gobi.Connect" units="ms" expires_after="2019-12-31">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <summary>
-    The time the Gobi modem takes to connect to the cellular network.
-  </summary>
-</histogram>
-
-<histogram name="Network.3G.Gobi.Disconnect" units="ms"
-    expires_after="2019-12-31">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <summary>
-    The time the Gobi modem takes to disconnect from the cellular network.
-  </summary>
-</histogram>
-
-<histogram name="Network.3G.Gobi.FirmwareDownload.Attempts" units="units"
-    expires_after="M85">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <summary>Number of attempts taken to install Gobi firmware.</summary>
-</histogram>
-
-<histogram name="Network.3G.Gobi.FirmwareDownload.Time" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <summary>The time it takes to install Gobi firmware.</summary>
-</histogram>
-
-<histogram name="Network.3G.Gobi.Registration" units="ms"
-    expires_after="2019-12-31">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <summary>
-    The time the Gobi modem takes to register on the cellular network.
-  </summary>
-</histogram>
-
-<histogram name="Network.3G.Gobi.SetPower" enum="Network3GGobiError"
-    expires_after="2019-12-31">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <summary>Errors experienced during Gobi device powerup.</summary>
-</histogram>
-
 <histogram name="Network.Ash.VPN.{VPNProviderType}.ConfigurationSource"
     enum="VPNConfigurationSource" expires_after="2022-12-31">
   <owner>chadduffin@chromium.org</owner>
@@ -182,20 +115,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Network.Cellular.Activation.StatusAtLogin"
-    enum="NetworkCellularActivationState" expires_after="2021-08-29">
-  <obsolete>
-    Split into Network.Cellular.PSim.StatusAtLogin and
-    Network.Cellular.ESim.StatusAtLogin on 3/2021 in M91.
-  </obsolete>
-  <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
-  <summary>
-    Tracks the Cellular network activation state when the primary user logs-in
-    to the device.
-  </summary>
-</histogram>
-
 <histogram name="Network.Cellular.Apn.UseAttachApnOnSave" enum="Boolean"
     expires_after="2022-05-18">
   <owner>hsuregan@chromium.org</owner>
@@ -204,34 +123,6 @@ chromium-metrics-reviews@google.com.
     Chrome OS cellular network metric that tracks the Attach APN Toggle value
     when the user explicitly clicks the Save button in the 'Other' APN settings,
     with the intent of setting the cellular network APN properties.
-  </summary>
-</histogram>
-
-<histogram name="Network.Cellular.Connection.Disconnections"
-    enum="NetworkCellularConnectionState" expires_after="2021-08-29">
-  <obsolete>
-    Split into Network.Cellular.PSim.Disconnections and
-    Network.Cellular.ESim.Disconnections on 03/2021.
-  </obsolete>
-  <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
-  <summary>
-    Tracks when cellular network is connected and when cellular network is
-    disconnected without explicit user action.
-  </summary>
-</histogram>
-
-<histogram name="Network.Cellular.Connection.TimeToConnected" units="ms"
-    expires_after="2021-08-29">
-  <obsolete>
-    Split into Network.Cellular.ESim.TimeToConnected and
-    Network.Cellular.ESim.TimeToConnected on 03/2021.
-  </obsolete>
-  <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <summary>
-    Tracks the amount fo time taken between when cellular device starts and
-    finishes connecting.
   </summary>
 </histogram>
 
@@ -696,20 +587,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Cellular.Usage.Count" enum="NetworkCellularUsage"
-    expires_after="2021-06-30">
-  <obsolete>
-    Split into Network.Cellular.PSim.Usage.Count and
-    Network.Cellular.ESim.Usage.Count on 2/2021 in M91.
-  </obsolete>
-  <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
-  <summary>
-    Tracks the number of times a cellular network is connected as the only
-    network, or with other network or not connected at all.
-  </summary>
-</histogram>
-
 <histogram name="Network.Cellular.{SimType}.CellularSetup.{Result}.Duration"
     units="ms" expires_after="2022-08-29">
   <owner>azeemarshad@chromium.org</owner>
@@ -755,29 +632,6 @@ chromium-metrics-reviews@google.com.
     Tracks the result of a user initiated connection attempt. Logged when a
     {SimType} connection succeeds or fails. This histogram logs failure reasons
     exposed by NetworkConnectionHandler.
-  </summary>
-  <token key="SimType">
-    <variant name="ESim"/>
-    <variant name="PSim"/>
-  </token>
-</histogram>
-
-<histogram name="Network.Cellular.{SimType}.ConnectionSuccess"
-    enum="CellularConnectResult" expires_after="2022-03-01">
-  <obsolete>
-    Removed 04/2021. Split to
-    Network.Cellular.{SimType}.ConnectionResult.UserInitiated and
-    Network.Cellular.{SimType}.ConnectionResult.All.
-  </obsolete>
-  <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <summary>
-    Tracks the result of connecting to a cellular network. Logged when a
-    {SimType} connection succeeds or fails. In the case of failure, which can
-    occur in the Chrome or Shill layers, the error reason is emitted. Note that
-    Shill errors are mapped to Unknown. Refer to
-    go/cros-cellular-success-metrics for details.
   </summary>
   <token key="SimType">
     <variant name="ESim"/>
@@ -1102,20 +956,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose"
-    enum="ResolveHostPurpose" expires_after="2021-12-01">
-  <obsolete>
-    Removed 12/2021. Use ResolveHostPurpose2 instead.
-  </obsolete>
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records the purpose of a host resolve request. Recorded when
-    NetworkContext::ResolveHost() is called while the radio state is dormant.
-    Only recorded on Android.
-  </summary>
-</histogram>
-
 <histogram name="Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose2"
     enum="ResolveHostPurpose" expires_after="2022-06-01">
   <owner>bashi@chromium.org</owner>
@@ -1124,19 +964,6 @@ chromium-metrics-reviews@google.com.
     Records the purpose of a host resolve request. Recorded when
     NetworkContext::ResolveHost() is called while the radio state is dormant.
     Only recorded on Android.
-  </summary>
-</histogram>
-
-<histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId"
-    enum="TrafficAnnotationUniqueIdHash" expires_after="2021-12-01">
-  <obsolete>
-    Removed 12/2021. Use URLLoaderAnnotationId2 instead.
-  </obsolete>
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records a traffic annotation ID hash when a URLLoader is created and the
-    radio state is dormant. Only recorded on Android.
   </summary>
 </histogram>
 
@@ -1491,96 +1318,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.DailyChosenFractionOnline.Cellular" units="%"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS fraction of daily cumulative time on a cellular connection when
-    both cellular and WiFi adaptors are available. Each sample is the ratio of
-    the corresponding DailyChosenTimeOnLine.{Cellular,Any} samples. Reported
-    only when both a cellular and a WiFi adaptor are present (independently of
-    whether they would both be able to connect).
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.DailyChosenFractionOnline.Wifi" units="%"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS fraction of daily cumulative time on a WiFi connection when both
-    cellular and WiFi adaptors are available. Each sample is the ratio of the
-    corresponding DailyChosenTimeOnLine.{Cellular,Any} samples. Reported only
-    when both a cellular and a WiFi adaptor are present (independently of
-    whether they would both be able to connect).
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.DailyChosenTimeOnline.Any" units="seconds"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS daily cumulative time on line when both cellular and WiFi adaptors
-    are available. Reported only when both kinds of adaptor are present
-    (independently of whether they would both be able to connect). Each sample
-    contains the total on-line time in the 24-hour slot following the previous
-    sample. The time granularity is 5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.DailyChosenTimeOnline.Cellular" units="seconds"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS daily cumulative time on a cellular connection when both cellular
-    and WiFi adaptors are available. Reported only when both kinds of adaptor
-    are present (independently of whether they would both be able to connect).
-    Each sample contains the total on-line time in the 24-hour slot following
-    the previous sample. The time granularity is 5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.DailyChosenTimeOnline.Wifi" units="seconds"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS daily cumulative time on a WiFi connection when both cellular and
-    WiFi adaptors are available. Reported only when both kinds of adaptor are
-    present (independently of whether they would both be able to connect). Each
-    sample contains the total on-line time in the 24-hour slot following the
-    previous sample. The time granularity is 5 minutes.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.DarkResumeActionResult"
     enum="ShillSuspendTerminationDarkResumeActionResult"
     expires_after="2022-04-03">
@@ -1865,96 +1602,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.MonthlyChosenFractionOnline.Cellular" units="%"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS fraction of monthly cumulative time on a cellular connection when
-    both cellular and WiFi adaptors are available. Each sample is the ratio of
-    the corresponding MonthlyChosenTimeOnLine.{Cellular,Any} samples. Reported
-    only when both a cellular and a WiFi adaptor are present (independently of
-    whether they would both be able to connect).
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.MonthlyChosenFractionOnline.Wifi" units="%"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS fraction of monthly cumulative time on a WiFi connection when both
-    cellular and WiFi adaptors are available. Each sample is the ratio of the
-    corresponding MonthlyChosenTimeOnLine.{Cellular,Any} samples. Reported only
-    when both a cellular and a WiFi adaptor are present (independently of
-    whether they would both be able to connect).
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.MonthlyChosenTimeOnline.Any" units="seconds"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS monthly cumulative time on line when both cellular and WiFi
-    adaptors are available. Reported only when both kinds of adaptor are present
-    (independently of whether they would both be able to connect). Each sample
-    contains the total on-line time in the 30-day slot following the previous
-    sample. The time granularity is 5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.MonthlyChosenTimeOnline.Cellular"
-    units="seconds" expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS monthly cumulative time on a cellular connection when both
-    cellular and WiFi adaptors are available. Reported only when both kinds of
-    adaptor are present (independently of whether they would both be able to
-    connect). Each sample contains the total on-line time in the 30-day slot
-    following the previous sample. The time granularity is 5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.MonthlyChosenTimeOnline.Wifi" units="seconds"
-    expires_after="M98">
-  <obsolete>
-    Removed 12/2021. b/172213047: shill's implementation of this metrics never
-    worked.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS monthly cumulative time on a WiFi connection when both cellular
-    and WiFi adaptors are available. Reported only when both kinds of adaptor
-    are present (independently of whether they would both be able to connect).
-    Each sample contains the total on-line time in the 30-day slot following the
-    previous sample. The time granularity is 5 minutes.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.PortalDetectionMultiProbeResult"
     enum="PortalDetectionMultiProbeResult" expires_after="2022-05-01">
   <owner>matthewmwang@chromium.org</owner>
@@ -1983,19 +1630,6 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS connection manager service errors across all technologies.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.ServicesOnSameNetwork" units="units"
-    expires_after="M92">
-  <obsolete>
-    Removed 05/2021
-  </obsolete>
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric sampling the number of services that are connected
-    to the currently connected network.
   </summary>
 </histogram>
 
@@ -2614,111 +2248,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Wifi.LinkMonitorBroadcastErrorsAtFailure"
-    units="units" expires_after="M92">
-  <obsolete>
-    Removed 05/2021
-  </obsolete>
-  <owner>briannorris@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network performance metric that tracks the number of LinkMonitor
-    broadcast errors that were accrued on an 802.11 wireless network at the time
-    that the link was declared to be failed.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Wifi.LinkMonitorFailure"
-    enum="LinkMonitorFailureType" expires_after="M92">
-  <obsolete>
-    Removed 05/2021
-  </obsolete>
-  <owner>briannorris@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS metric that signals the type of failure the LinkMonitor
-    encountered which caused it to stop monitoring an 802.11 wireless network.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Wifi.LinkMonitorResponseTimeSample" units="ms"
-    expires_after="M92">
-  <obsolete>
-    Removed 05/2021
-  </obsolete>
-  <owner>briannorris@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network performance metric that tracks the number of milliseconds
-    between an ARP request and a received reply on an 802.11 wireless network.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Wifi.LinkMonitorsDetectionTimeDiff.ArpBetter"
-    units="ms" expires_after="M91">
-  <obsolete>
-    Removed 04/2021
-  </obsolete>
-  <owner>jiejiang@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS metric that tracks the number of milliseconds between the
-    detection times for the same failure of NeighborLinkMonitor and
-    shill::LinkMonitor. Recorded after either of the link monitor detects an
-    error. The larger this value is, the better shill::LinkMonitor performs than
-    NeighborLinkMonitor. 0 means shill::LinkMonitor is no better than
-    NeighborLinkMonitor. If shill::LinkMonitor detects a failure but
-    NeighborLinkMonitor does not, the maximum value of a timeout will be
-    emitted.
-  </summary>
-</histogram>
-
-<histogram
-    name="Network.Shill.Wifi.LinkMonitorsDetectionTimeDiff.NeighborBetter"
-    units="ms" expires_after="M91">
-  <obsolete>
-    Removed 04/2021
-  </obsolete>
-  <owner>jiejiang@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS metric that tracks the number of milliseconds between the
-    detection times for the same failure of patchpanel::NeighborLinkMonitor and
-    shill::LinkMonitor. Recorded after either of the link monitor detects an
-    error. The larger this value is, the better NeighborLinkMonitor performs
-    than shill::LinkMonitor. 0 means NeighborLinkMonitor is no better than
-    shill::LinkMonitor. If NeighborLinkMonitor detects a failure but
-    shill::LinkMonitor does not, the maxmium value of a timeout will be emitted.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Wifi.LinkMonitorSecondsToFailure"
-    units="seconds" expires_after="M92">
-  <obsolete>
-    Removed 05/2021
-  </obsolete>
-  <owner>briannorris@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network performance metric that tracks the number of seconds from
-    the start of the LinkMonitor until failure on an 802.11 wireless network.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Wifi.LinkMonitorUnicastErrorsAtFailure"
-    units="units" expires_after="M92">
-  <obsolete>
-    Removed 05/2021
-  </obsolete>
-  <owner>briannorris@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network performance metric that tracks the number of LinkMonitor
-    unicast errors that were accrued on an 802.11 wireless network at the time
-    that the link was declaired to be failed.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.WiFi.MBOSupport" enum="MBOSupport"
     expires_after="2022-12-01">
   <owner>matthewmwang@google.com</owner>
@@ -2952,47 +2481,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Chrome OS network metric indicating the negative of the dBm received signal
     strength recorded at the time a successful WiFi connection started.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.StoppedTxQueueLength" units="frames"
-    expires_after="2021-12-01">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>briannorris@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric indicating the maximal length of any stopped
-    mac80211 transmit queue. The metric is reported when a queue-status check
-    determines that at least one transmit queue is stopped, and has more than a
-    threshold number of frames queued.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.WiFi.StoppedTxQueueReason"
-    enum="NetworkQueueStopReason" expires_after="2021-12-01">
-  <obsolete>
-    Removed 12/2020
-  </obsolete>
-  <owner>briannorris@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric indicating the reason that mac80211 transmit queues
-    were stopped. The metric is reported when a queue-status check determines
-    that at least one queue is stopped, and has more than a threshold number of
-    frames queued.
-
-    One measurement is reported per stop reason, per queue-status check. Reasons
-    that apply to multiple queues are reported only once per queue-status check.
-    Reasons that only apply to queues that have a below-threshold number of
-    frames are skipped.
-
-    Note that, because we may report multiple stop reasons for a single
-    queue-status check, this histogram is not suitable for determining the
-    number of times a queue-status check found that the queues were stopped. To
-    determine that number, use the count of
-    Network.Shill.WiFi.StoppedTxQueueLength reports.
   </summary>
 </histogram>
 
@@ -3487,24 +2975,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.CorsForcedOffForIsolatedWorldOrigin"
-    enum="BooleanForceDisabled" expires_after="2021-09-30">
-  <obsolete>
-    Removed in September 2021.
-  </obsolete>
-  <owner>lukasza@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    Whether CORS was turned off based on the origin of an isolated world (e.g.
-    for a content script of a platform app).
-
-    Logged in CorsURLLoader::HandleComplete for all successful requests.
-
-    The logged value depends on whether CorsURLLoader::SetCorsFlagIfNeeded had
-    been affected by network::ResourceRequest::isolated_world_origin.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.CorsPreflightMethodAllowed"
     enum="NetworkServiceCorsPreflightMethodAllowed" expires_after="M100">
   <owner>hiroshige@chromium.org</owner>
@@ -3589,20 +3059,6 @@ chromium-metrics-reviews@google.com.
   <owner>jam@chromium.org</owner>
   <summary>
     How long the browser waits for the network process to exit at shutdown.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.StreamingUploadDataPipeGetterValidity"
-    units="BooleanValid" expires_after="2021-03-31">
-  <obsolete>
-    Removed 03/2021
-  </obsolete>
-  <owner>yhirano@chromium.org</owner>
-  <owner>yoichio@chromium.org</owner>
-  <summary>
-    It seems in some cases the ChunkedDataPipeGetter for a request body is
-    missing. This histogram counts whether the mojo::Remote is valid, for each
-    request with body of type KChunkedDataPipe or kReadOnceStream.
   </summary>
 </histogram>
 

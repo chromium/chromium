@@ -24,17 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="MacOSNotificationStyle">
   <variant name="Alert" summary="Alert: Stays on screen"/>
-  <variant name="Alerts">
-    <obsolete>
-      Replaced by Alert in 2021/09.
-    </obsolete>
-  </variant>
   <variant name="Banner" summary="Banner: Auto dismisses"/>
-  <variant name="Banners">
-    <obsolete>
-      Replaced by Banner in 2021/09.
-    </obsolete>
-  </variant>
 </variants>
 
 <histogram name="Notifications.Actions" enum="NotificationActionType"
@@ -78,19 +68,6 @@ chromium-metrics-reviews@google.com.
     fallback, when a site-specific notification channel is expected to exist but
     does not. Note, we only log when the sites channel is *used*, not when it is
     not used.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Announcement.Events"
-    enum="AnnouncementNotificationEvent" expires_after="2020-10-30">
-  <obsolete>
-    Deprecated as of 10/2020
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
-  <summary>
-    Records the events when the announcement notification is shown, clicked, or
-    closed.
   </summary>
 </histogram>
 
@@ -916,22 +893,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.UsingNativeNotificationCenter"
-    enum="BooleanNativeNotifications" expires_after="never">
-  <obsolete>
-    Replaced by Notifications.UsingSystemNotificationCenter in October 2020.
-  </obsolete>
-<!-- expires-never: core to the notification user experience. -->
-
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <owner>thomasanderson@chromium.org</owner>
-  <summary>
-    Indicates if Chrome is using system notifications or the Chrome notification
-    center. Logged on each start up.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.UsingSystemNotificationCenter"
     enum="BooleanSystemNotifications" expires_after="never">
 <!-- expires-never: core to the notification user experience. -->
@@ -943,42 +904,6 @@ chromium-metrics-reviews@google.com.
     Indicates if Chrome is using system notifications or the Chrome notification
     center. Logged on each start up.
   </summary>
-</histogram>
-
-<histogram name="Notifications.WebPlatform.{Action}.TimeToActivity" units="ms"
-    expires_after="M96">
-  <obsolete>
-    From 2021-03 use Notifications.WebPlatform2 instead.
-  </obsolete>
-  <owner>peconn@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the delay between the user clicking on the {Action} of a web
-    platform notification, and an Activity being launched. Only records if the
-    duration is less than 5 seconds.
-  </summary>
-  <token key="Action">
-    <variant name="ActionButton" summary="action button"/>
-    <variant name="Body" summary="body"/>
-  </token>
-</histogram>
-
-<histogram name="Notifications.WebPlatform.{Action}.TimeToClose" units="ms"
-    expires_after="M96">
-  <obsolete>
-    From 2021-03 use Notifications.WebPlatform2 instead.
-  </obsolete>
-  <owner>peconn@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the delay between the user clicking on the {Action} of a web
-    platform notification, and the notification being closed. Only records if
-    the duration is less than 5 seconds.
-  </summary>
-  <token key="Action">
-    <variant name="ActionButton" summary="action button"/>
-    <variant name="Body" summary="body"/>
-  </token>
 </histogram>
 
 <histogram name="Notifications.WebPlatformV2.{Action}.TimeToActivity"
@@ -1213,20 +1138,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Used to indicate the status of start menu shortcut (Windows only). Logged
     whenever a notification display attempt is made.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.XPCConnectionEvent" enum="XPCConnectionEvent"
-    expires_after="M94">
-  <obsolete>
-    We no longer use an XPC service for macOS notifications from 06/2021.
-  </obsolete>
-  <owner>peter@chromium.org</owner>
-  <owner>rsesek@chromium.org</owner>
-  <summary>
-    Mac only. Records the different events of a Notification XPC connection.
-    These are recorded by monitoring the different error callbacks provided by
-    the XPC connection object.
   </summary>
 </histogram>
 
