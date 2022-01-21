@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
+#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -207,7 +208,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
   }
   params.launch_id = id.launch_id;
 
-  proxy->BrowserAppLauncher()->LaunchAppWithParams(std::move(params));
+  ::OpenApplication(profile_, std::move(params));
 }
 
 ArcAppListPrefs* ShelfControllerHelper::GetArcAppListPrefs() const {
