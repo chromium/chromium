@@ -43,7 +43,7 @@ void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   if (sign_out_in_progress_)
     return;
 
-  [handler_ showPolicySignoutPrompt];
+  [handler_ showForceSignedOutPrompt];
 }
 
 void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
@@ -142,12 +142,12 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
   if (sceneIsActive) {
     // Try to show the signout prompt in all cases: if there is a sign
     // in in progress, the UI will prevent the prompt from showing.
-    [handler_ showPolicySignoutPrompt];
+    [handler_ showForceSignedOutPrompt];
   } else {
-    scene_state.appState.shouldShowPolicySignoutPrompt = YES;
+    scene_state.appState.shouldShowForceSignOutPrompt = YES;
   }
 }
 
 void PolicyWatcherBrowserAgent::OnPrimaryAccountRestricted() {
-  [handler_ showEnterpriseSignout];
+  [handler_ showRestrictAccountSignedOutPrompt];
 }

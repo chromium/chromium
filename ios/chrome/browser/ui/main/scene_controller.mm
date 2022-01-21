@@ -2749,7 +2749,7 @@ bool IsSigninForcedByPolicy() {
     id<PolicyChangeCommands> handler = HandlerForProtocol(
         self.signinCoordinator.browser->GetCommandDispatcher(),
         PolicyChangeCommands);
-    [handler showPolicySignoutPrompt];
+    [handler showForceSignedOutPrompt];
     self.signinCoordinator = nil;
     return;
   }

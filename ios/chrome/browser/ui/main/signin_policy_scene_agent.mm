@@ -188,11 +188,11 @@
     return;
   }
 
-  if (self.sceneState.appState.shouldShowPolicySignoutPrompt) {
+  if (self.sceneState.appState.shouldShowForceSignOutPrompt) {
     // Show the sign-out prompt if the user was signed out due to policy.
     [HandlerForProtocol(self.dispatcher, PolicyChangeCommands)
-        showPolicySignoutPrompt];
-    self.sceneState.appState.shouldShowPolicySignoutPrompt = NO;
+        showForceSignedOutPrompt];
+    self.sceneState.appState.shouldShowForceSignOutPrompt = NO;
   }
 
   if ([self isForcedSignInRequiredByPolicy]) {

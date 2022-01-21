@@ -196,7 +196,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
 
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   // Action: disable browser sign-in.
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
@@ -230,7 +230,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
 
-  EXPECT_TRUE(scene_state_.appState.shouldShowPolicySignoutPrompt);
+  EXPECT_TRUE(scene_state_.appState.shouldShowForceSignOutPrompt);
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }
@@ -273,7 +273,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
       signin::ConsentLevel::kSignin));
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
   agent->Initialize(mockHandler);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
@@ -311,7 +311,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
   // update.
   agent_->SignInUIDismissed();
 
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(authentication_service->HasPrimaryIdentity(
@@ -330,14 +330,14 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
 
   // Strict protocol: method calls will fail until the method is stubbed.
   id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   agent_->Initialize(mockHandler);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
 
   // Reset the expectation for the SignInUIDismissed call.
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   agent_->SignInUIDismissed();
 

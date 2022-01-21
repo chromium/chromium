@@ -1127,7 +1127,7 @@
 
 #pragma mark - PolicyChangeCommands
 
-- (void)showPolicySignoutPrompt {
+- (void)showForceSignedOutPrompt {
   if (!self.enterprisePromptCoordinator) {
     self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
         initWithBaseViewController:self.viewController
@@ -1149,7 +1149,7 @@
   [self.enterprisePromptCoordinator start];
 }
 
-- (void)showEnterpriseSignout {
+- (void)showRestrictAccountSignedOutPrompt {
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
@@ -1167,7 +1167,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                  static_cast<int64_t>(1 * NSEC_PER_SEC)),
                    dispatch_get_main_queue(), ^{
-                     [weakSelf showEnterpriseSignout];
+                     [weakSelf showRestrictAccountSignedOutPrompt];
                    });
   }
 }
