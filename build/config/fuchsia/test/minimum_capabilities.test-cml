@@ -1,4 +1,7 @@
 {
+  include: [
+    "syslog/client.shard.cml",
+  ],
   // Add capability providers.
   children: [
     {
@@ -43,7 +46,6 @@
     {
       protocol: [
         "fuchsia.boot.ReadOnlyLog",
-        "fuchsia.logger.LogSink",
         "fuchsia.process.Launcher",
         "fuchsia.sys.Loader",
       ],

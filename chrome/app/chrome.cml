@@ -1,7 +1,7 @@
 {
     include: [
-        "vulkan/client.shard.cml",
         "syslog/client.shard.cml",
+        "vulkan/client.shard.cml",
     ],
     program: {
         runner: "elf",
@@ -59,7 +59,7 @@
                 "fuchsia.posix.socket.Provider",
                 "fuchsia.process.Launcher",
                 "fuchsia.ui.composition.Allocator",
-                "fuchsia.ui.composition.Flatland",                
+                "fuchsia.ui.composition.Flatland",
                 "fuchsia.ui.input3.Keyboard",
                 "fuchsia.ui.scenic.Scenic",
             ],
