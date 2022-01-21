@@ -356,11 +356,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         mDelegate.getSelectionDelegate().addObserver(this);
 
         Runnable promoHeaderChangeAction = () -> {
-            // If top level folders are not showing, update the header and notify.
-            // Otherwise, update header without notifying; we are going to update the bookmarks
-            // list, in case other top-level folders appeared because of the sync, and then
-            // redraw.
-            updateHeader(!topLevelFoldersShowing());
+            // Notify the view of changes to the elements list as the promo might be showing.
+            updateHeader(true);
         };
 
         mPromoHeaderManager = new BookmarkPromoHeader(mContext, promoHeaderChangeAction);
