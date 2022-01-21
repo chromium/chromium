@@ -58,6 +58,7 @@ using base::JSONParserOptions;
 using base::JSONReader;
 
 namespace {
+
 // The command-line flag to specify the command file flag.
 const char kCommandFileFlag[] = "command_file";
 
@@ -227,6 +228,57 @@ ExecutionState ProcessCommands(ExecutionState execution_state,
     }
   }
   return execution_state;
+}
+
+struct AllowNull {
+  inline constexpr AllowNull() = default;
+};
+
+absl::optional<std::string> FindPopulateString(
+    const base::Value::DictStorage& container,
+    base::StringPiece key_name,
+    absl::variant<base::StringPiece, AllowNull> key_descriptor) {
+  auto container_iter = container.find(key_name);
+  if (container_iter == container.end() ||
+      !container_iter->second.is_string()) {
+    if (absl::holds_alternative<base::StringPiece>(key_descriptor)) {
+      ADD_FAILURE() << "Failed to extract '"
+                    << absl::get<base::StringPiece>(key_descriptor)
+                    << "' string from container!";
+    }
+    return absl::nullopt;
+  }
+
+  return container_iter->second.GetString();
+}
+
+absl::optional<std::vector<std::string>> FindPopulateStringVector(
+    const base::Value::DictStorage& container,
+    base::StringPiece key_name,
+    absl::variant<base::StringPiece, AllowNull> key_descriptor) {
+  auto container_iter = container.find(key_name);
+  if (container_iter == container.end() || !container_iter->second.is_list()) {
+    if (absl::holds_alternative<base::StringPiece>(key_descriptor)) {
+      ADD_FAILURE() << "Failed to extract '"
+                    << absl::get<base::StringPiece>(key_descriptor)
+                    << "' strings from container!";
+    }
+    return absl::nullopt;
+  }
+
+  std::vector<std::string> strings;
+  for (const base::Value& item : container_iter->second.GetList()) {
+    if (!item.is_string()) {
+      if (absl::holds_alternative<base::StringPiece>(key_descriptor)) {
+        ADD_FAILURE() << "Failed to extract element of '"
+                      << absl::get<base::StringPiece>(key_descriptor)
+                      << "' vector from container!";
+      }
+      return absl::nullopt;
+    }
+    strings.push_back(item.GetString());
+  }
+  return strings;
 }
 
 }  // namespace
@@ -903,21 +955,6 @@ void TestRecipeReplayer::CleanupSiteData() {
   completion_observer.BlockUntilCompletion();
 }
 
-absl::optional<std::string> FindPopulateString(
-    const base::Value::DictStorage& container,
-    const std::string key_name,
-    const std::string key_descriptor) {
-  auto container_iter = container.find(key_name);
-  if (container_iter == container.end() ||
-      !container_iter->second.is_string()) {
-    ADD_FAILURE() << "Failed to extract '" << key_descriptor
-                  << "' from container!";
-    return absl::nullopt;
-  }
-
-  return container_iter->second.GetString();
-}
-
 bool TestRecipeReplayer::ReplayRecordedActions(
     const base::FilePath& recipe_file_path,
     const absl::optional<base::FilePath>& command_file_path) {
@@ -1512,20 +1549,31 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
         autofill_prediction_container_iter->second.GetString();
     VLOG(1) << "Checking the field `" << xpath << "` has the autofill type '"
             << expected_autofill_prediction_type << "'";
-    ExpectElementPropertyEquals(
-        frame, xpath,
-        "return target.getAttribute('autofill-prediction');",
-        expected_autofill_prediction_type, "autofill type mismatch", true);
+    ExpectElementPropertyEqualsAnyOf(
+        frame, xpath, "return target.getAttribute('autofill-prediction');",
+        {expected_autofill_prediction_type}, "autofill type mismatch",
+        IgnoreCase(true));
   }
 
+  absl::optional<std::vector<std::string>> expected_values =
+      FindPopulateStringVector(action, "expectedValues", AllowNull());
   absl::optional<std::string> expected_value =
-      FindPopulateString(action, "expectedValue", "validation expected value");
-  if (!expected_value)
+      FindPopulateString(action, "expectedValue", AllowNull());
+  if (!!expected_values == !!expected_value) {
+    ADD_FAILURE() << "Failed to extract 'expectedValue' xor 'expectedValues' "
+                     "vector from container !";
     return false;
+  }
 
   VLOG(1) << "Checking the field `" << xpath << "`.";
-  ExpectElementPropertyEquals(frame, xpath, "return target.value;",
-                              *expected_value, "text value mismatch");
+  if (expected_value) {
+    ExpectElementPropertyEqualsAnyOf(frame, xpath, "return target.value;",
+                                     {*expected_value}, "text value mismatch");
+  }
+  if (expected_values) {
+    ExpectElementPropertyEqualsAnyOf(frame, xpath, "return target.value;",
+                                     *expected_values, "text value mismatch");
+  }
   return true;
 }
 
@@ -1918,27 +1966,33 @@ bool TestRecipeReplayer::GetElementProperty(
       property);
 }
 
-bool TestRecipeReplayer::ExpectElementPropertyEquals(
+bool TestRecipeReplayer::ExpectElementPropertyEqualsAnyOf(
     const content::ToRenderFrameHost& frame,
     const std::string& element_xpath,
     const std::string& get_property_function_body,
-    const std::string& expected_value,
+    const std::vector<std::string>& expected_values,
     const std::string& validation_field,
-    bool ignore_case) {
-  std::string value;
+    IgnoreCase ignore_case) {
+  std::string actual_value;
   if (!GetElementProperty(frame, element_xpath, get_property_function_body,
-                          &value)) {
+                          &actual_value)) {
     ADD_FAILURE() << "Failed to extract element property! " << element_xpath
                   << ", " << get_property_function_body;
     return false;
   }
 
-  if ((ignore_case &&
-       !base::EqualsCaseInsensitiveASCII(expected_value, value)) ||
-      (!ignore_case && expected_value != value)) {
+  auto is_expected = [ignore_case,
+                      &actual_value](base::StringPiece expected_value) {
+    return ignore_case
+               ? base::EqualsCaseInsensitiveASCII(expected_value, actual_value)
+               : expected_value == actual_value;
+  };
+
+  if (base::ranges::none_of(expected_values, is_expected)) {
     std::string error_message = base::StrCat(
-      {"Field xpath: `", element_xpath, "` ", validation_field, ", ",
-       "Expected: '" , expected_value, "', actual: '", value, "'"});
+        {"Field xpath: `", element_xpath, "` ", validation_field, ", ",
+         "Expected: '", base::JoinString(expected_values, " or "),
+         "', actual: '", actual_value, "'"});
     VLOG(1) << error_message;
     validation_failures_.push_back(testing::AssertionFailure()
                                    << error_message);
