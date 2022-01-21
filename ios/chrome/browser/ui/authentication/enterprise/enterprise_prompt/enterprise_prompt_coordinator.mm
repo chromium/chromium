@@ -1,12 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_signout/enterprise_signout_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_signout/enterprise_signout_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,24 +20,35 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 }  // namespace
 #endif
 
-@interface EnterpriseSignoutCoordinator () <
+@interface EnterprisePromptCoordinator () <
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate>
 
-// ViewController that contains enterprise signout information.
-@property(nonatomic, strong) EnterpriseSignoutViewController* viewController;
+// ViewController that contains enterprise prompt information.
+@property(nonatomic, strong) EnterprisePromptViewController* viewController;
 
-// YES if the sign-in is in progress.
-@property(nonatomic, assign) BOOL isSigninInProgress;
+// PromptType that contains the type of the prompt to display.
+@property(nonatomic, assign) EnterprisePromptType promptType;
 
 @end
 
-@implementation EnterpriseSignoutCoordinator
+@implementation EnterprisePromptCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                                promptType:(EnterprisePromptType)promptType {
+  if (self = [super initWithBaseViewController:baseViewController
+                                       browser:browser]) {
+    _promptType = promptType;
+  }
+  return self;
+}
 
 - (void)start {
   [super start];
 
-  self.viewController = [[EnterpriseSignoutViewController alloc] init];
+  self.viewController = [[EnterprisePromptViewController alloc]
+      initWithpromptType:self.promptType];
   self.viewController.presentationController.delegate = self;
   self.viewController.actionHandler = self;
 
@@ -71,14 +83,23 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.delegate enterpriseSignoutCoordinatorDidDismiss];
+  // TODO(crbug.com/1261423): Implement all cases.
+  switch (self.promptType) {
+    case EnterprisePromptTypeRestrictAccountSignedOut:
+      [self.delegate enterprisePromptCoordinatorDidDismiss];
+      break;
+    case EnterprisePromptTypeForceSignOut:
+    case EnterprisePromptTypeSyncDisabled:
+      NOTREACHED();
+      break;
+  }
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate enterpriseSignoutCoordinatorDidDismiss];
+  [self.delegate enterprisePromptCoordinatorDidDismiss];
 }
 
 #pragma mark - Private

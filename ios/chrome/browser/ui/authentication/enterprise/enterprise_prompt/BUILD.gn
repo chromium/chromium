@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("enterprise_signout") {
+source_set("enterprise_prompt") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "enterprise_signout_coordinator.h",
-    "enterprise_signout_coordinator.mm",
-    "enterprise_signout_view_controller.h",
-    "enterprise_signout_view_controller.mm",
+    "enterprise_prompt_coordinator.h",
+    "enterprise_prompt_coordinator.mm",
+    "enterprise_prompt_type.h",
+    "enterprise_prompt_view_controller.h",
+    "enterprise_prompt_view_controller.mm",
   ]
   deps = [
     "//ios/chrome/app/strings",

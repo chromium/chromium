@@ -26,7 +26,8 @@
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_signout/enterprise_signout_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/user_policy_signout/user_policy_signout_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
@@ -107,7 +108,7 @@
                                   BrowserCoordinatorCommands,
                                   DefaultBrowserPromoCommands,
                                   DefaultPromoNonModalPresentationDelegate,
-                                  EnterpriseSignoutCoordinatorDelegate,
+                                  EnterprisePromptCoordinatorDelegate,
                                   FormInputAccessoryCoordinatorNavigator,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
@@ -237,7 +238,7 @@
 
 // The coordinator that manages the view for enterprise signout.
 @property(nonatomic, strong)
-    EnterpriseSignoutCoordinator* enterpriseSignoutCoordinator;
+    EnterprisePromptCoordinator* enterprisePromptCoordinator;
 
 // The coordinator used for the Text Fragments feature.
 @property(nonatomic, strong) TextFragmentsCoordinator* textFragmentsCoordinator;
@@ -1189,13 +1190,15 @@
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
-    if (!self.enterpriseSignoutCoordinator) {
-      self.enterpriseSignoutCoordinator = [[EnterpriseSignoutCoordinator alloc]
+    if (!self.enterprisePromptCoordinator) {
+      self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
           initWithBaseViewController:self.viewController
-                             browser:self.browser];
-      self.enterpriseSignoutCoordinator.delegate = self;
+                             browser:self.browser
+                          promptType:
+                              EnterprisePromptTypeRestrictAccountSignedOut];
+      self.enterprisePromptCoordinator.delegate = self;
     }
-    [self.enterpriseSignoutCoordinator start];
+    [self.enterprisePromptCoordinator start];
   } else {
     __weak BrowserCoordinator* weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
@@ -1259,11 +1262,11 @@
                                                    completion:completion];
 }
 
-#pragma mark - EnterpriseSignoutCoordinatorDelegate
+#pragma mark - EnterprisePromptCoordinatorDelegate
 
-- (void)enterpriseSignoutCoordinatorDidDismiss {
-  [self.enterpriseSignoutCoordinator stop];
-  self.enterpriseSignoutCoordinator = nil;
+- (void)enterprisePromptCoordinatorDidDismiss {
+  [self.enterprisePromptCoordinator stop];
+  self.enterprisePromptCoordinator = nil;
 }
 
 @end
