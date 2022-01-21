@@ -15,14 +15,15 @@
 
 namespace payments {
 
-class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
+class PaymentRequestUpdateWithTestBase : public PaymentRequestBrowserTestBase {
  public:
-  PaymentRequestUpdateWithTest(const PaymentRequestUpdateWithTest&) = delete;
-  PaymentRequestUpdateWithTest& operator=(const PaymentRequestUpdateWithTest&) =
+  PaymentRequestUpdateWithTestBase(const PaymentRequestUpdateWithTestBase&) =
       delete;
+  PaymentRequestUpdateWithTestBase& operator=(
+      const PaymentRequestUpdateWithTestBase&) = delete;
 
  protected:
-  PaymentRequestUpdateWithTest() {}
+  PaymentRequestUpdateWithTestBase() = default;
 
   void RunJavaScriptFunctionToOpenPaymentRequestUI(
       const std::string& function_name,
@@ -37,7 +38,25 @@ class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithEmpty) {
+class PaymentRequestUpdateWithBasicCardEnabledTest
+    : public PaymentRequestUpdateWithTestBase {
+ public:
+  PaymentRequestUpdateWithBasicCardEnabledTest(
+      const PaymentRequestUpdateWithBasicCardEnabledTest&) = delete;
+  PaymentRequestUpdateWithBasicCardEnabledTest& operator=(
+      const PaymentRequestUpdateWithBasicCardEnabledTest&) = delete;
+
+ protected:
+  PaymentRequestUpdateWithBasicCardEnabledTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithBasicCardEnabledTest,
+                       UpdateWithEmpty) {
   NavigateTo("/payment_request_update_with_test.html");
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
   AddAutofillProfile(billing_address);
@@ -84,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithEmpty) {
   ExpectBodyContains({"freeShipping"});
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithTotal) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithBasicCardEnabledTest,
+                       UpdateWithTotal) {
   NavigateTo("/payment_request_update_with_test.html");
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
   AddAutofillProfile(billing_address);
@@ -131,7 +151,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithTotal) {
   ExpectBodyContains({"freeShipping"});
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithDisplayItems) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithBasicCardEnabledTest,
+                       UpdateWithDisplayItems) {
   NavigateTo("/payment_request_update_with_test.html");
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
   AddAutofillProfile(billing_address);
@@ -179,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithDisplayItems) {
   ExpectBodyContains({"freeShipping"});
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithBasicCardEnabledTest,
                        UpdateWithShippingOptions) {
   NavigateTo("/payment_request_update_with_test.html");
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
@@ -228,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest,
   ExpectBodyContains({"updatedShipping"});
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithModifiers) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithBasicCardEnabledTest,
+                       UpdateWithModifiers) {
   NavigateTo("/payment_request_update_with_test.html");
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
   AddAutofillProfile(billing_address);
@@ -278,7 +300,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithModifiers) {
 
 // Show the shipping address validation error message even if the merchant
 // provided some shipping options.
-IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithError) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithBasicCardEnabledTest,
+                       UpdateWithError) {
   NavigateTo("/payment_request_update_with_test.html");
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
   AddAutofillProfile(billing_address);
@@ -308,11 +331,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithError) {
 }
 
 // The tests in this class correspond to the tests of the same name in
-// PaymentRequestUpdateWithTest, with the basic-card being disabled.
+// PaymentRequestUpdateWithTestBase, with the basic-card being disabled.
 // Parameterized tests are not used because the test setup for both tests are
 // too different.
 class PaymentRequestUpdateWithWithBasicCardDisabledTest
-    : public PaymentRequestUpdateWithTest {
+    : public PaymentRequestUpdateWithTestBase {
  public:
   PaymentRequestUpdateWithWithBasicCardDisabledTest(
       const PaymentRequestUpdateWithWithBasicCardDisabledTest&) = delete;

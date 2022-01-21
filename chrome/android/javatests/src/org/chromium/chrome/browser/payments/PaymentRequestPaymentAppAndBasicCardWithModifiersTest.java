@@ -107,6 +107,7 @@ public class PaymentRequestPaymentAppAndBasicCardWithModifiersTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testUpdateTotalAndInstrumentLabelWithVisaModifiers() throws TimeoutException {
         // Credit visa card with complete set of information.
         String guid1 = mHelper.setCreditCard(new CreditCard(/*guid=*/"", "https://example.com",
@@ -143,6 +144,7 @@ public class PaymentRequestPaymentAppAndBasicCardWithModifiersTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testUpdateTotalAndInstrumentLabelWithMastercardModifiers() throws TimeoutException {
         // 1st Mastercard card with complete set of information.
         String guid = mHelper.setCreditCard(new CreditCard(/*guid=*/"", "https://example.com",
@@ -194,6 +196,7 @@ public class PaymentRequestPaymentAppAndBasicCardWithModifiersTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testPaymentAppCanPayWithModifiers() throws TimeoutException {
         // Add a credit card to force showing payment sheet UI.
         String billingAddressId = mHelper.setProfile(

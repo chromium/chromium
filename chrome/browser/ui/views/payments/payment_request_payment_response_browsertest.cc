@@ -30,7 +30,12 @@ class PaymentRequestPaymentResponseAutofillPaymentAppTest
       const PaymentRequestPaymentResponseAutofillPaymentAppTest&) = delete;
 
  protected:
-  PaymentRequestPaymentResponseAutofillPaymentAppTest() {}
+  PaymentRequestPaymentResponseAutofillPaymentAppTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the PaymentResponse contains all the required fields for an

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/payments/cvc_unmask_view_controller.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -24,7 +26,12 @@ class PaymentRequestCvcUnmaskViewControllerTest
       const PaymentRequestCvcUnmaskViewControllerTest&) = delete;
 
  protected:
-  PaymentRequestCvcUnmaskViewControllerTest() = default;
+  PaymentRequestCvcUnmaskViewControllerTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,

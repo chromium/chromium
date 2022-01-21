@@ -53,7 +53,7 @@ class PaymentRequestNoShippingTest : public PaymentRequestBrowserTestBase {
 
  protected:
   PaymentRequestNoShippingTest() {
-    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
   }
 
  private:
@@ -191,7 +191,7 @@ class PaymentRequestNoShippingWithBasicCardDisabledTest
 
  protected:
   PaymentRequestNoShippingWithBasicCardDisabledTest() {
-    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
   }
 
   void OpenPaymentRequestDialog() {
@@ -261,7 +261,7 @@ class PaymentRequestAbortTest : public PaymentRequestBrowserTestBase {
 
  protected:
   PaymentRequestAbortTest() {
-    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
   }
 
  private:
@@ -329,7 +329,7 @@ class PaymentRequestAbortWithBasicCardDisabledTest
 
  protected:
   PaymentRequestAbortWithBasicCardDisabledTest() {
-    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
   }
 
  private:
@@ -380,7 +380,7 @@ class PaymentRequestPaymentMethodIdentifierTest
 
  protected:
   PaymentRequestPaymentMethodIdentifierTest() {
-    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
   }
 
   void InvokePaymentRequestWithJs(const std::string& js) {
@@ -470,7 +470,7 @@ class PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest
 
  protected:
   PaymentRequestPaymentMethodIdentifierWithBasicCardDisabledTest() {
-    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
   }
 
  private:
@@ -514,7 +514,7 @@ class PaymentsRequestVisualTest
 
  protected:
   PaymentsRequestVisualTest() {
-    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
   }
 
   // TestBrowserDialog:
@@ -552,7 +552,7 @@ class PaymentsRequestVisualWithBasicCardDisabledTest
 
  protected:
   PaymentsRequestVisualWithBasicCardDisabledTest() {
-    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
   }
 
   // TestBrowserDialog:
@@ -598,7 +598,7 @@ class PaymentRequestSettingsLinkTest : public PaymentRequestBrowserTestBase {
 
  protected:
   PaymentRequestSettingsLinkTest() {
-    feature_list_.InitWithFeatures({::features::kPaymentRequestBasicCard}, {});
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
   }
 
  private:
@@ -652,7 +652,7 @@ class PaymentRequestSettingsLinkWithBasicCardDisabledTest
 
  protected:
   PaymentRequestSettingsLinkWithBasicCardDisabledTest() {
-    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
   }
 
  private:

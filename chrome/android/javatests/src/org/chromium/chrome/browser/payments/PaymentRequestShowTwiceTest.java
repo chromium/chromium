@@ -55,6 +55,7 @@ public class PaymentRequestShowTwiceTest implements MainActivityStartCallback {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testSecondShowRequestCancelled() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.expectResultContains(new String[] {

@@ -31,7 +31,9 @@ class PaymentRequestCanMakePaymentMetricsTest
       const PaymentRequestCanMakePaymentMetricsTest&) = delete;
 
  protected:
-  PaymentRequestCanMakePaymentMetricsTest() = default;
+  PaymentRequestCanMakePaymentMetricsTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
 
   void SetupInitialAddressAndCreditCard() {
     autofill::AutofillProfile billing_address =
@@ -57,6 +59,9 @@ class PaymentRequestCanMakePaymentMetricsTest
     // Wait for all callbacks to run.
     base::RunLoop().RunUntilIdle();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,

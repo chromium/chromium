@@ -23,7 +23,22 @@ namespace payments {
 
 // A simple PaymentRequest which simply requests 'visa' or 'mastercard' and
 // nothing else.
-typedef PaymentRequestBrowserTestBase PaymentSheetViewControllerNoShippingTest;
+class PaymentSheetViewControllerNoShippingTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentSheetViewControllerNoShippingTest(
+      const PaymentSheetViewControllerNoShippingTest&) = delete;
+  PaymentSheetViewControllerNoShippingTest& operator=(
+      const PaymentSheetViewControllerNoShippingTest&) = delete;
+
+ protected:
+  PaymentSheetViewControllerNoShippingTest() {
+    feature_list_.InitAndEnableFeature(features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // With no data present, the pay button should be disabled.
 IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerNoShippingTest, NoData) {
@@ -89,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerNoShippingTest,
 // Parameterized tests are not used because the test setup for both tests are
 // too different.
 class PaymentSheetViewControllerNoShippingBasicCardDisabledTest
-    : public PaymentSheetViewControllerNoShippingTest {
+    : public PaymentRequestBrowserTestBase {
  public:
   PaymentSheetViewControllerNoShippingBasicCardDisabledTest(
       const PaymentSheetViewControllerNoShippingBasicCardDisabledTest&) =

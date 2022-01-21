@@ -80,70 +80,6 @@ class PaymentRequestCanMakePaymentQueryTest
   }
 };
 
-// Visa is required, and user has a visa instrument, but canMakePayment is
-// disabled by user preference.
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       CanMakePayment_SupportedButDisabled) {
-  test_controller()->SetCanMakePaymentEnabledPref(false);
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
-  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
-  AddCreditCard(card);
-
-  CallCanMakePayment();
-  ExpectBodyContains("false");
-
-  CallHasEnrolledInstrument();
-  ExpectBodyContains("false");
-}
-
-// Pages without a valid SSL certificate always get "false" from
-// .canMakePayment().
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       CanMakePayment_InvalidSSL) {
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
-  test_controller()->SetValidSsl(false);
-
-  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
-  AddCreditCard(card);
-
-  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "buy();"));
-  WaitForObservedEvent();
-  ExpectBodyContains("false");
-}
-
-// Pages without a valid SSL certificate always get NotSupported error from
-// .show().
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest, Show_InvalidSSL) {
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
-  test_controller()->SetValidSsl(false);
-
-  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
-  AddCreditCard(card);
-
-  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "show();"));
-  WaitForObservedEvent();
-  ExpectBodyContains("NotSupportedError: Invalid SSL certificate");
-}
-
-// Pages without a valid SSL certificate always get "false" from
-// .hasEnrolledInstrument().
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       HasEnrolledInstrument_InvalidSSL) {
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
-  test_controller()->SetValidSsl(false);
-
-  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
-  AddCreditCard(card);
-
-  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     "hasEnrolledInstrument();"));
-  WaitForObservedEvent();
-  ExpectBodyContains("false");
-}
-
 class PaymentRequestCanMakePaymentQueryBasicCardEnabledTest
     : public PaymentRequestCanMakePaymentQueryTest {
  public:
@@ -221,6 +157,71 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardEnabledTest,
   ExpectBodyContains("true");
 
   CallHasEnrolledInstrument();
+  ExpectBodyContains("false");
+}
+
+// Visa is required, and user has a visa instrument, but canMakePayment is
+// disabled by user preference.
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardEnabledTest,
+                       CanMakePayment_SupportedButDisabled) {
+  test_controller()->SetCanMakePaymentEnabledPref(false);
+  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
+  AddCreditCard(card);
+
+  CallCanMakePayment();
+  ExpectBodyContains("false");
+
+  CallHasEnrolledInstrument();
+  ExpectBodyContains("false");
+}
+
+// Pages without a valid SSL certificate always get "false" from
+// .canMakePayment().
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardEnabledTest,
+                       CanMakePayment_InvalidSSL) {
+  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  test_controller()->SetValidSsl(false);
+
+  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
+  AddCreditCard(card);
+
+  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
+  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "buy();"));
+  WaitForObservedEvent();
+  ExpectBodyContains("false");
+}
+
+// Pages without a valid SSL certificate always get NotSupported error from
+// .show().
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardEnabledTest,
+                       Show_InvalidSSL) {
+  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  test_controller()->SetValidSsl(false);
+
+  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
+  AddCreditCard(card);
+
+  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
+  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "show();"));
+  WaitForObservedEvent();
+  ExpectBodyContains("NotSupportedError: Invalid SSL certificate");
+}
+
+// Pages without a valid SSL certificate always get "false" from
+// .hasEnrolledInstrument().
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardEnabledTest,
+                       HasEnrolledInstrument_InvalidSSL) {
+  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  test_controller()->SetValidSsl(false);
+
+  const autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
+  AddCreditCard(card);
+
+  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
+  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
+                                     "hasEnrolledInstrument();"));
+  WaitForObservedEvent();
   ExpectBodyContains("false");
 }
 
@@ -356,7 +357,9 @@ class PaymentRequestCanMakePaymentQueryCCTest
       const PaymentRequestCanMakePaymentQueryCCTest&) = delete;
 
  protected:
-  PaymentRequestCanMakePaymentQueryCCTest() = default;
+  PaymentRequestCanMakePaymentQueryCCTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
 
   // If |visa| is true, then the method data is:
   //
@@ -382,6 +385,9 @@ class PaymentRequestCanMakePaymentQueryCCTest
                                      : "hasEnrolledInstrument('mastercard');"));
     WaitForObservedEvent();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that repeated canMakePayment and hasEnrolledInstrument queries are
@@ -505,6 +511,7 @@ class PaymentRequestCanMakePaymentQueryPMITest
   };
 
   PaymentRequestCanMakePaymentQueryPMITest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
     script_[CheckFor::BASIC_VISA] = "[basicVisaMethod]";
     script_[CheckFor::BASIC_CARD] = "[basicCardMethod]";
     script_[CheckFor::ALICE_PAY] = "[alicePayMethod]";
@@ -540,6 +547,7 @@ class PaymentRequestCanMakePaymentQueryPMITest
 
  private:
   base::flat_map<CheckFor, std::string> script_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryPMITest,

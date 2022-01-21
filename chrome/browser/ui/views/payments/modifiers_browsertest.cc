@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/payments/core/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -35,7 +36,9 @@ class PaymentRequestModifiersTest : public PaymentRequestBrowserTestBase {
   void SetUpInProcessBrowserTestFixture() override {
     PaymentRequestBrowserTestBase::SetUpInProcessBrowserTestFixture();
 
-    feature_list_.InitAndEnableFeature(features::kWebPaymentsModifiers);
+    feature_list_.InitWithFeatures(
+        {::features::kPaymentRequestBasicCard, features::kWebPaymentsModifiers},
+        {});
   }
 
   size_t GetLineCount() {

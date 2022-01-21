@@ -23,7 +23,22 @@ namespace payments {
 // 5$ which falls in regular transaction category.
 constexpr uint32_t kRegularTransaction = 2;
 
-using PaymentRequestCompletionStatusMetricsTest = PaymentRequestBrowserTestBase;
+class PaymentRequestCompletionStatusMetricsTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestCompletionStatusMetricsTest(
+      const PaymentRequestCompletionStatusMetricsTest&) = delete;
+  PaymentRequestCompletionStatusMetricsTest& operator=(
+      const PaymentRequestCompletionStatusMetricsTest&) = delete;
+
+ protected:
+  PaymentRequestCompletionStatusMetricsTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest, Completed) {
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
@@ -535,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestInitiatedCompletionStatusMetricsTest,
 // disabled. Parameterized tests are not used because the test setup for both
 // tests are too different.
 class PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest
-    : public PaymentRequestCompletionStatusMetricsTest {
+    : public PaymentRequestBrowserTestBase {
  public:
   PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest(
       const PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest&) =
@@ -546,7 +561,7 @@ class PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest
 
  protected:
   PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest() {
-    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
   }
 
  private:

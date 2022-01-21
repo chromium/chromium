@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -14,6 +15,7 @@
 #include "components/payments/core/test_payment_manifest_downloader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -31,7 +33,9 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
  protected:
   PaymentMethodViewControllerTest()
       : gpay_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-        kylepay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+        kylepay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -64,6 +68,7 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
  private:
   net::EmbeddedTestServer gpay_server_;
   net::EmbeddedTestServer kylepay_server_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest, OneCardSelected) {
