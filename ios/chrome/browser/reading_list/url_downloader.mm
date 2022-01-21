@@ -34,6 +34,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 // This script disables context menu on img elements.
 // The pages are stored locally and long pressing on them will trigger a context

@@ -17,6 +17,10 @@
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using OfflineURLUtilsTest = PlatformTest;
 
 // Checks the distilled URL for the page with an onlineURL is
@@ -27,11 +31,10 @@ TEST_F(OfflineURLUtilsTest, OfflineURLForPathWithEntryURLAndVirtualURLTest) {
   GURL virtual_url = GURL("http://foo.bar/virtual");
   GURL distilled_url =
       reading_list::OfflineURLForPath(page_path, entry_url, virtual_url);
-  EXPECT_EQ(
-      "chrome://offline/MD5/page.html?"
-      "entryURL=http%3A%2F%2Ffoo.bar%2F&"
-      "virtualURL=http%3A%2F%2Ffoo.bar%2Fvirtual",
-      distilled_url.spec());
+  EXPECT_EQ("chrome://offline/MD5/page.html?"
+            "entryURL=http%3A%2F%2Ffoo.bar%2F&"
+            "virtualURL=http%3A%2F%2Ffoo.bar%2Fvirtual",
+            distilled_url.spec());
 }
 
 // Checks the parsing of offline URL chrome://offline/MD5/page.html.

@@ -25,6 +25,10 @@
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/thread/web_thread.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // static
 ReadingListModel* ReadingListModelFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

@@ -11,6 +11,10 @@
 #include "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace reading_list {
 
 ReadingListRemoverHelper::ReadingListRemoverHelper(
