@@ -69,17 +69,31 @@ export function keyboardDiagramTestSuite() {
     assertKeyVisible('jisYenKey');
   });
 
-  test('dell-enterprise', async () => {
+  test('dellEnterpriseWilco', async () => {
     assertKeyHidden('dellPageDownKey');
     assertKeyHidden('dellPageUpKey');
     assertKeyHidden('fnKey');
     assertKeyHidden('layoutSwitchKey');
 
-    diagramElement.physicalLayout = PhysicalLayout.kChromeOSDellEnterprise;
+    diagramElement.physicalLayout = PhysicalLayout.kChromeOSDellEnterpriseWilco;
     await flushTasks();
 
     assertKeyVisible('dellPageDownKey');
     assertKeyVisible('dellPageUpKey');
+    assertKeyVisible('fnKey');
+    assertKeyVisible('layoutSwitchKey');
+  });
+
+  test('dellEnterpriseDrallion', async () => {
+    assertKeyHidden('fnKey');
+    assertKeyHidden('layoutSwitchKey');
+
+    diagramElement.physicalLayout =
+        PhysicalLayout.kChromeOSDellEnterpriseDrallion;
+    await flushTasks();
+
+    assertKeyHidden('dellPageDownKey');
+    assertKeyHidden('dellPageUpKey');
     assertKeyVisible('fnKey');
     assertKeyVisible('layoutSwitchKey');
   });

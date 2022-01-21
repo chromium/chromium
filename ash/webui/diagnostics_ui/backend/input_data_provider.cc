@@ -82,6 +82,12 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
       info->event_device_info.vendor_id(), info->event_device_info.product_id(),
       info->event_device_info.version());
 
+  if (info->event_device_info.HasKeyboard()) {
+    ui::EventRewriterChromeOS::IdentifyKeyboard(
+        info->input_device, &info->keyboard_type,
+        &info->keyboard_top_row_layout, &info->keyboard_scan_code_map);
+  }
+
   return info;
 }
 

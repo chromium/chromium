@@ -137,8 +137,10 @@ Polymer({
     return {
       [PhysicalLayout.kUnknown]: null,
       [PhysicalLayout.kChromeOS]: DiagramPhysicalLayout.kChromeOS,
-      [PhysicalLayout.kChromeOSDellEnterprise]:
-          DiagramPhysicalLayout.kChromeOSDellEnterprise,
+      [PhysicalLayout.kChromeOSDellEnterpriseWilco]:
+          DiagramPhysicalLayout.kChromeOSDellEnterpriseWilco,
+      [PhysicalLayout.kChromeOSDellEnterpriseDrallion]:
+          DiagramPhysicalLayout.kChromeOSDellEnterpriseDrallion,
     }[keyboardInfo.physicalLayout];
   },
 

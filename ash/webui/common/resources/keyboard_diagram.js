@@ -31,7 +31,8 @@ export const MechanicalLayout = {
  */
 export const PhysicalLayout = {
   kChromeOS: 'chrome-os',
-  kChromeOSDellEnterprise: 'dell-enterprise',
+  kChromeOSDellEnterpriseWilco: 'dell-enterprise-wilco',
+  kChromeOSDellEnterpriseDrallion: 'dell-enterprise-drallion',
 };
 
 /**
@@ -97,6 +98,12 @@ export class KeyboardDiagramElement extends PolymerElement {
         observer: 'updateHeight_',
       },
 
+      /** @private {boolean} */
+      showFnAndGlobeKeys_: {
+        type: Boolean,
+        computed: 'computeShowFnAndGlobeKeys_(physicalLayout)',
+      },
+
       /**
        * The keys to display on the top row.
        * @type {!Array<!TopRowKey>}
@@ -106,6 +113,16 @@ export class KeyboardDiagramElement extends PolymerElement {
         value: [],
       },
     };
+  }
+
+  /**
+   * @param {?PhysicalLayout} physicalLayout
+   * @return {boolean}
+   * @private
+   */
+  computeShowFnAndGlobeKeys_(physicalLayout) {
+    return physicalLayout == PhysicalLayout.kChromeOSDellEnterpriseWilco ||
+        physicalLayout == PhysicalLayout.kChromeOSDellEnterpriseDrallion;
   }
 
   constructor() {

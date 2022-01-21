@@ -42,6 +42,12 @@ class InputDeviceInformation {
   ui::InputDevice input_device;
   mojom::ConnectionType connection_type;
   base::FilePath path;
+
+  // Keyboard-only fields:
+  ui::EventRewriterChromeOS::DeviceType keyboard_type;
+  ui::EventRewriterChromeOS::KeyboardTopRowLayout keyboard_top_row_layout;
+  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
+      keyboard_scan_code_map;
 };
 
 // Class for running GetDeviceInfo in its own sequence that can block.

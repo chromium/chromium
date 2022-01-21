@@ -148,11 +148,11 @@
 
   /* Modifications for Dell Enterprise keyboards */
 
-  [data-physical-layout='dell-enterprise'] #leftCtrlKey {
+  [data-show-fn-and-globe-keys] #leftCtrlKey {
     grid-column: span 3;
   }
 
-  [data-physical-layout='dell-enterprise'] #leftAltKey {
+  [data-show-fn-and-globe-keys] #leftAltKey {
     grid-column: span 2;
   }
 
@@ -220,8 +220,8 @@
     data-show-number-pad$="[[showNumberPad]]">
   <div class="main-cluster"
       data-mech-layout$="[[mechanicalLayout]]"
-      data-physical-layout$="[[physicalLayout]]"
-      data-show-assistant-key$="[[showAssistantKey]]">
+      data-show-assistant-key$="[[showAssistantKey]]"
+      data-show-fn-and-globe-keys$="[[showFnAndGlobeKeys_]]">
     <div id="topRow">
       <keyboard-key main-glyph="esc"></keyboard-key>
       <dom-repeat items="[[topRowKeys]]" as="key">
@@ -301,7 +301,7 @@
     <keyboard-key id="rightShiftKey" class="right" main-glyph="shift"></keyboard-key>
 
     <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl"></keyboard-key>
-    <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+    <template is="dom-if" if="[[showFnAndGlobeKeys_]]">
       <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
       <keyboard-key id="layoutSwitchKey" icon="keyboard:layout-switch"></keyboard-key>
     </template>
@@ -320,11 +320,13 @@
     <keyboard-key id="rightCtrlKey" main-glyph="ctrl"></keyboard-key>
 
     <div id="arrowKeyCluster">
-      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+      <template is="dom-if"
+          if="[[isEqual_(physicalLayout, 'dell-enterprise-wilco')]]">
         <keyboard-key id="dellPageUpKey" main-glyph="pg up"></keyboard-key>
       </template>
       <keyboard-key id="upArrow" icon="keyboard:arrow-up"></keyboard-key>
-      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+      <template is="dom-if"
+          if="[[isEqual_(physicalLayout, 'dell-enterprise-wilco')]]">
         <keyboard-key id="dellPageDownKey" main-glyph="pg dn"></keyboard-key>
       </template>
       <keyboard-key icon="keyboard:arrow-left"></keyboard-key>

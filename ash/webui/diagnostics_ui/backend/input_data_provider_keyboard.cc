@@ -292,15 +292,11 @@ mojom::KeyGlyphSetPtr InputDataProviderKeyboard::LookupGlyphSet(
 
 void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
     const InputDeviceInformation* device_info,
-    ui::EventRewriterChromeOS::KeyboardTopRowLayout* out_top_row_layout,
+    ui::EventRewriterChromeOS::KeyboardTopRowLayout top_row_layout,
+    const base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>&
+        scan_code_map,
     std::vector<mojom::TopRowKey>* out_top_row_keys) {
   ui::InputDevice input_device = device_info->input_device;
-  ui::EventRewriterChromeOS::DeviceType device_type;
-  ui::EventRewriterChromeOS::KeyboardTopRowLayout top_row_layout;
-  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-      scan_code_map;
-  ui::EventRewriterChromeOS::IdentifyKeyboard(input_device, &device_type,
-                                              &top_row_layout, &scan_code_map);
 
   // Simple array in physical order from left to right
   std::vector<mojom::TopRowKey> top_row_keys = {};
@@ -358,7 +354,6 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
       top_row_keys.assign(std::begin(kSystemKeys1), std::end(kSystemKeys1));
   }
 
-  *out_top_row_layout = std::move(top_row_layout);
   *out_top_row_keys = std::move(top_row_keys);
 }
 
@@ -373,22 +368,43 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
   // TODO(crbug.com/1207678): review support for WWCB keyboards, Chromebase
   // keyboards, and Dell KM713 Chrome keyboard.
 
-  ui::EventRewriterChromeOS::KeyboardTopRowLayout top_row_layout_type;
-
-  ProcessKeyboardTopRowLayout(device_info, &top_row_layout_type,
+  ProcessKeyboardTopRowLayout(device_info, device_info->keyboard_top_row_layout,
+                              device_info->keyboard_scan_code_map,
                               &result->top_row_keys);
 
-  if (result->connection_type == mojom::ConnectionType::kInternal) {
-    if (device_info->event_device_info.HasKeyEvent(KEY_KBD_LAYOUT_NEXT)) {
-      // Only Dell Enterprise devices have this key, marked by a globe icon.
-      result->physical_layout = mojom::PhysicalLayout::kChromeOSDellEnterprise;
+  // Work out the physical layout.
+  if (device_info->keyboard_type ==
+      ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
+    // TODO(crbug.com/1207678): set internal keyboard as unknown on CloudReady
+    // (board names chromeover64 or reven).
+    if (device_info->keyboard_top_row_layout ==
+        ui::EventRewriterChromeOS::KeyboardTopRowLayout::
+            kKbdTopRowLayoutWilco) {
+      result->physical_layout =
+          mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco;
+    } else if (device_info->keyboard_top_row_layout ==
+               ui::EventRewriterChromeOS::KeyboardTopRowLayout::
+                   kKbdTopRowLayoutDrallion) {
+      result->physical_layout =
+          mojom::PhysicalLayout::kChromeOSDellEnterpriseDrallion;
     } else {
       result->physical_layout = mojom::PhysicalLayout::kChromeOS;
     }
-    // TODO(crbug.com/1207678): set internal keyboard as unknown on CloudReady
-    // (board names chromeover64 or reven).
-    result->mechanical_layout = GetSystemMechanicalLayout();
+  } else {
+    result->physical_layout = mojom::PhysicalLayout::kUnknown;
+  }
 
+  // Get the mechanical layout, if possible.
+  if (device_info->keyboard_type ==
+      ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
+    result->mechanical_layout = GetSystemMechanicalLayout();
+  } else {
+    result->mechanical_layout = mojom::MechanicalLayout::kUnknown;
+  }
+
+  // Determine number pad presence.
+  if (device_info->keyboard_type ==
+      ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
     result->number_pad_present =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kHasNumberPad)
@@ -401,25 +417,20 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
         !device_info->event_device_info.HasNumberpad())
       LOG(ERROR) << "OS believes internal numberpad is implemented, but "
                     "evdev disagrees.";
+  } else if (device_info->keyboard_top_row_layout ==
+             ui::EventRewriterChromeOS::KeyboardTopRowLayout::
+                 kKbdTopRowLayoutCustom) {
+    // If keyboard has WWCB top row custom layout (vivaldi) then we can trust
+    // the HID descriptor to be accurate about presence of keys.
+    result->number_pad_present = device_info->event_device_info.HasNumberpad()
+                                     ? mojom::NumberPadPresence::kPresent
+                                     : mojom::NumberPadPresence::kNotPresent;
   } else {
-    result->physical_layout = mojom::PhysicalLayout::kUnknown;
-
-    if (top_row_layout_type == ui::EventRewriterChromeOS::KeyboardTopRowLayout::
-                                   kKbdTopRowLayoutCustom) {
-      // If keyboard has WWCB top row custom layout (vivaldi) then we can trust
-      // the HID descriptor to be accurate about presence of keys.
-      result->number_pad_present =
-          !device_info->event_device_info.HasNumberpad()
-              ? mojom::NumberPadPresence::kNotPresent
-              : mojom::NumberPadPresence::kPresent;
-    } else {
-      // Without WWCB information, absence of KP keycodes means it definitely
-      // doesn't have a numberpad, but the presence isn't a reliable indicator.
-      result->number_pad_present =
-          !device_info->event_device_info.HasNumberpad()
-              ? mojom::NumberPadPresence::kNotPresent
-              : mojom::NumberPadPresence::kUnknown;
-    }
+    // Without WWCB information, absence of KP keycodes means it definitely
+    // doesn't have a numberpad, but the presence isn't a reliable indicator.
+    result->number_pad_present = device_info->event_device_info.HasNumberpad()
+                                     ? mojom::NumberPadPresence::kUnknown
+                                     : mojom::NumberPadPresence::kNotPresent;
   }
 
   result->has_assistant_key =

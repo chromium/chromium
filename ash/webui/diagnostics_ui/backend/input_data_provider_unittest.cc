@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -16,6 +17,9 @@
 #include "chromeos/system/statistics_provider.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
@@ -36,6 +40,23 @@ constexpr mojom::TopRowKey kClassicTopRowKeys[] = {
     mojom::TopRowKey::kVolumeMute,
     mojom::TopRowKey::kVolumeDown,
     mojom::TopRowKey::kVolumeUp};
+
+const base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
+    kInternalJinlonScanCodeMap = {
+        {0xEA, {ui::EF_NONE, ui::DomCode::F1, ui::DomKey::F1, ui::VKEY_F1}},
+        {0xE7, {ui::EF_NONE, ui::DomCode::F2, ui::DomKey::F2, ui::VKEY_F2}},
+        {0x91, {ui::EF_NONE, ui::DomCode::F3, ui::DomKey::F3, ui::VKEY_F3}},
+        {0x92, {ui::EF_NONE, ui::DomCode::F4, ui::DomKey::F4, ui::VKEY_F4}},
+        {0x93, {ui::EF_NONE, ui::DomCode::F5, ui::DomKey::F5, ui::VKEY_F5}},
+        {0x94, {ui::EF_NONE, ui::DomCode::F6, ui::DomKey::F6, ui::VKEY_F6}},
+        {0x95, {ui::EF_NONE, ui::DomCode::F7, ui::DomKey::F7, ui::VKEY_F7}},
+        {0x96, {ui::EF_NONE, ui::DomCode::F8, ui::DomKey::F8, ui::VKEY_F8}},
+        {0x97, {ui::EF_NONE, ui::DomCode::F9, ui::DomKey::F9, ui::VKEY_F9}},
+        {0x98, {ui::EF_NONE, ui::DomCode::F10, ui::DomKey::F10, ui::VKEY_F10}},
+        {0xA0, {ui::EF_NONE, ui::DomCode::F11, ui::DomKey::F11, ui::VKEY_F11}},
+        {0xAE, {ui::EF_NONE, ui::DomCode::F12, ui::DomKey::F12, ui::VKEY_F12}},
+        {0xB0, {ui::EF_NONE, ui::DomCode::F13, ui::DomKey::F13, ui::VKEY_F13}},
+};
 
 constexpr mojom::TopRowKey kInternalJinlonTopRowKeys[] = {
     mojom::TopRowKey::kBack,
@@ -143,9 +164,14 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
       base::FilePath path) override {
     ui::DeviceCapabilities device_caps;
     const std::string base_name = path.BaseName().value();
+    auto info = std::make_unique<InputDeviceInformation>();
 
     if (base_name == "event0") {
       device_caps = ui::kLinkKeyboard;
+      info->keyboard_type =
+          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout =
+          ui::EventRewriterChromeOS::KeyboardTopRowLayout::kKbdTopRowLayout1;
       EXPECT_EQ(0, id);
     } else if (base_name == "event1") {
       device_caps = ui::kLinkTouchpad;
@@ -158,21 +184,46 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
       EXPECT_EQ(3, id);
     } else if (base_name == "event4") {
       device_caps = ui::kHpUsbKeyboard;
+      info->keyboard_type =
+          ui::EventRewriterChromeOS::DeviceType::kDeviceExternalGenericKeyboard;
+      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
+          KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
       EXPECT_EQ(4, id);
     } else if (base_name == "event5") {
       device_caps = ui::kSarienKeyboard;  // Wilco
+      info->keyboard_type =
+          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
+          KeyboardTopRowLayout::kKbdTopRowLayoutWilco;
       EXPECT_EQ(5, id);
     } else if (base_name == "event6") {
       device_caps = ui::kEveKeyboard;
+      info->keyboard_type =
+          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout =
+          ui::EventRewriterChromeOS::KeyboardTopRowLayout::kKbdTopRowLayout2;
       EXPECT_EQ(6, id);
     } else if (base_name == "event7") {
       device_caps = ui::kJinlonKeyboard;
+      info->keyboard_type =
+          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
+          KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+      info->keyboard_scan_code_map = kInternalJinlonScanCodeMap;
       EXPECT_EQ(7, id);
     } else if (base_name == "event8") {
       device_caps = ui::kMicrosoftBluetoothNumberPad;
+      info->keyboard_type =
+          ui::EventRewriterChromeOS::DeviceType::kDeviceExternalGenericKeyboard;
+      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
+          KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
       EXPECT_EQ(8, id);
     } else if (base_name == "event9") {
       device_caps = ui::kLogitechTouchKeyboardK400;
+      info->keyboard_type =
+          ui::EventRewriterChromeOS::DeviceType::kDeviceExternalGenericKeyboard;
+      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
+          KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
       EXPECT_EQ(9, id);
     } else if (base_name == kSillyDeviceName) {
       // Simulate a device that is properly described, but has a malformed
@@ -185,8 +236,6 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
       // for whatever reason.
       return nullptr;
     }
-
-    auto info = std::make_unique<InputDeviceInformation>();
 
     EXPECT_TRUE(
         ui::CapabilitiesToDeviceInfo(device_caps, &info->event_device_info));
@@ -506,7 +555,7 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
 
   const mojom::KeyboardInfoPtr& dell_internal_keyboard = keyboards[2];
   EXPECT_EQ(5u, dell_internal_keyboard->id);
-  EXPECT_EQ(mojom::PhysicalLayout::kChromeOSDellEnterprise,
+  EXPECT_EQ(mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco,
             dell_internal_keyboard->physical_layout);
   EXPECT_EQ(mojom::MechanicalLayout::kIso,
             dell_internal_keyboard->mechanical_layout);

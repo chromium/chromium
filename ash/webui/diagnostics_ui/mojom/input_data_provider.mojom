@@ -19,9 +19,15 @@ enum PhysicalLayout {
   // A typical Chrome OS keyboard with action keys on the top row, reduced
   // navigation keys, etc.
   kChromeOS,
-  // The slightly-modified Chrome OS keyboard found on Dell Enterprise
-  // Chromebooks or Dell WWCB keyboards (like the KM713 Chrome Keyboard).
-  kChromeOSDellEnterprise,
+  // The slightly-modified Chrome OS keyboard found on the early Dell Enterprise
+  // Chromebooks (Arcada and Sarien). Has Fn and keyboard layout switch keys
+  // between the left Ctrl and Alt, and Page Up and Down keys in the gaps around
+  // the arrow keys.
+  kChromeOSDellEnterpriseWilco,
+  // The layout found on later Dell Enterprise Chromebooks (Drallion) and Dell
+  // ChromeOS keyboards like the KM713 Chrome Keyboard. Like the Wilco layout
+  // except it doesn't have the Page Up and Down keys around the arrow keys.
+  kChromeOSDellEnterpriseDrallion,
 };
 
 // The international standard that the layout follows.
