@@ -3913,23 +3913,6 @@
             ]
         }
     ],
-    "GlobalMediaControlsCastStartStop": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlobalMediaControlsCastStartStop"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlobalMediaControlsForChromeOS": [
         {
             "platforms": [
