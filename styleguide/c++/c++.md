@@ -139,12 +139,13 @@ Place platform-specific #includes in their own section below the "normal"
   #include <algorithm>
 
   #include "base/strings/utf_string_conversions.h"
+  #include "build/build_config.h"
   #include "chrome/common/render_messages.h"
 
-  #if defined(OS_WIN)
+  #if BUILDFLAG(IS_WIN)
   #include <windows.h>
   #include "base/win/com_init_util.h"
-  #elif defined(OS_POSIX)
+  #elif BUILDFLAG(IS_POSIX)
   #include "base/posix/global_descriptors.h"
   #endif
 ```

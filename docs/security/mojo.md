@@ -249,7 +249,7 @@ class View : public mojom::View {
  public:
   // ...
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void UpdateBrowserControlsState(bool enable_hiding, bool enable_showing,
                                   bool animate);
 #endif
@@ -271,7 +271,7 @@ class View : public mojom::View {
  public:
   // ...
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void UpdateBrowserControlsState(bool enable_hiding, bool enable_showing,
                                   bool animate) override;
 #else

@@ -480,7 +480,7 @@ behaviour/option is being controlled in each case.
 *** aside
 All common code is only compiled once for both WebView and Chrome for Android,
 for unavoidable packaging reasons, so there is no `WEBVIEW` or similar macro
-defined. Code can use `#if defined(OS_ANDROID)` to exclude it from other
+defined. Code can use `#if BUILDFLAG(IS_ANDROID)` to exclude it from other
 platforms if desired, but this includes Chrome for Android.
 ***
 
