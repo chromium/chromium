@@ -658,11 +658,11 @@ void ExtensionManagement::LoadDeferredExtensionSetting(
   // No need to check again later.
   deferred_ids_.erase(extension_id);
 
-  const base::DictionaryValue* extension_settings = nullptr;
   const base::DictionaryValue* dict_pref =
       static_cast<const base::DictionaryValue*>(
           LoadPreference(pref_names::kExtensionManagement, true,
                          base::Value::Type::DICTIONARY));
+  bool found = false;
   for (auto iter : dict_pref->DictItems()) {
     if (iter.first == schema_constants::kWildcard ||
         base::StartsWith(iter.first, schema_constants::kUpdateUrlPrefix,
@@ -676,14 +676,13 @@ void ExtensionManagement::LoadDeferredExtensionSetting(
     auto extension_ids = base::SplitStringPiece(
         iter.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (base::Contains(extension_ids, extension_id)) {
-      // Found our settings!
-      extension_settings = subdict;
-      break;
+      // Found our settings. After parsing, continue looking for more entries.
+      ParseById(extension_id, subdict);
+      found = true;
     }
   }
 
-  DCHECK(extension_settings);
-  ParseById(extension_id, extension_settings);
+  DCHECK(found) << "Couldn't find dictionary for extension in deferred_ids_.";
 }
 
 const base::Value* ExtensionManagement::LoadPreference(

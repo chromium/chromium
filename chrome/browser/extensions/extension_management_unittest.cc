@@ -77,6 +77,15 @@ const char kExampleDictPreferenceWithoutInstallationMode[] = R"({
   }
 })";
 
+const char kExampleDictPreferenceWithMultipleEntries[] = R"({
+  "abcdefghijklmnopabcdefghijklmnop,bcdefghijklmnopabcdefghijklmnopa" : {
+    "installation_mode": "blocked",
+  },
+  "bcdefghijklmnopabcdefghijklmnopa,cdefghijklmnopabcdefghijklmnopab" : {
+    "minimum_version_required": "2.0"
+  }
+})";
+
 const char kExampleDictPreference[] =
     R"(
 {
@@ -622,6 +631,16 @@ TEST_F(ExtensionManagementServiceTest, HostsMaximumExceeded) {
   SetExampleDictPref(policy);
   EXPECT_EQ(100u, GetPolicyBlockedHosts(kTargetExtension).size());
   EXPECT_EQ(100u, GetPolicyAllowedHosts(kTargetExtension).size());
+}
+
+// Tests that multiple entries for a dictionary are all applied.
+TEST_F(ExtensionManagementServiceTest, MultipleEntries) {
+  SetExampleDictPref(kExampleDictPreferenceWithMultipleEntries);
+
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension2),
+            ExtensionManagement::INSTALLATION_BLOCKED);
+
+  EXPECT_FALSE(CheckMinimumVersion(kTargetExtension2, "1.0"));
 }
 
 // Tests parsing of new dictionary preference.

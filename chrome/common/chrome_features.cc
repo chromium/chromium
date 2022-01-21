@@ -430,7 +430,7 @@ const base::Feature kEnterpriseReportingExtensionManifestVersion{
 // Lazy initialize IndividualSettings for extensions from enterprise policy
 // that are not installed.
 const base::Feature kExtensionDeferredIndividualSettings{
-    "ExtensionDeferredIndividualSettings", base::FEATURE_ENABLED_BY_DEFAULT};
+    "ExtensionDeferredIndividualSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Controls whether the user justification text field is visible on the
