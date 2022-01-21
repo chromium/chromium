@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/thread_test_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -65,7 +64,6 @@ class FileSystemBrowserTest : public ContentBrowserTest,
  protected:
   bool is_incognito_;
   raw_ptr<Shell> browser_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, FileSystemBrowserTest, ::testing::Bool());
