@@ -545,7 +545,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAomLiveRegion) {
   RunAomTest(FILE_PATH_LITERAL("aom-live-region.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAomModalDialog) {
+// TODO(http://crbug.com/1289698): fails on Windows 7.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityAomModalDialog DISABLED_AccessibilityAomModalDialog
+#else
+#define MAYBE_AccessibilityAomModalDialog AccessibilityAomModalDialog
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityAomModalDialog) {
   RunAomTest(FILE_PATH_LITERAL("aom-modal-dialog.html"));
 }
 
