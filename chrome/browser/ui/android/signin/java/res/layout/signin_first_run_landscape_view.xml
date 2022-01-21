@@ -37,9 +37,20 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.2"
                 android:gravity="start"
                 android:text="@string/fre_welcome"
-                style="@style/FreWelcomePageTitle" />
+                android:textAppearance="@style/TextAppearance.FreFirstFrameTitle" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:paddingTop="8dp"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:visibility="gone"
+                app:leading="@dimen/text_size_medium_leading" />
 
             <FrameLayout
                 android:id="@+id/fre_browser_managed_by_organization"

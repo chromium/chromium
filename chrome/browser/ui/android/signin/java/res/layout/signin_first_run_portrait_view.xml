@@ -49,8 +49,22 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.2"
+                android:gravity="center"
+                android:paddingHorizontal="70dp"
                 android:text="@string/fre_welcome"
-                style="@style/FreWelcomePageTitle" />
+                android:textAppearance="@style/TextAppearance.FreFirstFrameTitle" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingHorizontal="60dp"
+                android:paddingTop="8dp"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:visibility="gone"
+                app:leading="@dimen/text_size_medium_leading" />
 
             <FrameLayout
                 android:id="@+id/fre_browser_managed_by_organization"
@@ -79,8 +93,7 @@
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginBottom="128dp"
-                android:layout_gravity="center" />
+                android:layout_marginBottom="128dp" />
 
             <include layout="@layout/signin_first_run_bottom_group_view" />
         </LinearLayout>

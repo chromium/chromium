@@ -46,6 +46,7 @@ public class FREMobileIdentityConsistencyFieldTrial {
      * as the control group of the experiment.
      * If a new group needs to be added then another control group must also be added.
      */
+    @VisibleForTesting
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
             VariationsGroup.DEFAULT,
@@ -57,7 +58,7 @@ public class FREMobileIdentityConsistencyFieldTrial {
             VariationsGroup.MAKE_CHROME_YOUR_OWN,
             VariationsGroup.MAX_VALUE,
     })
-    private @interface VariationsGroup {
+    public @interface VariationsGroup {
         /**
          * Default group of the experiment which is the group WELCOME_TO_CHROME.
          *
@@ -248,6 +249,17 @@ public class FREMobileIdentityConsistencyFieldTrial {
     }
 
     /**
+     * Returns whether the title and the subtitle should be hidden until native code and policies
+     * are loaded on device.
+     */
+    @MainThread
+    public static boolean shouldHideTitleUntilPoliciesAreLoaded() {
+        @VariationsGroup
+        final int group = getFirstRunVariationsTrialGroupInternal();
+        return group != VariationsGroup.DEFAULT && group != VariationsGroup.WELCOME_TO_CHROME;
+    }
+
+    /**
      * Creates variations of the FRE signin welcome screen with different title/subtitle
      * combinations.
      *
@@ -287,6 +299,14 @@ public class FREMobileIdentityConsistencyFieldTrial {
         synchronized (LOCK) {
             SharedPreferencesManager.getInstance().writeString(
                     ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, group);
+        }
+    }
+
+    @AnyThread
+    public static void setFirstRunVariationsTrialGroupForTesting(@VariationsGroup int group) {
+        synchronized (LOCK) {
+            SharedPreferencesManager.getInstance().writeInt(
+                    ChromePreferenceKeys.FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP, group);
         }
     }
 }
