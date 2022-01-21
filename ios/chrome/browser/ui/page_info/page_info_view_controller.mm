@@ -149,11 +149,11 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   [self.tableViewModel setHeader:permissionsHeaderItem
         forSectionWithIdentifier:SectionIdentifierPermissions];
 
-  [self addSwitchIfExistForPermission:web::Permission::CAMERA
+  [self addSwitchIfExistForPermission:web::PermissionCamera
                             withLabel:l10n_util::GetNSString(
                                           IDS_IOS_PERMISSIONS_CAMERA)
                                toItem:ItemTypePermissionsCamera];
-  [self addSwitchIfExistForPermission:web::Permission::MICROPHONE
+  [self addSwitchIfExistForPermission:web::PermissionMicrophone
                             withLabel:l10n_util::GetNSString(
                                           IDS_IOS_PERMISSIONS_MICROPHONE)
                                toItem:ItemTypePermissionsMicrophone];
@@ -254,10 +254,10 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   web::Permission permission;
   switch (sender.tag) {
     case ItemTypePermissionsCamera:
-      permission = web::Permission::CAMERA;
+      permission = web::PermissionCamera;
       break;
     case ItemTypePermissionsMicrophone:
-      permission = web::Permission::MICROPHONE;
+      permission = web::PermissionMicrophone;
       break;
     case ItemTypeSecurityHeader:
     case ItemTypeSecurityDescription:

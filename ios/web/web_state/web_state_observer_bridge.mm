@@ -10,7 +10,7 @@
 
 namespace web {
 
-enum class Permission;
+enum Permission : NSUInteger;
 
 WebStateObserverBridge::WebStateObserverBridge(id<CRWWebStateObserver> observer)
     : observer_(observer) {}

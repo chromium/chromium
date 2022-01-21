@@ -18,8 +18,8 @@ class Value;
 namespace web {
 
 enum class NavigationInitiationType;
-enum class Permission;
-enum class PermissionState;
+enum Permission : NSUInteger;
+enum PermissionState : NSUInteger;
 enum class WKNavigationState;
 
 }  // namespace web
@@ -205,6 +205,10 @@ class WebStateImpl;
     API_AVAILABLE(ios(15.0));
 - (void)setState:(web::PermissionState)state
     forPermission:(web::Permission)permission API_AVAILABLE(ios(15.0));
+
+// Gets a mapping of all permissions and their states. Only works on iOS 15+.
+- (NSDictionary<NSNumber*, NSNumber*>*)
+    statesForAllPermissions API_AVAILABLE(ios(15.0));
 
 // Injects the windowID into the main frame of the current webpage.
 // TODO(crbug.com/905939): Remove WindowID.

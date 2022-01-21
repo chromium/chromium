@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_H_
 
+#import <Foundation/Foundation.h>
+
 #include <stdint.h>
 
 #include <map>
@@ -50,8 +52,8 @@ namespace web {
 class BrowserState;
 struct FaviconStatus;
 class NavigationManager;
-enum class Permission;
-enum class PermissionState;
+enum Permission : NSUInteger;
+enum PermissionState : NSUInteger;
 class SessionCertificatePolicyCache;
 class WebFrame;
 class WebFramesManager;
@@ -450,6 +452,13 @@ class WebState : public base::SupportsUserData {
       API_AVAILABLE(ios(15.0)) = 0;
   virtual void SetStateForPermission(PermissionState state,
                                      Permission permission)
+      API_AVAILABLE(ios(15.0)) = 0;
+
+  // Gets a mapping of all available permissions and their states.
+  // Note that both key and value are in NSNumber format, and should be
+  // translated to NSUInteger and casted to web::Permission or
+  // web::PermissionState before use.
+  virtual NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const
       API_AVAILABLE(ios(15.0)) = 0;
 
  protected:

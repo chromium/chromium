@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
 
-#import "ios/chrome/browser/ui/page_info/NSNumber+Permission.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -30,21 +29,19 @@
   self.accessiblePermissionStates = [[NSMutableDictionary alloc] init];
 
   if (web::features::IsMediaPermissionsControlEnabled()) {
-    NSArray* permissionKeys = @[
-      [NSNumber cr_numberWithPermission:web::Permission::CAMERA],
-      [NSNumber cr_numberWithPermission:web::Permission::MICROPHONE]
-    ];
-    for (NSNumber* key in permissionKeys) {
+    NSDictionary<NSNumber*, NSNumber*>* statesForAllPermissions =
+        webState->GetStatesForAllPermissions();
+    for (NSNumber* key in statesForAllPermissions) {
       web::PermissionState state =
-          webState->GetStateForPermission([key cr_permissionValue]);
+          (web::PermissionState)statesForAllPermissions[key].unsignedIntValue;
       switch (state) {
-        case web::PermissionState::NOT_ACCESSIBLE:
+        case web::PermissionStateNotAccessible:
           break;
-        case web::PermissionState::ALLOWED:
-          self.accessiblePermissionStates[key] = @YES;
-          break;
-        case web::PermissionState::BLOCKED:
+        case web::PermissionStateBlocked:
           self.accessiblePermissionStates[key] = @NO;
+          break;
+        case web::PermissionStateAllowed:
+          self.accessiblePermissionStates[key] = @YES;
           break;
       }
     }
@@ -60,23 +57,20 @@
 }
 
 - (BOOL)isPermissionAccessible:(web::Permission)permission {
-  return self.accessiblePermissionStates[
-             [NSNumber cr_numberWithPermission:permission]] != nil;
+  return self.accessiblePermissionStates[@(permission)] != nil;
 }
 
 - (BOOL)stateForAccessiblePermission:(web::Permission)permission {
-  return [[self.accessiblePermissionStates
-      objectForKey:[NSNumber cr_numberWithPermission:permission]] boolValue];
+  return self.accessiblePermissionStates[@(permission)].boolValue;
 }
 
 - (void)toggleStateForPermission:(web::Permission)permission {
   if ([self isPermissionAccessible:permission]) {
     BOOL newValue = ![self stateForAccessiblePermission:permission];
-    web::PermissionState state = newValue ? web::PermissionState::ALLOWED
-                                          : web::PermissionState::BLOCKED;
+    web::PermissionState state =
+        newValue ? web::PermissionStateAllowed : web::PermissionStateBlocked;
     self.webState->SetStateForPermission(state, permission);
-    NSNumber* key = [NSNumber cr_numberWithPermission:permission];
-    self.accessiblePermissionStates[key] = @(newValue);
+    self.accessiblePermissionStates[@(permission)] = @(newValue);
   }
 }
 
