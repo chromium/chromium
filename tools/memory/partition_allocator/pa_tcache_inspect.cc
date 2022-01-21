@@ -248,6 +248,7 @@ class PartitionRootInspector {
     size_t allocated_slots = 0;
     size_t freelist_size = 0;
     size_t active_slot_spans = 0;
+    std::vector<size_t> freelist_sizes;
   };
 
   PartitionRootInspector(uintptr_t root_addr, int mem_fd, pid_t pid)
@@ -363,10 +364,7 @@ bool PartitionRootInspector::GatherStatistics() {
       if (!metadata.has_value())
         return false;
 
-      int16_t allocated_slots = metadata->get()->num_allocated_slots;
-      // Negative number for a full slot span.
-      if (allocated_slots < 0)
-        allocated_slots = -allocated_slots;
+      uint16_t allocated_slots = metadata->get()->num_allocated_slots;
 
       stats.allocated_slots += allocated_slots;
       size_t allocated_unprovisioned = metadata->get()->num_allocated_slots +
@@ -381,6 +379,7 @@ bool PartitionRootInspector::GatherStatistics() {
 
       stats.freelist_size += freelist_size;
       stats.active_slot_spans++;
+      stats.freelist_sizes.push_back(freelist_size);
     }
     bucket_stats_.push_back(stats);
   }
@@ -474,7 +473,8 @@ void DisplayPerBucketData(ThreadCacheInspector& inspector) {
   std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB\n";
 }
 
-void DisplayRootData(PartitionRootInspector& root_inspector) {
+void DisplayRootData(PartitionRootInspector& root_inspector,
+                     size_t detailed_bucket_index) {
   std::cout << "Per-bucket size / allocated slots / free slots / slot span "
                "count:\n";
   for (size_t i = 0; i < root_inspector.bucket_stats().size(); i++) {
@@ -492,6 +492,14 @@ void DisplayRootData(PartitionRootInspector& root_inspector) {
     else
       std::cout << "\t";
   }
+
+  const auto& bucket_stats =
+      root_inspector.bucket_stats()[detailed_bucket_index];
+  std::cout << "\nFreelist size for active buckets of size = "
+            << bucket_stats.slot_size << "\n";
+  for (size_t freelist_size : bucket_stats.freelist_sizes)
+    std::cout << freelist_size << " ";
+  std::cout << "\n";
 
   auto* root = root_inspector.root();
   uint64_t syscall_count = root->syscall_count.load(std::memory_order_relaxed);
@@ -517,7 +525,7 @@ void DisplayRootData(PartitionRootInspector& root_inspector) {
   std::cout << "\nEmpty Slot Spans Dirty Size = "
             << TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes) / 1024
             << "kiB";
-}
+}  // namespace tools
 
 }  // namespace tools
 }  // namespace internal
@@ -551,6 +559,7 @@ int main(int argc, char** argv) {
       registry_address, mem_fd.get(), pid};
   std::map<base::PlatformThreadId, std::string> tid_to_name;
 
+  size_t iter = 0;
   while (true) {
     base::TimeTicks tick = base::TimeTicks::Now();
     bool ok = thread_cache_inspector.GetAllThreadCaches();
@@ -582,10 +591,12 @@ int main(int argc, char** argv) {
 
     if (has_bucket_stats) {
       std::cout << "\n\n";
-      DisplayRootData(root_inspector);
+      DisplayRootData(root_inspector,
+                      (iter / 50) % root_inspector.bucket_stats().size());
     }
 
     std::cout << std::endl;
     usleep(200000);
+    iter++;
   }
 }
