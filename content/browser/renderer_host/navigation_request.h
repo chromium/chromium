@@ -1425,9 +1425,11 @@ class CONTENT_EXPORT NavigationRequest
   // or not. Called when the navigation just started.
   bool ShouldReplaceCurrentEntryForSameUrlNavigation() const;
 
-  // Whether this navigation happens on the initial empty document, and thus
-  // should replace the current entry.  Called when the navigation just started.
-  bool ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument() const;
+  // Whether this navigation happens on the initial empty document or initial
+  // NavigationEntry, and thus should replace the current entry. Called when the
+  // navigation just started.
+  bool ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocumentOrEntry()
+      const;
 
   // Whether a failed navigation should replace the current entry or not. Called
   // when an error page is about to be committed.

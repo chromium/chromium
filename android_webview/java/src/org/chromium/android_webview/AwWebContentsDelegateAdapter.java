@@ -245,20 +245,14 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     @Override
     public void navigationStateChanged(int flags) {
         if ((flags & InvalidateTypes.URL) != 0
-                && (flags
-                        != InvalidateTypes.ALL_BUT_USED_TO_BE_IGNORED_DUE_TO_NULL_NAVIGATION_ENTRY)
+                && (flags != InvalidateTypes.ALL_BUT_KEEPS_INITIAL_NAVIGATION_ENTRY_STATUS)
                 && mAwContents.isPopupWindow() && mAwContents.hasAccessedInitialDocument()) {
             // This is a popup whose document has been accessed by script. Hint
             // the client to show the last committed url, as it may be unsafe to
             // show the pending entry. Note that we are also preserving old
-            // behavior by not firing this for a few cases where the navigation
-            // used to get "ignored" and won't trigger a NavigationStateChanged
-            // call.
-            // TODO(https://crbug.com/1277414): Figure out if it's possible to
-            // synthesize page load in this case, since it seems to be better
-            // to also show the last committed URL in the "used-to-be-ignored"
-            // cases too, probably by gating this behavior behind a flag and
-            // setting it based on targetSdkVersion.
+            // behavior by not firing this for initial NavigationEntry creation
+            // or modification, which used to not exist and thus won't trigger
+            // NavigationStateChanged calls.
             String url = mAwContents.getLastCommittedUrl();
             url = TextUtils.isEmpty(url) ? ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL : url;
             mContentsClient.getCallbackHelper().postSynthesizedPageLoadingForUrlBarUpdate(url);

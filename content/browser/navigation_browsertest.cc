@@ -5250,10 +5250,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
 
   // Verify that we are at the initial empty document.
   EXPECT_EQ(1, popup->GetController().GetEntryCount());
-  // Note that we're not on the initial NavigationEntry because of the
-  // synchronous about:blank commit.
-  EXPECT_FALSE(
-      popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_TRUE(popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_TRUE(
       popup->GetPrimaryFrameTree().root()->is_on_initial_empty_document());
 
@@ -5280,8 +5277,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
 
   // Verify that we are at the synchronously committed about:blank document.
   EXPECT_EQ(1, popup->GetController().GetEntryCount());
-  EXPECT_FALSE(
-      popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_TRUE(popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_TRUE(
       popup->GetPrimaryFrameTree().root()->is_on_initial_empty_document());
 
