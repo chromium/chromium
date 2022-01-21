@@ -174,7 +174,7 @@ hid_test(async (t, fake) => {
   const device = fake.makeDevice(kTestVendorId, kTestProductId);
 
   // Disconnect device after granting access to it.
-  const guid = fake.addDevice(device, /*grantPermission=*/true);
+  const guid = fake.addDevice(device, /*grantPermission=*/ true);
   fake.removeDevice(guid);
   let devices = await navigator.hid.getDevices();
   assert_equals(devices.length, 1);
@@ -185,7 +185,7 @@ hid_test(async (t, fake) => {
   assert_equals(devices.length, 0);
 
   // Connect device again.
-  fake.addDevice(device, /*grantPermission=*/false);
+  fake.addDevice(device, /*grantPermission=*/ false);
   devices = await navigator.hid.getDevices();
   assert_equals(devices.length, 0);
 }, 'Permission is not remembered even after reconnection');

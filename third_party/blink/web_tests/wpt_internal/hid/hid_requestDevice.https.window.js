@@ -20,8 +20,8 @@ promise_test(async (t) => {
 }, 'requestDevice() rejects with an empty filter');
 
 promise_test(async (t) => {
-  const {HidService} = await import(
-    '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js');
+  const {HidService} =
+      await import('/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js');
   let interceptor = new MojoInterfaceInterceptor(HidService.$interfaceName);
   interceptor.oninterfacerequest = e => e.handle.close();
   interceptor.start();

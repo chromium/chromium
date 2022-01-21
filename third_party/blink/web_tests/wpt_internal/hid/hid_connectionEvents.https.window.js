@@ -34,8 +34,8 @@ hid_test(async (t, fake) => {
 }, 'HID dispatches connection and disconnection events');
 
 hid_test(async (t, fake) => {
-  const {HidCollectionInfo, HidUsageAndPage} = await import(
-    '/gen/services/device/public/mojom/hid.mojom.m.js');
+  const {HidCollectionInfo, HidUsageAndPage} =
+      await import('/gen/services/device/public/mojom/hid.mojom.m.js');
   const watcher = new EventWatcher(t, navigator.hid, ['connect', 'disconnect']);
 
   // Wait for getDevices() to resolve in order to ensure that the Mojo client

@@ -7,8 +7,8 @@ const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
 
 promise_test(async () => {
-  const {HidService} = await import(
-    '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js');
+  const {HidService} =
+      await import('/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js');
 
   let interceptor = new MojoInterfaceInterceptor(HidService.$interfaceName);
   interceptor.oninterfacerequest = e => e.handle.close();

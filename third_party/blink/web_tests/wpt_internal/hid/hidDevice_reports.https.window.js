@@ -59,24 +59,24 @@ hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   // Simulate write() failure.
   fakeConnection.queueExpectedWrite(false, kReportId, kReportBytes);
-  await promise_rejects_dom(t, 'NotAllowedError',
-                            device.sendReport(kReportId, kReportBytes));
+  await promise_rejects_dom(
+      t, 'NotAllowedError', device.sendReport(kReportId, kReportBytes));
   fakeConnection.assertExpectationsMet();
 }, 'Failed sendReport rejects');
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   const promise = device.forget();
-  await promise_rejects_dom(t, 'InvalidStateError',
-                            device.sendReport(kReportId, kReportBytes));
+  await promise_rejects_dom(
+      t, 'InvalidStateError', device.sendReport(kReportId, kReportBytes));
   await promise;
 }, 'sendReport rejects while device is forgetting');
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   await device.forget();
-  await promise_rejects_dom(t, 'InvalidStateError',
-                            device.sendReport(kReportId, kReportBytes));
+  await promise_rejects_dom(
+      t, 'InvalidStateError', device.sendReport(kReportId, kReportBytes));
 }, 'sendReport rejects when device is forgotten');
 
 hid_test(async (t, fake) => {
@@ -102,24 +102,24 @@ hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   // Simulate getFeatureReport() failure.
   fakeConnection.queueExpectedGetFeatureReport(false, kReportId, kReportBytes);
-  await promise_rejects_dom(t, 'NotAllowedError',
-                            device.receiveFeatureReport(kReportId));
+  await promise_rejects_dom(
+      t, 'NotAllowedError', device.receiveFeatureReport(kReportId));
   fakeConnection.assertExpectationsMet();
 }, 'Failed receiveFeatureReport rejects');
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   const promise = device.forget();
-  await promise_rejects_dom(t, 'InvalidStateError',
-                            device.receiveFeatureReport(kReportId));
+  await promise_rejects_dom(
+      t, 'InvalidStateError', device.receiveFeatureReport(kReportId));
   await promise;
 }, 'receiveFeatureReport rejects while device is forgetting');
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   await device.forget();
-  await promise_rejects_dom(t, 'InvalidStateError',
-                            device.receiveFeatureReport(kReportId));
+  await promise_rejects_dom(
+      t, 'InvalidStateError', device.receiveFeatureReport(kReportId));
 }, 'receiveFeatureReport rejects when device is forgotten');
 
 hid_test(async (t, fake) => {
@@ -134,24 +134,26 @@ hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   // Simulate sendFeatureReport() failure.
   fakeConnection.queueExpectedSendFeatureReport(false, kReportId, kReportBytes);
-  await promise_rejects_dom(t, 'NotAllowedError',
-                            device.sendFeatureReport(kReportId, kReportBytes));
+  await promise_rejects_dom(
+      t, 'NotAllowedError', device.sendFeatureReport(kReportId, kReportBytes));
   fakeConnection.assertExpectationsMet();
 }, 'Failed sendFeatureReport rejects');
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   const promise = device.forget();
-  await promise_rejects_dom(t, 'InvalidStateError',
-                            device.sendFeatureReport(kReportId, kReportBytes));
+  await promise_rejects_dom(
+      t, 'InvalidStateError',
+      device.sendFeatureReport(kReportId, kReportBytes));
   await promise;
 }, 'sendFeatureReport rejects while device is forgetting');
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
   await device.forget();
-  await promise_rejects_dom(t, 'InvalidStateError',
-                            device.sendFeatureReport(kReportId, kReportBytes));
+  await promise_rejects_dom(
+      t, 'InvalidStateError',
+      device.sendFeatureReport(kReportId, kReportBytes));
 }, 'sendFeatureReport rejects when device is forgotten');
 
 hid_test(async (t, fake) => {

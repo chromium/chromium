@@ -39,15 +39,15 @@ async function createDeviceWithInputReport(fake) {
 
   const reportItem = new HidReportItem();
   reportItem.isRange = false;
-  reportItem.isConstant = false;  // Data.
-  reportItem.isVariable = true;  // Variable.
-  reportItem.isRelative = false;  // Absolute.
-  reportItem.wrap = false;  // No wrap.
-  reportItem.isNonLinear = false;  // Linear.
+  reportItem.isConstant = false;        // Data.
+  reportItem.isVariable = true;         // Variable.
+  reportItem.isRelative = false;        // Absolute.
+  reportItem.wrap = false;              // No wrap.
+  reportItem.isNonLinear = false;       // Linear.
   reportItem.noPreferredState = false;  // Preferred State.
-  reportItem.hasNullPosition = false;  // No Null position.
-  reportItem.isVolatile = false;  // Non Volatile.
-  reportItem.isBufferedBytes = false;  // Bit Field.
+  reportItem.hasNullPosition = false;   // No Null position.
+  reportItem.isVolatile = false;        // Non Volatile.
+  reportItem.isBufferedBytes = false;   // Bit Field.
   reportItem.usages = [buttonUsage];
   reportItem.usageMinimum = new HidUsageAndPage();
   reportItem.usageMaximum = new HidUsageAndPage();
@@ -60,7 +60,7 @@ async function createDeviceWithInputReport(fake) {
   reportItem.physicalMinimum = 0;
   reportItem.physicalMaximum = 1;
   reportItem.unitExponent = 0;
-  reportItem.unit = 0;  // Unitless.
+  reportItem.unit = 0;        // Unitless.
   reportItem.reportSize = 8;  // 1 byte.
   reportItem.reportCount = 1;
 
@@ -154,18 +154,20 @@ hid_test(async (t, fake) => {
   assert_equals(i.reportCount, 1, 'reportItem.reportCount');
   assert_equals(i.unitExponent, 0, 'reportItem.unitExponent');
   assert_equals(i.unitSystem, 'none', 'reportItem.unitSystem');
-  assert_equals(i.unitFactorLengthExponent, 0,
-                'reportItem.unitFactorLengthExponent');
-  assert_equals(i.unitFactorMassExponent, 0,
-                'reportItem.unitFactorMassExponent');
-  assert_equals(i.unitFactorTimeExponent, 0,
-                'reportItem.unitFactorTimeExponent');
-  assert_equals(i.unitFactorTemperatureExponent, 0,
-                'reportItem.unitFactorTemperatureExponent');
-  assert_equals(i.unitFactorCurrentExponent, 0,
-                'reportItem.unitFactorCurrentExponent');
-  assert_equals(i.unitFactorLuminousIntensityExponent, 0,
-                'reportItem.unitFactorLuminousIntensityExponent');
+  assert_equals(
+      i.unitFactorLengthExponent, 0, 'reportItem.unitFactorLengthExponent');
+  assert_equals(
+      i.unitFactorMassExponent, 0, 'reportItem.unitFactorMassExponent');
+  assert_equals(
+      i.unitFactorTimeExponent, 0, 'reportItem.unitFactorTimeExponent');
+  assert_equals(
+      i.unitFactorTemperatureExponent, 0,
+      'reportItem.unitFactorTemperatureExponent');
+  assert_equals(
+      i.unitFactorCurrentExponent, 0, 'reportItem.unitFactorCurrentExponent');
+  assert_equals(
+      i.unitFactorLuminousIntensityExponent, 0,
+      'reportItem.unitFactorLuminousIntensityExponent');
   assert_equals(i.logicalMinimum, 0, 'reportItem.logicalMinimum');
   assert_equals(i.logicalMaximum, 1, 'reportItem.logicalMaximum');
   assert_equals(i.physicalMinimum, 0, 'reportItem.physicalMinimum');
@@ -205,18 +207,20 @@ hid_test(async (t, fake) => {
   const i = r.items[0];
   assert_equals(i.unitExponent, -4, 'reportItem.unitExponent');
   assert_equals(i.unitSystem, 'si-linear', 'reportItem.unitSystem');
-  assert_equals(i.unitFactorLengthExponent, 1,
-                'reportItem.unitFactorLengthExponent');
-  assert_equals(i.unitFactorMassExponent, 1,
-                'reportItem.unitFactorMassExponent');
-  assert_equals(i.unitFactorTimeExponent, -2,
-                'reportItem.unitFactorTimeExponent');
-  assert_equals(i.unitFactorTemperatureExponent, 0,
-                'reportItem.unitFactorTemperatureExponent');
-  assert_equals(i.unitFactorCurrentExponent, 0,
-                'reportItem.unitFactorCurrentExponent');
-  assert_equals(i.unitFactorLuminousIntensityExponent, 0,
-                'reportItem.unitFactorLuminousIntensityExponent');
+  assert_equals(
+      i.unitFactorLengthExponent, 1, 'reportItem.unitFactorLengthExponent');
+  assert_equals(
+      i.unitFactorMassExponent, 1, 'reportItem.unitFactorMassExponent');
+  assert_equals(
+      i.unitFactorTimeExponent, -2, 'reportItem.unitFactorTimeExponent');
+  assert_equals(
+      i.unitFactorTemperatureExponent, 0,
+      'reportItem.unitFactorTemperatureExponent');
+  assert_equals(
+      i.unitFactorCurrentExponent, 0, 'reportItem.unitFactorCurrentExponent');
+  assert_equals(
+      i.unitFactorLuminousIntensityExponent, 0,
+      'reportItem.unitFactorLuminousIntensityExponent');
 }, 'HIDDevice preserves units');
 
 
@@ -228,9 +232,11 @@ hid_test(async (t, fake) => {
 
   deviceInfo.collections[0].inputReports[0].items[0].isRange = true;
   deviceInfo.collections[0].inputReports[0].items[0].usages = [];
-  deviceInfo.collections[0].inputReports[0].items[0].usageMinimum.usagePage = PAGE_BUTTON;
+  deviceInfo.collections[0].inputReports[0].items[0].usageMinimum.usagePage =
+      PAGE_BUTTON;
   deviceInfo.collections[0].inputReports[0].items[0].usageMinimum.usage = 1;
-  deviceInfo.collections[0].inputReports[0].items[0].usageMaximum.usagePage = PAGE_BUTTON;
+  deviceInfo.collections[0].inputReports[0].items[0].usageMaximum.usagePage =
+      PAGE_BUTTON;
   deviceInfo.collections[0].inputReports[0].items[0].usageMaximum.usage = 8;
 
   const guid = fake.addDevice(deviceInfo);
@@ -256,5 +262,4 @@ hid_test(async (t, fake) => {
   assert_equals(i.usages, undefined, 'reportItem.usages');
   assert_equals(i.usageMinimum, 0x00090001, 'reportItem.usageMinimum');
   assert_equals(i.usageMaximum, 0x00090008, 'reportItem.usageMaximum');
-
 }, 'HIDDevice usage range item presents usageMinimum and usageMaximum');

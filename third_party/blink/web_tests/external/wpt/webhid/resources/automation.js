@@ -12,7 +12,8 @@ function hid_test(func, name, properties) {
         fakeHidService = fakes.fakeHidService;
       }
     }
-    assert_implements(fakeHidService, 'missing fakeHidService after initialization');
+    assert_implements(
+        fakeHidService, 'missing fakeHidService after initialization');
 
     fakeHidService.start();
     try {
