@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name=timeout content=long>
+<!-- user agents are not required to support open features other than `noopener`
+     and on some platforms position and size features don't make sense -->
+<meta name="flags" content="may">
+<title>Multi-Screen Window Placement test: window.open()</title>
+<link rel="help" href="https://webscreens.github.io/window-placement/">
+This test uses multi-screen details to open a popup window on each screen.<br>
+It runs automated or manually with `wpt serve` and a compatible browser.<br><br>
+<button id="setUpButton">Request screen details</button>
+<ul id="popupButtons"></ul>
+<button id="cleanUpButton">Close any open popups</button><br>
+<input id="autoCleanUp" type="checkbox" checked=true>Auto-close popups</input>
+<ul id="logger"></ul>
+<p>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+let popups = [];
+
+function log(str) {
+  const entry = document.createElement('li');
+  entry.innerHTML = str;
+  logger.appendChild(entry);
+  return entry;
+}
+
+cleanUpButton.addEventListener('click', async () => {
+  popups.forEach(p => p.close());
+});
+
+async function testPopupOnScreen(popupTest, screen) {
+  // Show a popup child window on the associated screen.
+  const left = screen.availLeft + Math.floor(screen.availWidth / 2) - 150;
+  const top = screen.availTop + Math.floor(screen.availHeight / 2) - 50;
+  log(`Opening a popup on '${screen.label}' at (${left}, ${top})`);
+  let popup = window.open(
+      '/resources/blank.html', '',
+      `left=${left},top=${top},width=300,height=100`);
+  popups.push(popup);
+  if (autoCleanUp.checked)
+    popupTest.add_cleanup(popup.close);
+
+  // Window.open() synchronously returns a Window with estimated screenX|Y.
+  // Initial `screenX` and `screenY` values should match `left` and `top`.
+  log(`<div style='margin-left: 40px'>Initial bounds:
+         (${popup.screenX}, ${popup.screenY})
+       </div>`);
+  assert_equals(popup.screenX, left);
+  assert_equals(popup.screenY, top);
+  popup.initialScreenX = popup.screenX;
+  popup.initialScreenY = popup.screenY;
+
+  // Wait for asynchronous window creation and clamped placement before checking
+  // resolved window.screenX|Y values. In practice, window.screenX|Y may change
+  // even after waiting for Window.onload and Window.requestAnimationFrame().
+  const eventWatcher = new EventWatcher(popupTest, popup, ['load']);
+  await eventWatcher.wait_for('load');
+  await new Promise(window.requestAnimationFrame);
+  await new Promise(resolve => {
+    step_timeout(resolve, 300);
+  });
+  popup.document.write(`Expected: (${left}, ${top}) <br> \
+       Initial: (${popup.initialScreenX}, ${popup.initialScreenY}) <br> \
+       Resolved: (${popup.screenX}, ${popup.screenY}) `);
+  log(`<div style='margin-left: 40px'>Resolved bounds:
+         (${popup.screenX}, ${popup.screenY})
+       </div>`);
+  // Window.screenX|Y may be zero, if the user agent wishes to hide information
+  // about the screen of the output device. They also may incorrectly reflect
+  // the origin of content viewport; in that case, estimate window coordinates
+  // by subtracing estimated frame insets (top-heavy, horizontally centered).
+  const error = 10;
+  const dX = popup.screenX - left - (popup.outerWidth - popup.innerWidth) / 2;
+  const dY = popup.screenY - top - (popup.outerHeight - popup.innerHeight);
+  assert_true(!popup.screenX || popup.screenX == left || Math.abs(dX) <= error);
+  assert_true(!popup.screenY || popup.screenY == top || Math.abs(dY) <= error);
+}
+
+promise_test(async setUpTest => {
+  assert_true(
+      'getScreenDetails' in self && 'isExtended' in screen,
+      `API not supported; use Chromium (not content_shell) and enable
+       chrome://flags/#enable-experimental-web-platform-features`);
+  if (!screen.isExtended)
+    log(`WARNING: Use multiple screens for full test coverage`);
+  if (window.location.href.startsWith('file'))
+    log(`WARNING: Run via 'wpt serve'; file URLs lack permission support`);
+
+  try {  // Support manual testing where test_driver is not running.
+    await test_driver.set_permission({name: 'window-placement'}, 'granted');
+  } catch {
+  }
+  const setUpWatcher = new EventWatcher(setUpTest, setUpButton, ['click']);
+  const setUpClick = setUpWatcher.wait_for('click');
+  try {  // Support manual testing where test_driver is not running.
+    await test_driver.click(setUpButton);
+  } catch {
+  }
+  await setUpClick;
+  setUpButton.disabled = true;
+  const screenDetails = await getScreenDetails();
+  assert_true(!!screenDetails, 'Error getting screen details');
+  assert_greater_than(screenDetails.screens.length, 0, 'Connect a screen');
+  for (const s of screenDetails.screens) {
+    promise_test(async popupTest => {
+      const button = document.createElement('button');
+      button.innerHTML = `Open a popup on '${s.label}'`;
+      const entry = document.createElement('li');
+      entry.appendChild(button);
+      popupButtons.appendChild(entry);
+      const popupWatcher = new EventWatcher(popupTest, button, ['click']);
+      const popupClick = popupWatcher.wait_for('click');
+      try {  // Support manual testing where test_driver is not running.
+        await test_driver.click(button);
+      } catch {
+      }
+      await popupClick;
+      button.disabled = true;
+      await testPopupOnScreen(popupTest, s);
+    }, `Open a popup on '${s.label}'`);
+  }
+}, 'Use multi-screen details to open a popup window on each screen');
+</script>
