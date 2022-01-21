@@ -1120,6 +1120,10 @@ class SystemWebAppManagerInstallAllAppsBrowserTest
 // aforementioned crbug is fixed.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
                        WebAppProtoEntryDefined) {
+  // Wait for apps to install before performing assertions, otherwise the test
+  // might flake. See https://crbug.com/1286600#c6.
+  WaitForSystemAppsSynchronized();
+
   const auto& app_map = GetManager().GetRegisteredSystemAppsForTesting();
   ASSERT_GT(app_map.size(), 0U);
 
