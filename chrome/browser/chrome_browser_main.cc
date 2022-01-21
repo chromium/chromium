@@ -1202,6 +1202,17 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostProfileInit(profile, is_initial_profile);
+
+#if BUILDFLAG(IS_WIN)
+  // Verify that the profile is not on a network share and if so prepare to show
+  // notification to the user.
+  if (NetworkProfileBubble::ShouldCheckNetworkProfile(profile)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&NetworkProfileBubble::CheckNetworkProfile,
+                       profile->GetPath()));
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {
@@ -1587,15 +1598,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (!parsed_command_line().HasSwitch(switches::kBrowserTest)) {
     ChromeBrowserMainPartsWin::RegisterApplicationRestart(
         parsed_command_line());
-  }
-
-  // Verify that the profile is not on a network share and if so prepare to show
-  // notification to the user.
-  if (NetworkProfileBubble::ShouldCheckNetworkProfile(profile)) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&NetworkProfileBubble::CheckNetworkProfile,
-                       profile->GetPath()));
   }
 #endif  // BUILDFLAG(IS_WIN)
 
