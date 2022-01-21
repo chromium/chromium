@@ -53,7 +53,7 @@ class DataChannel(WebrtcPage):
         description='Amount of data transferred by data channel in 10 seconds')
     self.AddJavaScriptMeasurement(
         'data_throughput',
-        'bytesPerSecond',
+        'bytesPerSecond_biggerIsBetter',
         'currentThroughput',
         description='Throughput of the data transfer.')
 
