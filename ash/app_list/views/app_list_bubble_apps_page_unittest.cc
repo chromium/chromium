@@ -117,22 +117,6 @@ TEST_F(AppListBubbleAppsPageTest, AnimateShowPage) {
       "Apps.ClamshellLauncher.AnimationSmoothness.ShowAppsPage", 1);
 }
 
-TEST_F(AppListBubbleAppsPageTest, GradientMaskCreatedWhenAnimationsDisabled) {
-  // Force disable animation.
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(features::kProductivityLauncherAnimation);
-
-  // Show an app list with enough apps to fill the page and trigger a gradient
-  // at the bottom.
-  auto* helper = GetAppListTestHelper();
-  helper->AddAppItems(50);
-  helper->ShowAppList();
-
-  // Scroll view gradient mask layer is created.
-  auto* apps_page = helper->GetBubbleAppsPage();
-  EXPECT_TRUE(apps_page->scroll_view()->layer()->layer_mask_layer());
-}
-
 TEST_F(AppListBubbleAppsPageTest, ScrollPositionResetOnShow) {
   // Show an app list with enough apps to allow scrolling.
   auto* helper = GetAppListTestHelper();

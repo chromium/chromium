@@ -150,18 +150,16 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
     result_count += view->num_results();
   }
 
-  if (features::IsProductivityLauncherAnimationEnabled()) {
-    using AnimationInfo = SearchResultContainerView::ResultsAnimationInfo;
-    AnimationInfo aggregate_animation_info;
-    for (SearchResultContainerView* view : result_container_views_) {
-      absl::optional<AnimationInfo> container_animation_info =
-          view->ScheduleResultAnimations(aggregate_animation_info);
-      DCHECK(container_animation_info);
-      aggregate_animation_info.total_views +=
-          container_animation_info->total_views;
-      aggregate_animation_info.animating_views +=
-          container_animation_info->animating_views;
-    }
+  using AnimationInfo = SearchResultContainerView::ResultsAnimationInfo;
+  AnimationInfo aggregate_animation_info;
+  for (SearchResultContainerView* view : result_container_views_) {
+    absl::optional<AnimationInfo> container_animation_info =
+        view->ScheduleResultAnimations(aggregate_animation_info);
+    DCHECK(container_animation_info);
+    aggregate_animation_info.total_views +=
+        container_animation_info->total_views;
+    aggregate_animation_info.animating_views +=
+        container_animation_info->animating_views;
   }
 
   last_search_result_count_ = result_count;

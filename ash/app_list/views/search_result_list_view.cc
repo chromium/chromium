@@ -281,7 +281,6 @@ SearchResultListView::GetAllListTypesForCategoricalSearch() {
 absl::optional<SearchResultContainerView::ResultsAnimationInfo>
 SearchResultListView::ScheduleResultAnimations(
     const ResultsAnimationInfo& aggregate_animation_info) {
-  DCHECK(features::IsProductivityLauncherAnimationEnabled());
   DCHECK(animates_result_updates_);
 
   // Collect current container animation info.

@@ -1289,9 +1289,7 @@ TEST_F(SearchBoxViewAppListBubbleTest, HasAccessibilityHintWhenActive) {
 class SearchBoxViewAnimationTest : public AshTestBase {
  public:
   SearchBoxViewAnimationTest() {
-    scoped_features_.InitWithFeatures({features::kProductivityLauncherAnimation,
-                                       features::kProductivityLauncher},
-                                      {});
+    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~SearchBoxViewAnimationTest() override = default;
 

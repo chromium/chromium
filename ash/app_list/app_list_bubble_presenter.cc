@@ -257,9 +257,7 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   // The page must be set before triggering the show animation so the correct
   // animations are triggered.
   bubble_view_->ShowPage(target_page_);
-  if (features::IsProductivityLauncherAnimationEnabled()) {
-    bubble_view_->StartShowAnimation();
-  }
+  bubble_view_->StartShowAnimation();
   controller_->OnVisibilityChanged(/*visible=*/true, display_id);
 }
 
@@ -296,17 +294,10 @@ void AppListBubblePresenter::Dismiss() {
 
   controller_->ViewClosing();
   controller_->OnVisibilityWillChange(/*visible=*/false, display_id);
-  if (features::IsProductivityLauncherAnimationEnabled()) {
-    if (bubble_view_) {
-      bubble_view_->StartHideAnimation(
-          base::BindOnce(&AppListBubblePresenter::OnHideAnimationEnded,
-                         weak_factory_.GetWeakPtr()));
-    }
-  } else {
-    // Check for widget because the code could be waiting for zero-state search
-    // results before first show.
-    if (bubble_widget_)
-      OnHideAnimationEnded();
+  if (bubble_view_) {
+    bubble_view_->StartHideAnimation(
+        base::BindOnce(&AppListBubblePresenter::OnHideAnimationEnded,
+                       weak_factory_.GetWeakPtr()));
   }
   controller_->OnVisibilityChanged(/*visible=*/false, display_id);
 

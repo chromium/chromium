@@ -563,21 +563,16 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
   const bool should_show_assistant_button =
       show_assistant_button_ && !should_show_close_button;
 
-  if (!features::IsProductivityLauncherAnimationEnabled()) {
-    close_button_->SetVisible(should_show_close_button);
-    assistant_button_->SetVisible(should_show_assistant_button);
+  if (should_show_close_button) {
+    MaybeFadeButtonIn(close_button_);
   } else {
-    if (should_show_close_button) {
-      MaybeFadeButtonIn(close_button_);
-    } else {
-      MaybeFadeButtonOut(close_button_);
-    }
+    MaybeFadeButtonOut(close_button_);
+  }
 
-    if (should_show_assistant_button) {
-      MaybeFadeButtonIn(assistant_button_);
-    } else {
-      MaybeFadeButtonOut(assistant_button_);
-    }
+  if (should_show_assistant_button) {
+    MaybeFadeButtonIn(assistant_button_);
+  } else {
+    MaybeFadeButtonOut(assistant_button_);
   }
 }
 

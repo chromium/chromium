@@ -106,13 +106,6 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
   // Scroll view will have a gradient mask layer.
   scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  // When animations are enabled the gradient helper is created in the animation
-  // end callback.
-  if (!features::IsProductivityLauncherAnimationEnabled()) {
-    gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
-    // Layout() updates the gradient zone, since the gradient helper needs to
-    // know the bounds of the scroll view and contents view.
-  }
 
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
@@ -256,10 +249,8 @@ void AppListBubbleAppsPage::AnimateShowPage() {
   SetVisible(true);
 
   // If skipping animations, just update visibility.
-  if (!features::IsProductivityLauncherAnimationEnabled() ||
-      ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (ui::ScopedAnimationDurationScaleMode::is_zero())
     return;
-  }
 
   // Scroll contents has a layer, so animate that.
   views::View* scroll_contents = scroll_view_->contents();
@@ -296,8 +287,7 @@ void AppListBubbleAppsPage::AnimateShowPage() {
 
 void AppListBubbleAppsPage::AnimateHidePage() {
   // If skipping animations, just update visibility.
-  if (!features::IsProductivityLauncherAnimationEnabled() ||
-      ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
     SetVisible(false);
     return;
   }

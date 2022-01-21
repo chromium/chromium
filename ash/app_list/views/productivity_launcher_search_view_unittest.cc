@@ -172,8 +172,6 @@ INSTANTIATE_TEST_SUITE_P(Tablet,
 
 TEST_P(ProductivityLauncherSearchViewTest, AnimateSearchResultView) {
   // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 

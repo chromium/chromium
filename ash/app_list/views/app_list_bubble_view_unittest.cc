@@ -241,8 +241,6 @@ TEST_F(AppListBubbleViewTest,
 
 TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
   // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -280,8 +278,6 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
 
 TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
   // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -316,8 +312,6 @@ TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
 
 TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresGradientMask) {
   // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -340,8 +334,6 @@ TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresGradientMask) {
 
 TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
   // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -364,8 +356,6 @@ TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
   base::HistogramTester histograms;
 
   // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -389,8 +379,6 @@ TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
   ShowAppList();
 
   // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -418,8 +406,6 @@ TEST_F(AppListBubbleViewTest, ShutdownDuringHideAnimationDoesNotCrash) {
   base::HistogramTester histograms;
 
   // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
