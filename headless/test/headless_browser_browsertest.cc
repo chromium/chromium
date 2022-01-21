@@ -48,8 +48,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/resources/grit/blink_resources.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -794,6 +797,18 @@ IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithExplicitlyAllowedPorts,
     EXPECT_NE(error, net::ERR_UNSAFE_PORT);
   else
     EXPECT_EQ(error, net::ERR_UNSAFE_PORT);
+}
+
+// This assures that both string and data blink resources are
+// present. These are essential for correct rendering.
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, LocalizedResources) {
+  EXPECT_THAT(
+      ui::ResourceBundle::GetSharedInstance().LoadLocalizedResourceString(
+          IDS_FORM_SUBMIT_LABEL),
+      testing::Eq("Submit"));
+  EXPECT_THAT(ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                  IDR_UASTYLE_HTML_CSS),
+              testing::Ne(""));
 }
 
 }  // namespace headless

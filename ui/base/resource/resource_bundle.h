@@ -184,6 +184,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
       base::File pak_file,
       const base::MemoryMappedFile::Region& region);
 
+  // Initializes resource bundle by loading the primary data pack from the
+  // specified buffer. This does not infer the locale or access any files.
+  static void InitSharedInstanceWithBuffer(base::span<const uint8_t> buffer,
+                                           ResourceScaleFactor scale_factor);
+
   // Initialize the ResourceBundle using given data pack path for testing.
   static void InitSharedInstanceWithPakPath(const base::FilePath& path);
 
