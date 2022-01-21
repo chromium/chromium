@@ -5206,6 +5206,13 @@ others/histograms.xml -->
   <int value="4" label="Document destroyed"/>
 </enum>
 
+<enum name="AudioOutputDeviceMixerManagerStreamCreation">
+  <int value="0" label="Unmixable stream"/>
+  <int value="1" label="Fallback to unmixable stream"/>
+  <int value="2" label="Using new mixer"/>
+  <int value="3" label="Using existing mixer"/>
+</enum>
+
 <enum name="AudioOutputDeviceMixerMixedPlaybackStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="Failed to open rendering stream"/>

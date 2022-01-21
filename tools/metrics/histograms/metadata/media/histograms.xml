@@ -713,6 +713,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.OutputDeviceMixerManager.StreamCreation"
+    enum="AudioOutputDeviceMixerManagerStreamCreation"
+    expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    A path OutputDeviceMixerManager uses to create an output stream.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.PhysicalProcessorsMac" units="units"
     expires_after="2021-07-01">
   <owner>henrika@chromium.org</owner>

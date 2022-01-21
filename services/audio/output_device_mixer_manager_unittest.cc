@@ -442,6 +442,30 @@ TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_WithBitstreamFormat) {
   out_stream->Close();
 }
 
+// Makes sure we still get an unmixable stream if device info is stale and
+// AudioManager::GetOutputStreamParameters() returns invalid parameters.
+TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_WithStaleDeviceInfo) {
+  EXPECT_CALL(audio_manager_, GetDefaultOutputStreamParameters()).Times(0);
+
+  // Return invalid parameters, which should fail mixer creation.
+  EXPECT_CALL(audio_manager_, GetOutputStreamParameters(kOtherFakeDeviceId))
+      .WillOnce(Return(media::AudioParameters()));
+
+  ExpectNoMixerCreated();
+
+  MockAudioOutputStream mock_stream;
+  EXPECT_CALL(audio_manager_, MakeAudioOutputStreamProxy(_, _))
+      .WillOnce(Return(&mock_stream));
+
+  AudioOutputStream* out_stream = output_mixer_manager_.MakeOutputStream(
+      kOtherFakeDeviceId, default_params_, GetNoopDeviceChangeCallback());
+
+  EXPECT_TRUE(out_stream);
+
+  // Test cleanup.
+  out_stream->Close();
+}
+
 // Makes sure we handle running out of stream proxies.
 TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_MaxProxies) {
   ExpectNoMixerCreated();

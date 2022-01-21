@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -25,6 +26,17 @@ std::string NormalizeIfDefault(const std::string& device_id) {
              ? kNormalizedDefaultDeviceId
              : device_id;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Aligned with AudioOutputDeviceMixerManagerStreamCreation enum.
+enum class StreamCreation {
+  kUnmixable,
+  kFallbackToUnmixable,
+  kUsingNewMixer,
+  kUsingExistingMixer,
+  kMaxValue = kUsingExistingMixer,
+};
 
 }  // namespace
 
@@ -76,26 +88,32 @@ media::AudioOutputStream* OutputDeviceMixerManager::MakeOutputStream(
     const media::AudioParameters& params,
     base::OnceClosure close_stream_on_device_change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (params.format() != media::AudioParameters::AUDIO_PCM_LOW_LATENCY) {
-    DLOG(WARNING) << "Making unmixable output stream";
+  OutputDeviceMixer* mixer = nullptr;
+  StreamCreation stream_creation = StreamCreation::kUnmixable;
 
-    return CreateDeviceListenerStream(std::move(close_stream_on_device_change),
-                                      device_id, params);
+  if (params.format() == media::AudioParameters::AUDIO_PCM_LOW_LATENCY) {
+    std::string mixer_device_id = ToMixerDeviceId(device_id);
+    mixer = FindMixer(mixer_device_id);
+    if (mixer) {
+      stream_creation = StreamCreation::kUsingExistingMixer;
+    } else {
+      mixer = AddMixer(mixer_device_id);
+      stream_creation = mixer ? StreamCreation::kUsingNewMixer
+                              : StreamCreation::kFallbackToUnmixable;
+    }
   }
 
-  std::string mixer_device_id = ToMixerDeviceId(device_id);
+  base::UmaHistogramEnumeration(
+      "Media.Audio.OutputDeviceMixerManager.StreamCreation", stream_creation);
 
-  OutputDeviceMixer* mixer = FindMixer(mixer_device_id);
+  if (mixer) {
+    return mixer->MakeMixableStream(params,
+                                    std::move(close_stream_on_device_change));
+  }
 
-  if (!mixer)
-    mixer = AddMixer(mixer_device_id);
-
-  // Add mixer can still fail.
-  if (!mixer)
-    return nullptr;
-
-  return mixer->MakeMixableStream(params,
-                                  std::move(close_stream_on_device_change));
+  DLOG(WARNING) << "Making unmixable output stream";
+  return CreateDeviceListenerStream(std::move(close_stream_on_device_change),
+                                    device_id, params);
 }
 
 void OutputDeviceMixerManager::OnDeviceChange() {
