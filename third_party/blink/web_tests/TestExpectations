@@ -5298,7 +5298,7 @@ crbug.com/953591 [ Win ] transforms/matrix-02.html [ Failure Pass ]
 crbug.com/938884 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Pass Skip Timeout ]
 
 # Sheriff 2019-04-30
-crbug.com/948785 [ Debug ] fast/events/pointerevents/pointer-event-consumed-touchstart-in-slop-region.html [ Failure Pass ]
+crbug.com/948785 fast/events/pointerevents/pointer-event-consumed-touchstart-in-slop-region.html [ Skip ]
 
 # Sheriff 2019-05-01
 crbug.com/958347 [ Linux ] external/wpt/editing/run/removeformat.html [ Crash Pass ]
