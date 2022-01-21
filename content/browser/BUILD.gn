@@ -410,6 +410,8 @@ source_set("browser") {
     "attribution_reporting/attribution_storage_sql_migrations.h",
     "attribution_reporting/attribution_utils.cc",
     "attribution_reporting/attribution_utils.h",
+    "attribution_reporting/combinatorics.cc",
+    "attribution_reporting/combinatorics.h",
     "attribution_reporting/common_source_info.cc",
     "attribution_reporting/common_source_info.h",
     "attribution_reporting/rate_limit_table.cc",
