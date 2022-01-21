@@ -776,29 +776,26 @@ void DistributeExcessBlockSizeToRows(
 
   // Step 1: percentage rows grow to no more than their percentage size.
   if (!percent_rows_with_deficit.IsEmpty()) {
-    float ratio = std::min(
-        distributable_block_size.ToFloat() / percent_block_size_deficit, 1.0f);
-    LayoutUnit remaining_deficit =
-        LayoutUnit(ratio * percent_block_size_deficit);
-    LayoutUnit distributed_block_size;
+    // Don't distribute more than the percent block-size deficit.
+    LayoutUnit percent_distributable_block_size =
+        std::min(percent_block_size_deficit, distributable_block_size);
+
+    LayoutUnit remaining_deficit = percent_distributable_block_size;
     for (auto& index : percent_rows_with_deficit) {
       auto& row = rows->at(index);
-      LayoutUnit delta = LayoutUnit(RowBlockSizeDeficit(row) * ratio);
+      LayoutUnit delta = percent_distributable_block_size.MulDiv(
+          RowBlockSizeDeficit(row), percent_block_size_deficit);
       row.block_size += delta;
       total_block_size += delta;
-      distributed_block_size += delta;
+      distributable_block_size -= delta;
       remaining_deficit -= delta;
     }
     auto& last_row = rows->at(percent_rows_with_deficit.back());
     last_row.block_size += remaining_deficit;
-    last_row.block_size = std::max(last_row.block_size, LayoutUnit());
-    distributed_block_size += remaining_deficit;
-    // Rounding errors might cause us to distribute more than available length.
-    distributed_block_size =
-        std::min(distributed_block_size, distributable_block_size);
-    distributable_block_size -= distributed_block_size;
+    distributable_block_size -= remaining_deficit;
+    DCHECK_GE(last_row.block_size, LayoutUnit());
 
-    DCHECK_GE(distributable_block_size, LayoutUnit());
+    // Rounding may cause us to distribute more than the distributable size.
     if (distributable_block_size <= LayoutUnit())
       return;
   }
@@ -825,15 +822,14 @@ void DistributeExcessBlockSizeToRows(
     LayoutUnit remaining_deficit = distributable_block_size;
     for (auto& index : unconstrained_non_empty_rows) {
       auto& row = rows->at(index);
-      LayoutUnit delta =
-          LayoutUnit(row.block_size * distributable_block_size.ToFloat() /
-                     unconstrained_non_empty_row_block_size);
+      LayoutUnit delta = distributable_block_size.MulDiv(
+          row.block_size, unconstrained_non_empty_row_block_size);
       row.block_size += delta;
       remaining_deficit -= delta;
     }
     auto& last_row = rows->at(unconstrained_non_empty_rows.back());
     last_row.block_size += remaining_deficit;
-    last_row.block_size = std::max(last_row.block_size, LayoutUnit());
+    DCHECK_GE(last_row.block_size, LayoutUnit());
     return;
   }
 
@@ -862,14 +858,13 @@ void DistributeExcessBlockSizeToRows(
                                              : empty_rows;
       for (auto& index : rows_to_grow) {
         auto& row = rows->at(index);
-        LayoutUnit delta = LayoutUnit(distributable_block_size.ToFloat() /
-                                      rows_to_grow.size());
+        LayoutUnit delta = distributable_block_size / rows_to_grow.size();
         row.block_size = delta;
         remaining_deficit -= delta;
       }
       auto& last_row = rows->at(rows_to_grow.back());
       last_row.block_size += remaining_deficit;
-      last_row.block_size = std::max(last_row.block_size, LayoutUnit());
+      DCHECK_GE(last_row.block_size, LayoutUnit());
       return;
     }
   }
@@ -881,14 +876,13 @@ void DistributeExcessBlockSizeToRows(
     for (auto& index : non_empty_rows) {
       auto& row = rows->at(index);
       LayoutUnit delta =
-          LayoutUnit(distributable_block_size * row.block_size.ToFloat() /
-                     total_block_size);
+          distributable_block_size.MulDiv(row.block_size, total_block_size);
       row.block_size += delta;
       remaining_deficit -= delta;
     }
     auto& last_row = rows->at(non_empty_rows.back());
     last_row.block_size += remaining_deficit;
-    last_row.block_size = std::max(last_row.block_size, LayoutUnit());
+    DCHECK_GE(last_row.block_size, LayoutUnit());
   }
 }
 
