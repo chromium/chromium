@@ -5623,14 +5623,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="HighDownloadBandwidth" separator=".">
-  <obsolete>
-    Removed 2021/07.
-  </obsolete>
-  <suffix name="HighDownloadBandwidth" label="download with high bandwidth."/>
-  <affected-histogram name="Download.Parallelizable.FileSize"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="HstsState" separator=".">
   <suffix name="HSTSNotEnabled" label="The HSTS is not enabled."/>
   <suffix name="WithHSTSEnabled" label="The HSTS is enabled."/>
@@ -7066,20 +7058,6 @@ chromium-metrics-reviews@google.com.
   <suffix base="true" name="InitiatorSecure" label=""/>
   <suffix base="true" name="InitiatorUnknown" label=""/>
   <affected-histogram name="Download.InsecureBlocking.Extensions"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MixedContentDownloadMimeSecurity" separator=".">
-  <suffix name="Insecure" label=""/>
-  <suffix name="Other" label=""/>
-  <suffix name="Secure" label=""/>
-  <affected-histogram name="Download.InsecureBlocking.Verification.Item"/>
-  <affected-histogram name="Download.InsecureBlocking.Verification.Manager"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MixedContentDownloadMimeSource" separator=".">
-  <suffix base="true" name="Item" label=""/>
-  <suffix base="true" name="Manager" label=""/>
-  <affected-histogram name="Download.InsecureBlocking.Verification"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Mobile_DefaultBrowser_SystemDefaultBrowser_Type"
@@ -9090,15 +9068,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Tabs.StateTransfer.Time_Inactive"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NoAcceptRangesHeader" separator=".">
-  <obsolete>
-    Deprecated 10/2020
-  </obsolete>
-  <suffix name="NoAcceptRangesHeader"
-      label="For parallel requests created without accept-ranges header."/>
-  <affected-histogram name="Download.ParallelDownloadAddStreamSuccess"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NotificationDisplayExperiment" separator="_">
   <obsolete>
     Removed October 2017 (feature enabled by default).
@@ -10809,19 +10778,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="ParallelizableDownload"
       label="Download that supports but doesn't use parallel requests."/>
   <affected-histogram name="Download.Counts"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ParallelizableDownloadBandwidth" separator=".">
-  <suffix name="WithoutParallelRequests"
-      label="Bandwidth without using parallel requests."/>
-  <suffix name="WithParallelRequestsMultipleStreams"
-      label="Bandwidth when multiple streams are active while using parallel
-             requests."/>
-  <suffix name="WithParallelRequestsSingleStream"
-      label="Bandwidth when only a single stream is active while using
-             parallel requests. Other streams are either finished or haven't
-             started."/>
-  <affected-histogram name="Download.ParallelizableDownloadBandwidth"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PasswordAccountStorageUsageLevel" separator=".">

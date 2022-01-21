@@ -47,21 +47,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.BandwidthOverallBytesPerSecond" units="units"
-    expires_after="2021-08-15">
-  <obsolete>
-    Deprecated as of 05/2021. Use Download.BandwidthOverallBytesPerSecond2
-    instead as it has higher bucket range.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    Overall bandwidth seen for the download. Note that this is measured at the
-    point at which the file is written, and so will not take into account the
-    time costs of activities that occur after file write is completed (e.g. safe
-    browsing scanning).
-  </summary>
-</histogram>
-
 <histogram name="Download.BandwidthOverallBytesPerSecond2" units="bytes/second"
     expires_after="2022-07-11">
   <owner>qinmin@chromium.org</owner>
@@ -276,37 +261,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.HistoryPropagatedUpdate" enum="Boolean"
-    expires_after="2021-06-22">
-  <obsolete>
-    Deprecated in June 2021.
-  </obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Denotes whether the history result should be updated. Recorded when the
-    download is updated.
-  </summary>
-</histogram>
-
 <histogram name="Download.HttpResponseCode" enum="HttpResponseCode"
     expires_after="never">
 <!-- expires-never: Used to monitor download system health. -->
 
   <owner>xingliu@chromium.org</owner>
   <summary>The count of HTTP Response codes for download requests.</summary>
-</histogram>
-
-<histogram name="Download.InitiatedByWindowOpener"
-    enum="DownloadInitiatedByWindowOpenerType" expires_after="M85">
-  <obsolete>
-    Expired after M85. No longer in use.
-  </obsolete>
-  <owner>meacer@chromium.org</owner>
-  <owner>jdeblasio@chromium.org</owner>
-  <summary>
-    Records the type of the window.opener origin when a download is initiated in
-    a tab by that tab's opener (crbug.com/121259).
-  </summary>
 </histogram>
 
 <histogram name="Download.InProgressDB.Counts"
@@ -337,22 +297,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records security state of downloads to support analysis for mixed content
     file download blocking.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Download.InsecureBlocking.Verification"
-    enum="DownloadContentType" expires_after="2022-03-27">
-  <obsolete>
-    Expired after M92. No longer in use.
-  </obsolete>
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <owner>cthomp@chromium.org</owner>
-  <summary>
-    Records mime-type of download to support analysis for mixed content file
-    download blocking. This is a temporary metric for investigating differences
-    in metrics. Warning: this histogram was expired from M92 through M95; data
-    may be missing.
   </summary>
 </histogram>
 
@@ -396,17 +340,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Positive net error codes that happen in the case of download content fetch
     failure.
-  </summary>
-</histogram>
-
-<histogram name="Download.IOSDownloadedFileStatusCode" units="units"
-    expires_after="2020-12-08">
-  <obsolete>
-    Deprecated as of 08-2018. Recording code was removed in crrev.com/c/1170128.
-  </obsolete>
-  <owner>stkhapugin@chromium.org</owner>
-  <summary>
-    HTTP status code returned when file download completes on iOS.
   </summary>
 </histogram>
 
@@ -683,22 +616,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.ParallelDownload.CreationEvent"
-    enum="ParallelDownloadCreationEvent" expires_after="2020-12-06">
-  <obsolete>
-    Deprecated as of 10/2020
-  </obsolete>
-  <owner>xingliu@chromium.org</owner>
-  <summary>
-    When parallel downloading feature is enabled, a download may be created as
-    parallel download or fall back to normal download based on various factors.
-    Records the total number of parallel and non-parallel downloads created when
-    parallel downloading feature is enabled. Also records the reason why a
-    parallel download falls back to normal download. The reasons are not
-    mutually exclusive.
-  </summary>
-</histogram>
-
 <histogram name="Download.ParallelDownload.CreationFailureReason"
     enum="InterruptReason" expires_after="2021-04-25">
   <owner>qinmin@chromium.org</owner>
@@ -709,18 +626,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.ParallelDownloadAddStreamSuccess"
-    enum="BooleanSuccess" expires_after="2020-10-25">
-  <obsolete>
-    Depcreated 10/2020
-  </obsolete>
-  <owner>xingliu@chromium.org</owner>
-  <summary>
-    Records if the byte stream reader of a subsequent request is successfully
-    added to the download sink.
-  </summary>
-</histogram>
-
 <histogram name="Download.ParallelDownloadRequestCount" units="requests"
     expires_after="2022-04-01">
   <owner>qinmin@chromium.org</owner>
@@ -728,38 +633,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total number of requests sent for a parallel download, including the
     initial request.
-  </summary>
-</histogram>
-
-<histogram name="Download.Parallelizable.DownloadTime" units="ms"
-    expires_after="2020-12-28">
-  <obsolete>
-    Removed 2021/02
-  </obsolete>
-  <owner>xingliu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>The download time for a parallelizable download.</summary>
-</histogram>
-
-<histogram name="Download.Parallelizable.FileSize" units="KB"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed 2021/07
-  </obsolete>
-  <owner>xingliu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>The download size of a parallelizable download.</summary>
-</histogram>
-
-<histogram base="true" name="Download.ParallelizableDownloadBandwidth"
-    units="bytes/second" expires_after="2020-12-13">
-  <obsolete>
-    Deprecated as of 12/2020.
-  </obsolete>
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    For parallelizable download, average disk bandwidth seen for different
-    settings. If a download was ever paused, this is not recorded.
   </summary>
 </histogram>
 
@@ -1012,18 +885,6 @@ chromium-metrics-reviews@google.com.
   <owner>xingliu@chromium.org</owner>
   <summary>
     The error code when failed to create the download directory.
-  </summary>
-</histogram>
-
-<histogram name="Download.Service.Files.FreeDiskSpace" units="%"
-    expires_after="2021-09-05">
-  <obsolete>
-    Deprecated 09/2021
-  </obsolete>
-  <owner>xingliu@chromium.org</owner>
-  <summary>
-    The percentage of free disk space to total disk space. Recorded during
-    initialization of the file monitor.
   </summary>
 </histogram>
 
