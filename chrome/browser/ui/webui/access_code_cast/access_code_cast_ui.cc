@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
+#include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/access_code_cast_resources.h"
@@ -25,8 +26,22 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/bindings_policy.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/views/widget/widget.h"
 
 using media_router::AccessCodeCastHandler;
+
+// Creates default params for showing AccessCodeCastDialog in ChromeOS
+views::Widget::InitParams CreateParams() {
+  views::Widget::InitParams params;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  params.corner_radius = 12;
+  // Dialog frame view has its own shadow.
+  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+#endif // IS_CHROMEOS
+
+  return params;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //  AccessCodeCast dialog:
@@ -65,9 +80,11 @@ void AccessCodeCastDialog::Show(gfx::NativeView parent,
                                 content::BrowserContext* context,
                                 const media_router::CastModeSet& cast_mode_set,
                                 content::WebContents* web_contents) {
-  chrome::ShowWebDialog(
+  views::Widget::InitParams extra_params = CreateParams();
+  chrome::ShowWebDialogWithParams(
       parent, context,
-      new AccessCodeCastDialog(context, cast_mode_set, web_contents));
+      new AccessCodeCastDialog(context, cast_mode_set, web_contents),
+      absl::make_optional<views::Widget::InitParams>(std::move(extra_params)));
 }
 
 ui::ModalType AccessCodeCastDialog::GetDialogModalType() const {
