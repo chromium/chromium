@@ -54,11 +54,9 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
     int layer_id;
     unsigned bitfields;
     SkColor background_color;
-    Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
-    void* capture_bounds;
-    Region wheel_event_region;
     ElementId element_id;
+    void* rare_inputs;
   } inputs;
   raw_ptr<void> layer_tree_inputs;
   int int_fields[6];
@@ -1114,9 +1112,14 @@ bool Layer::GetUserScrollableVertical() const {
 
 void Layer::SetNonFastScrollableRegion(const Region& region) {
   DCHECK(IsPropertyChangeAllowed());
-  if (inputs_.non_fast_scrollable_region == region)
+  if (!inputs_.rare_inputs && region.IsEmpty())
     return;
-  inputs_.non_fast_scrollable_region = region;
+
+  RareInputs& rare_inputs = EnsureRareInputs();
+  if (rare_inputs.non_fast_scrollable_region == region)
+    return;
+
+  rare_inputs.non_fast_scrollable_region = region;
   SetPropertyTreesNeedRebuild();
   SetNeedsCommit();
 }
@@ -1131,25 +1134,30 @@ void Layer::SetTouchActionRegion(TouchActionRegion touch_action_region) {
   SetNeedsCommit();
 }
 
-void Layer::SetCaptureBounds(std::unique_ptr<viz::RegionCaptureBounds> bounds) {
+void Layer::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   DCHECK(IsPropertyChangeAllowed());
-  if (!inputs_.capture_bounds && !bounds)
+  if (!inputs_.rare_inputs && bounds.IsEmpty())
     return;
 
-  if (inputs_.capture_bounds && bounds && *inputs_.capture_bounds == *bounds)
+  RareInputs& rare_inputs = EnsureRareInputs();
+  if (inputs_.rare_inputs->capture_bounds == bounds)
     return;
 
-  inputs_.capture_bounds = std::move(bounds);
+  rare_inputs.capture_bounds = std::move(bounds);
   SetPropertyTreesNeedRebuild();
   SetNeedsCommit();
 }
 
 void Layer::SetWheelEventRegion(Region wheel_event_region) {
   DCHECK(IsPropertyChangeAllowed());
-  if (inputs_.wheel_event_region == wheel_event_region)
+  if (!inputs_.rare_inputs && wheel_event_region.IsEmpty())
     return;
 
-  inputs_.wheel_event_region = std::move(wheel_event_region);
+  RareInputs& rare_inputs = EnsureRareInputs();
+  if (rare_inputs.wheel_event_region == wheel_event_region)
+    return;
+
+  rare_inputs.wheel_event_region = std::move(wheel_event_region);
   SetNeedsCommit();
 }
 
@@ -1434,13 +1442,7 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   if (subtree_property_changed_.Read(*this))
     layer->NoteLayerPropertyChanged();
   layer->set_may_contain_video(may_contain_video_);
-  layer->SetNonFastScrollableRegion(inputs_.non_fast_scrollable_region);
   layer->SetTouchActionRegion(inputs_.touch_action_region);
-  layer->SetCaptureBounds(
-      inputs_.capture_bounds
-          ? std::make_unique<viz::RegionCaptureBounds>(*inputs_.capture_bounds)
-          : nullptr);
-  layer->SetWheelEventHandlerRegion(inputs_.wheel_event_region);
   layer->SetContentsOpaque(inputs_.contents_opaque);
   layer->SetContentsOpaqueForText(inputs_.contents_opaque_for_text);
   layer->SetShouldCheckBackfaceVisibility(should_check_backface_visibility_);
@@ -1466,6 +1468,15 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
 
   // debug_info_->invalidations, if exist, will be cleared in the function.
   layer->UpdateDebugInfo(debug_info_.get());
+
+  if (inputs_.rare_inputs) {
+    layer->SetNonFastScrollableRegion(
+        inputs_.rare_inputs->non_fast_scrollable_region);
+    layer->SetCaptureBounds(inputs_.rare_inputs->capture_bounds);
+    layer->SetWheelEventHandlerRegion(inputs_.rare_inputs->wheel_event_region);
+  } else {
+    layer->ResetRareProperties();
+  }
 
   // Reset any state that should be cleared for the next update.
   subtree_property_changed_.Write(*this) = false;

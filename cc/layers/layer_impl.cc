@@ -361,9 +361,9 @@ const Region& LayerImpl::GetAllTouchActionRegions() const {
   return *all_touch_action_regions_;
 }
 
-void LayerImpl::SetCaptureBounds(
-    std::unique_ptr<viz::RegionCaptureBounds> bounds) {
-  capture_bounds_ = std::move(bounds);
+void LayerImpl::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
+  if (rare_properties_ || !bounds.IsEmpty())
+    EnsureRareProperties().capture_bounds = std::move(bounds);
 }
 
 std::unique_ptr<LayerImpl> LayerImpl::CreateLayerImpl(
@@ -391,11 +391,8 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer->should_check_backface_visibility_ = should_check_backface_visibility_;
   layer->draws_content_ = draws_content_;
   layer->hit_testable_ = hit_testable_;
-  layer->non_fast_scrollable_region_ = non_fast_scrollable_region_;
   layer->touch_action_region_ = touch_action_region_;
   layer->all_touch_action_regions_ = ClonePtr(all_touch_action_regions_);
-  layer->capture_bounds_ = ClonePtr(capture_bounds_);
-  layer->wheel_event_handler_region_ = wheel_event_handler_region_;
   layer->background_color_ = background_color_;
   layer->safe_opaque_background_color_ = safe_opaque_background_color_;
   layer->transform_tree_index_ = transform_tree_index_;
@@ -419,6 +416,13 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer->UnionUpdateRect(update_rect_);
 
   layer->UpdateDebugInfo(debug_info_.get());
+
+  if (rare_properties_) {
+    layer->rare_properties_ =
+        std::make_unique<RareProperties>(*rare_properties_);
+  } else {
+    layer->rare_properties_.reset();
+  }
 
   // Reset any state that should be cleared for the next update.
   needs_show_scrollbars_ = false;
@@ -706,16 +710,14 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
     GetAllTouchActionRegions().AsValueInto(state);
     state->EndArray();
   }
-  if (!wheel_event_handler_region_.IsEmpty()) {
-    state->BeginArray("wheel_event_handler_region");
-    wheel_event_handler_region_.AsValueInto(state);
-    state->EndArray();
-  }
-  if (!non_fast_scrollable_region_.IsEmpty()) {
-    state->BeginArray("non_fast_scrollable_region");
-    non_fast_scrollable_region_.AsValueInto(state);
-    state->EndArray();
-  }
+
+  state->BeginArray("wheel_event_handler_region");
+  wheel_event_handler_region().AsValueInto(state);
+  state->EndArray();
+
+  state->BeginArray("non_fast_scrollable_region");
+  non_fast_scrollable_region().AsValueInto(state);
+  state->EndArray();
 
   state->SetBoolean("hit_testable", HitTestable());
   state->SetBoolean("contents_opaque", contents_opaque());

@@ -257,11 +257,32 @@ class CC_EXPORT LayerImpl {
   // scroll property, and invalidate scrollbar geometries etc. for the changes.
   void UpdateScrollable();
 
+  // Some properties on the LayerImpl are rarely set, and so are bundled
+  // under a single unique_ptr.
+  struct RareProperties {
+    // The bounds of elements marked for potential region capture, stored in
+    // the coordinate space of this layer.
+    viz::RegionCaptureBounds capture_bounds;
+    Region non_fast_scrollable_region;
+    Region wheel_event_handler_region;
+  };
+
+  RareProperties& EnsureRareProperties() {
+    if (!rare_properties_)
+      rare_properties_ = std::make_unique<RareProperties>();
+
+    return *rare_properties_;
+  }
+
+  void ResetRareProperties() { rare_properties_.reset(); }
+
   void SetNonFastScrollableRegion(const Region& region) {
-    non_fast_scrollable_region_ = region;
+    if (rare_properties_ || !region.IsEmpty())
+      EnsureRareProperties().non_fast_scrollable_region = region;
   }
   const Region& non_fast_scrollable_region() const {
-    return non_fast_scrollable_region_;
+    return rare_properties_ ? rare_properties_->non_fast_scrollable_region
+                            : Region::Empty();
   }
 
   void SetTouchActionRegion(TouchActionRegion);
@@ -273,19 +294,23 @@ class CC_EXPORT LayerImpl {
     return !touch_action_region_.IsEmpty();
   }
 
-  void SetCaptureBounds(std::unique_ptr<viz::RegionCaptureBounds> bounds);
+  void SetCaptureBounds(viz::RegionCaptureBounds bounds);
   const viz::RegionCaptureBounds* capture_bounds() const {
-    return capture_bounds_.get();
+    return rare_properties_ ? &rare_properties_->capture_bounds : nullptr;
   }
 
   // Set or get the region that contains wheel event handler.
   // The |wheel_event_handler_region| specify the area where wheel event handler
   // could block impl scrolling.
   void SetWheelEventHandlerRegion(const Region& wheel_event_handler_region) {
-    wheel_event_handler_region_ = wheel_event_handler_region;
+    if (rare_properties_ || !wheel_event_handler_region.IsEmpty()) {
+      EnsureRareProperties().wheel_event_handler_region =
+          wheel_event_handler_region;
+    }
   }
   const Region& wheel_event_handler_region() const {
-    return wheel_event_handler_region_;
+    return rare_properties_ ? rare_properties_->wheel_event_handler_region
+                            : Region::Empty();
   }
 
   // The main thread may commit multiple times before the impl thread actually
@@ -507,13 +532,8 @@ class CC_EXPORT LayerImpl {
 
   bool is_inner_viewport_scroll_layer_ : 1;
 
-  Region non_fast_scrollable_region_;
   TouchActionRegion touch_action_region_;
 
-  // The bounds of elements marked for potential region capture, stored in
-  // the coordinate space of this layer.
-  std::unique_ptr<viz::RegionCaptureBounds> capture_bounds_;
-  Region wheel_event_handler_region_;
   SkColor background_color_;
   SkColor safe_opaque_background_color_;
 
@@ -521,6 +541,8 @@ class CC_EXPORT LayerImpl {
   int effect_tree_index_;
   int clip_tree_index_;
   int scroll_tree_index_;
+
+  std::unique_ptr<RareProperties> rare_properties_;
 
  protected:
   friend class TreeSynchronizer;

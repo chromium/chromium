@@ -18183,14 +18183,12 @@ TEST_F(LayerTreeHostImplTest, CollectRegionCaptureBounds) {
 
   // Set up the root layer.
   LayerImpl* root_layer = SetupDefaultRootLayer(gfx::Size(350, 360));
-  root_layer->SetCaptureBounds(
-      std::make_unique<viz::RegionCaptureBounds>(kRootBounds));
+  root_layer->SetCaptureBounds(kRootBounds);
 
   // Set up a child layer, with a scaling transform.
   LayerImpl* child_layer = AddLayer();
   CopyProperties(root_layer, child_layer);
-  child_layer->SetCaptureBounds(
-      std::make_unique<viz::RegionCaptureBounds>(kChildBounds));
+  child_layer->SetCaptureBounds(kChildBounds);
   gfx::Transform child_layer_transform;
   child_layer_transform.Scale(2.0, 3.0);
   child_layer->draw_properties().screen_space_transform =
@@ -18199,8 +18197,7 @@ TEST_F(LayerTreeHostImplTest, CollectRegionCaptureBounds) {
   // Set up another child layer, with a rotation transform.
   LayerImpl* second_child_layer = AddLayer();
   CopyProperties(root_layer, second_child_layer);
-  second_child_layer->SetCaptureBounds(
-      std::make_unique<viz::RegionCaptureBounds>(kSecondChildBounds));
+  second_child_layer->SetCaptureBounds(kSecondChildBounds);
   gfx::Transform second_layer_transform;
   second_layer_transform.Rotate(45);
   second_child_layer->draw_properties().screen_space_transform =
