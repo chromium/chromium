@@ -210,6 +210,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher() {
   ui::AnimationThroughputReporter reporter(
       scrollable_apps_grid_view_->layer()->GetAnimator(),
       metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+        // This histogram name is used in Tast tests. Do not rename.
         base::UmaHistogramPercentage(
             "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", value);
       })));
@@ -260,13 +261,17 @@ void AppListBubbleAppsPage::AnimateShowPage() {
     return;
   }
 
-  // TODO(https://crbug.com/1286590): Add ui::AnimationThroughputReporter and
-  // tests.
-
   // Scroll contents has a layer, so animate that.
   views::View* scroll_contents = scroll_view_->contents();
   DCHECK(scroll_contents->layer());
   DCHECK_EQ(scroll_contents->layer()->type(), ui::LAYER_TEXTURED);
+
+  ui::AnimationThroughputReporter reporter(
+      scroll_contents->layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+        base::UmaHistogramPercentage(
+            "Apps.ClamshellLauncher.AnimationSmoothness.ShowAppsPage", value);
+      })));
 
   gfx::Transform translate_down;
   constexpr int kVerticalOffset = 40;
@@ -297,9 +302,6 @@ void AppListBubbleAppsPage::AnimateHidePage() {
     return;
   }
 
-  // TODO(https://crbug.com/1286590): Add ui::AnimationThroughputReporter and
-  // tests.
-
   // Update view visibility when the animation is done.
   auto set_visible_false = base::BindRepeating(
       [](base::WeakPtr<AppListBubbleAppsPage> self) {
@@ -316,6 +318,13 @@ void AppListBubbleAppsPage::AnimateHidePage() {
   views::View* scroll_contents = scroll_view_->contents();
   DCHECK(scroll_contents->layer());
   DCHECK_EQ(scroll_contents->layer()->type(), ui::LAYER_TEXTURED);
+
+  ui::AnimationThroughputReporter reporter(
+      scroll_contents->layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+        base::UmaHistogramPercentage(
+            "Apps.ClamshellLauncher.AnimationSmoothness.HideAppsPage", value);
+      })));
 
   // The animation spec says 40 dips down over 250ms, but the opacity animation
   // renders the view invisible after 50ms, so animate the visible fraction.

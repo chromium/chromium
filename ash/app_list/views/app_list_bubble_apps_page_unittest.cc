@@ -7,7 +7,7 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -58,7 +58,7 @@ TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
   EXPECT_FALSE(recent_apps->layer());
 }
 
-TEST_F(AppListBubbleAppsPageTest, ViewNotVisibleAfterAnimateHidePage) {
+TEST_F(AppListBubbleAppsPageTest, AnimateHidePage) {
   // Open the app list without animation.
   ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -72,16 +72,21 @@ TEST_F(AppListBubbleAppsPageTest, ViewNotVisibleAfterAnimateHidePage) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::HistogramTester histograms;
 
   // Type a key to trigger the animation to transition to the search page.
   PressAndReleaseKey(ui::VKEY_A);
-  LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
+  helper->WaitForLayerAnimation(apps_page->GetPageAnimationLayerForTest());
 
   // Apps page is not visible.
   EXPECT_FALSE(apps_page->GetVisible());
+
+  // Smoothness was recorded.
+  histograms.ExpectTotalCount(
+      "Apps.ClamshellLauncher.AnimationSmoothness.HideAppsPage", 1);
 }
 
-TEST_F(AppListBubbleAppsPageTest, ViewVisibleAfterAnimateShowPage) {
+TEST_F(AppListBubbleAppsPageTest, AnimateShowPage) {
   // Open the app list without animation.
   ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -98,13 +103,18 @@ TEST_F(AppListBubbleAppsPageTest, ViewVisibleAfterAnimateShowPage) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::HistogramTester histograms;
 
   // Press escape to trigger animation back to the apps page.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
-  LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
+  helper->WaitForLayerAnimation(apps_page->GetPageAnimationLayerForTest());
 
   // Apps page is visible.
   EXPECT_TRUE(apps_page->GetVisible());
+
+  // Smoothness was recorded.
+  histograms.ExpectTotalCount(
+      "Apps.ClamshellLauncher.AnimationSmoothness.ShowAppsPage", 1);
 }
 
 TEST_F(AppListBubbleAppsPageTest, GradientMaskCreatedWhenAnimationsDisabled) {

@@ -1585,6 +1585,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.ClamshellLauncher.AnimationSmoothness.{Transition}"
     units="%" expires_after="2022-09-01">
+<!-- This metric is used in Tast tests. Do not rename the metric or variants. -->
+
   <owner>jamescook@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1594,8 +1596,12 @@ chromium-metrics-reviews@google.com.
     60 frames per second.
   </summary>
   <token key="Transition">
-    <variant name="Close" summary="close"/>
-    <variant name="OpenAppsPage" summary="open apps page"/>
+    <variant name="Close" summary="close launcher"/>
+    <variant name="HideAppsPage"
+        summary="switch away from apps page to another page"/>
+    <variant name="OpenAppsPage" summary="open launcher to apps page"/>
+    <variant name="ShowAppsPage"
+        summary="switch to apps page from another page"/>
   </token>
 </histogram>
 

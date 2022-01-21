@@ -4,6 +4,7 @@
 
 #include "ash/app_list/test/app_list_test_helper.h"
 
+#include <tuple>
 #include <utility>
 
 #include "ash/app_list/app_list_bubble_presenter.h"
@@ -28,6 +29,8 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/test/test_utils.h"
 
 namespace ash {
 
@@ -88,6 +91,18 @@ void AppListTestHelper::ToggleAndRunLoop(uint64_t display_id,
   app_list_controller_->ToggleAppList(display_id, show_source,
                                       base::TimeTicks());
   WaitUntilIdle();
+}
+
+void AppListTestHelper::WaitForLayerAnimation(ui::Layer* layer) {
+  auto* compositor = layer->GetCompositor();
+  while (layer->GetAnimator()->is_animating()) {
+    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+  }
+
+  // Ensure there is one more frame presented after animation finishes
+  // to allow animation throughput data is passed from cc to ui.
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
 }
 
 void AppListTestHelper::StartSlideAnimationOnBubbleAppsPage(

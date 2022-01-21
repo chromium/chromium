@@ -87,19 +87,6 @@ AssistantVisibility GetAssistantVisibility() {
   return AssistantUiController::Get()->GetModel()->visibility();
 }
 
-// Waits for a layer animation to complete.
-void WaitForLayerAnimation(ui::Layer* layer) {
-  auto* compositor = layer->GetCompositor();
-  while (layer->GetAnimator()->is_animating()) {
-    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
-  }
-
-  // Ensure there is one more frame presented after animation finishes
-  // to allow animation throughput data is passed from cc to ui.
-  std::ignore =
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
-}
-
 class AppListBubbleViewTest : public AshTestBase {
  public:
   AppListBubbleViewTest() {
@@ -181,6 +168,10 @@ class AppListBubbleViewTest : public AshTestBase {
   const char* GetFocusedViewName() {
     auto* view = GetFocusedView();
     return view ? view->GetClassName() : "none";
+  }
+
+  void WaitForLayerAnimation(ui::Layer* layer) {
+    GetAppListTestHelper()->WaitForLayerAnimation(layer);
   }
 
   base::test::ScopedFeatureList scoped_features_;

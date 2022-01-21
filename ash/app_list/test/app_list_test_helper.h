@@ -13,6 +13,10 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/test_app_list_client.h"
 
+namespace ui {
+class Layer;
+}
+
 namespace views {
 class View;
 }
@@ -73,6 +77,10 @@ class AppListTestHelper {
   // Toggle the app list in |display_id| triggered with |show_source|, and wait
   // until animation finishes.
   void ToggleAndRunLoop(uint64_t display_id, AppListShowSource show_source);
+
+  // Waits for a layer animation to complete and for animation throughput data
+  // to be passed from cc to ui.
+  void WaitForLayerAnimation(ui::Layer* layer);
 
   // Slides a bubble apps page's component using a layer animation.
   void StartSlideAnimationOnBubbleAppsPage(views::View* view,
