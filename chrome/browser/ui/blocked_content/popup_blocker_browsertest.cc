@@ -67,6 +67,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -880,6 +881,84 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
   EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
                   tab_2->GetMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
+}
+
+class PopupBlockerFencedFrameTest : public PopupBlockerBrowserTest {
+ public:
+  PopupBlockerFencedFrameTest() = default;
+  ~PopupBlockerFencedFrameTest() override = default;
+
+  content::RenderFrameHost* primary_main_frame_host() {
+    return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PopupBlockerFencedFrameTest,
+                       AllowPopupThroughContentSettingFencedFrame) {
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+
+  // The content setting of the main frame URL is set to allow popup.
+  const GURL main_frame_url(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  content_settings->SetContentSettingDefaultScope(main_frame_url, GURL(),
+                                                  ContentSettingsType::POPUPS,
+                                                  CONTENT_SETTING_ALLOW);
+
+  // The content setting of the fenced frame URL is set to block popup.
+  const GURL fenced_frame_url(embedded_test_server()->GetURL(
+      "b.com", "/popup_blocker/popup-window-open.html"));
+  content_settings->SetContentSettingDefaultScope(fenced_frame_url, GURL(),
+                                                  ContentSettingsType::POPUPS,
+                                                  CONTENT_SETTING_BLOCK);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  // Create a fenced frame opening a popup.
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_helper_.CreateFencedFrame(primary_main_frame_host(),
+                                             fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+
+  // The popup should be shown even the iframe URL is blocked, since the
+  // top-level URL allows popups.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(0, GetBlockedContentsCount());
+}
+
+IN_PROC_BROWSER_TEST_F(PopupBlockerFencedFrameTest,
+                       BlockPopupThroughContentSettingFencedFrame) {
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+
+  // The content setting of the main frame URL is set to block popup.
+  const GURL main_frame_url(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  content_settings->SetContentSettingDefaultScope(main_frame_url, GURL(),
+                                                  ContentSettingsType::POPUPS,
+                                                  CONTENT_SETTING_BLOCK);
+
+  // The content setting of the fenced frame URL is set to allow popup.
+  const GURL fenced_frame_url(embedded_test_server()->GetURL(
+      "b.com", "/popup_blocker/popup-window-open.html"));
+  content_settings->SetContentSettingDefaultScope(fenced_frame_url, GURL(),
+                                                  ContentSettingsType::POPUPS,
+                                                  CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  // Create a fenced frame opening a popup.
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_helper_.CreateFencedFrame(primary_main_frame_host(),
+                                             fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+
+  // Popup should be blocked even the iframe URL is in AllowList, since the
+  // top-level URL blocks popups.
+  ASSERT_EQ(1, GetBlockedContentsCount());
 }
 
 }  // namespace

@@ -6633,7 +6633,8 @@ void RenderFrameHostImpl::CreateNewWindow(
   bool can_create_window =
       IsActive() && is_render_frame_created() &&
       GetContentClient()->browser()->CanCreateWindow(
-          this, GetLastCommittedURL(), GetMainFrame()->GetLastCommittedURL(),
+          this, GetLastCommittedURL(),
+          GetOutermostMainFrame()->GetLastCommittedURL(),
           last_committed_origin_, params->window_container_type,
           params->target_url, params->referrer.To<Referrer>(),
           params->frame_name, params->disposition, *params->features,
