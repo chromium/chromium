@@ -40,16 +40,20 @@ constexpr char kOtherDomain[] = "not-example.com";
 constexpr char kDomainWildcardPattern[] = "[*.]example.com";
 constexpr char kFPSOwnerURL[] = "https://fps-owner.test";
 constexpr char kFPSMemberURL[] = "https://fps-member.test";
+constexpr char kUnrelatedURL[] = "http://unrelated.com";
 
 std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
     const std::string& name,
     const std::string& domain,
-    bool sameparty) {
+    bool sameparty,
+    absl::optional<net::CookiePartitionKey> cookie_partition_key =
+        absl::nullopt) {
   return net::CanonicalCookie::CreateUnsafeCookieForTesting(
       name, "1", domain, "/" /* path */, base::Time() /* creation */,
       base::Time() /* expiration */, base::Time() /* last_access */,
       true /* secure */, false /* httponly */, net::CookieSameSite::UNSPECIFIED,
-      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, sameparty);
+      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, sameparty,
+      cookie_partition_key);
 }
 
 class CookieSettingsTest : public testing::Test {
@@ -458,40 +462,72 @@ TEST_F(CookieSettingsTest, IsPrivacyModeEnabled) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
-  // Enabled for third-party requests.
-  EXPECT_TRUE(settings.IsPrivacyModeEnabled(
-      GURL(kURL), net::SiteForCookies(), url::Origin::Create(GURL(kOtherURL)),
-      net::SamePartyContext::Type::kCrossParty));
+  // Third-party requests should only have accessed to partitioned state.
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly,
+      settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
+                                    url::Origin::Create(GURL(kOtherURL)),
+                                    net::SamePartyContext::Type::kCrossParty));
 
-  // Enabled for requests with a null site_for_cookies, even if the
+  // Same for requests with a null site_for_cookies, even if the
   // top_frame_origin matches.
-  EXPECT_TRUE(settings.IsPrivacyModeEnabled(
-      GURL(kURL), net::SiteForCookies(), url::Origin::Create(GURL(kURL)),
-      net::SamePartyContext::Type::kCrossParty));
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly,
+      settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
+                                    url::Origin::Create(GURL(kURL)),
+                                    net::SamePartyContext::Type::kCrossParty));
 
-  // Disabled for first-party requests, if no other rule applies.
-  EXPECT_FALSE(settings.IsPrivacyModeEnabled(
-      GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)),
-      url::Origin::Create(GURL(kURL)),
-      net::SamePartyContext::Type::kSameParty));
+  // The first party is able to send any type of state.
+  EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateAllowed,
+            settings.IsPrivacyModeEnabled(
+                GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)),
+                url::Origin::Create(GURL(kURL)),
+                net::SamePartyContext::Type::kSameParty));
 
-  // Enabled if there's a site-specific rule that blocks access, regardless of
-  // the kind of request.
+  // Setting a site-specific rule for the top-level frame origin that blocks
+  // access should cause partitioned state to be disallowed.
+  settings.set_content_settings(
+      {CreateSetting(kOtherURL, "*", CONTENT_SETTING_BLOCK)});
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kStateDisallowed,
+      settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
+                                    url::Origin::Create(GURL(kOtherURL)),
+                                    net::SamePartyContext::Type::kCrossParty));
+
+  // Setting a site-specific rule for the top-level frame origin when it is
+  // embedded on an unrelated site should not affect if partitioned state is
+  // allowed.
+  settings.set_content_settings(
+      {CreateSetting(kOtherURL, kUnrelatedURL, CONTENT_SETTING_BLOCK)});
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly,
+      settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
+                                    url::Origin::Create(GURL(kOtherURL)),
+                                    net::SamePartyContext::Type::kCrossParty));
+
+  // No state is allowed if there's a site-specific rule that blocks access,
+  // regardless of the kind of request.
   settings.set_content_settings(
       {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
   // Third-party requests:
-  EXPECT_TRUE(settings.IsPrivacyModeEnabled(
-      GURL(kURL), net::SiteForCookies(), url::Origin::Create(GURL(kOtherURL)),
-      net::SamePartyContext::Type::kCrossParty));
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kStateDisallowed,
+      settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
+                                    url::Origin::Create(GURL(kOtherURL)),
+                                    net::SamePartyContext::Type::kCrossParty));
+
   // Requests with a null site_for_cookies, but matching top_frame_origin.
-  EXPECT_TRUE(settings.IsPrivacyModeEnabled(
-      GURL(kURL), net::SiteForCookies(), url::Origin::Create(GURL(kURL)),
-      net::SamePartyContext::Type::kCrossParty));
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kStateDisallowed,
+      settings.IsPrivacyModeEnabled(GURL(kURL), net::SiteForCookies(),
+                                    url::Origin::Create(GURL(kURL)),
+                                    net::SamePartyContext::Type::kCrossParty));
   // First-party requests.
-  EXPECT_TRUE(settings.IsPrivacyModeEnabled(
-      GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)),
-      url::Origin::Create(GURL(kURL)),
-      net::SamePartyContext::Type::kSameParty));
+  EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateDisallowed,
+            settings.IsPrivacyModeEnabled(
+                GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)),
+                url::Origin::Create(GURL(kURL)),
+                net::SamePartyContext::Type::kSameParty));
 
   // No histogram samples should have been recorded.
   EXPECT_THAT(histogram_tester.GetAllSamples(
@@ -508,13 +544,15 @@ TEST_F(CookieSettingsTest, IsPrivacyModeEnabled_SamePartyConsideredFirstParty) {
   settings.set_block_third_party_cookies(true);
 
   // Enabled for cross-party requests.
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly,
       settings.IsPrivacyModeEnabled(GURL(kFPSMemberURL), net::SiteForCookies(),
                                     url::Origin::Create(GURL(kFPSOwnerURL)),
                                     net::SamePartyContext::Type::kCrossParty));
 
   // Disabled for cross-site, same-party requests.
-  EXPECT_FALSE(
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kStateAllowed,
       settings.IsPrivacyModeEnabled(GURL(kFPSMemberURL), net::SiteForCookies(),
                                     url::Origin::Create(GURL(kFPSOwnerURL)),
                                     net::SamePartyContext::Type::kSameParty));
@@ -522,7 +560,8 @@ TEST_F(CookieSettingsTest, IsPrivacyModeEnabled_SamePartyConsideredFirstParty) {
   // Enabled for same-party requests if blocked by a site-specific rule.
   settings.set_content_settings(
       {CreateSetting(kFPSMemberURL, "*", CONTENT_SETTING_BLOCK)});
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      net::NetworkDelegate::PrivacySetting::kStateDisallowed,
       settings.IsPrivacyModeEnabled(GURL(kFPSMemberURL), net::SiteForCookies(),
                                     url::Origin::Create(GURL(kFPSOwnerURL)),
                                     net::SamePartyContext::Type::kSameParty));
@@ -631,6 +670,73 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_SamePartyConsideredFirstParty) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
               ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
+}
+
+TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(true);
+
+  std::unique_ptr<net::CanonicalCookie> unpartitioned_cookie =
+      MakeCanonicalCookie("unpartitioned", kURL, false /* sameparty */,
+                          absl::nullopt /* cookie_partition_key */);
+
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *unpartitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL))));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
+              IsEmpty());
+
+  std::unique_ptr<net::CanonicalCookie> partitioned_cookie =
+      MakeCanonicalCookie(
+          "__Host-partitioned", kURL, false /* sameparty */,
+          net::CookiePartitionKey::FromURLForTesting(GURL(kOtherURL)));
+
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL))));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
+              IsEmpty());
+
+  // If there is a site-specific content setting blocking cookies, then
+  // partitioned cookies should not be available.
+  settings.set_block_third_party_cookies(false);
+  settings.set_content_settings(
+      {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL))));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
+              IsEmpty());
+
+  // If third-party cookie blocking is enabled and there is a site-specific
+  // content setting blocking the top-frame origin's own cookies, then
+  // the partitioned cookie should not be allowed.
+  settings.set_block_third_party_cookies(true);
+  settings.set_content_settings(
+      {CreateSetting(kOtherURL, "*", CONTENT_SETTING_BLOCK)});
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL))));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
+              IsEmpty());
+
+  // If third-party cookie blocking is enabled and there is a site-specific
+  // setting for the top-frame origin that only applies on an unrelated site,
+  // then the partitioned cookie should still be allowed.
+  settings.set_content_settings(
+      {CreateSetting(kOtherURL, kUnrelatedURL, CONTENT_SETTING_BLOCK)});
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL))));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
+              IsEmpty());
 }
 
 TEST_F(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
@@ -781,6 +887,128 @@ TEST_F(CookieSettingsTest,
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
               ElementsAre(base::Bucket(/*min=*/0, /*count=*/2)));
+}
+
+namespace {
+
+net::CookieAccessResultList MakeUnpartitionedAndPartitionedCookies() {
+  return {
+      {*MakeCanonicalCookie("unpartitioned", kURL, false /* sameparty */), {}},
+      {*MakeCanonicalCookie(
+           "__Host-partitioned", kURL, false /* sameparty */,
+           net::CookiePartitionKey::FromURLForTesting(GURL(kOtherURL))),
+       {}},
+  };
+}
+
+}  // namespace
+
+TEST_F(CookieSettingsTest,
+       AnnotateAndMoveUserBlockedCookies_PartitionedCookies) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  CookieSettings settings;
+
+  net::CookieAccessResultList maybe_included_cookies =
+      MakeUnpartitionedAndPartitionedCookies();
+  net::CookieAccessResultList excluded_cookies = {};
+
+  url::Origin top_level_origin = url::Origin::Create(GURL(kOtherURL));
+
+  // If 3PC blocking is enabled and there are no site-specific content settings
+  // then partitioned cookies should be allowed.
+  settings.set_block_third_party_cookies(true);
+  EXPECT_TRUE(settings.AnnotateAndMoveUserBlockedCookies(
+      GURL(kURL), net::SiteForCookies(), &top_level_origin,
+      maybe_included_cookies, excluded_cookies));
+  EXPECT_THAT(maybe_included_cookies,
+              ElementsAre(MatchesCookieWithAccessResult(
+                  net::MatchesCookieWithName("__Host-partitioned"),
+                  MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
+  EXPECT_THAT(excluded_cookies,
+              ElementsAre(MatchesCookieWithAccessResult(
+                  net::MatchesCookieWithName("unpartitioned"),
+                  MatchesCookieAccessResult(
+                      net::HasExclusionReason(
+                          net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
+                      _, _, _))));
+
+  // If there is a site-specific content setting blocking cookies, then
+  // partitioned cookies should not be allowed.
+  maybe_included_cookies = MakeUnpartitionedAndPartitionedCookies();
+  excluded_cookies = {};
+  settings.set_block_third_party_cookies(false);
+  settings.set_content_settings(
+      {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
+  EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
+      GURL(kURL), net::SiteForCookies(), &top_level_origin,
+      maybe_included_cookies, excluded_cookies));
+  EXPECT_THAT(maybe_included_cookies, IsEmpty());
+  EXPECT_THAT(
+      excluded_cookies,
+      UnorderedElementsAre(
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("__Host-partitioned"),
+              MatchesCookieAccessResult(
+                  net::HasExclusionReason(
+                      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("unpartitioned"),
+              MatchesCookieAccessResult(
+                  net::HasExclusionReason(
+                      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
+                  _, _, _))));
+
+  // If there is a site-specific content setting blocking cookies on the
+  // current top-level origin, then partitioned cookies should not be allowed.
+  maybe_included_cookies = MakeUnpartitionedAndPartitionedCookies();
+  excluded_cookies = {};
+  settings.set_block_third_party_cookies(true);
+  settings.set_content_settings(
+      {CreateSetting(kOtherURL, "*", CONTENT_SETTING_BLOCK)});
+  EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
+      GURL(kURL), net::SiteForCookies(), &top_level_origin,
+      maybe_included_cookies, excluded_cookies));
+  EXPECT_THAT(maybe_included_cookies, IsEmpty());
+  EXPECT_THAT(
+      excluded_cookies,
+      UnorderedElementsAre(
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("__Host-partitioned"),
+              MatchesCookieAccessResult(
+                  net::HasExclusionReason(
+                      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("unpartitioned"),
+              MatchesCookieAccessResult(
+                  net::HasExclusionReason(
+                      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
+                  _, _, _))));
+
+  // If there is a site-specific content setting blocking cookies on the
+  // current top-level origin but only when it is embedded on an unrelated site,
+  // then partitioned cookies should still be allowed.
+  maybe_included_cookies = MakeUnpartitionedAndPartitionedCookies();
+  excluded_cookies = {};
+  settings.set_block_third_party_cookies(true);
+  settings.set_content_settings(
+      {CreateSetting(kOtherURL, kUnrelatedURL, CONTENT_SETTING_BLOCK)});
+  EXPECT_TRUE(settings.AnnotateAndMoveUserBlockedCookies(
+      GURL(kURL), net::SiteForCookies(), &top_level_origin,
+      maybe_included_cookies, excluded_cookies));
+  EXPECT_THAT(maybe_included_cookies,
+              ElementsAre(MatchesCookieWithAccessResult(
+                  net::MatchesCookieWithName("__Host-partitioned"),
+                  MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
+  EXPECT_THAT(excluded_cookies,
+              ElementsAre(MatchesCookieWithAccessResult(
+                  net::MatchesCookieWithName("unpartitioned"),
+                  MatchesCookieAccessResult(
+                      net::HasExclusionReason(
+                          net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
+                      _, _, _))));
 }
 
 }  // namespace

@@ -364,7 +364,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies,
       bool allowed_from_caller) override;
-  bool OnForcePrivacyMode(
+  NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
@@ -451,7 +451,7 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
       net::CookieAccessResultList& excluded_cookies,
       bool allowed_from_caller) override;
 
-  bool OnForcePrivacyMode(
+  NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
@@ -481,6 +481,10 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
 
   void set_force_privacy_mode(bool enabled) { force_privacy_mode_ = enabled; }
 
+  void set_partitioned_state_allowed(bool allowed) {
+    partitioned_state_allowed_ = allowed;
+  }
+
  private:
   std::string cookie_name_filter_ = "";
   int set_cookie_called_count_ = 0;
@@ -492,6 +496,7 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
   bool block_get_cookies_by_name_ = false;
 
   bool force_privacy_mode_ = false;
+  bool partitioned_state_allowed_ = false;
 };
 
 // ----------------------------------------------------------------------------

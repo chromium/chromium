@@ -61,7 +61,7 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
                       const net::CanonicalCookie& cookie,
                       net::CookieOptions* options,
                       bool allowed_from_caller) override;
-  bool OnForcePrivacyMode(
+  net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,

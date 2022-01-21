@@ -123,7 +123,7 @@ bool NetworkDelegate::CanSetCookie(const URLRequest& request,
   return OnCanSetCookie(request, cookie, options, allowed_from_caller);
 }
 
-bool NetworkDelegate::ForcePrivacyMode(
+NetworkDelegate::PrivacySetting NetworkDelegate::ForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,

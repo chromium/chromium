@@ -85,10 +85,27 @@ class NET_EXPORT NetworkDelegate {
                     const net::CanonicalCookie& cookie,
                     CookieOptions* options,
                     bool allowed_from_caller);
-  bool ForcePrivacyMode(const GURL& url,
-                        const SiteForCookies& site_for_cookies,
-                        const absl::optional<url::Origin>& top_frame_origin,
-                        SamePartyContext::Type same_party_context_type) const;
+
+  // PrivacySetting is kStateDisallowed iff the given |url| has to be
+  // requested over connection that is not tracked by the server.
+  //
+  // Usually PrivacySetting is kStateAllowed, unless user privacy settings
+  // block cookies from being get or set.
+  //
+  // It may be set to kPartitionedStateAllowedOnly if the request allows
+  // partitioned state to be sent over the connection, but unpartitioned
+  // state should be blocked.
+  enum class PrivacySetting {
+    kStateAllowed,
+    kStateDisallowed,
+    // First-party requests will never have this setting.
+    kPartitionedStateAllowedOnly,
+  };
+  PrivacySetting ForcePrivacyMode(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      SamePartyContext::Type same_party_context_type) const;
 
   bool CancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
@@ -246,10 +263,7 @@ class NET_EXPORT NetworkDelegate {
                               CookieOptions* options,
                               bool allowed_from_caller) = 0;
 
-  // Returns true if the given |url| has to be requested over connection that
-  // is not tracked by the server. Usually is false, unless user privacy
-  // settings block cookies from being get or set.
-  virtual bool OnForcePrivacyMode(
+  virtual PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,

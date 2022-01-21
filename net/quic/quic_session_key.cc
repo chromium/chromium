@@ -32,11 +32,7 @@ QuicSessionKey::QuicSessionKey(const std::string& host,
                                SecureDnsPolicy secure_dns_policy)
     : QuicSessionKey(
           // TODO(crbug.com/1103350): Handle non-boolean privacy modes.
-          quic::QuicServerId(
-              host,
-              port,
-              privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS ||
-                  privacy_mode == PRIVACY_MODE_ENABLED),
+          quic::QuicServerId(host, port, privacy_mode != PRIVACY_MODE_DISABLED),
           socket_tag,
           network_isolation_key,
           secure_dns_policy) {}

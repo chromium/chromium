@@ -12,6 +12,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_delegate_impl.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/cookie_settings.h"
 #include "services/network/network_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -75,7 +76,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
                       const net::CanonicalCookie& cookie,
                       net::CookieOptions* options,
                       bool allowed_from_caller) override;
-  bool OnForcePrivacyMode(
+  net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,

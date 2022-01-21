@@ -354,14 +354,26 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
   // |URLRequest::DefaultCanUseCookies()| if not.
   // TODO(mmenke): Looks like |URLRequest::DefaultCanUseCookies()| is not too
   // useful, with the network service - remove it.
-  bool enable_privacy_mode = !URLRequest::DefaultCanUseCookies();
-  if (request()->network_delegate()) {
-    enable_privacy_mode = request()->network_delegate()->ForcePrivacyMode(
-        request()->url(), request()->site_for_cookies(),
-        request()->isolation_info().top_frame_origin(),
-        request()->first_party_set_metadata().context().context_type());
+  NetworkDelegate::PrivacySetting privacy_setting =
+      URLRequest::DefaultCanUseCookies()
+          ? NetworkDelegate::PrivacySetting::kStateAllowed
+          : NetworkDelegate::PrivacySetting::kStateDisallowed;
+  if (request_->network_delegate()) {
+    privacy_setting = request()->network_delegate()->ForcePrivacyMode(
+        request_->url(), request_->site_for_cookies(),
+        request_->isolation_info().top_frame_origin(),
+        request_->first_party_set_metadata().context().context_type());
   }
-  return enable_privacy_mode ? PRIVACY_MODE_ENABLED : PRIVACY_MODE_DISABLED;
+  switch (privacy_setting) {
+    case NetworkDelegate::PrivacySetting::kStateAllowed:
+      return PRIVACY_MODE_DISABLED;
+    case NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly:
+      return PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED;
+    case NetworkDelegate::PrivacySetting::kStateDisallowed:
+      return PRIVACY_MODE_ENABLED;
+  }
+  NOTREACHED();
+  return PRIVACY_MODE_ENABLED;
 }
 
 void URLRequestHttpJob::NotifyHeadersComplete() {
@@ -630,6 +642,19 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
   }
 }
 
+namespace {
+
+bool ShouldBlockAllCookies(const PrivacyMode& privacy_mode) {
+  return privacy_mode == PRIVACY_MODE_ENABLED ||
+         privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
+}
+
+bool ShouldBlockUnpartitionedCookiesOnly(const PrivacyMode& privacy_mode) {
+  return privacy_mode == PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED;
+}
+
+}  // namespace
+
 void URLRequestHttpJob::SetCookieHeaderAndStart(
     const CookieOptions& options,
     const CookieAccessResultList& cookies_with_access_result_list,
@@ -640,10 +665,10 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
       cookies_with_access_result_list;
   CookieAccessResultList excluded_cookies = excluded_list;
 
-  if (request_info_.privacy_mode != PRIVACY_MODE_DISABLED) {
-    // If cookies are blocked (without our needing to consult the delegate), we
-    // move them to `excluded_cookies` and ensure that they have the correct
-    // exclusion reason.
+  if (ShouldBlockAllCookies(request_info_.privacy_mode)) {
+    // If cookies are blocked (without our needing to consult the delegate),
+    // we move them to `excluded_cookies` and ensure that they have the
+    // correct exclusion reason.
     excluded_cookies.insert(
         excluded_cookies.end(),
         std::make_move_iterator(maybe_included_cookies.begin()),
@@ -653,7 +678,23 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
       cookie.access_result.status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
     }
-  } else {
+  }
+  if (ShouldBlockUnpartitionedCookiesOnly(request_info_.privacy_mode)) {
+    auto partition_it = base::ranges::stable_partition(
+        maybe_included_cookies, [](const CookieWithAccessResult& el) {
+          return el.cookie.IsPartitioned();
+        });
+    for (auto it = partition_it; it < maybe_included_cookies.end(); ++it) {
+      it->access_result.status.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+    }
+    excluded_cookies.insert(
+        excluded_cookies.end(), std::make_move_iterator(partition_it),
+        std::make_move_iterator(maybe_included_cookies.end()));
+    maybe_included_cookies.erase(partition_it, maybe_included_cookies.end());
+  }
+  if (request_info_.privacy_mode == PRIVACY_MODE_DISABLED ||
+      !maybe_included_cookies.empty()) {
     AnnotateAndMoveUserBlockedCookies(maybe_included_cookies, excluded_cookies);
     if (!maybe_included_cookies.empty()) {
       std::string cookie_line =
@@ -733,7 +774,15 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 void URLRequestHttpJob::AnnotateAndMoveUserBlockedCookies(
     CookieAccessResultList& maybe_included_cookies,
     CookieAccessResultList& excluded_cookies) const {
-  DCHECK_EQ(request_info_.privacy_mode, PrivacyMode::PRIVACY_MODE_DISABLED);
+  DCHECK(request_info_.privacy_mode == PrivacyMode::PRIVACY_MODE_DISABLED ||
+         (request_info_.privacy_mode ==
+              PrivacyMode::PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED &&
+          base::ranges::all_of(maybe_included_cookies,
+                               [](const CookieWithAccessResult& el) {
+                                 return el.cookie.IsPartitioned();
+                               })))
+      << request_info_.privacy_mode;
+
   bool can_get_cookies = URLRequest::DefaultCanUseCookies();
   if (request()->network_delegate()) {
     can_get_cookies =

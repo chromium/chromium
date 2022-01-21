@@ -16,6 +16,8 @@ const char* PrivacyModeToDebugString(PrivacyMode privacy_mode) {
       return "enabled";
     case PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS:
       return "enabled without client certs";
+    case PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED:
+      return "enabled partitioned state allowed";
   }
   NOTREACHED();
   return "";

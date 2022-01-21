@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "net/base/features.h"
+#include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
@@ -99,9 +100,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override;
 
-  // Returns true iff "privacy mode" should be enabled for the URL request in
-  // question, according to the user's settings.
-  bool IsPrivacyModeEnabled(
+  // Returns kStateDisallowed iff the given |url| has to be requested over
+  // connection that is not tracked by the server. Usually is kStateAllowed,
+  // unless user privacy settings block cookies from being get or set.
+  // It may be set to kPartitionedStateAllowedOnly if the request allows
+  // partitioned state to be sent over the connection, but unpartitioned
+  // state should be blocked.
+  net::NetworkDelegate::PrivacySetting IsPrivacyModeEnabled(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
@@ -149,9 +154,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       bool is_third_party_request,
       content_settings::SettingSource* source) const override;
 
+  enum class ThirdPartyCookieBlockingSetting {
+    kThirdPartyStateAllowed = 1,
+    kThirdPartyStateDisallowed,
+    kPartitionedThirdPartyStateAllowedOnly,
+  };
+
   struct CookieSettingWithMetadata {
     ContentSetting cookie_setting;
-    bool blocked_by_third_party_setting;
+    ThirdPartyCookieBlockingSetting blocked_by_third_party_setting;
   };
 
   // Returns the cookie setting for the given request, along with metadata
@@ -190,6 +201,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool IsHypotheticalCookieAllowed(
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       bool is_same_party,
+      bool is_partitioned,
       bool record_metrics) const;
 
   // Returns true if at least one content settings is session only.
