@@ -913,20 +913,20 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (web::PermissionState)stateForPermission:(web::Permission)permission {
   WKMediaCaptureState captureState;
   switch (permission) {
-    case web::PermissionCamera:
+    case web::Permission::CAMERA:
       captureState = self.webView.cameraCaptureState;
       break;
-    case web::PermissionMicrophone:
+    case web::Permission::MICROPHONE:
       captureState = self.webView.microphoneCaptureState;
       break;
   }
   switch (captureState) {
     case WKMediaCaptureStateActive:
-      return web::PermissionStateAllowed;
+      return web::PermissionState::ALLOWED;
     case WKMediaCaptureStateMuted:
-      return web::PermissionStateBlocked;
+      return web::PermissionState::BLOCKED;
     case WKMediaCaptureStateNone:
-      return web::PermissionStateNotAccessible;
+      return web::PermissionState::NOT_ACCESSIBLE;
   }
 }
 
@@ -934,49 +934,35 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     forPermission:(web::Permission)permission {
   WKMediaCaptureState captureState;
   switch (state) {
-    case web::PermissionStateAllowed:
+    case web::PermissionState::ALLOWED:
       captureState = WKMediaCaptureStateActive;
       break;
-    case web::PermissionStateBlocked:
+    case web::PermissionState::BLOCKED:
       captureState = WKMediaCaptureStateMuted;
       break;
-    case web::PermissionStateNotAccessible:
+    case web::PermissionState::NOT_ACCESSIBLE:
       captureState = WKMediaCaptureStateNone;
       break;
   }
   switch (permission) {
-    case web::PermissionCamera:
+    case web::Permission::CAMERA:
       [self.webView setCameraCaptureState:captureState completionHandler:nil];
       break;
-    case web::PermissionMicrophone:
+    case web::Permission::MICROPHONE:
       [self.webView setMicrophoneCaptureState:captureState
                             completionHandler:nil];
       break;
   }
 }
-
-- (NSDictionary<NSNumber*, NSNumber*>*)statesForAllPermissions {
-  return @{
-    @(web::PermissionCamera) :
-        @([self stateForPermission:web::PermissionCamera]),
-    @(web::PermissionMicrophone) :
-        @([self stateForPermission:web::PermissionMicrophone])
-  };
-}
 #else
 // Stub getter implementation for mac catalyst build.
 - (web::PermissionState)stateForPermission:(web::Permission)permission {
-  return PermissionStateNotAccessible;
+  return web::PermissionState::NOT_ACCESSIBLE;
 }
 
 // Stub setter implementation for mac catalyst build.
 - (void)setState:(web::PermissionState)state
     forPermission:(web::Permission)permission {
-}
-
-// Stub implementation for mac catalyst build.
-- (NSDictionary<NSNumber*, NSNumber*>*)
-    statesForAllPermissions API_AVAILABLE(ios(15.0)) {
 }
 #endif
 
@@ -1799,12 +1785,12 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 // Called when WKWebView cameraCaptureState property has changed.
 - (void)webViewCameraCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
-  self.webStateImpl->OnStateChangedForPermission(web::PermissionCamera);
+  self.webStateImpl->OnStateChangedForPermission(web::Permission::CAMERA);
 }
 
 // Called when WKWebView microphoneCaptureState property has changed.
 - (void)webViewMicrophoneCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
-  self.webStateImpl->OnStateChangedForPermission(web::PermissionMicrophone);
+  self.webStateImpl->OnStateChangedForPermission(web::Permission::MICROPHONE);
 }
 
 #pragma mark - CRWWebViewHandlerDelegate

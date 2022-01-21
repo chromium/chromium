@@ -834,11 +834,6 @@ void WebStateImpl::RealizedWebState::SetStateForPermission(
   [web_controller_ setState:state forPermission:permission];
 }
 
-NSDictionary<NSNumber*, NSNumber*>*
-WebStateImpl::RealizedWebState::GetStatesForAllPermissions() const {
-  return [web_controller_ statesForAllPermissions];
-}
-
 void WebStateImpl::RealizedWebState::OnStateChangedForPermission(
     Permission permission) {
   for (auto& observer : observers()) {

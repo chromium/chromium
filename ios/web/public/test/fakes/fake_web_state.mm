@@ -514,32 +514,24 @@ NSData* FakeWebState::SessionStateData() {
 PermissionState FakeWebState::GetStateForPermission(
     Permission permission) const {
   switch (permission) {
-    case PermissionCamera:
+    case Permission::CAMERA:
       return camera_permission_state_;
-    case PermissionMicrophone:
+    case Permission::MICROPHONE:
       return microphone_permission_state_;
   }
-  return PermissionStateNotAccessible;
+  return PermissionState::NOT_ACCESSIBLE;
 }
 
 void FakeWebState::SetStateForPermission(PermissionState state,
                                          Permission permission) {
   switch (permission) {
-    case PermissionCamera:
+    case Permission::CAMERA:
       camera_permission_state_ = state;
       return;
-    case PermissionMicrophone:
+    case Permission::MICROPHONE:
       microphone_permission_state_ = state;
       return;
   }
-}
-
-NSDictionary<NSNumber*, NSNumber*>* FakeWebState::GetStatesForAllPermissions()
-    const {
-  return @{
-    @(PermissionCamera) : @(camera_permission_state_),
-    @(PermissionMicrophone) : @(microphone_permission_state_)
-  };
 }
 
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(

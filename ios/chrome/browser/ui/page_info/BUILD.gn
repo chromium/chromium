@@ -57,6 +57,15 @@ source_set("constants") {
   ]
 }
 
+source_set("permission_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "NSNumber+Permission.h",
+    "NSNumber+Permission.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("coordinator") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -69,6 +78,7 @@ source_set("coordinator") {
   ]
   deps = [
     ":page_info",
+    ":permission_util",
     "resources:page_info_bad",
     "resources:page_info_good",
     "resources:page_info_info",

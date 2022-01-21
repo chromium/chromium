@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 namespace web {
-enum Permission : NSUInteger;
+enum class Permission;
 }  // namespace web
 
 // Protocol used to display permissions section of the page info screen.

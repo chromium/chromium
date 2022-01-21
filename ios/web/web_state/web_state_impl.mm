@@ -577,18 +577,12 @@ NSData* WebStateImpl::SessionStateData() {
 PermissionState WebStateImpl::GetStateForPermission(
     Permission permission) const {
   return LIKELY(pimpl_) ? pimpl_->GetStateForPermission(permission)
-                        : PermissionStateNotAccessible;
+                        : PermissionState::NOT_ACCESSIBLE;
 }
 
 void WebStateImpl::SetStateForPermission(PermissionState state,
                                          Permission permission) {
   RealizedState()->SetStateForPermission(state, permission);
-}
-
-NSDictionary<NSNumber*, NSNumber*>* WebStateImpl::GetStatesForAllPermissions()
-    const {
-  return LIKELY(pimpl_) ? pimpl_->GetStatesForAllPermissions()
-                        : [NSDictionary dictionary];
 }
 
 void WebStateImpl::AddPolicyDecider(WebStatePolicyDecider* decider) {

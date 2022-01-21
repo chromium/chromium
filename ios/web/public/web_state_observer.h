@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_OBSERVER_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_OBSERVER_H_
 
-#include <Foundation/Foundation.h>
+#include <CoreFoundation/CFBase.h>
 
 #include <stddef.h>
 
@@ -16,7 +16,7 @@ namespace web {
 
 struct FaviconURL;
 class NavigationContext;
-enum Permission : NSUInteger;
+enum class Permission;
 class WebFrame;
 class WebState;
 
