@@ -64,8 +64,17 @@ FirmwareUpdateNotificationController::FirmwareUpdateNotificationController(
   DCHECK(message_center_);
 }
 
-FirmwareUpdateNotificationController::~FirmwareUpdateNotificationController() =
-    default;
+FirmwareUpdateNotificationController::~FirmwareUpdateNotificationController() {
+  if (ash::FirmwareUpdateManager::IsInitialized())
+    ash::FirmwareUpdateManager::Get()->RemoveObserver(this);
+}
+
+void FirmwareUpdateNotificationController::
+    OnFirmwareUpdateManagerInitialized() {
+  DCHECK(ash::FirmwareUpdateManager::IsInitialized());
+
+  ash::FirmwareUpdateManager::Get()->AddObserver(this);
+}
 
 void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {
   message_center::RichNotificationData optional;
@@ -92,6 +101,10 @@ void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   message_center_->AddNotification(std::move(notification));
+}
+
+void FirmwareUpdateNotificationController::OnFirmwareUpdateReceived() {
+  NotifyFirmwareUpdateAvailable();
 }
 
 }  // namespace ash

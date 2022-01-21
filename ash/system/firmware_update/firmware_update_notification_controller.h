@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_FIRMWARE_UPDATE_FIRMWARE_UPDATE_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/components/fwupd/firmware_update_manager.h"
 
 namespace message_center {
 class MessageCenter;
@@ -16,7 +17,8 @@ namespace ash {
 // Manages showing notifications for fwupd daemon events.
 // We display a WARNING notification on startup if a critical firmware update
 // is available.
-class ASH_EXPORT FirmwareUpdateNotificationController {
+class ASH_EXPORT FirmwareUpdateNotificationController
+    : public FirmwareUpdateManager::Observer {
  public:
   explicit FirmwareUpdateNotificationController(
       message_center::MessageCenter* message_center);
@@ -24,7 +26,14 @@ class ASH_EXPORT FirmwareUpdateNotificationController {
       const FirmwareUpdateNotificationController&) = delete;
   FirmwareUpdateNotificationController& operator=(
       const FirmwareUpdateNotificationController&) = delete;
-  ~FirmwareUpdateNotificationController();
+  ~FirmwareUpdateNotificationController() override;
+
+  // Call when FirmwareUpdateManager is initialized so that this class can start
+  // observering requests for notifications.
+  void OnFirmwareUpdateManagerInitialized();
+
+  // chromeos::FirmwareUpdateManager::Observer
+  void OnFirmwareUpdateReceived() override;
 
   // Call to show a notification to indicate that a firmware update is
   // available.

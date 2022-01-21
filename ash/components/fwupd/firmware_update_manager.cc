@@ -220,6 +220,25 @@ FirmwareUpdateManager* FirmwareUpdateManager::Get() {
   return g_instance;
 }
 
+// static
+bool FirmwareUpdateManager::IsInitialized() {
+  return g_instance;
+}
+
+void FirmwareUpdateManager::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FirmwareUpdateManager::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void FirmwareUpdateManager::NotifyCriticalFirmwareUpdateReceived() {
+  for (auto& observer : observer_list_) {
+    observer.OnFirmwareUpdateReceived();
+  }
+}
+
 void FirmwareUpdateManager::NotifyUpdateListObservers() {
   for (auto& observer : update_list_observers_) {
     observer->OnUpdateListChanged(mojo::Clone(updates_));
@@ -426,6 +445,17 @@ void FirmwareUpdateManager::OnDeviceListResponse(
   }
 }
 
+void FirmwareUpdateManager::ShowNotificationIfRequired() {
+  should_show_notification_ = false;
+  for (const auto& update : updates_) {
+    if (update->priority == firmware_update::mojom::UpdatePriority::kCritical &&
+        !base::Contains(devices_already_notified_, update->device_id)) {
+      devices_already_notified_.insert(update->device_id);
+      NotifyCriticalFirmwareUpdateReceived();
+    }
+  }
+}
+
 void FirmwareUpdateManager::OnUpdateListResponse(
     const std::string& device_id,
     chromeos::FwupdUpdateList* updates) {
@@ -444,6 +474,9 @@ void FirmwareUpdateManager::OnUpdateListResponse(
 
   // Fire the observer if there are no devices pending updates.
   if (!HasPendingUpdates()) {
+    if (should_show_notification_) {
+      ShowNotificationIfRequired();
+    }
     NotifyUpdateListObservers();
   }
 }
@@ -455,6 +488,8 @@ void FirmwareUpdateManager::OnInstallResponse(bool success) {
       /**percentage=*/100, state);
   update_progress_observer_->OnStatusChanged(std::move(update));
   ResetInstallState();
+
+  devices_already_notified_.erase(inflight_update_id_);
   inflight_update_id_.clear();
 }
 

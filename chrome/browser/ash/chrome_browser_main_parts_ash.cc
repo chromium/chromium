@@ -30,6 +30,7 @@
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/shell.h"
+#include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "base/bind.h"
@@ -1255,6 +1256,13 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (features::IsFirmwareUpdaterAppEnabled()) {
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
     fwupd_download_client_ = std::make_unique<FwupdDownloadClientImpl>();
+    // The notification controller is registered as an observer before
+    // requesting updates to allow a notification to be shown if a critical
+    // firmware update is found.
+    Shell::Get()
+        ->firmware_update_notification_controller()
+        ->OnFirmwareUpdateManagerInitialized();
+    firmware_update_manager_->RequestAllUpdates();
   }
 
   if (features::IsPciguardUiEnabled()) {

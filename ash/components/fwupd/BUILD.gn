@@ -29,6 +29,7 @@ source_set("unit_tests") {
 
   deps = [
     ":fwupd",
+    "//ash",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/mojom",
@@ -40,6 +41,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/message_center:test_support",
   ]
 
   sources = [
