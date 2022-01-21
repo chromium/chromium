@@ -11596,51 +11596,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, CreateETC1UIResource) {
   EXPECT_NE(viz::kInvalidResourceId, id1);
 }
 
-TEST_P(ScrollUnifiedLayerTreeHostImplTest, ObeyMSAACaps) {
-  LayerTreeSettings msaaSettings = DefaultSettings();
-  msaaSettings.gpu_rasterization_msaa_sample_count = 4;
-
-  // gpu raster, msaa on
-  {
-    bool msaa_is_slow = false;
-    EXPECT_TRUE(CreateHostImpl(
-        msaaSettings,
-        FakeLayerTreeFrameSink::Create3dForGpuRasterization(
-            msaaSettings.gpu_rasterization_msaa_sample_count, msaa_is_slow)));
-    EXPECT_TRUE(host_impl_->can_use_msaa());
-  }
-
-  // gpu raster, msaa off
-  {
-    bool msaa_is_slow = true;
-    EXPECT_TRUE(CreateHostImpl(
-        msaaSettings,
-        FakeLayerTreeFrameSink::Create3dForGpuRasterization(
-            msaaSettings.gpu_rasterization_msaa_sample_count, msaa_is_slow)));
-    EXPECT_FALSE(host_impl_->can_use_msaa());
-  }
-
-  // oop raster, msaa on
-  {
-    bool msaa_is_slow = false;
-    EXPECT_TRUE(CreateHostImpl(
-        msaaSettings,
-        FakeLayerTreeFrameSink::Create3dForOopRasterization(
-            msaaSettings.gpu_rasterization_msaa_sample_count, msaa_is_slow)));
-    EXPECT_TRUE(host_impl_->can_use_msaa());
-  }
-
-  // oop raster, msaa off
-  {
-    bool msaa_is_slow = true;
-    EXPECT_TRUE(CreateHostImpl(
-        msaaSettings,
-        FakeLayerTreeFrameSink::Create3dForOopRasterization(
-            msaaSettings.gpu_rasterization_msaa_sample_count, msaa_is_slow)));
-    EXPECT_FALSE(host_impl_->can_use_msaa());
-  }
-}
-
 class FrameSinkClient : public TestLayerTreeFrameSinkClient {
  public:
   explicit FrameSinkClient(
@@ -15667,52 +15622,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   EXPECT_FALSE(controller.did_draw_frame());
 }
 
-// Tests that SetDeviceScaleFactor correctly impacts GPU rasterization.
-TEST_P(ScrollUnifiedLayerTreeHostImplTest,
-       GpuRasterizationStatusDeviceScaleFactor) {
-  // Create a host impl with MSAA support (4 samples).
-  LayerTreeSettings msaaSettings = DefaultSettings();
-  msaaSettings.gpu_rasterization_msaa_sample_count = -1;
-  EXPECT_TRUE(CreateHostImpl(
-      msaaSettings, FakeLayerTreeFrameSink::Create3dForGpuRasterization(4)));
-
-  // Set initial state, before varying scale factor.
-  host_impl_->CommitComplete();
-  EXPECT_EQ(GpuRasterizationStatus::ON, host_impl_->gpu_rasterization_status());
-  EXPECT_TRUE(host_impl_->use_gpu_rasterization());
-  host_impl_->NotifyReadyToActivate();
-
-  // Set device scale factor to 2, which lowers the required MSAA samples from
-  // 8 to 4.
-  host_impl_->active_tree()->SetDeviceScaleFactor(2.0f);
-  host_impl_->CommitComplete();
-  EXPECT_TRUE(host_impl_->can_use_msaa());
-  EXPECT_TRUE(host_impl_->use_gpu_rasterization());
-  host_impl_->NotifyReadyToActivate();
-
-  // Set device scale factor back to 1.
-  host_impl_->active_tree()->SetDeviceScaleFactor(1.0f);
-  host_impl_->CommitComplete();
-  EXPECT_FALSE(host_impl_->can_use_msaa());
-  EXPECT_TRUE(host_impl_->use_gpu_rasterization());
-  host_impl_->NotifyReadyToActivate();
-}
-
-// Tests that explicit MSAA sample count correctly impacts GPU rasterization.
-TEST_P(ScrollUnifiedLayerTreeHostImplTest,
-       GpuRasterizationStatusExplicitMSAACount) {
-  // Create a host impl with MSAA support and a forced sample count of 4.
-  LayerTreeSettings msaaSettings = DefaultSettings();
-  msaaSettings.gpu_rasterization_msaa_sample_count = 4;
-  EXPECT_TRUE(CreateHostImpl(
-      msaaSettings, FakeLayerTreeFrameSink::Create3dForGpuRasterization(
-                        msaaSettings.gpu_rasterization_msaa_sample_count)));
-
-  host_impl_->CommitComplete();
-  EXPECT_TRUE(host_impl_->can_use_msaa());
-  EXPECT_TRUE(host_impl_->use_gpu_rasterization());
-}
-
 class GpuRasterizationDisabledLayerTreeHostImplTest
     : public LayerTreeHostImplTest {
  public:
@@ -15728,8 +15637,6 @@ class MsaaIsSlowLayerTreeHostImplTest : public LayerTreeHostImplTest {
     settings.gpu_rasterization_msaa_sample_count = 4;
     auto frame_sink =
         FakeLayerTreeFrameSink::Builder()
-            .AllContexts(&viz::TestGLES2Interface::SetMaxSamples,
-                         settings.gpu_rasterization_msaa_sample_count)
             .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow,
                          msaa_is_slow)
             .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
@@ -15745,16 +15652,16 @@ TEST_F(MsaaIsSlowLayerTreeHostImplTest, GpuRasterizationStatusMsaaIsSlow) {
   // we raster slow paths with msaa.
   CreateHostImplWithCaps(false, false);
   host_impl_->CommitComplete();
-  EXPECT_TRUE(host_impl_->can_use_msaa());
   EXPECT_TRUE(host_impl_->use_gpu_rasterization());
+  EXPECT_TRUE(host_impl_->can_use_msaa());
 
   // Ensure that with either msaa_is_slow or avoid_stencil_buffers caps
   // we don't raster slow paths with msaa (we'll still use GPU raster, though).
   // msaa_is_slow = true, avoid_stencil_buffers = false
   CreateHostImplWithCaps(true, false);
   host_impl_->CommitComplete();
-  EXPECT_FALSE(host_impl_->can_use_msaa());
   EXPECT_TRUE(host_impl_->use_gpu_rasterization());
+  EXPECT_FALSE(host_impl_->can_use_msaa());
 
   // msaa_is_slow = false, avoid_stencil_buffers = true
   CreateHostImplWithCaps(false, true);
@@ -15777,8 +15684,6 @@ class MsaaCompatibilityLayerTreeHostImplTest : public LayerTreeHostImplTest {
     settings.gpu_rasterization_msaa_sample_count = 4;
     auto frame_sink =
         FakeLayerTreeFrameSink::Builder()
-            .AllContexts(&viz::TestGLES2Interface::SetMaxSamples,
-                         settings.gpu_rasterization_msaa_sample_count)
             .AllContexts(
                 &viz::TestGLES2Interface::set_support_multisample_compatibility,
                 support_multisample_compatibility)

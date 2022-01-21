@@ -89,26 +89,11 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
         viz::TestContextProvider::CreateWorker()));
   }
 
-  static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForGpuRasterization(
-      int max_msaa_samples = -1,
-      bool msaa_is_slow = false) {
-    return Builder()
-        .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
-        .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow, msaa_is_slow)
-        .AllContexts(&viz::TestGLES2Interface::SetMaxSamples, max_msaa_samples)
-        .Build();
-  }
-
-  static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForOopRasterization(
-      int max_msaa_samples = -1,
-      bool msaa_is_slow = false) {
+  static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForGpuRasterization() {
     // TODO(enne): this should really use a TestRasterInterface.
     // It's very fake to use "supports oop raster" on a gles2 interface.
     return Builder()
         .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
-        .AllContexts(&viz::TestGLES2Interface::set_supports_oop_raster, true)
-        .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow, msaa_is_slow)
-        .AllContexts(&viz::TestGLES2Interface::SetMaxSamples, max_msaa_samples)
         .Build();
   }
 

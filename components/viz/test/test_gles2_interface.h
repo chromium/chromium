@@ -6,8 +6,13 @@
 #define COMPONENTS_VIZ_TEST_TEST_GLES2_INTERFACE_H_
 
 #include <stddef.h>
+
+#include <limits>
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -173,7 +178,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   virtual GLuint NextRenderbufferId();
   virtual void RetireRenderbufferId(GLuint id);
 
-  void SetMaxSamples(int max_samples);
   void set_context_lost_callback(base::OnceClosure callback) {
     context_lost_callback_ = std::move(callback);
   }

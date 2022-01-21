@@ -6945,11 +6945,9 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
     viz::TestGLES2Interface* gl = context_provider->UnboundTestContextGL();
     gl->set_gpu_rasterization(true);
     gl->set_support_multisample_compatibility(false);
-    gl->SetMaxSamples(4);
     viz::TestGLES2Interface* worker = worker_provider->UnboundTestContextGL();
     worker->set_gpu_rasterization(true);
     worker->set_support_multisample_compatibility(false);
-    worker->SetMaxSamples(4);
   }
 
   void InitializeSettings(LayerTreeSettings* settings) override {
