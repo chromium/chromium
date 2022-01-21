@@ -465,10 +465,8 @@ class NearbySharingServiceImplTest : public testing::Test {
   NearbySharingServiceImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kNearbySharing,
-                              features::kNearbySharingBackgroundScanning,
-                              chromeos::features::
-                                  kBluetoothAdvertisementMonitoring},
+        /*enabled_features=*/{features::kNearbySharingBackgroundScanning,
+                              features::kNearbySharingSelfShare},
         /*disabled_features=*/{});
     RegisterNearbySharingPrefs(prefs_.registry());
   }
@@ -2062,11 +2060,29 @@ TEST_F(NearbySharingServiceImplTest,
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 }
 
 TEST_F(NearbySharingServiceImplTest, ScreenLocksDuringAdvertising) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  MockTransferUpdateCallback callback;
+  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
+      &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+
+  session_controller_->SetScreenLocked(true);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+
+  session_controller_->SetScreenLocked(false);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+}
+
+TEST_F(NearbySharingServiceImplTest, ScreenLocksDuringDiscovery) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;

@@ -1894,8 +1894,9 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
     return;
   }
 
-  // Screen is off. Do no work.
-  if (is_screen_locked_) {
+  // Do not advertise on lock screen unless Self Share is enabled.
+  if (is_screen_locked_ &&
+      !base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     StopAdvertising();
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping advertising because the screen is locked.";
