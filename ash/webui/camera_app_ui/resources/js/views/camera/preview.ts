@@ -42,9 +42,6 @@ import * as util from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {windowController} from '../../window_controller.js';
 
-// eslint-disable-next-line no-unused-vars
-import {CameraManager} from './camera_manager.js';
-
 /**
  * Creates a controller for the video preview of Camera view.
  */
@@ -97,7 +94,7 @@ export class Preview {
    * @param onNewStreamNeeded Callback to request new stream.
    */
   constructor(
-      private readonly cameraManager: CameraManager,
+      private readonly getLastScreenOnTime: () => number,
       private readonly onNewStreamNeeded: () => Promise<void>) {
     window.addEventListener('resize', () => this.onWindowStatusChanged());
 
@@ -297,8 +294,7 @@ export class Preview {
     // TODO(b/173679752): Removes this workaround after fix delay on
     // kernel side.
     if (loadTimeData.getBoard() === 'zork') {
-      const screenOnTime =
-          performance.now() - this.cameraManager.getLastScreenOnTime();
+      const screenOnTime = performance.now() - this.getLastScreenOnTime();
       const delay = 2500 - screenOnTime;
       if (delay > 0) {
         await util.sleep(delay);

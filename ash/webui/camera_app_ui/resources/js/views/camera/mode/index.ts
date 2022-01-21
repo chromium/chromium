@@ -53,6 +53,9 @@ export {setAvc1Parameters, Video, VideoHandler, VideoResult} from './video.js';
  */
 export type DoSwitchMode = () => Promise<boolean>;
 
+export type CaptureHandler =
+    PhotoHandler&VideoHandler&PortraitHandler&ScanHandler;
+
 /**
  * Parameters for capture settings.
  */
@@ -129,7 +132,7 @@ export class Modes {
       photoPreferrer: PhotoConstraintsPreferrer,
       videoPreferrer: VideoConstraintsPreferrer,
       private readonly doSwitchMode: DoSwitchMode,
-      handler: PhotoHandler&PortraitHandler&ScanHandler&VideoHandler,
+      handler: CaptureHandler,
   ) {
     /**
      * Returns a set of general constraints for fake cameras.

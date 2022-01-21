@@ -90,11 +90,6 @@ export abstract class ModeBase {
   }
 
   /**
-   * Updates preview video currently in used.
-   */
-  abstract updatePreview(previewVideo: PreviewVideo): void;
-
-  /**
    * Initiates video/photo capture operation under this mode.
    */
   protected abstract start(): Promise<() => Promise<void>>;

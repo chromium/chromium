@@ -11,11 +11,12 @@ import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, ViewName} from '../../type.js';
 import * as util from '../../util.js';
+import {CameraManager, CameraUI} from './camera_manager.js';
 
 /**
  * Creates a controller for the options of Camera view.
  */
-export class Options {
+export class Options implements CameraUI {
   private readonly toggleMic = dom.get('#toggle-mic', HTMLInputElement);
   private readonly toggleMirror = dom.get('#toggle-mirror', HTMLInputElement);
 
@@ -39,11 +40,15 @@ export class Options {
    */
   constructor(
       private readonly infoUpdater: DeviceInfoUpdater,
-      private readonly doSwitchDevice: () => Promise<void>| null,
+      private readonly cameraManager: CameraManager,
   ) {
+    this.cameraManager.registerCameraUI(this);
     dom.get('#switch-device', HTMLButtonElement)
         .addEventListener('click', () => {
-          const switching = this.doSwitchDevice();
+          if (state.get(state.State.TAKING)) {
+            return;
+          }
+          const switching = this.cameraManager.switchCamera();
           if (switching !== null) {
             animate.play(dom.get('#switch-device', HTMLElement));
           }
@@ -71,14 +76,10 @@ export class Options {
     });
   }
 
-  /**
-   * Updates the options' values for the current constraints and stream.
-   * @param stream Current Stream in use.
-   */
-  updateValues(stream: MediaStream, deviceId: string, facing: Facing): void {
-    this.videoDeviceId = deviceId;
-    this.updateMirroring(facing);
-    this.audioTrack = stream.getAudioTracks()[0];
+  onConfigureComplete(): void {
+    this.videoDeviceId = this.cameraManager.getDeviceId();
+    this.updateMirroring(this.cameraManager.getFacing());
+    this.audioTrack = this.cameraManager.getAudioTrack();
     this.updateAudioByMic();
   }
 

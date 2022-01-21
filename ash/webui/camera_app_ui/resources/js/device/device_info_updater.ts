@@ -111,10 +111,10 @@ export class DeviceInfoUpdater {
           this.pendingDevicesInfo.map((d) => assertExists(d.v3Info));
       this.photoPreferrer.updateDevicesInfo(this.camera3DevicesInfo);
       this.videoPreferrer.updateDevicesInfo(this.camera3DevicesInfo);
-      this.deviceChangeListeners.forEach((l) => l(this));
     } else {
       this.camera3DevicesInfo = null;
     }
+    this.deviceChangeListeners.forEach((l) => l(this));
   }
 
   /**
