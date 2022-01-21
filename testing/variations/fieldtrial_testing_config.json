@@ -5055,23 +5055,6 @@
             ]
         }
     ],
-    "MobileFriendlinessUKMBadTapTargets": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BadTapTargetsRatio"
-                    ]
-                }
-            ]
-        }
-    ],
     "MobileIdentityConsistencyPromos": [
         {
             "platforms": [
