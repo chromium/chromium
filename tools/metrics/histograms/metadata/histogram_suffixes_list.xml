@@ -2217,6 +2217,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="OriginTrials" label=""/>
   <suffix name="TrustTokenKeyCommitments" label=""/>
   <suffix name="WebViewAppsPackageNamesAllowlist" label=""/>
+  <suffix name="WebViewEmptyComponent" label=""/>
   <affected-histogram
       name="ComponentUpdater.AndroidComponentLoader.LoadStatus"/>
 </histogram_suffixes>
