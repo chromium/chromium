@@ -219,10 +219,9 @@ void AdAuctionServiceImpl::JoinInterestGroup(
     return;
   }
   // If the interest group API is not allowed for this origin do nothing.
-  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host(),
+  if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kJoin,
-          main_frame_origin_, group.owner)) {
+          group.owner)) {
     return;
   }
 
@@ -250,10 +249,8 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
     return;
   }
   // If the interest group API is not allowed for this origin do nothing.
-  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host(),
-          ContentBrowserClient::InterestGroupApiOperation::kLeave,
-          main_frame_origin_, origin())) {
+  if (!IsInterestGroupAPIAllowed(
+          ContentBrowserClient::InterestGroupApiOperation::kLeave, origin())) {
     return;
   }
 
@@ -275,10 +272,8 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
     return;
   }
   // If the interest group API is not allowed for this origin do nothing.
-  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host(),
-          ContentBrowserClient::InterestGroupApiOperation::kUpdate,
-          main_frame_origin_, origin())) {
+  if (!IsInterestGroupAPIAllowed(
+          ContentBrowserClient::InterestGroupApiOperation::kUpdate, origin())) {
     return;
   }
   GetInterestGroupManager().UpdateInterestGroupsOfOwner(
@@ -299,12 +294,10 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
     return;
   }
 
-  const url::Origin& frame_origin = origin();
-  auto* rfh = render_frame_host();
   // If the interest group API is not allowed for this seller do nothing.
-  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          rfh, ContentBrowserClient::InterestGroupApiOperation::kSell,
-          frame_origin, config->seller)) {
+  if (!IsInterestGroupAPIAllowed(
+          ContentBrowserClient::InterestGroupApiOperation::kSell,
+          config->seller)) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -315,10 +308,9 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                            ->interest_group_buyers->get_buyers();
   std::copy_if(
       buyers.begin(), buyers.end(), std::back_inserter(filtered_buyers),
-      [rfh, &frame_origin](const url::Origin& buyer) {
-        return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-            rfh, ContentBrowserClient::InterestGroupApiOperation::kBuy,
-            frame_origin, buyer);
+      [this](const url::Origin& buyer) {
+        return IsInterestGroupAPIAllowed(
+            ContentBrowserClient::InterestGroupApiOperation::kBuy, buyer);
       });
 
   // If there are no buyers (either due to filtering, or in the original auction
@@ -337,7 +329,7 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, this, &GetInterestGroupManager(),
-      std::move(config), std::move(filtered_buyers), frame_origin,
+      std::move(config), std::move(filtered_buyers), /*frame_origin=*/origin(),
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback)));
   auctions_.insert(std::move(auction));
@@ -462,6 +454,16 @@ RenderFrameHostImpl* AdAuctionServiceImpl::GetFrame() {
 network::mojom::ClientSecurityStatePtr
 AdAuctionServiceImpl::GetClientSecurityState() {
   return GetFrame()->BuildClientSecurityState();
+}
+
+bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
+    ContentBrowserClient::InterestGroupApiOperation
+        interest_group_api_operation,
+    const url::Origin& origin) const {
+  return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+      render_frame_host(),
+      ContentBrowserClient::InterestGroupApiOperation::kJoin,
+      main_frame_origin_, origin);
 }
 
 void AdAuctionServiceImpl::OnAuctionComplete(

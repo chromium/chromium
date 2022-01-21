@@ -11,6 +11,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -74,6 +75,13 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   // `this` can only be destroyed by DocumentService.
   ~AdAuctionServiceImpl() override;
+
+  // Returns true if `origin` is allowed to perform the specified
+  // `interest_group_api_operation` in this frame. Must be called on worklet /
+  // interest group origins before using them in any interest group API.
+  bool IsInterestGroupAPIAllowed(ContentBrowserClient::InterestGroupApiOperation
+                                     interest_group_api_operation,
+                                 const url::Origin& origin) const;
 
   // Deletes `auction`.
   void OnAuctionComplete(RunAdAuctionCallback callback,
