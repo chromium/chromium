@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
   // Note: locks for a short amount of time.
   bool IsPageInList(const PrintedPage& page) const;
 #endif  // !defined(NDEBUG)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Draws the document in the context.  Fails if context->NewPage() or
   // context->PageDone() fails.

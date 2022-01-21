@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Metafile : public MetafilePlayer {
   // it requires user intervention.
   virtual bool Playback(printing::NativeDrawingContext hdc,
                         const RECT* rect) const = 0;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // MetfilePlayer implementation.
   bool GetDataAsVector(std::vector<char>* buffer) const override;

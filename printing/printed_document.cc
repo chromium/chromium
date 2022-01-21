@@ -276,9 +276,9 @@ base::FilePath PrintedDocument::CreateDebugDumpPath(
   base::FilePath::StringType system_filename;
 #if BUILDFLAG(IS_WIN)
   system_filename = base::UTF16ToWide(filename);
-#else   // OS_WIN
+#else   // BUILDFLAG(IS_WIN)
   system_filename = base::UTF16ToUTF8(filename);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   base::i18n::ReplaceIllegalCharactersInPath(&system_filename, '_');
   const auto& dump_path = g_debug_dump_info.Get();
   DCHECK(!dump_path.empty());
