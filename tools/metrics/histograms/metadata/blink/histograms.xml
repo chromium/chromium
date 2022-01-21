@@ -1894,6 +1894,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true" name="Blink.ParseStyleSheet.UpdateTime"
+    units="microseconds" expires_after="2022-07-20">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Time spent parsing style sheets for a document. Only recorded when the
+    CSSParserContext has a document available.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Plugin.UpdateTime" units="ms" expires_after="2022-06-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
