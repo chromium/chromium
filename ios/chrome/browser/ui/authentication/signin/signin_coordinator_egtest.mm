@@ -1059,8 +1059,7 @@ void ExpectSyncConsentHistogram(
 // Tests that the sign-in promo disappear when sync is disabled and reappears
 // when sync is enabled again.
 // Related to crbug.com/1287465.
-// TODO(crbug.com/1289275): Re-enable.
-- (void)DISABLED_testTurnOffSyncDisablePolicy {
+- (void)testTurnOffSyncDisablePolicy {
   // Disable sync by policy.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey selectElementWithMatcher:
@@ -1085,9 +1084,16 @@ void ExpectSyncConsentHistogram(
   policy_test_utils::SetPolicy(false, policy::key::kSyncDisabled);
   [ChromeEarlGreyUI waitForAppToIdle];
   // Check that the sign-in promo is visible.
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
-                           closeButton:NO];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollToContentEdgeWithStartPoint(
+                               kGREYContentEdgeBottom, 0.5, 0.5)
+      onElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
