@@ -55773,6 +55773,7 @@ from previous Chrome versions.
   <int value="1491212579" label="ChromeTipsInMainMenuNewBadge:enabled"/>
   <int value="1492255992" label="OnDeviceGrammarCheck:enabled"/>
   <int value="1492541927" label="QuickAnswersTranslationCloudAPI:enabled"/>
+  <int value="1493223152" label="CloseAllTabsModalDialog:enabled"/>
   <int value="1495059835" label="VirtualKeyboardMultipasteSuggestion:enabled"/>
   <int value="1495341532" label="disable-mtp-write-support"/>
   <int value="1495748045" label="SignedHTTPExchange:enabled"/>
@@ -56041,6 +56042,7 @@ from previous Chrome versions.
   <int value="1702090999" label="ClearOldBrowsingData:disabled"/>
   <int value="1702985369"
       label="IncognitoClearBrowsingDataDialogForDesktop:enabled"/>
+  <int value="1703206814" label="CloseAllTabsModalDialog:disabled"/>
   <int value="1703927420" label="PiexWasm:enabled"/>
   <int value="1705724232" label="use-android-midi-api"/>
   <int value="1705822740"

@@ -2928,6 +2928,11 @@ const char kChromeSharingHubLaunchAdjacentDescription[] =
     "In multi-window mode, launches share hub actions in an adjacent window. "
     "For internal debugging.";
 
+const char kCloseAllTabsModalDialogName[] = "Close all tabs modal dialog";
+const char kCloseAllTabsModalDialogDescription[] =
+    "Shows a confirmation modal dialog when clicking 'Close all tabs' in the"
+    "app menu.";
+
 const char kCloseTabSuggestionsName[] = "Suggest to close Tabs";
 const char kCloseTabSuggestionsDescription[] =
     "Suggests to the user to close Tabs that haven't been used beyond a "

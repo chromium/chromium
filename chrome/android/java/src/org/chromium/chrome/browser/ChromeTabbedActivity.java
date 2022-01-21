@@ -163,6 +163,7 @@ import org.chromium.chrome.browser.tasks.EngagementTimeUtil;
 import org.chromium.chrome.browser.tasks.JourneyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.TasksUma;
+import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
@@ -2047,8 +2048,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             getCurrentTabModel().closeTab(currentTab, true, false, true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
-            // Close both incognito and normal tabs
-            getTabModelSelector().closeAllTabs();
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLOSE_ALL_TABS_MODAL_DIALOG)) {
+                CloseAllTabsDialog.show(this, getModalDialogManagerSupplier(),
+                        ()
+                                -> getTabModelSelector().closeAllTabs(),
+                        HomepageManager.shouldCloseAppWithZeroTabs());
+            } else {
+                // Close both incognito and normal tabs.
+                getTabModelSelector().closeAllTabs();
+            }
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
             // Close only incognito tabs

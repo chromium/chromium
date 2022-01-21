@@ -168,6 +168,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackgroundThreadPool,
     &kBookmarkBottomSheet,
     &kCastDeviceFilter,
+    &kCloseAllTabsModalDialog,
     &kCloseTabSuggestions,
     &kCriticalPersistedTabData,
     &kCCTBackgroundTab,
@@ -435,6 +436,9 @@ const base::Feature kConditionalTabStripAndroid{
 // Used in downstream code.
 const base::Feature kCastDeviceFilter{"CastDeviceFilter",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCloseAllTabsModalDialog{"CloseAllTabsModalDialog",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCloseTabSuggestions{"CloseTabSuggestions",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
