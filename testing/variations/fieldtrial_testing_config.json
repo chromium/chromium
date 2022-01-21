@@ -117,21 +117,6 @@
             ]
         }
     ],
-    "AndroidBindingManagementWaiveCpu": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BindingManagementWaiveCpu"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidContextualSearchM95": [
         {
             "platforms": [
