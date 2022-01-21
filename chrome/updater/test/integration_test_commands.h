@@ -37,7 +37,6 @@ class IntegrationTestCommands
   virtual void ExpectActiveUpdater() const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
-  virtual void ExpectSelfUpdateSequence(ScopedServer* test_server) const = 0;
   virtual void ExpectUpdateSequence(ScopedServer* test_server,
                                     const std::string& app_id,
                                     const base::Version& from_version,
@@ -49,7 +48,6 @@ class IntegrationTestCommands
   virtual void CopyLog() const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
-  virtual void SetupRealUpdaterLowerVersion() const = 0;
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
   virtual void SetServerStarts(int value) const = 0;
@@ -58,7 +56,6 @@ class IntegrationTestCommands
   virtual void ExpectAppVersion(const std::string& app_id,
                                 const base::Version& version) const = 0;
   virtual void RunWake(int exit_code) const = 0;
-  virtual void RunWakeActive(int exit_code) const = 0;
   virtual void Update(const std::string& app_id) const = 0;
   virtual void UpdateAll() const = 0;
   virtual void PrintLog() const = 0;

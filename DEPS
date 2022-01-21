@@ -540,31 +540,6 @@ deps = {
       'condition': 'checkout_mac',
   },
 
-  # A somewhat recent Chromium-branded updater build. (x86_64)
-  'src/third_party/updater/chromium_mac_amd64': {
-      'dep_type': 'cipd',
-      'condition': 'checkout_mac',
-      'packages': [
-        {
-          'package': 'chromium/third_party/updater/chromium_mac_amd64',
-          'version': '1RmnK4JbmordT5NJbib3mfagpHvrO-oJaTW4HKsYgmAC',
-        },
-      ],
-  },
-
-  # A somewhat recent Chromium-branded updater build. (ARM64)
-  'src/third_party/updater/chromium_mac_arm64': {
-      'dep_type': 'cipd',
-      'condition': 'checkout_mac',
-      'packages': [
-        {
-          'package': 'chromium/third_party/updater/chromium_mac_arm64',
-          'version': '-o_WPHLr3JzvHdsTl_E0AgEV2D2--sBNqVT_F74hvOIC',
-        },
-      ],
-  },
-
-
   'src/tools/clang/dsymutil': {
     'packages': [
       {
