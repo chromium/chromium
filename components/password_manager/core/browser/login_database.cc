@@ -947,6 +947,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password), primary_key,
                       /*password_changed=*/false);
+    db_.reset_error_callback();
     return list;
   }
 
