@@ -187,9 +187,7 @@ absl::optional<const std::string> DeviceIdMap::GetDeviceIdForAddress(
   const device::BluetoothDevice* device =
       bluetooth_adapter_->GetDevice(address);
   if (!device) {
-    QP_LOG(WARNING) << __func__
-                    << ": Can't find matching bluetooth device for address: " +
-                           address;
+    QP_LOG(WARNING) << __func__ << ": Can't find matching bluetooth device";
     return absl::nullopt;
   }
   return device->GetIdentifier();

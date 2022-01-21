@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "ash/quick_pair/common/protocol.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace {
@@ -16,10 +17,15 @@ std::ostream& OutputToStream(std::ostream& stream,
                              const std::string& ble_address,
                              const absl::optional<std::string>& classic_address,
                              const ash::quick_pair::Protocol& protocol) {
-  stream << "[Device: metadata_id=" << metadata_id
-         << ", ble_address=" << ble_address
-         << ", class_address=" << classic_address.value_or("null")
-         << ", protocol=" << protocol << "]";
+  stream << "[Device: metadata_id=" << metadata_id;
+
+  // We can only include PII from the device in verbose logging.
+  if (VLOG_IS_ON(/*verbose_level=*/1)) {
+    stream << ", ble_address=" << ble_address
+           << ", class_address=" << classic_address.value_or("null");
+  }
+
+  stream << ", protocol=" << protocol << "]";
   return stream;
 }
 
