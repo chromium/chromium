@@ -404,47 +404,51 @@ html[cvd="1"] {
 
 
   /**
-   * Process request from background page.
-   * @param {!object} request An object containing color filter parameters.
+   * Process a message from background page.
+   * @param {!object} message An object containing color filter parameters.
    */
-  function onExtensionMessage(request) {
-    debugPrint('onExtensionMessage: ' + JSON.stringify(request));
+  function onExtensionMessage(message) {
+    debugPrint('onExtensionMessage: ' + JSON.stringify(message));
     var changed = false;
 
-    if (request['type'] !== undefined) {
-      var type = request.type;
+    if (!message) {
+      return;
+    }
+
+    if (message['type'] !== undefined) {
+      var type = message.type;
       if (curType != type) {
         curType = type;
         changed = true;
       }
     }
 
-    if (request['severity'] !== undefined) {
-      var severity = request.severity;
+    if (message['severity'] !== undefined) {
+      var severity = message.severity;
       if (curSeverity != severity) {
         curSeverity = severity;
         changed = true;
       }
     }
 
-    if (request['delta'] !== undefined) {
-      var delta = request.delta;
+    if (message['delta'] !== undefined) {
+      var delta = message.delta;
       if (curDelta != delta) {
         curDelta = delta;
         changed = true;
       }
     }
 
-    if (request['simulate'] !== undefined) {
-      var simulate = request.simulate;
+    if (message['simulate'] !== undefined) {
+      var simulate = message.simulate;
       if (curSimulate != simulate) {
         curSimulate = simulate;
         changed = true;
       }
     }
 
-    if (request['enable'] !== undefined) {
-      var enable = request.enable;
+    if (message['enable'] !== undefined) {
+      var enable = message.enable;
       if (curEnable != enable) {
         curEnable = enable;
         changed = true;
@@ -470,8 +474,8 @@ html[cvd="1"] {
    * values.
    */
   exports.initializeExtension = function () {
-    chrome.extension.onRequest.addListener(onExtensionMessage);
-    chrome.extension.sendRequest({'init': true}, onExtensionMessage);
+    chrome.runtime.onMessage.addListener(onExtensionMessage);
+    chrome.runtime.sendMessage("init", onExtensionMessage);
   };
 
   /**

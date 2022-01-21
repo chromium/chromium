@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+importScripts('./common.js', './storage.js');
+
 /**
  * Adds filter script and css to all existing tabs.
  *
@@ -31,7 +33,7 @@ function injectContentScripts() {
  * Updates all existing tabs with config values.
  */
 function updateTabs() {
-  chrome.windows.getAll({'populate': true}, function(windows) {
+  chrome.windows.getAll({'populate': true}, async function(windows) {
     for (var i = 0; i < windows.length; i++) {
       var tabs = windows[i].tabs;
       for (var j = 0; j < tabs.length; j++) {
@@ -40,18 +42,36 @@ function updateTabs() {
           continue;
         }
         var msg = {
-          'delta': getSiteDelta(siteFromUrl(url)),
-          'severity': getDefaultSeverity(),
-          'type': getDefaultType(),
-          'simulate': getDefaultSimulate(),
-          'enable': getDefaultEnable()
+          'delta': await getSiteDelta(siteFromUrl(url)),
+          'severity': await getDefaultSeverity(),
+          'type': await getDefaultType(),
+          'simulate': await getDefaultSimulate(),
+          'enable': await getDefaultEnable()
         };
         debugPrint('updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
             siteFromUrl(url));
-        chrome.tabs.sendRequest(tabs[j].id, msg);
+        chrome.tabs.sendMessage(tabs[j].id, msg);
       }
     }
   });
+}
+
+async function onInitReceived(sender) {
+  var delta;
+  if (sender.tab) {
+    delta = await getSiteDelta(siteFromUrl(sender.tab.url));
+  } else {
+    delta = await getDefaultDelta();
+  }
+
+  var msg = {
+    'delta': delta,
+    'severity': await getDefaultSeverity(),
+    'type': await getDefaultType(),
+    'simulate': await getDefaultSimulate(),
+    'enable': await getDefaultEnable()
+  };
+  return msg;
 }
 
 /**
@@ -61,28 +81,22 @@ function updateTabs() {
   injectContentScripts();
   updateTabs();
 
-  chrome.extension.onRequest.addListener(
-      function(request, sender, sendResponse) {
-        if (request['init']) {
-          var delta = getDefaultDelta();
-          if (sender.tab) {
-            delta = getSiteDelta(siteFromUrl(sender.tab.url));
-          }
-
-          var msg = {
-            'delta': delta,
-            'severity': getDefaultSeverity(),
-            'type': getDefaultType(),
-            'simulate': getDefaultSimulate(),
-            'enable': getDefaultEnable()
-          };
-          sendResponse(msg);
+  chrome.runtime.onMessage.addListener(
+      function(message, sender, sendResponse) {
+        if (message === 'init') {
+          onInitReceived(sender).then(sendResponse);
         }
       });
 
   //TODO(mustaq): Handle uninstall
 
-  document.addEventListener('storage', function(evt) {
+  chrome.storage.onChanged.addListener(function() {
     updateTabs();
-  }, false);
+  });
 })();
+
+chrome.runtime.onMessage.addListener(message => {
+  if (message === 'updateTabs') {
+    updateTabs();
+  }
+});

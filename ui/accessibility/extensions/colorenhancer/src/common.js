@@ -17,9 +17,7 @@ function $(id) {
  * TODO(wnwen): Remove this, it's terrible.
  */
 function siteFromUrl(url) {
-  var a = document.createElement('a');
-  a.href = url;
-  return a.hostname;
+  return new URL(url).hostname;
 }
 
 

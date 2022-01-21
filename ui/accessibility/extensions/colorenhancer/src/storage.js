@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(wnwen): Move to chrome.storage.local, wrap calls, add JsDocs.
-
-/**
- * Convert the string to boolean if possible.
- * @return {(boolean|string)} The Boolean value if possible, 'undefined'
- *     otherwise.
- */
-function stringToBoolean(str) {
-  return (str == 'true') ? true : (str == 'false') ? false : 'undefined';
-}
+// TODO(wnwen): Wrap calls, add JsDocs.
 
 function validBoolean(b) {
   return b == true || b == false;
 }
 
+function store_(key, val) {
+  const newVals = {};
+  newVals[key] = val;
+  chrome.storage.local.set(newVals);
+}
 
 // ======= Delta setting =======
 
@@ -31,13 +27,18 @@ function validDelta(delta) {
 
 
 function getDefaultDelta() {
-  var delta = localStorage[LOCAL_STORAGE_TAG_DELTA];
-  if (validDelta(delta)) {
-    return delta;
-  }
-  delta = DEFAULT_DELTA;
-  localStorage[LOCAL_STORAGE_TAG_DELTA] = delta;
-  return delta;
+  return new Promise(resolve => {
+    chrome.storage.local.get([LOCAL_STORAGE_TAG_DELTA], (result) => {
+      let delta = result[LOCAL_STORAGE_TAG_DELTA];
+      if (validDelta(delta)) {
+        resolve(delta);
+        return;
+      }
+      delta = DEFAULT_DELTA;
+      store_(LOCAL_STORAGE_TAG_DELTA, delta);
+      resolve(delta);
+    });
+  });
 }
 
 
@@ -45,43 +46,50 @@ function setDefaultDelta(delta) {
   if (!validDelta(delta)) {
     delta = DEFAULT_DELTA;
   }
-  localStorage[LOCAL_STORAGE_TAG_DELTA] = delta;
+  store_(LOCAL_STORAGE_TAG_DELTA, delta);
 }
 
 
 function getSiteDelta(site) {
-  var delta = getDefaultDelta();
-  try {
-    var siteDeltas = JSON.parse(localStorage[LOCAL_STORAGE_TAG_SITE_DELTA]);
-    delta = siteDeltas[site];
-    if (!validDelta(delta)) {
-      delta = getDefaultDelta();
-    }
-  } catch (e) {
-    delta = getDefaultDelta();
-  }
-  return delta;
+  return new Promise(resolve => {
+    chrome.storage.local.get([LOCAL_STORAGE_TAG_SITE_DELTA], (result) => {
+      let delta;
+      try {
+        var siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
+        delta = siteDeltas[site];
+        if (!validDelta(delta)) {
+          getDefaultDelta().then(resolve);
+          return;
+        }
+      } catch (e) {
+        getDefaultDelta().then(resolve);
+        return;
+      }
+      resolve(delta);
+    });
+  });
 }
 
 
-function setSiteDelta(site, delta) {
+async function setSiteDelta(site, delta) {
   if (!validDelta(delta)) {
-    delta = getDefaultDelta();
+    delta = await getDefaultDelta();
   }
-  var siteDeltas = {};
-  try {
-    siteDeltas = JSON.parse(localStorage[LOCAL_STORAGE_TAG_SITE_DELTA]);
-  } catch (e) {
-    siteDeltas = {};
-  }
-  siteDeltas[site] = delta;
-  localStorage[LOCAL_STORAGE_TAG_SITE_DELTA] = JSON.stringify(siteDeltas);
+  chrome.storage.local.get([LOCAL_STORAGE_TAG_SITE_DELTA], (result) => {
+    var siteDeltas = {};
+    try {
+      siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
+    } catch (e) {
+      siteDeltas = {};
+    }
+    siteDeltas[site] = delta;
+    store_(LOCAL_STORAGE_TAG_SITE_DELTA, siteDeltas);
+  });
 }
 
 
 function resetSiteDeltas() {
-  var siteDeltas = {};
-  localStorage[LOCAL_STORAGE_TAG_SITE_DELTA] = JSON.stringify(siteDeltas);
+  store_(LOCAL_STORAGE_TAG_SITE_DELTA, {});
 }
 
 
@@ -97,13 +105,18 @@ function validSeverity(severity) {
 
 
 function getDefaultSeverity() {
-  var severity = localStorage[LOCAL_STORAGE_TAG_SEVERITY];
-  if (validSeverity(severity)) {
-    return severity;
-  }
-  severity = DEFAULT_SEVERITY;
-  localStorage[LOCAL_STORAGE_TAG_SEVERITY] = severity;
-  return severity;
+  return new Promise(resolve => {
+    chrome.storage.local.get([LOCAL_STORAGE_TAG_SEVERITY], (result) => {
+      var severity = result[LOCAL_STORAGE_TAG_SEVERITY];
+      if (validSeverity(severity)) {
+        resolve(severity);
+        return;
+      }
+      severity = DEFAULT_SEVERITY;
+      store_(LOCAL_STORAGE_TAG_SEVERITY, severity);
+      resolve(severity);
+    });
+  });
 }
 
 
@@ -111,7 +124,7 @@ function setDefaultSeverity(severity) {
   if (!validSeverity(severity)) {
     severity = DEFAULT_SEVERITY;
   }
-  localStorage[LOCAL_STORAGE_TAG_SEVERITY] = severity;
+  store_(LOCAL_STORAGE_TAG_SEVERITY, severity);
 }
 
 
@@ -129,10 +142,17 @@ function validType(type) {
 
 
 function getDefaultType() {
-  var type = localStorage[LOCAL_STORAGE_TAG_TYPE];
-  if (validType(type)) {
-    return type;
-  }
+  return new Promise(resolve => {
+    chrome.storage.local.get([LOCAL_STORAGE_TAG_TYPE], (result) => {
+      var type = result[LOCAL_STORAGE_TAG_TYPE];
+      if (validType(type)) {
+        resolve(type);
+      } else {
+        // TODO(anastasi): add appropriate error handling
+        resolve();
+      }
+    });
+  });
 }
 
 
@@ -140,7 +160,7 @@ function setDefaultType(type) {
   if (!validType(type)) {
     type = INVALID_TYPE_PLACEHOLDER;
   }
-  localStorage[LOCAL_STORAGE_TAG_TYPE] = type;
+  store_(LOCAL_STORAGE_TAG_TYPE, type);
 }
 
 
@@ -151,16 +171,19 @@ function setDefaultType(type) {
 
 
 function getDefaultSimulate() {
-  var simulate = localStorage[LOCAL_STORAGE_TAG_SIMULATE];
+  return new Promise(resolve => {
+    chrome.storage.local.get([LOCAL_STORAGE_TAG_SIMULATE], (result) => {
+      var simulate = result[LOCAL_STORAGE_TAG_SIMULATE];
 
-  simulate = stringToBoolean(simulate);
-
-  if (validBoolean(simulate)) {
-    return simulate;
-  }
-  simulate = DEFAULT_SIMULATE;
-  localStorage[LOCAL_STORAGE_TAG_SIMULATE] = simulate;
-  return simulate;
+      if (validBoolean(simulate)) {
+        resolve(simulate);
+        return;
+      }
+      simulate = DEFAULT_SIMULATE;
+      store_(LOCAL_STORAGE_TAG_SIMULATE, simulate);
+      resolve(simulate);
+    });
+  });
 }
 
 
@@ -168,7 +191,7 @@ function setDefaultSimulate(simulate) {
   if (!validBoolean(simulate)) {
     simulate = DEFAULT_SIMULATE;
   }
-  localStorage[LOCAL_STORAGE_TAG_SIMULATE] = simulate;
+  store_(LOCAL_STORAGE_TAG_SIMULATE, simulate);
 }
 
 
@@ -178,22 +201,20 @@ function setDefaultSimulate(simulate) {
 /** @const {string} */ var LOCAL_STORAGE_TAG_ENABLE = 'cvd_enable';
 
 
-function validEnable(enable) {
-  return enable == true || enable == false;
-}
-
-
 function getDefaultEnable() {
-  var enable = localStorage[LOCAL_STORAGE_TAG_ENABLE];
+  return new Promise(resolve => {
+    chrome.storage.local.get([LOCAL_STORAGE_TAG_ENABLE], (result) => {
+      var enable = result[LOCAL_STORAGE_TAG_ENABLE];
 
-  enable = stringToBoolean(enable);
-
-  if (validBoolean(enable)) {
-    return enable;
-  }
-  enable = DEFAULT_ENABLE;
-  localStorage[LOCAL_STORAGE_TAG_ENABLE] = enable;
-  return enable;
+      if (validBoolean(enable)) {
+        resolve(enable);
+        return;
+      }
+      enable = DEFAULT_ENABLE;
+      store_(LOCAL_STORAGE_TAG_ENABLE, enable);
+      resolve(enable);
+    });
+  });
 }
 
 
@@ -201,5 +222,5 @@ function setDefaultEnable(enable) {
   if (!validBoolean(enable)) {
     enable = DEFAULT_ENABLE;
   }
-  localStorage[LOCAL_STORAGE_TAG_ENABLE] = enable;
+  store_(LOCAL_STORAGE_TAG_ENABLE, enable);
 }

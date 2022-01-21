@@ -209,8 +209,8 @@
    * Update the popup controls based on settings for this site or the default.
    * @return {boolean} True if settings are valid and update performed.
    */
-  function update() {
-    var type = getDefaultType();
+  async function update() {
+    var type = await getDefaultType();
     var validType = false;
     CVD_TYPES.forEach(function(cvdType) {
       if (cvdType == type) {
@@ -223,25 +223,25 @@
       return false;
 
     if (site) {
-      $('delta').value = getSiteDelta(site);
+      $('delta').value = await getSiteDelta(site);
     } else {
-      $('delta').value = getDefaultDelta();
+      $('delta').value = await getDefaultDelta();
     }
 
-    $('severity').value = getDefaultSeverity();
+    $('severity').value = await getDefaultSeverity();
 
     if (!$('setup-panel').classList.contains('collapsed'))
-      setCvdTypeSelection(getDefaultType());
-    $('enable').checked = getDefaultEnable();
+      setCvdTypeSelection(await getDefaultType());
+    $('enable').checked = await getDefaultEnable();
 
     debugPrint('update: ' +
         ' del=' + $('delta').value +
         ' sev=' + $('severity').value +
-        ' typ=' + getDefaultType() +
+        ' typ=' + await getDefaultType() +
         ' enb=' + $('enable').checked +
         ' for ' + site
     );
-    chrome.extension.getBackgroundPage().updateTabs();
+    chrome.runtime.sendMessage('updateTabs');
     return true;
   }
 
@@ -326,12 +326,12 @@
       elem.textContent = chrome.i18n.getMessage(msg);
     }
 
-    $('setup').onclick = function() {
+    $('setup').onclick = async function() {
       $('setup-panel').classList.remove('collapsed');
       // Store current settings in the event of a canceled setup.
       restoreSettings = {
-        type: getDefaultType(),
-        severity: getDefaultSeverity()
+        type: await getDefaultType(),
+        severity: await getDefaultSeverity()
       };
       // Initalize controls based on current settings.
       setCvdTypeSelection(restoreSettings.type);
