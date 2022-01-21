@@ -14,6 +14,12 @@
     height: var(--help-icon-size);
     width: var(--help-icon-size);
   }
+
+  #overlap-warning {
+    color: var(--secondary-text-color);
+    margin-block-start: -12px;
+    margin-inline-start: 36px;
+  }
 </style>
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"
@@ -27,7 +33,7 @@
     <localized-link id="info-string"
       localized-string="[[getDisabledExplanation_(app)]]">
     </localized-link>
-</span>
+  </span>
 </template>
 <div class="list-frame">
   <cr-radio-group id="radio-group"
@@ -40,6 +46,11 @@
     <cr-radio-button id="browser" name="browser">
       $i18n{appManagementIntentSharingOpenBrowserLabel}
     </cr-radio-button>
+    <template is="dom-if" if="[[showOverlappingAppsWarning_]]">
+      <div id="overlap-warning">
+        [[overlappingAppsWarning_]]
+      </div>
+    </template>
   </cr-radio-group>
 </div>
 <template is="dom-if" if="[[showSupportedLinksDialog_]]" restamp>

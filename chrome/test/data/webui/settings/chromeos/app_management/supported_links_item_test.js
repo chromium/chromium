@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {AppManagementStore, FakePageHandler, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AppManagementStore, FakePageHandler, updateSelectedAppId, addApp} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, isHidden} from './test_util.m.js';
 // #import {flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
@@ -22,6 +22,10 @@ suite('<app-management-supported-links-item>', () => {
 
     supportedLinksItem =
         document.createElement('app-management-supported-links-item');
+
+    replaceBody(supportedLinksItem);
+    test_util.flushTasks();
+
     // TODO(crbug.com/1204324): Remove this line when the feature is launched.
     loadTimeData.overrideValues({
       appManagementIntentSettingsEnabled: true,
@@ -257,7 +261,7 @@ suite('<app-management-supported-links-item>', () => {
     const promise = fakeHandler.whenCalled('getOverlappingPreferredApps');
     await supportedLinksItem.shadowRoot.querySelector('#preferred').click();
     await promise;
-    await test_util.flushTasks();
+
     assertTrue(
         !!supportedLinksItem.shadowRoot.querySelector('#overlap-dialog'));
 
@@ -330,5 +334,74 @@ suite('<app-management-supported-links-item>', () => {
     expectEquals(
         supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
         'preferred');
+  });
+
+  test('overlap warning isnt shown when not selected', async function() {
+    const pwaOptions1 = {
+      type: apps.mojom.AppType.kWeb,
+      isPreferredApp: true,
+      supportedLinks: ['google.com', 'gmail.com'],
+    };
+
+    const pwaOptions2 = {
+      type: apps.mojom.AppType.kWeb,
+      isPreferredApp: false,
+      supportedLinks: ['google.com'],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    const app1 = await fakeHandler.addApp('app1', pwaOptions1);
+    await fakeHandler.addApp('app2', pwaOptions2);
+    fakeHandler.overlappingAppIds = ['app2'];
+
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app1.id));
+    await fakeHandler.flushPipesForTesting();
+
+    expectTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app1.id]);
+    supportedLinksItem.app = app1;
+    replaceBody(supportedLinksItem);
+    await fakeHandler.flushPipesForTesting();
+    await test_util.flushTasks();
+
+    assertFalse(
+        !!supportedLinksItem.shadowRoot.querySelector('#overlap-warning'));
+  });
+
+  test('overlap warning is shown', async function() {
+    const pwaOptions1 = {
+      type: apps.mojom.AppType.kWeb,
+      isPreferredApp: false,
+      supportedLinks: ['google.com', 'gmail.com'],
+    };
+
+    const pwaOptions2 = {
+      type: apps.mojom.AppType.kWeb,
+      isPreferredApp: true,
+      supportedLinks: ['google.com'],
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    const app1 = await fakeHandler.addApp('app1', pwaOptions1);
+    const app2 = await fakeHandler.addApp('app2', pwaOptions2);
+    fakeHandler.overlappingAppIds = ['app2'];
+
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app1.id));
+    await fakeHandler.flushPipesForTesting();
+    await test_util.flushTasks();
+
+    expectTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app1.id]);
+    expectTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app2.id]);
+    supportedLinksItem.app = app1;
+    replaceBody(supportedLinksItem);
+    await fakeHandler.flushPipesForTesting();
+    await test_util.flushTasks();
+
+    assertTrue(
+        !!supportedLinksItem.shadowRoot.querySelector('#overlap-warning'));
   });
 });

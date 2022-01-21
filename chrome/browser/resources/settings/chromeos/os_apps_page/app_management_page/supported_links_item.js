@@ -71,12 +71,45 @@ Polymer({
     },
 
     /**
+     * @private {string}
+     */
+    overlappingAppsWarning_: {
+      type: String,
+    },
+
+    /**
+     * @private {boolean}
+     */
+    showOverlappingAppsWarning_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * @type {AppMap}
+     * @private
+     */
+    apps_: {
+      type: Object,
+    },
+
+    /**
      * @private {Array<string>}
      */
     overlappingAppIds_: {
       type: Array,
     },
+
   },
+
+  attached() {
+    this.watch('apps_', state => state.apps);
+    this.updateFromStore();
+  },
+
+  observers: [
+    'getOverlappingAppsWarning_(apps_, app)',
+  ],
 
   /**
    * The supported links item is not available when an app has no supported
@@ -134,6 +167,65 @@ Polymer({
     return this.i18nAdvanced(
         'appManagementIntentSharingTabExplanation',
         {substitutions: [String(app.title)]});
+  },
+
+  /**
+   * @param {!AppMap} apps
+   * @param {!App} app
+   * @private
+   */
+  async getOverlappingAppsWarning_(apps, app) {
+    if (app === undefined || app.isPreferredApp || apps === undefined) {
+      this.showOverlappingAppsWarning_ = false;
+      return;
+    }
+
+    let overlappingAppIds = [];
+    try {
+      const {appIds: appIds} =
+          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
+              app.id);
+      overlappingAppIds = appIds;
+    } catch (err) {
+      // If we fail to get the overlapping preferred apps, do not
+      // show the overlap warning.
+      console.log(err);
+      this.showOverlappingAppsWarning_ = false;
+      return;
+    }
+    this.overlappingAppIds_ = overlappingAppIds;
+
+    const appNames = overlappingAppIds.map(app_id => {
+      assert(apps[app_id]);
+      return apps[app_id].title;
+    });
+
+    if (appNames.length === 0) {
+      this.showOverlappingAppsWarning_ = false;
+      return;
+    }
+
+    switch (appNames.length) {
+      case 1:
+        this.overlappingAppsWarning_ =
+            this.i18n('appManagementIntentOverlapWarningText1App', appNames[0]);
+      case 2:
+        this.overlappingAppsWarning_ = this.i18n(
+            'appManagementIntentOverlapWarningText2Apps', ...appNames);
+      case 3:
+        this.overlappingAppsWarning_ = this.i18n(
+            'appManagementIntentOverlapWarningText3Apps', ...appNames);
+      case 4:
+        this.overlappingAppsWarning_ = this.i18n(
+            'appManagementIntentOverlapWarningText4Apps',
+            ...appNames.slice(0, 3));
+      default:
+        this.overlappingAppsWarning_ = this.i18n(
+            'appManagementIntentOverlapWarningText5OrMoreApps',
+            ...appNames.slice(0, 3), appNames.length - 3);
+    }
+
+    this.showOverlappingAppsWarning_ = true;
   },
 
   /* Supported links list dialog functions ************************************/
