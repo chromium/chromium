@@ -384,6 +384,9 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // descendants.
   BrowserAccessibility* GetFocusFromThisOrDescendantFrame() const;
 
+  // Return the last known node that had focus, without searching.
+  static BrowserAccessibility* GetLastFocusedNode();
+
   // Given a node, returns a descendant of that node if the node has an active
   // descendant, otherwise returns the node itself. The node does not need to be
   // focused.
@@ -587,7 +590,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   bool ShouldFireEventForNode(BrowserAccessibility* node) const;
 
   static void SetLastFocusedNode(BrowserAccessibility* node);
-  static BrowserAccessibility* GetLastFocusedNode();
 
   // The object that can perform actions on our behalf.
   raw_ptr<BrowserAccessibilityDelegate> delegate_;
