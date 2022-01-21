@@ -160,6 +160,7 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   // constructed inside of blink.
   void ReplaceTrack(MediaStreamComponent* with_track,
                     base::OnceCallback<void(bool)> callback);
+  // Removes this sender's track from its PeerConnection. Only used in Plan B.
   bool RemoveFromPeerConnection(webrtc::PeerConnectionInterface* pc);
 
  private:

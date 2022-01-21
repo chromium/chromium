@@ -2032,7 +2032,8 @@ RTCPeerConnectionHandler::RemoveTrackUnifiedPlan(
 
   blink::TransceiverStateSurfacer transceiver_state_surfacer(
       task_runner_, signaling_thread());
-  CancellableBooleanOperationResult result;
+  absl::optional<webrtc::RTCError> result;
+  // TODO(hta): Figure out syntax for using an OnceClosure here.
   RunSynchronousRepeatingClosureOnSignalingThread(
       base::BindRepeating(
           &RTCPeerConnectionHandler::RemoveTrackUnifiedPlanOnSignalingThread,
@@ -2041,15 +2042,14 @@ RTCPeerConnectionHandler::RemoveTrackUnifiedPlan(
           base::Unretained(&result)),
       "RemoveTrackUnifiedPlanOnSignalingThread");
   DCHECK(transceiver_state_surfacer.is_initialized());
-  if (result != CancellableBooleanOperationResult::kSuccess) {
+  if (!result || !result->ok()) {
     // Don't leave the surfacer in a pending state.
     transceiver_state_surfacer.ObtainStates();
-    if (result == CancellableBooleanOperationResult::kCancelled) {
+    if (!result) {
+      // Operation has been cancelled.
       return std::unique_ptr<RTCRtpTransceiverPlatform>(nullptr);
     }
-    // TODO(hbos): Surface RTCError from third_party/webrtc when
-    // peerconnectioninterface.h is updated. https://crbug.com/webrtc/9534
-    return webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR);
+    return std::move(*result);
   }
 
   auto transceiver_states = transceiver_state_surfacer.ObtainStates();
@@ -2073,13 +2073,10 @@ RTCPeerConnectionHandler::RemoveTrackUnifiedPlan(
 void RTCPeerConnectionHandler::RemoveTrackUnifiedPlanOnSignalingThread(
     webrtc::RtpSenderInterface* sender,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer,
-    CancellableBooleanOperationResult* result) {
-  // TODO(bugs.webrtc.org/9534): Rewrite to return correct error
-  auto is_successful = native_peer_connection_->RemoveTrackOrError(sender).ok();
-  *result = is_successful ? CancellableBooleanOperationResult::kSuccess
-                          : CancellableBooleanOperationResult::kFailure;
+    absl::optional<webrtc::RTCError>* result) {
+  *result = native_peer_connection_->RemoveTrackOrError(sender);
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
-  if (is_successful) {
+  if ((*result)->ok()) {
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver_for_sender =
         nullptr;
     for (const auto& transceiver : native_peer_connection_->GetTransceivers()) {
@@ -2091,7 +2088,7 @@ void RTCPeerConnectionHandler::RemoveTrackUnifiedPlanOnSignalingThread(
     if (!transceiver_for_sender) {
       // If the transceiver doesn't exist, it must have been rolled back while
       // we were performing removeTrack(). Abort this operation.
-      *result = CancellableBooleanOperationResult::kCancelled;
+      *result = absl::nullopt;
     } else {
       transceivers = {transceiver_for_sender};
     }

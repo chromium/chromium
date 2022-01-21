@@ -369,11 +369,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
     // video, then false).
     bool rtcp_mux = false;
   };
-  enum class CancellableBooleanOperationResult {
-    kCancelled,
-    kSuccess,
-    kFailure,
-  };
 
   RTCSessionDescriptionPlatform*
   GetRTCSessionDescriptionPlatformOnSignalingThread(
@@ -414,10 +409,14 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   bool RemoveTrackPlanB(blink::RTCRtpSenderPlatform* web_sender);
   webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
   RemoveTrackUnifiedPlan(blink::RTCRtpSenderPlatform* web_sender);
+  // Helper function to remove a track on the signaling thread.
+  // Updates the entire transceiver state.
+  // The result will be absl::nullopt if the operation is cancelled,
+  // and no change to the state will be made.
   void RemoveTrackUnifiedPlanOnSignalingThread(
       webrtc::RtpSenderInterface* sender,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
-      CancellableBooleanOperationResult* result);
+      absl::optional<webrtc::RTCError>* result);
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOfferInternal(
       blink::RTCSessionDescriptionRequest* request,
       webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options);
