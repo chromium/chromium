@@ -3071,7 +3071,18 @@ TEST_F(NavigationControllerTest, CopyStateFrom) {
   std::unique_ptr<TestWebContents> other_contents(
       static_cast<TestWebContents*>(CreateTestWebContents().release()));
   NavigationControllerImpl& other_controller = other_contents->GetController();
-  other_controller.CopyStateFrom(&controller, true);
+
+  // Before copying state, the new FrameTree's root is marked as "on the
+  // initial empty document".
+  EXPECT_TRUE(
+      other_controller.frame_tree().root()->is_on_initial_empty_document());
+
+  other_controller.CopyStateFrom(&controller, /*needs_reload=*/true);
+
+  // After copying state, the new FrameTree's root is no longer marked as "on
+  // the initial empty document".
+  EXPECT_FALSE(
+      other_controller.frame_tree().root()->is_on_initial_empty_document());
 
   // other_controller should now contain 2 urls.
   ASSERT_EQ(2, other_controller.GetEntryCount());
