@@ -51976,6 +51976,7 @@ from previous Chrome versions.
   <int value="-1301804101"
       label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:disabled"/>
   <int value="-1301167148" label="WebViewZeroCopyVideo:disabled"/>
+  <int value="-1298273481" label="http2-grease-settings"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
@@ -55826,6 +55827,7 @@ from previous Chrome versions.
   <int value="1524732956" label="WebUIFeedback:enabled"/>
   <int value="1526718531"
       label="DarkenWebsitesCheckboxInThemesSetting:enabled"/>
+  <int value="1527172748" label="disable-http2-grease-settings"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>
   <int value="1529979182" label="EnablePasswordSelection:enabled"/>
   <int value="1530113113" label="disable-pushstate-throttle"/>

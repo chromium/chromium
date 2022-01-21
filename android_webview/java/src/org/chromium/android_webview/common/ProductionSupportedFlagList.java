@@ -10,6 +10,7 @@ import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.metrics.MetricsSwitches;
+import org.chromium.components.network_session_configurator.NetworkSessionSwitches;
 import org.chromium.components.power_scheduler.PowerSchedulerFeatures;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.content_public.common.ContentFeatures;
@@ -90,6 +91,10 @@ public final class ProductionSupportedFlagList {
                             + "this mode, each renderer process will contain pages from at most "
                             + "one site, using out-of-process iframes when needed. Highly "
                             + "experimental."),
+            Flag.commandLine(NetworkSessionSwitches.ENABLE_HTTP2_GREASE_SETTINGS,
+                    "Enable sending HTTP/2 SETTINGS parameters with reserved identifiers."),
+            Flag.commandLine(NetworkSessionSwitches.DISABLE_HTTP2_GREASE_SETTINGS,
+                    "Disable sending HTTP/2 SETTINGS parameters with reserved identifiers."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
                     "Use Vulkan for composite. Requires Android device and OS support. May crash "
                             + "if enabled on unsupported device."),

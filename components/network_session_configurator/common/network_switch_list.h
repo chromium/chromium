@@ -62,13 +62,6 @@ NETWORK_SWITCH(kTestingFixedHttpsPort, "testing-fixed-https-port")
 // useful.
 NETWORK_SWITCH(kHostRules, "host-rules")
 
-// Enable/disable "greasing" HTTP/2 SETTINGS, that is, sending SETTINGS
-// parameters with reserved identifiers.  `kEnableHttp2GreaseSettings` does not
-// include the word "enable" for historical reasons.  See
-// https://tools.ietf.org/html/draft-bishop-httpbis-grease-00 for more detail.
-NETWORK_SWITCH(kEnableHttp2GreaseSettings, "http2-grease-settings")
-NETWORK_SWITCH(kDisableHttp2GreaseSettings, "disable-http2-grease-settings")
-
 // Enable "greasing" HTTP/2 frame types, that is, sending frames of reserved
 // types.  See https://tools.ietf.org/html/draft-bishop-httpbis-grease-00 for
 // more detail.

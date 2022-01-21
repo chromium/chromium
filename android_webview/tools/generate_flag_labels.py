@@ -51,6 +51,7 @@ KNOWN_MISTAKES = {
     'KeyboardAccessoryPaymentVirtualCardFeature': 'IPH_KeyboardAccessoryPaymentVirtualCard',  # pylint: disable=line-too-long
     'CompositeBgColorAnimation': 'CompositeBGColorAnimation',
     'RtcDisallowPlanBOutsideDeprecationTrial': 'RTCDisallowPlanBOutsideDeprecationTrial',  # pylint: disable=line-too-long
+    'enable-http2-grease-settings': 'http2-grease-settings',
 }
 
 
