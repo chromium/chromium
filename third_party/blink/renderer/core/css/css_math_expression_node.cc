@@ -381,7 +381,9 @@ static CalculationCategory DetermineCategory(
         return kCalcOther;
       return left_category == kCalcNumber ? right_category : left_category;
     case CSSMathOperator::kDivide:
-      if (right_category != kCalcNumber || right_side.IsZero())
+      if (right_category != kCalcNumber ||
+          (!RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
+           right_side.IsZero()))
         return kCalcOther;
       return left_category;
     default:
