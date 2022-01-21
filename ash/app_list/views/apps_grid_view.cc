@@ -187,17 +187,6 @@ constexpr float AppsGridView::kCardifiedScale;
 // static
 constexpr int AppsGridView::kDefaultAnimationDuration;
 
-// AppsGridView::VisibleItemIndexRange -----------------------------------------
-
-AppsGridView::VisibleItemIndexRange::VisibleItemIndexRange() = default;
-
-AppsGridView::VisibleItemIndexRange::VisibleItemIndexRange(
-    int input_first_index,
-    int input_last_index)
-    : first_index(input_first_index), last_index(input_last_index) {}
-
-AppsGridView::VisibleItemIndexRange::~VisibleItemIndexRange() = default;
-
 // AppsGridView::FolderIconItemHider -------------------------------------------
 
 // Class used to hide an icon depicting an app list item from an folder item
@@ -1894,8 +1883,6 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
   reorder_animation_status_ = ReorderAnimationStatus::kFadeOutAnimation;
   const absl::optional<VisibleItemIndexRange> range =
       GetVisibleItemIndexRange();
-
-  // TODO(https://crbug.com/1289411): handle the case that `range` is null.
   DCHECK(range);
 
   // Assume all the items matched by the indices in `range` are placed on the
@@ -1933,9 +1920,6 @@ void AppsGridView::FadeInVisibleItemsForReorder() {
   reorder_animation_status_ = ReorderAnimationStatus::kFadeInAnimation;
   const absl::optional<VisibleItemIndexRange> range =
       GetVisibleItemIndexRange();
-
-  // TODO(https://crbug.com/1289411): handle the case that `range` is null.
-  DCHECK(range);
 
   views::AnimationBuilder animation_builder;
   reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
@@ -2813,10 +2797,6 @@ void AppsGridView::BeginHideCurrentGhostImageView() {
     current_ghost_view_->FadeOut();
 }
 
-bool AppsGridView::IsUnderReorderAnimation() const {
-  return reorder_animation_status_ != ReorderAnimationStatus::kEmpty;
-}
-
 void AppsGridView::OnAppListItemViewActivated(
     AppListItemView* pressed_item_view,
     const ui::Event& event) {
@@ -2873,19 +2853,12 @@ void AppsGridView::OnFadeOutAnimationEnded(
   // their final positions instantly.
   base::AutoReset auto_reset(&enable_item_move_animation_, false);
 
-  // Prevent the opacity from changing before starting the fade in animation.
-  // It is necessary because `PagedAppsGridView::UpdateOpacity()` updates
-  // the apps grid opacity based on the app list state.
-  // TODO(https://crbug.com/1289380): remove this line when a better solution
-  // is came up with.
-  base::ScopedClosureRunner runner = LockAppsGridOpacity();
-
   callback_from_caller.Run(aborted);
 
   // When the fade out animation is abortted, the fade in animation should not
   // run. Hence, the reorder animation ends.
   if (aborted)
-    MaybeRunFrontReorderAnimationCallbackForTest(/*aborted=*/true);
+    MaybeRunFrontReorderAnimationCallbackForTest(/*abort=*/true);
 }
 
 void AppsGridView::OnFadeInAnimationEnded(bool aborted) {
