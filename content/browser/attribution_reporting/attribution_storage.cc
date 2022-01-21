@@ -68,7 +68,7 @@ absl::optional<DeactivatedSource> CreateReportResult::GetDeactivatedSource()
   return absl::nullopt;
 }
 
-DeactivatedSource::DeactivatedSource(StorableSource source, Reason reason)
+DeactivatedSource::DeactivatedSource(StoredSource source, Reason reason)
     : source(std::move(source)), reason(reason) {}
 
 DeactivatedSource::~DeactivatedSource() = default;

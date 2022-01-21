@@ -16,7 +16,7 @@ HistogramContribution::HistogramContribution(std::string bucket, uint32_t value)
 }
 
 AggregatableAttribution::AggregatableAttribution(
-    StorableSource::Id source_id,
+    StoredSource::Id source_id,
     base::Time trigger_time,
     base::Time report_time,
     std::vector<HistogramContribution> contributions)

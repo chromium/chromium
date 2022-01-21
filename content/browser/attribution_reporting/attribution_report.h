@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -82,7 +82,7 @@ class CONTENT_EXPORT AttributionReport {
   using Id = absl::variant<EventLevelData::Id, AggregateContributionData::Id>;
 
   AttributionReport(
-      StorableSource source,
+      StoredSource source,
       base::Time trigger_time,
       base::Time report_time,
       base::GUID external_report_id,
@@ -101,7 +101,7 @@ class CONTENT_EXPORT AttributionReport {
 
   absl::optional<Id> ReportId() const;
 
-  const StorableSource& source() const { return source_; }
+  const StoredSource& source() const { return source_; }
 
   base::Time trigger_time() const { return trigger_time_; }
 
@@ -127,7 +127,7 @@ class CONTENT_EXPORT AttributionReport {
 
  private:
   // Source associated with this conversion report.
-  StorableSource source_;
+  StoredSource source_;
 
   // The time the trigger occurred.
   base::Time trigger_time_;

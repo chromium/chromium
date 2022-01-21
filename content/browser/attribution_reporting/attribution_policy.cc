@@ -16,14 +16,14 @@ namespace content {
 
 namespace {
 
-using AttributionLogic = ::content::StorableSource::AttributionLogic;
+using AttributionLogic = ::content::CommonSourceInfo::AttributionLogic;
 using AttributionMode = ::content::AttributionPolicy::AttributionMode;
 
-uint64_t TriggerDataCardinality(StorableSource::SourceType source_type) {
+uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type) {
   switch (source_type) {
-    case StorableSource::SourceType::kNavigation:
+    case CommonSourceInfo::SourceType::kNavigation:
       return 8;
-    case StorableSource::SourceType::kEvent:
+    case CommonSourceInfo::SourceType::kEvent:
       return 2;
   }
 }
@@ -60,7 +60,7 @@ uint64_t AttributionPolicy::MakeNoisedTriggerData(uint64_t cardinality) const {
 
 uint64_t AttributionPolicy::SanitizeTriggerData(
     uint64_t trigger_data,
-    StorableSource::SourceType source_type) const {
+    CommonSourceInfo::SourceType source_type) const {
   const uint64_t cardinality = TriggerDataCardinality(source_type);
 
   // Add noise to the conversion when the value is first sanitized from a
@@ -77,14 +77,14 @@ uint64_t AttributionPolicy::SanitizeTriggerData(
 
 bool AttributionPolicy::IsTriggerDataInRange(
     uint64_t trigger_data,
-    StorableSource::SourceType source_type) const {
+    CommonSourceInfo::SourceType source_type) const {
   return trigger_data < TriggerDataCardinality(source_type);
 }
 
 base::Time AttributionPolicy::GetExpiryTimeForImpression(
     const absl::optional<base::TimeDelta>& declared_expiry,
     base::Time impression_time,
-    StorableSource::SourceType source_type) const {
+    CommonSourceInfo::SourceType source_type) const {
   constexpr base::TimeDelta kMinImpressionExpiry = base::Days(1);
   constexpr base::TimeDelta kDefaultImpressionExpiry = base::Days(30);
 
@@ -92,7 +92,7 @@ base::Time AttributionPolicy::GetExpiryTimeForImpression(
   base::TimeDelta expiry = declared_expiry.value_or(kDefaultImpressionExpiry);
 
   // Expiry time for event sources must be a whole number of days.
-  if (source_type == StorableSource::SourceType::kEvent)
+  if (source_type == CommonSourceInfo::SourceType::kEvent)
     expiry = expiry.RoundToMultiple(base::Days(1));
 
   // If the impression specified its own expiry, clamp it to the minimum and
@@ -132,7 +132,7 @@ absl::optional<base::TimeDelta> AttributionPolicy::GetFailedReportDelay(
 }
 
 AttributionPolicy::AttributionMode AttributionPolicy::GetAttributionMode(
-    StorableSource::SourceType source_type) const {
+    CommonSourceInfo::SourceType source_type) const {
   if (debug_mode_)
     return AttributionMode(AttributionLogic::kTruthfully);
 
@@ -140,10 +140,10 @@ AttributionPolicy::AttributionMode AttributionPolicy::GetAttributionMode(
 
   // TODO(apaseltiner): Pick non-zero probabilities.
   switch (source_type) {
-    case StorableSource::SourceType::kNavigation:
+    case CommonSourceInfo::SourceType::kNavigation:
       randomized_response_probability = 0;
       break;
-    case StorableSource::SourceType::kEvent:
+    case CommonSourceInfo::SourceType::kEvent:
       randomized_response_probability = 0;
       break;
   }

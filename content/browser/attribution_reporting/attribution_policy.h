@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,17 +32,17 @@ class CONTENT_EXPORT AttributionPolicy {
   virtual ~AttributionPolicy();
 
   uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                               StorableSource::SourceType source_type) const;
+                               CommonSourceInfo::SourceType source_type) const;
 
   bool IsTriggerDataInRange(uint64_t trigger_data,
-                            StorableSource::SourceType source_type) const;
+                            CommonSourceInfo::SourceType source_type) const;
 
   // Returns the expiry time for an impression that is clamped to a maximum
   // value of 30 days from |impression_time|.
   base::Time GetExpiryTimeForImpression(
       const absl::optional<base::TimeDelta>& declared_expiry,
       base::Time impression_time,
-      StorableSource::SourceType source_type) const;
+      CommonSourceInfo::SourceType source_type) const;
 
   // Both bounds are inclusive.
   struct OfflineReportDelayConfig {
@@ -68,7 +68,7 @@ class CONTENT_EXPORT AttributionPolicy {
   class CONTENT_EXPORT AttributionMode {
    public:
     explicit AttributionMode(
-        StorableSource::AttributionLogic logic,
+        CommonSourceInfo::AttributionLogic logic,
         absl::optional<uint64_t> fake_trigger_data = absl::nullopt);
 
     ~AttributionMode();
@@ -79,7 +79,7 @@ class CONTENT_EXPORT AttributionPolicy {
     AttributionMode& operator=(const AttributionMode&);
     AttributionMode& operator=(AttributionMode&&);
 
-    StorableSource::AttributionLogic logic() const { return logic_; }
+    CommonSourceInfo::AttributionLogic logic() const { return logic_; }
 
     // `absl::nullopt` when `logic()` is not `AttributionLogic::kFalsely`.
     absl::optional<uint64_t> fake_trigger_data() const {
@@ -87,14 +87,14 @@ class CONTENT_EXPORT AttributionPolicy {
     }
 
    private:
-    StorableSource::AttributionLogic logic_;
+    CommonSourceInfo::AttributionLogic logic_;
     absl::optional<uint64_t> fake_trigger_data_;
   };
 
   // Selects how to handle the given source type; may involve RNG or other
   // dynamic criteria.
   AttributionMode GetAttributionMode(
-      StorableSource::SourceType source_type) const;
+      CommonSourceInfo::SourceType source_type) const;
 
  protected:
   virtual bool ShouldNoiseTriggerData() const;

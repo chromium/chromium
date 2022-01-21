@@ -7,7 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -37,10 +37,10 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   ~AttributionStorageDelegateImpl() override = default;
 
   // AttributionStorageDelegate:
-  base::Time GetReportTime(const StorableSource& source,
+  base::Time GetReportTime(const CommonSourceInfo& source,
                            base::Time trigger_time) const override;
   int GetMaxAttributionsPerSource(
-      StorableSource::SourceType source_type) const override;
+      CommonSourceInfo::SourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
   int GetMaxAttributionsPerOrigin() const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;

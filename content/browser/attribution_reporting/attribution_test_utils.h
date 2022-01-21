@@ -22,10 +22,12 @@
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,10 +83,10 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   ~ConfigurableStorageDelegate() override;
 
   // AttributionStorage::Delegate
-  base::Time GetReportTime(const StorableSource& source,
+  base::Time GetReportTime(const CommonSourceInfo& source,
                            base::Time trigger_time) const override;
   int GetMaxAttributionsPerSource(
-      StorableSource::SourceType source_type) const override;
+      CommonSourceInfo::SourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
   int GetMaxAttributionsPerOrigin() const override;
   RateLimitConfig GetRateLimits(
@@ -164,7 +166,7 @@ class MockAttributionManager : public AttributionManager {
 
   MOCK_METHOD(void,
               GetActiveSourcesForWebUI,
-              (base::OnceCallback<void(std::vector<StorableSource>)> callback),
+              (base::OnceCallback<void(std::vector<StoredSource>)> callback),
               (override));
 
   MOCK_METHOD(
@@ -223,35 +225,39 @@ class SourceBuilder {
 
   SourceBuilder& SetReportingOrigin(url::Origin origin);
 
-  SourceBuilder& SetSourceType(StorableSource::SourceType source_type);
+  SourceBuilder& SetSourceType(CommonSourceInfo::SourceType source_type);
 
   SourceBuilder& SetPriority(int64_t priority);
 
   SourceBuilder& SetAttributionLogic(
-      StorableSource::AttributionLogic attribution_logic);
+      CommonSourceInfo::AttributionLogic attribution_logic);
 
   SourceBuilder& SetFakeTriggerData(absl::optional<uint64_t> fake_trigger_data);
 
-  SourceBuilder& SetSourceId(absl::optional<StorableSource::Id> source_id);
+  SourceBuilder& SetSourceId(StoredSource::Id source_id);
 
   SourceBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys);
 
   StorableSource Build() const;
 
+  StoredSource BuildStored() const;
+
  private:
+  CommonSourceInfo BuildCommonInfo() const;
+
   uint64_t source_event_id_ = 123;
   base::Time impression_time_;
   base::TimeDelta expiry_;
   url::Origin impression_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
-  StorableSource::SourceType source_type_ =
-      StorableSource::SourceType::kNavigation;
+  CommonSourceInfo::SourceType source_type_ =
+      CommonSourceInfo::SourceType::kNavigation;
   int64_t priority_ = 0;
-  StorableSource::AttributionLogic attribution_logic_ =
-      StorableSource::AttributionLogic::kTruthfully;
+  CommonSourceInfo::AttributionLogic attribution_logic_ =
+      CommonSourceInfo::AttributionLogic::kTruthfully;
   absl::optional<uint64_t> fake_trigger_data_;
-  absl::optional<StorableSource::Id> source_id_;
+  StoredSource::Id source_id_;
   std::vector<int64_t> dedup_keys_;
 };
 
@@ -295,7 +301,7 @@ class TriggerBuilder {
 // data.
 class ReportBuilder {
  public:
-  explicit ReportBuilder(StorableSource source);
+  explicit ReportBuilder(StoredSource source);
   ~ReportBuilder();
 
   ReportBuilder& SetTriggerData(uint64_t trigger_data);
@@ -314,7 +320,7 @@ class ReportBuilder {
   AttributionReport Build() const;
 
  private:
-  StorableSource source_;
+  StoredSource source_;
   uint64_t trigger_data_ = 0;
   base::Time trigger_time_;
   base::Time report_time_;
@@ -323,7 +329,11 @@ class ReportBuilder {
   absl::optional<AttributionReport::EventLevelData::Id> report_id_;
 };
 
+bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
+
 bool operator==(const StorableSource& a, const StorableSource& b);
+
+bool operator==(const StoredSource& a, const StoredSource& b);
 
 bool operator==(const HistogramContribution& a, const HistogramContribution& b);
 
@@ -352,11 +362,15 @@ std::ostream& operator<<(std::ostream& out,
                          RateLimitTable::AttributionAllowedStatus status);
 
 std::ostream& operator<<(std::ostream& out,
-                         StorableSource::SourceType source_type);
+                         CommonSourceInfo::SourceType source_type);
 
 std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion);
 
-std::ostream& operator<<(std::ostream& out, const StorableSource& impression);
+std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
+
+std::ostream& operator<<(std::ostream& out, const StorableSource& source);
+
+std::ostream& operator<<(std::ostream& out, const StoredSource& source);
 
 std::ostream& operator<<(std::ostream& out,
                          const HistogramContribution& contribution);
@@ -378,7 +392,7 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status);
 std::ostream& operator<<(std::ostream& out, const SendResult& info);
 
 std::ostream& operator<<(std::ostream& out,
-                         StorableSource::AttributionLogic attribution_logic);
+                         CommonSourceInfo::AttributionLogic attribution_logic);
 
 std::ostream& operator<<(
     std::ostream& out,

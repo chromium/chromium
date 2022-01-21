@@ -25,6 +25,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -107,7 +108,7 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
   // a long time while a conversion report is pending. Revisit this range if it
   // is non-ideal for real world data.
   base::Time original_report_time =
-      ComputeReportTime(report.source(), report.trigger_time());
+      ComputeReportTime(report.source().common_info(), report.trigger_time());
   base::TimeDelta time_since_original_report_time = now - original_report_time;
   base::UmaHistogramCustomTimes(
       "Conversions.ExtraReportDelay2", time_since_original_report_time,
@@ -274,7 +275,7 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
 }
 
 void AttributionManagerImpl::GetActiveSourcesForWebUI(
-    base::OnceCallback<void(std::vector<StorableSource>)> callback) {
+    base::OnceCallback<void(std::vector<StoredSource>)> callback) {
   const int kMaxSources = 1000;
   attribution_storage_.AsyncCall(&AttributionStorage::GetActiveSources)
       .WithArgs(kMaxSources)
@@ -447,9 +448,9 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
         GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
             storage_partition_->browser_context(),
             ContentBrowserClient::ConversionMeasurementOperation::kReport,
-            &report.source().impression_origin(),
-            &report.source().conversion_origin(),
-            &report.source().reporting_origin());
+            &report.source().common_info().impression_origin(),
+            &report.source().common_info().conversion_origin(),
+            &report.source().common_info().reporting_origin());
     if (!allowed) {
       // If measurement is disallowed, just drop the report on the floor. We
       // need to make sure we forward that the report was "sent" to ensure it is

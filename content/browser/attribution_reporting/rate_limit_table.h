@@ -14,7 +14,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 
 namespace sql {
@@ -74,7 +74,7 @@ class CONTENT_EXPORT RateLimitTable {
   // tests.
   AttributionAllowedStatus AddAggregateHistogramContributionsForTesting(
       sql::Database* db,
-      const StorableSource& source,
+      const StoredSource& source,
       const std::vector<AggregateHistogramContribution>& contributions);
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
@@ -89,7 +89,7 @@ class CONTENT_EXPORT RateLimitTable {
   // Returns false on failure.
   [[nodiscard]] bool ClearDataForSourceIds(
       sql::Database* db,
-      const std::vector<StorableSource::Id>& source_ids);
+      const std::vector<StoredSource::Id>& source_ids);
 
  private:
   // Returns the capacity for the given `attribution_type`, `impression_site`,
@@ -105,7 +105,7 @@ class CONTENT_EXPORT RateLimitTable {
   [[nodiscard]] bool AddRow(
       sql::Database* db,
       AttributionStorage::AttributionType attribution_type,
-      StorableSource::Id source_id,
+      StoredSource::Id source_id,
       const std::string& serialized_impression_site,
       const std::string& serialized_impression_origin,
       const std::string& serialized_conversion_destination,

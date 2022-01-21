@@ -10,8 +10,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -23,8 +24,8 @@ namespace content {
 
 namespace {
 
-StorableSource::Id NextImpressionId(StorableSource::Id id) {
-  return StorableSource::Id(*id + 1);
+StoredSource::Id NextImpressionId(StoredSource::Id id) {
+  return StoredSource::Id(*id + 1);
 }
 
 AttributionReport::EventLevelData::Id NextConversionId(
@@ -33,13 +34,13 @@ AttributionReport::EventLevelData::Id NextConversionId(
 }
 
 struct ImpressionIdAndConversionOrigin {
-  StorableSource::Id source_id;
+  StoredSource::Id source_id;
   url::Origin conversion_origin;
 };
 
 std::vector<ImpressionIdAndConversionOrigin>
 GetImpressionIdAndConversionOrigins(sql::Database* db,
-                                    StorableSource::Id start_source_id) {
+                                    StoredSource::Id start_source_id) {
   static constexpr char kGetImpressionsSql[] =
       "SELECT impression_id,conversion_origin "
       "FROM impressions "
@@ -56,7 +57,7 @@ GetImpressionIdAndConversionOrigins(sql::Database* db,
 
   std::vector<ImpressionIdAndConversionOrigin> impressions;
   while (statement.Step()) {
-    StorableSource::Id source_id(statement.ColumnInt64(0));
+    StoredSource::Id source_id(statement.ColumnInt64(0));
     url::Origin conversion_origin =
         DeserializeOrigin(statement.ColumnString(1));
 
@@ -68,13 +69,13 @@ GetImpressionIdAndConversionOrigins(sql::Database* db,
 }
 
 struct ImpressionIdAndImpressionOrigin {
-  StorableSource::Id source_id;
+  StoredSource::Id source_id;
   url::Origin impression_origin;
 };
 
 std::vector<ImpressionIdAndImpressionOrigin>
 GetImpressionIdAndImpressionOrigins(sql::Database* db,
-                                    StorableSource::Id start_source_id) {
+                                    StoredSource::Id start_source_id) {
   static constexpr char kGetImpressionsSql[] =
       "SELECT impression_id,impression_origin "
       "FROM impressions "
@@ -91,7 +92,7 @@ GetImpressionIdAndImpressionOrigins(sql::Database* db,
 
   std::vector<ImpressionIdAndImpressionOrigin> impressions;
   while (statement.Step()) {
-    StorableSource::Id source_id(statement.ColumnInt64(0));
+    StoredSource::Id source_id(statement.ColumnInt64(0));
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(1));
 
@@ -186,7 +187,7 @@ bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
   // We update a subset of rows at a time to avoid pulling the entire
   // impressions table into memory.
   std::vector<ImpressionIdAndConversionOrigin> impressions =
-      GetImpressionIdAndConversionOrigins(db, StorableSource::Id(0));
+      GetImpressionIdAndConversionOrigins(db, StoredSource::Id(0));
 
   static constexpr char kUpdateDestinationSql[] =
       "UPDATE impressions SET conversion_destination = ? WHERE impression_id = "
@@ -279,7 +280,7 @@ bool MigrateToVersion3(sql::Database* db, sql::MetaTable* meta_table) {
       db->GetCachedStatement(SQL_FROM_HERE, kPopulateNewImpressionTableSql));
   // Only navigation type was supported prior to this column being added.
   populate_statement.BindInt(
-      0, static_cast<int>(StorableSource::SourceType::kNavigation));
+      0, static_cast<int>(CommonSourceInfo::SourceType::kNavigation));
   populate_statement.BindBool(1, true);
   if (!populate_statement.Run())
     return false;
@@ -516,7 +517,7 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
   // We update a subset of rows at a time to avoid pulling the entire
   // impressions table into memory.
   std::vector<ImpressionIdAndImpressionOrigin> impressions =
-      GetImpressionIdAndImpressionOrigins(db, StorableSource::Id(0));
+      GetImpressionIdAndImpressionOrigins(db, StoredSource::Id(0));
 
   static constexpr char kUpdateImpressionSiteSql[] =
       "UPDATE impressions SET impression_site = ? WHERE impression_id = ?";
@@ -572,13 +573,13 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
 }
 
 struct ImpressionIdAndImpressionData {
-  StorableSource::Id source_id;
+  StoredSource::Id source_id;
   std::string impression_data;
 };
 
 std::vector<ImpressionIdAndImpressionData> GetImpressionIdAndImpressionData(
     sql::Database* db,
-    StorableSource::Id start_source_id) {
+    StoredSource::Id start_source_id) {
   static constexpr char kGetImpressionsSql[] =
       "SELECT impression_id,impression_data "
       "FROM impressions "
@@ -595,7 +596,7 @@ std::vector<ImpressionIdAndImpressionData> GetImpressionIdAndImpressionData(
 
   std::vector<ImpressionIdAndImpressionData> impressions;
   while (statement.Step()) {
-    StorableSource::Id source_id(statement.ColumnInt64(0));
+    StoredSource::Id source_id(statement.ColumnInt64(0));
     std::string impression_data = statement.ColumnString(1);
 
     impressions.push_back({source_id, std::move(impression_data)});
@@ -655,7 +656,7 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
   // We update a subset of rows at a time to avoid pulling the entire
   // impressions table into memory.
   std::vector<ImpressionIdAndImpressionData> impressions =
-      GetImpressionIdAndImpressionData(db, StorableSource::Id(0));
+      GetImpressionIdAndImpressionData(db, StoredSource::Id(0));
 
   static constexpr char kUpdateImpressionDataSql[] =
       "UPDATE new_impressions SET impression_data = ? WHERE impression_id = ?";

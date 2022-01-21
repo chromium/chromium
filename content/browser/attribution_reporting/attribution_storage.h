@@ -10,7 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,6 +26,7 @@ class Origin;
 
 namespace content {
 
+class StorableSource;
 class StorableTrigger;
 
 // This class provides an interface for persisting attribution data to
@@ -48,7 +50,7 @@ class AttributionStorage {
 
     // Returns the time a report should be sent for a given trigger time and
     // its corresponding source.
-    virtual base::Time GetReportTime(const StorableSource& source,
+    virtual base::Time GetReportTime(const CommonSourceInfo& source,
                                      base::Time trigger_time) const = 0;
 
     // This limit is used to determine if a source is allowed to schedule
@@ -57,7 +59,7 @@ class AttributionStorage {
     // Sources will be checked against this limit after they schedule a new
     // report.
     virtual int GetMaxAttributionsPerSource(
-        StorableSource::SourceType source_type) const = 0;
+        CommonSourceInfo::SourceType source_type) const = 0;
 
     // These limits are designed solely to avoid excessive disk / memory usage.
     // In particular, they do not correspond with any privacy parameters.
@@ -107,7 +109,7 @@ class AttributionStorage {
       kReachedAttributionLimit,
     };
 
-    DeactivatedSource(StorableSource source, Reason reason);
+    DeactivatedSource(StoredSource source, Reason reason);
     ~DeactivatedSource();
 
     DeactivatedSource(const DeactivatedSource&);
@@ -116,7 +118,7 @@ class AttributionStorage {
     DeactivatedSource& operator=(const DeactivatedSource&);
     DeactivatedSource& operator=(DeactivatedSource&&);
 
-    StorableSource source;
+    StoredSource source;
     Reason reason;
   };
 
@@ -220,7 +222,7 @@ class AttributionStorage {
   // trigger and then superceded by a matching source should not be
   // returned. |limit| limits the number of sources to return; use
   // a negative number for no limit.
-  virtual std::vector<StorableSource> GetActiveSources(int limit = -1) = 0;
+  virtual std::vector<StoredSource> GetActiveSources(int limit = -1) = 0;
 
   // Deletes the report with the given |report_id|. Returns
   // false if an error occurred.

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "net/base/schemeful_site.h"
 #include "sql/database.h"
@@ -29,11 +30,11 @@ constexpr AttributionType kAttributionTypes[] = {
 };
 
 AttributionType AttributionTypeFromSourceType(
-    StorableSource::SourceType source_type) {
+    CommonSourceInfo::SourceType source_type) {
   switch (source_type) {
-    case StorableSource::SourceType::kNavigation:
+    case CommonSourceInfo::SourceType::kNavigation:
       return AttributionType::kNavigation;
-    case StorableSource::SourceType::kEvent:
+    case CommonSourceInfo::SourceType::kEvent:
       return AttributionType::kEvent;
   }
 }
@@ -115,27 +116,28 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 bool RateLimitTable::AddRateLimit(sql::Database* db,
                                   const AttributionReport& report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(report.source().source_id().has_value());
 
-  return AddRow(db,
-                AttributionTypeFromSourceType(report.source().source_type()),
-                *report.source().source_id(),
-                report.source().ImpressionSite().Serialize(),
-                SerializeOrigin(report.source().impression_origin()),
-                report.source().ConversionDestination().Serialize(),
-                SerializeOrigin(report.source().conversion_origin()),
-                report.trigger_time(),
-                // Rate limits for the event-level API do not have a bucket.
-                /*bucket=*/"",
-                // By supplying 1 here, rate limits for the event-level API act
-                // as a count.
-                /*value=*/1u);
+  return AddRow(
+      db,
+      AttributionTypeFromSourceType(
+          report.source().common_info().source_type()),
+      report.source().source_id(),
+      report.source().common_info().ImpressionSite().Serialize(),
+      SerializeOrigin(report.source().common_info().impression_origin()),
+      report.source().common_info().ConversionDestination().Serialize(),
+      SerializeOrigin(report.source().common_info().conversion_origin()),
+      report.trigger_time(),
+      // Rate limits for the event-level API do not have a bucket.
+      /*bucket=*/"",
+      // By supplying 1 here, rate limits for the event-level API act
+      // as a count.
+      /*value=*/1u);
 }
 
 bool RateLimitTable::AddRow(
     sql::Database* db,
     AttributionType attribution_type,
-    StorableSource::Id source_id,
+    StoredSource::Id source_id,
     const std::string& serialized_impression_site,
     const std::string& serialized_impression_origin,
     const std::string& serialized_conversion_destination,
@@ -181,12 +183,14 @@ AttributionAllowedStatus RateLimitTable::AttributionAllowed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const std::string serialized_impression_site =
-      report.source().ImpressionSite().Serialize();
+      report.source().common_info().ImpressionSite().Serialize();
   const std::string serialized_conversion_destination =
-      report.source().ConversionDestination().Serialize();
+      report.source().common_info().ConversionDestination().Serialize();
 
   const int64_t capacity = GetCapacity(
-      db, AttributionTypeFromSourceType(report.source().source_type()),
+      db,
+      AttributionTypeFromSourceType(
+          report.source().common_info().source_type()),
       serialized_impression_site, serialized_conversion_destination, now);
   // This should only be possible if there is DB corruption.
   if (capacity < 0)
@@ -347,7 +351,7 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db,
 
 bool RateLimitTable::ClearDataForSourceIds(
     sql::Database* db,
-    const std::vector<StorableSource::Id>& source_ids) {
+    const std::vector<StoredSource::Id>& source_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db);
@@ -359,7 +363,7 @@ bool RateLimitTable::ClearDataForSourceIds(
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
 
-  for (StorableSource::Id id : source_ids) {
+  for (StoredSource::Id id : source_ids) {
     statement.Reset(/*clear_bound_vars=*/true);
     statement.BindInt64(0, *id);
     if (!statement.Run())
@@ -372,17 +376,16 @@ bool RateLimitTable::ClearDataForSourceIds(
 AttributionAllowedStatus
 RateLimitTable::AddAggregateHistogramContributionsForTesting(
     sql::Database* db,
-    const StorableSource& source,
+    const StoredSource& source,
     const std::vector<AggregateHistogramContribution>& contributions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(source.source_id().has_value());
 
   base::Time now = base::Time::Now();
 
   const std::string serialized_impression_site =
-      source.ImpressionSite().Serialize();
+      source.common_info().ImpressionSite().Serialize();
   const std::string serialized_conversion_destination =
-      source.ConversionDestination().Serialize();
+      source.common_info().ConversionDestination().Serialize();
 
   const int64_t capacity =
       GetCapacity(db, AttributionType::kAggregate, serialized_impression_site,
@@ -407,12 +410,12 @@ RateLimitTable::AddAggregateHistogramContributionsForTesting(
     return AttributionAllowedStatus::kError;
 
   const std::string serialized_impression_origin =
-      SerializeOrigin(source.impression_origin());
+      SerializeOrigin(source.common_info().impression_origin());
   const std::string serialized_conversion_origin =
-      SerializeOrigin(source.conversion_origin());
+      SerializeOrigin(source.common_info().conversion_origin());
 
   for (const auto& contribution : contributions) {
-    if (!AddRow(db, AttributionType::kAggregate, *source.source_id(),
+    if (!AddRow(db, AttributionType::kAggregate, source.source_id(),
                 serialized_impression_site, serialized_impression_origin,
                 serialized_conversion_destination, serialized_conversion_origin,
                 now, contribution.bucket, contribution.value)) {

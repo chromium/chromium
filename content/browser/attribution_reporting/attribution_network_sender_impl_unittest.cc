@@ -13,7 +13,9 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -46,7 +48,7 @@ const char kReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/report-attribution";
 
 AttributionReport DefaultReport() {
-  return ReportBuilder(SourceBuilder(base::Time()).Build()).Build();
+  return ReportBuilder(SourceBuilder(base::Time()).BuildStored()).Build();
 }
 
 }  // namespace
@@ -125,16 +127,16 @@ TEST_F(AttributionNetworkSenderTest, Isolation) {
 
 TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
   const struct {
-    StorableSource::SourceType source_type;
+    CommonSourceInfo::SourceType source_type;
     const char* expected_report;
   } kTestCases[] = {
-      {StorableSource::SourceType::kNavigation,
+      {CommonSourceInfo::SourceType::kNavigation,
        R"({"attribution_destination":"https://conversion.test",)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
        R"("trigger_data":"5"})"},
-      {StorableSource::SourceType::kEvent,
+      {CommonSourceInfo::SourceType::kEvent,
        R"({"attribution_destination":"https://conversion.test",)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
@@ -146,7 +148,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
     auto impression = SourceBuilder(base::Time())
                           .SetSourceEventId(100)
                           .SetSourceType(test_case.source_type)
-                          .Build();
+                          .BuildStored();
     AttributionReport report =
         ReportBuilder(impression).SetTriggerData(5).Build();
     network_sender_->SendReport(report.ReportURL(), report.ReportBody(),
@@ -167,7 +169,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_RequestAttributesSet) {
       SourceBuilder(base::Time())
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))
-          .Build();
+          .BuildStored();
   AttributionReport report = ReportBuilder(impression).Build();
   network_sender_->SendReport(report.ReportURL(), report.ReportBody(),
                               base::DoNothing());

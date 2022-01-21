@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -700,10 +701,12 @@ TEST_F(AttributionHostTest,
 
 TEST_F(AttributionHostTest,
        ImpressionInSubframe_ImpressionOriginMatchesTopPageOrigin) {
-  EXPECT_CALL(mock_manager_,
-              HandleSource(Property(
-                  &StorableSource::impression_origin,
-                  url::Origin::Create(GURL("https://www.example.com")))));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(Property(
+          &StorableSource::common_info,
+          Property(&CommonSourceInfo::impression_origin,
+                   url::Origin::Create(GURL("https://www.example.com"))))));
 
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
@@ -731,9 +734,11 @@ TEST_F(AttributionHostTest,
 
 TEST_F(AttributionHostTest, ValidImpression_NoBadMessage) {
   EXPECT_CALL(mock_manager_,
-              HandleSource(AllOf(Property(&StorableSource::source_type,
-                                          StorableSource::SourceType::kEvent),
-                                 Property(&StorableSource::priority, 10))));
+              HandleSource(
+                  Property(&StorableSource::common_info,
+                           AllOf(Property(&CommonSourceInfo::source_type,
+                                          CommonSourceInfo::SourceType::kEvent),
+                                 Property(&CommonSourceInfo::priority, 10)))));
 
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));

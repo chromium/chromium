@@ -25,6 +25,7 @@ namespace content {
 class AttributionPolicy;
 class StorableTrigger;
 class StorableSource;
+class StoredSource;
 class WebContents;
 
 struct SendResult;
@@ -82,7 +83,7 @@ class AttributionManager {
   // Get all sources that are currently stored in this partition. Used for
   // populating WebUI.
   virtual void GetActiveSourcesForWebUI(
-      base::OnceCallback<void(std::vector<StorableSource>)> callback) = 0;
+      base::OnceCallback<void(std::vector<StoredSource>)> callback) = 0;
 
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI.

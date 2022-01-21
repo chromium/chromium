@@ -1966,8 +1966,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
 
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
-                       source.impression_origin().GetURL(), now, now,
-                       run_loop.QuitClosure());
+                       source.common_info().impression_origin().GetURL(), now,
+                       now, run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(
@@ -1994,8 +1994,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
   // Arbitrary non-conversions mask.
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
-                       source.impression_origin().GetURL(), now, now,
-                       run_loop.QuitClosure());
+                       source.common_info().impression_origin().GetURL(), now,
+                       now, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_FALSE(
       GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())

@@ -7,7 +7,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/url_utils.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
@@ -52,13 +52,14 @@ class AttributionReporterTest : public ::testing::Test {
 TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
   base::Time time = base::Time::Now() - base::Hours(1);
 
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(AllOf(Property(&StorableSource::impression_origin,
-                                  OriginFromAndroidPackageName(kPackageName)),
-                         Property(&StorableSource::source_type,
-                                  StorableSource::SourceType::kEvent),
-                         Property(&StorableSource::impression_time, time))));
+  EXPECT_CALL(mock_manager_,
+              HandleSource(Property(
+                  &StorableSource::common_info,
+                  AllOf(Property(&CommonSourceInfo::impression_origin,
+                                 OriginFromAndroidPackageName(kPackageName)),
+                        Property(&CommonSourceInfo::source_type,
+                                 CommonSourceInfo::SourceType::kEvent),
+                        Property(&CommonSourceInfo::impression_time, time)))));
 
   attribution_reporter_android::ReportAppImpression(
       mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
@@ -66,12 +67,13 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
 }
 
 TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(AllOf(Property(&StorableSource::impression_origin,
-                                  OriginFromAndroidPackageName(kPackageName)),
-                         Property(&StorableSource::source_type,
-                                  StorableSource::SourceType::kEvent))));
+  EXPECT_CALL(mock_manager_,
+              HandleSource(Property(
+                  &StorableSource::common_info,
+                  AllOf(Property(&CommonSourceInfo::impression_origin,
+                                 OriginFromAndroidPackageName(kPackageName)),
+                        Property(&CommonSourceInfo::source_type,
+                                 CommonSourceInfo::SourceType::kEvent)))));
 
   attribution_reporter_android::ReportAppImpression(
       mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,

@@ -8,16 +8,16 @@
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
 namespace {
 
-const StorableSource::SourceType kSourceTypes[] = {
-    StorableSource::SourceType::kNavigation,
-    StorableSource::SourceType::kEvent,
+const CommonSourceInfo::SourceType kSourceTypes[] = {
+    CommonSourceInfo::SourceType::kNavigation,
+    CommonSourceInfo::SourceType::kEvent,
 };
 
 class ConfigurableAttributionPolicy : public AttributionPolicy {
@@ -41,14 +41,14 @@ TEST(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
       std::make_unique<ConfigurableAttributionPolicy>(/*should_noise=*/false);
 
   EXPECT_EQ(0u, policy->SanitizeTriggerData(
-                    8, StorableSource::SourceType::kNavigation));
+                    8, CommonSourceInfo::SourceType::kNavigation));
   EXPECT_EQ(1u, policy->SanitizeTriggerData(
-                    9, StorableSource::SourceType::kNavigation));
+                    9, CommonSourceInfo::SourceType::kNavigation));
 
-  EXPECT_EQ(0u,
-            policy->SanitizeTriggerData(2, StorableSource::SourceType::kEvent));
-  EXPECT_EQ(1u,
-            policy->SanitizeTriggerData(3, StorableSource::SourceType::kEvent));
+  EXPECT_EQ(
+      0u, policy->SanitizeTriggerData(2, CommonSourceInfo::SourceType::kEvent));
+  EXPECT_EQ(
+      1u, policy->SanitizeTriggerData(3, CommonSourceInfo::SourceType::kEvent));
 }
 
 TEST(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
@@ -58,12 +58,12 @@ TEST(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
   for (uint64_t trigger_data = 0; trigger_data < 8; trigger_data++) {
     EXPECT_EQ(trigger_data,
               policy->SanitizeTriggerData(
-                  trigger_data, StorableSource::SourceType::kNavigation));
+                  trigger_data, CommonSourceInfo::SourceType::kNavigation));
   }
   for (uint64_t trigger_data = 0; trigger_data < 2; trigger_data++) {
     EXPECT_EQ(trigger_data,
-              policy->SanitizeTriggerData(trigger_data,
-                                          StorableSource::SourceType::kEvent));
+              policy->SanitizeTriggerData(
+                  trigger_data, CommonSourceInfo::SourceType::kEvent));
   }
 }
 
@@ -132,18 +132,18 @@ TEST(AttributionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
 
 TEST(AttributionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   const struct {
-    StorableSource::SourceType source_type;
+    CommonSourceInfo::SourceType source_type;
     base::TimeDelta declared_expiry;
     base::TimeDelta want_expiry;
   } kTestCases[] = {
-      {StorableSource::SourceType::kNavigation, base::Hours(36),
+      {CommonSourceInfo::SourceType::kNavigation, base::Hours(36),
        base::Hours(36)},
-      {StorableSource::SourceType::kEvent, base::Hours(36), base::Days(2)},
+      {CommonSourceInfo::SourceType::kEvent, base::Hours(36), base::Days(2)},
 
-      {StorableSource::SourceType::kNavigation,
+      {CommonSourceInfo::SourceType::kNavigation,
        base::Days(1) + base::Milliseconds(1),
        base::Days(1) + base::Milliseconds(1)},
-      {StorableSource::SourceType::kEvent,
+      {CommonSourceInfo::SourceType::kEvent,
        base::Days(1) + base::Milliseconds(1), base::Days(1)},
   };
 

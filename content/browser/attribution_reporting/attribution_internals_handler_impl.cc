@@ -15,8 +15,9 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -39,10 +40,11 @@ using Attributability =
     ::content::mojom::WebUIAttributionSource::Attributability;
 
 mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
-    const StorableSource& source,
+    const StoredSource& source,
     absl::optional<DeactivatedSource::Reason> deactivation_reason) {
   auto attributability = Attributability::kAttributable;
-  if (source.attribution_logic() == StorableSource::AttributionLogic::kNever) {
+  if (source.common_info().attribution_logic() ==
+      CommonSourceInfo::AttributionLogic::kNever) {
     attributability = Attributability::kNoised;
   } else if (deactivation_reason.has_value()) {
     switch (*deactivation_reason) {
@@ -56,21 +58,24 @@ mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
   }
 
   return mojom::WebUIAttributionSource::New(
-      source.source_event_id(), source.impression_origin(),
-      source.ConversionDestination().Serialize(), source.reporting_origin(),
-      source.impression_time().ToJsTime(), source.expiry_time().ToJsTime(),
-      source.source_type(), source.priority(), source.dedup_keys(),
-      attributability);
+      source.common_info().source_event_id(),
+      source.common_info().impression_origin(),
+      source.common_info().ConversionDestination().Serialize(),
+      source.common_info().reporting_origin(),
+      source.common_info().impression_time().ToJsTime(),
+      source.common_info().expiry_time().ToJsTime(),
+      source.common_info().source_type(), source.common_info().priority(),
+      source.dedup_keys(), attributability);
 }
 
 void ForwardSourcesToWebUI(
     mojom::AttributionInternalsHandler::GetActiveSourcesCallback
         web_ui_callback,
-    std::vector<StorableSource> active_sources) {
+    std::vector<StoredSource> active_sources) {
   std::vector<mojom::WebUIAttributionSourcePtr> web_ui_sources;
   web_ui_sources.reserve(active_sources.size());
 
-  for (const StorableSource& source : active_sources) {
+  for (const StoredSource& source : active_sources) {
     web_ui_sources.push_back(
         WebUIAttributionSource(source, /*deactivation_reason=*/absl::nullopt));
   }
@@ -86,13 +91,15 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
       absl::get_if<AttributionReport::EventLevelData>(&report.data());
   DCHECK(data);
   return mojom::WebUIAttributionReport::New(
-      data->id, report.source().ConversionDestination().Serialize(),
+      data->id,
+      report.source().common_info().ConversionDestination().Serialize(),
       report.ReportURL(),
       /*trigger_time=*/report.trigger_time().ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(), data->priority,
       report.ReportBody(/*pretty_print=*/true),
-      /*attributed_truthfully=*/report.source().attribution_logic() ==
-          StorableSource::AttributionLogic::kTruthfully,
+      /*attributed_truthfully=*/
+      report.source().common_info().attribution_logic() ==
+          CommonSourceInfo::AttributionLogic::kTruthfully,
       status, http_response_code);
 }
 

@@ -108,7 +108,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   void HandleSource(StorableSource source) override;
   void HandleTrigger(StorableTrigger trigger) override;
   void GetActiveSourcesForWebUI(
-      base::OnceCallback<void(std::vector<StorableSource>)> callback) override;
+      base::OnceCallback<void(std::vector<StoredSource>)> callback) override;
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;

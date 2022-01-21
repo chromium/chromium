@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -59,7 +60,7 @@ AttributionReport::AggregateContributionData::~AggregateContributionData() =
     default;
 
 AttributionReport::AttributionReport(
-    StorableSource source,
+    StoredSource source,
     base::Time trigger_time,
     base::Time report_time,
     base::GUID external_report_id,
@@ -102,7 +103,8 @@ GURL AttributionReport::ReportURL() const {
   const char* path = absl::visit(Visitor{}, data_);
   url::Replacements<char> replacements;
   replacements.SetPath(path, url::Component(0, strlen(path)));
-  return source_.reporting_origin().GetURL().ReplaceComponents(replacements);
+  return source_.common_info().reporting_origin().GetURL().ReplaceComponents(
+      replacements);
 }
 
 std::string AttributionReport::ReportBody(bool pretty_print) const {
@@ -112,22 +114,23 @@ std::string AttributionReport::ReportBody(bool pretty_print) const {
   base::Value dict(base::Value::Type::DICTIONARY);
 
   dict.SetStringKey("attribution_destination",
-                    source_.ConversionDestination().Serialize());
+                    source_.common_info().ConversionDestination().Serialize());
 
   // The API denotes these values as strings; a `uint64_t` cannot be put in
   // a dict as an integer in order to be opaque to various API configurations.
-  dict.SetStringKey("source_event_id",
-                    base::NumberToString(source_.source_event_id()));
+  dict.SetStringKey(
+      "source_event_id",
+      base::NumberToString(source_.common_info().source_event_id()));
 
   dict.SetStringKey("trigger_data",
                     base::NumberToString(event_data->trigger_data));
 
   const char* source_type = nullptr;
-  switch (source_.source_type()) {
-    case StorableSource::SourceType::kNavigation:
+  switch (source_.common_info().source_type()) {
+    case CommonSourceInfo::SourceType::kNavigation:
       source_type = "navigation";
       break;
-    case StorableSource::SourceType::kEvent:
+    case CommonSourceInfo::SourceType::kEvent:
       source_type = "event";
       break;
   }

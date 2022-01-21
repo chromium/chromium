@@ -8,14 +8,14 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 
 namespace content {
 
-base::Time ComputeReportTime(const StorableSource& impression,
+base::Time ComputeReportTime(const CommonSourceInfo& source,
                              base::Time trigger_time) {
   base::TimeDelta expiry_deadline =
-      impression.expiry_time() - impression.impression_time();
+      source.expiry_time() - source.impression_time();
 
   constexpr base::TimeDelta kMinExpiryDeadline = base::Days(2);
   if (expiry_deadline < kMinExpiryDeadline)
@@ -41,12 +41,12 @@ base::Time ComputeReportTime(const StorableSource& impression,
   constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 
   std::vector<base::TimeDelta> early_deadlines;
-  switch (impression.source_type()) {
-    case StorableSource::SourceType::kNavigation:
+  switch (source.source_type()) {
+    case CommonSourceInfo::SourceType::kNavigation:
       early_deadlines = {base::Days(2) - kWindowDeadlineOffset,
                          base::Days(7) - kWindowDeadlineOffset};
       break;
-    case StorableSource::SourceType::kEvent:
+    case CommonSourceInfo::SourceType::kEvent:
       early_deadlines = {};
       break;
   }
@@ -58,7 +58,7 @@ base::Time ComputeReportTime(const StorableSource& impression,
   for (base::TimeDelta early_deadline : early_deadlines) {
     // If this window is valid for the conversion, use it.
     // |trigger_time| is roughly ~now.
-    if (impression.impression_time() + early_deadline >= trigger_time &&
+    if (source.impression_time() + early_deadline >= trigger_time &&
         early_deadline < deadline_to_use) {
       deadline_to_use = early_deadline;
       break;
@@ -68,7 +68,7 @@ base::Time ComputeReportTime(const StorableSource& impression,
   // Valid conversion reports should always have a valid reporting deadline.
   DCHECK(!deadline_to_use.is_zero());
 
-  return impression.impression_time() + deadline_to_use + kWindowDeadlineOffset;
+  return source.impression_time() + deadline_to_use + kWindowDeadlineOffset;
 }
 
 }  // namespace content

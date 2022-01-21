@@ -18,12 +18,13 @@ mojom("mojo_bindings") {
         },
         {
           mojom = "content.mojom.SourceType"
-          cpp = "::content::StorableSource::SourceType"
+          cpp = "::content::CommonSourceInfo::SourceType"
         },
       ]
       traits_headers = [
         "attribution_internals_mojom_traits.h",
         "attribution_report.h",
+        "common_source_info.h",
       ]
       traits_sources = [ "attribution_internals_mojom_traits.cc" ]
     },

@@ -11,12 +11,13 @@ class Time;
 
 namespace content {
 
-class StorableSource;
+class CommonSourceInfo;
 
 // Calculates the report time for a conversion associated with a given
-// impression.
-base::Time ComputeReportTime(const StorableSource& impression,
+// source.
+base::Time ComputeReportTime(const CommonSourceInfo& source,
                              base::Time trigger_time);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_UTILS_H_

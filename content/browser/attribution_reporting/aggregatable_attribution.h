@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -38,7 +38,7 @@ class CONTENT_EXPORT HistogramContribution {
 // Struct which represents all attributes of an aggregatable attribution.
 struct CONTENT_EXPORT AggregatableAttribution {
  public:
-  AggregatableAttribution(StorableSource::Id source_id,
+  AggregatableAttribution(StoredSource::Id source_id,
                           base::Time trigger_time,
                           base::Time report_time,
                           std::vector<HistogramContribution> contributions);
@@ -48,7 +48,7 @@ struct CONTENT_EXPORT AggregatableAttribution {
   AggregatableAttribution& operator=(AggregatableAttribution&& other);
   ~AggregatableAttribution();
 
-  StorableSource::Id source_id;
+  StoredSource::Id source_id;
   base::Time trigger_time;
   // Might be null if not set yet.
   base::Time report_time;

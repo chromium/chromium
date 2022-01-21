@@ -229,12 +229,12 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  VerifyAndStoreImpression(StorableSource::SourceType::kNavigation,
+  VerifyAndStoreImpression(CommonSourceInfo::SourceType::kNavigation,
                            impression_origin, impression, *attribution_manager);
 }
 
 bool AttributionHost::VerifyAndStoreImpression(
-    StorableSource::SourceType source_type,
+    CommonSourceInfo::SourceType source_type,
     const url::Origin& impression_origin,
     const blink::Impression& impression,
     AttributionManager& attribution_manager) {
@@ -302,7 +302,7 @@ void AttributionHost::RegisterConversion(
   const AttributionPolicy& policy = attribution_manager->GetAttributionPolicy();
 
   if (!policy.IsTriggerDataInRange(conversion->conversion_data,
-                                   StorableSource::SourceType::kNavigation)) {
+                                   CommonSourceInfo::SourceType::kNavigation)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
         render_frame_host,
         devtools_instrumentation::AttributionReportingIssueType::
@@ -312,7 +312,7 @@ void AttributionHost::RegisterConversion(
   }
 
   if (!policy.IsTriggerDataInRange(conversion->event_source_trigger_data,
-                                   StorableSource::SourceType::kEvent)) {
+                                   CommonSourceInfo::SourceType::kEvent)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
         render_frame_host,
         devtools_instrumentation::AttributionReportingIssueType::
@@ -325,10 +325,10 @@ void AttributionHost::RegisterConversion(
 
   StorableTrigger storable_conversion(
       policy.SanitizeTriggerData(conversion->conversion_data,
-                                 StorableSource::SourceType::kNavigation),
+                                 CommonSourceInfo::SourceType::kNavigation),
       std::move(conversion_destination), conversion->reporting_origin,
       policy.SanitizeTriggerData(conversion->event_source_trigger_data,
-                                 StorableSource::SourceType::kEvent),
+                                 CommonSourceInfo::SourceType::kEvent),
       conversion->priority,
       conversion->dedup_key.is_null()
           ? absl::nullopt
@@ -368,7 +368,7 @@ void AttributionHost::RegisterImpression(const blink::Impression& impression) {
 
   const url::Origin& impression_origin =
       render_frame_host->GetLastCommittedOrigin();
-  if (VerifyAndStoreImpression(StorableSource::SourceType::kEvent,
+  if (VerifyAndStoreImpression(CommonSourceInfo::SourceType::kEvent,
                                impression_origin, impression,
                                *attribution_manager)) {
     NotifyImpressionInitiatedByPage(impression_origin, impression);
@@ -406,7 +406,7 @@ void AttributionHost::ReportAttributionForCurrentNavigation(
 
   // No navigation in progress and we've already committed the destination for
   // the conversion, so just store the impression.
-  VerifyAndStoreImpression(StorableSource::SourceType::kNavigation,
+  VerifyAndStoreImpression(CommonSourceInfo::SourceType::kNavigation,
                            impression_origin, impression, *attribution_manager);
 }
 

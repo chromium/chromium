@@ -61,13 +61,13 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
 base::Time ConfigurableStorageDelegate::GetReportTime(
-    const StorableSource& source,
+    const CommonSourceInfo& source,
     base::Time trigger_time) const {
   return source.impression_time() + base::Milliseconds(report_time_ms_);
 }
 
 int ConfigurableStorageDelegate::GetMaxAttributionsPerSource(
-    StorableSource::SourceType source_type) const {
+    CommonSourceInfo::SourceType source_type) const {
   return max_attributions_per_source_;
 }
 
@@ -190,7 +190,7 @@ SourceBuilder& SourceBuilder::SetReportingOrigin(url::Origin origin) {
 }
 
 SourceBuilder& SourceBuilder::SetSourceType(
-    StorableSource::SourceType source_type) {
+    CommonSourceInfo::SourceType source_type) {
   source_type_ = source_type;
   return *this;
 }
@@ -201,7 +201,7 @@ SourceBuilder& SourceBuilder::SetPriority(int64_t priority) {
 }
 
 SourceBuilder& SourceBuilder::SetAttributionLogic(
-    StorableSource::AttributionLogic attribution_logic) {
+    CommonSourceInfo::AttributionLogic attribution_logic) {
   attribution_logic_ = attribution_logic;
   return *this;
 }
@@ -212,8 +212,7 @@ SourceBuilder& SourceBuilder::SetFakeTriggerData(
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetSourceId(
-    absl::optional<StorableSource::Id> source_id) {
+SourceBuilder& SourceBuilder::SetSourceId(StoredSource::Id source_id) {
   source_id_ = source_id;
   return *this;
 }
@@ -223,14 +222,22 @@ SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<int64_t> dedup_keys) {
   return *this;
 }
 
+CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
+  return CommonSourceInfo(source_event_id_, impression_origin_,
+                          conversion_origin_, reporting_origin_,
+                          impression_time_,
+                          /*expiry_time=*/impression_time_ + expiry_,
+                          source_type_, priority_, attribution_logic_);
+}
+
 StorableSource SourceBuilder::Build() const {
-  StorableSource impression(
-      source_event_id_, impression_origin_, conversion_origin_,
-      reporting_origin_, impression_time_,
-      /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
-      attribution_logic_, fake_trigger_data_, source_id_);
-  impression.SetDedupKeys(dedup_keys_);
-  return impression;
+  return StorableSource(BuildCommonInfo(), fake_trigger_data_);
+}
+
+StoredSource SourceBuilder::BuildStored() const {
+  StoredSource source(BuildCommonInfo(), source_id_);
+  source.SetDedupKeys(dedup_keys_);
+  return source;
 }
 
 StorableTrigger DefaultTrigger() {
@@ -283,7 +290,7 @@ StorableTrigger TriggerBuilder::Build() const {
                          priority_, dedup_key_);
 }
 
-ReportBuilder::ReportBuilder(StorableSource source)
+ReportBuilder::ReportBuilder(StoredSource source)
     : source_(std::move(source)),
       external_report_id_(DefaultExternalReportID()) {}
 
@@ -327,16 +334,29 @@ AttributionReport ReportBuilder::Build() const {
       AttributionReport::EventLevelData(trigger_data_, priority_, report_id_));
 }
 
-// Custom comparator for `StorableSource` that does not take impression IDs
-// into account.
+bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
+  const auto tie = [](const CommonSourceInfo& source) {
+    return std::make_tuple(source.source_event_id(), source.impression_origin(),
+                           source.conversion_origin(),
+                           source.reporting_origin(), source.impression_time(),
+                           source.expiry_time(), source.source_type(),
+                           source.priority(), source.attribution_logic());
+  };
+  return tie(a) == tie(b);
+}
+
 bool operator==(const StorableSource& a, const StorableSource& b) {
-  const auto tie = [](const StorableSource& impression) {
-    return std::make_tuple(
-        impression.source_event_id(), impression.impression_origin(),
-        impression.conversion_origin(), impression.reporting_origin(),
-        impression.impression_time(), impression.expiry_time(),
-        impression.source_type(), impression.priority(),
-        impression.attribution_logic(), impression.dedup_keys());
+  const auto tie = [](const StorableSource& source) {
+    return std::make_tuple(source.common_info(), source.fake_trigger_data());
+  };
+  return tie(a) == tie(b);
+}
+
+// Does not compare source IDs, as they are set by the underlying sqlite DB and
+// should not be tested.
+bool operator==(const StoredSource& a, const StoredSource& b) {
+  const auto tie = [](const StoredSource& source) {
+    return std::make_tuple(source.common_info(), source.dedup_keys());
   };
   return tie(a) == tie(b);
 }
@@ -375,6 +395,8 @@ bool operator==(const AttributionReport::AggregateContributionData& a,
   return a.contribution == b.contribution;
 }
 
+// Does not compare source or report IDs, as they are set by the underlying
+// sqlite DB and should not be tested.
 bool operator==(const AttributionReport& a, const AttributionReport& b) {
   const auto tie = [](const AttributionReport& report) {
     return std::make_tuple(report.source(), report.trigger_time(),
@@ -460,12 +482,12 @@ std::ostream& operator<<(std::ostream& out, AttributionAllowedStatus status) {
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         StorableSource::SourceType source_type) {
+                         CommonSourceInfo::SourceType source_type) {
   switch (source_type) {
-    case StorableSource::SourceType::kNavigation:
+    case CommonSourceInfo::SourceType::kNavigation:
       out << "kNavigation";
       break;
-    case StorableSource::SourceType::kEvent:
+    case CommonSourceInfo::SourceType::kEvent:
       out << "kEvent";
       break;
   }
@@ -473,15 +495,15 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         StorableSource::AttributionLogic attribution_logic) {
+                         CommonSourceInfo::AttributionLogic attribution_logic) {
   switch (attribution_logic) {
-    case StorableSource::AttributionLogic::kNever:
+    case CommonSourceInfo::AttributionLogic::kNever:
       out << "kNever";
       break;
-    case StorableSource::AttributionLogic::kTruthfully:
+    case CommonSourceInfo::AttributionLogic::kTruthfully:
       out << "kTruthfully";
       break;
-    case StorableSource::AttributionLogic::kFalsely:
+    case CommonSourceInfo::AttributionLogic::kFalsely:
       out << "kFalsely";
       break;
   }
@@ -502,24 +524,32 @@ std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion) {
              << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
-  out << "{source_event_id=" << impression.source_event_id()
-      << ",impression_origin=" << impression.impression_origin()
-      << ",conversion_origin=" << impression.conversion_origin()
-      << ",reporting_origin=" << impression.reporting_origin()
-      << ",impression_time=" << impression.impression_time()
-      << ",expiry_time=" << impression.expiry_time()
-      << ",source_type=" << impression.source_type()
-      << ",priority=" << impression.priority()
-      << ",attribution_logic=" << impression.attribution_logic()
-      << ",source_id="
-      << (impression.source_id()
-              ? base::NumberToString(**impression.source_id())
-              : "null")
-      << ",dedup_keys=[";
+std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
+  return out << "{source_event_id=" << source.source_event_id()
+             << ",impression_origin=" << source.impression_origin()
+             << ",conversion_origin=" << source.conversion_origin()
+             << ",reporting_origin=" << source.reporting_origin()
+             << ",impression_time=" << source.impression_time()
+             << ",expiry_time=" << source.expiry_time()
+             << ",source_type=" << source.source_type()
+             << ",priority=" << source.priority()
+             << ",attribution_logic=" << source.attribution_logic() << "}";
+}
+
+std::ostream& operator<<(std::ostream& out, const StorableSource& source) {
+  return out << "{common_info=" << source.common_info() << ",fake_trigger_data="
+             << (source.fake_trigger_data()
+                     ? base::NumberToString(*source.fake_trigger_data())
+                     : "null")
+             << "}";
+}
+
+std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
+  out << "{common_info=" << source.common_info()
+      << ",source_id=" << *source.source_id() << ",dedup_keys=[";
 
   const char* separator = "";
-  for (int64_t dedup_key : impression.dedup_keys()) {
+  for (int64_t dedup_key : source.dedup_keys()) {
     out << separator << dedup_key;
     separator = ", ";
   }

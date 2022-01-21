@@ -15,7 +15,7 @@
 #include "base/thread_annotations.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "sql/meta_table.h"
 
@@ -88,7 +88,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   absl::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::EventLevelData::Id>& ids) override;
-  std::vector<StorableSource> GetActiveSources(int limit = -1) override;
+  std::vector<StoredSource> GetActiveSources(int limit = -1) override;
   bool DeleteReport(AttributionReport::EventLevelData::Id report_id) override;
   bool UpdateReportForSendFailure(
       AttributionReport::EventLevelData::Id report_id,
@@ -112,7 +112,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   // Returns false on failure.
   [[nodiscard]] bool DeleteSources(
-      const std::vector<StorableSource::Id>& source_ids)
+      const std::vector<StoredSource::Id>& source_ids)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deletes all sources that have expired and have no pending
@@ -137,7 +137,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
   ReportAlreadyStoredStatus ReportAlreadyStored(
-      StorableSource::Id source_id,
+      StoredSource::Id source_id,
       absl::optional<int64_t> dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -170,8 +170,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       AttributionReport::EventLevelData::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<std::vector<int64_t>> ReadDedupKeys(
-      StorableSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
+  absl::optional<std::vector<int64_t>> ReadDedupKeys(StoredSource::Id source_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // When storing an event source, deletes active event
   // sources in order by |impression_time| until there are sufficiently few
@@ -180,11 +180,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool EnsureCapacityForPendingDestinationLimit(
       const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Stores |report| in the database, but uses |source_id| rather than
-  // |AttributionReport::source::source_id()|, which may be null. Returns false
-  // on failure.
-  [[nodiscard]] bool StoreReport(const AttributionReport& report,
-                                 StorableSource::Id source_id)
+  [[nodiscard]] bool StoreReport(const AttributionReport& report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is

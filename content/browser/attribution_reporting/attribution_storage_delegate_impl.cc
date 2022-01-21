@@ -23,12 +23,12 @@ AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(bool debug_mode)
 }
 
 int AttributionStorageDelegateImpl::GetMaxAttributionsPerSource(
-    StorableSource::SourceType source_type) const {
+    CommonSourceInfo::SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
-    case StorableSource::SourceType::kNavigation:
+    case CommonSourceInfo::SourceType::kNavigation:
       return 3;
-    case StorableSource::SourceType::kEvent:
+    case CommonSourceInfo::SourceType::kEvent:
       return 1;
   }
 }
@@ -83,7 +83,7 @@ AttributionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
 }
 
 base::Time AttributionStorageDelegateImpl::GetReportTime(
-    const StorableSource& source,
+    const CommonSourceInfo& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If in debug mode, the report should be sent immediately.

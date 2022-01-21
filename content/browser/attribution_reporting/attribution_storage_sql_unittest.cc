@@ -233,9 +233,10 @@ TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
   // Use a time range that only intersects the last conversion.
-  storage()->ClearData(base::Time::Now(), base::Time::Now(),
-                       base::BindRepeating(std::equal_to<url::Origin>(),
-                                           impression.impression_origin()));
+  storage()->ClearData(
+      base::Time::Now(), base::Time::Now(),
+      base::BindRepeating(std::equal_to<url::Origin>(),
+                          impression.common_info().impression_origin()));
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
@@ -533,15 +534,18 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
 
   const auto impression = SourceBuilder().SetSourceEventId(kMaxUint64).Build();
   storage()->StoreSource(impression);
-  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(impression));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(Property(&StoredSource::common_info,
+                                   impression.common_info())));
 
   EXPECT_EQ(
       CreateReportStatus::kSuccess,
       MaybeCreateAndStoreReport(
           TriggerBuilder()
               .SetTriggerData(kMaxUint64)
-              .SetConversionDestination(impression.ConversionDestination())
-              .SetReportingOrigin(impression.reporting_origin())
+              .SetConversionDestination(
+                  impression.common_info().ConversionDestination())
+              .SetReportingOrigin(impression.common_info().reporting_origin())
               .Build()));
 
   EXPECT_THAT(

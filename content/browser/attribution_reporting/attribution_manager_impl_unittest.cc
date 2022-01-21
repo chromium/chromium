@@ -27,9 +27,11 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -189,11 +191,11 @@ class AttributionManagerImplTest : public testing::Test {
     }
   }
 
-  std::vector<StorableSource> StoredSources() {
-    std::vector<StorableSource> result;
+  std::vector<StoredSource> StoredSources() {
+    std::vector<StoredSource> result;
     base::RunLoop loop;
     attribution_manager_->GetActiveSourcesForWebUI(
-        base::BindLambdaForTesting([&](std::vector<StorableSource> sources) {
+        base::BindLambdaForTesting([&](std::vector<StoredSource> sources) {
           result = std::move(sources);
           loop.Quit();
         }));
@@ -241,7 +243,8 @@ TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
                         .Build();
   attribution_manager_->HandleSource(impression);
 
-  EXPECT_THAT(StoredSources(), ElementsAre(impression));
+  EXPECT_THAT(StoredSources(), ElementsAre(Property(&StoredSource::common_info,
+                                                    impression.common_info())));
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
@@ -255,17 +258,15 @@ TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
 }
 
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
-  auto impression = SourceBuilder()
-                        .SetExpiry(kImpressionExpiry)
-                        .SetSourceEventId(100)
-                        .Build();
-  attribution_manager_->HandleSource(impression);
+  SourceBuilder builder;
+  builder.SetExpiry(kImpressionExpiry).SetSourceEventId(100);
+  attribution_manager_->HandleSource(builder.Build());
 
   auto conversion = DefaultTrigger();
   attribution_manager_->HandleTrigger(conversion);
 
   AttributionReport expected_report =
-      ReportBuilder(impression)
+      ReportBuilder(builder.BuildStored())
           .SetTriggerData(conversion.trigger_data())
           .SetTriggerTime(base::Time::Now())
           .SetReportTime(base::Time::Now() + kFirstReportingWindow)
@@ -575,19 +576,25 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
 
   EXPECT_CALL(
       observer,
-      OnReportSent(Property(&AttributionReport::source,
-                            Property(&StorableSource::source_event_id, 1u)),
-                   _));
+      OnReportSent(
+          Property(&AttributionReport::source,
+                   Property(&StoredSource::common_info,
+                            Property(&CommonSourceInfo::source_event_id, 1u))),
+          _));
   EXPECT_CALL(
       observer,
-      OnReportSent(Property(&AttributionReport::source,
-                            Property(&StorableSource::source_event_id, 2u)),
-                   _));
+      OnReportSent(
+          Property(&AttributionReport::source,
+                   Property(&StoredSource::common_info,
+                            Property(&CommonSourceInfo::source_event_id, 2u))),
+          _));
   EXPECT_CALL(
       observer,
-      OnReportSent(Property(&AttributionReport::source,
-                            Property(&StorableSource::source_event_id, 3u)),
-                   _));
+      OnReportSent(
+          Property(&AttributionReport::source,
+                   Property(&StoredSource::common_info,
+                            Property(&CommonSourceInfo::source_event_id, 3u))),
+          _));
 
   attribution_manager_->HandleSource(
       SourceBuilder().SetSourceEventId(1).SetExpiry(kImpressionExpiry).Build());
@@ -979,8 +986,8 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
       observation(&observer);
   observation.Observe(attribution_manager_.get());
 
-  auto source1 =
-      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(7).Build();
+  SourceBuilder builder;
+  builder.SetExpiry(kImpressionExpiry).SetSourceEventId(7);
 
   Checkpoint checkpoint;
   {
@@ -1000,13 +1007,13 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer, OnReportsChanged).Times(0);
-    EXPECT_CALL(
-        observer,
-        OnSourceDeactivated(DeactivatedSource{
-            source1, DeactivatedSource::Reason::kReplacedByNewerSource}));
+    EXPECT_CALL(observer,
+                OnSourceDeactivated(DeactivatedSource{
+                    builder.BuildStored(),
+                    DeactivatedSource::Reason::kReplacedByNewerSource}));
   }
 
-  attribution_manager_->HandleSource(source1);
+  attribution_manager_->HandleSource(builder.Build());
   EXPECT_THAT(StoredSources(), SizeIs(1));
   checkpoint.Call(1);
 
@@ -1014,9 +1021,8 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
   EXPECT_THAT(StoredReports(), SizeIs(1));
   checkpoint.Call(2);
 
-  auto source2 =
-      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(9).Build();
-  attribution_manager_->HandleSource(source2);
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(9).Build());
   EXPECT_THAT(StoredSources(), SizeIs(1));
 }
 
@@ -1026,8 +1032,8 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
       observation(&observer);
   observation.Observe(attribution_manager_.get());
 
-  auto source1 =
-      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(7).Build();
+  SourceBuilder builder;
+  builder.SetExpiry(kImpressionExpiry).SetSourceEventId(7);
 
   Checkpoint checkpoint;
   {
@@ -1053,13 +1059,13 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer, OnReportsChanged);
-    EXPECT_CALL(
-        observer,
-        OnSourceDeactivated(DeactivatedSource{
-            source1, DeactivatedSource::Reason::kReachedAttributionLimit}));
+    EXPECT_CALL(observer,
+                OnSourceDeactivated(DeactivatedSource{
+                    builder.BuildStored(),
+                    DeactivatedSource::Reason::kReachedAttributionLimit}));
   }
 
-  attribution_manager_->HandleSource(source1);
+  attribution_manager_->HandleSource(builder.Build());
   EXPECT_THAT(StoredSources(), SizeIs(1));
   checkpoint.Call(1);
 
