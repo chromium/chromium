@@ -645,10 +645,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mShareRegistrationCoordinator.registerShareType(PrintShareActivity.BROADCAST_ACTION,
                     () -> doPrintShare(this, mActivityTabProvider));
 
-            ShareDelegate shareDelegate =
-                    new ShareDelegateImpl(mRootUiCoordinator.getBottomSheetController(),
-                            getLifecycleDispatcher(), getActivityTabProvider(),
-                            new ShareDelegateImpl.ShareSheetDelegate(), isCustomTab());
+            ShareDelegate shareDelegate = new ShareDelegateImpl(
+                    mRootUiCoordinator.getBottomSheetController(), getLifecycleDispatcher(),
+                    getActivityTabProvider(), getTabModelSelectorSupplier(),
+                    new ShareDelegateImpl.ShareSheetDelegate(), isCustomTab());
             mShareDelegateSupplier.set(shareDelegate);
 
             // If onStart was called before postLayoutInflation (because inflation was done in a

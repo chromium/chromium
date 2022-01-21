@@ -70,6 +70,7 @@ public class ChromeProvidedSharingOptionsProvider {
     private final ShareParams mShareParams;
     private final Callback<Tab> mPrintTabCallback;
     private final SettingsLauncher mSettingsLauncher;
+    private final boolean mIsIncognito;
     private final boolean mIsSyncEnabled;
     private final long mShareStartTime;
     private final List<FirstPartyOption> mOrderedFirstPartyOptions;
@@ -90,6 +91,7 @@ public class ChromeProvidedSharingOptionsProvider {
      * activity.
      * @param shareParams The {@link ShareParams} for the current share.
      * @param printTab A {@link Callback} that will print a given Tab.
+     * @param isIncognito Whether incognito mode is enabled.
      * @param shareStartTime The start time of the current share.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
      * Chrome-provided sharing options.
@@ -104,8 +106,9 @@ public class ChromeProvidedSharingOptionsProvider {
     ChromeProvidedSharingOptionsProvider(Activity activity, Supplier<Tab> tabProvider,
             BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheetContent, ShareParams shareParams,
-            Callback<Tab> printTab, SettingsLauncher settingsLauncher, boolean isSyncEnabled,
-            long shareStartTime, ChromeOptionShareCallback chromeOptionShareCallback,
+            Callback<Tab> printTab, SettingsLauncher settingsLauncher, boolean isIncognito,
+            boolean isSyncEnabled, long shareStartTime,
+            ChromeOptionShareCallback chromeOptionShareCallback,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
             String url, @LinkGeneration int linkGenerationStatusForMetrics,
             LinkToggleMetricsDetails linkToggleMetricsDetails) {
@@ -116,6 +119,7 @@ public class ChromeProvidedSharingOptionsProvider {
         mShareParams = shareParams;
         mPrintTabCallback = printTab;
         mSettingsLauncher = settingsLauncher;
+        mIsIncognito = isIncognito;
         mIsSyncEnabled = isSyncEnabled;
         mShareStartTime = shareStartTime;
         mImageEditorModuleProvider = imageEditorModuleProvider;
@@ -297,7 +301,7 @@ public class ChromeProvidedSharingOptionsProvider {
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
         mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
-        if (!mTabProvider.get().isIncognito()) {
+        if (!mIsIncognito) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
         }
         if (UserPrefs.get(Profile.getLastUsedRegularProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
@@ -429,8 +433,8 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.qr_code, R.string.qr_code_share_icon_label)
                 .setFeatureNameForMetrics("SharingHubAndroid.QRCodeSelected")
                 .setOnClickCallback((view) -> {
-                    QrCodeCoordinator qrCodeCoordinator = new QrCodeCoordinator(
-                            mActivity, mUrl, mTabProvider.get().getWindowAndroid());
+                    QrCodeCoordinator qrCodeCoordinator =
+                            new QrCodeCoordinator(mActivity, mUrl, mShareParams.getWindow());
                     qrCodeCoordinator.show();
                 })
                 .build();

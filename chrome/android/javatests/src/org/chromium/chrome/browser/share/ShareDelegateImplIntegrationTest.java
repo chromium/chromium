@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -119,6 +120,7 @@ public class ShareDelegateImplIntegrationTest {
                 void share(ShareParams params, ChromeShareExtras chromeShareParams,
                         BottomSheetController controller,
                         ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
+                        Supplier<TabModelSelector> tabModelSelectorProvider,
                         Callback<Tab> printCallback, int shareOrigin, boolean syncState,
                         long shareStartTime, boolean sharingHubEnabled) {
                     paramsRef.set(params);
@@ -130,7 +132,8 @@ public class ShareDelegateImplIntegrationTest {
                                           .getRootUiCoordinatorForTesting()
                                           .getBottomSheetController(),
                     mActivityTestRule.getActivity().getLifecycleDispatcher(),
-                    mActivityTestRule.getActivity().getActivityTabProvider(), delegate, false)
+                    mActivityTestRule.getActivity().getActivityTabProvider(),
+                    mActivityTestRule.getActivity().getTabModelSelectorSupplier(), delegate, false)
                     .share(mActivityTestRule.getActivity().getActivityTab(), false,
                             /*shareOrigin=*/0);
         });

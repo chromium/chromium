@@ -84,6 +84,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
     private final Callback<Tab> mPrintTabCallback;
     private final SettingsLauncher mSettingsLauncher;
+    private final boolean mIsIncognito;
     private final boolean mIsSyncEnabled;
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
     private final BottomSheetObserver mBottomSheetObserver;
@@ -124,14 +125,16 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      * changes.
      * @param tabProvider Supplier for the current activity tab.
      * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
+     * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
      */
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
             ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
-            LargeIconBridge iconBridge, SettingsLauncher settingsLauncher, boolean isSyncEnabled,
-            ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker) {
+            LargeIconBridge iconBridge, SettingsLauncher settingsLauncher, boolean isIncognito,
+            boolean isSyncEnabled, ImageEditorModuleProvider imageEditorModuleProvider,
+            Tracker featureEngagementTracker) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -139,6 +142,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mPropertyModelBuilder = modelBuilder;
         mPrintTabCallback = printTab;
         mSettingsLauncher = settingsLauncher;
+        mIsIncognito = isIncognito;
         mIsSyncEnabled = isSyncEnabled;
         mImageEditorModuleProvider = imageEditorModuleProvider;
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
@@ -331,7 +335,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         }
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(activity,
                 mTabProvider, mBottomSheetController, mBottomSheet, shareParams, mPrintTabCallback,
-                mSettingsLauncher, mIsSyncEnabled, mShareStartTime, this,
+                mSettingsLauncher, mIsIncognito, mIsSyncEnabled, mShareStartTime, this,
                 mImageEditorModuleProvider, mFeatureEngagementTracker,
                 getUrlToShare(shareParams, chromeShareExtras,
                         mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec()
