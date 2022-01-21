@@ -226,7 +226,6 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   void RunPostponedEvents();
 
   void ResendFocusSignalsForCurrentlyFocusedNode();
-  void SetAsCurrentlyFocusedNode();
   bool SupportsSelectionWithAtkSelection();
   bool SelectionAndFocusAreTheSame();
   void SetActiveViewsDialog();
