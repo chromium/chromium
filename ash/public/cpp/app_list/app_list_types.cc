@@ -119,6 +119,21 @@ AppListItemMetadata::~AppListItemMetadata() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+std::ostream& operator<<(std::ostream& os, AppListState state) {
+  switch (state) {
+    case AppListState::kStateApps:
+      return os << "StateApps";
+    case AppListState::kStateSearchResults:
+      return os << "SearchResults";
+    case AppListState::kStateStart_DEPRECATED:
+      return os << "Start_DEPRECATED";
+    case AppListState::kStateEmbeddedAssistant:
+      return os << "EmbeddedAssistant";
+    case AppListState::kInvalidState:
+      return os << "InvalidState";
+  }
+}
+
 std::ostream& operator<<(std::ostream& os, AppListBubblePage page) {
   switch (page) {
     case AppListBubblePage::kNone:

@@ -41,6 +41,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
@@ -61,8 +62,8 @@ constexpr int kWidth = 640;
 constexpr int kSeparatorPadding = 12;
 constexpr int kSeparatorThickness = 1;
 
-// The height of the search box in this page.
-constexpr int kSearchBoxHeight = 56;
+// The height of the active search box in this page.
+constexpr int kActiveSearchBoxHeight = 56;
 
 // The spacing between search box bottom and separator line.
 // Add 1 pixel spacing so that the search bbox bottom will not paint over
@@ -79,6 +80,14 @@ constexpr int kSearchBoxSearchResultShadowElevation = 12;
 // The amount of time by which notifications to accessibility framework about
 // result page changes are delayed.
 constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
+
+// The duration of the search result page view expanding animation.
+constexpr base::TimeDelta kExpandingSearchResultDuration =
+    base::Milliseconds(200);
+
+// The duration of the search result page view closing animation.
+constexpr base::TimeDelta kClosingSearchResultDuration =
+    base::Milliseconds(100);
 
 // A container view that ensures the card background and the shadow are painted
 // in the correct order.
@@ -130,10 +139,10 @@ class SearchResultPageBackground : public views::Background {
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
     canvas->DrawColor(get_color());
     gfx::Rect bounds = view->GetContentsBounds();
-    if (bounds.height() <= kSearchBoxHeight)
+    if (bounds.height() <= kActiveSearchBoxHeight)
       return;
     // Draw a separator between SearchBoxView and SearchResultPageView.
-    bounds.set_y(kSearchBoxHeight + kSearchBoxBottomSpacing);
+    bounds.set_y(kActiveSearchBoxHeight + kSearchBoxBottomSpacing);
     bounds.set_height(kSeparatorThickness);
     canvas->FillRect(bounds, AppListColorProvider::Get()->GetSeparatorColor());
   }
@@ -193,15 +202,15 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   // controller so we do not need to construct new ones here.
   if (features::IsProductivityLauncherEnabled()) {
     contents_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-        kSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness, 0, 0,
-        0)));
+        kActiveSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness,
+        0, 0, 0)));
     AddChildView(contents_view_);
   } else {
     auto scroller = std::make_unique<views::ScrollView>();
     // Leaves a placeholder area for the search box and the separator below it.
     scroller->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-        kSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness, 0, 0,
-        0)));
+        kActiveSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness,
+        0, 0, 0)));
     scroller->SetDrawOverflowIndicator(false);
     scroller->SetContents(base::WrapUnique(contents_view_));
     // Setting clip height is necessary to make ScrollView take into account its
@@ -299,18 +308,28 @@ gfx::Size SearchResultPageView::CalculatePreferredSize() const {
   int adjusted_height = std::min(
       std::max(kMinHeight,
                productivity_launcher_search_view_->TabletModePreferredHeight() +
-                   kSearchBoxHeight + kSearchBoxBottomSpacing +
+                   kActiveSearchBoxHeight + kSearchBoxBottomSpacing +
                    kSeparatorThickness),
       AppListPage::contents_view()->height());
   return gfx::Size(kWidth, adjusted_height);
 }
 
 void SearchResultPageView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // The clip rect set for page state animations needs to be reset when the
-  // bounds change because page size change invalidates the previous bounds.
-  // This allows content to properly follow target bounds when screen rotates.
-  if (previous_bounds.size() != bounds().size())
+  if (previous_bounds.size() != bounds().size()) {
+    // If the clip rect is currently animating, then animate from the current
+    // clip rect bounds to the newly set bounds.
+    if (features::IsProductivityLauncherEnabled() &&
+        layer()->GetAnimator()->is_animating()) {
+      AnimateBetweenBounds(layer()->clip_rect(), gfx::Rect(bounds().size()));
+      return;
+    }
+
+    // The clip rect set for page state animations needs to be reset when the
+    // bounds change because page size change invalidates the previous bounds.
+    // This allows content to properly follow target bounds when screen
+    // rotates.
     layer()->SetClipRect(gfx::Rect());
+  }
 }
 
 void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -352,7 +371,9 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
   bool should_show_page_view = false;
   if (features::IsProductivityLauncherEnabled()) {
     should_show_page_view = ShouldShowSearchResultView();
-    SetVisible(should_show_page_view);
+    AnimateToSearchResultsState(should_show_page_view
+                                    ? SearchResultsState::kExpanded
+                                    : SearchResultsState::kActive);
   } else {
     bool should_show_search_result_view = ShouldShowSearchResultView();
     for (auto* container : result_container_views_) {
@@ -370,11 +391,11 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
         search_result_tile_item_list_view_->num_results() &&
         search_result_list_view_->num_results() &&
         ShouldShowSearchResultView());
+    AppListPage::contents_view()
+        ->GetSearchBoxView()
+        ->OnResultContainerVisibilityChanged(should_show_page_view);
   }
   Layout();
-  AppListPage::contents_view()
-      ->GetSearchBoxView()
-      ->OnResultContainerVisibilityChanged(should_show_page_view);
 }
 
 void SearchResultPageView::SelectedResultChanged() {
@@ -452,6 +473,118 @@ void SearchResultPageView::NotifySelectedResultChanged() {
 
   search_box->SetA11yActiveDescendant(
       selected_view->GetViewAccessibility().GetUniqueId().Get());
+}
+
+void SearchResultPageView::AnimateToSearchResultsState(
+    SearchResultsState to_state) {
+  // The search results page is only visible in expanded state. Exit early when
+  // transitioning between states where results UI is invisible.
+  if (current_search_results_state_ != SearchResultsState::kExpanded &&
+      to_state != SearchResultsState::kExpanded) {
+    SetVisible(false);
+    current_search_results_state_ = to_state;
+    return;
+  }
+
+  gfx::Rect from_rect =
+      GetPageBoundsForResultState(current_search_results_state_);
+  gfx::Rect to_rect = GetPageBoundsForResultState(to_state);
+
+  if (to_state == SearchResultsState::kExpanded) {
+    // Set bounds here because this is a result opening transition. We avoid
+    // setting bounds for closing transitions because then the animation would
+    // be hidden, instead set the bounds for closing transitions once the
+    // animation has completed.
+    SetBoundsRect(to_rect);
+    AppListPage::contents_view()
+        ->GetSearchBoxView()
+        ->OnResultContainerVisibilityChanged(true);
+  }
+
+  current_search_results_state_ = to_state;
+  AnimateBetweenBounds(from_rect, to_rect);
+}
+
+void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
+                                                const gfx::Rect& to_rect) {
+  if (from_rect == to_rect)
+    return;
+
+  gfx::Rect clip_rect = from_rect;
+  clip_rect -= to_rect.OffsetFromOrigin();
+  layer()->SetClipRect(clip_rect);
+  view_shadow_.reset();
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(
+          base::BindOnce(&SearchResultPageView::OnAnimationBetweenBoundsEnded,
+                         base::Unretained(this)))
+      .Once()
+      .SetDuration((from_rect.height() < to_rect.height())
+                       ? kExpandingSearchResultDuration
+                       : kClosingSearchResultDuration)
+      .SetClipRect(layer(), gfx::Rect(to_rect.size()),
+                   gfx::Tween::FAST_OUT_SLOW_IN)
+      .SetRoundedCorners(
+          layer(),
+          gfx::RoundedCornersF(GetCornerRadiusForSearchResultsState(
+              current_search_results_state_)),
+          gfx::Tween::FAST_OUT_SLOW_IN);
+}
+
+void SearchResultPageView::OnAnimationBetweenBoundsEnded() {
+  view_shadow_ =
+      std::make_unique<ViewShadow>(this, kSearchBoxSearchResultShadowElevation);
+  view_shadow_->SetRoundedCornerRadius(
+      GetCornerRadiusForSearchResultsState(current_search_results_state_));
+
+  // To keep the animation visible for closing transitions from expanded search
+  // results, bounds are set here once the animation completes.
+  SetBoundsRect(GetPageBoundsForResultState(current_search_results_state_));
+
+  // Avoid visible overlap with the search box when the search results are not
+  // expanded.
+  if (current_search_results_state_ != SearchResultsState::kExpanded) {
+    SetVisible(false);
+    AppListPage::contents_view()
+        ->GetSearchBoxView()
+        ->OnResultContainerVisibilityChanged(false);
+  }
+}
+
+gfx::Rect SearchResultPageView::GetPageBoundsForResultState(
+    SearchResultsState state) const {
+  AppListState app_list_state = (state == SearchResultsState::kClosed)
+                                    ? AppListState::kStateApps
+                                    : AppListState::kStateSearchResults;
+  const ContentsView* const contents_view = AppListPage::contents_view();
+  const gfx::Rect contents_bounds = contents_view->GetContentsBounds();
+
+  gfx::Rect final_bounds =
+      GetPageBoundsForState(app_list_state, contents_bounds,
+                            contents_view->GetSearchBoxBounds(app_list_state));
+
+  // Ensure the height is set according to |state|, because
+  // GetPageBoundForState() returns a height according to |app_list_state| which
+  // does not account for kActive search result state.
+  if (state == SearchResultsState::kActive)
+    final_bounds.set_height(kActiveSearchBoxHeight);
+
+  return final_bounds;
+}
+
+int SearchResultPageView::GetCornerRadiusForSearchResultsState(
+    SearchResultsState state) {
+  switch (state) {
+    case SearchResultsState::kClosed:
+      return kSearchBoxBorderCornerRadius;
+    case SearchResultsState::kActive:
+      return kExpandedSearchBoxCornerRadiusForProductivityLauncher;
+    case SearchResultsState::kExpanded:
+      return kExpandedSearchBoxCornerRadiusForProductivityLauncher;
+  }
 }
 
 void SearchResultPageView::OnActiveAppListModelsChanged(
@@ -609,7 +742,8 @@ void SearchResultPageView::AnimateYPosition(AppListViewState target_view_state,
     Layout();
 
   animator.Run(default_offset, layer());
-  animator.Run(default_offset, view_shadow_->shadow()->shadow_layer());
+  if (view_shadow_)
+    animator.Run(default_offset, view_shadow_->shadow()->shadow_layer());
   SearchResultPageAnchoredDialog* search_page_dialog =
       dialog_controller_->dialog();
   if (search_page_dialog) {
@@ -652,48 +786,62 @@ void SearchResultPageView::OnAnimationStarted(AppListState from_state,
     return;
   }
 
-  const ContentsView* const contents_view = AppListPage::contents_view();
-  const gfx::Rect contents_bounds = contents_view->GetContentsBounds();
-  const gfx::Rect from_rect =
-      GetPageBoundsForState(from_state, contents_bounds,
-                            contents_view->GetSearchBoxBounds(from_state));
-  const gfx::Rect to_rect = GetPageBoundsForState(
-      to_state, contents_bounds, contents_view->GetSearchBoxBounds(to_state));
-  if (from_rect == to_rect)
-    return;
+  if (features::IsProductivityLauncherEnabled()) {
+    SearchResultsState to_result_state;
+    if (to_state == AppListState::kStateApps) {
+      to_result_state = SearchResultsState::kClosed;
+    } else {
+      to_result_state = ShouldShowSearchResultView()
+                            ? SearchResultsState::kExpanded
+                            : SearchResultsState::kActive;
+    }
 
-  const int to_radius =
-      contents_view->GetSearchBoxView()->GetSearchBoxBorderCornerRadiusForState(
-          to_state);
+    AnimateToSearchResultsState(to_result_state);
+  } else {
+    const ContentsView* const contents_view = AppListPage::contents_view();
+    const gfx::Rect contents_bounds = contents_view->GetContentsBounds();
+    const gfx::Rect from_rect =
+        GetPageBoundsForState(from_state, contents_bounds,
+                              contents_view->GetSearchBoxBounds(from_state));
+    const gfx::Rect to_rect = GetPageBoundsForState(
+        to_state, contents_bounds, contents_view->GetSearchBoxBounds(to_state));
+    if (from_rect == to_rect)
+      return;
 
-  // Here does the following animations;
-  // - clip-rect, so it looks like expanding from |from_rect| to |to_rect|.
-  // - rounded-rect
-  // - transform of the shadow
-  SetBoundsRect(to_rect);
-  gfx::Rect clip_rect = from_rect;
-  clip_rect -= to_rect.OffsetFromOrigin();
-  layer()->SetClipRect(clip_rect);
-  {
-    auto settings = contents_view->CreateTransitionAnimationSettings(layer());
-    layer()->SetClipRect(gfx::Rect(to_rect.size()));
-    // This changes the shadow's corner immediately while this corner bounds
-    // gradually. This would be fine because this would be unnoticeable to
-    // users.
-    view_shadow_->SetRoundedCornerRadius(to_radius);
-  }
+    const int to_radius =
+        contents_view->GetSearchBoxView()
+            ->GetSearchBoxBorderCornerRadiusForState(to_state);
 
-  // Animate the shadow's bounds through transform.
-  {
-    gfx::Transform transform;
-    transform.Translate(from_rect.origin() - to_rect.origin());
-    transform.Scale(static_cast<float>(from_rect.width()) / to_rect.width(),
-                    static_cast<float>(from_rect.height()) / to_rect.height());
-    view_shadow_->shadow()->layer()->SetTransform(transform);
+    // Here does the following animations;
+    // - clip-rect, so it looks like expanding from |from_rect| to |to_rect|.
+    // - rounded-rect
+    // - transform of the shadow
+    SetBoundsRect(to_rect);
+    gfx::Rect clip_rect = from_rect;
+    clip_rect -= to_rect.OffsetFromOrigin();
+    layer()->SetClipRect(clip_rect);
+    {
+      auto settings = contents_view->CreateTransitionAnimationSettings(layer());
+      layer()->SetClipRect(gfx::Rect(to_rect.size()));
+      // This changes the shadow's corner immediately while this corner bounds
+      // gradually. This would be fine because this would be unnoticeable to
+      // users.
+      view_shadow_->SetRoundedCornerRadius(to_radius);
+    }
 
-    auto settings = contents_view->CreateTransitionAnimationSettings(
-        view_shadow_->shadow()->layer());
-    view_shadow_->shadow()->layer()->SetTransform(gfx::Transform());
+    // Animate the shadow's bounds through transform.
+    {
+      gfx::Transform transform;
+      transform.Translate(from_rect.origin() - to_rect.origin());
+      transform.Scale(
+          static_cast<float>(from_rect.width()) / to_rect.width(),
+          static_cast<float>(from_rect.height()) / to_rect.height());
+      view_shadow_->shadow()->layer()->SetTransform(transform);
+
+      auto settings = contents_view->CreateTransitionAnimationSettings(
+          view_shadow_->shadow()->layer());
+      view_shadow_->shadow()->layer()->SetTransform(gfx::Transform());
+    }
   }
 }
 
@@ -715,7 +863,7 @@ void SearchResultPageView::OnAnimationUpdated(double progress,
 }
 
 gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
-  static gfx::Size size = gfx::Size(kWidth, kSearchBoxHeight);
+  static gfx::Size size = gfx::Size(kWidth, kActiveSearchBoxHeight);
   return size;
 }
 

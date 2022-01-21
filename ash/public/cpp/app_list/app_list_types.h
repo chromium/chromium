@@ -195,6 +195,9 @@ enum class AppListState {
   kStateLast = kInvalidState,  // Don't use over IPC
 };
 
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
+                                           AppListState state);
+
 // Sub-pages of the app list bubble (with ProductivityLauncher).
 enum class AppListBubblePage {
   // Used at startup and when the app list bubble is not visible. Allows

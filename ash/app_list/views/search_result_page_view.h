@@ -132,6 +132,10 @@ class ASH_EXPORT SearchResultPageView
   SearchResultListView* GetSearchResultListViewForTest();
 
  private:
+  // All possible states for the search results page. Used with productivity
+  // launcher.
+  enum class SearchResultsState { kClosed, kActive, kExpanded };
+
   // Separator between SearchResultContainerView.
   class HorizontalSeparator;
 
@@ -166,6 +170,23 @@ class ASH_EXPORT SearchResultPageView
   // If required, sends a kSelection a11y notification for the currently
   // selected search result view.
   void NotifySelectedResultChanged();
+
+  // Animates from the current search results state to the `target_state`. Used
+  // with productivity launcher.
+  void AnimateToSearchResultsState(SearchResultsState target_state);
+
+  // Transitions between `from_rect` and `to_rect` by animating the clip rect.
+  void AnimateBetweenBounds(const gfx::Rect& from_rect,
+                            const gfx::Rect& to_rect);
+
+  // Called when the clip rect animation between bounds has ended.
+  void OnAnimationBetweenBoundsEnded();
+
+  // Get the page bounds according to the input SearchResultsState.
+  gfx::Rect GetPageBoundsForResultState(SearchResultsState state) const;
+
+  // Get the corner radius associated with the SearchResultsState.
+  int GetCornerRadiusForSearchResultsState(SearchResultsState state);
 
   template <typename T>
   T* AddSearchResultContainerView(std::unique_ptr<T> result_container) {
@@ -215,6 +236,10 @@ class ASH_EXPORT SearchResultPageView
   // The last reported number of search results shown within search result
   // containers.
   int last_search_result_count_ = 0;
+
+  // The currently shown search results state. Used with productivity launcher.
+  SearchResultsState current_search_results_state_ =
+      SearchResultsState::kClosed;
 
   std::unique_ptr<ViewShadow> view_shadow_;
 
