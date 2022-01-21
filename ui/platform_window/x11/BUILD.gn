@@ -112,16 +112,4 @@ test("x11_unittests") {
   }
 
   configs += [ "//build/config:precompiled_headers" ]
-
-  # Needed for tests.  Please note that if you want to run tests locally,
-  # ensure that you start them from your out directory with the xvfb
-  # script so that openbox has time to start. Otherwise, the x11_unittests
-  # will time out. e.g. -
-  #
-  # 1) cd out/Debug.
-  # 2) ../../testing/xvfb.py ./x11_unittests.
-  #
-  #TODO(dpranke): move that to appropriate place after test() template is
-  # reworked.
-  data_deps = [ "//ui/base/x/xwmstartupcheck" ]
 }
