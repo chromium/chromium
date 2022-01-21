@@ -97,6 +97,12 @@ void TextFragmentsManagerImpl::OnClick() {
   }
 }
 
+void TextFragmentsManagerImpl::OnClickWithSender(CGRect rect) {
+  if (delegate_) {
+    [delegate_ userTappedTextFragmentInWebState:web_state_ withSender:rect];
+  }
+}
+
 void TextFragmentsManagerImpl::DidFinishNavigation(
     WebState* web_state,
     NavigationContext* navigation_context) {

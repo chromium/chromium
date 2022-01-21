@@ -11,6 +11,7 @@ source_set("text_fragments") {
     ":text_fragments_js",
     "//base",
     "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/ios",
     "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",

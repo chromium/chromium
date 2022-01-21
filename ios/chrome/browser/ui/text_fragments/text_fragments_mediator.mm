@@ -26,11 +26,17 @@
 #pragma mark - TextFragmentsDelegate methods
 
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState {
+  if (!base::FeatureList::IsEnabled(
+          shared_highlighting::kIOSSharedHighlightingV2)) {
+    [self removeTextFragmentsInWebState:webState];
+  }
+}
+
+- (void)userTappedTextFragmentInWebState:(web::WebState*)webState
+                              withSender:(CGRect)rect {
   if (base::FeatureList::IsEnabled(
           shared_highlighting::kIOSSharedHighlightingV2)) {
-    [self.consumer userTappedTextFragmentInWebState:webState];
-  } else {
-    [self removeTextFragmentsInWebState:webState];
+    [self.consumer userTappedTextFragmentInWebState:webState withSender:rect];
   }
 }
 

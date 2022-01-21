@@ -98,10 +98,19 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
     if (scroll && marks.length > 0)
       utils.scrollElementIntoView(marks[0]);
 
-    // Clean-up marks whenever the user taps somewhere on the page. Use capture
-    // to make sure the event listener is executed immediately and cannot be
-    // prevented by the event target (during bubble phase).
+
+    // Send events back to the browser when the user taps a mark, and when the
+    // user taps the page anywhere. We have to send both because one is consumed
+    // when kIOSSharedHighlightingV2 is enabled, and the other when it's
+    // disabled, and this JS file doesn't know about flag states.
+
+    // Use capture to make sure the event listener is executed immediately and
+    // cannot be prevented by the event target (during bubble phase).
     document.addEventListener("click", handleClick, /*useCapture=*/true);
+    for (var mark of marks) {
+      mark.addEventListener("click", handleClickWithSender.bind(mark), true);
+    }
+
 
     __gCrWeb.common.sendWebKitMessage('textFragments', {
       command: 'textFragments.processingComplete',
@@ -116,5 +125,22 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
       __gCrWeb.common.sendWebKitMessage('textFragments', {
         command: 'textFragments.onClick'
       });
-    }
+    };
+
+  const handleClickWithSender = function(event) {
+    __gCrWeb.common.sendWebKitMessage('textFragments', {
+      command: 'textFragments.onClickWithSender',
+      rect: rectFromElement(event.target)
+    });
+  };
+
+  const rectFromElement = function(elt) {
+    const domRect = elt.getClientRects()[0];
+    return {
+      x: domRect.x,
+      y: domRect.y,
+      width: domRect.width,
+      height: domRect.height
+    };
+  }
 })();

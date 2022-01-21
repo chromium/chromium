@@ -47,17 +47,17 @@
 #pragma mark - TextFragmentsDelegate methods
 
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState {
-  // TODO(crbug.com/1267933): This works for phones, but for tablets the
-  //     alignment of the bubble is wrong. The values used for the rect need
-  //     to be piped through from the web layer, rather than the arbitrary
-  //     numbers currently used.
+}
+
+- (void)userTappedTextFragmentInWebState:(web::WebState*)webState
+                              withSender:(CGRect)rect {
   ActionSheetCoordinator* actionSheet = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:[self baseViewController]
                          browser:[self browser]
                            title:l10n_util::GetNSString(
                                      IDS_IOS_SHARED_HIGHLIGHT_MENU_TITLE)
                          message:nil
-                            rect:CGRectMake(0, 0, 100, 100)
+                            rect:rect
                             view:[self.baseViewController view]];
 
   // TODO(crbug.com/1281931): The Learn More and Reshare options are currently
