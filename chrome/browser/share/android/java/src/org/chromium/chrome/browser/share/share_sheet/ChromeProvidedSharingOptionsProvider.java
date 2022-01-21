@@ -452,7 +452,7 @@ public class ChromeProvidedSharingOptionsProvider {
         boolean showNewBadge = mFeatureEngagementTracker.isInitialized()
                 && mFeatureEngagementTracker.shouldTriggerHelpUI(
                         FeatureConstants.SHARING_HUB_WEBNOTES_STYLIZE_FEATURE);
-        String title = mTabProvider.get().getTitle();
+        String title = mShareParams.getTitle();
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
                 .setIcon(R.drawable.webnote, R.string.sharing_webnotes_create_card)
                 .setIconContentDescription(R.string.sharing_webnotes_accessibility_description)
@@ -461,7 +461,7 @@ public class ChromeProvidedSharingOptionsProvider {
                     mFeatureEngagementTracker.notifyEvent(
                             EventConstants.SHARING_HUB_WEBNOTES_STYLIZE_USED);
                     NoteCreationCoordinator coordinator = NoteCreationCoordinatorFactory.create(
-                            mActivity, mTabProvider.get(), mUrl, title,
+                            mActivity, mShareParams.getWindow(), mUrl, title,
                             mShareParams.getRawText().trim(), mChromeOptionShareCallback);
                     coordinator.showDialog();
                 })

@@ -114,14 +114,14 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mShareLinkParams = selector.isEmpty()
                 ? null
                 : new ShareParams
-                          .Builder(mTab.getWindowAndroid(), /*title=*/"",
+                          .Builder(mTab.getWindowAndroid(), mTab.getTitle(),
                                   LinkToTextHelper.getUrlToShare(mShareUrl, selector))
                           .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
                           .setPreviewText(getPreviewText(), SHARE_TEXT_TEMPLATE)
                           .setLinkToTextSuccessful(true)
                           .build();
         mShareTextParams =
-                new ShareParams.Builder(mTab.getWindowAndroid(), /*title=*/"", /*url=*/"")
+                new ShareParams.Builder(mTab.getWindowAndroid(), mTab.getTitle(), /*url=*/"")
                         .setText(mSelectedText)
                         .setLinkToTextSuccessful(!selector.isEmpty())
                         .build();

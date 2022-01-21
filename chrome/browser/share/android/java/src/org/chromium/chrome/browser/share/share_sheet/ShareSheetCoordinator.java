@@ -348,7 +348,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     private boolean shouldShowLinkToText(ChromeShareExtras chromeShareExtras) {
-        return chromeShareExtras.getDetailedContentType() == DetailedContentType.HIGHLIGHTED_TEXT;
+        return chromeShareExtras.getDetailedContentType() == DetailedContentType.HIGHLIGHTED_TEXT
+                && mTabProvider != null && mTabProvider.hasValue();
     }
 
     private PropertyModel createMorePropertyModel(
