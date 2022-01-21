@@ -153,10 +153,8 @@ void AddCmaKeySystems(
         key_systems_properties,
     bool enable_persistent_license_support,
     bool enable_playready) {
-  SupportedCodecs codecs = GetCastEmeSupportedCodecs();
-
   // |codecs| may not be used if Widevine and Playready aren't supported.
-  ANALYZER_ALLOW_UNUSED(codecs);
+  [[maybe_unused]] SupportedCodecs codecs = GetCastEmeSupportedCodecs();
 
 #if BUILDFLAG(ENABLE_PLAYREADY)
   if (enable_playready) {

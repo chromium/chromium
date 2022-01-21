@@ -63,9 +63,7 @@ std::unique_ptr<::media::Renderer> CastMojoMediaClient::CreateRenderer(
     const std::string& audio_device_id) {
   // TODO(guohuideng): CastMojoMediaClient is used only when build flag
   // ENABLE_CAST_RENDERER is set. We can get rid of a number of related macros
-  // And the ANALYZER_ALLOW_UNUSED below.
-  ANALYZER_ALLOW_UNUSED(video_mode_switcher_);
-  ANALYZER_ALLOW_UNUSED(video_resolution_policy_);
+  // and the [[maybe_unused]].
   NOTREACHED();
   return nullptr;
 }

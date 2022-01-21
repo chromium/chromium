@@ -64,8 +64,8 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
  private:
   CmaBackendFactory* const backend_factory_;
   const CreateCdmFactoryCB create_cdm_factory_cb_;
-  VideoModeSwitcher* video_mode_switcher_;
-  VideoResolutionPolicy* video_resolution_policy_;
+  [[maybe_unused]] VideoModeSwitcher* video_mode_switcher_;
+  [[maybe_unused]] VideoResolutionPolicy* video_resolution_policy_;
   external_service_support::ExternalConnector* const connector_;
   const EnableBufferingCB enable_buffering_cb_;
 
