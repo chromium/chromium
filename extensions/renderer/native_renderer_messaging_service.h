@@ -156,6 +156,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   void DeliverMessageToScriptContext(const Message& message,
                                      const PortId& target_port_id,
                                      ScriptContext* script_context);
+  void DeliverMessageToWorker(const Message& message,
+                              const PortId& target_port_id,
+                              ScriptContext* script_context);
+  void DeliverMessageToBackgroundPage(const Message& message,
+                                      const PortId& target_port_id,
+                                      ScriptContext* script_context);
   void DispatchOnDisconnectToScriptContext(const PortId& port_id,
                                            const std::string& error_message,
                                            ScriptContext* script_context);

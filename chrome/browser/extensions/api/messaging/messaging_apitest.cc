@@ -1207,6 +1207,46 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingUserGesture) {
           "});", receiver->id().c_str())));
 }
 
+IN_PROC_BROWSER_TEST_F(MessagingApiTest, UserGestureFromContentScript) {
+  static constexpr char kBackground[] = R"(
+    chrome.runtime.onMessage.addListener(function() {
+      chrome.test.assertTrue(chrome.test.isProcessingUserGesture());
+      chrome.test.notifyPass();
+    });
+  )";
+
+  static constexpr char kContentScript[] = R"(
+    chrome.test.runWithUserGesture(function() {
+      chrome.runtime.sendMessage('');
+    });
+  )";
+
+  static constexpr char kManifest[] = R"(
+    {
+      "name": "Test user gesture from content script.",
+      "version": "1.0",
+      "manifest_version": 3,
+      "background": {
+        "service_worker": "background.js"
+      },
+      "content_scripts": [{
+        "matches": ["*://example.com/*"],
+        "js": ["content_script.js"]
+      }]
+    }
+  )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+  test_dir.WriteManifest(kManifest);
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(),
+                               {.page_url = url.spec().c_str()}, {}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(MessagingApiTest,
                        RestrictedActivationTriggerBetweenExtensions) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
