@@ -20,8 +20,6 @@ class PrefRegistrySimple;
 namespace ash {
 namespace quick_pair {
 
-class FastPairImageDecoder;
-
 // Saves any discovered device images in a flat_map model_id_to_images_.
 // Images are saved in DeviceImageInfo objects and are loaded from prefs on
 // creation. Images can be persisted to prefs (i.e. on device pair) or
@@ -36,42 +34,30 @@ class DeviceImageStore {
   // to keep track of pending downloads.
   // kNotSupportedType is an error state that signifies that the image is not a
   // supported type.
-  enum class DeviceImageType {
-    kNotSupportedType = 0,
-    kDefault = 1,
-    kLeftBud = 2,
-    kRightBud = 3,
-    kCase = 4
-  };
+  enum class DeviceImageType { kNotSupportedType = 0, kDefault = 1 };
 
-  // Corresponds to the status of a FetchDeviceImages call.
-  enum class FetchDeviceImagesResult {
-    kSuccess = 0,
-    kFailure = 1,
-    // Skipped refers to when an image was already saved or there is no matching
-    // URL to attempt a download.
-    kSkipped = 2
-  };
+  // Corresponds to the status of a SaveDeviceImages call.
+  enum class SaveDeviceImagesResult { kSuccess = 0, kFailure = 1 };
 
-  // Returns the type of image that was was fetched and the result, i.e.
-  // DeviceImageType::kDefault and FetchDeviceImagesResult::kSuccess after
-  // successfully saving a default image.
-  using FetchDeviceImagesCallback = base::RepeatingCallback<void(
-      std::pair<DeviceImageType, FetchDeviceImagesResult>)>;
+  // Returns the type of image that was was saved, i.e.
+  // DeviceImageInfo::DeviceImageType::kDefault for default image, on success.
+  // If images already exist or there are any errors, return empty kNone.
+  using SaveDeviceImagesCallback =
+      base::OnceCallback<void(SaveDeviceImagesResult)>;
 
   // Registers preferences used by this class in the provided |registry|.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  explicit DeviceImageStore(FastPairImageDecoder* image_decoder);
+  DeviceImageStore();
   DeviceImageStore(const DeviceImageStore&) = delete;
   DeviceImageStore& operator=(const DeviceImageStore&) = delete;
   ~DeviceImageStore();
 
   // Saves the device images stored in |device_metadata| to model_id_to_images_,
   // mapped to by |model_id|, if there are images.
-  void FetchDeviceImages(const std::string& model_id,
-                         DeviceMetadata* device_metadata,
-                         FetchDeviceImagesCallback on_images_saved_callback);
+  void SaveDeviceImages(const std::string& model_id,
+                        DeviceMetadata* device_metadata,
+                        SaveDeviceImagesCallback on_images_saved_callback);
 
   // Persists the DeviceImageInfo for |model_id| in model_id_to_images_
   // to local state prefs. Returns true if images were persisted, false
@@ -96,14 +82,6 @@ class DeviceImageStore {
   bool DeviceImageInfoHasImages(
       const chromeos::bluetooth_config::DeviceImageInfo& images) const;
 
-  // Wrapper around a call to FastPairImageDecoder's DecodeImage. Downloads
-  // and decodes the image at |image_url|, then passes the |model_id|,
-  // |image_type|, and decoded image to SaveImageAsBase64.
-  void DecodeImage(const std::string& model_id,
-                   DeviceImageType image_type,
-                   const std::string& image_url,
-                   FetchDeviceImagesCallback on_images_saved_callback);
-
   // Callee ensures |image| is not empty. Encodes |image| as a base64 data URL
   // and saves it to the DeviceImageInfo belonging to |model_id| in field
   // |image_type|. Invokes |on_images_saved_callback| with the
@@ -111,7 +89,7 @@ class DeviceImageStore {
   // otherwise.
   void SaveImageAsBase64(const std::string& model_id,
                          DeviceImageType image_type,
-                         FetchDeviceImagesCallback on_images_saved_callback,
+                         SaveDeviceImagesCallback on_images_saved_callback,
                          gfx::Image image);
 
   // Maps from model IDs to images stored in DeviceImageInfo.
@@ -119,8 +97,6 @@ class DeviceImageStore {
       model_id_to_images_;
   // Used to lazily load images from prefs.
   bool loaded_images_from_prefs_ = false;
-  FastPairImageDecoder* image_decoder_;
-  base::WeakPtrFactory<DeviceImageStore> weak_ptr_factory_{this};
 };
 
 }  // namespace quick_pair

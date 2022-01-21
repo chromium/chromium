@@ -11,7 +11,7 @@
 #include "ash/quick_pair/repository/fast_pair/device_id_map.h"
 #include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
-#include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
+#include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/proto_conversions.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
+#include "components/image_fetcher/core/image_fetcher.h"
 #include "device/bluetooth/bluetooth_device.h"
 
 namespace ash {
@@ -30,10 +31,10 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
     : FastPairRepository(),
       device_metadata_fetcher_(std::make_unique<DeviceMetadataFetcher>()),
       footprints_fetcher_(std::make_unique<FootprintsFetcher>()),
-      image_decoder_(std::make_unique<FastPairImageDecoderImpl>()),
+      image_decoder_(std::make_unique<FastPairImageDecoder>(
+          std::unique_ptr<image_fetcher::ImageFetcher>())),
       device_id_map_(std::make_unique<DeviceIdMap>()),
-      device_image_store_(
-          std::make_unique<DeviceImageStore>(image_decoder_.get())),
+      device_image_store_(std::make_unique<DeviceImageStore>()),
       saved_device_registry_(std::make_unique<SavedDeviceRegistry>()),
       footprints_last_updated_(base::Time::UnixEpoch()) {}
 
@@ -77,7 +78,6 @@ void FastPairRepositoryImpl::OnMetadataFetched(
 
   image_decoder_->DecodeImage(
       binary_data,
-      /*resize_to_notification_size=*/true,
       base::BindOnce(&FastPairRepositoryImpl::OnImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), normalized_model_id,
                      std::move(callback), *response));
@@ -260,8 +260,8 @@ void FastPairRepositoryImpl::CompleteFetchDeviceImages(
   QP_LOG(INFO) << __func__
                << ": Completing fetching device images for model ID "
                << hex_model_id;
-  device_image_store_->FetchDeviceImages(hex_model_id, device_metadata,
-                                         base::DoNothing());
+  device_image_store_->SaveDeviceImages(hex_model_id, device_metadata,
+                                        base::DoNothing());
 }
 
 bool FastPairRepositoryImpl::PersistDeviceImages(scoped_refptr<Device> device) {
