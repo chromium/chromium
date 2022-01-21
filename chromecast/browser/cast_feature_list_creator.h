@@ -32,7 +32,7 @@ class CastFeatureListCreator {
   // ownership of the |PrefService|. Based on the given |ProcessType|, different
   // files will be used to store prefs.
   void CreatePrefServiceAndFeatureList(
-      ProcessType process_type = ProcessType::kCastBrowser);
+      ProcessType process_type = ProcessType::kCastService);
 
   // Takes ownership of the |PrefService| previously created.
   std::unique_ptr<PrefService> TakePrefService();
