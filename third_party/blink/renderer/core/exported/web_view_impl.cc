@@ -1857,7 +1857,7 @@ void WebViewImpl::SetPageFocus(bool enable) {
         // no caret and does respond to keyboard inputs.
         focused_frame->GetDocument()->UpdateStyleAndLayoutTree();
         if (element->IsTextControl()) {
-          element->UpdateFocusAppearance(SelectionBehaviorOnFocus::kRestore);
+          element->UpdateSelectionOnFocus(SelectionBehaviorOnFocus::kRestore);
         } else if (HasEditableStyle(*element)) {
           // updateFocusAppearance() selects all the text of
           // contentseditable DIVs. So we set the selection explicitly

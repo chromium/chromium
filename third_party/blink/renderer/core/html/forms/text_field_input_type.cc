@@ -399,8 +399,9 @@ void TextFieldInputType::ListAttributeTargetChanged() {
           MakeGarbageCollected<DataListIndicatorElement>(document);
       rp_container->AppendChild(data_list);
       data_list->InitializeInShadowTree();
-      if (GetElement().GetDocument().FocusedElement() == GetElement())
-        GetElement().UpdateFocusAppearance(SelectionBehaviorOnFocus::kRestore);
+      Element& input = GetElement();
+      if (input.GetDocument().FocusedElement() == input)
+        input.UpdateSelectionOnFocus(SelectionBehaviorOnFocus::kRestore);
     }
   } else {
     picker->remove(ASSERT_NO_EXCEPTION);

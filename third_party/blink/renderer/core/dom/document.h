@@ -1248,11 +1248,12 @@ class CORE_EXPORT Document : public ContainerNode,
   // there is no such element.
   HTMLLinkElement* LinkCanonical() const;
 
-  void UpdateFocusAppearanceAfterLayout();
-  void CancelFocusAppearanceUpdate();
-  // Return true after UpdateFocusAppearanceAfterLayout() call and before
-  // updating focus appearance.
-  bool WillUpdateFocusAppearance() const;
+  void SetShouldUpdateSelectionAfterLayout(bool flag) {
+    should_update_selection_after_layout_ = flag;
+  }
+  bool ShouldUpdateSelectionAfterLayout() const {
+    return should_update_selection_after_layout_;
+  }
 
   void SendFocusNotification(Element*, mojom::blink::FocusType);
 
@@ -1895,7 +1896,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void UpdateTitle(const String&);
   void DispatchDidReceiveTitle();
-  void UpdateFocusAppearance();
+  void UpdateSelectionAfterLayout();
   void UpdateBaseURL();
 
   void ExecuteScriptsWaitingForResources();
@@ -2120,7 +2121,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<AXObjectCache> ax_object_cache_;
   Member<DocumentMarkerController> markers_;
 
-  bool update_focus_appearance_after_layout_ = false;
+  bool should_update_selection_after_layout_ = false;
 
   Member<Element> css_target_;
 

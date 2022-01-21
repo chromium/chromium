@@ -4499,12 +4499,12 @@ void Element::focus(const FocusParams& params) {
   }
 }
 
-void Element::UpdateFocusAppearance(
+void Element::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior) {
-  UpdateFocusAppearanceWithOptions(selection_behavior, FocusOptions::Create());
+  UpdateSelectionOnFocus(selection_behavior, FocusOptions::Create());
 }
 
-void Element::UpdateFocusAppearanceWithOptions(
+void Element::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {
   if (selection_behavior == SelectionBehaviorOnFocus::kNone)
@@ -4559,7 +4559,7 @@ void Element::UpdateFocusAppearanceWithOptions(
 }
 
 void Element::blur() {
-  CancelFocusAppearanceUpdate();
+  CancelSelectionAfterLayout();
   if (AdjustedFocusedElementInTreeScope() == this) {
     Document& doc = GetDocument();
     if (doc.GetPage()) {
@@ -5580,9 +5580,9 @@ Locale& Element::GetLocale() const {
   return GetDocument().GetCachedLocale(ComputeInheritedLanguage());
 }
 
-void Element::CancelFocusAppearanceUpdate() {
+void Element::CancelSelectionAfterLayout() {
   if (GetDocument().FocusedElement() == this)
-    GetDocument().CancelFocusAppearanceUpdate();
+    GetDocument().SetShouldUpdateSelectionAfterLayout(false);
 }
 
 void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {

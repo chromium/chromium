@@ -315,7 +315,7 @@ bool HTMLTextAreaElement::MayTriggerVirtualKeyboard() const {
   return true;
 }
 
-void HTMLTextAreaElement::UpdateFocusAppearanceWithOptions(
+void HTMLTextAreaElement::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {
   switch (selection_behavior) {

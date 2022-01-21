@@ -448,7 +448,7 @@ unsigned TextControlElement::IndexForPosition(HTMLElement* inner_editor,
 
 bool TextControlElement::ShouldApplySelectionCache() const {
   const auto& doc = GetDocument();
-  return doc.FocusedElement() != this || doc.WillUpdateFocusAppearance();
+  return doc.FocusedElement() != this || doc.ShouldUpdateSelectionAfterLayout();
 }
 
 bool TextControlElement::SetSelectionRange(

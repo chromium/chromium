@@ -318,7 +318,7 @@ bool HTMLInputElement::ShouldHaveFocusAppearance() const {
   return TextControlElement::ShouldHaveFocusAppearance();
 }
 
-void HTMLInputElement::UpdateFocusAppearanceWithOptions(
+void HTMLInputElement::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {
   if (IsTextField()) {
@@ -347,8 +347,7 @@ void HTMLInputElement::UpdateFocusAppearanceWithOptions(
         GetDocument().GetFrame()->Selection().RevealSelection();
     }
   } else {
-    TextControlElement::UpdateFocusAppearanceWithOptions(selection_behavior,
-                                                         options);
+    TextControlElement::UpdateSelectionOnFocus(selection_behavior, options);
   }
 }
 
@@ -579,7 +578,7 @@ void HTMLInputElement::UpdateType() {
   // UA Shadow tree was recreated. We need to set selection again. We do it
   // later in order to avoid force layout.
   if (GetDocument().FocusedElement() == this)
-    GetDocument().UpdateFocusAppearanceAfterLayout();
+    GetDocument().SetShouldUpdateSelectionAfterLayout(true);
 
   // TODO(tkent): Should we dispatch a change event?
   ClearValueBeforeFirstUserEdit();

@@ -694,9 +694,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void focus();
   void focus(const FocusOptions*);
 
-  void UpdateFocusAppearance(SelectionBehaviorOnFocus);
-  virtual void UpdateFocusAppearanceWithOptions(SelectionBehaviorOnFocus,
-                                                const FocusOptions*);
+  void UpdateSelectionOnFocus(SelectionBehaviorOnFocus);
+  // This function is called after SetFocused(true) before dispatching 'focus'
+  // event, or is called just after a layout after changing <input> type.
+  virtual void UpdateSelectionOnFocus(SelectionBehaviorOnFocus,
+                                      const FocusOptions*);
   virtual void blur();
 
   // Whether this element can receive focus at all. Most elements are not
@@ -1338,7 +1340,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       AtomicString name,
       WTF::AtomicStringTable::WeakResult hint) const;
 
-  void CancelFocusAppearanceUpdate();
+  void CancelSelectionAfterLayout();
   virtual int DefaultTabIndex() const;
 
   const ComputedStyle* VirtualEnsureComputedStyle(

@@ -2496,8 +2496,8 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
     frame_view->DidFinishForcedLayout(reason);
 
-  if (update_focus_appearance_after_layout_)
-    UpdateFocusAppearance();
+  if (should_update_selection_after_layout_)
+    UpdateSelectionAfterLayout();
 }
 
 void Document::LayoutUpdated() {
@@ -4785,11 +4785,11 @@ bool Document::SetFocusedElement(Element* new_focused_element,
         frame->Selection().DidChangeFocus();
       return false;
     }
-    CancelFocusAppearanceUpdate();
+    SetShouldUpdateSelectionAfterLayout(false);
     EnsurePaintLocationDataValidForNode(focused_element_,
                                         DocumentUpdateReason::kFocus);
-    focused_element_->UpdateFocusAppearanceWithOptions(
-        params.selection_behavior, params.options);
+    focused_element_->UpdateSelectionOnFocus(params.selection_behavior,
+                                             params.options);
 
     // Dispatch the focus event and let the node do any other focus related
     // activities (important for text fields)
@@ -6969,25 +6969,13 @@ bool Document::AllowInlineEventHandler(Node* node,
   return true;
 }
 
-void Document::UpdateFocusAppearanceAfterLayout() {
-  update_focus_appearance_after_layout_ = true;
-}
-
-void Document::CancelFocusAppearanceUpdate() {
-  update_focus_appearance_after_layout_ = false;
-}
-
-bool Document::WillUpdateFocusAppearance() const {
-  return update_focus_appearance_after_layout_;
-}
-
-void Document::UpdateFocusAppearance() {
-  update_focus_appearance_after_layout_ = false;
+void Document::UpdateSelectionAfterLayout() {
+  should_update_selection_after_layout_ = false;
   Element* element = FocusedElement();
   if (!element)
     return;
   if (element->IsFocusable())
-    element->UpdateFocusAppearance(SelectionBehaviorOnFocus::kRestore);
+    element->UpdateSelectionOnFocus(SelectionBehaviorOnFocus::kRestore);
 }
 
 void Document::AttachRange(Range* range) {

@@ -219,7 +219,7 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
     layout_image->AreaElementFocusChanged(this);
 }
 
-void HTMLAreaElement::UpdateFocusAppearanceWithOptions(
+void HTMLAreaElement::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
@@ -227,8 +227,7 @@ void HTMLAreaElement::UpdateFocusAppearanceWithOptions(
     return;
 
   if (HTMLImageElement* image_element = ImageElement()) {
-    image_element->UpdateFocusAppearanceWithOptions(selection_behavior,
-                                                    options);
+    image_element->UpdateSelectionOnFocus(selection_behavior, options);
   }
 }
 
