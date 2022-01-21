@@ -62,6 +62,8 @@ class PageSpecificContentSettingsDelegate
     return pending_protocol_handler_setting_;
   }
 
+  content::Page& GetPage() const { return web_contents()->GetPrimaryPage(); }
+
  private:
   // PageSpecificContentSettings::Delegate:
   void UpdateLocationBar() override;
