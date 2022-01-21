@@ -4661,8 +4661,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSignInWebViewTest,
                        ClosingChromeSignInShouldNotCrash) {
   GURL signin_url{"chrome://chrome-signin/?reason=5"};
 
-  AddTabAtIndex(0, signin_url, ui::PAGE_TRANSITION_TYPED);
-  AddTabAtIndex(1, signin_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, signin_url, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(AddTabAtIndex(1, signin_url, ui::PAGE_TRANSITION_TYPED));
   WaitForWebViewInDom();
 
   chrome::CloseTab(browser());
@@ -4781,7 +4781,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
             guest->GetMainFrame()->GetSiteInstance());
 
   // Load a page with subframe in a regular tab.
-  AddTabAtIndex(0, foo_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, foo_url, ui::PAGE_TRANSITION_TYPED));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -4819,7 +4819,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginWebViewTest,
 
   // Load a page with subframe in a regular tab.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/iframe.html"));
-  AddTabAtIndex(0, foo_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, foo_url, ui::PAGE_TRANSITION_TYPED));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
