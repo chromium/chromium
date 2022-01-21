@@ -41,6 +41,11 @@ MockGooglePhotosCountFetcher::MockGooglePhotosCountFetcher(Profile* profile)
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), /*count=*/0));
       });
+
+  ON_CALL(*this, ParseResponse)
+      .WillByDefault([this](absl::optional<base::Value> value) {
+        return GooglePhotosCountFetcher::ParseResponse(std::move(value));
+      });
 }
 
 MockGooglePhotosCountFetcher::~MockGooglePhotosCountFetcher() = default;

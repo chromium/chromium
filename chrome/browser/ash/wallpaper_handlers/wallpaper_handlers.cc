@@ -634,13 +634,10 @@ int GooglePhotosCountFetcher::ParseResponse(
   if (!response.has_value())
     return -1;
 
-  const base::Value* user = response->FindDictPath("user");
-  if (!user)
-    return -1;
+  const std::string* count_string = response->FindStringPath("user.numPhotos");
 
-  const std::string* count_string = user->FindStringKey("numPhotos");
   int64_t count;
-  if (!count_string || !base::StringToInt64(*count_string, &count))
+  if (!count_string || !base::StringToInt64(*count_string, &count) || count < 0)
     return -1;
 
   return base::saturated_cast<int>(count);

@@ -392,3 +392,35 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchCount) {
   }
   wallpaper_provider_remote()->FlushForTesting();
 }
+
+TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, ParseCount) {
+  // Mock a fetcher to parse constructed responses.
+  auto* const google_photos_count_fetcher = static_cast<
+      wallpaper_handlers::MockGooglePhotosCountFetcher*>(
+      delegate()->SetGooglePhotosCountFetcherForTest(
+          std::make_unique<wallpaper_handlers::MockGooglePhotosCountFetcher>(
+              profile())));
+
+  // Parse an absent response (simulating a fetching error).
+  EXPECT_EQ(-1, google_photos_count_fetcher->ParseResponse(absl::nullopt));
+
+  // Parse a response without a photo count.
+  base::Value response(base::Value::Type::DICTIONARY);
+  EXPECT_EQ(-1, google_photos_count_fetcher->ParseResponse(
+                    absl::make_optional(response.Clone())));
+
+  // Parse a response with a non-integer photo count.
+  response.SetStringPath("user.numPhotos", "NaN");
+  EXPECT_EQ(-1, google_photos_count_fetcher->ParseResponse(
+                    absl::make_optional(response.Clone())));
+
+  // Parse a response with a negative photo count.
+  response.SetStringPath("user.numPhotos", "-2");
+  EXPECT_EQ(-1, google_photos_count_fetcher->ParseResponse(
+                    absl::make_optional(response.Clone())));
+
+  // Parse a valid response.
+  response.SetStringPath("user.numPhotos", "1");
+  EXPECT_EQ(1, google_photos_count_fetcher->ParseResponse(
+                   absl::make_optional(std::move(response))));
+}

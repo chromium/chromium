@@ -251,7 +251,7 @@ class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
   virtual void AddRequestAndStartIfNecessary(
       base::OnceCallback<void(int)> callback);
 
- private:
+ protected:
   // GooglePhotosFetcher:
   int ParseResponse(absl::optional<base::Value> response) override;
 };

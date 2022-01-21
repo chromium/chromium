@@ -49,6 +49,11 @@ class MockGooglePhotosCountFetcher : public GooglePhotosCountFetcher {
               AddRequestAndStartIfNecessary,
               (base::OnceCallback<void(int)> callback),
               (override));
+
+  MOCK_METHOD(int,
+              ParseResponse,
+              (absl::optional<base::Value> response),
+              (override));
 };
 
 }  // namespace wallpaper_handlers
