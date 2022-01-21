@@ -57,14 +57,6 @@ void RecordPinSetupScreenAction(PinSetupScreen::UserAction value) {
   base::UmaHistogramEnumeration("OOBE.PinSetupScreen.UserActions", value);
 }
 
-bool IsPinSetupUserAction(const std::string& action_id) {
-  for (const auto& el : actions) {
-    if (action_id == el.name_)
-      return true;
-  }
-  return false;
-}
-
 void RecordUserAction(const std::string& action_id) {
   for (const auto& el : actions) {
     if (action_id == el.name_) {
