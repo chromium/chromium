@@ -3022,6 +3022,25 @@ Unknown properties are collapsed to zero. -->
   <int value="9" label="Security Error"/>
 </enum>
 
+<enum name="AppIdentityDisplayMetric">
+  <int value="0" label="Nothing changing."/>
+  <int value="1" label="Icon changing."/>
+  <int value="2" label="Mask changing."/>
+  <int value="3" label="Mask and Icon changing."/>
+  <int value="4" label="App name changing."/>
+  <int value="5" label="App name and Icon changing."/>
+  <int value="6" label="App name and Mask changing."/>
+  <int value="7" label="App name, Mask, and Icon changing."/>
+  <int value="8" label="Short name changing."/>
+  <int value="9" label="Short name and Icon changing."/>
+  <int value="10" label="Short name and Mask changing."/>
+  <int value="11" label="Short name, Mask, and Icon changing."/>
+  <int value="12" label="Short name and App name changing."/>
+  <int value="13" label="Short name, App name, and Icon changing."/>
+  <int value="14" label="Short name, App name, and Mask changing."/>
+  <int value="15" label="Short name, App name, Mask and Icon changing."/>
+</enum>
+
 <enum name="AppInfoDialogLaunchOrigin">
   <int value="0" label="App List context menu"/>
   <int value="1" label="Extensions page"/>

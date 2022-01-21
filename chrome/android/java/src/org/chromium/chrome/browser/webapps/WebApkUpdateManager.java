@@ -18,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -58,6 +59,14 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     // Maximum wait time for WebAPK update to be scheduled.
     private static final long UPDATE_TIMEOUT_MILLISECONDS = DateUtils.SECOND_IN_MILLIS * 30;
+
+    // Flags for AppIdentity Update dialog histograms.
+    private static final int CHANGING_NOTHING = 0;
+    private static final int CHANGING_ICON = 1 << 0;
+    private static final int CHANGING_ICON_MASK = 1 << 1;
+    private static final int CHANGING_APP_NAME = 1 << 2;
+    private static final int CHANGING_SHORTNAME = 1 << 3;
+    private static final int HISTOGRAM_SCOPE = 1 << 4;
 
     private final ActivityTabProvider mTabProvider;
 
@@ -186,12 +195,35 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 || mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
         boolean shortNameChanging = mUpdateReasons.contains(WebApkUpdateReason.SHORT_NAME_DIFFERS);
         boolean nameChanging = mUpdateReasons.contains(WebApkUpdateReason.NAME_DIFFERS);
+
+        int histogramAction = CHANGING_NOTHING;
+        if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS)) {
+            histogramAction |= CHANGING_ICON;
+        }
+        if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS)) {
+            histogramAction |= CHANGING_ICON_MASK;
+        }
+        if (nameChanging) histogramAction |= CHANGING_APP_NAME;
+        if (shortNameChanging) histogramAction |= CHANGING_SHORTNAME;
+
         if (!iconOrNameUpdateDialogEnabled()
                 || (!iconChanging && !shortNameChanging && !nameChanging)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Webapp.AppIdentityDialog.NotShowing", histogramAction, HISTOGRAM_SCOPE);
+
+            // It might seem non-obvious why the POSITIVE button is selected when we've determined
+            // that App Identity updates are not enabled or when nothing meaningful is changing.
+            // Keep in mind, though, that the update being processed might not be app identity
+            // related and those updates must still go through. The server keeps track of whether an
+            // identity update has been approved by the user, using the `appIdentityUpdateSupported`
+            // flag, so the app won't be able to update its identity even if we use the POSITIVE
+            // button here.
             onUserApprovedUpdate(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
             return;
         }
 
+        RecordHistogram.recordEnumeratedHistogram(
+                "Webapp.AppIdentityDialog.Showing", histogramAction, HISTOGRAM_SCOPE);
         showIconOrNameUpdateDialog(iconChanging, shortNameChanging, nameChanging);
     }
 
