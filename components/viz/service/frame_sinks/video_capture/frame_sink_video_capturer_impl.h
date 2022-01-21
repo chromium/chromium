@@ -246,6 +246,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
     // The actual content size of the copied frame, as a post-scaled size
     // with an origin at (0, 0).
+    // TODO(https://crbug.com/1287686): replace zero-origin gfx::Rect with
+    // gfx::Size.
     gfx::Rect content_rect;
 
     // The requested capture region, may be larger or at a different

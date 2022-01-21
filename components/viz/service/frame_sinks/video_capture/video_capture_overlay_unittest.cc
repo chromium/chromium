@@ -161,16 +161,18 @@ TEST_F(VideoCaptureOverlayTest, DoesNotRenderWithoutImage) {
   constexpr gfx::Rect kRegionInFrame = gfx::Rect(kSize);
   EXPECT_FALSE(
       overlay->MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = kRegionInFrame,
+          .compositor_region = kRegionInFrame,
           .sub_region = kRegionInFrame,
+          .content_region = kRegionInFrame,
           .format = kI420Format}));
 
   // Once an image is set, the renderer should not be null.
   overlay->SetImageAndBounds(MakeTestBitmap(1), gfx::RectF(0, 0, 1, 1));
   EXPECT_TRUE(
       overlay->MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = kRegionInFrame,
+          .compositor_region = kRegionInFrame,
           .sub_region = kRegionInFrame,
+          .content_region = kRegionInFrame,
           .format = kI420Format}));
 }
 
@@ -185,8 +187,9 @@ TEST_F(VideoCaptureOverlayTest, DoesNotRenderIfCompletelyOutOfBounds) {
   constexpr gfx::Rect kRegionInFrame = gfx::Rect(kSize);
   EXPECT_FALSE(
       overlay->MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = kRegionInFrame,
+          .compositor_region = kRegionInFrame,
           .sub_region = kRegionInFrame,
+          .content_region = kRegionInFrame,
           .format = kI420Format}));
 
   // Setting an image, but out-of-bounds, should always result in a null
@@ -194,26 +197,30 @@ TEST_F(VideoCaptureOverlayTest, DoesNotRenderIfCompletelyOutOfBounds) {
   overlay->SetImageAndBounds(MakeTestBitmap(0), gfx::RectF(-1, -1, 1, 1));
   EXPECT_FALSE(
       overlay->MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = kRegionInFrame,
+          .compositor_region = kRegionInFrame,
           .sub_region = kRegionInFrame,
+          .content_region = kRegionInFrame,
           .format = kI420Format}));
   overlay->SetBounds(gfx::RectF(1, 1, 1, 1));
   EXPECT_FALSE(
       overlay->MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = kRegionInFrame,
+          .compositor_region = kRegionInFrame,
           .sub_region = kRegionInFrame,
+          .content_region = kRegionInFrame,
           .format = kI420Format}));
   overlay->SetBounds(gfx::RectF(-1, 1, 1, 1));
   EXPECT_FALSE(
       overlay->MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = kRegionInFrame,
+          .compositor_region = kRegionInFrame,
           .sub_region = kRegionInFrame,
+          .content_region = kRegionInFrame,
           .format = kI420Format}));
   overlay->SetBounds(gfx::RectF(1, -1, 1, 1));
   EXPECT_FALSE(
       overlay->MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = kRegionInFrame,
+          .compositor_region = kRegionInFrame,
           .sub_region = kRegionInFrame,
+          .content_region = kRegionInFrame,
           .format = kI420Format}));
 }
 
@@ -232,8 +239,9 @@ TEST_F(VideoCaptureOverlayTest,
   constexpr gfx::Rect kRegionInFrame = gfx::Rect(kSize);
   EXPECT_FALSE(VideoCaptureOverlay::MakeCombinedRenderer(
       overlays, VideoCaptureOverlay::CapturedFrameProperties{
-                    .frame_region = kRegionInFrame,
+                    .compositor_region = kRegionInFrame,
                     .sub_region = kRegionInFrame,
+                    .content_region = kRegionInFrame,
                     .format = kI420Format}));
 
   // If just the first overlay renders, the combined renderer should not be
@@ -241,16 +249,18 @@ TEST_F(VideoCaptureOverlayTest,
   overlays[0]->SetImageAndBounds(MakeTestBitmap(0), gfx::RectF(0, 0, 1, 1));
   EXPECT_TRUE(VideoCaptureOverlay::MakeCombinedRenderer(
       overlays, VideoCaptureOverlay::CapturedFrameProperties{
-                    .frame_region = kRegionInFrame,
+                    .compositor_region = kRegionInFrame,
                     .sub_region = kRegionInFrame,
+                    .content_region = kRegionInFrame,
                     .format = kI420Format}));
 
   // If both overlays render, the combined renderer should not be null.
   overlays[1]->SetImageAndBounds(MakeTestBitmap(1), gfx::RectF(0, 0, 1, 1));
   EXPECT_TRUE(VideoCaptureOverlay::MakeCombinedRenderer(
       overlays, VideoCaptureOverlay::CapturedFrameProperties{
-                    .frame_region = kRegionInFrame,
+                    .compositor_region = kRegionInFrame,
                     .sub_region = kRegionInFrame,
+                    .content_region = kRegionInFrame,
                     .format = kI420Format}));
 
   // If only the second overlay renders, because the first is hidden, the
@@ -258,16 +268,18 @@ TEST_F(VideoCaptureOverlayTest,
   overlays[0]->SetBounds(gfx::RectF());
   EXPECT_TRUE(VideoCaptureOverlay::MakeCombinedRenderer(
       overlays, VideoCaptureOverlay::CapturedFrameProperties{
-                    .frame_region = kRegionInFrame,
+                    .compositor_region = kRegionInFrame,
                     .sub_region = kRegionInFrame,
+                    .content_region = kRegionInFrame,
                     .format = kI420Format}));
 
   // Both overlays are hidden, so the combined renderer should be null.
   overlays[1]->SetBounds(gfx::RectF());
   EXPECT_FALSE(VideoCaptureOverlay::MakeCombinedRenderer(
       overlays, VideoCaptureOverlay::CapturedFrameProperties{
-                    .frame_region = kRegionInFrame,
+                    .compositor_region = kRegionInFrame,
                     .sub_region = kRegionInFrame,
+                    .content_region = kRegionInFrame,
                     .format = kI420Format}));
 }
 
@@ -440,6 +452,18 @@ class VideoCaptureOverlayRenderTest
     return matches_golden_file;
   }
 
+  void ExpectRendersAs(VideoCaptureOverlay::OnceRenderer* renderers,
+                       const char* const* expected_files,
+                       const std::size_t count,
+                       const gfx::Size& frame_size) {
+    for (std::size_t i = 0; i < count; ++i) {
+      auto frame = CreateVideoFrame(frame_size);
+      DCHECK(renderers[i]);
+      std::move(renderers[i]).Run(frame.get());
+      EXPECT_TRUE(FrameMatchesPNG(*frame, expected_files[i]));
+    }
+  }
+
   // The size of the compositor frame sink's Surface.
   static constexpr gfx::Size kSourceSize = gfx::Size(96, 40);
 
@@ -470,8 +494,9 @@ TEST_P(VideoCaptureOverlayRenderTest, FullCover_NoScaling) {
   const gfx::Size output_size(test_bitmap.width(), test_bitmap.height());
   VideoCaptureOverlay::OnceRenderer renderer =
       overlay.MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = gfx::Rect(output_size),
+          .compositor_region = gfx::Rect(output_size),
           .sub_region = gfx::Rect(output_size),
+          .content_region = gfx::Rect(output_size),
           .format = pixel_format()});
   ASSERT_TRUE(renderer);
   auto frame = CreateVideoFrame(output_size);
@@ -500,8 +525,9 @@ TEST_P(VideoCaptureOverlayRenderTest, FullCover_WithScaling) {
                               test_bitmap.height() * 4);
   VideoCaptureOverlay::OnceRenderer renderer =
       overlay.MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = gfx::Rect(output_size),
+          .compositor_region = gfx::Rect(output_size),
           .sub_region = gfx::Rect(output_size),
+          .content_region = gfx::Rect(output_size),
           .format = pixel_format()});
   ASSERT_TRUE(renderer);
   auto frame = CreateVideoFrame(output_size);
@@ -542,8 +568,9 @@ TEST_P(VideoCaptureOverlayRenderTest, MovesAround) {
     }
     renderers[i] =
         overlay.MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-            .frame_region = gfx::Rect(frame_size),
+            .compositor_region = gfx::Rect(frame_size),
             .sub_region = gfx::Rect(frame_size),
+            .content_region = gfx::Rect(frame_size),
             .format = pixel_format()});
   }
 
@@ -552,15 +579,8 @@ TEST_P(VideoCaptureOverlayRenderTest, MovesAround) {
       "overlay_moves_2_1.png", "overlay_moves_2_2.png", "overlay_moves_lr.png",
   };
 
-  for (int i = 0; i < 6; ++i) {
-    SCOPED_TRACE(testing::Message() << "relative_image_bounds="
-                                    << relative_image_bounds[i].ToString()
-                                    << ", frame_size=" << frame_size.ToString()
-                                    << ", golden_file=" << kGoldenFiles[i]);
-    auto frame = CreateVideoFrame(frame_size);
-    std::move(renderers[i]).Run(frame.get());
-    EXPECT_TRUE(FrameMatchesPNG(*frame, kGoldenFiles[i]));
-  }
+  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
+                  frame_size);
 }
 
 // Tests that the overlay will be partially rendered (clipped) when any part of
@@ -611,8 +631,9 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToContentBounds) {
     }
     renderers[i] =
         overlay.MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-            .frame_region = region_in_frame,
+            .compositor_region = region_in_frame,
             .sub_region = region_in_frame,
+            .content_region = region_in_frame,
             .format = pixel_format()});
   }
 
@@ -623,11 +644,8 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToContentBounds) {
       "overlay_clips_ll.png",
   };
 
-  for (int i = 0; i < 4; ++i) {
-    auto frame = CreateVideoFrame(frame_size);
-    std::move(renderers[i]).Run(frame.get());
-    EXPECT_TRUE(FrameMatchesPNG(*frame, kGoldenFiles[i]));
-  }
+  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
+                  frame_size);
 }
 
 TEST_P(VideoCaptureOverlayRenderTest, HandlesEmptySubRegion) {
@@ -640,15 +658,16 @@ TEST_P(VideoCaptureOverlayRenderTest, HandlesEmptySubRegion) {
 
   const SkBitmap test_bitmap = MakeTestBitmap(0);
   const gfx::Size frame_size(test_bitmap.width() * 4, test_bitmap.height() * 4);
-  const gfx::Rect frame_region(frame_size);
+  const gfx::Rect compositor_region(frame_size);
   const gfx::Rect sub_region_in_frame;
   const gfx::RectF relative_image_bounds(0.125f, .125f, 0.25f, 0.25f);
 
   overlay.SetImageAndBounds(test_bitmap, relative_image_bounds);
   auto renderer =
       overlay.MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-          .frame_region = frame_region,
+          .compositor_region = compositor_region,
           .sub_region = sub_region_in_frame,
+          .content_region = compositor_region,
           .format = pixel_format()});
 
   // We shouldn't even create a renderer if we aren't capturing any pixels.
@@ -665,7 +684,7 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToSubregionBounds) {
 
   const SkBitmap test_bitmap = MakeTestBitmap(0);
   const gfx::Size frame_size(test_bitmap.width() * 4, test_bitmap.height() * 4);
-  const gfx::Rect frame_region(frame_size);
+  const gfx::Rect compositor_region(frame_size);
   const gfx::Rect sub_region_in_frame(test_bitmap.width(), test_bitmap.height(),
                                       test_bitmap.width() * 2,
                                       test_bitmap.height() * 2);
@@ -685,8 +704,9 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToSubregionBounds) {
     }
     renderers[i] =
         overlay.MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
-            .frame_region = frame_region,
+            .compositor_region = compositor_region,
             .sub_region = sub_region_in_frame,
+            .content_region = gfx::Rect(sub_region_in_frame.size()),
             .format = pixel_format()});
   }
 
@@ -697,11 +717,59 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToSubregionBounds) {
       "overlay_clips_ll_subregion.png",
   };
 
+  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
+                  sub_region_in_frame.size());
+}
+
+TEST_P(VideoCaptureOverlayRenderTest, ScalesToContentRegion) {
+  NiceMock<MockFrameSource> frame_source;
+  EXPECT_CALL(frame_source, GetSourceSize())
+      .WillRepeatedly(Return(kSourceSize));
+  mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
+  VideoCaptureOverlay overlay(&frame_source,
+                              overlay_remote.BindNewPipeAndPassReceiver());
+
+  const SkBitmap test_bitmap = MakeTestBitmap(0);
+  const gfx::Size frame_size(test_bitmap.width() * 4, test_bitmap.height() * 4);
+  const gfx::Rect compositor_region(frame_size);
+  const gfx::Rect sub_region_in_frame(test_bitmap.width(), test_bitmap.height(),
+                                      test_bitmap.width() * 2,
+                                      test_bitmap.height() * 2);
+  const gfx::Rect content_region(
+      test_bitmap.width() * 2, test_bitmap.height() * 2,
+      test_bitmap.width() * 6, test_bitmap.height() * 6);
+
+  const gfx::RectF relative_image_bounds[4] = {
+      gfx::RectF(0.125f, .125f, 0.25f, 0.25f),
+      gfx::RectF(0.625f, .125f, 0.25f, 0.25f),
+      gfx::RectF(0.625f, 0.625f, 0.25f, 0.25f),
+      gfx::RectF(.125f, 0.625f, 0.25f, 0.25f),
+  };
+
+  VideoCaptureOverlay::OnceRenderer renderers[4];
   for (int i = 0; i < 4; ++i) {
-    auto frame = CreateVideoFrame(sub_region_in_frame.size());
-    std::move(renderers[i]).Run(frame.get());
-    EXPECT_TRUE(FrameMatchesPNG(*frame, kGoldenFiles[i]));
+    if (i == 0) {
+      overlay.SetImageAndBounds(test_bitmap, relative_image_bounds[i]);
+    } else {
+      overlay.SetBounds(relative_image_bounds[i]);
+    }
+    renderers[i] =
+        overlay.MakeRenderer(VideoCaptureOverlay::CapturedFrameProperties{
+            .compositor_region = compositor_region,
+            .sub_region = sub_region_in_frame,
+            .content_region = content_region,
+            .format = pixel_format()});
   }
+
+  constexpr std::array<const char*, 4> kGoldenFiles = {
+      "overlay_clips_ul_contentscaled.png",
+      "overlay_clips_ur_contentscaled.png",
+      "overlay_clips_lr_contentscaled.png",
+      "overlay_clips_ll_contentscaled.png",
+  };
+
+  ExpectRendersAs(renderers, kGoldenFiles.data(), kGoldenFiles.size(),
+                  gfx::Size(content_region.right(), content_region.bottom()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
