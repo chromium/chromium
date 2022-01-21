@@ -57,6 +57,9 @@ void CompleteWithInvalidWebBundleError(
     int frame_tree_node_id,
     const std::string& error_message);
 
+void LogErrorMessageToConsole(const int frame_tree_node_id,
+                              const std::string& error_message);
+
 std::string GetMetadataParseErrorMessage(
     const web_package::mojom::BundleMetadataParseErrorPtr& metadata_error);
 

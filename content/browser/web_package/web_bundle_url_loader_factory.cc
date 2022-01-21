@@ -12,8 +12,10 @@
 #include "base/task/post_task.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_source.h"
+#include "content/browser/web_package/web_bundle_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -31,23 +33,6 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {
-
-namespace {
-
-void AddResponseParseErrorMessageToConsole(
-    int frame_tree_node_id,
-    const web_package::mojom::BundleResponseParseErrorPtr& error) {
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (!frame_tree_node)
-    return;
-  frame_tree_node->current_frame_host()->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError,
-      std::string("Failed to read response header of Web Bundle file: ") +
-          error->message);
-}
-
-}  // namespace
 
 // TODO(crbug.com/966753): Consider security models, i.e. plausible CORS
 // adoption.
@@ -107,8 +92,12 @@ class WebBundleURLLoaderFactory::EntryLoader final
     // TODO(crbug.com/990733): For the initial implementation, we allow only
     // net::HTTP_OK, but we should clarify acceptable status code in the spec.
     if (!response || response->response_code != net::HTTP_OK) {
-      if (error)
-        AddResponseParseErrorMessageToConsole(frame_tree_node_id_, error);
+      if (error) {
+        web_bundle_utils::LogErrorMessageToConsole(
+            frame_tree_node_id_,
+            std::string("Failed to read response header of Web Bundle file: ") +
+                error->message);
+      }
       loader_client_->OnComplete(
           network::URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
       return;
