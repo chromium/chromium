@@ -85,7 +85,7 @@ std::string PrettyPrintValue(const base::Value& value) {
   std::string json;
   base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::RemoveChars(json, "\r", &json);
 #endif
   // Remove the trailing newline.

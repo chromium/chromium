@@ -8,9 +8,9 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/test/scoped_install_details.h"
-#elif defined(OS_POSIX) && !defined(OS_MAC)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include <string>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
@@ -32,18 +32,18 @@ class ScopedChannelOverride {
     kStable,
     kBeta,
     kDev,
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
     kCanary,
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif
   };
 
   explicit ScopedChannelOverride(Channel channel);
   ~ScopedChannelOverride();
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   install_static::ScopedInstallDetails scoped_install_details_;
-#elif defined(OS_POSIX) && !defined(OS_MAC)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // The original value of the CHROME_VERSION_EXTRA environment variable.
   const absl::optional<std::string> old_env_var_;
 #endif

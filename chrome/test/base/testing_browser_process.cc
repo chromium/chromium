@@ -63,7 +63,7 @@
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #endif
@@ -138,7 +138,7 @@ void TestingBrowserProcess::Init() {
   // Make sure permissions client has been set.
   ChromePermissionsClient::GetInstance();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
 #endif
 }
@@ -215,7 +215,7 @@ TestingBrowserProcess::browser_policy_connector() {
     EXPECT_FALSE(created_browser_policy_connector_);
     created_browser_policy_connector_ = true;
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     // Make sure that the machine policy directory does not exist so that
     // machine-wide policies do not affect tests.
     // Note that passing false as last argument to OverrideAndCreateIfNeeded
@@ -315,7 +315,7 @@ TestingBrowserProcess::notification_platform_bridge() {
   return notification_platform_bridge_.get();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IntranetRedirectDetector* TestingBrowserProcess::intranet_redirect_detector() {
   return nullptr;
 }
@@ -393,7 +393,7 @@ TestingBrowserProcess::component_updater() {
 }
 
 MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
   return nullptr;
 #else
@@ -421,7 +421,7 @@ TestingBrowserProcess::network_time_tracker() {
   return network_time_tracker_.get();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 gcm::GCMDriver* TestingBrowserProcess::gcm_driver() {
   return nullptr;
 }
@@ -436,7 +436,7 @@ TestingBrowserProcess::resource_coordinator_parts() {
   return resource_coordinator_parts_.get();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 SerialPolicyAllowedPorts* TestingBrowserProcess::serial_policy_allowed_ports() {
   if (!serial_policy_allowed_ports_) {
     serial_policy_allowed_ports_ =
@@ -447,7 +447,7 @@ SerialPolicyAllowedPorts* TestingBrowserProcess::serial_policy_allowed_ports() {
 #endif
 
 BuildState* TestingBrowserProcess::GetBuildState() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return &build_state_;
 #else
   return nullptr;
@@ -495,7 +495,7 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
     notification_ui_manager_.reset();
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     serial_policy_allowed_ports_.reset();
 #endif
     ShutdownBrowserPolicyConnector();

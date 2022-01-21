@@ -304,7 +304,7 @@ void TestingProfile::Init() {
     key_ = std::make_unique<TestingProfileKey>(this, profile_path_);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   signin::SetUpMockAccountManagerFacade();
 #endif
 

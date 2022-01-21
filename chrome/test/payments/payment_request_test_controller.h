@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 namespace sync_preferences {
 class TestingPrefServiceSyncable;
 }
@@ -80,7 +80,7 @@ class PaymentRequestTestController {
   // only if: 1) PaymentRequest UI is opening. 2) PaymentHandler is opening.
   content::WebContents* GetPaymentHandlerWebContents();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Clicks the security icon on the Expandable Payment Handler toolbar for
   // testing purpose. Return whether it's succeeded.
   bool ClickPaymentHandlerSecurityIcon();
@@ -137,7 +137,7 @@ class PaymentRequestTestController {
   std::string twa_payment_app_response_;
   std::vector<AppDescription> app_descriptions_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void UpdateDelegateFactory();
 
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;

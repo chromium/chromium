@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, AfterStartupTaskUtils) {
 
 // On Mac this crashes inside cc::SingleThreadProxy::SetNeedsCommit. See
 // https://ci.chromium.org/b/8923336499994443392
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 class SingleProcessBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -120,7 +120,7 @@ class SingleProcessBrowserTest : public InProcessBrowserTest {
 };
 
 // TODO(https://crbug.com/1231009): Flaky / times out on windows bots.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test

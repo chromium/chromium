@@ -61,12 +61,12 @@
 #include "third_party/zlib/google/zip.h"
 #include "url/gurl.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
 
 #include <windows.h>
@@ -100,7 +100,7 @@ const char* const kDesktopSwitches[] = {
     "no-service-autorun",
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 const char* const kWindowsDesktopSwitches[] = {
     "disable-backgrounding-occluded-windows",
@@ -118,7 +118,7 @@ const base::FilePath::CharType kDevToolsActivePort[] =
 
 enum ChromeType { Remote, Desktop, Android, Replay };
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // The values for kReadFD and kWriteFD come from
 // content/browser/devtools/devtools_pipe_handler.cc
 const int kReadFD = 3;
@@ -151,7 +151,7 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
     switches.SetUnparsedSwitch(common_switch);
   for (auto* desktop_switch : kDesktopSwitches)
     switches.SetUnparsedSwitch(desktop_switch);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   for (auto* win_desktop_switch : kWindowsDesktopSwitches)
     switches.SetUnparsedSwitch(win_desktop_switch);
 #endif
@@ -414,7 +414,7 @@ Status LaunchRemoteChromeSession(
   return Status(kOk);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 Status PipeSetUp(base::LaunchOptions* options, int* write_fd, int* read_fd) {
   int chrome_to_driver_pipe_fds[2];
   int driver_to_chrome_pipe_fds[2];
@@ -480,13 +480,13 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 
   base::LaunchOptions options;
 
-#if defined(OS_WIN) || defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // If minidump path is set in the capability, enable minidump for crashes.
   if (!capabilities.minidump_path.empty()) {
     VLOG(0) << "Minidump generation specified. Will save dumps to: "
             << capabilities.minidump_path;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // EnvironmentMap uses wide string
     options.environment[L"CHROME_HEADLESS"] = L"1";
     options.environment[L"BREAKPAD_DUMP_LOCATION"] =
@@ -500,20 +500,20 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
       command.AppendSwitch(kEnableCrashReport);
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // We need to allow new privileges so that chrome's setuid sandbox can run.
   options.allow_new_privs = true;
 #endif
-#endif  // OS_WIN || OS_POSIX || OS_FUCHSIA
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   if (!capabilities.log_path.empty())
     options.environment["CHROME_LOG_FILE"] = capabilities.log_path;
   if (capabilities.detach)
     options.new_process_group = true;
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
   int write_fd;
   int read_fd;
@@ -534,7 +534,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     options.fds_to_remap.push_back(
         std::make_pair(devnull.get(), STDERR_FILENO));
   }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (enable_chrome_logs) {
     // On Windows, we must inherit the stdout/stderr handles, or the output from
     // the browser will not be part of our output and thus not capturable by
@@ -551,14 +551,14 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
         "interpreted incorrectly";
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Chrome is a third party process with respect to ChromeDriver. This allows
   // Chrome to get its own permissions attributed on Mac instead of relying on
   // ChromeDriver.
   options.disclaim_responsibility = true;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string command_string = base::WideToUTF8(command.GetCommandLineString());
 #else
   std::string command_string = command.GetCommandLineString();
@@ -604,7 +604,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     // Check to see if Chrome has crashed.
     chrome_status = base::GetTerminationStatus(process.Handle(), &exit_code);
     if (chrome_status != base::TERMINATION_STATUS_STILL_RUNNING) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       if (exit_code == chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED)
 #else
       if (WEXITSTATUS(exit_code) ==
@@ -782,7 +782,7 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!SwitchToUSKeyboardLayout())
     VLOG(0) << "Cannot switch to US keyboard layout - some keys may be "
                "interpreted incorrectly";
@@ -1194,12 +1194,12 @@ std::string GetTerminationReason(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
       return "exited abnormally";
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
     case base::TERMINATION_STATUS_OOM:
       return "was killed";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case base::TERMINATION_STATUS_OOM_PROTECTED:
       return "protected from oom";
 #endif
@@ -1207,7 +1207,7 @@ std::string GetTerminationReason(base::TerminationStatus status) {
       return "crashed";
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
       return "failed to launch";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
       return "integrity failure";
 #endif

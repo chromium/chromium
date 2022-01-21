@@ -261,14 +261,18 @@ void NaClBrowserTestBase::RunNaClIntegrationTest(
     AddPnaclParm(url_fragment, &url_fragment_with_pnacl);
   }
   base::FilePath::StringType url_fragment_with_both = url_fragment_with_pnacl;
-  bool ok = RunJavascriptTest(full_url
-#if defined(OS_WIN)
-                              ? GURL(base::WideToUTF16(url_fragment_with_both))
+
+  GURL url;
+  if (full_url) {
+#if BUILDFLAG(IS_WIN)
+    url = GURL(base::WideToUTF16(url_fragment_with_both));
 #else
-                              ? GURL(url_fragment_with_both)
+    url = GURL(url_fragment_with_both);
 #endif
-                              : TestURL(url_fragment_with_both),
-                              &handler);
+  } else {
+    url = TestURL(url_fragment_with_both);
+  }
+  bool ok = RunJavascriptTest(url, &handler);
   ASSERT_TRUE(ok) << handler.error_message();
   ASSERT_TRUE(handler.test_passed()) << "Test failed.";
 }

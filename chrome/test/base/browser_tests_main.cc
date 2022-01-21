@@ -11,9 +11,9 @@
 #include "content/public/common/content_switches.h"
 #include "ui/compositor/compositor_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Many tests validate code that requires user32.dll to be loaded. Loading it,
   // however, cannot be done on the main thread loop because it is a blocking
   // call, and all the test code runs on the main thread loop. Instead, just
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
   base::win::PinUser32();
 
   base::win::EnableHighDPISupport();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -41,13 +41,13 @@ int main(int argc, char** argv) {
     // Since the test is interactive, the invoker will want to have pixel output
     // to actually see the result.
     command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Under Windows, dialogs (but not the browser window) created in the
     // spawned browser_test process are invisible for some unknown reason.
     // Pass in --disable-gpu to resolve this for now. See
     // http://crbug.com/687387.
     command_line->AppendSwitch(switches::kDisableGpu);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   ChromeTestSuiteRunner runner;

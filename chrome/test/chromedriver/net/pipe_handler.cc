@@ -13,7 +13,7 @@
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <io.h>
 #else
 #include <unistd.h>

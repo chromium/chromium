@@ -51,7 +51,7 @@ namespace {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Ensure that there is a writable shared memory directory. We use
 // network::SimpleURLLoader to connect to Chrome, and it calls
 // base::subtle::PlatformSharedMemoryRegion::Create to get a shared memory
@@ -151,7 +151,7 @@ void StartServerOnIOThread(
 // to both IPv4 and IPv6 ports, or only IPv6 port. Listening to IPv4 first
 // ensures that we successfully listen to both IPv4 and IPv6.
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   temp_server = std::make_unique<HttpServer>(
       url_base, allowed_ips, allowed_origins, handle_request_func, handler,
       cmd_task_runner);
@@ -181,7 +181,7 @@ void StartServerOnIOThread(
     exit(1);
   }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // In some cases, binding to an IPv6 port also binds to the same IPv4 port.
   // The following code determines if it is necessary to bind to IPv4 port.
   enum class NeedIPv4 { NOT_NEEDED, UNKNOWN, NEEDED } need_ipv4;
@@ -192,7 +192,7 @@ void StartServerOnIOThread(
 // Currently, the network layer provides no way for us to control dual-protocol
 // bind option, or to query the current setting of that option, so we do our
 // best to determine the current setting. See https://crbug.com/858892.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // On Linux, dual-protocol bind is controlled by a system file.
     // ChromeOS builds also have OS_LINUX defined, so the code below applies.
     std::string bindv6only;
@@ -208,7 +208,7 @@ void StartServerOnIOThread(
       LOG(WARNING) << "Unexpected " << bindv6only_filename << " contents.";
       need_ipv4 = NeedIPv4::UNKNOWN;
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     // On Windows, the net component always enables dual-protocol bind. See
     // https://chromium.googlesource.com/chromium/src/+/69.0.3464.0/net/socket/socket_descriptor.cc#28.
     need_ipv4 = NeedIPv4::NOT_NEEDED;
@@ -237,7 +237,7 @@ void StartServerOnIOThread(
       }
     }
   }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
   if (ipv4_status != net::OK && ipv6_status != net::OK) {
     printf("Unable to start server with either IPv4 or IPv6. Exiting...\n");
@@ -291,7 +291,7 @@ int main(int argc, char *argv[]) {
   base::AtExitManager at_exit;
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Select the locale from the environment by passing an empty string instead
   // of the default "C" locale. This is particularly needed for the keycode
   // conversion code to work.
@@ -338,7 +338,7 @@ int main(int argc, char *argv[]) {
       "show logs from the browser (overrides other logging options)",
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
       "disable-dev-shm-usage",
       "do not use /dev/shm "
       "(add this switch if seeing errors related to shared memory)",
@@ -462,7 +462,7 @@ int main(int argc, char *argv[]) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   EnsureSharedMemory(cmd_line);
 #endif
 

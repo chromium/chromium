@@ -16,8 +16,8 @@
 // This is a bit heavy handed, but the majority of these tests fail under ASAN.
 // See bug for history.
 // Flaky on Win/Mac, http://crbug.com/1048148.
-#if defined(ADDRESS_SANITIZER) || defined(OS_WIN) || defined(OS_MAC) || \
-    defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MouseLock_SucceedWhenAllowed DISABLED_MouseLock_SucceedWhenAllowed
 #else
 #define MAYBE_MouseLock_SucceedWhenAllowed MouseLock_SucceedWhenAllowed

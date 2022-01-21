@@ -30,7 +30,7 @@
 #include "ash/test/ui_controls_factory_ash.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "chrome/test/base/always_on_top_window_killer_win.h"
@@ -48,7 +48,7 @@ class InteractiveUITestSuite : public ChromeTestSuite {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ui_controls::InstallUIControlsAura(ash::test::CreateAshUIControls());
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
     ui_controls::InstallUIControlsAura(
         aura::test::CreateUIControlsAura(nullptr));
@@ -68,13 +68,13 @@ class InteractiveUITestSuite : public ChromeTestSuite {
   }
 
   void Shutdown() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     com_initializer_.reset();
 #endif
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
 };
@@ -92,7 +92,7 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
   // content::TestLauncherDelegate:
   void PreSharding() override {
     ChromeTestLauncherDelegate::PreSharding();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Check for any always-on-top windows present before any tests are run.
     // Take a snapshot if any are found and attempt to close any that are system
     // dialogs.
@@ -101,7 +101,7 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
   }
 
   void OnTestTimedOut(const base::CommandLine& command_line) override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Take a snapshot of the screen and check for any always-on-top windows
     // present before terminating the test. Attempt to close any that are system
     // dialogs.
@@ -110,7 +110,7 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
     ChromeTestLauncherDelegate::OnTestTimedOut(command_line);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PreRunTest() override {
     // Clear currently pressed modifier keys (if any) before the test starts.
     ui_test_utils::ClearKeyEventModifiers();
@@ -126,7 +126,7 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
     }
     ChromeTestLauncherDelegate::PostRunTest(test_result);
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 class InteractiveUITestSuiteRunner : public ChromeTestSuiteRunner {
@@ -156,9 +156,9 @@ int main(int argc, char** argv) {
   InProcessBrowserTest::set_global_browser_set_up_function(
       &ui_test_utils::BringBrowserWindowToFront);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::EnableHighDPISupport();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Run interactive_ui_tests serially, they do not support running in parallel.
   size_t parallel_jobs = 1U;

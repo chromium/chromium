@@ -428,7 +428,7 @@ const base::Feature kEnterpriseReportingExtensionManifestVersion{
     "EnterpriseReportingExtensionManifestVersion",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Lazy initialize IndividualSettings for extensions from enterprise policy
 // that are not installed.
 const base::Feature kExtensionDeferredIndividualSettings{

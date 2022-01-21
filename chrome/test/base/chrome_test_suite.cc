@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/chrome_test_suite.h"
 
+#include "build/build_config.h"
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <stdio.h>
 #include <unistd.h>
@@ -38,7 +40,7 @@
 #include "chrome/common/chrome_paths_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/bundle_locations.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
@@ -69,16 +71,16 @@ ChromeTestSuite::ChromeTestSuite(int argc, char** argv)
 ChromeTestSuite::~ChromeTestSuite() = default;
 
 void ChromeTestSuite::Initialize() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
   chrome_browser_application_mac::RegisterBrowserCrApp();
 #endif
 
   if (!browser_dir_.empty()) {
     base::PathService::Override(base::DIR_EXE, browser_dir_);
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     base::PathService::Override(base::DIR_MODULE, browser_dir_);
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
   }
 
   // Disable external libraries load if we are under python process in
@@ -101,7 +103,7 @@ void ChromeTestSuite::Initialize() {
   // DICE feature gets the right test coverage.
   AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Look in the framework bundle for resources.
   base::FilePath path;
   base::PathService::Get(base::DIR_EXE, &path);
@@ -125,7 +127,7 @@ void ChromeTestSuite::Initialize() {
 }
 
 void ChromeTestSuite::Shutdown() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::SetOverrideFrameworkBundle(NULL);
 #endif
 

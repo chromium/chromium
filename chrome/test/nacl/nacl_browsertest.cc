@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 
+#include "build/build_config.h"
+
 #define TELEMETRY 1
 
 #include "base/bind.h"
@@ -24,9 +26,9 @@
 #include "content/public/test/browser_test.h"
 #include "sandbox/policy/switches.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/windows_version.h"
@@ -34,7 +36,7 @@
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // crbug.com/98721
 #  define MAYBE_SysconfNprocessorsOnln DISABLED_SysconfNprocessorsOnln
 #else
@@ -51,7 +53,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatus0, {
 })
 
 // TODO(1059468): Flaky on Win7 (32).
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_ExitStatus254 DISABLED_ExitStatus254
 #else
 #define MAYBE_ExitStatus254 ExitStatus254
@@ -67,7 +69,8 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatusNeg2, {
 })
 
 // TODO(1059468): Flaky on Win7 (32).
-#if defined(ADDRESS_SANITIZER) || (defined(OS_WIN) && defined(ARCH_CPU_32_BITS))
+#if defined(ADDRESS_SANITIZER) || \
+    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS))
 #define Maybe_PPAPICore DISABLED_PPAPICore
 #else
 #define Maybe_PPAPICore PPAPICore
@@ -77,7 +80,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, Maybe_PPAPICore, {
 })
 
 // TODO(1059468): Flaky on Win7 (32).
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_PPAPIPPBInstance DISABLED_PPAPIPPBInstance
 #else
 #define MAYBE_PPAPIPPBInstance PPAPIPPBInstance
@@ -87,7 +90,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPIPPBInstance, {
 })
 
 // TODO(1059468): Flaky on Win7 (32).
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_PPAPIPPPInstance DISABLED_PPAPIPPPInstance
 #else
 #define MAYBE_PPAPIPPPInstance PPAPIPPPInstance
@@ -97,7 +100,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPIPPPInstance, {
 })
 
 // TODO(1059468): Flaky on Win7 (32).
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_ProgressEvents DISABLED_ProgressEvents
 #else
 #define MAYBE_ProgressEvents ProgressEvents
@@ -112,7 +115,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_ProgressEvents, {
 // allowed.  Also not run on GLibc because it's a large test that is at risk of
 // causing timeouts.
 // crbug/338444
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Bad DISABLED_Bad
 #else
 #define MAYBE_Bad Bad
@@ -128,14 +131,14 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestNewlib, BadNative) {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // crbug.com/98721
 #  define MAYBE_CrashViaCheckFailure DISABLED_CrashViaCheckFailure
 #  define MAYBE_CrashViaExitCall DISABLED_CrashViaExitCall
 #  define MAYBE_CrashInCallback DISABLED_CrashInCallback
 #  define MAYBE_CrashOffMainThread DISABLED_CrashOffMainThread
 #  define MAYBE_CrashPPAPIOffMainThread DISABLED_CrashPPAPIOffMainThread
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 // crbug.com/425570
 #  define MAYBE_CrashViaCheckFailure DISABLED_CrashViaCheckFailure
 #  define MAYBE_CrashViaExitCall DISABLED_CrashViaExitCall
@@ -175,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestNewlib, IrtManifestFile) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("irt_manifest_file_test.html"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // http://crbug.com/416272
 #define MAYBE_IrtException DISABLED_IrtException
 #else
@@ -190,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestNewlib, MAYBE_IrtException) {
 // conditionals on a helper function.  We are already in an anonymous
 // namespace, so the name of the helper is not visible in external
 // scope.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 base::FilePath::StringType NumberOfCoresAsFilePathString() {
   char string_rep[23];
   long nprocessors = sysconf(_SC_NPROCESSORS_ONLN);
@@ -202,7 +205,7 @@ base::FilePath::StringType NumberOfCoresAsFilePathString() {
   snprintf(string_rep, sizeof string_rep, "%ld", nprocessors);
   return string_rep;
 }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 base::FilePath::StringType NumberOfCoresAsFilePathString() {
   wchar_t string_rep[23];
   SYSTEM_INFO system_info;
@@ -221,7 +224,7 @@ base::FilePath::StringType NumberOfCoresAsFilePathString() {
 
 #if TELEMETRY
 static void PathTelemetry(base::FilePath::StringType const &path) {
-# if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   fwprintf(stderr, L"path = %s\n", path.c_str());
 # else
   fprintf(stderr, "path = %s\n", path.c_str());
@@ -272,7 +275,7 @@ class NaClBrowserTestPnaclDebug : public NaClBrowserTestPnacl {
     command_line->AppendSwitch(switches::kEnableNaClDebug);
     // On windows, the debug stub requires --no-sandbox:
     // crbug.com/265624
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
 #endif
   }
@@ -282,7 +285,7 @@ class NaClBrowserTestPnaclDebug : public NaClBrowserTestPnacl {
     // TODO(jvoung): Make this test work on Windows 32-bit. When --no-sandbox
     // is used, the required 1GB sandbox address space is not reserved.
     // (see note in chrome/browser/nacl_host/test/nacl_gdb_browsertest.cc)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (base::win::OSInfo::GetInstance()->IsWowDisabled() &&
         base::win::OSInfo::GetArchitecture() ==
             base::win::OSInfo::X86_ARCHITECTURE) {
@@ -340,7 +343,7 @@ class NaClBrowserTestPnaclDebugMasked : public NaClBrowserTestPnaclDebug {
 // to continue the app startup. However, NaCl on windows can't open the
 // debug stub socket in the browser process as needed by the test.
 // See http://crbug.com/157312.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PnaclDebugURLFlagAndURL DISABLED_PnaclDebugURLFlagAndURL
 #define MAYBE_PnaclDebugURLFlagNoURL DISABLED_PnaclDebugURLFlagNoURL
 #else
@@ -360,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclDebug,
 }
 
 // TODO(1059468): Flaky on Win7 (32).
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_PnaclDebugURLFlagOff DISABLED_PnaclDebugURLFlagOff
 #else
 #define MAYBE_PnaclDebugURLFlagOff MAYBE_PNACL(PnaclDebugURLFlagOff)
@@ -382,8 +385,8 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclDebugMasked,
 
 // NaClBrowserTestPnacl.PnaclErrorHandling is flaky on Win, Mac, and Linux.
 // http://crbug.com/704980, http://crbug.com/870309
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PnaclErrorHandling DISABLED_PnaclErrorHandling
 #else
 #define MAYBE_PnaclErrorHandling PnaclErrorHandling
@@ -400,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero, MAYBE_PnaclErrorHandling) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("pnacl_error_handling.html"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1046044) Test is flaky on Win 7.
 #define MAYBE_PnaclNMFOptionsO0 DISABLED_PnaclNMFOptionsO0
 #else
@@ -413,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
 
 // Test Subzero. Subzero is triggered by the O0 option so reuse
 // test harnesses that use "optlevel": 0.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1046044) Test is flaky on Win 7.
 #define MAYBE_SubZeroPnaclNMFOptionsO0 DISABLED_SubZeroPnaclNMFOptionsO0
 #else
@@ -429,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
   RunLoadTest(FILE_PATH_LITERAL("pnacl_options.html?use_nmf=o_2"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1046033): Flaky on Windows 7.
 #define MAYBE_PnaclNMFOptionsOlarge DISABLED_PnaclNMFOptionsOlarge
 #else
@@ -441,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
 }
 
 // TODO(1059468): Flaky on Win7 (32).
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_PnaclDyncodeSyscallDisabled DISABLED_PnaclDyncodeSyscallDisabled
 #else
 #define MAYBE_PnaclDyncodeSyscallDisabled \
@@ -454,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
 }
 
 // TODO(1059468): Flaky on Win7 (32).
-#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_32_BITS)
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
                        MAYBE_PNACL(PnaclExceptionHandlingDisabled)) {
   RunNaClIntegrationTest(FILE_PATH_LITERAL(

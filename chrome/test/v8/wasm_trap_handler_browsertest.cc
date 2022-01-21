@@ -25,11 +25,11 @@ namespace {
 // support non-Android, Linux x64, Windows x64 and Mac x64 and arm64. In the
 // future more platforms will be supported. Though this file is a browser test
 // that is not built on Android.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
 constexpr bool kIsTrapHandlerSupported = true;
-#elif defined(OS_WIN) && defined(ARCH_CPU_X86_64)
+#elif BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)
 constexpr bool kIsTrapHandlerSupported = true;
-#elif defined(OS_MAC) && (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
+#elif BUILDFLAG(IS_MAC) && (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
 constexpr bool kIsTrapHandlerSupported = true;
 #else
 constexpr bool kIsTrapHandlerSupported = false;
@@ -86,7 +86,7 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
 // kEnableCrashReporterForTesting only exists on POSIX systems
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     command_line->AppendSwitch(switches::kEnableCrashReporterForTesting);
 #endif
     command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,

@@ -97,8 +97,8 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
 }
 #undef MAYBE_Fail_SendMessage
 
-#if defined(OS_CHROMEOS) ||                                      \
-    (defined(OS_LINUX) &&                                        \
+#if BUILDFLAG(IS_CHROMEOS) ||                                    \
+    (BUILDFLAG(IS_LINUX) &&                                      \
      (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
       BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
       BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)))

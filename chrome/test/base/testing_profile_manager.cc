@@ -246,7 +246,7 @@ void TestingProfileManager::DeleteProfileAttributesStorage() {
 }
 
 void TestingProfileManager::UpdateLastUser(Profile* last_active) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   profile_manager_->UpdateLastUser(last_active);
 #endif
 }

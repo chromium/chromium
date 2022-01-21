@@ -675,7 +675,7 @@ void Switches::SetSwitch(const std::string& name) {
 }
 
 void Switches::SetSwitch(const std::string& name, const std::string& value) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   switch_map_[name] = base::UTF8ToWide(value);
 #else
   switch_map_[name] = value;
@@ -718,7 +718,7 @@ bool Switches::HasSwitch(const std::string& name) const {
 
 std::string Switches::GetSwitchValue(const std::string& name) const {
   NativeString value = GetSwitchValueNative(name);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(value);
 #else
   return value;

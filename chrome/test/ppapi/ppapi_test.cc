@@ -315,7 +315,7 @@ void OutOfProcessPPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void OutOfProcessPPAPITest::RunTest(const std::string& test_case) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // See crbug.com/1231528 for context.
   if (test_case == "Printing")
     return;

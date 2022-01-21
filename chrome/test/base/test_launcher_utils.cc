@@ -55,7 +55,7 @@ void PrepareBrowserCommandLineForTests(base::CommandLine* command_line) {
       wm::switches::kWindowAnimationsDisabled);
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't use the native password stores on Linux since they may
   // prompt for additional UI during tests and cause test failures or
   // timeouts.  Win, Mac and ChromeOS don't look at the kPasswordStore
@@ -64,14 +64,14 @@ void PrepareBrowserCommandLineForTests(base::CommandLine* command_line) {
     command_line->AppendSwitchASCII(switches::kPasswordStore, "basic");
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Use mock keychain on mac to prevent blocking permissions dialogs.
   command_line->AppendSwitch(os_crypt::switches::kUseMockKeychain);
 #endif
 
   command_line->AppendSwitch(switches::kDisableComponentUpdate);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Changing the stack canary means we need to disable the stack guard on all
   // functions that appear as ancestors in the call stack of RunZygote(). This
   // is infeasible for tests, and changing the stack canary is unnecessary for
@@ -128,7 +128,7 @@ bool OverrideUserDataDir(const base::FilePath& user_data_dir) {
   // directory. This matches what is done in ChromeMain().
   success = base::PathService::Override(chrome::DIR_USER_DATA, user_data_dir);
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Make sure the cache directory is inside our clear profile. Otherwise
   // the cache may contain data from earlier tests that could break the
   // current test.

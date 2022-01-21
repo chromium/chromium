@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/test/base/chrome_test_suite.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 #endif
 
@@ -35,7 +35,7 @@ class ChromeUnitTestSuite : public ChromeTestSuite {
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // InstanceID can make network requests which will time out and make tests
   // slow. Insert a fake one in all tests, as the prefetch service (perhaps
   // among others in the future) causes us to use the InstanceID in a posted

@@ -157,9 +157,10 @@ class NaClBrowserTestGLibcExtension : public NaClBrowserTestGLibc {
 // PNaCl tests take a long time on windows debug builds
 // and sometimes time out.  Disable until it is made faster:
 // https://code.google.com/p/chromium/issues/detail?id=177555
-#if (defined(OS_WIN) && !defined(NDEBUG))
+#if (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
 #  define MAYBE_PNACL(test_name) DISABLED_##test_name
-#elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ADDRESS_SANITIZER)
+#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    defined(ADDRESS_SANITIZER)
 // NaClBrowserTestPnacl tests are very flaky on ASan, see crbug.com/1003259.
 #  define MAYBE_PNACL(test_name) DISABLED_##test_name
 #else
@@ -169,7 +170,7 @@ class NaClBrowserTestGLibcExtension : public NaClBrowserTestGLibc {
 // NaCl glibc toolchain is not available on MIPS
 // It also no longer runs on recent versions of MacOS, and is flaky on Windows
 // due to use of cygwin.
-#if defined(ARCH_CPU_MIPS_FAMILY) || defined(OS_MAC) || defined(OS_WIN)
+#if defined(ARCH_CPU_MIPS_FAMILY) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #  define MAYBE_GLIBC(test_name) DISABLED_##test_name
 #else
 #  define MAYBE_GLIBC(test_name) test_name

@@ -28,10 +28,10 @@
 #include "chrome/test/chromedriver/performance_logger.h"
 #include "chrome/test/chromedriver/session.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
 #include <unistd.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -124,7 +124,7 @@ bool HandleLogMessage(int severity,
     std::string entry;
 
     if (readable_timestamp) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       SYSTEMTIME local_time;
       GetLocalTime(&local_time);
 
@@ -135,7 +135,7 @@ bool HandleLogMessage(int severity,
           local_time.wMilliseconds,
           level_name,
           message.c_str());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
       timeval tv;
       gettimeofday(&tv, nullptr);
       time_t t = tv.tv_sec;
@@ -294,8 +294,8 @@ bool InitLogging(uint16_t port) {
   if (cmd_line->HasSwitch("readable-timestamp")) {
     readable_timestamp = true;
   }
-#if defined(OS_WIN)
-    FILE* redir_stderr = _wfreopen(log_path.value().c_str(), logMode, stderr);
+#if BUILDFLAG(IS_WIN)
+  FILE* redir_stderr = _wfreopen(log_path.value().c_str(), logMode, stderr);
 #else
     FILE* redir_stderr = freopen(log_path.value().c_str(), logMode, stderr);
 #endif

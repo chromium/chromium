@@ -19,9 +19,9 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/common/buildflags.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#endif  //  !defined(OS_ANDROID)
+#endif  //  !BUILDFLAG(IS_ANDROID)
 
 class FeaturePromoController;
 class LocationBarTesting;
@@ -145,7 +145,7 @@ class TestBrowserWindow : public BrowserWindow {
       qrcode_generator::QRCodeGeneratorBubbleController* controller,
       const GURL& url,
       bool show_back_button) override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
       content::WebContents* contents,
       const gfx::Image& image,
@@ -199,8 +199,8 @@ class TestBrowserWindow : public BrowserWindow {
       bool is_source_keyboard) override {}
   void MaybeShowProfileSwitchIPH() override {}
 
-#if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_WIN) || \
-    defined(OS_LINUX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
   void ShowHatsDialog(
       const std::string& site_id,
       base::OnceClosure success_callback,

@@ -492,7 +492,7 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
 }
 
 // TODO(crbug.com/1238758): Test is flaky on Windows and Linux.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_Basic MANUAL_Basic
 #else
 #define MAYBE_Basic Basic
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MAYBE_Basic) {
 }
 
 // TODO(crbug.com/1238728): Test is flaky on Windows and Linux.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_SendAndOnMessage MANUAL_SendAndOnMessage
 #else
 #define MAYBE_SendAndOnMessage SendAndOnMessage
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, CloseOnError) {
 }
 
 // TODO(crbug.com/1238688): Test is flaky on Windows and Linux.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage

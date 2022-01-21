@@ -147,7 +147,7 @@ void WaitForViewFocus(Browser* browser, ViewID vid, bool focused);
 void WaitForViewFocus(Browser* browser, views::View* view, bool focused);
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Send press and release events for |key_code| with selected modifiers and wait
 // until the last event arrives to our NSApp. Events will be sent as CGEvents
 // through HID event tap. |key_code| must be a virtual key code (reference can
