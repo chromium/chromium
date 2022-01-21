@@ -105,6 +105,9 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
 
     toplevel_window_ = surface_->window()->GetToplevelWindow();
     toplevel_window_->AddObserver(this);
+
+    // Disable visibility change animations on the dragged window.
+    toplevel_window_->SetProperty(aura::client::kAnimationsDisabledKey, true);
     return true;
   }
 
@@ -255,9 +258,6 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel,
   // Ensure |toplevel| window does skip events while it's being dragged.
   event_blocker_ =
       std::make_unique<aura::ScopedWindowEventTargetingBlocker>(toplevel);
-
-  // Disable visibility change animations on the dragged window.
-  toplevel->SetProperty(aura::client::kAnimationsDisabledKey, true);
 
   DVLOG(1) << "Starting drag. pointer_loc=" << pointer_location.ToString();
   auto* toplevel_handler = ash::Shell::Get()->toplevel_window_event_handler();
