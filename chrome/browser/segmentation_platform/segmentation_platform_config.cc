@@ -159,8 +159,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
     configs.emplace_back(GetConfigForChromeStartAndroid());
   }
   if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::
-              kSegmentationPlatformQueryTilesFeature)) {
+          query_tiles::features::kQueryTilesSegmentation)) {
     configs.emplace_back(GetConfigForQueryTiles());
   }
   if (base::FeatureList::IsEnabled(
