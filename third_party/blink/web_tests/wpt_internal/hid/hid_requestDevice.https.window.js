@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<body>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script type="module">
-
-import {hid_test, trustedClick} from './resources/hid-test-utils.js';
-
-import {HidService} from '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js';
+// META: script=/resources/test-only-api.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/webhid/resources/common.js
+// META: script=/webhid/resources/automation.js
+'use strict';
 
 const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
@@ -23,6 +20,8 @@ promise_test(async (t) => {
 }, 'requestDevice() rejects with an empty filter');
 
 promise_test(async (t) => {
+  const {HidService} = await import(
+    '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js');
   let interceptor = new MojoInterfaceInterceptor(HidService.$interfaceName);
   interceptor.oninterfacerequest = e => e.handle.close();
   interceptor.start();
@@ -111,6 +110,3 @@ hid_test(async (t, fake) => {
   assert_equals(1, devices.length);
   assert_true(devices[0] instanceof HIDDevice);
 }, 'requestDevice() does not merge devices with empty physical device IDs');
-
-</script>
-</body>

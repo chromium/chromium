@@ -1,27 +1,5 @@
-import '/resources/testdriver.js';
-import '/resources/testdriver-vendor.js';
-import '/resources/testharness.js';
-import '/resources/testharnessreport.js';
-
-import {HidConnection, HidConnectionReceiver, HidDeviceInfo, HidManagerClientRemote} from '/gen/services/device/public/mojom/hid.mojom.m.js';
+import {HidConnectionReceiver, HidDeviceInfo} from '/gen/services/device/public/mojom/hid.mojom.m.js';
 import {HidService, HidServiceReceiver} from '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js';
-
-// Compare two DataViews byte-by-byte.
-export function compareDataViews(actual, expected) {
-  assert_true(actual instanceof DataView, 'actual is DataView');
-  assert_true(expected instanceof DataView, 'expected is DataView');
-  assert_equals(actual.byteLength, expected.byteLength, 'lengths equal');
-  for (let i = 0; i < expected.byteLength; ++i) {
-    assert_equals(actual.getUint8(i), expected.getUint8(i),
-                  `Mismatch at byte ${i}.`);
-  }
-}
-
-// Returns a Promise that resolves once |device| receives an input report.
-export function oninputreport(device) {
-  assert_true(device instanceof HIDDevice);
-  return new Promise(resolve => { device.oninputreport = resolve; });
-}
 
 // Fake implementation of device.mojom.HidConnection. HidConnection represents
 // an open connection to a HID device and can be used to send and receive
@@ -98,8 +76,9 @@ class FakeHidConnection {
     let actual = new Uint8Array(buffer);
     compareDataViews(
         new DataView(actual.buffer, actual.byteOffset),
-        new DataView(expectedWrite.params.data.buffer,
-                     expectedWrite.params.data.byteOffset));
+        new DataView(
+            expectedWrite.params.data.buffer,
+            expectedWrite.params.data.byteOffset));
     return expectedWrite.result;
   }
 
@@ -123,8 +102,9 @@ class FakeHidConnection {
     let actual = new Uint8Array(buffer);
     compareDataViews(
         new DataView(actual.buffer, actual.byteOffset),
-        new DataView(expectedSendFeatureReport.params.data.buffer,
-                     expectedSendFeatureReport.params.data.byteOffset));
+        new DataView(
+            expectedSendFeatureReport.params.data.buffer,
+            expectedSendFeatureReport.params.data.byteOffset));
     return expectedSendFeatureReport.result;
   }
 }
@@ -314,32 +294,4 @@ class FakeHidService {
   }
 }
 
-let fakeHidService = new FakeHidService();
-
-export function hid_test(func, name, properties) {
-  promise_test(async (test) => {
-    fakeHidService.start();
-    try {
-      await func(test, fakeHidService);
-    } finally {
-      fakeHidService.stop();
-      fakeHidService.reset();
-    }
-  }, name, properties);
-}
-
-export function trustedClick() {
-  return new Promise(resolve => {
-    let button = document.createElement('button');
-    button.textContent = 'click to continue test';
-    button.style.display = 'block';
-    button.style.fontSize = '20px';
-    button.style.padding = '10px';
-    button.onclick = () => {
-      document.body.removeChild(button);
-      resolve();
-    };
-    document.body.appendChild(button);
-    test_driver.click(button);
-  });
-}
+export const fakeHidService = new FakeHidService();

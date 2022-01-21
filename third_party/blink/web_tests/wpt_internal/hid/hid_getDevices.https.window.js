@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script type="module">
-
-import {hid_test} from './resources/hid-test-utils.js';
-
-import {HidService} from '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js';
+// META: script=/resources/test-only-api.js
+// META: script=/webhid/resources/common.js
+// META: script=/webhid/resources/automation.js
+'use strict';
 
 const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
 
 promise_test(async () => {
+  const {HidService} = await import(
+    '/gen/third_party/blink/public/mojom/hid/hid.mojom.m.js');
+
   let interceptor = new MojoInterfaceInterceptor(HidService.$interfaceName);
   interceptor.oninterfacerequest = e => e.handle.close();
   interceptor.start();
@@ -42,5 +41,3 @@ hid_test(async (t, fake) => {
   assert_true(devicesSecond[0] instanceof HIDDevice);
   assert_true(devicesFirst[0] === devicesSecond[0]);
 }, 'getDevices() returns the same device objects every time');
-
-</script>

@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<body>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script type="module">
-
-import {hid_test, trustedClick} from './resources/hid-test-utils.js';
+// META: script=/resources/test-only-api.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/webhid/resources/common.js
+// META: script=/webhid/resources/automation.js
+'use strict';
 
 const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
@@ -190,6 +189,3 @@ hid_test(async (t, fake) => {
   devices = await navigator.hid.getDevices();
   assert_equals(devices.length, 0);
 }, 'Permission is not remembered even after reconnection');
-
-</script>
-</body>

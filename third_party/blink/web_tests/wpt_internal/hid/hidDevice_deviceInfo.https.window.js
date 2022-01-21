@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<body>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script type="module">
-
-import {hid_test, trustedClick} from './resources/hid-test-utils.js';
-import {GENERIC_DESKTOP_GAME_PAD, HID_COLLECTION_TYPE_APPLICATION, HidBusType, HidCollectionInfo, HidReportDescription, HidReportItem, HidUsageAndPage, PAGE_BUTTON, PAGE_GENERIC_DESKTOP} from '/gen/services/device/public/mojom/hid.mojom.m.js';
+// META: script=/resources/test-only-api.js
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/webhid/resources/common.js
+// META: script=/webhid/resources/automation.js
+'use strict';
 
 const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
@@ -19,7 +17,18 @@ const kTestDeviceNode = 'test-device-node';
 // Constructs and returns a device.mojom.HidDeviceInfo representing a
 // gamepad-like device with one input report. The input report has a single
 // 8-bit field with a button usage.
-function createDeviceWithInputReport(fake) {
+async function createDeviceWithInputReport(fake) {
+  const {
+    GENERIC_DESKTOP_GAME_PAD,
+    HID_COLLECTION_TYPE_APPLICATION,
+    HidBusType,
+    HidCollectionInfo,
+    HidReportDescription,
+    HidReportItem,
+    HidUsageAndPage,
+    PAGE_BUTTON,
+    PAGE_GENERIC_DESKTOP
+  } = await import('/gen/services/device/public/mojom/hid.mojom.m.js');
   const nullUsage = new HidUsageAndPage();
   const buttonUsage = new HidUsageAndPage();
   buttonUsage.usagePage = PAGE_BUTTON;
@@ -85,7 +94,18 @@ function createDeviceWithInputReport(fake) {
 }
 
 hid_test(async (t, fake) => {
-  const deviceInfo = createDeviceWithInputReport(fake);
+  const {
+    GENERIC_DESKTOP_GAME_PAD,
+    HID_COLLECTION_TYPE_APPLICATION,
+    HidBusType,
+    HidCollectionInfo,
+    HidReportDescription,
+    HidReportItem,
+    HidUsageAndPage,
+    PAGE_BUTTON,
+    PAGE_GENERIC_DESKTOP
+  } = await import('/gen/services/device/public/mojom/hid.mojom.m.js');
+  const deviceInfo = await createDeviceWithInputReport(fake);
   const guid = fake.addDevice(deviceInfo);
   fake.setSelectedDevice(guid);
 
@@ -154,7 +174,7 @@ hid_test(async (t, fake) => {
 }, 'HIDDevice preserves device info');
 
 hid_test(async (t, fake) => {
-  const deviceInfo = createDeviceWithInputReport(fake);
+  const deviceInfo = await createDeviceWithInputReport(fake);
 
   // Set the units to nano-Newtons. 10^-9 kg m/s^2 = 10^-4 g cm/s^2
   // |unit_exponent| is set to 0x0C which encodes the factor 10^-4.
@@ -201,7 +221,10 @@ hid_test(async (t, fake) => {
 
 
 hid_test(async (t, fake) => {
-  const deviceInfo = createDeviceWithInputReport(fake);
+  const {
+    PAGE_BUTTON,
+  } = await import('/gen/services/device/public/mojom/hid.mojom.m.js');
+  const deviceInfo = await createDeviceWithInputReport(fake);
 
   deviceInfo.collections[0].inputReports[0].items[0].isRange = true;
   deviceInfo.collections[0].inputReports[0].items[0].usages = [];
@@ -235,6 +258,3 @@ hid_test(async (t, fake) => {
   assert_equals(i.usageMaximum, 0x00090008, 'reportItem.usageMaximum');
 
 }, 'HIDDevice usage range item presents usageMinimum and usageMaximum');
-
-</script>
-</body>

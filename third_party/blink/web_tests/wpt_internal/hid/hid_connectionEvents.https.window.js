@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script type="module">
-
-import {hid_test} from './resources/hid-test-utils.js';
-import {HidCollectionInfo, HidUsageAndPage} from '/gen/services/device/public/mojom/hid.mojom.m.js';
+// META: script=/resources/test-only-api.js
+// META: script=/webhid/resources/common.js
+// META: script=/webhid/resources/automation.js
+'use strict';
 
 const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
@@ -37,6 +34,8 @@ hid_test(async (t, fake) => {
 }, 'HID dispatches connection and disconnection events');
 
 hid_test(async (t, fake) => {
+  const {HidCollectionInfo, HidUsageAndPage} = await import(
+    '/gen/services/device/public/mojom/hid.mojom.m.js');
   const watcher = new EventWatcher(t, navigator.hid, ['connect', 'disconnect']);
 
   // Wait for getDevices() to resolve in order to ensure that the Mojo client
@@ -107,5 +106,3 @@ hid_test(async (t, fake) => {
   devices = await navigator.hid.getDevices();
   assert_equals(devices.length, 1);
 }, 'HID dispatches connect for DeviceChanged without DeviceAdded');
-
-</script>
