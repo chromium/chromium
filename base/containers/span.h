@@ -225,10 +225,6 @@ constexpr size_t must_not_be_dynamic_extent() {
 //   sized container (e.g. std::vector) requires an explicit conversion (in the
 //   C++20 draft this is simply UB)
 //
-// Differences from [span.obs]:
-// - empty() is marked with WARN_UNUSED_RESULT instead of [[nodiscard]]
-//   ([[nodiscard]] is a C++17 feature)
-//
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
 //
