@@ -2445,7 +2445,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="OS"
       label="As reported by the operating system. Currently logged only on
              Android."/>
-  <affected-histogram name="DataUse.BytesReceived"/>
   <affected-histogram name="DataUse.BytesReceived2"/>
   <affected-histogram name="DataUse.BytesSent"/>
 </histogram_suffixes>
@@ -4069,12 +4068,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="LevelDB.SharedCache.BytesUsed"/>
   <affected-histogram name="LevelDB.SharedCache.DBCount"/>
   <affected-histogram name="LevelDB.SharedCache.KBUsed"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="LiteVideoDecision" separator=".">
-  <suffix name="MainFrame" label="Recorded for the mainframe navigation."/>
-  <suffix name="SubFrame" label="Recorded for subframe navigation."/>
-  <affected-histogram name="LiteVideo.CanApplyLiteVideo.UserBlocklist"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="LiveTabCountMetrics" separator=".">
