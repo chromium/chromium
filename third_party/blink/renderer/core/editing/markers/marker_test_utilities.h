@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_MARKER_TEST_UTILITIES_H_
 
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 inline bool compare_markers(const Member<DocumentMarker>& marker1,

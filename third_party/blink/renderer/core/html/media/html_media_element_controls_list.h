@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 

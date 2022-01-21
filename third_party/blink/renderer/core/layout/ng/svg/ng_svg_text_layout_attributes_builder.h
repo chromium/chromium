@@ -7,7 +7,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

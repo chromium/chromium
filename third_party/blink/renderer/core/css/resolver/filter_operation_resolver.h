@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

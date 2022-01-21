@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 

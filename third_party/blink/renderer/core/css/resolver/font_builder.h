@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_numeric.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

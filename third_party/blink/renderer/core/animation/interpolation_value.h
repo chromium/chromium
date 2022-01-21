@@ -8,7 +8,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/animation/non_interpolable_value.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

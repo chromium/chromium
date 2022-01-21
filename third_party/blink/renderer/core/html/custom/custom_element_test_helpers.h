@@ -15,8 +15,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition_builder.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {

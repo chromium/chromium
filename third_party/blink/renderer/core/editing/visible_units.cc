@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 

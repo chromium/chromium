@@ -65,7 +65,7 @@
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"

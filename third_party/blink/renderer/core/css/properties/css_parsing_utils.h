@@ -18,7 +18,8 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

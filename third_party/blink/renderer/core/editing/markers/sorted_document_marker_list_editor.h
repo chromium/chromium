@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker_list.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 

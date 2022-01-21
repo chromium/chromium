@@ -38,12 +38,12 @@
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/mixed_content.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

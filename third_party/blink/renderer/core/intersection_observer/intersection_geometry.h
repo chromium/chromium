@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

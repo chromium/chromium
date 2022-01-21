@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

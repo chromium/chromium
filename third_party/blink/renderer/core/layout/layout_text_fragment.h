@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

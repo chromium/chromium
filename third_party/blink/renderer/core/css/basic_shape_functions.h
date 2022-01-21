@@ -32,7 +32,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace gfx {
 class PointF;

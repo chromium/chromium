@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/perspective_transform_operation.h"

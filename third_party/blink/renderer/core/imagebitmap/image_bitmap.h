@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"

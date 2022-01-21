@@ -28,7 +28,6 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "ui/gfx/geometry/rect_f.h"
