@@ -5,8 +5,8 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac bigsur catalina lion highsierra mac-10.12 mojave mountainlion
-#             sierra
+#         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
+#             mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
@@ -730,6 +730,33 @@ crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-rendere
 crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/texsubimage2d_pbo_cube_03.html [ Failure ]
 crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/texsubimage3d_pbo_3d_00.html [ Failure ]
 crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/texsubimage3d_pbo_3d_01.html [ Failure ]
+
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/image_bitmap_from_canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/image_bitmap_from_video/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/video/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/webgl_canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/texsubimage2d_pbo_2d_00.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/texsubimage2d_pbo_2d_01.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/texsubimage2d_pbo_cube_01.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/texsubimage2d_pbo_cube_02.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/texsubimage2d_pbo_cube_03.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/teximage2d_pbo_2d_00.html [ Failure ]
+crbug.com/1278909 [ monterey amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] deqp/functional/gles3/texturespecification/teximage2d_pbo_2d_01.html [ Failure ]
+
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-disabled ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_00.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-disabled ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_01.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-disabled ] deqp/functional/gles3/texturespecification/teximage3d_pbo_3d_00.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-disabled ] deqp/functional/gles3/texturespecification/teximage3d_pbo_3d_01.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-disabled ] deqp/functional/gles3/texturespecification/texsubimage3d_pbo_3d_00.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-disabled ] deqp/functional/gles3/texturespecification/texsubimage3d_pbo_3d_01.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_00.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_01.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_3d_00.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_3d_01.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-opengl ] deqp/functional/gles3/texturespecification/texsubimage3d_pbo_3d_00.html [ Failure ]
+crbug.com/1278935 [ monterey amd-0x6821 skia-renderer-gl angle-opengl ] deqp/functional/gles3/texturespecification/texsubimage3d_pbo_3d_01.html [ Failure ]
 
 # Mac Intel
 crbug.com/886970 [ mac intel-0xa2e ] conformance/rendering/canvas-alpha-bug.html [ Failure ]
