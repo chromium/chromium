@@ -868,9 +868,10 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.basic_user_info.type = user->GetType();
     user_info.basic_user_info.account_id = user->GetAccountId();
 
-    if (!user_manager::known_user::GetBooleanPref(
-            account_id, ::prefs::kUse24HourClock,
-            &user_info.use_24hour_clock)) {
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+
+    if (!known_user.GetBooleanPref(account_id, ::prefs::kUse24HourClock,
+                                   &user_info.use_24hour_clock)) {
       // Fallback to system default in case pref was not found.
       user_info.use_24hour_clock =
           base::GetHourClockType() == base::k24HourClock;
@@ -887,13 +888,11 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.fingerprint_state =
         quick_unlock::GetFingerprintStateForUser(user);
     user_info.show_pin_pad_for_password = false;
-    if (user_manager::known_user::GetIsEnterpriseManaged(
-            user->GetAccountId()) &&
+    if (known_user.GetIsEnterpriseManaged(user->GetAccountId()) &&
         user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-      std::string account_manager;
-      if (user_manager::known_user::GetAccountManager(user->GetAccountId(),
-                                                      &account_manager)) {
-        user_info.user_account_manager = account_manager;
+      if (const std::string* account_manager =
+              known_user.GetAccountManager(user->GetAccountId())) {
+        user_info.user_account_manager = *account_manager;
       } else {
         user_info.user_account_manager =
             gaia::ExtractDomainName(user->display_email());
@@ -901,9 +900,9 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     }
     CrosSettings::Get()->GetBoolean(kDeviceShowNumericKeyboardForPassword,
                                     &user_info.show_pin_pad_for_password);
-    user_manager::known_user::GetBooleanPref(
-        user->GetAccountId(), prefs::kLoginDisplayPasswordButtonEnabled,
-        &user_info.show_display_password_button);
+    known_user.GetBooleanPref(user->GetAccountId(),
+                              prefs::kLoginDisplayPasswordButtonEnabled,
+                              &user_info.show_display_password_button);
 
     // Fill multi-profile data.
     if (!is_signin_to_add) {

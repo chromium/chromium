@@ -1910,14 +1910,12 @@ const std::string AccessibilityManager::GetBluetoothBrailleDisplayAddress()
   if (user_list.empty())
     return std::string();
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // |user_list| is sorted by last log in date. Take the most recent user to
   // log in.
-  std::string val;
-  return user_manager::known_user::GetStringPref(
-             user_list[0]->GetAccountId(), kUserBluetoothBrailleDisplayAddress,
-             &val)
-             ? val
-             : std::string();
+  const std::string* val = known_user.FindStringPath(
+      user_list[0]->GetAccountId(), kUserBluetoothBrailleDisplayAddress);
+  return val ? *val : std::string();
 }
 
 void AccessibilityManager::UpdateBluetoothBrailleDisplayAddress(

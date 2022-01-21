@@ -25,11 +25,11 @@ namespace {
 absl::optional<std::string> GetStringPrefValue(KnownUser* known_user,
                                                const AccountId& account_id,
                                                const char* pref_name) {
-  std::string value;
-  if (!known_user->GetStringPref(account_id, pref_name, &value)) {
-    return {};
+  if (const std::string* value =
+          known_user->FindStringPath(account_id, pref_name)) {
+    return *value;
   }
-  return value;
+  return absl::nullopt;
 }
 }  // namespace
 
@@ -321,9 +321,9 @@ TEST_F(KnownUserTest, FindGaiaIdForGaiaAccount) {
       AccountId::FromUserEmailGaiaId("account1@gmail.com", "gaia_id");
   known_user.SaveKnownUser(kAccountIdGaia);
 
-  std::string gaia_id;
-  EXPECT_TRUE(known_user.FindGaiaID(kAccountIdGaia, &gaia_id));
-  EXPECT_EQ(gaia_id, "gaia_id");
+  const std::string* gaia_id = known_user.FindGaiaID(kAccountIdGaia);
+  ASSERT_TRUE(gaia_id);
+  EXPECT_EQ(*gaia_id, "gaia_id");
 }
 
 TEST_F(KnownUserTest, FindGaiaIdForAdAccount) {
@@ -332,8 +332,7 @@ TEST_F(KnownUserTest, FindGaiaIdForAdAccount) {
       AccountId::AdFromUserEmailObjGuid("account1@gmail.com", "guid");
   known_user.SaveKnownUser(kAccountIdAd);
 
-  std::string gaia_id;
-  EXPECT_FALSE(known_user.FindGaiaID(kAccountIdAd, &gaia_id));
+  EXPECT_FALSE(known_user.FindGaiaID(kAccountIdAd));
 }
 
 // TODO(https://crbug.com/1148457): Add tests for GetAccountId.
@@ -343,18 +342,10 @@ TEST_F(KnownUserTest, RemovePrefOnCustomPref) {
   const std::string kCustomPrefName = "custom_pref";
 
   known_user.SetStringPref(kDefaultAccountId, kCustomPrefName, "value");
-  {
-    std::string read_value;
-    EXPECT_TRUE(known_user.GetStringPref(kDefaultAccountId, kCustomPrefName,
-                                         &read_value));
-  }
+  EXPECT_TRUE(known_user.FindStringPath(kDefaultAccountId, kCustomPrefName));
 
   known_user.RemovePref(kDefaultAccountId, kCustomPrefName);
-  {
-    std::string read_value;
-    EXPECT_FALSE(known_user.GetStringPref(kDefaultAccountId, kCustomPrefName,
-                                          &read_value));
-  }
+  EXPECT_FALSE(known_user.FindStringPath(kDefaultAccountId, kCustomPrefName));
 }
 
 TEST_F(KnownUserTest, RemovePrefOnReservedPref) {
@@ -483,36 +474,20 @@ TEST_F(KnownUserTest, IsEnterpriseManaged) {
 
 TEST_F(KnownUserTest, AccountManager) {
   KnownUser known_user(local_state());
-  {
-    std::string account_manager;
-    EXPECT_FALSE(
-        known_user.GetAccountManager(kDefaultAccountId, &account_manager));
-  }
+  EXPECT_FALSE(known_user.GetAccountManager(kDefaultAccountId));
 
   known_user.SetAccountManager(kDefaultAccountId, "test");
 
-  {
-    std::string account_manager;
-    EXPECT_TRUE(
-        known_user.GetAccountManager(kDefaultAccountId, &account_manager));
-  }
+  EXPECT_TRUE(known_user.GetAccountManager(kDefaultAccountId));
 }
 
 TEST_F(KnownUserTest, UserLastLoginInputMethodId) {
   KnownUser known_user(local_state());
-  {
-    std::string user_last_input_method_id;
-    EXPECT_FALSE(known_user.GetUserLastInputMethodId(
-        kDefaultAccountId, &user_last_input_method_id));
-  }
+  EXPECT_FALSE(known_user.GetUserLastInputMethodId(kDefaultAccountId));
 
   known_user.SetUserLastLoginInputMethodId(kDefaultAccountId, "test");
 
-  {
-    std::string user_last_input_method_id;
-    EXPECT_TRUE(known_user.GetUserLastInputMethodId(
-        kDefaultAccountId, &user_last_input_method_id));
-  }
+  EXPECT_TRUE(known_user.GetUserLastInputMethodId(kDefaultAccountId));
 }
 
 TEST_F(KnownUserTest, UserPinLength) {
@@ -618,7 +593,7 @@ struct PrefTypeInfoString {
   using PrefTypeForReading = std::string;
 
   static constexpr auto SetFunc = &KnownUser::SetStringPref;
-  static constexpr auto GetFunc = &KnownUser::GetStringPref;
+  static constexpr auto GetFunc = &KnownUser::GetStringPrefForTest;
 
   static PrefType CreatePrefValue() { return std::string("test"); }
   static bool CheckPrefValue(PrefTypeForReading read_value) {

@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
@@ -230,7 +231,8 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
                                    base::Unretained(this), account_id,
                                    pin.size(), std::move(did_set)));
   } else {
-    user_manager::known_user::SetUserPinLength(account_id, 0);
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetUserPinLength(account_id, 0);
     PrefService(account_id)
         ->SetBoolean(::prefs::kPinUnlockAutosubmitEnabled, false);
     PostResponse(std::move(did_set), true);
@@ -335,9 +337,10 @@ bool PinBackend::ShouldUseCryptohome(const AccountId& account_id) {
 }
 
 int PinBackend::GetExposedPinLength(const AccountId& account_id) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   if (!features::IsPinAutosubmitFeatureEnabled()) {
     // Clear the exposed length if the feature was disabled.
-    user_manager::known_user::SetUserPinLength(account_id, 0);
+    known_user.SetUserPinLength(account_id, 0);
     return 0;
   }
 
@@ -346,11 +349,11 @@ int PinBackend::GetExposedPinLength(const AccountId& account_id) {
   // immediately.
   if (!PrefService(account_id)
            ->GetBoolean(::prefs::kPinUnlockAutosubmitEnabled)) {
-    user_manager::known_user::SetUserPinLength(account_id, 0);
+    known_user.SetUserPinLength(account_id, 0);
     return 0;
   }
 
-  return user_manager::known_user::GetUserPinLength(account_id);
+  return known_user.GetUserPinLength(account_id);
 }
 
 void PinBackend::OnIsCryptohomeBackendSupported(bool is_supported) {
@@ -388,9 +391,9 @@ void PinBackend::OnPinAutosubmitCheckComplete(const AccountId& account_id,
                                               size_t pin_length,
                                               BoolCallback result,
                                               bool success) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // Set the exposed PIN to zero, if not successful.
-  user_manager::known_user::SetUserPinLength(account_id,
-                                             success ? pin_length : 0);
+  known_user.SetUserPinLength(account_id, success ? pin_length : 0);
   PrefService(account_id)
       ->SetBoolean(::prefs::kPinUnlockAutosubmitEnabled, success);
   PostResponse(std::move(result), success);
@@ -405,9 +408,10 @@ void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
   if (!features::IsPinAutosubmitFeatureEnabled())
     return;
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // A PIN is being set when the auto submit feature is present. This user
   // does not need to be backfilled.
-  user_manager::known_user::PinAutosubmitSetBackfillNotNeeded(account_id);
+  known_user.PinAutosubmitSetBackfillNotNeeded(account_id);
 
   const bool autosubmit_enabled =
       PrefService(account_id)
@@ -424,13 +428,14 @@ void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
 
   // Expose the true PIN length if enabled
   pin_length = autosubmit_enabled ? pin_length : 0;
-  user_manager::known_user::SetUserPinLength(account_id, pin_length);
+  known_user.SetUserPinLength(account_id, pin_length);
 }
 
 void PinBackend::UpdatePinAutosubmitOnRemove(const AccountId& account_id) {
   if (!features::IsPinAutosubmitFeatureEnabled())
     return;
-  user_manager::known_user::SetUserPinLength(account_id, 0);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetUserPinLength(account_id, 0);
   PrefService(account_id)->ClearPref(::prefs::kPinUnlockAutosubmitEnabled);
 }
 
@@ -448,8 +453,9 @@ void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
       PrefService(account_id)
           ->GetBoolean(::prefs::kPinUnlockAutosubmitEnabled) &&
       pin_length <= kPinAutosubmitMaxPinLength;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   if (autosubmit_enabled)
-    user_manager::known_user::SetUserPinLength(account_id, pin_length);
+    known_user.SetUserPinLength(account_id, pin_length);
 }
 
 void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
@@ -459,10 +465,11 @@ void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
     return;
   }
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // Don't backfill if its not necessary & Prevent future backfill attempts.
-  if (!user_manager::known_user::PinAutosubmitIsBackfillNeeded(account_id))
+  if (!known_user.PinAutosubmitIsBackfillNeeded(account_id))
     return;
-  user_manager::known_user::PinAutosubmitSetBackfillNotNeeded(account_id);
+  known_user.PinAutosubmitSetBackfillNotNeeded(account_id);
 
   // Dont backfill if there is a user value set for the pref.
   if (PrefService(account_id)

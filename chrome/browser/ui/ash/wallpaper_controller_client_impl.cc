@@ -131,10 +131,10 @@ void GetFilesIdSaltReady(
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) {
   DCHECK(CanGetFilesId());
-  std::string stored_value;
-  if (user_manager::known_user::GetStringPref(account_id, kWallpaperFilesId,
-                                              &stored_value)) {
-    std::move(files_id_callback).Run(stored_value);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (const std::string* stored_value =
+          known_user.FindStringPath(account_id, kWallpaperFilesId)) {
+    std::move(files_id_callback).Run(*stored_value);
     return;
   }
 

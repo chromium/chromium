@@ -102,10 +102,10 @@ void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
     return;
   }
 
-  AccountId account_id =
-      Shell::Get()->session_controller()->GetActiveAccountId();
+  Shell* shell = Shell::Get();
+  AccountId account_id = shell->session_controller()->GetActiveAccountId();
   const UserSession* session =
-      Shell::Get()->session_controller()->GetUserSessionByAccountId(account_id);
+      shell->session_controller()->GetUserSessionByAccountId(account_id);
   DCHECK(session);
   UserAvatar avatar = session->user_info.avatar;
 
@@ -114,7 +114,8 @@ void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
 
   AuthDialogContentsView::AuthMethodsMetadata auth_metadata;
   auth_metadata.autosubmit_pin_length =
-      user_manager::known_user::GetUserPinLength(account_id);
+      user_manager::KnownUser(shell->local_state())
+          .GetUserPinLength(account_id);
   source_window_tracker_.Remove(source_window);
   dialog_ = std::make_unique<InSessionAuthDialog>(
       auth_methods, source_window, origin_name, auth_metadata, avatar);

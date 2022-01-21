@@ -60,6 +60,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
@@ -1387,14 +1388,15 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest,
                        ManagedUserManagedBy) {
   SetManagedBy(kManager);
   Login(managed_user_);
-  EXPECT_TRUE(user_manager::known_user::GetIsEnterpriseManaged(
-      managed_user_.account_id));
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  EXPECT_TRUE(known_user.GetIsEnterpriseManaged(managed_user_.account_id));
 
   // Verify that managed_by has been stored in prefs
-  std::string manager;
-  EXPECT_TRUE(user_manager::known_user::GetAccountManager(
-      managed_user_.account_id, &manager));
-  EXPECT_EQ(manager, kManager);
+  const std::string* manager =
+      known_user.GetAccountManager(managed_user_.account_id);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(*manager, kManager);
 
   // Set the lock screen so that the managed warning can be queried.
   ScreenLockerTester().Lock();
@@ -1411,14 +1413,14 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest,
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, ManagedUserDomain) {
   SetManagedBy(std::string());
   Login(managed_user_);
-  EXPECT_TRUE(user_manager::known_user::GetIsEnterpriseManaged(
-      managed_user_.account_id));
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  EXPECT_TRUE(known_user.GetIsEnterpriseManaged(managed_user_.account_id));
 
   // Verify that managed_by has been stored in prefs
-  std::string manager;
-  EXPECT_TRUE(user_manager::known_user::GetAccountManager(
-      managed_user_.account_id, &manager));
-  EXPECT_EQ(manager, kManagedDomain);
+  const std::string* manager =
+      known_user.GetAccountManager(managed_user_.account_id);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(*manager, kManagedDomain);
 
   // Set the lock screen so that the managed warning can be queried.
   ScreenLockerTester().Lock();
@@ -1434,13 +1436,11 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, ManagedUserDomain) {
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
   Login(not_managed_user_);
-  EXPECT_FALSE(user_manager::known_user::GetIsEnterpriseManaged(
-      not_managed_user_.account_id));
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  EXPECT_FALSE(known_user.GetIsEnterpriseManaged(not_managed_user_.account_id));
 
   // Verify that no value is stored in prefs for this user.
-  std::string manager;
-  EXPECT_FALSE(user_manager::known_user::GetAccountManager(
-      not_managed_user_.account_id, &manager));
+  EXPECT_FALSE(known_user.GetAccountManager(not_managed_user_.account_id));
 
   ScreenLockerTester().Lock();
 

@@ -1014,7 +1014,8 @@ void LockContentsView::OnPinEnabledForUserChanged(const AccountId& user,
 
   state->show_pin = enabled;
   state->autosubmit_pin_length =
-      user_manager::known_user::GetUserPinLength(user);
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .GetUserPinLength(user);
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);

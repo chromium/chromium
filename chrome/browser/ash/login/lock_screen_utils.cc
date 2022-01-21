@@ -19,8 +19,7 @@
 #include "components/user_manager/known_user.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 
-namespace ash {
-namespace lock_screen_utils {
+namespace ash::lock_screen_utils {
 namespace {
 
 bool SetUserInputMethodImpl(
@@ -77,17 +76,17 @@ void SetUserInputMethod(const AccountId& account_id,
 std::string GetUserLastInputMethodId(const AccountId& account_id) {
   if (!account_id.is_valid())
     return std::string();
-  std::string input_method_id;
-  if (user_manager::known_user::GetUserLastInputMethodId(account_id,
-                                                         &input_method_id)) {
-    return input_method_id;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (const std::string* input_method_id =
+          known_user.GetUserLastInputMethodId(account_id)) {
+    return *input_method_id;
   }
 
   // Try profile prefs. For the ephemeral case known_user does not persist the
   // data.
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (profile && profile->GetPrefs()) {
-    input_method_id =
+    std::string input_method_id =
         profile->GetPrefs()->GetString(prefs::kLastLoginInputMethod);
     if (!input_method_id.empty())
       return input_method_id;
@@ -202,5 +201,4 @@ std::vector<LocaleItem> FromListValueToLocaleItem(
   return result;
 }
 
-}  // namespace lock_screen_utils
-}  // namespace ash
+}  // namespace ash::lock_screen_utils

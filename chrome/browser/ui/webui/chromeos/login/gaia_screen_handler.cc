@@ -1373,15 +1373,14 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
   context.force_reload = force;
   context.email = populated_account_id_.GetUserEmail();
 
-  std::string gaia_id;
-  if (!context.email.empty() &&
-      user_manager::known_user::FindGaiaID(
-          AccountId::FromUserEmail(context.email), &gaia_id)) {
-    context.gaia_id = gaia_id;
-  }
-
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   if (!context.email.empty()) {
-    context.gaps_cookie = user_manager::known_user::GetGAPSCookie(
+    if (const std::string* gaia_id =
+            known_user.FindGaiaID(AccountId::FromUserEmail(context.email))) {
+      context.gaia_id = *gaia_id;
+    }
+
+    context.gaps_cookie = known_user.GetGAPSCookie(
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
   }
 

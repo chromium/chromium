@@ -34,18 +34,18 @@ const char* g_invalid_token_for_testing = nullptr;
 bool MaybeReturnCachedStatus(
     const AccountId& account_id,
     TokenHandleUtil::TokenValidationCallback* callback) {
-  std::string saved_status;
-  if (!user_manager::known_user::GetStringPref(
-          account_id, kTokenHandleStatusPref, &saved_status)) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string* saved_status =
+      known_user.FindStringPath(account_id, kTokenHandleStatusPref);
+  if (!saved_status)
     return false;
-  }
 
-  if (saved_status == kHandleStatusValid) {
+  if (*saved_status == kHandleStatusValid) {
     std::move(*callback).Run(account_id, TokenHandleUtil::VALID);
     return true;
   }
 
-  if (saved_status == kHandleStatusInvalid) {
+  if (*saved_status == kHandleStatusInvalid) {
     std::move(*callback).Run(account_id, TokenHandleUtil::INVALID);
     return true;
   }
@@ -62,9 +62,9 @@ void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
   // Check that the token that was checked matches the latest known token.
   // (This may happen if token check took too long, and user went through
   // online sign-in and obtained new token during that time.
-  std::string latest_token;
-  if (known_user.GetStringPref(account_id, kTokenHandlePref, &latest_token)) {
-    if (token != latest_token) {
+  if (const std::string* latest_token =
+          known_user.FindStringPath(account_id, kTokenHandlePref)) {
+    if (token != *latest_token) {
       LOG(WARNING) << "Outdated token, assuming status is unknown";
       std::move(callback).Run(account_id, TokenHandleUtil::UNKNOWN);
       return;
@@ -86,12 +86,11 @@ void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
 
 // Checks if token handle is explicitly marked as INVALID for |account_id|.
 bool HasTokenStatusInvalid(const AccountId& account_id) {
-  std::string status;
-  if (!user_manager::known_user::GetStringPref(
-          account_id, kTokenHandleStatusPref, &status)) {
-    return false;
-  }
-  return status == kHandleStatusInvalid;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string* status =
+      known_user.FindStringPath(account_id, kTokenHandleStatusPref);
+
+  return status && *status == kHandleStatusInvalid;
 }
 
 }  // namespace
@@ -112,9 +111,9 @@ bool TokenHandleUtil::HasToken(const AccountId& account_id) {
     return false;
   }
 
-  std::string token;
-  return known_user.GetStringPref(account_id, kTokenHandlePref, &token) &&
-         !token.empty();
+  const std::string* token =
+      known_user.FindStringPath(account_id, kTokenHandlePref);
+  return token && !token->empty();
 }
 
 // static
@@ -147,14 +146,15 @@ void TokenHandleUtil::CheckToken(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenValidationCallback callback) {
-  std::string token;
-  if (!user_manager::known_user::GetStringPref(account_id, kTokenHandlePref,
-                                               &token)) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string* token =
+      known_user.FindStringPath(account_id, kTokenHandlePref);
+  if (!token) {
     std::move(callback).Run(account_id, UNKNOWN);
     return;
   }
 
-  if (g_invalid_token_for_testing && g_invalid_token_for_testing == token) {
+  if (g_invalid_token_for_testing && g_invalid_token_for_testing == *token) {
     std::move(callback).Run(account_id, INVALID);
     return;
   }
@@ -172,10 +172,10 @@ void TokenHandleUtil::CheckToken(
   }
 
   // Constructor starts validation.
-  validation_delegates_[token] = std::make_unique<TokenDelegate>(
-      weak_factory_.GetWeakPtr(), account_id, token,
+  validation_delegates_[*token] = std::make_unique<TokenDelegate>(
+      weak_factory_.GetWeakPtr(), account_id, *token,
       std::move(url_loader_factory),
-      base::BindOnce(&OnStatusChecked, std::move(callback), token));
+      base::BindOnce(&OnStatusChecked, std::move(callback), *token));
 }
 
 // static
