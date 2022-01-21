@@ -42,6 +42,7 @@
 #include "printing/test_printing_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/emf_win.h"
@@ -161,6 +162,48 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
         printer_name);
   }
+
+  // Common helpers to perform particular stages of printing a document.
+  mojom::ResultCode StartPrintingAndWait(const PrintSettings& print_settings) {
+    mojom::ResultCode result;
+
+    // Safe to use base::Unretained(this) since waiting locally on the callback
+    // forces a shorter lifetime than `this`.
+    GetPrintBackendService()->StartPrinting(
+        /*document_cookie=*/1, u"document name",
+        mojom::PrintTargetType::kDirectToDevice, print_settings,
+        base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
+                       base::Unretained(this), std::ref(result)));
+    WaitUntilCallbackReceived();
+    return result;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  absl::optional<mojom::ResultCode> RenderPageAndWait() {
+    // Load a sample EMF file for a single page for testing handling.
+    Emf metafile;
+    if (!LoadMetafileDataFromFile("test1.emf", metafile))
+      return absl::nullopt;
+
+    base::MappedReadOnlyRegion region_mapping =
+        metafile.GetDataAsSharedMemoryRegion();
+    if (!region_mapping.IsValid())
+      return absl::nullopt;
+
+    mojom::ResultCode result;
+    GetPrintBackendService()->RenderPrintedPage(
+        /*document_cookie=*/1,
+        /*page_index=*/0, metafile.GetDataType(),
+        std::move(region_mapping.region),
+        /*page_size=*/gfx::Size(200, 200),
+        /*page_content_rect=*/gfx::Rect(0, 0, 200, 200),
+        /*shrink_factor=*/1.0f,
+        base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
+                       base::Unretained(this), std::ref(result)));
+    WaitUntilCallbackReceived();
+    return result;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   // Public callbacks used by tests.
   void OnDidEnumeratePrinters(mojom::PrinterListResultPtr& capture_printer_list,
@@ -484,21 +527,11 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingValidPrinter) {
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
-  mojom::ResultCode result;
-
   PrintSettings print_settings;
   print_settings.set_device_name(
       base::ASCIIToUTF16(base::StringPiece(kDefaultPrinterName)));
 
-  // Safe to use base::Unretained(this) since waiting locally on the callback
-  // forces a shorter lifetime than `this`.
-  GetPrintBackendService()->StartPrinting(
-      /*document_cookie=*/1, u"document name",
-      mojom::PrintTargetType::kDirectToDevice, print_settings,
-      base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
-                     base::Unretained(this), std::ref(result)));
-  WaitUntilCallbackReceived();
-  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
+  EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingInvalidPrinter) {
@@ -506,21 +539,11 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingInvalidPrinter) {
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
-  mojom::ResultCode result;
-
   PrintSettings print_settings;
   print_settings.set_device_name(
       base::ASCIIToUTF16(base::StringPiece(kInvalidPrinterName)));
 
-  // Safe to use base::Unretained(this) since waiting locally on the callback
-  // forces a shorter lifetime than `this`.
-  GetPrintBackendService()->StartPrinting(
-      /*document_cookie=*/1, u"document name",
-      mojom::PrintTargetType::kDirectToDevice, print_settings,
-      base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
-                     base::Unretained(this), std::ref(result)));
-  WaitUntilCallbackReceived();
-  EXPECT_EQ(result, mojom::ResultCode::kFailed);
+  EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kFailed);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -529,40 +552,15 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
-  mojom::ResultCode result;
-
   PrintSettings print_settings;
   print_settings.set_device_name(
       base::ASCIIToUTF16(base::StringPiece(kDefaultPrinterName)));
 
-  // Safe to use base::Unretained(this) since waiting locally on the callback
-  // forces a shorter lifetime than `this`.
-  GetPrintBackendService()->StartPrinting(
-      /*document_cookie=*/1, u"document name",
-      mojom::PrintTargetType::kDirectToDevice, print_settings,
-      base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
-                     base::Unretained(this), std::ref(result)));
-  WaitUntilCallbackReceived();
-  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
+  EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
 
-  auto metafile = std::make_unique<Emf>();
-  ASSERT_TRUE(LoadMetafileDataFromFile("embedded_images_ps_level3.emf",
-                                       *metafile.get()));
-  base::MappedReadOnlyRegion region_mapping =
-      metafile->GetDataAsSharedMemoryRegion();
-  ASSERT_TRUE(region_mapping.IsValid());
-
-  GetPrintBackendService()->RenderPrintedPage(
-      /*document_cookie=*/1,
-      /*page_index=*/0, metafile->GetDataType(),
-      std::move(region_mapping.region),
-      /*page_size=*/gfx::Size(200, 200),
-      /*page_content_rect=*/gfx::Rect(0, 0, 200, 200),
-      /*shrink_factor=*/1.0f,
-      base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
-                     base::Unretained(this), std::ref(result)));
-  WaitUntilCallbackReceived();
-  EXPECT_EQ(result, mojom::ResultCode::kSuccess);
+  absl::optional<mojom::ResultCode> result = RenderPageAndWait();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
