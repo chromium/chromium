@@ -44,40 +44,23 @@ group("headless_lib") {
   deps = [ ":headless_non_renderer" ]
 }
 
-repack("resource_pack_data") {
+repack("pak") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
+    "$root_gen_dir/components/strings/components_strings_en-US.pak",
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
+    "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/dev_ui_content_resources.pak",
     "$root_gen_dir/headless/headless_lib_resources.pak",
+    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",
-  ]
-
-  deps = [
-    ":resources",
-    "//components/resources:components_resources",
-    "//content:content_resources",
-    "//content:dev_ui_content_resources",
-    "//content/app/resources",
-    "//net:net_resources",
-    "//third_party/blink/public:resources",
-    "//third_party/blink/public:scaled_resources_100_percent",
-    "//ui/resources",
-  ]
-
-  output = "$root_out_dir/headless_lib_data.pak"
-}
-
-repack("resource_pack_strings") {
-  sources = [
-    "$root_gen_dir/components/strings/components_strings_en-US.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
@@ -90,8 +73,19 @@ repack("resource_pack_strings") {
   }
 
   deps = [
+    ":resources",
+    "//components/resources:components_resources",
     "//components/strings",
+    "//content:content_resources",
+    "//content:dev_ui_content_resources",
+    "//content/app/resources",
+    "//content/browser/tracing:resources",
+    "//mojo/public/js:resources",
+    "//net:net_resources",
+    "//third_party/blink/public:resources",
+    "//third_party/blink/public:scaled_resources_100_percent",
     "//third_party/blink/public/strings",
+    "//ui/resources",
     "//ui/strings",
   ]
 
@@ -101,65 +95,36 @@ repack("resource_pack_strings") {
     deps += [ "//content/browser/devtools:devtools_resources" ]
   }
 
-  output = "$root_out_dir/headless_lib_strings.pak"
+  output = "$root_out_dir/headless_lib.pak"
 }
 
-action("embedded_resource_pack_data") {
+action("embed_resources") {
   # TODO(altimin): Consider zipping file here, it can reduce size up to 80%.
   script = "lib/embed_data.py"
 
-  inputs = [ "$root_out_dir/headless_lib_data.pak" ]
+  inputs = [ "$root_out_dir/headless_lib.pak" ]
 
   outputs = [
-    "$root_gen_dir/headless/embedded_resource_pack_data.cc",
-    "$root_gen_dir/headless/embedded_resource_pack_data.h",
+    "$root_gen_dir/headless/embedded_resource_pak.cc",
+    "$root_gen_dir/headless/embedded_resource_pak.h",
   ]
 
   args = [
     "--data_file",
-    rebase_path("$root_out_dir/headless_lib_data.pak", root_build_dir),
+    rebase_path("$root_out_dir/headless_lib.pak", root_build_dir),
     "--gendir",
     rebase_path("$root_gen_dir", root_build_dir),
     "--header_file",
-    "headless/embedded_resource_pack_data.h",
+    "headless/embedded_resource_pak.h",
     "--source_file",
-    "headless/embedded_resource_pack_data.cc",
+    "headless/embedded_resource_pak.cc",
     "--namespace",
     "headless",
     "--variable_name",
-    "kHeadlessResourcePackData",
+    "kHeadlessResourcePak",
   ]
 
-  deps = [ ":resource_pack_data" ]
-}
-
-action("embedded_resource_pack_strings") {
-  # TODO(altimin): Consider zipping file here, it can reduce size up to 80%.
-  script = "lib/embed_data.py"
-
-  inputs = [ "$root_out_dir/headless_lib_strings.pak" ]
-
-  outputs = [
-    "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
-    "$root_gen_dir/headless/embedded_resource_pack_strings.h",
-  ]
-
-  args = [
-    "--data_file",
-    rebase_path("$root_out_dir/headless_lib_strings.pak", root_build_dir),
-    "--gendir",
-    rebase_path("$root_gen_dir", root_build_dir),
-    "--header_file",
-    "headless/embedded_resource_pack_strings.h",
-    "--source_file",
-    "headless/embedded_resource_pack_strings.cc",
-    "--namespace",
-    "headless",
-    "--variable_name",
-    "kHeadlessResourcePackStrings",
-  ]
-
-  deps = [ ":resource_pack_strings" ]
+  deps = [ ":pak" ]
 }
 
 grit("resources") {
@@ -612,21 +577,13 @@ component("headless_non_renderer") {
 
   if (headless_use_embedded_resources) {
     defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
-    deps += [
-      ":embedded_resource_pack_data",
-      ":embedded_resource_pack_strings",
-    ]
+    deps += [ ":embed_resources" ]
     sources += [
-      "$root_gen_dir/headless/embedded_resource_pack_data.cc",
-      "$root_gen_dir/headless/embedded_resource_pack_data.h",
-      "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
-      "$root_gen_dir/headless/embedded_resource_pack_strings.h",
+      "$root_gen_dir/headless/embedded_resource_pak.cc",
+      "$root_gen_dir/headless/embedded_resource_pak.h",
     ]
   } else {
-    deps += [
-      ":resource_pack_data",
-      ":resource_pack_strings",
-    ]
+    deps += [ ":pak" ]
   }
 
   if (use_ozone) {
@@ -701,24 +658,17 @@ if (!is_component_build) {
       ]
     }
     configs += [ ":headless_defines_config" ]
-    if (is_mac || is_win || is_linux || is_chromeos) {
-      deps += [ "//components/crash/core/app" ]
-    }
-
-    # TODO(caseq): this is only here because we build headless_content_main_delegate.cc in renderer.
-    # Move it to the browser-specific part.
     if (headless_use_embedded_resources) {
       defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
-      deps += [
-        ":embedded_resource_pack_data",
-        ":embedded_resource_pack_strings",
-      ]
+      deps += [ ":embed_resources" ]
       sources += [
-        "$root_gen_dir/headless/embedded_resource_pack_data.cc",
-        "$root_gen_dir/headless/embedded_resource_pack_data.h",
-        "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
-        "$root_gen_dir/headless/embedded_resource_pack_strings.h",
+        "$root_gen_dir/headless/embedded_resource_pak.cc",
+        "$root_gen_dir/headless/embedded_resource_pak.h",
       ]
+    }
+
+    if (is_mac || is_win || is_linux || is_chromeos) {
+      deps += [ "//components/crash/core/app" ]
     }
   }
 } else {
@@ -835,8 +785,7 @@ test("headless_browsertests") {
     "test/data/",
     "test/dom_tree_extraction_expected_nodes.txt",
     "test/dom_tree_extraction_expected_styles.txt",
-    "$root_out_dir/headless_lib_data.pak",
-    "$root_out_dir/headless_lib_strings.pak",
+    "$root_out_dir/headless_lib.pak",
     "//net/tools/testserver/",
     "//third_party/blink/web_tests/http/tests/inspector-protocol/",
     "//third_party/pywebsocket3/",
@@ -1033,10 +982,7 @@ executable("headless_shell") {
   deps = [ ":headless_shell_lib" ]
 
   if (!headless_use_embedded_resources) {
-    data = [
-      "$root_out_dir/headless_lib_data.pak",
-      "$root_out_dir/headless_lib_strings.pak",
-    ]
+    data = [ "$root_out_dir/headless_lib.pak" ]
   }
 
   if (is_win) {

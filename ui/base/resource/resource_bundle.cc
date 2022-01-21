@@ -295,21 +295,6 @@ std::string ResourceBundle::InitSharedInstanceWithLocale(
 }
 
 // static
-void ResourceBundle::InitSharedInstanceWithBuffer(
-    base::span<const uint8_t> buffer,
-    ResourceScaleFactor scale_factor) {
-  InitSharedInstance(nullptr);
-
-  auto data_pack = std::make_unique<DataPack>(scale_factor);
-  if (data_pack->LoadFromBuffer(buffer)) {
-    g_shared_instance_->locale_resources_data_ = std::move(data_pack);
-  } else {
-    LOG(ERROR) << "Failed to load locale resource from buffer";
-  }
-  g_shared_instance_->InitDefaultFontList();
-}
-
-// static
 void ResourceBundle::InitSharedInstanceWithPakFileRegion(
     base::File pak_file,
     const base::MemoryMappedFile::Region& region) {
