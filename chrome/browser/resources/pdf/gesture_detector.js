@@ -55,6 +55,9 @@ export class GestureDetector {
     this.pinchStartEvent_ = null;
     this.lastTouchTouchesCount_ = 0;
 
+    /** @private {boolean} */
+    this.isPresentationMode_ = false;
+
     /** @private {TouchEvent} */
     this.lastEvent_ = null;
 
@@ -76,6 +79,11 @@ export class GestureDetector {
 
     /** @private {!EventTarget} */
     this.eventTarget_ = new EventTarget();
+  }
+
+  /** @param {boolean} enabled */
+  setPresentationMode(enabled) {
+    this.isPresentationMode_ = enabled;
   }
 
   /** @return {!EventTarget} */
@@ -174,13 +182,19 @@ export class GestureDetector {
     // to anchor the zoom around the mouse position instead of the scroll
     // position.
     if (!event.ctrlKey) {
+      if (this.isPresentationMode_) {
+        this.notify_('wheel', {
+          center: {x: event.clientX, y: event.clientY},
+          direction: event.deltaY > 0 ? 'down' : 'up',
+        });
+      }
       return;
     }
 
     event.preventDefault();
 
     // Disable wheel gestures in Presentation mode.
-    if (document.fullscreenElement !== null) {
+    if (this.isPresentationMode_) {
       return;
     }
 

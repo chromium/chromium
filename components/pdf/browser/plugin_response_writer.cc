@@ -57,6 +57,11 @@ embed {
   position: fixed;
   top: 0;
 }
+
+/* Hide scrollbars when in Presentation mode. */
+.fullscreen {
+  overflow: hidden;
+}
 </style>
 <div id="sizer"></div>
 <embed type="application/x-google-chrome-pdf" src="$1" original-url="$2"

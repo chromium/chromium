@@ -59,13 +59,17 @@ const tests = [
     await ensureFullscreen();
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
+    const content =
+        /** @type {!HTMLElement} */ (
+            viewer.shadowRoot.querySelector('#content'));
+
     // Simulate scrolling towards the bottom.
-    scroller.dispatchEvent(
+    content.dispatchEvent(
         createWheelEvent(40, {clientX: 0, clientY: 0}, false));
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
     // Simulate scrolling towards the top.
-    scroller.dispatchEvent(
+    content.dispatchEvent(
         createWheelEvent(-40, {clientX: 0, clientY: 0}, false));
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
