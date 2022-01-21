@@ -99,7 +99,8 @@ CreateLowEnergyScanFilter() {
       kBackgroundScanningDeviceFoundRSSIThreshold,
       kBackgroundScanningDeviceLostRSSIThreshold,
       kBackgroundScanningDeviceFoundTimeout,
-      kBackgroundScanningDeviceLostTimeout, {pattern});
+      kBackgroundScanningDeviceLostTimeout, {pattern},
+      /*rssi_sampling_period=*/absl::nullopt);
 }
 
 bluez::FakeBluetoothAdvertisementMonitorApplicationServiceProvider*

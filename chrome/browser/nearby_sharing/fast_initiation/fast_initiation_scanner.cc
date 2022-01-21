@@ -25,7 +25,6 @@ constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
 // via a "device lost" event.
 constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
     base::Seconds(7);
-
 }  // namespace
 
 // static
@@ -90,7 +89,8 @@ void FastInitiationScanner::StartScanning(
   auto filter = device::BluetoothLowEnergyScanFilter::Create(
       device::BluetoothLowEnergyScanFilter::Range::kNear,
       kBackgroundScanningDeviceFoundTimeout,
-      kBackgroundScanningDeviceLostTimeout, {pattern});
+      kBackgroundScanningDeviceLostTimeout, {pattern},
+      /*rssi_sampling_period=*/absl::nullopt);
   if (!filter) {
     NS_LOG(ERROR) << __func__
                   << ": Failed to start Fast Initiation scanning due to "

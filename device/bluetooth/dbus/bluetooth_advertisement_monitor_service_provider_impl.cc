@@ -186,6 +186,17 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::WriteProperties(
       filter_->device_lost_timeout().InSeconds());
   array_writer.CloseContainer(&dict_entry_writer);
 
+  if (filter_->rssi_sampling_period().has_value()) {
+    array_writer.OpenDictEntry(&dict_entry_writer);
+    dict_entry_writer.AppendString(
+        bluetooth_advertisement_monitor::kRSSISamplingPeriod);
+
+    // Convert from ms to 100ms * N format.
+    dict_entry_writer.AppendVariantOfUint16(
+        filter_->rssi_sampling_period().value().InMilliseconds() / 100);
+    array_writer.CloseContainer(&dict_entry_writer);
+  }
+
   array_writer.OpenDictEntry(&dict_entry_writer);
   dict_entry_writer.AppendString(bluetooth_advertisement_monitor::kPatterns);
 
