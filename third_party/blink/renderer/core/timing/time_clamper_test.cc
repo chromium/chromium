@@ -92,7 +92,7 @@ TEST(TimeClamperTest, ClampingIsPerInstance) {
                      .InMicroseconds()) >= 1) {
       break;
     }
-    time_microseconds += kIntervalInMicroseconds;
+    time_microseconds += 1;
   }
 }
 
