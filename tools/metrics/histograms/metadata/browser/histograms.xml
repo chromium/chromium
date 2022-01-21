@@ -22,24 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="ContinuousSearchExperiment">
-  <variant name=".Discover">
-    <obsolete>
-      Deprecated as of 2021-06.
-    </obsolete>
-  </variant>
-  <variant name=".News">
-    <obsolete>
-      Obsoleted as of 2021-11. The experiment has ended.
-    </obsolete>
-  </variant>
-  <variant name=".Organic">
-    <obsolete>
-      Obsoleted as of 2021-11. The experiment has ended.
-    </obsolete>
-  </variant>
-</variants>
-
 <variants name="TabSwitchingType">
   <variant name=".NoSavedFrames"
       summary="The time from the input timestamp on a tab switch, until the
@@ -132,205 +114,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Browser.ContinuousSearch.BackNavigationToSrp{ExperimentCategory}"
-    units="count" expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records the number of back navigations to the Google search result page
-    while in a search session. It is emitted when the session is considered
-    ended. Different actions that cause the search session to end include
-    navigating away from SRP (or one of the pages linked in SRP), closing the
-    SRP tab and closing the browser.
-  </summary>
-  <token key="ExperimentCategory">
-    <variant name="">
-      <obsolete>
-        Deprecated 2021-02. Replaced by experiment arm suffixes.
-      </obsolete>
-    </variant>
-    <variant name=".News"/>
-    <variant name=".Organic"/>
-  </token>
-</histogram>
-
-<histogram name="Browser.ContinuousSearch.DismissalCount" units="count"
-    expires_after="2021-12-12">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records the number of dismissals of the Continuous Search feature. It is
-    emitted when the Continuous Search UI is dismissed via the dismiss button.
-    This metric is only emitted if permanent dismissal is enabled and the UI is
-    not permanently dismissed.
-  </summary>
-</histogram>
-
-<histogram name="Browser.ContinuousSearch.NumberOfSearchResultsExtracted"
-    units="count" expires_after="2022-04-17">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records the number of search results extracted. It is emitted when results
-    for a Google search results page are extracted by the browser when the
-    continuous search mode is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Browser.ContinuousSearch.SearchResultExtractionStatus"
-    enum="SearchResultExtractorClientStatus" expires_after="2022-04-10">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records the status of the search result extraction. It is emitted when
-    results for a Google search results page are extracted by the browser when
-    the continuous search mode is enabled.
-  </summary>
-</histogram>
-
-<histogram
-    name="Browser.ContinuousSearch.UI.CarouselScrolled2{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-09-20">
-  <obsolete>
-    Obsoleted as of 2021-07. It is replaced by
-    Browser.ContinuousSearch.UI.CarouselScrolled3 as the emission method has
-    changed.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records whether the UI was scrolled while being shown. It is emmited when
-    the CSN session is considered ended. Actions that can end the session
-    include closing the tab, navigating away from the CSN url list or dismissing
-    the UI.
-  </summary>
-  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
-</histogram>
-
-<histogram
-    name="Browser.ContinuousSearch.UI.CarouselScrolled3{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records whether the UI was scrolled while being shown. It is emmited when
-    the CSN session is considered ended. Actions that can end the session
-    include closing the tab, navigating away from the CSN url list or dismissing
-    the UI. This ignores programmatic scrolls of the carousel.
-  </summary>
-  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
-</histogram>
-
-<histogram
-    name="Browser.ContinuousSearch.UI.CarouselScrolled{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-09-20">
-  <obsolete>
-    Obsoleted as of 2021-07. It is replaced by
-    Browser.ContinuousSearch.UI.CarouselScrolled2 as the emission method has
-    changed.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records whether the UI was scrolled while being shown. It it emmited when
-    the UI gets hidden.
-  </summary>
-  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
-</histogram>
-
-<histogram
-    name="Browser.ContinuousSearch.UI.ClickedItemPosition{ExperimentCategory}"
-    units="position" expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records the 0-indexed position of list item in the UI when the user clicks
-    on the item.
-  </summary>
-  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
-</histogram>
-
-<histogram
-    name="Browser.ContinuousSearch.UI.DismissButtonClicked{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records whether the UI dismiss button was pressed while UI was being shown.
-    It is emmited when the CSN session is considered ended. Actions that can end
-    the session include closing the tab, navigating away from the CSN url list
-    or dismissing the UI.
-  </summary>
-  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
-</histogram>
-
-<histogram
-    name="Browser.ContinuousSearch.UI.ItemClickedAtLeastOnce{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records whether any item was pressed while UI was being shown. It is emmited
-    when the CSN session is considered ended. Actions that can end the session
-    include closing the tab, navigating away from the CSN url list or dismissing
-    the UI.
-  </summary>
-  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
-</histogram>
-
-<histogram
-    name="Browser.ContinuousSearch.UI.ProviderButtonClicked{ExperimentCategory}"
-    enum="Boolean" expires_after="2021-12-20">
-  <obsolete>
-    Obsoleted as of 2021-11. The experiment has ended.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
-  <summary>
-    Records whether the provider button was pressed while UI was being shown. It
-    is emmited when the CSN session is considered ended. Actions that can end
-    the session include closing the tab, navigating away from the CSN url list
-    or dismissing the UI.
-  </summary>
-  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
-</histogram>
-
 <histogram name="Browser.DarkModeStatus" enum="DarkModeStatus"
     expires_after="2022-08-29">
   <owner>lgrey@chromium.org</owner>
@@ -380,50 +163,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the total time spent capturing a paint preview of a page. This
     includes capture and serialization of all frames and IPC time.
-  </summary>
-</histogram>
-
-<histogram name="Browser.PaintPreview.Capture.UncompressedOnDiskSize"
-    units="KB" expires_after="2021-10-31">
-  <obsolete>
-    Obsoleted on 2021-11-09 as uncompressed captures were never being stored.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    Records the size of an uncompressed on-disk capture for the paint preview
-    after a proto is written to disk if not compressed.
-  </summary>
-</histogram>
-
-<histogram name="Browser.PaintPreview.CaptureExperiment.CompressedOnDiskSize"
-    units="KB" expires_after="2020-12-20">
-  <obsolete>
-    Obsoleted on 2020-11-17 as corresponding experiment code was removed and the
-    experiment wrapped up.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    Records the compressed on-disk size of the capture if it succeeded for the
-    capture experiment.
-  </summary>
-</histogram>
-
-<histogram name="Browser.PaintPreview.CaptureExperiment.Success"
-    enum="BooleanSuccess" expires_after="2020-12-20">
-  <obsolete>
-    Obsoleted on 2020-11-17 as corresponding experiment code was removed and the
-    experiment wrapped up.
-  </obsolete>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    Records the ratio of success to failure for the Paint Preview capture
-    experiment.
   </summary>
 </histogram>
 
@@ -546,11 +285,6 @@ chromium-metrics-reviews@google.com.
     {TabbedPaintPreviewPlayerUptime}
   </summary>
   <token key="TabbedPaintPreviewPlayerUptime">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".RemovedByCompositorFailure"
         summary="Removed by compositor failure"/>
     <variant name=".RemovedByLinkClick" summary="Removed by link click"/>
@@ -700,37 +434,7 @@ chromium-metrics-reviews@google.com.
     <variant name=""/>
     <variant name=".Initial"
         summary="The first 30 seconds interval after the message loop starts."/>
-    <variant name=".NonStartup"
-        summary="Does not include jank in the first 30 seconds [startup].">
-      <obsolete>
-        This metric is now only recorded after the main message loop starts and
-        no longer distinguishes the first 30 seconds as &quot;startup&quot;.
-        Startup.BrowserMessageLoopStartTime can be used for the startup phase
-        (before the loop is running) and Startup.FirstWebContents.NonEmptyPaint3
-        can be used for the user-visible startup performance.
-      </obsolete>
-    </variant>
-    <variant name=".NoSuspend"
-        summary="Only counts jank without power suspend/resume.">
-      <obsolete>
-        This metric is now only recorded after the main message loop starts and
-        no longer distinguishes the first 30 seconds as &quot;startup&quot;.
-        Startup.BrowserMessageLoopStartTime can be used for the startup phase
-        (before the loop is running) and Startup.FirstWebContents.NonEmptyPaint3
-        can be used for the user-visible startup performance.
-      </obsolete>
-    </variant>
     <variant name=".Periodic" summary="All intervals after OnFirstIdle()."/>
-    <variant name=".Startup"
-        summary="Only counts jank in the first 30 seconds [startup].">
-      <obsolete>
-        This metric is now only recorded after the main message loop starts and
-        no longer distinguishes the first 30 seconds as &quot;startup&quot;.
-        Startup.BrowserMessageLoopStartTime can be used for the startup phase
-        (before the loop is running) and Startup.FirstWebContents.NonEmptyPaint3
-        can be used for the user-visible startup performance.
-      </obsolete>
-    </variant>
   </token>
 </histogram>
 
@@ -743,11 +447,6 @@ chromium-metrics-reviews@google.com.
     TabStripModel begins processing the switch. {TabSwitchInputLatency}
   </summary>
   <token key="TabSwitchInputLatency">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".Keyboard"
         summary="The time it takes from receiving a keyboard input event that
                  leads to the active tab changing to just before the TabStrip
@@ -807,13 +506,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether a frame was presented after a tab switch event. {TabSwitchingType}
   </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
 <histogram name="Browser.Tabs.TabSwitchResult{TabSwitchingType}"
@@ -825,13 +518,7 @@ chromium-metrics-reviews@google.com.
     Whether a frame was presented after a tab switch event. Not recorded in
     several cases described at http://shortn/_1wrMKYQjzu. {TabSwitchingType}
   </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration2{TabSwitchingType}"
@@ -844,13 +531,7 @@ chromium-metrics-reviews@google.com.
     The time between a tab switch input event timestamp and when the tab is
     hidden, if no frame is presented in the meantime. {TabSwitchingType}
   </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration{TabSwitchingType}"
@@ -864,13 +545,7 @@ chromium-metrics-reviews@google.com.
     hidden, if no frame is presented in the meantime. Not recorded in several
     cases described at http://shortn/_1wrMKYQjzu. {TabSwitchingType}
   </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
 <histogram name="Browser.Tabs.TotalSwitchDuration2{TabSwitchingType}"
@@ -883,13 +558,7 @@ chromium-metrics-reviews@google.com.
     The time between the input event timestamp and the frame presentation time
     on a tab switch. {TabSwitchingType}
   </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
 <histogram name="Browser.Tabs.TotalSwitchDuration{TabSwitchingType}" units="ms"
@@ -903,13 +572,7 @@ chromium-metrics-reviews@google.com.
     on a tab switch. Not recorded in several cases described at
     http://shortn/_1wrMKYQjzu. {TabSwitchingType}
   </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
 <histogram name="Browser.WindowCount.Guest" units="units"
@@ -933,21 +596,6 @@ chromium-metrics-reviews@google.com.
     incognito window is created. Please note that this metric double counts the
     lower numbers, meaning that if user opens three windows (without closing any
     in between), then buckets 1, 2, and 3 will all be incremented in turn.
-  </summary>
-</histogram>
-
-<histogram name="BrowserRenderProcessHost.BackgroundTime" units="ms"
-    expires_after="2021-04-04">
-  <obsolete>
-    Obsoleted on 2021-01-22 as corresponding experiment code was removed and the
-    experiment wrapped up.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Record the time spent in the background after RenderProcessHost
-    initialization of the process. Recorded when the RenderProcessHost for the
-    process is destroyed.
   </summary>
 </histogram>
 
@@ -1026,21 +674,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowserRenderProcessHost.FramePrioritiesSeen"
-    enum="FramePrioritiesSeen" expires_after="2021-06-13">
-  <obsolete>
-    Obsoleted on 2021-01-22 as corresponding experiment code was removed and the
-    experiment wrapped up.
-  </obsolete>
-  <owner>csharrison@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Determines what combination of low and normal priority frames were attached
-    to a render process during its lifetime. Recorded when the host for the
-    render process is destroyed.
-  </summary>
-</histogram>
-
 <histogram name="BrowserRenderProcessHost.InvisibleMediaStreamFrameDepth"
     units="frame_depth" expires_after="M72">
   <owner>boliu@chromium.org</owner>
@@ -1074,20 +707,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records what happens when an attempt is made to use a spare
     RenderProcessHost - logs that either the attempt succeeded or why it failed.
-  </summary>
-</histogram>
-
-<histogram name="BrowserRenderProcessHost.TotalTime" units="ms"
-    expires_after="2021-06-06">
-  <obsolete>
-    Obsoleted on 2021-01-22 as corresponding experiment code was removed and the
-    experiment wrapped up.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Record the lifetime of the RenderProcessHost after initialization of the
-    process. Recorded when the RenderProcessHost for the process is destroyed.
   </summary>
 </histogram>
 
