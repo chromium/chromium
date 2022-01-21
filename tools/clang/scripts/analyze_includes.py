@@ -68,9 +68,11 @@ def parse_build(build_log, root_filter=None):
 
   # ninja: Entering directory `out/foo'
   ENTER_DIR_RE = re.compile(r'ninja: Entering directory `(.*?)\'$')
-  # ...clang... -c foo.cc -o foo.o ...
-  # ...clang-cl.exe /c foo.cc /Fofoo.o ...
-  COMPILE_RE = re.compile(r'.*clang.* [/-]c (\S*)')
+  # [M/N] clang... -c foo.cc -o foo.o ...
+  # [M/N] .../clang... -c foo.cc -o foo.o ...
+  # [M/N] clang-cl.exe /c foo.cc /Fofoo.o ...
+  # [M/N] ...\clang-cl.exe /c foo.cc /Fofoo.o ...
+  COMPILE_RE = re.compile(r'\[\d+/\d+\] (.*[/\\])?clang.* [/-]c (\S*)')
   # . a.h
   # .. b.h
   # . c.h
@@ -107,7 +109,7 @@ def parse_build(build_log, root_filter=None):
     m = COMPILE_RE.match(line)
     if m:
       skipping_root = False
-      filename = norm(m.group(1))
+      filename = norm(m.group(2))
       if root_filter and not root_filter.match(filename):
         skipping_root = True
         continue
@@ -128,9 +130,9 @@ class TestParseBuild(unittest.TestCase):
   def test_basic(self):
     x = [
         'ninja: Entering directory `out/foo\'',
-        'clang -c ../../a.cc -o a.o',
+        '[1/3] clang -c ../../a.cc -o a.o',
         '. ../../a.h',
-        'clang -c gen/c.c -o a.o',
+        '[2/3] clang -c gen/c.c -o a.o',
     ]
     (roots, includes) = parse_build(x)
     self.assertEqual(roots, set(['a.cc', 'out/foo/gen/c.c']))
@@ -143,7 +145,7 @@ class TestParseBuild(unittest.TestCase):
   def test_more(self):
     x = [
         'ninja: Entering directory `out/foo\'',
-        'clang -c ../../a.cc -o a.o',
+        '[20/99] clang -c ../../a.cc -o a.o',
         '. ../../a.h',
         '. ../../b.h',
         '.. ../../c.h',
@@ -161,9 +163,9 @@ class TestParseBuild(unittest.TestCase):
   def test_multiple(self):
     x = [
         'ninja: Entering directory `out/foo\'',
-        'clang -c ../../a.cc -o a.o',
+        '[123/234] clang -c ../../a.cc -o a.o',
         '. ../../a.h',
-        'clang -c ../../b.cc -o b.o',
+        '[124/234] clang -c ../../b.cc -o b.o',
         '. ../../b.h',
     ]
     (roots, includes) = parse_build(x)
@@ -174,15 +176,30 @@ class TestParseBuild(unittest.TestCase):
   def test_root_filter(self):
     x = [
         'ninja: Entering directory `out/foo\'',
-        'clang -c ../../a.cc -o a.o',
+        '[9/100] clang -c ../../a.cc -o a.o',
         '. ../../a.h',
-        'clang -c ../../b.cc -o b.o',
+        '[10/100] clang -c ../../b.cc -o b.o',
         '. ../../b.h',
     ]
     (roots, includes) = parse_build(x, re.compile(r'^a.cc$'))
     self.assertEqual(roots, set(['a.cc']))
     self.assertEqual(set(includes.keys()), set(['a.cc', 'a.h']))
     self.assertEqual(includes['a.cc'], set(['a.h']))
+
+  def test_windows(self):
+    x = [
+        'ninja: Entering directory `out/foo\'',
+        '[1/3] path\\clang-cl.exe /c ../../a.cc /Foa.o',
+        '. ../../a.h',
+        '[2/3] clang-cl.exe /c gen/c.c /Foa.o',
+    ]
+    (roots, includes) = parse_build(x)
+    self.assertEqual(roots, set(['a.cc', 'out/foo/gen/c.c']))
+    self.assertEqual(set(includes.keys()),
+                     set(['a.cc', 'a.h', 'out/foo/gen/c.c']))
+    self.assertEqual(includes['a.cc'], set(['a.h']))
+    self.assertEqual(includes['a.h'], set())
+    self.assertEqual(includes['out/foo/gen/c.c'], set())
 
 
 def post_order_nodes(root, child_nodes):
@@ -473,7 +490,8 @@ def main():
     print('error: --root-filter is not a valid regex')
     return 1
 
-  analyze(args.target, args.revision, args.build_log, args.json_out, root_filter)
+  analyze(args.target, args.revision, args.build_log, args.json_out,
+          root_filter)
 
 
 if __name__ == '__main__':
