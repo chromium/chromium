@@ -552,13 +552,6 @@ LINUX_REL = PerfPlatform(
     executables=_LINUX_EXECUTABLE_CONFIGS)
 
 # Mac
-MAC_HIGH_END = PerfPlatform(
-    'mac-10_13_laptop_high_end-perf',
-    'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
-    _MAC_HIGH_END_BENCHMARK_CONFIGS,
-    26,
-    'mac',
-    executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS)
 MAC_HIGH_END_LAPTOP = PerfPlatform(
     'mac-laptop_high_end-perf',
     'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
@@ -566,13 +559,6 @@ MAC_HIGH_END_LAPTOP = PerfPlatform(
     26,
     'mac',
     executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS)
-MAC_LOW_END = PerfPlatform(
-    'mac-10_12_laptop_low_end-perf',
-    'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',
-    _MAC_LOW_END_BENCHMARK_CONFIGS,
-    26,
-    'mac',
-    executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
 MAC_LOW_END_LAPTOP = PerfPlatform(
     'mac-laptop_low_end-perf',
     'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',

@@ -99,8 +99,6 @@ LIGHTWEIGHT_TESTERS = [
     'android-pixel2-perf',
     'android-pixel2_webview-perf',
     'linux-perf',
-    'mac-10_12_laptop_low_end-perf',
-    'mac-10_13_laptop_high_end-perf',
     'win-10-perf',
     'win-10_laptop_low_end-perf',
     'mac-laptop_high_end-perf',
@@ -919,30 +917,6 @@ BUILDERS = {
             'synthetic_product_name': 'PowerEdge R220 [01] (Dell Inc.)'
         },
     },
-    'mac-10_12_laptop_low_end-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'mac',
-        'dimension': {
-            'cpu':
-            'x86-64',
-            'gpu':
-            '8086:1626',
-            'os':
-            'Mac-10.12.6',
-            'pool':
-            'chrome.tests.perf',
-            'synthetic_product_name':
-            'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
-        },
-    },
     'mac-laptop_low_end-perf': {
         'tests': [
             {
@@ -1021,30 +995,6 @@ BUILDERS = {
             'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
         },
     },
-    'mac-10_13_laptop_high_end-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'mac',
-        'dimension': {
-            'cpu':
-            'x86-64',
-            'gpu':
-            '1002:6821-4.0.20-3.2.8',
-            'os':
-            'Mac-11.6.1',
-            'pool':
-            'chrome.tests.perf',
-            'synthetic_product_name':
-            'MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G',
-        },
-    },
     'mac-laptop_high_end-perf': {
         'tests': [
             {
@@ -1093,15 +1043,7 @@ BUILDERS = {
         'platform': 'linux',
         'perf_processor': True,
     },
-    'mac-10_12_laptop_low_end-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
     'mac-laptop_low_end-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
-    'mac-10_13_laptop_high_end-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },
