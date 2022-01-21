@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/entity_annotator_native_library.h"
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
@@ -16,6 +17,9 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #endif
+
+// IMPORTANT: All functions in this file that call dlsym()'ed
+// functions should be annotated with DISABLE_CFI_ICALL.
 
 namespace optimization_guide {
 
@@ -98,6 +102,7 @@ EntityAnnotatorNativeLibrary::Create() {
   return nullptr;
 }
 
+DISABLE_CFI_ICALL
 void EntityAnnotatorNativeLibrary::LoadFunctions() {
   get_max_supported_feature_flag_func_ =
       reinterpret_cast<GetMaxSupportedFeatureFlagFunc>(
@@ -188,6 +193,7 @@ void EntityAnnotatorNativeLibrary::LoadFunctions() {
               "dex"));
 }
 
+DISABLE_CFI_ICALL
 bool EntityAnnotatorNativeLibrary::IsValid() const {
   return get_max_supported_feature_flag_func_ && create_from_options_func_ &&
          get_creation_error_func_ && delete_func_ &&
@@ -208,6 +214,7 @@ bool EntityAnnotatorNativeLibrary::IsValid() const {
          entity_metadata_get_human_readable_category_score_at_index_func_;
 }
 
+DISABLE_CFI_ICALL
 int32_t EntityAnnotatorNativeLibrary::GetMaxSupportedFeatureFlag() {
   DCHECK(IsValid());
   if (!IsValid()) {
@@ -217,6 +224,7 @@ int32_t EntityAnnotatorNativeLibrary::GetMaxSupportedFeatureFlag() {
   return get_max_supported_feature_flag_func_();
 }
 
+DISABLE_CFI_ICALL
 void* EntityAnnotatorNativeLibrary::CreateEntityAnnotator(
     const ModelInfo& model_info) {
   DCHECK(IsValid());
@@ -241,6 +249,7 @@ void* EntityAnnotatorNativeLibrary::CreateEntityAnnotator(
   return entity_annotator;
 }
 
+DISABLE_CFI_ICALL
 bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
     void* options,
     const ModelInfo& model_info) {
@@ -321,6 +330,7 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
   return true;
 }
 
+DISABLE_CFI_ICALL
 void EntityAnnotatorNativeLibrary::DeleteEntityAnnotator(
     void* entity_annotator) {
   DCHECK(IsValid());
@@ -331,6 +341,7 @@ void EntityAnnotatorNativeLibrary::DeleteEntityAnnotator(
   delete_func_(reinterpret_cast<void*>(entity_annotator));
 }
 
+DISABLE_CFI_ICALL
 absl::optional<std::vector<ScoredEntityMetadata>>
 EntityAnnotatorNativeLibrary::AnnotateText(void* annotator,
                                            const std::string& text) {
@@ -361,6 +372,7 @@ EntityAnnotatorNativeLibrary::AnnotateText(void* annotator,
   return scored_md;
 }
 
+DISABLE_CFI_ICALL
 absl::optional<EntityMetadata>
 EntityAnnotatorNativeLibrary::GetEntityMetadataForEntityId(
     void* annotator,
@@ -386,6 +398,7 @@ EntityAnnotatorNativeLibrary::GetEntityMetadataForEntityId(
   return md;
 }
 
+DISABLE_CFI_ICALL
 EntityMetadata EntityAnnotatorNativeLibrary::
     GetEntityMetadataFromOptimizationGuideEntityMetadata(
         const void* og_entity_metadata) {
