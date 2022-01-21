@@ -80,7 +80,6 @@ bool UnpickleOptionalNetworkResponseInfo(
 }
 
 void PickleDebugStreamData(const DebugStreamData& value, base::Pickle& pickle) {
-  (void)PickleOptionalNetworkResponseInfo;
   pickle.WriteInt(DebugStreamData::kVersion);
   PickleOptionalNetworkResponseInfo(value.fetch_info, pickle);
   PickleOptionalNetworkResponseInfo(value.upload_info, pickle);

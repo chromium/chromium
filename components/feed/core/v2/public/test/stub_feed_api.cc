@@ -4,13 +4,11 @@
 
 #include "components/feed/core/v2/public/test/stub_feed_api.h"
 
+#include <type_traits>
+
 namespace feed {
 
-namespace {
-[[maybe_unused]] void EnsureStubFeedApiHasNoPureVirtualFunctions() {
-  (void)StubFeedApi();
-}
-}  // namespace
+static_assert(!std::is_abstract_v<StubFeedApi>);
 
 WebFeedSubscriptions& StubFeedApi::subscriptions() {
   return web_feed_subscriptions_;
