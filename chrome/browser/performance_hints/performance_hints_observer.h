@@ -22,7 +22,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
-class NavigationHandle;
 class WebContents;
 }  // namespace content
 
@@ -70,8 +69,7 @@ class PerformanceHintsObserver
   friend class PerformanceHintsObserverTest;
 
   // content::WebContentsObserver.
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // Returns true if the current page supports hints (not an error page,
   // must be HTTP/HTTPS, etc).

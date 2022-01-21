@@ -20,8 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -127,25 +126,14 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
         CanApplyOptimization(_, optimization_guide::proto::FAST_HOST_HINTS, _))
         .WillByDefault(
             Return(optimization_guide::OptimizationGuideDecision::kFalse));
-
-    test_handle_ = std::make_unique<content::MockNavigationHandle>(
-        GURL(kPageUrl), main_rfh());
-    std::vector<GURL> redirect_chain;
-    redirect_chain.emplace_back(GURL(kPageUrl));
-    test_handle_->set_redirect_chain(redirect_chain);
-    test_handle_->set_has_committed(true);
-    test_handle_->set_is_same_document(false);
-    test_handle_->set_is_error_page(false);
   }
 
-  void CallDidFinishNavigation(content::WebContents* web_contents) {
-    PerformanceHintsObserver* observer =
-        PerformanceHintsObserver::FromWebContents(web_contents);
-    observer->DidFinishNavigation(test_handle_.get());
+  void NavigateAndCommit() {
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                               GURL(kPageUrl));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<content::MockNavigationHandle> test_handle_;
   raw_ptr<NiceMock<MockOptimizationGuideKeyedService>>
       mock_optimization_guide_keyed_service_ = nullptr;
   raw_ptr<MockOptimizationGuideKeyedService>
@@ -190,7 +178,7 @@ TEST_F(PerformanceHintsObserverTest, LinkHintFound) {
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -229,7 +217,7 @@ TEST_F(PerformanceHintsObserverTest, MultipleLinkHints) {
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -271,7 +259,7 @@ TEST_F(PerformanceHintsObserverTest, NoLinkHints) {
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -333,7 +321,7 @@ TEST_F(LinkPerformanceHintsEnabledPerformanceHintsObserverTest,
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -353,7 +341,7 @@ TEST_F(LinkPerformanceHintsEnabledPerformanceHintsObserverTest,
 
 TEST_F(PerformanceHintsObserverTest, PageHintFound) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -389,7 +377,7 @@ TEST_F(PerformanceHintsObserverTest, PageHintFound) {
 
 TEST_F(PerformanceHintsObserverTest, PageHintNotReady) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -417,7 +405,7 @@ TEST_F(PerformanceHintsObserverTest, PageHintNotReady) {
 
 TEST_F(PerformanceHintsObserverTest, FastHostHintFound) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -446,7 +434,7 @@ TEST_F(PerformanceHintsObserverTest, FastHostHintFound) {
 
 TEST_F(PerformanceHintsObserverTest, FastHostHintNotReady) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -488,7 +476,7 @@ TEST_F(FastHostHintsDisabledPerformanceHintsObserverTest,
                   optimization_guide::proto::PERFORMANCE_HINTS)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -526,7 +514,7 @@ TEST_F(FastHostHintsDisabledPerformanceHintsObserverTest,
 // returned.
 TEST_F(PerformanceHintsObserverTest, SomeSourcesNotReady) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   ON_CALL(
       *mock_optimization_guide_keyed_service_,
@@ -561,7 +549,7 @@ TEST_F(PerformanceHintsObserverTest, RewrittenUrl) {
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -648,7 +636,7 @@ TEST_F(RewritesDisabledPerformanceHintsObserverTest, RewritesDisabled) {
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -665,7 +653,7 @@ TEST_F(RewritesDisabledPerformanceHintsObserverTest, RewritesDisabled) {
 
 TEST_F(PerformanceHintsObserverTest, InvalidURL) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -684,7 +672,7 @@ TEST_F(PerformanceHintsObserverTest, InvalidURL) {
 
 TEST_F(PerformanceHintsObserverTest, NoHints) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -724,7 +712,7 @@ TEST_F(PerformanceHintsObserverTest, DontMatchQueryParams) {
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -743,7 +731,7 @@ TEST_F(PerformanceHintsObserverTest, LinkHintsNotReady) {
           Return(optimization_guide::OptimizationGuideDecision::kUnknown));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -761,7 +749,7 @@ TEST_F(PerformanceHintsObserverTest, LinkHintsNotReady) {
 
 TEST_F(PerformanceHintsObserverTest, CacheLinkHints) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   optimization_guide::proto::PerformanceHintsMetadata hints_metadata;
   auto* hint = hints_metadata.add_performance_hints();
@@ -808,7 +796,7 @@ TEST_F(PerformanceHintsObserverTest, CacheLinkHints) {
 
 TEST_F(PerformanceHintsObserverTest, ResetObserverForNextNavigation) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   {
     base::HistogramTester histogram_tester;
@@ -842,7 +830,7 @@ TEST_F(PerformanceHintsObserverTest, ResetObserverForNextNavigation) {
     base::HistogramTester histogram_tester;
 
     // Simulate navigation to another page.
-    CallDidFinishNavigation(web_contents());
+    NavigateAndCommit();
 
     EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
                     web_contents(), GURL("https://www.hint.com"),
@@ -861,7 +849,7 @@ TEST_F(PerformanceHintsObserverTest, OptimizationGuideDisabled) {
       profile(), OptimizationGuideKeyedServiceFactory::TestingFactory());
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
                   web_contents(), GURL("http://www.test.com"),
@@ -870,14 +858,13 @@ TEST_F(PerformanceHintsObserverTest, OptimizationGuideDisabled) {
 }
 
 TEST_F(PerformanceHintsObserverTest, NoErrorPageHints) {
-  test_handle_->set_is_error_page(true);
-
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanApplyOptimization(_, _, _))
       .Times(0);
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  content::NavigationSimulator::NavigateAndFailFromBrowser(
+      web_contents(), GURL(kPageUrl), net::ERR_TIMED_OUT);
 
   EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
                   web_contents(), GURL("http://www.test.com"),
@@ -886,22 +873,14 @@ TEST_F(PerformanceHintsObserverTest, NoErrorPageHints) {
 }
 
 TEST_F(PerformanceHintsObserverTest, DontFetchForSubframe) {
-  test_handle_ = std::make_unique<content::MockNavigationHandle>(
-      GURL(kPageUrl),
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe"));
-  std::vector<GURL> redirect_chain;
-  redirect_chain.emplace_back(GURL(kPageUrl));
-  test_handle_->set_redirect_chain(redirect_chain);
-  test_handle_->set_has_committed(true);
-  test_handle_->set_is_same_document(false);
-  test_handle_->set_is_error_page(false);
-
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanApplyOptimization(_, _, _))
       .Times(0);
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL(kPageUrl),
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe"));
 
   EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
                   web_contents(), GURL(kPageUrl),
@@ -950,7 +929,7 @@ TEST_F(OverrideUnknownPerformanceHintsObserverTest,
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   base::HistogramTester histogram_tester;
 
@@ -995,7 +974,7 @@ class OverrideUnknownPerformanceHintsObserverFetchingNotEnabledTest
 TEST_F(OverrideUnknownPerformanceHintsObserverFetchingNotEnabledTest,
        HintFetchingNotEnabled) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
-  CallDidFinishNavigation(web_contents());
+  NavigateAndCommit();
 
   EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
                   web_contents(), GURL("http://www.test.com"),
