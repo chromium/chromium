@@ -5074,6 +5074,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
             entry->metrics.begin()->second);
 }
 
+#if BUILDFLAG(ENABLE_PLUGINS)
 class WebViewPPAPITest : public WebViewTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -5089,6 +5090,7 @@ IN_PROC_BROWSER_TEST_F(WebViewPPAPITest, Shim_TestPlugin) {
 IN_PROC_BROWSER_TEST_F(WebViewPPAPITest, Shim_TestPluginLoadPermission) {
   TestHelper("testPluginLoadPermission", "web_view/shim", NO_TEST_SERVER);
 }
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 // Helper class to set up a fake Chrome Web Store URL which can be loaded in
 // tests.

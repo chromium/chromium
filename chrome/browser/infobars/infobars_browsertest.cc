@@ -19,11 +19,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/infobars/infobar_observer.h"
-#include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
-#include "chrome/browser/plugins/plugin_infobar_delegates.h"
-#include "chrome/browser/plugins/plugin_metadata.h"
-#include "chrome/browser/plugins/plugin_observer.h"
-#include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -56,6 +51,14 @@
 #include "sandbox/policy/switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
+#include "chrome/browser/plugins/plugin_infobar_delegates.h"
+#include "chrome/browser/plugins/plugin_metadata.h"
+#include "chrome/browser/plugins/plugin_observer.h"
+#include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
@@ -179,16 +182,12 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   }
 
   const base::flat_map<std::string, IBD::InfoBarIdentifier> kIdentifiers = {
-      {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
       {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
       {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},
       {"incognito_connectability",
        IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
       {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
       {"nacl", IBD::NACL_INFOBAR_DELEGATE},
-      {"outdated_plugin", IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE},
-      {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
-      {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
       {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
       {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
       {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
@@ -201,6 +200,13 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
       {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
       {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+      {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
+      {"outdated_plugin", IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE},
+      {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
+      {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
   };
   auto id_entry = kIdentifiers.find(name);
   if (id_entry == kIdentifiers.end()) {
@@ -210,11 +216,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   auto infobar_identifier = id_entry->second;
   AddExpectedInfoBar(infobar_identifier);
   switch (infobar_identifier) {
-    case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
-      HungPluginInfoBarDelegate::Create(GetInfoBarManager(), nullptr, 0,
-                                        u"Test Plugin");
-      break;
-
     case IBD::DEV_TOOLS_INFOBAR_DELEGATE:
       DevToolsInfoBarDelegate::Create(
           l10n_util::GetStringFUTF16(
@@ -254,6 +255,12 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 #endif
       break;
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+    case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
+      HungPluginInfoBarDelegate::Create(GetInfoBarManager(), nullptr, 0,
+                                        u"Test Plugin");
+      break;
+
     case IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE:
       OutdatedPluginInfoBarDelegate::Create(
           GetInfoBarManager(), nullptr,
@@ -273,6 +280,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       PluginObserver::CreatePluginObserverInfoBar(GetInfoBarManager(),
                                                   u"Test Plugin");
       break;
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
     case IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE:
       ChromeSelectFilePolicy(GetWebContents()).SelectFileDenied();
@@ -362,12 +370,9 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     default:
+      ADD_FAILURE() << "Unhandled infobar " << name;
       break;
   }
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_hung_plugin) {
-  ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_dev_tools) {
@@ -392,6 +397,11 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_nacl) {
 }
 #endif
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_hung_plugin) {
+  ShowAndVerifyUi();
+}
+
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_outdated_plugin) {
   ShowAndVerifyUi();
 }
@@ -403,6 +413,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_reload_plugin) {
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_plugin_observer) {
   ShowAndVerifyUi();
 }
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_file_access_disabled) {
   ShowAndVerifyUi();
