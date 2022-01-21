@@ -27,6 +27,7 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -4010,6 +4011,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
   LensConfiguration* configuration = [[LensConfiguration alloc] init];
   configuration.isIncognito = self.isOffTheRecord;
+  configuration.ssoService = GetApplicationContext()->GetSSOService();
 
   if (!self.isOffTheRecord) {
     ChromeBrowserState* browserState = _browser->GetBrowserState();
