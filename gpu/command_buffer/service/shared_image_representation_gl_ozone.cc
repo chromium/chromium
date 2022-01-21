@@ -73,12 +73,10 @@ scoped_refptr<gl::GLImageNativePixmap>
 SharedImageRepresentationGLOzoneShared::CreateGLImage(
     scoped_refptr<gfx::NativePixmap> pixmap,
     gfx::BufferFormat buffer_format,
-    gfx::BufferPlane plane) {
-  gfx::Size plane_size = GetPlaneSize(plane, pixmap->GetBufferSize());
-  gfx::BufferFormat plane_format = GetPlaneBufferFormat(plane, buffer_format);
+    gfx::BufferPlane plane,
+    gfx::Size size) {
   scoped_refptr<gl::GLImageNativePixmap> image =
-      base::MakeRefCounted<gl::GLImageNativePixmap>(plane_size, plane_format,
-                                                    plane);
+      base::MakeRefCounted<gl::GLImageNativePixmap>(size, buffer_format, plane);
   if (!image->Initialize(std::move(pixmap))) {
     LOG(ERROR) << "Unable to initialize GL image from pixmap";
     return nullptr;
@@ -125,7 +123,7 @@ SharedImageRepresentationGLTextureOzone::Create(
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
   auto image = SharedImageRepresentationGLOzoneShared::CreateGLImage(
-      pixmap, buffer_format, plane);
+      pixmap, buffer_format, plane, backing->size());
   if (!image) {
     return nullptr;
   }
@@ -147,10 +145,9 @@ SharedImageRepresentationGLTextureOzone::Create(
   GLuint internal_format = image->GetInternalFormat();
   GLenum gl_format = image->GetDataFormat();
   GLenum gl_type = image->GetDataType();
-  texture->SetLevelInfo(target, 0, internal_format,
-                        pixmap->GetBufferSize().width(),
-                        pixmap->GetBufferSize().height(), 1, 0, gl_format,
-                        gl_type, backing->ClearedRect());
+  texture->SetLevelInfo(target, 0, internal_format, backing->size().width(),
+                        backing->size().height(), 1, 0, gl_format, gl_type,
+                        backing->ClearedRect());
   texture->SetLevelImage(target, 0, image.get(), gles2::Texture::BOUND);
   texture->SetImmutable(true, true);
 
@@ -203,7 +200,7 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
   auto image = SharedImageRepresentationGLOzoneShared::CreateGLImage(
-      pixmap, buffer_format, plane);
+      pixmap, buffer_format, plane, backing->size());
   if (!image) {
     return nullptr;
   }

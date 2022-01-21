@@ -29,7 +29,8 @@ class SharedImageRepresentationGLOzoneShared {
   static scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
       scoped_refptr<gfx::NativePixmap> pixmap,
       gfx::BufferFormat buffer_format,
-      gfx::BufferPlane plane);
+      gfx::BufferPlane plane,
+      gfx::Size size);
 };
 
 // Representation of an Ozone-backed SharedImage that can be accessed as a

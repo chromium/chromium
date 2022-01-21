@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_backing_ozone.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
@@ -152,9 +153,13 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
       return nullptr;
     }
 
+    const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
+    const viz::ResourceFormat plane_format =
+        viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
     backing = std::make_unique<SharedImageBackingOzone>(
-        mailbox, format, plane, size, color_space, surface_origin, alpha_type,
-        usage, shared_context_state_, std::move(pixmap), dawn_procs_);
+        mailbox, plane_format, plane, plane_size, color_space, surface_origin,
+        alpha_type, usage, shared_context_state_, std::move(pixmap),
+        dawn_procs_);
     backing->SetCleared();
   } else if (handle.type == gfx::SHARED_MEMORY_BUFFER) {
     SharedMemoryRegionWrapper shm_wrapper;
