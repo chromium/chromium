@@ -190,6 +190,8 @@ public class ContextMenuHeaderMediatorTest {
     public void testHeaderImage_Link() {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS).build();
+        // Bitmaps created need to have a size set to more than 0.
+        model.set(ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL, 1);
         final GURL linkUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.FILE,
                 GURL.emptyGURL(), linkUrl, JUnitTestGURLs.URL_1, GURL.emptyGURL(), GURL.emptyGURL(),
