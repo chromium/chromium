@@ -101,6 +101,7 @@ export class CameraManager implements EventListener {
       photoPreferrer: PhotoConstraintsPreferrer,
       videoPreferrer: VideoConstraintsPreferrer,
       cameraViewUI: CameraViewUI,
+      defaultFacing: Facing,
       modeConstraints: ModeConstraints,
   ) {
     this.preview = new Preview(() => this.lastScreenOnTime, async () => {
@@ -114,6 +115,7 @@ export class CameraManager implements EventListener {
         cameraViewUI,
         photoPreferrer,
         videoPreferrer,
+        defaultFacing,
         modeConstraints,
     );
 

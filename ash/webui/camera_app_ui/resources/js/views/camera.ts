@@ -104,7 +104,7 @@ export class Camera extends View implements CameraViewUI {
   private activeDeviceId: string|null = null;
 
   protected readonly review = new review.Review();
-  protected facingMode: Facing;
+  protected facing = Facing.NOT_SET;
   protected shutterType = metrics.ShutterType.UNKNOWN;
 
   /**
@@ -128,7 +128,7 @@ export class Camera extends View implements CameraViewUI {
       photoPreferrer: PhotoConstraintsPreferrer,
       videoPreferrer: VideoConstraintsPreferrer,
       readonly perfLogger: PerfLogger,
-      facing: Facing|null,
+      defaultFacing: Facing,
       modeConstraints: ModeConstraints,
   ) {
     super(ViewName.CAMERA);
@@ -144,7 +144,7 @@ export class Camera extends View implements CameraViewUI {
 
     this.cameraManager = new CameraManager(
         infoUpdater, perfLogger, photoPreferrer, videoPreferrer, this,
-        modeConstraints);
+        defaultFacing, modeConstraints);
 
     this.scanOptions = new ScanOptions(this.cameraManager);
 
@@ -154,9 +154,6 @@ export class Camera extends View implements CameraViewUI {
     // complainting about the unused reference, it's left here without any
     // reference point to it.
     new Options(this.infoUpdater, this.cameraManager);
-
-
-    this.facingMode = facing ?? Facing.NOT_SET;
 
     /**
      * Gets type of ways to trigger shutter from click event.
@@ -216,6 +213,7 @@ export class Camera extends View implements CameraViewUI {
     this.cameraManager.registerCameraUI({
       onConfigureComplete: () => {
         nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
+        this.facing = this.cameraManager.getFacing();
         this.updateActiveCamera(this.cameraManager.getDeviceId());
       },
     });
@@ -418,8 +416,7 @@ export class Camera extends View implements CameraViewUI {
             assertInstanceof(e, Error));
       } finally {
         this.take = null;
-        state.set(
-            state.State.TAKING, false, {hasError, facing: this.facingMode});
+        state.set(state.State.TAKING, false, {hasError, facing: this.facing});
         this.focus();  // Refocus the visible shutter button for ChromeVox.
       }
     })();
@@ -449,7 +446,7 @@ export class Camera extends View implements CameraViewUI {
   async handleVideoSnapshot({resolution, blob, timestamp}: PhotoResult):
       Promise<void> {
     metrics.sendCaptureEvent({
-      facing: this.facingMode,
+      facing: this.facing,
       resolution,
       shutterType: this.shutterType,
       isVideoSnapshot: true,
@@ -479,7 +476,7 @@ export class Camera extends View implements CameraViewUI {
           await this.checkPhotoResult(pendingPhotoResult);
 
       metrics.sendCaptureEvent({
-        facing: this.facingMode,
+        facing: this.facing,
         resolution,
         shutterType: this.shutterType,
         isVideoSnapshot: false,
@@ -494,7 +491,7 @@ export class Camera extends View implements CameraViewUI {
       }
       state.set(
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false,
-          {resolution, facing: this.facingMode});
+          {resolution, facing: this.facing});
     } catch (e) {
       state.set(
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
@@ -513,7 +510,7 @@ export class Camera extends View implements CameraViewUI {
           await this.checkPhotoResult(pendingPortrait);
 
       metrics.sendCaptureEvent({
-        facing: this.facingMode,
+        facing: this.facing,
         resolution,
         shutterType: this.shutterType,
         isVideoSnapshot: false,
@@ -543,7 +540,7 @@ export class Camera extends View implements CameraViewUI {
     } finally {
       state.set(
           PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
-          {hasError, facing: this.facingMode});
+          {hasError, facing: this.facing});
     }
   }
 
@@ -619,7 +616,7 @@ export class Camera extends View implements CameraViewUI {
         let fixType = metrics.DocFixType.NONE;
         const sendEvent = (docResult) => {
           metrics.sendCaptureEvent({
-            facing: this.facingMode,
+            facing: this.facing,
             resolution: originImage.resolution,
             shutterType: this.shutterType,
             docResult,
@@ -752,7 +749,7 @@ export class Camera extends View implements CameraViewUI {
     const sendEvent = (gifResult) => {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.GIF,
-        facing: this.facingMode,
+        facing: this.facing,
         resolution,
         duration,
         shutterType: this.shutterType,
@@ -797,7 +794,7 @@ export class Camera extends View implements CameraViewUI {
     try {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.NORMAL_VIDEO,
-        facing: this.facingMode,
+        facing: this.facing,
         duration,
         resolution,
         shutterType: this.shutterType,
@@ -806,7 +803,7 @@ export class Camera extends View implements CameraViewUI {
       await this.resultSaver.finishSaveVideo(videoSaver);
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
-          {resolution, facing: this.facingMode});
+          {resolution, facing: this.facing});
     } catch (e) {
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});

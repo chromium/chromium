@@ -96,7 +96,7 @@ export class CameraIntent extends Camera {
         ],
       }));
       metrics.sendCaptureEvent({
-        facing: this.facingMode,
+        facing: this.facing,
         ...metricArgs,
         intentResult: confirmed ? metrics.IntentResultType.CONFIRMED :
                                   metrics.IntentResultType.CANCELED,

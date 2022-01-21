@@ -77,7 +77,6 @@ class CameraInfo {
 
 class Reconfigurer {
   // Preferred value for reconfiguring.
-  public facing = Facing.NOT_SET;
   public deviceId: string|null = null;
 
   private shouldSuspend = false;
@@ -85,7 +84,8 @@ class Reconfigurer {
   constructor(
       private readonly preview: Preview, private readonly modes: Modes,
       private readonly modeConstraints: ModeConstraints,
-      private readonly postConfigure: () => Promise<void>) {}
+      private readonly postConfigure: () => Promise<void>,
+      public facing: Facing) {}
 
   setShouldSuspend(value: boolean) {
     this.shouldSuspend = value;
@@ -328,6 +328,7 @@ export class OperationScheduler {
       cameraViewUI: CameraViewUI,
       photoPreferrer: PhotoConstraintsPreferrer,
       videoPreferrer: VideoConstraintsPreferrer,
+      defaultFacing: Facing,
       modeConstraints: ModeConstraints,
   ) {
     const defaultMode =
@@ -340,6 +341,7 @@ export class OperationScheduler {
         modes,
         modeConstraints,
         async () => this.listener.onConfigureComplete(),
+        defaultFacing,
     );
     this.capturer = new Capturer(modes);
     this.infoUpdater.addDeviceChangeListener(async (updater) => {

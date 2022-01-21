@@ -68,7 +68,7 @@ export class App {
   constructor({perfLogger, intent, facing, mode: defaultMode}: {
     perfLogger: PerfLogger,
     intent: Intent|null,
-    facing: Facing|null,
+    facing: Facing,
     mode: Mode|null,
   }) {
     this.perfLogger = perfLogger;
@@ -356,7 +356,7 @@ export class App {
  */
 function parseSearchParams(): {
   intent: Intent|null,
-  facing: Facing|null,
+  facing: Facing,
   mode: Mode|null,
   openFrom: string|null,
   autoTake: boolean
@@ -364,7 +364,8 @@ function parseSearchParams(): {
   const url = new URL(window.location.href);
   const params = url.searchParams;
 
-  const facing = checkEnumVariant(Facing, params.get('facing'));
+  const facing =
+      checkEnumVariant(Facing, params.get('facing')) ?? Facing.NOT_SET;
 
   const mode = checkEnumVariant(Mode, params.get('mode'));
 
