@@ -6,7 +6,7 @@
 
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {PersonalizationThemeElement} from 'chrome://personalization/trusted/personalization_theme_element.js';
-import {ThemeActionName} from 'chrome://personalization/trusted/theme/theme_actions.js';
+import {SetDarkModeEnabledAction, ThemeActionName} from 'chrome://personalization/trusted/theme/theme_actions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -46,8 +46,9 @@ export function PersonalizationThemeTest() {
   test('sets color mode in store on first load', async () => {
     personalizationStore.expectAction(ThemeActionName.SET_DARK_MODE_ENABLED);
     personalizationThemeElement = initElement(PersonalizationThemeElement);
-    const action = await personalizationStore.waitForAction(
-        ThemeActionName.SET_DARK_MODE_ENABLED);
+    const action =
+        await personalizationStore.waitForAction(
+            ThemeActionName.SET_DARK_MODE_ENABLED) as SetDarkModeEnabledAction;
     assertTrue(action.enabled);
   });
 
@@ -63,8 +64,9 @@ export function PersonalizationThemeTest() {
     themeProvider.themeObserverRemote!.onColorModeChanged(
         /*darkModeEnabled=*/ false);
 
-    const {enabled} = await personalizationStore.waitForAction(
-        ThemeActionName.SET_DARK_MODE_ENABLED);
+    const {enabled} =
+        await personalizationStore.waitForAction(
+            ThemeActionName.SET_DARK_MODE_ENABLED) as SetDarkModeEnabledAction;
     assertFalse(enabled);
   });
 

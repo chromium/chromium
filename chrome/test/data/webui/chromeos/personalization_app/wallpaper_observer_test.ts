@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
-import {WallpaperActionName} from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
+import {SetSelectedImageAction, WallpaperActionName} from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
 import {WallpaperObserver} from 'chrome://personalization/trusted/wallpaper/wallpaper_observer.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -27,8 +27,9 @@ export function WallpaperObserverTest() {
 
   test('sets wallpaper image in store on first load', async () => {
     personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
-    const action = await personalizationStore.waitForAction(
-        WallpaperActionName.SET_SELECTED_IMAGE);
+    const action =
+        await personalizationStore.waitForAction(
+            WallpaperActionName.SET_SELECTED_IMAGE) as SetSelectedImageAction;
     assertDeepEquals(wallpaperProvider.currentWallpaper, action.image);
   });
 
@@ -40,8 +41,9 @@ export function WallpaperObserverTest() {
     wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
         wallpaperProvider.currentWallpaper);
 
-    const {image} = await personalizationStore.waitForAction(
-        WallpaperActionName.SET_SELECTED_IMAGE);
+    const {image} =
+        await personalizationStore.waitForAction(
+            WallpaperActionName.SET_SELECTED_IMAGE) as SetSelectedImageAction;
 
     assertDeepEquals(wallpaperProvider.currentWallpaper, image);
   });
