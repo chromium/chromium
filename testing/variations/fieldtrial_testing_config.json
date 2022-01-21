@@ -569,21 +569,6 @@
             ]
         }
     ],
-    "AndroidRequestMobileSiteOption": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppMenuMobileSiteOption"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSwitchToTab": [
         {
             "platforms": [
