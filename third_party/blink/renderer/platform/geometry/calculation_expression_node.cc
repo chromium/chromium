@@ -65,11 +65,11 @@ CalculationExpressionPixelsAndPercentNode::ResolvedResultType() const {
 }
 #endif
 
-// ------ CalculationExpressionOperatorNode ------
+// ------ CalculationExpressionOperationNode ------
 
 // static
 scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionOperatorNode::CreateSimplified(Children&& children,
+CalculationExpressionOperationNode::CreateSimplified(Children&& children,
                                                     CalculationOperator op) {
   switch (op) {
     case CalculationOperator::kAdd:
@@ -77,7 +77,7 @@ CalculationExpressionOperatorNode::CreateSimplified(Children&& children,
       DCHECK_EQ(children.size(), 2u);
       if (!children[0]->IsPixelsAndPercent() ||
           !children[1]->IsPixelsAndPercent()) {
-        return base::MakeRefCounted<CalculationExpressionOperatorNode>(
+        return base::MakeRefCounted<CalculationExpressionOperationNode>(
             Children({std::move(children[0]), std::move(children[1])}), op);
       }
       const auto& left_pixels_and_percent =
@@ -100,7 +100,7 @@ CalculationExpressionOperatorNode::CreateSimplified(Children&& children,
       auto& maybe_pixels_and_percent_node =
           children[0]->IsNumber() ? children[1] : children[0];
       if (!maybe_pixels_and_percent_node->IsPixelsAndPercent()) {
-        return base::MakeRefCounted<CalculationExpressionOperatorNode>(
+        return base::MakeRefCounted<CalculationExpressionOperationNode>(
             Children({std::move(children[0]), std::move(children[1])}), op);
       }
       auto& number_node = children[0]->IsNumber() ? children[0] : children[1];
@@ -141,7 +141,7 @@ CalculationExpressionOperatorNode::CreateSimplified(Children&& children,
         return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
             PixelsAndPercent(simplified_px, 0));
       }
-      return base::MakeRefCounted<CalculationExpressionOperatorNode>(
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
     }
     default:
@@ -150,7 +150,7 @@ CalculationExpressionOperatorNode::CreateSimplified(Children&& children,
   }
 }
 
-float CalculationExpressionOperatorNode::Evaluate(float max_value) const {
+float CalculationExpressionOperationNode::Evaluate(float max_value) const {
   switch (operator_) {
     case CalculationOperator::kAdd: {
       DCHECK_EQ(children_.size(), 2u);
@@ -192,17 +192,17 @@ float CalculationExpressionOperatorNode::Evaluate(float max_value) const {
   return std::numeric_limits<float>::quiet_NaN();
 }
 
-bool CalculationExpressionOperatorNode::operator==(
+bool CalculationExpressionOperationNode::operator==(
     const CalculationExpressionNode& other) const {
-  if (!other.IsOperator())
+  if (!other.IsOperation())
     return false;
-  const auto& other_operation = To<CalculationExpressionOperatorNode>(other);
+  const auto& other_operation = To<CalculationExpressionOperationNode>(other);
   return operator_ == other_operation.GetOperator() &&
          children_ == other_operation.GetChildren();
 }
 
 scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionOperatorNode::Zoom(double factor) const {
+CalculationExpressionOperationNode::Zoom(double factor) const {
   switch (operator_) {
     case CalculationOperator::kAdd:
     case CalculationOperator::kSubtract:
@@ -235,7 +235,7 @@ CalculationExpressionOperatorNode::Zoom(double factor) const {
 
 #if DCHECK_IS_ON()
 CalculationExpressionNode::ResultType
-CalculationExpressionOperatorNode::ResolvedResultType() const {
+CalculationExpressionOperationNode::ResolvedResultType() const {
   switch (operator_) {
     case CalculationOperator::kAdd:
     case CalculationOperator::kSubtract: {

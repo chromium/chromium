@@ -35,7 +35,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
 
   virtual bool IsNumber() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
-  virtual bool IsOperator() const { return false; }
+  virtual bool IsOperation() const { return false; }
 
   virtual scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const = 0;
@@ -123,7 +123,7 @@ struct DowncastTraits<CalculationExpressionPixelsAndPercentNode> {
   }
 };
 
-class PLATFORM_EXPORT CalculationExpressionOperatorNode final
+class PLATFORM_EXPORT CalculationExpressionOperationNode final
     : public CalculationExpressionNode {
  public:
   using Children = Vector<scoped_refptr<const CalculationExpressionNode>>;
@@ -132,7 +132,7 @@ class PLATFORM_EXPORT CalculationExpressionOperatorNode final
       Children&& children,
       CalculationOperator op);
 
-  CalculationExpressionOperatorNode(Children&& children, CalculationOperator op)
+  CalculationExpressionOperationNode(Children&& children, CalculationOperator op)
       : children_(std::move(children)), operator_(op) {
 #if DCHECK_IS_ON()
     result_type_ = ResolvedResultType();
@@ -148,8 +148,8 @@ class PLATFORM_EXPORT CalculationExpressionOperatorNode final
   bool operator==(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
-  bool IsOperator() const final { return true; }
-  ~CalculationExpressionOperatorNode() final = default;
+  bool IsOperation() const final { return true; }
+  ~CalculationExpressionOperationNode() final = default;
 
 #if DCHECK_IS_ON()
   ResultType ResolvedResultType() const final;
@@ -161,9 +161,9 @@ class PLATFORM_EXPORT CalculationExpressionOperatorNode final
 };
 
 template <>
-struct DowncastTraits<CalculationExpressionOperatorNode> {
+struct DowncastTraits<CalculationExpressionOperationNode> {
   static bool AllowFrom(const CalculationExpressionNode& node) {
-    return node.IsOperator();
+    return node.IsOperation();
   }
 };
 

@@ -30,34 +30,34 @@ class LengthTest : public ::testing::Test {
   }
 
   Pointer Add(Pointer lhs, Pointer rhs) {
-    return base::MakeRefCounted<CalculationExpressionOperatorNode>(
-        CalculationExpressionOperatorNode::Children(
+    return base::MakeRefCounted<CalculationExpressionOperationNode>(
+        CalculationExpressionOperationNode::Children(
             {std::move(lhs), std::move(rhs)}),
         CalculationOperator::kAdd);
   }
 
   Pointer Subtract(Pointer lhs, Pointer rhs) {
-    return base::MakeRefCounted<CalculationExpressionOperatorNode>(
-        CalculationExpressionOperatorNode::Children(
+    return base::MakeRefCounted<CalculationExpressionOperationNode>(
+        CalculationExpressionOperationNode::Children(
             {std::move(lhs), std::move(rhs)}),
         CalculationOperator::kSubtract);
   }
 
   Pointer Multiply(Pointer node, float factor) {
-    return base::MakeRefCounted<CalculationExpressionOperatorNode>(
-        CalculationExpressionOperatorNode::Children(
+    return base::MakeRefCounted<CalculationExpressionOperationNode>(
+        CalculationExpressionOperationNode::Children(
             {std::move(node),
              base::MakeRefCounted<CalculationExpressionNumberNode>(factor)}),
         CalculationOperator::kMultiply);
   }
 
   Pointer Min(Vector<Pointer>&& operands) {
-    return base::MakeRefCounted<CalculationExpressionOperatorNode>(
+    return base::MakeRefCounted<CalculationExpressionOperationNode>(
         std::move(operands), CalculationOperator::kMin);
   }
 
   Pointer Max(Vector<Pointer>&& operands) {
-    return base::MakeRefCounted<CalculationExpressionOperatorNode>(
+    return base::MakeRefCounted<CalculationExpressionOperationNode>(
         std::move(operands), CalculationOperator::kMax);
   }
 

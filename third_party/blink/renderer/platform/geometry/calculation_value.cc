@@ -80,18 +80,18 @@ scoped_refptr<const CalculationValue> CalculationValue::Blend(
     return Create(PixelsAndPercent(pixels, percent), range);
   }
 
-  auto blended_from = CalculationExpressionOperatorNode::CreateSimplified(
-      CalculationExpressionOperatorNode::Children(
+  auto blended_from = CalculationExpressionOperationNode::CreateSimplified(
+      CalculationExpressionOperationNode::Children(
           {from.GetOrCreateExpression(),
            base::MakeRefCounted<CalculationExpressionNumberNode>(1.0 -
                                                                  progress)}),
       CalculationOperator::kMultiply);
-  auto blended_to = CalculationExpressionOperatorNode::CreateSimplified(
-      CalculationExpressionOperatorNode::Children(
+  auto blended_to = CalculationExpressionOperationNode::CreateSimplified(
+      CalculationExpressionOperationNode::Children(
           {GetOrCreateExpression(),
            base::MakeRefCounted<CalculationExpressionNumberNode>(progress)}),
       CalculationOperator::kMultiply);
-  auto result_expression = CalculationExpressionOperatorNode::CreateSimplified(
+  auto result_expression = CalculationExpressionOperationNode::CreateSimplified(
       {std::move(blended_from), std::move(blended_to)},
       CalculationOperator::kAdd);
   return CreateSimplified(result_expression, range);
@@ -106,8 +106,8 @@ CalculationValue::SubtractFromOneHundredPercent() const {
   auto hundred_percent =
       base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
           PixelsAndPercent(0, 100));
-  auto result_expression = CalculationExpressionOperatorNode::CreateSimplified(
-      CalculationExpressionOperatorNode::Children(
+  auto result_expression = CalculationExpressionOperationNode::CreateSimplified(
+      CalculationExpressionOperationNode::Children(
           {std::move(hundred_percent), GetOrCreateExpression()}),
       CalculationOperator::kSubtract);
   return CreateSimplified(std::move(result_expression),

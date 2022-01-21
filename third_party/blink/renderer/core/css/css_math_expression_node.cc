@@ -567,14 +567,14 @@ CSSMathExpressionBinaryOperation::ToCalculationExpression(
     const CSSToLengthConversionData& conversion_data) const {
   switch (operator_) {
     case CSSMathOperator::kAdd:
-      return CalculationExpressionOperatorNode::CreateSimplified(
-          CalculationExpressionOperatorNode::Children(
+      return CalculationExpressionOperationNode::CreateSimplified(
+          CalculationExpressionOperationNode::Children(
               {left_side_->ToCalculationExpression(conversion_data),
                right_side_->ToCalculationExpression(conversion_data)}),
           CalculationOperator::kAdd);
     case CSSMathOperator::kSubtract:
-      return CalculationExpressionOperatorNode::CreateSimplified(
-          CalculationExpressionOperatorNode::Children(
+      return CalculationExpressionOperationNode::CreateSimplified(
+          CalculationExpressionOperationNode::Children(
               {left_side_->ToCalculationExpression(conversion_data),
                right_side_->ToCalculationExpression(conversion_data)}),
           CalculationOperator::kSubtract);
@@ -582,23 +582,23 @@ CSSMathExpressionBinaryOperation::ToCalculationExpression(
       DCHECK_NE((left_side_->Category() == kCalcNumber),
                 (right_side_->Category() == kCalcNumber));
       if (left_side_->Category() == kCalcNumber) {
-        return CalculationExpressionOperatorNode::CreateSimplified(
-            CalculationExpressionOperatorNode::Children(
+        return CalculationExpressionOperationNode::CreateSimplified(
+            CalculationExpressionOperationNode::Children(
                 {right_side_->ToCalculationExpression(conversion_data),
                  base::MakeRefCounted<CalculationExpressionNumberNode>(
                      left_side_->DoubleValue())}),
             CalculationOperator::kMultiply);
       }
-      return CalculationExpressionOperatorNode::CreateSimplified(
-          CalculationExpressionOperatorNode::Children(
+      return CalculationExpressionOperationNode::CreateSimplified(
+          CalculationExpressionOperationNode::Children(
               {left_side_->ToCalculationExpression(conversion_data),
                base::MakeRefCounted<CalculationExpressionNumberNode>(
                    right_side_->DoubleValue())}),
           CalculationOperator::kMultiply);
     case CSSMathOperator::kDivide:
       DCHECK_EQ(right_side_->Category(), kCalcNumber);
-      return CalculationExpressionOperatorNode::CreateSimplified(
-          CalculationExpressionOperatorNode::Children(
+      return CalculationExpressionOperationNode::CreateSimplified(
+          CalculationExpressionOperationNode::Children(
               {left_side_->ToCalculationExpression(conversion_data),
                base::MakeRefCounted<CalculationExpressionNumberNode>(
                    1.0 / right_side_->DoubleValue())}),
@@ -979,7 +979,7 @@ CSSMathExpressionVariadicOperation::ToCalculationExpression(
   auto expression_operator = operator_ == CSSMathOperator::kMin
                                  ? CalculationOperator::kMin
                                  : CalculationOperator::kMax;
-  return CalculationExpressionOperatorNode::CreateSimplified(
+  return CalculationExpressionOperationNode::CreateSimplified(
       std::move(operands), expression_operator);
 }
 
@@ -1351,9 +1351,9 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     return Create(pixels_and_percent.GetPixelsAndPercent());
   }
 
-  DCHECK(node.IsOperator());
+  DCHECK(node.IsOperation());
 
-  const auto& operation = To<CalculationExpressionOperatorNode>(node);
+  const auto& operation = To<CalculationExpressionOperationNode>(node);
   const auto& children = operation.GetChildren();
   const auto calc_op = operation.GetOperator();
   switch (calc_op) {
