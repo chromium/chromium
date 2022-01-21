@@ -46,8 +46,10 @@ const char kPSIMemoryPath[] = "/proc/pressure/memory";
 
 PSIMemoryMetrics::PSIMemoryMetrics(uint32_t period)
     : memory_psi_file_(kPSIMemoryPath), parser_(period) {
-  collection_interval_ = base::Seconds(parser_.GetPeriod());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DETACH_FROM_SEQUENCE(background_sequence_checker_);
 
+  collection_interval_ = base::Seconds(parser_.GetPeriod());
   runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -56,23 +58,22 @@ PSIMemoryMetrics::PSIMemoryMetrics(uint32_t period)
 PSIMemoryMetrics::~PSIMemoryMetrics() = default;
 
 void PSIMemoryMetrics::Start() {
-  ScheduleCollector();
-}
-
-void PSIMemoryMetrics::CancelTimer() {
-  if (last_timer_.IsValid()) {
-    last_timer_.CancelTask();
-  }
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Start the collection on the background sequence.
+  runner_->PostTask(FROM_HERE,
+                    base::BindOnce(&PSIMemoryMetrics::ScheduleCollector, this));
 }
 
 void PSIMemoryMetrics::Stop() {
-  // Note that you can't call last_timer.CancelTask() from here,
-  // as we may not be running in the correct sequence.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Stop the collection on the background sequence.
   runner_->PostTask(FROM_HERE,
                     base::BindOnce(&PSIMemoryMetrics::CancelTimer, this));
 }
 
 void PSIMemoryMetrics::CollectEvents() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+
   std::string content;
   int metric_some;
   int metric_full;
@@ -97,15 +98,24 @@ void PSIMemoryMetrics::CollectEvents() {
 }
 
 void PSIMemoryMetrics::CollectEventsAndReschedule() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
   CollectEvents();
   ScheduleCollector();
 }
 
 void PSIMemoryMetrics::ScheduleCollector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
   last_timer_ = runner_->PostCancelableDelayedTask(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&PSIMemoryMetrics::CollectEventsAndReschedule, this),
       collection_interval_);
+}
+
+void PSIMemoryMetrics::CancelTimer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  if (last_timer_.IsValid()) {
+    last_timer_.CancelTask();
+  }
 }
 
 }  // namespace ash
