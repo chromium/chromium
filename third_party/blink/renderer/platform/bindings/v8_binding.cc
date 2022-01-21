@@ -51,30 +51,15 @@ v8::Local<v8::Value> FreezeV8Object(v8::Local<v8::Value> value,
   return value;
 }
 
-String GetCurrentScriptUrl(int max_stack_depth) {
+String GetCurrentScriptUrl() {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   DCHECK(isolate);
   if (!isolate->InContext())
     return String();
 
-  // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you need
-  // is the url of the script at the top of the stack. See crbug.com/1057211 for
-  // more detail.
-  v8::Local<v8::StackTrace> stack_trace =
-      v8::StackTrace::CurrentStackTrace(isolate, max_stack_depth);
-  if (stack_trace.IsEmpty())
-    return String();
-  for (int i = 0, frame_count = stack_trace->GetFrameCount(); i < frame_count;
-       ++i) {
-    v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, i);
-    if (frame.IsEmpty())
-      continue;
-    v8::Local<v8::String> script_name = frame->GetScriptNameOrSourceURL();
-    if (script_name.IsEmpty() || !script_name->Length())
-      continue;
-    return ToCoreString(script_name);
-  }
-  return String();
+  v8::Local<v8::String> script_name =
+      v8::StackTrace::CurrentScriptNameOrSourceURL(isolate);
+  return ToCoreStringWithNullCheck(script_name);
 }
 
 namespace bindings {

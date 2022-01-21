@@ -223,11 +223,8 @@ void AuditsIssue::ReportNavigatorUserAgentAccess(
           .build();
 
   // Try to get only the script name quickly.
-  String script_url = GetCurrentScriptUrl(5);
-  if (script_url.IsEmpty())
-    script_url = GetCurrentScriptUrl(200);
-
   std::unique_ptr<SourceLocation> location;
+  String script_url = GetCurrentScriptUrl();
   if (!script_url.IsEmpty())
     location = std::make_unique<SourceLocation>(script_url, 1, 0, nullptr);
   else

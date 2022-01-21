@@ -111,7 +111,7 @@ void HttpEquiv::ProcessHttpEquivOriginTrial(LocalDOMWindow* window,
   // NOTE: The external script origin is not considered security-critical. See
   // the comment thread in the design doc for details:
   // https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA/edit?disco=AAAAJyG8StI
-  KURL external_script_url(GetCurrentScriptUrl(/*max_stack_depth=*/1));
+  KURL external_script_url(GetCurrentScriptUrl());
 
   if (external_script_url.IsValid()) {
     scoped_refptr<SecurityOrigin> external_origin =
