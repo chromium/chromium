@@ -132,6 +132,12 @@ bool IsValidWildcardPattern(const std::string& hostname_pattern) {
     return false;
   if (components.back().find("*") != std::string::npos)
     return false;
+  // If a wildcard is a part of a component or there is adjacent wildcards, the
+  // pattern is not considered valid.
+  for (const std::string& component : components) {
+    if (component.find('*') != std::string::npos && component != "*")
+      return false;
+  }
   return true;
 }
 
