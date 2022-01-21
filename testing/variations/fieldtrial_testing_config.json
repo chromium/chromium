@@ -3540,6 +3540,26 @@
             ]
         }
     ],
+    "DynamicAudioTimeout": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DynamicAudioTimeout_50_20211125",
+                    "params": {
+                        "buffer_duration_percent": "0.5"
+                    },
+                    "enable_features": [
+                        "DynamicAudioTimeout"
+                    ]
+                }
+            ]
+        }
+    ],
     "DynamicBufferQueueAllocation": [
         {
             "platforms": [
