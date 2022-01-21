@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_STATE_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_STATE_H_
 
+#import <Foundation/Foundation.h>
+
 #include <stdint.h>
 
 #include <memory>
@@ -22,8 +24,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-@class NSURLRequest;
-@class NSURLResponse;
 class SessionCertificatePolicyCache;
 
 namespace web {
@@ -100,6 +100,8 @@ class FakeWebState : public WebState {
   void SetStateForPermission(PermissionState state,
                              Permission permission) override
       API_AVAILABLE(ios(15.0));
+  NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions()
+      const override API_AVAILABLE(ios(15.0));
 
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;
@@ -194,9 +196,8 @@ class FakeWebState : public WebState {
   base::RepeatingCallbackList<ScriptCommandCallbackSignature> callback_list_;
   absl::optional<ScriptCommandCallback> last_added_callback_;
   std::string last_command_prefix_;
-  PermissionState camera_permission_state_ = PermissionState::NOT_ACCESSIBLE;
-  PermissionState microphone_permission_state_ =
-      PermissionState::NOT_ACCESSIBLE;
+  PermissionState camera_permission_state_ = PermissionStateNotAccessible;
+  PermissionState microphone_permission_state_ = PermissionStateNotAccessible;
 
   // A list of observers notified when page state changes. Weak references.
   base::ObserverList<WebStateObserver, true>::Unchecked observers_;

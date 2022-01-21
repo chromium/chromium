@@ -13,7 +13,7 @@
 
 namespace web {
 class NavigationContext;
-enum class Permission;
+enum Permission : NSUInteger;
 }
 
 // Observes page lifecycle events from Objective-C. To use as a

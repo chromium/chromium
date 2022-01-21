@@ -5,27 +5,29 @@
 #ifndef IOS_WEB_PUBLIC_PERMISSIONS_PERMISSIONS_H_
 #define IOS_WEB_PUBLIC_PERMISSIONS_PERMISSIONS_H_
 
+#import <Foundation/Foundation.h>
+
 namespace web {
 
 // Enum specifying different data or device hardwares that the app/site needs
 // access permissions to.
-enum class Permission {
-  CAMERA = 0,
-  MICROPHONE = 1,
+typedef NS_ENUM(NSUInteger, Permission) {
+  PermissionCamera = 0,
+  PermissionMicrophone,
 };
 
 // Enum specifying whether a subject of permission is accessible and allowed.
-enum class PermissionState {
+typedef NS_ENUM(NSUInteger, PermissionState) {
   // The device has not granted the site access to the requested permission.
   // When this is the state of a given permission, the app is unable to change
   // it to ALLOWED or BLOCKED.
-  NOT_ACCESSIBLE = 0,
+  PermissionStateNotAccessible = 0,
   // The site has access to the requested permission, but the user has disabled
   // or blocked the subject of permission so it cannot be used.
-  BLOCKED = 1,
+  PermissionStateBlocked,
   // The site has access to the requested permission and is able to use it when
   // needed.
-  ALLOWED = 2,
+  PermissionStateAllowed,
 };
 
 }  // namespace web
