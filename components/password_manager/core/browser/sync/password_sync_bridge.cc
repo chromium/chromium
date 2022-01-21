@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -49,8 +50,11 @@ enum class SyncMetadataReadError {
   kDbNotAvailable = 1,
   // Reading failure.
   kReadFailed = 2,
+  // Reading successful but cleaning initiated in order to force initial sync.
+  // This will clean undecryptable passwords.
+  kReadSuccessButCleared = 3,
 
-  kMaxValue = kReadFailed,
+  kMaxValue = kReadSuccessButCleared,
 };
 
 std::string ComputeClientTag(
@@ -189,6 +193,28 @@ bool ShouldRecoverPasswordsDuringMerge() {
 #endif
 }
 
+bool ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails() {
+#if BUILDFLAG(IS_LINUX)
+  return ShouldRecoverPasswordsDuringMerge() &&
+         base::FeatureList::IsEnabled(
+             features::kForceInitialSyncWhenDecryptionFails);
+#else
+  return false;
+#endif
+}
+
+bool DoesPasswordStoreHaveEncryptionServiceFailures(
+    PasswordStoreSync* password_store_sync) {
+  PrimaryKeyToFormMap key_to_form_map;
+  FormRetrievalResult result =
+      password_store_sync->ReadAllLogins(&key_to_form_map);
+  if (result == FormRetrievalResult::kEncrytionServiceFailure ||
+      result == FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
+    return true;
+  }
+  return false;
+}
+
 // A simple class for scoping a password store sync transaction. If the
 // transaction hasn't been committed, it will be rolled back when it goes out of
 // scope.
@@ -248,6 +274,14 @@ PasswordSyncBridge::PasswordSyncBridge(
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
+    } else if (ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails() &&
+               DoesPasswordStoreHaveEncryptionServiceFailures(
+                   password_store_sync_)) {
+      // Some logins in the passwords store cannot be read, force initial sync
+      // by dropping the metadata.
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+      batch = std::make_unique<syncer::MetadataBatch>();
+      sync_metadata_read_error = SyncMetadataReadError::kReadSuccessButCleared;
     }
   }
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError",

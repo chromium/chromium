@@ -67,6 +67,13 @@ const base::Feature kFillingAcrossAffiliatedWebsites{
 const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_LINUX)
+// When enabled, initial sync will be forced during startup if the password
+// store has encryption service failures.
+const base::Feature kForceInitialSyncWhenDecryptionFails = {
+    "ForceInitialSyncWhenDecryptionFails", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables finding a confirmation password field during saving by inspecting the
 // values of the fields. Used as a kill switch.
 // TODO(crbug.com/1164861): Remove once confirmed to be safe (around M92 or so).

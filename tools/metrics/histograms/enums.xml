@@ -69472,6 +69472,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="None"/>
   <int value="1" label="DB Not Available"/>
   <int value="2" label="Reading failure"/>
+  <int value="3" label="Reading success but metadata cleaned for initial sync"/>
 </enum>
 
 <enum name="PasswordSyncState">

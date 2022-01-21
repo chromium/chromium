@@ -27,6 +27,9 @@ extern const base::Feature kEnablePasswordsAccountStorage;
 extern const base::Feature KEnablePasswordGenerationForClearTextFields;
 extern const base::Feature kFillingAcrossAffiliatedWebsites;
 extern const base::Feature kFillOnAccountSelect;
+#if BUILDFLAG(IS_LINUX)
+extern const base::Feature kForceInitialSyncWhenDecryptionFails;
+#endif
 extern const base::Feature kInferConfirmationPasswordField;
 extern const base::Feature kIOSEnablePasswordManagerBrandingUpdate;
 extern const base::Feature kMuteCompromisedPasswords;

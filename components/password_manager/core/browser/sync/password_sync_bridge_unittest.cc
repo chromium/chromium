@@ -857,6 +857,54 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_TRUE(error);
 }
 
+#if BUILDFLAG(IS_LINUX)
+TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {
+          features::kForceInitialSyncWhenDecryptionFails,
+          features::kSyncUndecryptablePasswordsLinux,
+      },
+      {});
+  ON_CALL(*mock_password_store_sync(), ReadAllLogins)
+      .WillByDefault(
+          testing::Return(FormRetrievalResult::kEncrytionServiceFailure));
+
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata());
+  EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
+      .WillOnce(Return(FormRetrievalResult::kEncrytionServiceFailure));
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata());
+
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         mock_password_store_sync(), base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
+                                      3, 1);
+}
+
+TEST_F(PasswordSyncBridgeTest,
+       ShouldNotRemoveSyncMetadataWhenReadAllLoginsSucceeds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {
+          features::kForceInitialSyncWhenDecryptionFails,
+          features::kSyncUndecryptablePasswordsLinux,
+      },
+      {});
+
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata());
+  EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
+      .WillOnce(Return(FormRetrievalResult::kSuccess));
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata())
+      .Times(0);
+
+  PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                     mock_password_store_sync(), base::DoNothing());
+}
+#endif
+
 // This tests that if adding logins to the store fails,
 // ShouldMergeSync() would return an error without crashing.
 TEST_F(PasswordSyncBridgeTest,
