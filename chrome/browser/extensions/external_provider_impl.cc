@@ -166,7 +166,8 @@ void ExternalProviderImpl::SetPrefs(
         InstallStageTracker::InstallCreationStage::SEEN_BY_EXTERNAL_PROVIDER);
   }
 
-  prefs_ = std::move(prefs);
+  prefs_ =
+      std::make_unique<base::Value::DictStorage>(std::move(*prefs).TakeDict());
   ready_ = true;  // Queries for extensions are allowed from this point.
 
   NotifyServiceOnExternalExtensionsFound(/*is_initial_load=*/true);
@@ -211,8 +212,8 @@ void ExternalProviderImpl::UpdatePrefs(
 
   std::set<std::string> removed_extensions;
   // Find extensions that were removed by this ExternalProvider.
-  for (const auto kv : prefs_->DictItems()) {
-    const std::string& extension_id = kv.first;
+  for (auto& pref : *prefs_) {
+    const std::string& extension_id = pref.first;
     // Don't bother about invalid ids.
     if (!crx_file::id_util::IdIsValid(extension_id))
       continue;
@@ -220,7 +221,8 @@ void ExternalProviderImpl::UpdatePrefs(
       removed_extensions.insert(extension_id);
   }
 
-  prefs_ = std::move(prefs);
+  prefs_ =
+      std::make_unique<base::Value::DictStorage>(std::move(*prefs).TakeDict());
 
   std::vector<ExternalInstallInfoUpdateUrl> external_update_url_extensions;
   std::vector<ExternalInstallInfoFile> external_file_extensions;
@@ -244,8 +246,8 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       InstallStageTracker::Get(profile_);
 
   // Discover all the extensions this provider has.
-  for (base::DictionaryValue::Iterator i(*prefs_); !i.IsAtEnd(); i.Advance()) {
-    const std::string& extension_id = i.key();
+  for (auto& pref : *prefs_) {
+    const std::string& extension_id = pref.first;
     const base::DictionaryValue* extension_dict = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -276,7 +278,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       continue;
     }
 
-    if (!i.value().GetAsDictionary(&extension_dict)) {
+    if (!pref.second.GetAsDictionary(&extension_dict)) {
       LOG(WARNING) << "Malformed extension dictionary: key "
                    << extension_id.c_str()
                    << " has a value that is not a dictionary.";
@@ -517,7 +519,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
        it != unsupported_extensions.end(); ++it) {
     // Remove extension for the list of know external extensions. The extension
     // will be uninstalled later because provider doesn't provide it anymore.
-    prefs_->RemoveKey(*it);
+    prefs_->erase(prefs_->find(*it));
   }
 }
 
@@ -534,7 +536,7 @@ bool ExternalProviderImpl::HasExtension(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_.get());
   CHECK(ready_);
-  return prefs_->FindKey(id);
+  return prefs_->find(id) != prefs_->end();
 }
 
 bool ExternalProviderImpl::GetExtensionDetails(
@@ -544,19 +546,19 @@ bool ExternalProviderImpl::GetExtensionDetails(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_.get());
   CHECK(ready_);
-  base::DictionaryValue* extension = nullptr;
-  if (!prefs_->GetDictionary(id, &extension))
+  auto it = prefs_->find(id);
+  if (it == prefs_->end() || !it->second.is_dict())
     return false;
 
   ManifestLocation loc = ManifestLocation::kInvalidLocation;
-  if (extension->FindKey(kExternalUpdateUrl)) {
+  if (it->second.FindKey(kExternalUpdateUrl)) {
     loc = download_location_;
 
-  } else if (extension->FindKey(kExternalCrx)) {
+  } else if (it->second.FindKey(kExternalCrx)) {
     loc = crx_location_;
 
     const std::string* external_version =
-        extension->FindStringKey(kExternalVersion);
+        it->second.FindStringKey(kExternalVersion);
     if (!external_version)
       return false;
 

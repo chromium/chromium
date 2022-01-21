@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/common/manifest.h"
@@ -132,7 +133,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   raw_ptr<VisitorInterface> service_;  // weak
 
   // Dictionary of the external extensions that are provided by this provider.
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  std::unique_ptr<base::Value::DictStorage> prefs_;
 
   // Indicates that the extensions provided by this provider are loaded
   // entirely.
