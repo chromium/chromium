@@ -24,6 +24,13 @@
 
 namespace {
 
+gfx::ImageSkia CreateImageSkia(int width, int height, SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(color);
+  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+}
+
 // Creates a RunLoop that waits until the context menu of app list item is
 // shown.
 void WaitUntilItemMenuShown(ash::AppListItemView* item_view) {
@@ -261,15 +268,12 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     // Set the IconColor for each app to be used for color sort testing.
     // When ordered by color, the apps should be in the following order:
     //   {app2 (red icon), app3 (green icon), app1 (blue icon)}
-    model_updater->SetIconColor(
-        app1_id_,
-        ash::IconColor(sync_pb::AppListSpecifics_ColorGroup_COLOR_BLUE, 260));
-    model_updater->SetIconColor(
-        app2_id_,
-        ash::IconColor(sync_pb::AppListSpecifics_ColorGroup_COLOR_RED, 5));
-    model_updater->SetIconColor(
-        app3_id_,
-        ash::IconColor(sync_pb::AppListSpecifics_ColorGroup_COLOR_GREEN, 230));
+    model_updater->FindItem(app1_id_)->SetIcon(
+        CreateImageSkia(16, 16, SK_ColorBLUE));
+    model_updater->FindItem(app2_id_)->SetIcon(
+        CreateImageSkia(16, 16, SK_ColorRED));
+    model_updater->FindItem(app3_id_)->SetIcon(
+        CreateImageSkia(16, 16, SK_ColorGREEN));
   }
 
   void TearDownOnMainThread() override {
@@ -506,8 +510,8 @@ IN_PROC_BROWSER_TEST_F(
                                    MenuType::kAppListPageMenu,
                                    AnimationTargetStatus::kCompleted);
 
-  // TODO(https://crbug.com/1288880): verify the app order after the color
-  // sorting result becomes consistent.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
 }
 
 // Verify that deleting an item during reorder animation works as expected.
