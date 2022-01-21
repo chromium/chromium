@@ -1103,6 +1103,9 @@
       origin_trial_feature_name: "Fledge",
     },
     {
+      name: "Focusgroup",
+    },
+    {
       name: "FocuslessSpatialNavigation",
       settable_from_internals: true,
     },
