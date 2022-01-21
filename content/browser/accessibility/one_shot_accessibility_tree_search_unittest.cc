@@ -11,6 +11,8 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #ifdef OS_ANDROID
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
+#elif OS_FUCHSIA
+#include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 #endif
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +27,13 @@ class TestBrowserAccessibilityManager
  public:
   explicit TestBrowserAccessibilityManager(const ui::AXTreeUpdate& initial_tree)
       : BrowserAccessibilityManagerAndroid(initial_tree, nullptr, nullptr) {}
+};
+#elif OS_FUCHSIA
+class TestBrowserAccessibilityManager
+    : public BrowserAccessibilityManagerFuchsia {
+ public:
+  explicit TestBrowserAccessibilityManager(const ui::AXTreeUpdate& initial_tree)
+      : BrowserAccessibilityManagerFuchsia(initial_tree, nullptr) {}
 };
 #else
 class TestBrowserAccessibilityManager : public BrowserAccessibilityManager {

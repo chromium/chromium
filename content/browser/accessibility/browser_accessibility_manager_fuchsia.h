@@ -38,9 +38,16 @@ class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
   // Sends hit test result to fuchsia.
   void OnHitTestResult(int action_request_id, BrowserAccessibility* node);
 
- private:
-  // Returns the accessibility bridge instance for this manager's WebContents.
+  // Returns the accessibility bridge instance for this manager's native window.
   ui::AccessibilityBridgeFuchsia* GetAccessibilityBridge() const;
+
+  // Test-only method to set the return value of GetAccessibilityBridge().
+  void SetAccessibilityBridgeForTest(
+      ui::AccessibilityBridgeFuchsia* accessibility_bridge_for_test);
+
+ private:
+  // Accessibility bridge instance to use for tests, if set.
+  ui::AccessibilityBridgeFuchsia* accessibility_bridge_for_test_ = nullptr;
 };
 
 }  // namespace content

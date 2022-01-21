@@ -133,6 +133,11 @@ class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
     mock_browser_accessibility_delegate_ =
         std::make_unique<MockBrowserAccessibilityDelegate>();
     mock_accessibility_bridge_ = std::make_unique<MockAccessibilityBridge>();
+    manager_ = std::unique_ptr<BrowserAccessibilityManager>(
+        BrowserAccessibilityManager::Create(
+            mock_browser_accessibility_delegate_.get()));
+    static_cast<BrowserAccessibilityManagerFuchsia*>(manager_.get())
+        ->SetAccessibilityBridgeForTest(mock_accessibility_bridge_.get());
   }
 
  protected:
@@ -140,6 +145,7 @@ class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
       mock_browser_accessibility_delegate_;
   std::unique_ptr<MockAccessibilityBridge> mock_accessibility_bridge_;
   const content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<BrowserAccessibilityManager> manager_;
 };
 
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
@@ -152,20 +158,14 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
   initial_state.nodes.resize(1);
   initial_state.nodes[0].id = 1;
 
-  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  registry->RegisterAccessibilityBridge(tree_id,
-                                        mock_accessibility_bridge_.get());
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
-          initial_state, mock_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(manager);
+  manager_->ax_tree()->Unserialize(initial_state);
 
   {
     const auto& node_updates = mock_accessibility_bridge_->node_updates();
     ASSERT_EQ(node_updates.size(), 1u);
 
     BrowserAccessibilityFuchsia* node_1 =
-        ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+        ToBrowserAccessibilityFuchsia(manager_->GetFromID(1));
     ASSERT_TRUE(node_1);
 
     EXPECT_EQ(node_updates[0].node_id(), node_1->GetFuchsiaNodeID());
@@ -189,17 +189,17 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
   updated_state.nodes[0].child_ids.push_back(2);
   updated_state.nodes[1].id = 2;
 
-  manager->ax_tree()->Unserialize(updated_state);
+  manager_->ax_tree()->Unserialize(updated_state);
 
   {
     const auto& node_updates = mock_accessibility_bridge_->node_updates();
     ASSERT_EQ(node_updates.size(), 3u);
 
     BrowserAccessibilityFuchsia* node_1 =
-        ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+        ToBrowserAccessibilityFuchsia(manager_->GetFromID(1));
     ASSERT_TRUE(node_1);
     BrowserAccessibilityFuchsia* node_2 =
-        ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+        ToBrowserAccessibilityFuchsia(manager_->GetFromID(2));
     ASSERT_TRUE(node_2);
 
     // Node 1 is the root of the root tree, so its fuchsia ID should be 0.
@@ -224,13 +224,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
   initial_state.nodes[0].child_ids.push_back(2);
   initial_state.nodes[1].id = 2;
 
-  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  registry->RegisterAccessibilityBridge(tree_id,
-                                        mock_accessibility_bridge_.get());
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
-          initial_state, mock_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(manager);
+  manager_->ax_tree()->Unserialize(initial_state);
 
   // Verify that no deletions were received.
   {
@@ -240,11 +234,11 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
 
   // Get the fuchsia IDs for nodes 1 and 2 before they are deleted.
   BrowserAccessibilityFuchsia* node_1 =
-      ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+      ToBrowserAccessibilityFuchsia(manager_->GetFromID(1));
   ASSERT_TRUE(node_1);
   uint32_t node_1_fuchsia_id = node_1->GetFuchsiaNodeID();
   BrowserAccessibilityFuchsia* node_2 =
-      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+      ToBrowserAccessibilityFuchsia(manager_->GetFromID(2));
   ASSERT_TRUE(node_2);
   uint32_t node_2_fuchsia_id = node_2->GetFuchsiaNodeID();
 
@@ -253,7 +247,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
   updated_state.nodes.resize(1);
   updated_state.nodes[0].id = 1;
 
-  manager->ax_tree()->Unserialize(updated_state);
+  manager_->ax_tree()->Unserialize(updated_state);
 
   // Verify that the accessibility bridge received a deletion for node 2.
   {
@@ -264,7 +258,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
 
   // Destroy manager. Doing so should force the remainder of the tree to be
   // deleted.
-  manager.reset();
+  manager_.reset();
 
   // Verify that the accessibility bridge received a deletion for node 1.
   {
@@ -286,13 +280,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
   initial_state.nodes[0].child_ids.push_back(2);
   initial_state.nodes[1].id = 2;
 
-  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  registry->RegisterAccessibilityBridge(tree_id,
-                                        mock_accessibility_bridge_.get());
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
-          initial_state, mock_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(manager);
+  manager_->ax_tree()->Unserialize(initial_state);
 
   {
     const std::vector<fuchsia::accessibility::semantics::Node>& node_updates =
@@ -306,11 +294,11 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
   relative_bounds.bounds =
       gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
   changes.push_back(mojom::LocationChanges::New(2, relative_bounds));
-  manager->OnLocationChanges(std::move(changes));
+  manager_->OnLocationChanges(std::move(changes));
 
   {
     BrowserAccessibilityFuchsia* node_2 =
-        ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+        ToBrowserAccessibilityFuchsia(manager_->GetFromID(2));
     ASSERT_TRUE(node_2);
 
     const std::vector<fuchsia::accessibility::semantics::Node>& node_updates =
@@ -347,20 +335,14 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   initial_state.nodes[0].child_ids.push_back(2);
   initial_state.nodes[1].id = 2;
 
-  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  registry->RegisterAccessibilityBridge(tree_id,
-                                        mock_accessibility_bridge_.get());
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
-          initial_state, mock_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(manager);
+  manager_->ax_tree()->Unserialize(initial_state);
 
   BrowserAccessibilityFuchsia* node_1 =
-      ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+      ToBrowserAccessibilityFuchsia(manager_->GetFromID(1));
   ASSERT_TRUE(node_1);
 
   BrowserAccessibilityFuchsia* node_2 =
-      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+      ToBrowserAccessibilityFuchsia(manager_->GetFromID(2));
   ASSERT_TRUE(node_2);
 
   // Set focus to node 1, and check that the focus was updated from null to
@@ -374,7 +356,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
     updated_state.tree_data.focus_id = 1;
     event.ax_tree_id = tree_id;
     event.updates.push_back(std::move(updated_state));
-    EXPECT_TRUE(manager->OnAccessibilityEvents(event));
+    EXPECT_TRUE(manager_->OnAccessibilityEvents(event));
   }
 
   ASSERT_FALSE(mock_accessibility_bridge_->old_focus());
@@ -393,7 +375,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
     updated_state.tree_data.focus_id = 2;
     event.ax_tree_id = tree_id;
     event.updates.push_back(std::move(updated_state));
-    EXPECT_TRUE(manager->OnAccessibilityEvents(event));
+    EXPECT_TRUE(manager_->OnAccessibilityEvents(event));
   }
 
   ASSERT_TRUE(mock_accessibility_bridge_->old_focus());
@@ -408,36 +390,25 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeviceScale) {
   const float kScaleFactor = 0.8f;
   mock_accessibility_bridge_->SetDeviceScaleFactor(kScaleFactor);
 
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
-          mock_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(manager);
+  AXEventNotificationDetails event;
+  ui::AXTreeUpdate initial_state;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  initial_state.tree_data.tree_id = tree_id;
+  initial_state.has_tree_data = true;
+  initial_state.tree_data.loaded = true;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(1);
+  initial_state.nodes[0].id = 1;
+  event.updates.push_back(std::move(initial_state));
 
-  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  registry->RegisterAccessibilityBridge(manager->ax_tree_id(),
-                                        mock_accessibility_bridge_.get());
-
-  // Update the root node.
-  {
-    BrowserAccessibility* root_node = manager->GetRoot();
-    ASSERT_TRUE(root_node);
-    AXEventNotificationDetails event;
-    ui::AXTreeUpdate updated_state;
-    updated_state.tree_data.tree_id = manager->ax_tree_id();
-    updated_state.has_tree_data = true;
-    updated_state.tree_data.loaded = true;
-    updated_state.nodes.resize(1);
-    updated_state.nodes[0] = root_node->GetData();
-    event.updates.push_back(std::move(updated_state));
-    EXPECT_TRUE(manager->OnAccessibilityEvents(event));
-  }
+  EXPECT_TRUE(manager_->OnAccessibilityEvents(std::move(event)));
 
   {
     const auto& node_updates = mock_accessibility_bridge_->node_updates();
     ASSERT_FALSE(node_updates.empty());
 
     BrowserAccessibilityFuchsia* root_node =
-        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+        ToBrowserAccessibilityFuchsia(manager_->GetRoot());
     ASSERT_TRUE(root_node);
 
     EXPECT_EQ(node_updates.back().node_id(), root_node->GetFuchsiaNodeID());
@@ -464,19 +435,13 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
   initial_state.nodes[0].child_ids.push_back(2);
   initial_state.nodes[1].id = 2;
 
-  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  registry->RegisterAccessibilityBridge(tree_id,
-                                        mock_accessibility_bridge_.get());
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
-          initial_state, mock_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(manager);
+  manager_->ax_tree()->Unserialize(initial_state);
 
   BrowserAccessibilityFuchsia* node_1 =
-      ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+      ToBrowserAccessibilityFuchsia(manager_->GetFromID(1));
   ASSERT_TRUE(node_1);
   BrowserAccessibilityFuchsia* node_2 =
-      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+      ToBrowserAccessibilityFuchsia(manager_->GetFromID(2));
   ASSERT_TRUE(node_2);
 
   // Set the hit test action data. Note that we will later hard-code the result
@@ -510,8 +475,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
   }
 
   // Fire blink event to signify the hit test result.
-  manager->FireBlinkEvent(ax::mojom::Event::kHover, node_2,
-                          action_data.request_id);
+  manager_->FireBlinkEvent(ax::mojom::Event::kHover, node_2,
+                           action_data.request_id);
 
   {
     const std::map<int, absl::optional<uint32_t>>& hit_test_results =
@@ -539,16 +504,10 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTestFails) {
   initial_state.nodes[0].child_ids.push_back(2);
   initial_state.nodes[1].id = 2;
 
-  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  registry->RegisterAccessibilityBridge(tree_id,
-                                        mock_accessibility_bridge_.get());
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
-          initial_state, mock_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(manager);
+  manager_->ax_tree()->Unserialize(initial_state);
 
   BrowserAccessibilityFuchsia* node_1 =
-      ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+      ToBrowserAccessibilityFuchsia(manager_->GetFromID(1));
   ASSERT_TRUE(node_1);
 
   ui::AXActionData action_data;
@@ -572,7 +531,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTestFails) {
   }
 
   // FIre blink event to signify the hit test result.
-  manager->FireBlinkEvent(ax::mojom::Event::kHover, nullptr, 4);
+  manager_->FireBlinkEvent(ax::mojom::Event::kHover, nullptr, 4);
 
   {
     const std::map<int, absl::optional<uint32_t>>& hit_test_results =
@@ -598,16 +557,10 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, PerformAction) {
   initial_state.nodes[0].child_ids.push_back(2);
   initial_state.nodes[1].id = 2;
 
-  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  registry->RegisterAccessibilityBridge(tree_id,
-                                        mock_accessibility_bridge_.get());
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(
-          initial_state, mock_browser_accessibility_delegate_.get()));
-  ASSERT_TRUE(manager);
+  manager_->ax_tree()->Unserialize(initial_state);
 
   BrowserAccessibilityFuchsia* node_2 =
-      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+      ToBrowserAccessibilityFuchsia(manager_->GetFromID(2));
   ASSERT_TRUE(node_2);
 
   ui::AXActionData action_data;

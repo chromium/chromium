@@ -26,12 +26,11 @@ BrowserAccessibilityFuchsia::BrowserAccessibilityFuchsia(
 
 ui::AccessibilityBridgeFuchsia*
 BrowserAccessibilityFuchsia::GetAccessibilityBridge() const {
-  ui::AccessibilityBridgeFuchsiaRegistry* accessibility_bridge_registry =
-      ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  DCHECK(accessibility_bridge_registry);
+  BrowserAccessibilityManagerFuchsia* manager_fuchsia =
+      static_cast<BrowserAccessibilityManagerFuchsia*>(manager());
+  DCHECK(manager_fuchsia);
 
-  return accessibility_bridge_registry->GetAccessibilityBridge(
-      manager()->ax_tree_id());
+  return manager_fuchsia->GetAccessibilityBridge();
 }
 
 // static

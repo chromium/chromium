@@ -5,6 +5,7 @@
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
 
 namespace content {
@@ -35,11 +36,27 @@ BrowserAccessibilityManagerFuchsia::~BrowserAccessibilityManagerFuchsia() =
 
 ui::AccessibilityBridgeFuchsia*
 BrowserAccessibilityManagerFuchsia::GetAccessibilityBridge() const {
+  if (accessibility_bridge_for_test_)
+    return accessibility_bridge_for_test_;
+
   ui::AccessibilityBridgeFuchsiaRegistry* accessibility_bridge_registry =
       ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
   DCHECK(accessibility_bridge_registry);
 
-  return accessibility_bridge_registry->GetAccessibilityBridge(ax_tree_id());
+  WebContents* web_contents = this->web_contents();
+  if (!web_contents)
+    return nullptr;
+
+  gfx::NativeWindow top_level_native_window =
+      web_contents->GetTopLevelNativeWindow();
+  if (!top_level_native_window)
+    return nullptr;
+
+  aura::Window* root_window = top_level_native_window->GetRootWindow();
+  if (!root_window)
+    return nullptr;
+
+  return accessibility_bridge_registry->GetAccessibilityBridge(root_window);
 }
 
 void BrowserAccessibilityManagerFuchsia::FireFocusEvent(
@@ -116,6 +133,11 @@ void BrowserAccessibilityManagerFuchsia::UpdateDeviceScaleFactor() {
     device_scale_factor_ = accessibility_bridge->GetDeviceScaleFactor();
   else
     BrowserAccessibilityManager::UpdateDeviceScaleFactor();
+}
+
+void BrowserAccessibilityManagerFuchsia::SetAccessibilityBridgeForTest(
+    ui::AccessibilityBridgeFuchsia* accessibility_bridge_for_test) {
+  accessibility_bridge_for_test_ = accessibility_bridge_for_test;
 }
 
 }  // namespace content

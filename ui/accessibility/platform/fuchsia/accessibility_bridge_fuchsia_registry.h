@@ -7,15 +7,16 @@
 
 #include "base/containers/flat_map.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
+#include "ui/aura/window.h"
 
 namespace ui {
 
-// This class manages a mapping between AXTrees and their respective
-// accessibility bridge instances. The accessibility bridge instances
-// are owned by the FrameImpl for the WebContents to which the AXTrees
-// belong.
+// TODO(https://crbug.com/1289708): Investigate using window ID instead of
+// Window*.
+// This class manages a mapping between aura root windows and their respective
+// accessibility bridge instances. This class does NOT own the accessibility
+// bridge instances themselves.
 class AX_EXPORT AccessibilityBridgeFuchsiaRegistry {
  public:
   // Get the global instance of this class.
@@ -29,27 +30,27 @@ class AX_EXPORT AccessibilityBridgeFuchsiaRegistry {
   AccessibilityBridgeFuchsiaRegistry& operator=(
       const AccessibilityBridgeFuchsiaRegistry&) = delete;
 
-  // Retrieve an |AccessibilityBridgeFuchsia| by AXTreeID.
+  // Retrieve an |AccessibilityBridgeFuchsia| by aura::Window*.
   //
   // Returns nullptr if no accessibility bridge is registered for
-  // |ax_tree_id|.
-  AccessibilityBridgeFuchsia* GetAccessibilityBridge(AXTreeID ax_tree_id);
+  // |window|.
+  AccessibilityBridgeFuchsia* GetAccessibilityBridge(aura::Window* window);
 
-  // Registers the accessibility bridge for the specified AXTreeID.
-  // There must NOT be an accessibility bridge registered for |ax_tree_id| when
-  // this method is called.
+  // Registers the accessibility bridge for the specified window.
+  // There must NOT be an accessibility bridge registered for |window| when
+  // this method is called, and |window| must NOT be null.
   void RegisterAccessibilityBridge(
-      AXTreeID ax_tree_id,
+      aura::Window* window,
       AccessibilityBridgeFuchsia* accessibility_bridge);
 
-  // Removes the accessibility bridge for the specified AXTreeID.
-  // There must be an accessibility bridge registered for |ax_tree_id| when this
+  // Removes the accessibility bridge for the specified widow.
+  // There must be an accessibility bridge registered for |window| when this
   // method is called.
-  void UnregisterAccessibilityBridge(AXTreeID ax_tree_id);
+  void UnregisterAccessibilityBridge(aura::Window* window);
 
  private:
-  base::flat_map<AXTreeID, AccessibilityBridgeFuchsia*>
-      ax_tree_id_to_accessibility_bridge_map_;
+  base::flat_map<aura::Window*, AccessibilityBridgeFuchsia*>
+      window_to_bridge_map_;
 };
 
 }  // namespace ui
