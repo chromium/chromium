@@ -72,7 +72,7 @@ VideoLayerImpl::~VideoLayerImpl() {
 }
 
 std::unique_ptr<LayerImpl> VideoLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return base::WrapUnique(new VideoLayerImpl(
       tree_impl, id(), provider_client_impl_, video_transform_));
 }

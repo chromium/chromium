@@ -22,7 +22,7 @@ NinePatchLayer::NinePatchLayer()
 NinePatchLayer::~NinePatchLayer() = default;
 
 std::unique_ptr<LayerImpl> NinePatchLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return NinePatchLayerImpl::Create(tree_impl, id());
 }
 

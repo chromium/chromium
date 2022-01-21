@@ -28,7 +28,8 @@ class CC_EXPORT DocumentTransitionContentLayerImpl : public LayerImpl {
       const DocumentTransitionContentLayerImpl&) = delete;
 
   // LayerImpl overrides.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 

@@ -367,7 +367,7 @@ void LayerImpl::SetCaptureBounds(
 }
 
 std::unique_ptr<LayerImpl> LayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return LayerImpl::Create(tree_impl, layer_id_);
 }
 

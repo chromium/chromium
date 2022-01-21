@@ -392,7 +392,7 @@ void ProxyMain::BeginMainFrame(
                                   begin_main_frame_state->begin_frame_args,
                                   blocking ? &commit_timestamps : nullptr));
     if (blocking)
-      layer_tree_host_->WaitForCommitCompletion();
+      layer_tree_host_->WaitForProtectedSequenceCompletion();
   }
 
   // For Blink implementations, this updates frame throttling and
@@ -661,7 +661,7 @@ bool ProxyMain::MainFrameWillHappenForTesting() {
   DCHECK(IsMainThread());
   bool main_frame_will_happen = false;
   if (layer_tree_host_)
-    layer_tree_host_->WaitForCommitCompletion();
+    layer_tree_host_->WaitForProtectedSequenceCompletion();
   DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
   CompletionEvent completion;
   ImplThreadTaskRunner()->PostTask(

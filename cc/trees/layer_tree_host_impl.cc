@@ -4876,6 +4876,18 @@ void LayerTreeHostImpl::NotifyLatencyInfoSwapPromiseMonitors() {
     monitor->OnSetNeedsRedrawOnImpl();
 }
 
+// These ProtectedSequenceSynchronizer methods are only called in relation to
+// data owned by mutator_host_. These data are never used by a "non-owner"
+// thread, and hence have no protected sequence.
+bool LayerTreeHostImpl::IsOwnerThread() const {
+  DCHECK(task_runner_provider_->IsImplThread());
+  return true;
+}
+bool LayerTreeHostImpl::InProtectedSequence() const {
+  return false;
+}
+void LayerTreeHostImpl::WaitForProtectedSequenceCompletion() const {}
+
 bool LayerTreeHostImpl::IsElementInPropertyTrees(
     ElementId element_id,
     ElementListType list_type) const {

@@ -148,7 +148,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       InitParams params);
 
   LayerTreeHost(const LayerTreeHost&) = delete;
-  virtual ~LayerTreeHost();
+  ~LayerTreeHost() override;
 
   LayerTreeHost& operator=(const LayerTreeHost&) = delete;
 
@@ -611,7 +611,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   }
 
   bool in_commit() const {
-    DCHECK(IsMainThread());
     return commit_completion_event_ && !commit_completion_event_->IsSignaled();
   }
 
@@ -695,7 +694,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       std::unique_ptr<CompletionEvent> completion,
       bool has_updates);
   std::unique_ptr<CommitState> ActivateCommitState();
-  void WaitForCommitCompletion();
   void CommitComplete(const CommitTimestamps&);
   void RequestNewLayerTreeFrameSink();
   void DidInitializeLayerTreeFrameSink();
@@ -755,6 +753,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // rather than layer trees. This also implies that property trees
   // are always already built and so cc doesn't have to build them.
   bool IsUsingLayerLists() const;
+
+  // ProtectedSequenceSynchronizer implementation.
+  bool IsOwnerThread() const override;
+  bool InProtectedSequence() const override;
+  // If commit is currently running on the impl thread, this will block until
+  // commit is finished.
+  void WaitForProtectedSequenceCompletion() const override;
 
   // MutatorHostClient implementation.
   bool IsElementInPropertyTrees(ElementId element_id,
@@ -866,7 +871,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   }
   ThreadUnsafeCommitState& thread_unsafe_commit_state() {
     DCHECK(IsMainThread());
-    WaitForCommitCompletion();
+    WaitForProtectedSequenceCompletion();
     return thread_unsafe_commit_state_;
   }
 
@@ -909,6 +914,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void InitializeProxy(std::unique_ptr<Proxy> proxy);
 
   bool DoUpdateLayers();
+
+  void WaitForCommitCompletion() const;
 
   void UpdateDeferMainFrameUpdateInternal();
 
@@ -1001,7 +1008,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     base::OnceClosure end_notification;
   } scroll_animation_;
 
-  std::unique_ptr<CompletionEvent> commit_completion_event_;
+  mutable std::unique_ptr<CompletionEvent> commit_completion_event_;
 
   EventsMetricsManager events_metrics_manager_;
 

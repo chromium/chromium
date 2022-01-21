@@ -334,7 +334,8 @@ class CC_EXPORT LayerImpl {
   // ReleaseTileResources call.
   virtual void RecreateTileResources();
 
-  virtual std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl);
+  virtual std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const;
   virtual void PushPropertiesTo(LayerImpl* layer);
 
   // Internal to property tree construction (which only happens in tests on a

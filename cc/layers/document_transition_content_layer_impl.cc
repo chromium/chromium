@@ -32,7 +32,7 @@ DocumentTransitionContentLayerImpl::~DocumentTransitionContentLayerImpl() =
     default;
 
 std::unique_ptr<LayerImpl> DocumentTransitionContentLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return DocumentTransitionContentLayerImpl::Create(tree_impl, id(),
                                                     resource_id_);
 }

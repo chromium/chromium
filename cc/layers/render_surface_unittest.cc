@@ -48,7 +48,7 @@ class FakePictureLayerImplForRenderSurfaceTest : public FakePictureLayerImpl {
   }
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) override {
+      LayerTreeImpl* tree_impl) const override {
     return base::WrapUnique(
         new FakePictureLayerImplForRenderSurfaceTest(tree_impl, id()));
   }

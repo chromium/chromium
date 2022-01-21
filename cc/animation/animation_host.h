@@ -42,7 +42,8 @@ enum class ThreadInstance { MAIN, IMPL };
 // An AnimationHost talks to its correspondent LayerTreeHost via
 // MutatorHostClient interface.
 class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
-                                          public LayerTreeMutatorClient {
+                                          public LayerTreeMutatorClient,
+                                          public ProtectedSequenceSynchronizer {
  public:
   using ElementToAnimationsMap =
       std::unordered_map<ElementId,
@@ -83,6 +84,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
            mutator_host_client_->RunsOnCurrentThread());
     return mutator_host_client_;
   }
+
+  // ProtectedSequenceSynchronizer implementation
+  bool IsOwnerThread() const override;
+  bool InProtectedSequence() const override;
+  void WaitForProtectedSequenceCompletion() const override;
 
   void SetNeedsCommit();
   void SetNeedsPushProperties();

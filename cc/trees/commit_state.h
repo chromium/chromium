@@ -154,10 +154,10 @@ struct CC_EXPORT ThreadUnsafeCommitState {
   // TODO(szager/vmpstr): These methods are to support range-based 'for' loops,
   // which is weird because ThreadUnsafeCommitState is not a collection or
   // container. We should do something more sensible and less weird.
-  LayerListIterator begin() const {
-    return LayerListIterator(root_layer.get());
+  LayerListConstIterator begin() const {
+    return LayerListConstIterator(root_layer.get());
   }
-  LayerListIterator end() const { return LayerListIterator(nullptr); }
+  LayerListConstIterator end() const { return LayerListConstIterator(nullptr); }
 
   // Set of layers that need to push properties.
   base::flat_set<Layer*> layers_that_should_push_properties;

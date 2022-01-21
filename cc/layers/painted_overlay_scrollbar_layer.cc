@@ -26,7 +26,7 @@
 namespace cc {
 
 std::unique_ptr<LayerImpl> PaintedOverlayScrollbarLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return PaintedOverlayScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), is_left_side_vertical_scrollbar());
 }
