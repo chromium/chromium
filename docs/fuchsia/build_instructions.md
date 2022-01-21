@@ -92,14 +92,21 @@ $ mkdir ~/chromium && cd ~/chromium
 ```
 
 Run the `fetch` tool from depot_tools to check out the code and its
-dependencies.
+dependencies. Depending on your needs, you can check out Chromium along with
+all of its previous revisions, or you can just check out the latest trunk.
+Omitting the history is much faster to download and requires much less disk
+space. If you are checking out on a slow or metered Internet connection,
+you should consider omitting history.
 
+* **No Git version history - faster**
 ```shell
-$ fetch --nohooks chromium
-```
+  $ fetch --nohooks --no-history chromium
+  ```
 
-Expect the command to take 30 minutes on even a fast connection, and many hours
-on slower ones.
+*  **With Git version history - slower (up to 30m on fast connection)**
+  ```shell
+  $ fetch --nohooks chromium
+  ```
 
 If you've already installed the build dependencies on the machine (from another
 checkout, for example), you can omit the `--nohooks` flag and `fetch` will
