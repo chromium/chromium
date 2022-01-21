@@ -152,6 +152,10 @@ void HTMLIFrameElement::ParseAttribute(
     name_ = value;
     if (name_ != old_name)
       FrameOwnerPropertiesChanged();
+    if (name_.Contains('\n'))
+      UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsNewline);
+    if (name_.Contains('<'))
+      UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsBrace);
   } else if (name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, value);
 
