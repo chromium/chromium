@@ -468,7 +468,8 @@ public abstract class AsyncTask<Result> {
         @Override
         @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         public void run() {
-            try (TraceEvent e = TraceEvent.scoped("AsyncTask.run: " + mFuture.getBlamedClass())) {
+            try (TraceEvent e = TraceEvent.scoped(
+                         "AsyncTask.run: " + mFuture.getBlamedClass().getName())) {
                 super.run();
             }
         }
