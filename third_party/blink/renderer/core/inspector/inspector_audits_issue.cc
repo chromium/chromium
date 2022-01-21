@@ -248,32 +248,6 @@ void AuditsIssue::ReportNavigatorUserAgentAccess(
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
-void AuditsIssue::ReportCrossOriginWasmModuleSharingIssue(
-    ExecutionContext* execution_context,
-    const std::string& wasm_source_url,
-    WTF::String source_origin,
-    WTF::String target_origin,
-    bool is_warning) {
-  auto details =
-      protocol::Audits::WasmCrossOriginModuleSharingIssueDetails::create()
-          .setWasmModuleUrl(WTF::String::FromUTF8(wasm_source_url))
-          .setSourceOrigin(source_origin)
-          .setTargetOrigin(target_origin)
-          .setIsWarning(is_warning)
-          .build();
-
-  auto issue_details =
-      protocol::Audits::InspectorIssueDetails::create()
-          .setWasmCrossOriginModuleSharingIssue(std::move(details))
-          .build();
-  auto issue = protocol::Audits::InspectorIssue::create()
-                   .setCode(protocol::Audits::InspectorIssueCodeEnum::
-                                WasmCrossOriginModuleSharingIssue)
-                   .setDetails(std::move(issue_details))
-                   .build();
-  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
-}
-
 namespace {
 
 protocol::Audits::SharedArrayBufferIssueType

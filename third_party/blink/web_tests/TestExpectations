@@ -6810,9 +6810,7 @@ crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.h
 
 # Cross-origin WebAssembly module sharing is getting deprecated.
 crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html [ Skip ]
-crbug.com/1224804 http/tests/inspector-protocol/issues/wasm-co-sharing-issue.js [ Skip ]
 crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-domain-success.sub.html [ Skip ]
-
 
 # Sheriff 2021-07-13
 crbug.com/1220114 external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]

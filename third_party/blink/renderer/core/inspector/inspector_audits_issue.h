@@ -131,13 +131,6 @@ class CORE_EXPORT AuditsIssue {
       ExecutionContext* execution_context,
       WTF::String url);
 
-  static void ReportCrossOriginWasmModuleSharingIssue(
-      ExecutionContext* execution_context,
-      const std::string& wasm_source_url,
-      WTF::String source_origin,
-      WTF::String target_origin,
-      bool is_warning);
-
   static void ReportSharedArrayBufferIssue(
       ExecutionContext* execution_context,
       bool shared_buffer_transfer_allowed,
