@@ -53,8 +53,8 @@
       'android-archive-dbg': 'android_without_codecs_debug_bot',
       'android-official': 'android_official_optimize_goma',
       'fuchsia-official': 'fuchsia_official_optimize_goma',
-      'linux-archive-rel': 'release_bot',
-      'linux-archive-dbg': 'debug_bot',
+      'linux-archive-rel': 'release_bot_reclient',
+      'linux-archive-dbg': 'debug_bot_reclient',
       'linux-archive-tagged': 'official_optimize_goma',
       'linux-official': 'official_optimize_goma',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols',
@@ -2166,6 +2166,10 @@
 
     'debug_bot': [
       'debug_bot',
+    ],
+
+    'debug_bot_reclient': [
+      'debug_bot_reclient',
     ],
 
     'debug_bot_arm64': [
