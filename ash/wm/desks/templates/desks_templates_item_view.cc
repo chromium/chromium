@@ -16,11 +16,14 @@
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desks_textfield.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/strings/utf_string_conversions.h"
@@ -218,6 +221,22 @@ bool DesksTemplatesItemView::IsTemplateNameBeingModified() const {
   return name_view_->HasFocus();
 }
 
+void DesksTemplatesItemView::ReplaceTemplate(const std::string& uuid,
+                                             const std::u16string& new_name) {
+  UpdateTemplateName();
+  DesksTemplatesPresenter::Get()->DeleteEntry(uuid);
+  RecordReplaceTemplateHistogram();
+}
+
+void DesksTemplatesItemView::RevertTemplateName() {
+  views::FocusManager* focus_manager = GetFocusManager();
+  focus_manager->SetFocusedView(name_view_);
+  name_view_->SetText(desk_template_->template_name());
+  name_view_->SelectAll(true);
+
+  name_view_->OnContentsChanged();
+}
+
 void DesksTemplatesItemView::Layout() {
   const int previous_name_view_width = name_view_->width();
 
@@ -335,6 +354,47 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
     return;
   }
 
+  // Check if template name exist, replace existing template if confirmed by
+  // user.
+  aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
+  OverviewGrid* overview_grid = Shell::Get()
+                                    ->overview_controller()
+                                    ->overview_session()
+                                    ->GetGridWithRootWindow(root_window);
+  auto* templates_grid_view = static_cast<DesksTemplatesGridView*>(
+      overview_grid->desks_templates_grid_widget()->GetContentsView());
+  for (DesksTemplatesItemView* template_item :
+       templates_grid_view->grid_items()) {
+    auto new_name = name_view_->GetText();
+    if (template_item != this &&
+        template_item->desk_template_->template_name() == new_name) {
+      // Show replace template dialog.
+      // If accepted, replace old template and commit name change.
+      DesksTemplatesDialogController::Get()->ShowReplaceDialog(
+          root_window, new_name,
+          base::BindOnce(
+              &DesksTemplatesItemView::ReplaceTemplate, base::Unretained(this),
+              template_item->desk_template_->uuid().AsLowercaseString(),
+              new_name),
+          base::BindOnce(&DesksTemplatesItemView::RevertTemplateName,
+                         base::Unretained(this)));
+      return;
+    }
+  }
+  UpdateTemplateName();
+}
+
+views::Button::KeyClickAction DesksTemplatesItemView::GetKeyClickActionForEvent(
+    const ui::KeyEvent& event) {
+  // Prevents any key events from activating a button click while the template
+  // name is being modified.
+  if (is_template_name_being_modified_)
+    return KeyClickAction::kNone;
+
+  return Button::GetKeyClickActionForEvent(event);
+}
+
+void DesksTemplatesItemView::UpdateTemplateName() {
   auto updated_template = desk_template_->Clone();
   updated_template->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(updated_template->template_name());
@@ -351,16 +411,6 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
                            /*is_update=*/false, std::move(desk_template));
                      },
                      std::move(updated_template)));
-}
-
-views::Button::KeyClickAction DesksTemplatesItemView::GetKeyClickActionForEvent(
-    const ui::KeyEvent& event) {
-  // Prevents any key events from activating a button click while the template
-  // name is being modified.
-  if (is_template_name_being_modified_)
-    return KeyClickAction::kNone;
-
-  return Button::GetKeyClickActionForEvent(event);
 }
 
 void DesksTemplatesItemView::ContentsChanged(

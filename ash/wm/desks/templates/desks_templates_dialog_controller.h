@@ -51,7 +51,9 @@ class ASH_EXPORT DesksTemplatesDialogController : public views::WidgetObserver {
       DesksController::GetDeskTemplateCallback callback,
       std::unique_ptr<DeskTemplate> desk_template);
   void ShowReplaceDialog(aura::Window* root_window,
-                         const std::u16string& template_name);
+                         const std::u16string& template_name,
+                         base::OnceClosure on_accept_callback,
+                         base::OnceClosure on_cancel_callback);
   // Show the delete template dialog when user press the delete button.
   // The `template_name` shows the name of the template which will be deleted in
   // the dialog description.

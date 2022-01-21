@@ -52,6 +52,11 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   // `DesksTemplatesNameView` has the focus).
   bool IsTemplateNameBeingModified() const;
 
+  // Rename current template with new name, delete old template with same name
+  // by uuid. Used for callback functions for Replace Dialog.
+  void ReplaceTemplate(const std::string& uuid, const std::u16string& new_name);
+  void RevertTemplateName();
+
   // views::Button:
   void Layout() override;
   void OnThemeChanged() override;
@@ -86,6 +91,9 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   // Called when we want to update `name_view_` when the template's name
   // changes.
   void OnTemplateNameChanged(const std::u16string& new_name);
+
+  // Update template name based on `name_view_` string.
+  void UpdateTemplateName();
 
   // OverviewHighlightableView:
   views::View* GetView() override;

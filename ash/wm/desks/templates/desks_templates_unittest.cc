@@ -554,7 +554,8 @@ TEST_F(DesksTemplatesTest, DialogSystemModal) {
 
   // Show one of the dialogs. Activating the dialog keeps us in overview mode.
   auto* dialog_controller = DesksTemplatesDialogController::Get();
-  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento");
+  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento",
+                                       base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
   ASSERT_TRUE(GetOverviewSession());
 
@@ -2113,17 +2114,31 @@ TEST_F(DesksTemplatesTest, LayoutItemsInPortrait) {
 }
 
 // Tests record metrics when current template being replaced.
-TEST_F(DesksTemplatesTest, ReplaceTemplateRecordMetrics) {
+TEST_F(DesksTemplatesTest, ReplaceTemplate) {
   base::HistogramTester histogram_tester;
 
   UpdateDisplay("800x600,800x600");
 
-  ToggleOverview();
-  ASSERT_TRUE(GetOverviewSession());
+  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  const std::u16string name_1 = u"template_1";
+  AddEntry(uuid_1, "template_1", base::Time::Now());
 
+  const base::GUID uuid_2 = base::GUID::GenerateRandomV4();
+  const std::u16string name_2 = u"template_2";
+  AddEntry(uuid_2, "template_2", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
+      /*grid_item_index=*/0);
   // Show replace dialogs.
   auto* dialog_controller = DesksTemplatesDialogController::Get();
-  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento");
+  auto callback = base::BindLambdaForTesting([&]() {
+    item_view->ReplaceTemplate(uuid_1.AsLowercaseString(), name_1);
+  });
+
+  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento",
+                                       callback, base::DoNothing());
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
   ASSERT_TRUE(GetOverviewSession());
 
@@ -2133,6 +2148,14 @@ TEST_F(DesksTemplatesTest, ReplaceTemplateRecordMetrics) {
       ->AsDialogDelegate()
       ->AcceptDialog();
 
+  // Only one template left.
+  EXPECT_EQ(1ul, desk_model()->GetEntryCount());
+  // The Template has been replaced.
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+  EXPECT_EQ(name_1, name_view->GetText());
+  std::vector<DeskTemplate*> entries = GetAllEntries();
+  EXPECT_EQ(uuid_2, entries[0]->uuid());
   // Assert metrics being recorded.
   histogram_tester.ExpectTotalCount(kReplaceTemplateHistogramName, 1);
 
