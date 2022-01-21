@@ -701,21 +701,6 @@
             ]
         }
     ],
-    "AppListOmniboxRichEntities": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableOmniboxRichEntities"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppListZeroStateMixedTypesRanker": [
         {
             "platforms": [
@@ -2506,25 +2491,6 @@
             ]
         }
     ],
-    "ColorProviderRedirection": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ColorProviderRedirection"
-                    ]
-                }
-            ]
-        }
-    ],
     "CombinedNavigationOptimizations": [
         {
             "platforms": [
@@ -3753,21 +3719,6 @@
                     "enable_features": [
                         "EnableSuggestedFiles",
                         "LauncherItemSuggest"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ExperimentalAccessibilityLabels": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExperimentalAccessibilityLabels"
                     ]
                 }
             ]
@@ -5114,29 +5065,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableMixedContentDownloadDialog"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MixedFormInterstitial": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "mode": "include-redirects-with-form-data"
-                    },
-                    "enable_features": [
-                        "InsecureFormSubmissionInterstitial"
                     ]
                 }
             ]
@@ -6949,21 +6877,6 @@
             ]
         }
     ],
-    "ReportSaveDataSavings": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReportSaveDataSavings"
-                    ]
-                }
-            ]
-        }
-    ],
     "RequestDesktopSiteForTablets": [
         {
             "platforms": [
@@ -7472,22 +7385,6 @@
                     ],
                     "disable_features": [
                         "EnableAutomaticSnooze"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SpecPageFaultStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SpecPageFault"
                     ]
                 }
             ]
@@ -8859,22 +8756,6 @@
         }
     ],
     "WebRTC-Aec3TransparentModeHmm": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
-    "WebRTC-Aec3UseUnboundedEchoSpectrum": [
         {
             "platforms": [
                 "windows",
