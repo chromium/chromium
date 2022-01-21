@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -35,13 +34,8 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/platform_window/platform_window_init_properties.h"
-#include "ui/platform_window/x11/x11_window.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
-#else
 #include "ui/platform_window/x11/os_exchange_data_provider_x11.h"
-#endif
+#include "ui/platform_window/x11/x11_window.h"
 
 namespace ui {
 namespace {
@@ -464,11 +458,7 @@ class TestOSExchangeDataProvideFactory
   ~TestOSExchangeDataProvideFactory() override = default;
 
   std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    return std::make_unique<OSExchangeDataProviderNonBacked>();
-#else
     return std::make_unique<OSExchangeDataProviderX11>();
-#endif
   }
 };
 

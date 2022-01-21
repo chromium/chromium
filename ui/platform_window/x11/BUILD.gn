@@ -68,7 +68,6 @@ test("x11_unittests") {
   sources = [
     "test/device_data_manager_x11_unittest.cc",
     "test/events_x_unittest.cc",
-    "test/x11_drag_drop_client_unittest.cc",
     "test/x11_event_translation_unittest.cc",
     "test/x11_window_unittest.cc",
   ]
@@ -101,6 +100,15 @@ test("x11_unittests") {
   if (!is_chromeos && !is_chromeos_ash && !is_chromeos_lacros) {
     sources += [ "test/os_exchange_data_provider_x11_unittest.cc" ]
     deps += [ "//ui/base/clipboard:clipboard_types" ]
+
+    # ChromeOS uses a non-backed exchange data provider while the tests actually
+    # expect to use a normal X11 provider. Running these tests with a non-backed
+    # provided results in crashes when ownership selection call is made.
+    # Moreover, X11 on ChromeOS is used only for dev purposes and it doesn't
+    # support DnD between X11 windows. Instead, all the dnd operations are
+    # performed within a single native windows, where ash spawns its own
+    # internal windows
+    sources += [ "test/x11_drag_drop_client_unittest.cc" ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
