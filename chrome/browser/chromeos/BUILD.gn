@@ -4312,6 +4312,8 @@ source_set("unit_tests") {
     "../ash/net/network_diagnostics/https_latency_routine_unittest.cc",
     "../ash/net/network_diagnostics/lan_connectivity_routine_unittest.cc",
     "../ash/net/network_diagnostics/network_diagnostics_routine_unittest.cc",
+    "../ash/net/network_diagnostics/network_diagnostics_test_helper.cc",
+    "../ash/net/network_diagnostics/network_diagnostics_test_helper.h",
     "../ash/net/network_diagnostics/network_diagnostics_unittest.cc",
     "../ash/net/network_diagnostics/network_diagnostics_util_unittest.cc",
     "../ash/net/network_diagnostics/signal_strength_routine_unittest.cc",
