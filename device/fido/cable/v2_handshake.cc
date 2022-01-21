@@ -921,8 +921,7 @@ HandshakeResult HandshakeInitiator::ProcessResponse(
     return absl::nullopt;
   }
 
-  std::array<uint8_t, 32> read_key, write_key;
-  std::tie(write_key, read_key) = noise_.traffic_keys();
+  auto [write_key, read_key] = noise_.traffic_keys();
   return std::make_pair(std::make_unique<cablev2::Crypter>(read_key, write_key),
                         noise_.handshake_hash());
 }
@@ -1028,8 +1027,7 @@ HandshakeResult RespondToHandshake(
   out_response->insert(out_response->end(), my_ciphertext.begin(),
                        my_ciphertext.end());
 
-  std::array<uint8_t, 32> read_key, write_key;
-  std::tie(read_key, write_key) = noise.traffic_keys();
+  auto [read_key, write_key] = noise.traffic_keys();
   return std::make_pair(std::make_unique<cablev2::Crypter>(read_key, write_key),
                         noise.handshake_hash());
 }

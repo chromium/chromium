@@ -99,10 +99,7 @@ std::string FakePeripheral::AddFakeService(
   std::string new_service_id =
       base::StringPrintf("%s_%zu", GetAddress().c_str(), ++last_service_id_);
 
-  GattServiceMap::iterator it;
-  bool inserted;
-
-  std::tie(it, inserted) = gatt_services_.emplace(
+  auto [it, inserted] = gatt_services_.emplace(
       new_service_id,
       std::make_unique<FakeRemoteGattService>(new_service_id, service_uuid,
                                               true /* is_primary */, this));

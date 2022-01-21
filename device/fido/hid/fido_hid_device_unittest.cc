@@ -213,8 +213,7 @@ class FidoDeviceEnumerateCallbackReceiver
 
   std::vector<std::unique_ptr<FidoHidDevice>> TakeReturnedDevicesFiltered() {
     std::vector<std::unique_ptr<FidoHidDevice>> filtered_results;
-    std::vector<mojom::HidDeviceInfoPtr> results;
-    std::tie(results) = TakeResult();
+    auto [results] = TakeResult();
     for (auto& device_info : results) {
       HidDeviceFilter filter;
       filter.SetUsagePage(0xf1d0);

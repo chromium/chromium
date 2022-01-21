@@ -161,9 +161,7 @@ TEST_F(BioEnrollmentHandlerTest, Enroll) {
   auto handler = MakeHandler();
   ready_callback_.WaitForCallback();
 
-  CtapDeviceResponseCode status;
-  BioEnrollmentHandler::TemplateId template_id;
-  std::tie(status, template_id) = EnrollTemplate(handler.get());
+  auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
   EXPECT_FALSE(template_id.empty());
 }
@@ -181,9 +179,7 @@ TEST_F(BioEnrollmentHandlerTest, EnrollMultiple) {
 
   // Multiple enrollments
   for (auto i = 0; i < 4; i++) {
-    CtapDeviceResponseCode status;
-    BioEnrollmentHandler::TemplateId template_id;
-    std::tie(status, template_id) = EnrollTemplate(handler.get());
+    auto [status, template_id] = EnrollTemplate(handler.get());
     EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
     EXPECT_FALSE(template_id.empty());
   }
@@ -260,9 +256,7 @@ TEST_F(BioEnrollmentHandlerTest, EnumerateOne) {
   ready_callback_.WaitForCallback();
 
   // Enroll - skip response validation
-  CtapDeviceResponseCode status;
-  BioEnrollmentHandler::TemplateId template_id;
-  std::tie(status, template_id) = EnrollTemplate(handler.get());
+  auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
   EXPECT_FALSE(template_id.empty());
 
@@ -296,9 +290,7 @@ TEST_F(BioEnrollmentHandlerTest, Rename) {
   EXPECT_EQ(cb0.value(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
 
   // Enroll - skip response validation.
-  CtapDeviceResponseCode status;
-  BioEnrollmentHandler::TemplateId template_id;
-  std::tie(status, template_id) = EnrollTemplate(handler.get());
+  auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
   EXPECT_FALSE(template_id.empty());
 
@@ -338,9 +330,7 @@ TEST_F(BioEnrollmentHandlerTest, Delete) {
   EXPECT_EQ(cb0.value(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
 
   // Enroll - skip response validation.
-  CtapDeviceResponseCode status;
-  BioEnrollmentHandler::TemplateId template_id;
-  std::tie(status, template_id) = EnrollTemplate(handler.get());
+  auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
   EXPECT_FALSE(template_id.empty());
 
@@ -371,9 +361,7 @@ TEST_F(BioEnrollmentHandlerTest, SampleError) {
   auto handler = MakeHandler();
   ready_callback_.WaitForCallback();
 
-  CtapDeviceResponseCode status;
-  BioEnrollmentHandler::TemplateId template_id;
-  std::tie(status, template_id) = EnrollTemplate(handler.get());
+  auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
   EXPECT_EQ(sample_failures_, 1u);
 }
@@ -392,9 +380,7 @@ TEST_F(BioEnrollmentHandlerTest, SampleNoUserActivity) {
   auto handler = MakeHandler();
   ready_callback_.WaitForCallback();
 
-  CtapDeviceResponseCode status;
-  BioEnrollmentHandler::TemplateId template_id;
-  std::tie(status, template_id) = EnrollTemplate(handler.get());
+  auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
   EXPECT_EQ(sample_failures_, 0u);
 }

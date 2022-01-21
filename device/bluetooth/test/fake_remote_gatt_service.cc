@@ -41,14 +41,11 @@ bool FakeRemoteGattService::AllResponsesConsumed() {
 std::string FakeRemoteGattService::AddFakeCharacteristic(
     const device::BluetoothUUID& characteristic_uuid,
     mojom::CharacteristicPropertiesPtr properties) {
-  CharacteristicMap::iterator it;
-  bool inserted;
-
   // Attribute instance Ids need to be unique.
   std::string new_characteristic_id = base::StringPrintf(
       "%s_%zu", GetIdentifier().c_str(), ++last_characteristic_id_);
 
-  std::tie(it, inserted) = characteristics_.emplace(
+  auto [it, inserted] = characteristics_.emplace(
       new_characteristic_id, std::make_unique<FakeRemoteGattCharacteristic>(
                                  new_characteristic_id, characteristic_uuid,
                                  std::move(properties), this));
