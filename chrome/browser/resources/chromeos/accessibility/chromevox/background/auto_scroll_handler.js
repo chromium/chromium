@@ -124,6 +124,7 @@ AutoScrollHandler = class {
         }
       });
       if (!scrollResult) {
+        this.isScrolling_ = false;
         ChromeVoxState.instance.navigateToRange(target, false, speechProps);
         return;
       }
@@ -214,7 +215,7 @@ AutoScrollHandler = class {
 
       // Usual case. Retry navigation with a refreshed tree.
       retryCommandFunc();
-    })().catch(e => {
+    })().finally(() => {
       this.isScrolling_ = false;
     });
 

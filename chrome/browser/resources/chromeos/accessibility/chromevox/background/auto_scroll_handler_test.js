@@ -26,6 +26,7 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
         <p>2nd item</p>
         <p>3rd item</p>
       </div>
+      <p>hello</p><p>world</p>
       <script>
         let i = 4;
         const list = document.getElementById('div');
@@ -166,7 +167,7 @@ TEST_F(
       this.runWithFakeArcSimpleScrollable(function(root) {
         const handler = new AutoScrollHandler();
 
-        const list = root.firstChild;
+        const list = root.find({role: RoleType.LIST});
         const firstItemCursor = cursors.Range.fromNode(list.firstChild);
         const lastItemCursor = cursors.Range.fromNode(list.lastChild);
 
@@ -183,7 +184,7 @@ TEST_F(
       this.runWithFakeArcSimpleScrollable(function(root) {
         const handler = new AutoScrollHandler();
 
-        const list = root.firstChild;
+        const list = root.find({role: RoleType.LIST});
         const rootCursor = cursors.Range.fromNode(root);
         const firstItemCursor = cursors.Range.fromNode(list.firstChild);
         const lastItemCursor = cursors.Range.fromNode(list.lastChild);
@@ -219,6 +220,26 @@ TEST_F('ChromeVoxAutoScrollHandlerTest', 'ScrollForward', function() {
         .replay();
   });
 });
+
+TEST_F(
+    'ChromeVoxAutoScrollHandlerTest', 'ScrollForwardReturnsFalse', function() {
+      const mockFeedback = this.createMockFeedback();
+      this.runWithFakeArcSimpleScrollable(function(root) {
+        const list = root.find({role: RoleType.LIST});
+        list.scrollForward = (callback) => callback(false);
+
+        mockFeedback.expectSpeech('1st item')
+            .call(doCmd('nextObject'))
+            .expectSpeech('2nd item')
+            .call(doCmd('nextObject'))
+            .expectSpeech('3rd item')
+            .call(doCmd('nextObject'))
+            .expectSpeech('hello')
+            .call(doCmd('nextObject'))
+            .expectSpeech('world')
+            .replay();
+      });
+    });
 
 TEST_F('ChromeVoxAutoScrollHandlerTest', 'RecyclerViewByObject', function() {
   const mockFeedback = this.createMockFeedback();
