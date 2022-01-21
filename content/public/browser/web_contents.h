@@ -1340,7 +1340,8 @@ class WebContents : public PageNavigator,
   virtual std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PrerenderTriggerType trigger_type,
-      const std::string& embedder_histogram_suffix) = 0;
+      const std::string& embedder_histogram_suffix,
+      ui::PageTransition page_transition) = 0;
 
  private:
   // This interface should only be implemented inside content.

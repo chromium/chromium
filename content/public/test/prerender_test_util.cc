@@ -315,17 +315,19 @@ std::unique_ptr<PrerenderHandle>
 PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
     const GURL& prerendering_url,
     PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
+    const std::string& embedder_histogram_suffix,
+    ui::PageTransition page_transition) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync",
               "prerendering_url", prerendering_url, "trigger_type",
               trigger_type, "embedder_histogram_suffix",
-              embedder_histogram_suffix);
+              embedder_histogram_suffix, "page_transition", page_transition);
   if (!content::BrowserThread::CurrentlyOn(BrowserThread::UI))
     return nullptr;
 
   WebContents* web_contents = GetWebContents();
   return web_contents->StartPrerendering(prerendering_url, trigger_type,
-                                         embedder_histogram_suffix);
+                                         embedder_histogram_suffix,
+                                         page_transition);
 }
 
 void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,

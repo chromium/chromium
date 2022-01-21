@@ -110,7 +110,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
           prerender_url, content::PrerenderTriggerType::kEmbedder,
-          prerender_utils::kDirectUrlInputMetricSuffix);
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);

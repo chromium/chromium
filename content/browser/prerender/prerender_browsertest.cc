@@ -4637,9 +4637,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(kPrerenderingUrl,
-                                             PrerenderTriggerType::kEmbedder,
-                                             "EmbedderSuffixForTest");
+      web_contents_impl()->StartPrerendering(
+          kPrerenderingUrl, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *shell()->web_contents(), kPrerenderingUrl);
@@ -4659,9 +4661,11 @@ void PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents.StartPrerendering(prerendering_url,
-                                     PrerenderTriggerType::kEmbedder,
-                                     "EmbedderSuffixForTest");
+      web_contents.StartPrerendering(
+          prerendering_url, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(web_contents,
                                                             prerendering_url);

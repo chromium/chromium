@@ -9210,16 +9210,14 @@ VisibleTimeRequestTrigger* WebContentsImpl::GetVisibleTimeRequestTrigger() {
 std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     const GURL& prerendering_url,
     PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
-  // TODO(https://crbug.com/1166085): Use the ui::PageTransition value passed
-  // from Embedders for flexibility.
+    const std::string& embedder_histogram_suffix,
+    ui::PageTransition page_transition) {
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       content::Referrer(), /*initiator_origin=*/absl::nullopt, prerendering_url,
       content::ChildProcessHost::kInvalidUniqueID,
       /*initiator_frame_token=*/absl::nullopt, ukm::kInvalidSourceId,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+      page_transition);
   int frame_tree_node_id =
       GetPrerenderHostRegistry()->CreateAndStartHost(attributes, *this);
 

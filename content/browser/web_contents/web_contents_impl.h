@@ -856,7 +856,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PrerenderTriggerType trigger_type,
-      const std::string& embedder_histogram_suffix) override;
+      const std::string& embedder_histogram_suffix,
+      ui::PageTransition page_transition) override;
 
   // NavigatorDelegate ---------------------------------------------------------
 

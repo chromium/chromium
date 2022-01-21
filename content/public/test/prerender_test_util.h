@@ -122,7 +122,8 @@ class PrerenderTestHelper {
   std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
       const GURL& prerendering_url,
       PrerenderTriggerType trigger_type,
-      const std::string& embedder_histogram_suffix);
+      const std::string& embedder_histogram_suffix,
+      ui::PageTransition page_transition);
 
   // This navigates, but does not activate, the prerendered page.
   void NavigatePrerenderedPage(int host_id, const GURL& gurl);
