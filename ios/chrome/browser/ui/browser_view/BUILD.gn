@@ -82,7 +82,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
-    "//ios/chrome/browser/ui/authentication/enterprise/user_policy_signout",
     "//ios/chrome/browser/ui/autofill:autofill",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/ui/badges:badges_popup_menu",

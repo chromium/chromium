@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/user_policy_signout/user_policy_signout_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
@@ -117,7 +116,6 @@
                                   RepostFormTabHelperDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
-                                  UserPolicySignoutCoordinatorDelegate,
                                   WebStateListObserving>
 
 // Whether the coordinator is started.
@@ -228,15 +226,10 @@
 @property(nonatomic, strong)
     DefaultBrowserPromoNonModalCoordinator* nonModalPromoCoordinator;
 
-// The coordinator that manages the prompt for when the user is signed out due
-// to policy.
-@property(nonatomic, strong)
-    UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
-
 // The coordinator that manages alerts for enterprise sync policy changes.
 @property(nonatomic, strong) AlertCoordinator* syncDisabledAlertCoordinator;
 
-// The coordinator that manages the view for enterprise signout.
+// The coordinator that manages enterprise prompts.
 @property(nonatomic, strong)
     EnterprisePromptCoordinator* enterprisePromptCoordinator;
 
@@ -1138,13 +1131,14 @@
 #pragma mark - PolicyChangeCommands
 
 - (void)showPolicySignoutPrompt {
-  if (!self.policySignoutPromptCoordinator) {
-    self.policySignoutPromptCoordinator = [[UserPolicySignoutCoordinator alloc]
+  if (!self.enterprisePromptCoordinator) {
+    self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
         initWithBaseViewController:self.viewController
-                           browser:self.browser];
-    self.policySignoutPromptCoordinator.delegate = self;
+                           browser:self.browser
+                        promptType:EnterprisePromptTypeForceSignOut];
+    self.enterprisePromptCoordinator.delegate = self;
   }
-  [self.policySignoutPromptCoordinator start];
+  [self.enterprisePromptCoordinator start];
 }
 
 - (void)showSyncDisabledAlert {
@@ -1209,18 +1203,6 @@
   }
 }
 
-#pragma mark - UserPolicySignoutCoordinatorDelegate
-
-- (void)hidePolicySignoutPromptForLearnMore:(BOOL)learnMore {
-  [self.policySignoutPromptCoordinator stop];
-  self.policySignoutPromptCoordinator = nil;
-}
-
-- (void)userPolicySignoutDidDismiss {
-  [self.policySignoutPromptCoordinator stop];
-  self.policySignoutPromptCoordinator = nil;
-}
-
 #pragma mark - DefaultBrowserPromoNonModalCommands
 
 - (void)showDefaultBrowserNonModalPromo {
@@ -1263,6 +1245,11 @@
 }
 
 #pragma mark - EnterprisePromptCoordinatorDelegate
+
+- (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore {
+  [self.enterprisePromptCoordinator stop];
+  self.enterprisePromptCoordinator = nil;
+}
 
 - (void)enterprisePromptCoordinatorDidDismiss {
   [self.enterprisePromptCoordinator stop];

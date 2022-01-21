@@ -26,7 +26,7 @@ source_set("sync") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
-    "//ios/chrome/browser/ui/authentication/enterprise/user_policy_signout",
+    "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

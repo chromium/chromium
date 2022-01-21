@@ -16,6 +16,10 @@
 // Notifies the delegate that the view has been dismissed.
 - (void)enterprisePromptCoordinatorDidDismiss;
 
+// Command to clean up the prompt. Stops the coordinator and sets it to
+// nil. |learnMore| is YES if the user tapped the "learn more" button.
+- (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore;
+
 @end
 
 // Coordinator for enterprise prompt alerts.

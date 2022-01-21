@@ -43,9 +43,11 @@
   // TODO(crbug.com/1261423): Implement all cases.
   switch (self.promptType) {
     case EnterprisePromptTypeRestrictAccountSignedOut:
-      [self restrictAccountSignedOut];
+      [self setupForRestrictAccountSignedOut];
       break;
     case EnterprisePromptTypeForceSignOut:
+      [self setupForForceSignOut];
+      break;
     case EnterprisePromptTypeSyncDisabled:
       NOTREACHED();
       break;
@@ -65,12 +67,23 @@
 #pragma mark - Private
 
 // Updates the view with account restriction informations.
-- (void)restrictAccountSignedOut {
+- (void)setupForRestrictAccountSignedOut {
   self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
   self.subtitleString = l10n_util::GetNSString(
       IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
+}
+
+// Updates the view with force sign out informations.
+- (void)setupForForceSignOut {
+  self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
+  self.subtitleString =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT);
+  self.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
+  self.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
 }
 
 @end

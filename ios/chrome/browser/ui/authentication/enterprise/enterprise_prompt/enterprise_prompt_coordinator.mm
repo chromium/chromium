@@ -4,11 +4,16 @@
 
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 
-#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_view_controller.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -89,6 +94,23 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       [self.delegate enterprisePromptCoordinatorDidDismiss];
       break;
     case EnterprisePromptTypeForceSignOut:
+      [self.delegate hideEnterprisePrompForLearnMore:NO];
+      break;
+    case EnterprisePromptTypeSyncDisabled:
+      NOTREACHED();
+      break;
+  }
+}
+
+- (void)confirmationAlertSecondaryAction {
+  // TODO(crbug.com/1261423): Implement all cases.
+  switch (self.promptType) {
+    case EnterprisePromptTypeRestrictAccountSignedOut:
+      NOTREACHED();
+      break;
+    case EnterprisePromptTypeForceSignOut:
+      [self closeEntreprisePromptAndOpenLearnMoreURL];
+      break;
     case EnterprisePromptTypeSyncDisabled:
       NOTREACHED();
       break;
@@ -104,7 +126,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 #pragma mark - Private
 
-// Remove view controller from display.
+// Removes view controller from display.
 - (void)dismissSignOutViewController {
   if (self.viewController) {
     [self.baseViewController.presentedViewController
@@ -112,6 +134,16 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                            completion:nil];
     self.viewController = nil;
   }
+}
+
+// Handles 'Learn More' action for force sign out prompt.
+- (void)closeEntreprisePromptAndOpenLearnMoreURL {
+  [self.delegate hideEnterprisePrompForLearnMore:YES];
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler openURLInNewTab:command];
 }
 
 @end
