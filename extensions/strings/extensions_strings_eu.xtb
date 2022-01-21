@@ -18,7 +18,7 @@
 <translation id="3144135466825225871">Ezin izan da crx fitxategia ordeztu. Begiratu fitxategia nonbait erabiltzen ari den.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
 <translation id="3302709122321372472">Ezin izan da kargatu script-edukien "<ph name="RELATIVE_PATH" />" css txantiloia.</translation>
-<translation id="3369521687965833290">Ezin da despaketatu luzapena. Luzapena segurtasunez despaketatzeko, zure profilaren direktoriorako bide bat egon behar du, bideak unitate baten letrarekin hasi behar du eta ezin du elkargunerik, muntatze-punturik edo esteka sinbolikorik eduki. Ez duzu halako biderik profilean.</translation>
+<translation id="3369521687965833290">Ezin da despaketatu luzapena. Luzapena segurtasunez despaketatzeko, zure profilaren direktoriorako bide bat egon behar du, bideak unitate baten letrarekin hasi behar du eta ezin du elkargunerik, instalazio-punturik edo esteka sinbolikorik eduki. Ez duzu halako biderik profilean.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3561217442734750519">Gako pribatuak baliozko bide-izena izan behar du.</translation>

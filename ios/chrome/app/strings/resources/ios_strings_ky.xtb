@@ -239,7 +239,7 @@
 <translation id="3169472444629675720">Аныктоо</translation>
 <translation id="3174662312949010067">Сакталган сырсөздөрдү башка түзмөктөрүңүздө да колдонсоңуз болот.</translation>
 <translation id="3175081911749765310">Желе кызмт</translation>
-<translation id="3178650076442119961">Акыркы аракеттер: бүгүн</translation>
+<translation id="3178650076442119961">Соңку аракеттер: бүгүн</translation>
 <translation id="3181825792072797598">Шайкештирүүнү күйгүзүү</translation>
 <translation id="3181954750937456830">Коопсуз серептөө (сизди жана түзмөгүңүздү кооптуу сайттардан коргойт)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен кулпуну ачуу</translation>
@@ -487,7 +487,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{1 Chrome терезеси көрсөтүлүүдө}other{{count} Chrome терезеси көрсөтүлүүдө}}</translation>
 <translation id="5704908597376970822">Аккаунтка кирген жоксуз.</translation>
-<translation id="5706552126692816153">Акыркы аракеттер: 1 күн мурун</translation>
+<translation id="5706552126692816153">Соңку аракеттер: 1 күн мурун</translation>
 <translation id="5711039611392265845">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка жөндөөлөрдү көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү жана Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
 <translation id="5724941645893276623">Интернетти купуя серептөө үчүн жаңы өтмөк кошуңуз</translation>
 <translation id="5728700505257787410">Кечиресиз, каттоо эсебиңзге кирип жаткнда көйгй келип чыкты.</translation>

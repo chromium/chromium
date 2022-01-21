@@ -96,7 +96,7 @@
 <translation id="1099282607296956954">Attiva isolamento dei siti per ogni sito
 </translation>
 <translation id="1105572260329131950">Vengono usate icone predefinite per le connessioni sicure</translation>
-<translation id="1110426799149444997">Disattiva la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1110426799149444997">Disattiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
@@ -781,7 +781,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       Questo criterio aziendale è disattivato per impostazione predefinita.</translation>
 <translation id="1949584741547056205">Risposte rapide</translation>
-<translation id="1960416154405676350">Attiva la ricerca area geografica di<ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1960416154405676350">Attiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Il criterio viene applicato soltanto alle sessioni Ospite gestite.
       La configurazione del criterio consente di specificare un elenco di ID delle estensioni esenti dalla procedura di pulizia della sessione Ospite gestita limitata (vedi <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
 Lasciare il criterio non impostato significa che nessuna estensione è esente dalla procedura di reimpostazione.</translation>
@@ -5799,7 +5799,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Questo criterio può essere impostato soltanto dalla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7816326058023670173">Stesso secret per dispositivi di figli e genitori.</translation>
 <translation id="7818131573217430250">Impostazione stato predefinito modalità ad alto contrasto nella schermata di accesso</translation>
-<translation id="7821864705813933283">Consenti la visualizzazione della voce di menu per la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale se supportato.</translation>
+<translation id="7821864705813933283">Consenti la visualizzazione della voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale se supportata.</translation>
 <translation id="7823902813460802031">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> impedisce al dispositivo di avviare la modalità sviluppatore.
 
        Se il criterio viene impostato su Disattivato o se non viene configurato, la modalità sviluppatore continua a essere disponibile per il dispositivo.</translation>
@@ -6120,7 +6120,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8239109177194627162">Disattiva la compilazione automatica per le carte di credito</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
-<translation id="8245574649143980200">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono visualizzare la voce di menu per la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale. Se viene impostato su Disattivato, gli utenti non visualizzeranno la voce di menu per la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> se la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>
+<translation id="8245574649143980200">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono visualizzare la voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale. Se viene impostato su Disattivato, gli utenti non vedranno la voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> se la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>
 <translation id="824818544897669723">Viene disattivata l'eliminazione della cronologia del browser e dei download</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.

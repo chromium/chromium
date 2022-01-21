@@ -191,7 +191,7 @@
 <translation id="7787242579016742662">బ్రౌజర్‌లో ఫైల్‌ను తెరవండి</translation>
 <translation id="7952165122793773711">1 నుండి 8 వరకు ట్యాబ్‌లలోకి వెళ్లండి</translation>
 <translation id="8026334261755873520">బ్రౌజింగ్ డేటా క్లియర్ చేయండి</translation>
-<translation id="8130528849632411619">పత్రం ప్రారంభం వద్దకు వెళ్లండి</translation>
+<translation id="8130528849632411619">డాక్యుమెంట్‌ ప్రారంభం వద్దకు వెళ్లండి</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> లేదా <ph name="E" /></translation>
 <translation id="8234414138295101081">స్క్రీన్‌ని 90 డిగ్రీలు తిప్పండి</translation>
 <translation id="8241665785394195545">కుడి బ్రాకెట్</translation>
@@ -227,5 +227,5 @@
 <translation id="93603345341560814"><ph name="SHIFT" />ను నొక్కి, లింక్‌ను క్లిక్ చేయండి</translation>
 <translation id="945383118875625837">‌లింక్‌ను బుక్‌మార్క్‌ల బార్ వద్దకు లాగండి</translation>
 <translation id="969054500339500113">మెనూ బార్‌పై దృష్టి కేంద్రీకరించండి</translation>
-<translation id="98120814841227350">పత్రం చివరకు వెళ్లు</translation>
+<translation id="98120814841227350">డాక్యుమెంట్‌ చివరకు వెళ్లు</translation>
 </translationbundle>

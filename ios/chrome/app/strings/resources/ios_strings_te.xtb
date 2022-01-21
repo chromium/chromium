@@ -274,7 +274,7 @@
 <translation id="3470502288861289375">కాపీ చేస్తోంది...</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> వలె కొనసాగించు</translation>
 <translation id="3478058380795961209">గడువు ముగింపు నెల</translation>
-<translation id="3482959374254649722">మీ ట్యాబ్‌లను సమకాలీకరిస్తోంది...</translation>
+<translation id="3482959374254649722">మీ ట్యాబ్‌లను సింక్ చేస్తోంది...</translation>
 <translation id="3484946776651937681">డౌన్‌లోడ్‌లలో తెరవండి</translation>
 <translation id="3493531032208478708">సూచించిన కంటెంట్ గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3494788280727468875">బ్రౌజింగ్ డేటాను తీసివేయడాన్ని నిర్ధారించు</translation>
@@ -292,7 +292,7 @@
 కింది దశలను ఫాలో అవ్వండి:</translation>
 <translation id="3603009562372709545">లింక్ URLను కాపీ చేయి</translation>
 <translation id="3607167657931203000">స్వీయపూర్తి డేటా</translation>
-<translation id="3609785682760573515">సమకాలీకరిస్తోంది...</translation>
+<translation id="3609785682760573515">సింక్ చేస్తోంది...</translation>
 <translation id="3631443864840848029">మీరు ఈ సైట్‌లో మీ ప్రస్తుత పాస్‌వర్డ్‌ను సేవ్ చేస్తున్నారని నిర్ధారించుకోండి.</translation>
 <translation id="3638472932233958418">వెబ్‌పేజీలను ముందే లోడ్ చేయి</translation>
 <translation id="3661160521073045932">కాన్ఫిగరేషన్ ప్రొఫైల్ అందుబాటులో ఉంది</translation>
@@ -624,7 +624,7 @@
 
 అజ్ఞాతంలో ఉండగా, వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం.</translation>
 <translation id="6674571176963658787">సింక్‌ను ప్రారంభించడానికి, రహస్య పదబంధాన్ని ఎంటర్ చేయండి</translation>
-<translation id="667999046851023355">పత్రం</translation>
+<translation id="667999046851023355">డాక్యుమెంట్‌</translation>
 <translation id="6691331417640343772">Google డాష్‌బోర్డ్‌లో సింక్ చేయ‌బ‌డిన‌ డేటాను నిర్వహించండి</translation>
 <translation id="6710079714193676716">మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది. కొన్ని ఫీచర్‌లు అందుబాటులో ఉండకపోవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
@@ -680,7 +680,7 @@
 <translation id="7162168282402939716">అజ్ఞాత ట్యాబ్‌లను <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />తో అన్‌లాక్ చేయండి</translation>
 <translation id="7172852049901402487">సెక్యూరిటీ సమస్యల నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
 <translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
-<translation id="7189598951263744875">భాగస్వామ్యం చేయి...</translation>
+<translation id="7189598951263744875">షేర్ చేయండి...</translation>
 <translation id="7192050974311852563">లాగ్ చేయడం ప్రారంభించు</translation>
 <translation id="7203585745079012652">సమాధానాలను చదివి వినిపించు</translation>
 <translation id="7207383424303353046">కొత్తది: Chromeను మీ ఆటోమేటిక్ బ్రౌజర్ యాప్‌గా చేయడం ద్వారా, దానిలో సైట్‌లను ఆటోమేటిక్‌గా తెరవండి. <ph name="BEGIN_LINK" />సెట్టింగ్‌లను తెరవండి<ph name="END_LINK" /></translation>
@@ -849,7 +849,7 @@
 <translation id="8870413625673593573">ఇటీవల మూసివేసినవి</translation>
 <translation id="8876882697946675716">మీ పరికరాలను సింక్‌లో ఉంచండి</translation>
 <translation id="8881801611828450202">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />ని వెతకండి</translation>
-<translation id="8909135823018751308">భాగస్వామ్యం చేయి…</translation>
+<translation id="8909135823018751308">షేర్ చేయండి…</translation>
 <translation id="8917490105272468696">సరే, నాకు సమ్మతమే</translation>
 <translation id="8952559610785099500">పాస్‌వర్డ్‌ను జోడించండి</translation>
 <translation id="895541991026785598">ఒక సమస్యను రిపోర్ట్ చేయండి</translation>

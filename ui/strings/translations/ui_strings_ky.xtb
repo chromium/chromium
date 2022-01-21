@@ -122,7 +122,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Сол жебе</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мүн.}other{# мүн.}}</translation>
-<translation id="5763338081255973061">{DAYS,plural, =0{Акыркы аракеттер: бүгүн}=1{Акыркы аракеттер: 1 күн мурун}other{Акыркы аракеттер: # күн мурун}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Соңку аракеттер: бүгүн}=1{Соңку аракеттер: 1 күн мурун}other{Соңку аракеттер: # күн мурун}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 күн жана }other{# күн жана }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Сүрөт.</translation>

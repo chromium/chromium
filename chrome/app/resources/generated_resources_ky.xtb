@@ -505,7 +505,7 @@
 <translation id="151501797353681931">Safari'ден импорттолгон</translation>
 <translation id="1515163294334130951">Ишке киргизүү</translation>
 <translation id="1521442365706402292">Тастыктамаларды башкаруу</translation>
-<translation id="1521774566618522728">Акыркы аракеттер: бүгүн</translation>
+<translation id="1521774566618522728">Соңку аракеттер: бүгүн</translation>
 <translation id="152234381334907219">Эч качан сакталбайт</translation>
 <translation id="1523978563989812243">Кеп синтезаторлору</translation>
 <translation id="1524430321211440688">Баскычтоп</translation>
@@ -6392,7 +6392,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ээси)</translation>
 <translation id="7645681574855902035">Linux'тун камдык көчүрмөсүн сактоо жокко чыгарылууда</translation>
 <translation id="7646772052135772216">Сырсөздү шайкештирүү иштеген жок</translation>
-<translation id="7647403192093989392">Акыркы аракеттер жок</translation>
+<translation id="7647403192093989392">Соңку аракеттер жок</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7650178491875594325">Жергиликтүү маалыматтарды калыбына келтирүү</translation>
 <translation id="7650511557061837441">"<ph name="TRIGGERING_EXTENSION_NAME" />" төмөнкүнү чыгарып салганы жатат: "<ph name="EXTENSION_NAME" />".</translation>
@@ -7344,7 +7344,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8630338733867813168">Уктап жатканда кубаттоо</translation>
 <translation id="8631032106121706562">Гүлдүн желекчелери</translation>
 <translation id="863109444997383731">Сайттар билдирмелерди көрсөтүүнү суранбай калышат. Эгер сайт билдирмелерди жөнөтүүнү суранса, дарек тилкесинде бөгөттөө индикатору көрүнөт.</translation>
-<translation id="8633025649649592204">Акыркы аракеттер</translation>
+<translation id="8633025649649592204">Соңку аракеттер</translation>
 <translation id="8635628933471165173">Кайра жүктөлүүдө…</translation>
 <translation id="8636284842992792762">Кеңейтүүлөргө баштапкы маани берилүүдө...</translation>
 <translation id="8636500887554457830">Сайттар калкыма терезелерди жөнөтүп же башка дарекке багыттамаларды колдоно албасын</translation>
@@ -7707,7 +7707,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8981825781894055334">Кагаз аз калды</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> түзөтө алат</translation>
 <translation id="8984694057134206124">Түзмөгүңүз бардык адамдарга <ph name="MINUTES" /> мүнөткө чейин көрүнөт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211">Акыркы аракеттер: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> күн мурун</translation>
+<translation id="8985264973231822211">Соңку аракеттер: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> күн мурун</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> түзмөгүңүзгө кирүү үчүн Интернетке туташыңыз.</translation>
 <translation id="8986362086234534611">Унутуу</translation>
 <translation id="8986494364107987395">Google'га автоматтык түрдө колдонуу статистикасы жана каталар жөнүндө кабар берүү.</translation>
