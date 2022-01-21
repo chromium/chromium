@@ -402,7 +402,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   void DiscoverAdapters();
 
-  int32_t GetPreferredAdapterIndex(PowerPreference power_preference) const;
+  int32_t GetPreferredAdapterIndex(PowerPreference power_preference,
+                                   bool force_fallback) const;
 
   void DoRequestDevice(DawnRequestDeviceSerial request_device_serial,
                        int32_t requested_adapter_index,
@@ -765,12 +766,22 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   std::vector<dawn::native::Adapter> adapters = dawn_instance_->GetAdapters();
   for (dawn::native::Adapter& adapter : adapters) {
     adapter.SetUseTieredLimits(true);
-    if (!adapter.SupportsExternalImages()) {
-      continue;
-    }
 
     WGPUAdapterProperties adapterProperties = {};
     adapter.GetProperties(&adapterProperties);
+
+    const bool is_fallback_adapter =
+        adapterProperties.adapterType == WGPUAdapterType_CPU &&
+        adapterProperties.vendorID == 0x1AE0 &&
+        adapterProperties.deviceID == 0xC0DE;
+
+    // The adapter must be able to import external images, or it must be a
+    // SwiftShader adapter. For SwiftShader, we will perform a manual
+    // upload/readback to/from shared images.
+    if (!(adapter.SupportsExternalImages() || is_fallback_adapter)) {
+      continue;
+    }
+
     if (force_webgpu_compat_) {
       if (adapterProperties.backendType == WGPUBackendType_OpenGLES) {
         dawn_adapters_.push_back(adapter);
@@ -783,7 +794,8 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 }
 
 int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
-    PowerPreference power_preference) const {
+    PowerPreference power_preference,
+    bool force_fallback) const {
   WGPUAdapterType preferred_adapter_type =
       PowerPreferenceToDawnAdapterType(power_preference);
 
@@ -796,6 +808,11 @@ int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
     const dawn::native::Adapter& adapter = dawn_adapters_[i];
     WGPUAdapterProperties adapterProperties = {};
     adapter.GetProperties(&adapterProperties);
+
+    if (force_fallback &&
+        adapterProperties.adapterType != WGPUAdapterType_CPU) {
+      continue;
+    }
 
     if (adapterProperties.adapterType == preferred_adapter_type) {
       return i;
@@ -1003,12 +1020,6 @@ error::Error WebGPUDecoderImpl::HandleRequestAdapter(
       static_cast<PowerPreference>(c.power_preference);
   bool force_fallback_adapter = c.force_fallback_adapter;
 
-  if (force_fallback_adapter) {
-    SendAdapterProperties(request_adapter_serial, -1, nullptr,
-                          "WebGPU fallback adapter not implemented.");
-    return error::kNoError;
-  }
-
   if (gr_context_type_ != GrContextType::kVulkan) {
 #if BUILDFLAG(IS_LINUX)
     SendAdapterProperties(request_adapter_serial, -1, nullptr,
@@ -1018,7 +1029,8 @@ error::Error WebGPUDecoderImpl::HandleRequestAdapter(
 #endif  // BUILDFLAG(IS_LINUX)
   }
 
-  int32_t requested_adapter_index = GetPreferredAdapterIndex(power_preference);
+  int32_t requested_adapter_index =
+      GetPreferredAdapterIndex(power_preference, force_fallback_adapter);
   if (requested_adapter_index < 0) {
     // There are no adapters to return since webgpu is not supported here
     SendAdapterProperties(request_adapter_serial, requested_adapter_index,
@@ -1032,6 +1044,17 @@ error::Error WebGPUDecoderImpl::HandleRequestAdapter(
             dawn_adapters_.size());
   const dawn::native::Adapter& adapter =
       dawn_adapters_[requested_adapter_index];
+
+  // TODO(crbug.com/1266550): Hide CPU adapters until WebGPU fallback adapters
+  // are fully implemented.
+  WGPUAdapterProperties adapterProperties = {};
+  adapter.GetProperties(&adapterProperties);
+  if (adapterProperties.adapterType == WGPUAdapterType_CPU &&
+      !enable_unsafe_webgpu_) {
+    SendAdapterProperties(request_adapter_serial, -1, nullptr);
+    return error::kNoError;
+  }
+
   SendAdapterProperties(request_adapter_serial, requested_adapter_index,
                         adapter);
 

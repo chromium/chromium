@@ -36,15 +36,18 @@ class WebGPUImplementation;
 }  // namespace webgpu
 
 class WebGPUTest : public testing::Test {
- protected:
+ public:
   struct Options {
     Options();
 
     // Shared memory limits
     SharedMemoryLimits shared_memory_limits =
         SharedMemoryLimits::ForWebGPUContext();
+    bool force_fallback_adapter = false;
+    bool enable_unsafe_webgpu = false;
   };
 
+ protected:
   WebGPUTest();
   ~WebGPUTest() override;
 
@@ -69,7 +72,7 @@ class WebGPUTest : public testing::Test {
     return gpu_service_holder_.get();
   }
 
-  uint32_t GetAdapterId() const { return adapter_id_; }
+  int32_t GetAdapterId() const { return adapter_id_; }
 
   const WGPUDeviceProperties& GetDeviceProperties() const {
     return device_properties_;
@@ -83,7 +86,8 @@ class WebGPUTest : public testing::Test {
   // SharedImages on macOS require a valid image factory.
   GpuMemoryBufferFactoryIOSurface image_factory_;
 #endif
-  uint32_t adapter_id_;
+  // The ID is the index, so anything less than 0 is invalid.
+  int32_t adapter_id_ = -2;
   WGPUDeviceProperties device_properties_;
 };
 
