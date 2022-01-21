@@ -227,8 +227,21 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
     Widget::MoveLoopSource source,
     Widget::MoveLoopEscapeBehavior escape_behavior) {
   GetContentWindow()->SetCapture();
-  return DesktopWindowTreeHostPlatform::RunMoveLoop(drag_offset, source,
-                                                    escape_behavior);
+
+  // DesktopWindowTreeHostLinux::RunMoveLoop() may result in |this| being
+  // deleted. As an extra safity guard, keep track of |this| with a weak
+  // pointer, and only call ReleaseCapture() if it still exists.
+  //
+  // TODO(https://crbug.com/1289682): Consider removing capture set/unset
+  // during window drag 'n drop (detached).
+  auto weak_this = weak_factory_.GetWeakPtr();
+
+  Widget::MoveLoopResult result = DesktopWindowTreeHostPlatform::RunMoveLoop(
+      drag_offset, source, escape_behavior);
+  if (weak_this.get())
+    GetContentWindow()->ReleaseCapture();
+
+  return result;
 }
 
 void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
