@@ -3299,21 +3299,6 @@
             ]
         }
     ],
-    "DirectCompositionForceFullDamage": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DirectCompositionForceFullDamage"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableDiscoverFeedAppFlows": [
         {
             "platforms": [
@@ -6132,6 +6117,21 @@
                     },
                     "enable_features": [
                         "PasswordChange"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PasswordManagerRebranding": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSEnablePasswordManagerBrandingUpdate"
                     ]
                 }
             ]
