@@ -6,7 +6,7 @@
 
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
-#include "base/logging.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -115,6 +115,7 @@ RecentAppsInteractionHandlerImpl::FetchRecentAppMetadataList() {
 void RecentAppsInteractionHandlerImpl::
     LoadRecentAppMetadataListFromPrefIfNeed() {
   if (!has_loaded_prefs_) {
+    PA_LOG(INFO) << "LoadRecentAppMetadataListFromPref";
     const base::Value* recent_apps_history_pref =
         pref_service_->GetList(prefs::kRecentAppsHistory);
     for (const auto& value : recent_apps_history_pref->GetList()) {
@@ -128,6 +129,7 @@ void RecentAppsInteractionHandlerImpl::
 }
 
 void RecentAppsInteractionHandlerImpl::SaveRecentAppMetadataListToPref() {
+  PA_LOG(INFO) << "SaveRecentAppMetadataListToPref";
   size_t num_recent_apps_to_display =
       std::min(recent_app_metadata_list_.size(), kMaxMostRecentApps);
   std::vector<base::Value> app_metadata_value_list;
@@ -146,8 +148,10 @@ void RecentAppsInteractionHandlerImpl::OnFeatureStatesChanged(
 
 void RecentAppsInteractionHandlerImpl::OnHostStatusChanged(
     const HostStatusWithDevice& host_device_with_status) {
-  if (host_device_with_status.first != HostStatus::kHostVerified)
+  if (host_device_with_status.first != HostStatus::kHostVerified) {
+    PA_LOG(INFO) << "ClearRecentAppMetadataListAndPref";
     ClearRecentAppMetadataListAndPref();
+  }
 }
 
 void RecentAppsInteractionHandlerImpl::OnNotificationAccessChanged() {
