@@ -2465,8 +2465,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InitializeResult"
     enum="ArcVideoDecodeAcceleratorResult" expires_after="2021-02-18">
-  <owner>acourbot@chromium.org</owner>
-  <owner>chromeos-video-eng@google.com</owner>
+  <owner>andrescj@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Counts of status values returned from calls to
     GpuArcVideoDecodeAccelerator::Initialize().
