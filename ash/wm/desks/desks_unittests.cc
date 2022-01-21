@@ -1624,20 +1624,6 @@ TEST_P(DesksTest, DragWindowToNonMiniViewPoints) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
 
-  // Drag it and drop it on the new desk button. Nothing happens, it should be
-  // returned back to its original target bounds.
-  DragItemToPoint(overview_item,
-                  desks_bar_view->expanded_state_new_desk_button()
-                      ->inner_button()
-                      ->GetBoundsInScreen()
-                      .CenterPoint(),
-                  GetEventGenerator(),
-                  /*by_touch_gestures=*/GetParam());
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(1u, overview_grid->size());
-  EXPECT_EQ(target_bounds_before_drag, overview_item->target_bounds());
-  EXPECT_TRUE(DoesActiveDeskContainWindow(window.get()));
-
   // Drag it and drop it on the center of the bottom of the display. Also,
   // nothing should happen.
   DragItemToPoint(overview_item,
