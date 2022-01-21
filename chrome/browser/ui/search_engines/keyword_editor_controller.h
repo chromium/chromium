@@ -58,6 +58,10 @@ class KeywordEditorController {
   // the current default search engine.
   bool CanDeactivate(const TemplateURL* url) const;
 
+  // Return true if the user should be asked to confirm before deleting the
+  // given `url`.
+  bool ShouldConfirmDeletion(const TemplateURL* url) const;
+
   // Remove the TemplateURL at the specified index in the TableModel.
   void RemoveTemplateURL(int index);
 

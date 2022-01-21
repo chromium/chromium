@@ -82,6 +82,13 @@ bool KeywordEditorController::CanDeactivate(const TemplateURL* url) const {
           url->prepopulate_id() == 0);
 }
 
+bool KeywordEditorController::ShouldConfirmDeletion(
+    const TemplateURL* url) const {
+  // Currently, only built-in search engines require confirmation before
+  // deletion.
+  return url->prepopulate_id() != 0;
+}
+
 void KeywordEditorController::RemoveTemplateURL(int index) {
   table_model_->Remove(index);
   base::RecordAction(UserMetricsAction("KeywordEditor_RemoveKeyword"));

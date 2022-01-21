@@ -29,6 +29,7 @@ export type SearchEngine = {
   keyword: string,
   modelIndex: number,
   name: string,
+  shouldConfirmDeletion: boolean,
   url: string,
   urlLocked: boolean,
 };

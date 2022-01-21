@@ -13,7 +13,8 @@ import 'chrome://resources/js/cr.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
-import './search_engine_dialog.js';
+import './search_engine_delete_confirmation_dialog.js';
+import './search_engine_edit_dialog.js';
 import './search_engines_list.js';
 import './omnibox_extension_entry.js';
 import '../settings_shared_css.js';
@@ -32,6 +33,11 @@ import {routes} from '../route.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 
 type SearchEngineEditEvent = CustomEvent<{
+  engine: SearchEngine,
+  anchorElement: HTMLElement,
+}>;
+
+type SearchEngineDeleteEvent = CustomEvent<{
   engine: SearchEngine,
   anchorElement: HTMLElement,
 }>;
@@ -125,7 +131,12 @@ export class SettingsSearchEnginesPageElement extends
         value: null,
       },
 
-      showDialog_: {
+      showEditDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showDeleteConfirmationDialog_: {
         type: Boolean,
         value: false,
       },
@@ -161,7 +172,8 @@ export class SettingsSearchEnginesPageElement extends
   private omniboxExtensionListBlurred_: boolean;
   private dialogModel_: SearchEngine|null;
   private dialogAnchorElement_: HTMLElement|null;
-  private showDialog_: boolean;
+  private showEditDialog_: boolean;
+  private showDeleteConfirmationDialog_: boolean;
   private showKeywordTriggerSetting_: boolean;
   private isActiveSearchEnginesFlagEnabled_: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
@@ -178,24 +190,45 @@ export class SettingsSearchEnginesPageElement extends
     this.addEventListener(
         'edit-search-engine',
         e => this.onEditSearchEngine_(e as SearchEngineEditEvent));
+
+    this.addEventListener(
+        'delete-search-engine',
+        e => this.onDeleteSearchEngine_(e as SearchEngineDeleteEvent));
   }
 
-  private openDialog_(
+  private openEditDialog_(
       searchEngine: SearchEngine|null, anchorElement: HTMLElement) {
     this.dialogModel_ = searchEngine;
     this.dialogAnchorElement_ = anchorElement;
-    this.showDialog_ = true;
+    this.showEditDialog_ = true;
   }
 
-  private onCloseDialog_() {
-    this.showDialog_ = false;
+  private openDeleteConfirmationDialog_(
+      searchEngine: SearchEngine|null, anchorElement: HTMLElement) {
+    this.dialogModel_ = searchEngine;
+    this.dialogAnchorElement_ = anchorElement;
+    this.showDeleteConfirmationDialog_ = true;
+  }
+
+  private onCloseEditDialog_() {
+    this.showEditDialog_ = false;
     focusWithoutInk(this.dialogAnchorElement_ as HTMLElement);
     this.dialogModel_ = null;
     this.dialogAnchorElement_ = null;
   }
 
+  private onCloseDeleteConfirmationDialog_() {
+    this.showDeleteConfirmationDialog_ = false;
+    this.dialogModel_ = null;
+    this.dialogAnchorElement_ = null;
+  }
+
   private onEditSearchEngine_(e: SearchEngineEditEvent) {
-    this.openDialog_(e.detail.engine, e.detail.anchorElement);
+    this.openEditDialog_(e.detail.engine, e.detail.anchorElement);
+  }
+
+  private onDeleteSearchEngine_(e: SearchEngineDeleteEvent) {
+    this.openDeleteConfirmationDialog_(e.detail.engine, e.detail.anchorElement);
   }
 
   private extensionsChanged_() {
@@ -220,7 +253,7 @@ export class SettingsSearchEnginesPageElement extends
 
   private onAddSearchEngineTap_(e: Event) {
     e.preventDefault();
-    this.openDialog_(null, this.$.addSearchEngine);
+    this.openEditDialog_(null, this.$.addSearchEngine);
   }
 
   private computeShowExtensionsList_(): boolean {

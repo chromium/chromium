@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrInputElement, SettingsOmniboxExtensionEntryElement, SettingsSearchEngineDialogElement, SettingsSearchEngineEntryElement, SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
+import {CrInputElement, SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEditDialogElement, SettingsSearchEngineEntryElement, SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
 import {ExtensionControlBrowserProxyImpl, loadTimeData, SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -37,20 +37,21 @@ function createSampleOmniboxExtension(): SearchEngine {
     keyword: 'oe',
     modelIndex: 6,
     name: 'Omnibox extension',
+    shouldConfirmDeletion: false,
     url: 'chrome-extension://dummyextensionid/?q=%s',
     urlLocked: false
   };
 }
 
 suite('AddSearchEngineDialogTests', function() {
-  let dialog: SettingsSearchEngineDialogElement;
+  let dialog: SettingsSearchEngineEditDialogElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
 
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
-    dialog = document.createElement('settings-search-engine-dialog');
+    dialog = document.createElement('settings-search-engine-edit-dialog');
     document.body.appendChild(dialog);
   });
 
@@ -553,7 +554,7 @@ suite('SearchEnginePageTests', function() {
   // button is tapped.
   test('AddSearchEngineDialog', function() {
     assertFalse(
-        !!page.shadowRoot!.querySelector('settings-search-engine-dialog'));
+        !!page.shadowRoot!.querySelector('settings-search-engine-edit-dialog'));
     const addSearchEngineButton =
         page.shadowRoot!.querySelector<HTMLButtonElement>('#addSearchEngine')!;
     assertTrue(!!addSearchEngineButton);
@@ -561,7 +562,7 @@ suite('SearchEnginePageTests', function() {
     addSearchEngineButton.click();
     flush();
     assertTrue(
-        !!page.shadowRoot!.querySelector('settings-search-engine-dialog'));
+        !!page.shadowRoot!.querySelector('settings-search-engine-edit-dialog'));
   });
 
   test('EditSearchEngineDialog', function() {
@@ -574,8 +575,8 @@ suite('SearchEnginePageTests', function() {
     return browserProxy.whenCalled('searchEngineEditStarted')
         .then(modelIndex => {
           assertEquals(engine.modelIndex, modelIndex);
-          const dialog =
-              page.shadowRoot!.querySelector('settings-search-engine-dialog')!;
+          const dialog = page.shadowRoot!.querySelector(
+              'settings-search-engine-edit-dialog')!;
           assertTrue(!!dialog);
 
           // Check that the cr-input fields are pre-populated.

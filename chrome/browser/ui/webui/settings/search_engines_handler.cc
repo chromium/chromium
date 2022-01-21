@@ -33,7 +33,7 @@
 
 namespace {
 // The following strings need to match with the IDs of the text input elements
-// at settings/search_engines_page/search_engine_dialog.html.
+// at settings/search_engines_page/search_engine_edit_dialog.html.
 const char kSearchEngineField[] = "searchEngine";
 const char kKeywordField[] = "keyword";
 const char kQueryUrlField[] = "queryUrl";
@@ -227,6 +227,8 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
                    list_controller_.CanActivate(template_url));
   dict->SetBoolean("canBeDeactivated",
                    list_controller_.CanDeactivate(template_url));
+  dict->SetBoolean("shouldConfirmDeletion",
+                   list_controller_.ShouldConfirmDeletion(template_url));
   TemplateURL::Type type = template_url->type();
   dict->SetBoolean("isOmniboxExtension",
                    type == TemplateURL::OMNIBOX_API_EXTENSION);

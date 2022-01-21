@@ -149,7 +149,8 @@ export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/s
 export {SettingsResetPageElement} from './reset_page/reset_page.js';
 export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dialog.js';
 export {SettingsOmniboxExtensionEntryElement} from './search_engines_page/omnibox_extension_entry.js';
-export {SettingsSearchEngineDialogElement} from './search_engines_page/search_engine_dialog.js';
+export {SettingsSearchEngineDeleteConfirmationDialogElement} from './search_engines_page/search_engine_delete_confirmation_dialog.js';
+export {SettingsSearchEngineEditDialogElement} from './search_engines_page/search_engine_edit_dialog.js';
 export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';
 export {SettingsSearchEnginesListElement} from './search_engines_page/search_engines_list.js';
 export {SettingsSearchEnginesPageElement} from './search_engines_page/search_engines_page.js';

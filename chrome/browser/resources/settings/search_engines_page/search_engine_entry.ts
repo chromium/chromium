@@ -82,9 +82,24 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     return this.isActiveSearchEnginesFlagEnabled && this.engine.default;
   }
 
-  private onDeleteTap_() {
-    this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
+  private onDeleteTap_(e: Event) {
+    e.preventDefault();
     this.closePopupMenu_();
+
+    if (!this.engine.shouldConfirmDeletion) {
+      this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
+      return;
+    }
+
+    this.dispatchEvent(new CustomEvent('delete-search-engine', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        engine: this.engine,
+        anchorElement: assert(
+            this.shadowRoot!.querySelector('cr-icon-button.icon-more-vert')!),
+      },
+    }));
   }
 
   private onDotsTap_() {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-search-engine-dialog' is a component for adding
+ * @fileoverview 'settings-search-engine-edit-dialog' is a component for adding
  * or editing a search engine entry.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
@@ -20,7 +20,7 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
-export interface SettingsSearchEngineDialogElement {
+export interface SettingsSearchEngineEditDialogElement {
   $: {
     actionButton: CrButtonElement,
     cancel: CrButtonElement,
@@ -31,13 +31,13 @@ export interface SettingsSearchEngineDialogElement {
   };
 }
 
-const SettingsSearchEngineDialogElementBase =
+const SettingsSearchEngineEditDialogElementBase =
     WebUIListenerMixin(PolymerElement);
 
-export class SettingsSearchEngineDialogElement extends
-    SettingsSearchEngineDialogElementBase {
+export class SettingsSearchEngineEditDialogElement extends
+    SettingsSearchEngineEditDialogElementBase {
   static get is() {
-    return 'settings-search-engine-dialog';
+    return 'settings-search-engine-edit-dialog';
   }
 
   static get template() {
@@ -189,9 +189,10 @@ export class SettingsSearchEngineDialogElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-search-engine-dialog': SettingsSearchEngineDialogElement;
+    'settings-search-engine-edit-dialog': SettingsSearchEngineEditDialogElement;
   }
 }
 
 customElements.define(
-    SettingsSearchEngineDialogElement.is, SettingsSearchEngineDialogElement);
+    SettingsSearchEngineEditDialogElement.is,
+    SettingsSearchEngineEditDialogElement);
