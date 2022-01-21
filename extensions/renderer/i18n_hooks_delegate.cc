@@ -14,11 +14,11 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "extensions/renderer/get_script_context.h"
+#include "extensions/renderer/renderer_i18n_util.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
@@ -152,27 +152,10 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
                                     content::RenderFrame* render_frame,
                                     v8::Local<v8::Context> context) {
   v8::Isolate* isolate = context->GetIsolate();
-  L10nMessagesMap* l10n_messages = nullptr;
-  {
-    ExtensionToL10nMessagesMap& messages_map = *GetExtensionToL10nMessagesMap();
-    auto iter = messages_map.find(extension_id);
-    if (iter != messages_map.end()) {
-      l10n_messages = &iter->second;
-    } else {
-      if (!render_frame)
-        return v8::Undefined(isolate);
-
-      l10n_messages = &messages_map[extension_id];
-      // A sync call to load message catalogs for current extension.
-      // TODO(devlin): Wait, what?! A synchronous call to the browser to perform
-      // potentially blocking work reading files from disk? That's Bad.
-      {
-        SCOPED_UMA_HISTOGRAM_TIMER("Extensions.SyncGetMessageBundle");
-        render_frame->Send(
-            new ExtensionHostMsg_GetMessageBundle(extension_id, l10n_messages));
-      }
-    }
-  }
+  const L10nMessagesMap* l10n_messages =
+      i18n_util::GetRendererMessagesMap(extension_id, render_frame);
+  if (!l10n_messages)
+    return v8::Undefined(isolate);
 
   std::string message =
       MessageBundle::GetL10nMessage(message_name, *l10n_messages);
