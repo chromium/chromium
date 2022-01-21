@@ -54,6 +54,11 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
   std::unique_ptr<media::AudioBus> output_bus_;
   uint64_t callback_num_ = 0;
 
+  // Used to record a UMA stat for the audio output stream duration form the
+  // moment it successfully started to the moment it stopped - as seen by the
+  // renderer process (which equals to |this| lifetime duration).
+  const base::TimeTicks create_time_;
+
   // If set, used to record the startup duration UMA stat.
   absl::optional<base::TimeTicks> first_play_start_time_;
 };

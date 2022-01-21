@@ -942,13 +942,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Render.OutputStreamDuration" units="ms"
     expires_after="2022-01-30">
+  <obsolete>
+    Removed Mar 2020. Use Media.Audio.Render.OutputStreamDuration2 instead.
+  </obsolete>
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
+</histogram>
+
+<histogram name="Media.Audio.Render.OutputStreamDuration2" units="ms"
+    expires_after="2023-01-21">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
   <summary>
     This histogram measures the duration of every output stream, as seen from
     the renderer. It counts from when it has been successfully started, until it
-    is stopped. Streams that fail to start are not logged. Warning: this
-    histogram was expired from 2020-04-05 to 2021-06-04; data may be missing.
+    is stopped. Streams that fail to start are not logged.
   </summary>
 </histogram>
 

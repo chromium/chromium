@@ -21,13 +21,17 @@ AudioOutputDeviceThreadCallback::AudioOutputDeviceThreadCallback(
           ComputeAudioOutputBufferSize(audio_parameters),
           /*segment count*/ 1),
       shared_memory_region_(std::move(shared_memory_region)),
-      render_callback_(render_callback) {
+      render_callback_(render_callback),
+      create_time_(base::TimeTicks::Now()) {
   // CHECK that the shared memory is large enough. The memory allocated must be
   // at least as large as expected.
   CHECK(memory_length_ <= shared_memory_region_.GetSize());
 }
 
-AudioOutputDeviceThreadCallback::~AudioOutputDeviceThreadCallback() = default;
+AudioOutputDeviceThreadCallback::~AudioOutputDeviceThreadCallback() {
+  UmaHistogramLongTimes("Media.Audio.Render.OutputStreamDuration2",
+                        base::TimeTicks::Now() - create_time_);
+}
 
 void AudioOutputDeviceThreadCallback::MapSharedMemory() {
   CHECK_EQ(total_segments_, 1u);
