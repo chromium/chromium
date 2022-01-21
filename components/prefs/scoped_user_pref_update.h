@@ -18,11 +18,6 @@
 
 class PrefService;
 
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
-
 namespace subtle {
 
 // Base class for ScopedUserPrefUpdateTemplate that contains the parts
@@ -62,15 +57,12 @@ class COMPONENTS_PREFS_EXPORT ScopedUserPrefUpdateBase {
 
 }  // namespace subtle
 
-// Class to support modifications to Values, DictionaryValues and ListValues
-// while guaranteeing that PrefObservers are notified of changed values.
+// Class to support modifications to dictionary and list base::Values while
+// guaranteeing that PrefObservers are notified of changed values.
 //
 // This class may only be used on the UI thread as it requires access to the
 // PrefService.
-//
-// TODO(crbug.com/1285745): Replace T with base::Value once the deprecated
-// ListValue and DictionaryValue options are removed.
-template <typename T, base::Value::Type type_enum_value>
+template <base::Value::Type type_enum_value>
 class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
  public:
   ScopedUserPrefUpdate(PrefService* service, const std::string& path)
@@ -82,7 +74,7 @@ class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
   // Triggers an update notification if Get() was called.
   virtual ~ScopedUserPrefUpdate() {}
 
-  // Returns a mutable |T| instance that
+  // Returns a mutable |base::Value| instance that
   // - is already in the user pref store, or
   // - is (silently) created and written to the user pref store if none existed
   //   before.
@@ -93,33 +85,15 @@ class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
   // The ownership of the return value remains with the user pref store.
   // Virtual so it can be overriden in subclasses that transform the value
   // before returning it (for example to return a subelement of a dictionary).
-  virtual T* Get() {
-    return static_cast<T*>(GetValueOfType(type_enum_value));
-  }
+  virtual base::Value* Get() { return GetValueOfType(type_enum_value); }
 
-  T& operator*() {
-    return *Get();
-  }
+  base::Value& operator*() { return *Get(); }
 
-  T* operator->() {
-    return Get();
-  }
+  base::Value* operator->() { return Get(); }
 };
 
-// DictionaryPrefUpdateDeprecated and ListPrefUpdateDeprecated rely on the
-// deprecated base::DictionaryValue and base::ListValue. Use
-// DictionaryPrefUpdate and ListPrefUpdate going forward to modify dictionaries
-// and lists.
-// TODO(crbug.com/1285745): Remove deprecated options when no longer used.
-typedef ScopedUserPrefUpdate<base::DictionaryValue,
-                             base::Value::Type::DICTIONARY>
-    DictionaryPrefUpdateDeprecated;
-typedef ScopedUserPrefUpdate<base::ListValue, base::Value::Type::LIST>
-    ListPrefUpdateDeprecated;
-
-typedef ScopedUserPrefUpdate<base::Value, base::Value::Type::DICTIONARY>
+typedef ScopedUserPrefUpdate<base::Value::Type::DICTIONARY>
     DictionaryPrefUpdate;
-typedef ScopedUserPrefUpdate<base::Value, base::Value::Type::LIST>
-    ListPrefUpdate;
+typedef ScopedUserPrefUpdate<base::Value::Type::LIST> ListPrefUpdate;
 
 #endif  // COMPONENTS_PREFS_SCOPED_USER_PREF_UPDATE_H_
