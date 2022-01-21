@@ -72,11 +72,11 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   browser_prefs_change_observer_.Add(
       syncer::prefs::kSyncManaged,
       base::BindRepeating(
-          &PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded,
+          &PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
           base::Unretained(this)));
 
   // Try to show the alert in case the policy changed since last time.
-  ShowSyncDisabledAlertIfNeeded();
+  ShowSyncDisabledPromptIfNeeded();
 }
 
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
@@ -105,7 +105,7 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   }
 }
 
-void PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded() {
+void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
   BOOL syncDisabledAlertShown =
       [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
@@ -114,7 +114,7 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded() {
           syncer::prefs::kSyncManaged);
 
   if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
-    [handler_ showSyncDisabledAlert];
+    [handler_ showSyncDisabledPrompt];
     // Will never trigger again unless policy changes.
     [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
   } else if (syncDisabledAlertShown && !isSyncDisabledByAdministrator) {

@@ -226,9 +226,6 @@
 @property(nonatomic, strong)
     DefaultBrowserPromoNonModalCoordinator* nonModalPromoCoordinator;
 
-// The coordinator that manages alerts for enterprise sync policy changes.
-@property(nonatomic, strong) AlertCoordinator* syncDisabledAlertCoordinator;
-
 // The coordinator that manages enterprise prompts.
 @property(nonatomic, strong)
     EnterprisePromptCoordinator* enterprisePromptCoordinator;
@@ -1141,43 +1138,15 @@
   [self.enterprisePromptCoordinator start];
 }
 
-- (void)showSyncDisabledAlert {
-  if (self.syncDisabledAlertCoordinator) {
-    [self.syncDisabledAlertCoordinator stop];
+- (void)showSyncDisabledPrompt {
+  if (!self.enterprisePromptCoordinator) {
+    self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser
+                        promptType:EnterprisePromptTypeSyncDisabled];
+    self.enterprisePromptCoordinator.delegate = self;
   }
-  self.syncDisabledAlertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                           title:l10n_util::GetNSString(
-                                     IDS_IOS_SYNC_SYNC_DISABLED)
-                         message:l10n_util::GetNSString(
-                                     IDS_IOS_SYNC_SYNC_DISABLED_DESCRIPTION)];
-
-  __weak BrowserCoordinator* weakSelf = self;
-  [self.syncDisabledAlertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)
-                action:^{
-                  [weakSelf.syncDisabledAlertCoordinator stop];
-                  weakSelf.syncDisabledAlertCoordinator = nil;
-                }
-                 style:UIAlertActionStyleCancel];
-  [self.syncDisabledAlertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SYNC_SYNC_DISABLED_LEARN_MORE)
-                action:^{
-                  if (weakSelf) {
-                    UrlLoadParams params =
-                        UrlLoadParams::InNewTab(GURL(kChromeUIManagementURL));
-                    UrlLoadingBrowserAgent::FromBrowser(weakSelf.browser)
-                        ->Load(params);
-                    [weakSelf.syncDisabledAlertCoordinator stop];
-                    weakSelf.syncDisabledAlertCoordinator = nil;
-                  }
-                }
-                 style:UIAlertActionStyleDefault];
-
-  [self.syncDisabledAlertCoordinator start];
+  [self.enterprisePromptCoordinator start];
 }
 
 - (void)showEnterpriseSignout {

@@ -372,7 +372,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showSyncDisabledAlert]);
+  OCMExpect([mockHandler showSyncDisabledPrompt]);
   agent->Initialize(mockHandler);
 
   // Update the pref.
@@ -382,7 +382,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   EXPECT_OCMOCK_VERIFY(mockHandler);
   EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
 
-  [[mockHandler reject] showSyncDisabledAlert];
+  [[mockHandler reject] showSyncDisabledPrompt];
 
   // Update the pref.
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(
@@ -420,13 +420,13 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showSyncDisabledAlert]);
+  OCMExpect([mockHandler showSyncDisabledPrompt]);
   agent->Initialize(mockHandler);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
   EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
 
-  [[mockHandler reject] showSyncDisabledAlert];
+  [[mockHandler reject] showSyncDisabledPrompt];
 
   // Update the pref.
   browser_->GetBrowserState()->GetPrefs()->SetBoolean(

@@ -52,8 +52,8 @@ class PolicyWatcherBrowserAgent
   void ForceSignOutIfSigninDisabled();
 
   // Handler for change to kSyncManaged. When the pref changes to |true|,
-  // sends a command to the handler to show an alert.
-  void ShowSyncDisabledAlertIfNeeded();
+  // sends a command to the handler to show a prompt.
+  void ShowSyncDisabledPromptIfNeeded();
 
   // Callback called when the sign out is complete.
   void OnSignOutComplete();

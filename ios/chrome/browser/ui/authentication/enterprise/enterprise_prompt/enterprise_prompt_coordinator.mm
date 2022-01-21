@@ -88,31 +88,29 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  // TODO(crbug.com/1261423): Implement all cases.
   switch (self.promptType) {
     case EnterprisePromptTypeRestrictAccountSignedOut:
+    case EnterprisePromptTypeSyncDisabled:
       [self.delegate enterprisePromptCoordinatorDidDismiss];
       break;
     case EnterprisePromptTypeForceSignOut:
       [self.delegate hideEnterprisePrompForLearnMore:NO];
       break;
-    case EnterprisePromptTypeSyncDisabled:
-      NOTREACHED();
-      break;
   }
 }
 
 - (void)confirmationAlertSecondaryAction {
-  // TODO(crbug.com/1261423): Implement all cases.
   switch (self.promptType) {
     case EnterprisePromptTypeRestrictAccountSignedOut:
       NOTREACHED();
       break;
     case EnterprisePromptTypeForceSignOut:
-      [self closeEntreprisePromptAndOpenLearnMoreURL];
+      [self.delegate hideEnterprisePrompForLearnMore:YES];
+      [self openManagementPage];
       break;
     case EnterprisePromptTypeSyncDisabled:
-      NOTREACHED();
+      [self.delegate enterprisePromptCoordinatorDidDismiss];
+      [self openManagementPage];
       break;
   }
 }
@@ -136,9 +134,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   }
 }
 
-// Handles 'Learn More' action for force sign out prompt.
-- (void)closeEntreprisePromptAndOpenLearnMoreURL {
-  [self.delegate hideEnterprisePrompForLearnMore:YES];
+// Opens the management page in a new tab.
+- (void)openManagementPage {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
