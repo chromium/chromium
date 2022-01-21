@@ -376,7 +376,7 @@ export class TabSearchAppElement extends PolymerElement {
       case TabItemType.OPEN_TAB:
         this.apiProxy_.switchToTab(
             {tabId: (itemData as TabData).tab.tabId}, !!this.searchText_,
-            tabIndex);
+            tabHasMediaAlerts((itemData as TabData).tab as Tab), tabIndex);
         action = 'SwitchTab';
         break;
       case TabItemType.RECENTLY_CLOSED_TAB:
@@ -403,7 +403,9 @@ export class TabSearchAppElement extends PolymerElement {
   private onItemClose_(e: RepeaterEvent<TabData>) {
     performance.mark('tab_search:close_tab:metric_begin');
     const tabId = e.model.item.tab.tabId;
-    this.apiProxy_.closeTab(tabId, !!this.searchText_, e.model.index);
+    this.apiProxy_.closeTab(
+        tabId, !!this.searchText_, tabHasMediaAlerts((e.model.item.tab as Tab)),
+        e.model.index);
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
     listenOnce(this.$.tabsList, 'iron-items-changed', () => {
       performance.mark('tab_search:close_tab:metric_end');

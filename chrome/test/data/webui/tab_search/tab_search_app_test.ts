@@ -212,10 +212,11 @@ suite('TabSearchAppTest', () => {
     const tabSearchItemCloseButton =
         tabSearchItem.shadowRoot!.querySelector('cr-icon-button')!;
     tabSearchItemCloseButton.click();
-    const [tabId, withSearch, closedTabIndex] =
+    const [tabId, withSearch, isMediaTab, closedTabIndex] =
         await testProxy.whenCalled('closeTab');
     assertEquals(tabData.tabId, tabId);
     assertFalse(withSearch);
+    assertFalse(isMediaTab);
     assertEquals(0, closedTabIndex);
   });
 
@@ -560,9 +561,10 @@ suite('TabSearchAppTest', () => {
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
     await testProxy.whenCalled('switchToTab')
-        .then(([tabInfo, withSearch, switchedTabIndex]) => {
+        .then(([tabInfo, withSearch, isMediaTab, switchedTabIndex]) => {
           assertEquals(1, tabInfo.tabId);
           assertFalse(withSearch);
+          assertFalse(isMediaTab);
           assertEquals(0, switchedTabIndex);
         });
 
@@ -574,9 +576,10 @@ suite('TabSearchAppTest', () => {
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
     await testProxy.whenCalled('switchToTab')
-        .then(([tabInfo, withSearch, switchedTabIndex]) => {
+        .then(([tabInfo, withSearch, isMediaTab, switchedTabIndex]) => {
           assertEquals(6, tabInfo.tabId);
           assertFalse(withSearch);
+          assertFalse(isMediaTab);
           assertEquals(2, switchedTabIndex);
         });
 
@@ -596,9 +599,10 @@ suite('TabSearchAppTest', () => {
     // Assert switchToTab() was called appropriately for a tab list fitlered by
     // the search query.
     await testProxy.whenCalled('switchToTab')
-        .then(([tabInfo, withSearch, switchedTabIndex]) => {
+        .then(([tabInfo, withSearch, isMediaTab, switchedTabIndex]) => {
           assertEquals(2, tabInfo.tabId);
           assertTrue(withSearch);
+          assertFalse(isMediaTab);
           assertEquals(0, switchedTabIndex);
         });
   });

@@ -10779,6 +10779,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Tablet"/>
 </enum>
 
+<enum name="BooleanTabSearchWithSearchQuery">
+  <int value="0" label="Action occurred from an unfiltered item list"/>
+  <int value="1" label="Action occurred from a filtered item list"/>
+</enum>
+
 <enum name="BooleanTerminated">
   <int value="0" label="Not terminated"/>
   <int value="1" label="Terminated"/>

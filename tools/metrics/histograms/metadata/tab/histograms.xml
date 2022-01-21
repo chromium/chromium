@@ -2329,6 +2329,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.NumMediaTabsOnOpen" units="tabs"
+    expires_after="2022-09-27">
+  <owner>elainechien@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to efficiently navigate, search,
+    and interact with their open and recently closed tabs. This records the
+    number of tabs using audio or video in the payload Tab Search receives when
+    it is first opened. This metric will be zero if Media Tabs are not enabled.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.NumTabsClosedPerInstance" units="tabs"
     expires_after="2022-06-05">
   <owner>tluk@chromium.org</owner>
@@ -2433,6 +2448,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.WebUI.CloseMediaTabAction"
+    enum="BooleanTabSearchWithSearchQuery" expires_after="2022-09-27">
+  <owner>elainechien@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to efficiently navigate, search,
+    and interact with their open and recently closed tabs. This metric will be
+    updated when the user uses Tab Search to close a tab in the Audio and Video
+    section and will track whether this action was taken from a filtered search
+    results list or the default unfiltered list.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.WebUI.IndexOf{Action}In{State}List"
     units="tabs" expires_after="2022-03-27">
   <owner>tluk@chromium.org</owner>
@@ -2516,6 +2547,22 @@ chromium-metrics-reviews@google.com.
     The time taken to run the search algorithm. The algorithm takes an
     unfiltered list of items and user search query as inputs, then generate a
     list of filtered items as output. Recorded after the measurement ends.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.SwitchToMediaTabAction"
+    enum="BooleanTabSearchWithSearchQuery" expires_after="2022-09-27">
+  <owner>elainechien@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to efficiently navigate, search,
+    and interact with their open and recently closed tabs. This metric will be
+    updated when the user uses Tab Search to switch to a tab in the Audio and
+    Video section and will track whether this action was taken from a filtered
+    search results list or the default unfiltered list.
   </summary>
 </histogram>
 

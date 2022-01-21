@@ -23,7 +23,9 @@ export enum TabSwitchAction {
 }
 
 export interface TabSearchApiProxy {
-  closeTab(tabId: number, withSearch: boolean, closedTabIndex: number): void;
+  closeTab(
+      tabId: number, withSearch: boolean, isMediaTab: boolean,
+      closedTabIndex: number): void;
 
   getProfileData(): Promise<{profileData: ProfileData}>;
 
@@ -31,7 +33,7 @@ export interface TabSearchApiProxy {
       id: number, withSearch: boolean, isTab: boolean, index: number): void;
 
   switchToTab(
-      info: SwitchToTabInfo, withSearch: boolean,
+      info: SwitchToTabInfo, withSearch: boolean, isMediaTab: boolean,
       switchedTabIndex: number): void;
 
   getCallbackRouter(): PageCallbackRouter;
@@ -52,11 +54,17 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  closeTab(tabId: number, withSearch: boolean, closedTabIndex: number) {
+  closeTab(
+      tabId: number, withSearch: boolean, isMediaTab: boolean,
+      closedTabIndex: number) {
     chrome.metricsPrivate.recordSmallCount(
         withSearch ? 'Tabs.TabSearch.WebUI.IndexOfCloseTabInFilteredList' :
                      'Tabs.TabSearch.WebUI.IndexOfCloseTabInUnfilteredList',
         closedTabIndex);
+    if (isMediaTab) {
+      chrome.metricsPrivate.recordBoolean(
+          'Tabs.TabSearch.WebUI.CloseMediaTabAction', withSearch);
+    }
     this.handler.closeTab(tabId);
   }
 
@@ -81,7 +89,8 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
   }
 
   switchToTab(
-      info: SwitchToTabInfo, withSearch: boolean, switchedTabIndex: number) {
+      info: SwitchToTabInfo, withSearch: boolean, isMediaTab: boolean,
+      switchedTabIndex: number) {
     chrome.metricsPrivate.recordEnumerationValue(
         'Tabs.TabSearch.WebUI.TabSwitchAction',
         withSearch ? TabSwitchAction.WITH_SEARCH :
@@ -91,6 +100,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
         withSearch ? 'Tabs.TabSearch.WebUI.IndexOfSwitchTabInFilteredList' :
                      'Tabs.TabSearch.WebUI.IndexOfSwitchTabInUnfilteredList',
         switchedTabIndex);
+    if (isMediaTab) {
+      chrome.metricsPrivate.recordBoolean(
+          'Tabs.TabSearch.WebUI.SwitchToMediaTabAction', withSearch);
+    }
 
     this.handler.switchToTab(info);
   }
