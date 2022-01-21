@@ -912,7 +912,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     if (DecryptedString(form.encrypted_password, &decrypted_password) !=
         ENCRYPTION_RESULT_SUCCESS) {
       if (error) {
-        *error = AddLoginError::kEncrytionServiceFailure;
+        *error = AddLoginError::kEncryptionServiceFailure;
       }
       return list;
     }
@@ -922,7 +922,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     if (EncryptedString(form.password_value, &encrypted_password) !=
         ENCRYPTION_RESULT_SUCCESS) {
       if (error) {
-        *error = AddLoginError::kEncrytionServiceFailure;
+        *error = AddLoginError::kEncryptionServiceFailure;
       }
       return list;
     }
@@ -998,7 +998,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   if (EncryptedString(form.password_value, &encrypted_password) !=
       ENCRYPTION_RESULT_SUCCESS) {
     if (error) {
-      *error = UpdateLoginError::kEncrytionServiceFailure;
+      *error = UpdateLoginError::kEncryptionServiceFailure;
     }
     return PasswordStoreChangeList();
   }
@@ -1805,7 +1805,7 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   }
   if (has_service_failure &&
       (key_to_form_map->empty() || !ShouldReturnPartialPasswords())) {
-    return FormRetrievalResult::kEncrytionServiceFailure;
+    return FormRetrievalResult::kEncryptionServiceFailure;
   }
   if (has_service_failure) {
     return FormRetrievalResult::kEncryptionServiceFailureWithPartialData;

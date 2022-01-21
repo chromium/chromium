@@ -869,11 +869,11 @@ TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
       {});
   ON_CALL(*mock_password_store_sync(), ReadAllLogins)
       .WillByDefault(
-          testing::Return(FormRetrievalResult::kEncrytionServiceFailure));
+          testing::Return(FormRetrievalResult::kEncryptionServiceFailure));
 
   EXPECT_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata());
   EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
-      .WillOnce(Return(FormRetrievalResult::kEncrytionServiceFailure));
+      .WillOnce(Return(FormRetrievalResult::kEncryptionServiceFailure));
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata());
 
   auto bridge =
@@ -1051,7 +1051,7 @@ INSTANTIATE_TEST_SUITE_P(
     PasswordSyncBridgeTest,
     PasswordSyncBridgeMergeTest,
     testing::Values(
-        FormRetrievalResult::kEncrytionServiceFailure,
+        FormRetrievalResult::kEncryptionServiceFailure,
         FormRetrievalResult::kEncryptionServiceFailureWithPartialData));
 #endif
 

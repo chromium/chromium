@@ -208,7 +208,7 @@ bool DoesPasswordStoreHaveEncryptionServiceFailures(
   PrimaryKeyToFormMap key_to_form_map;
   FormRetrievalResult result =
       password_store_sync->ReadAllLogins(&key_to_form_map);
-  if (result == FormRetrievalResult::kEncrytionServiceFailure ||
+  if (result == FormRetrievalResult::kEncryptionServiceFailure ||
       result == FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
     return true;
   }
@@ -365,7 +365,7 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     return syncer::ModelError(FROM_HERE,
                               "Failed to load entries from password store.");
   }
-  if (read_result == FormRetrievalResult::kEncrytionServiceFailure ||
+  if (read_result == FormRetrievalResult::kEncryptionServiceFailure ||
       read_result ==
           FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
     if (!ShouldRecoverPasswordsDuringMerge()) {

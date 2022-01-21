@@ -40,7 +40,7 @@ enum class FormRetrievalResult {
   kDbError,
   // A service-level failure (e.g., on a platform using a keyring, the keyring
   // is temporarily unavailable).
-  kEncrytionServiceFailure,
+  kEncryptionServiceFailure,
   // A service-level failure, but some forms can be retrieved successfully.
   kEncryptionServiceFailureWithPartialData,
 };
@@ -59,7 +59,7 @@ enum class AddLoginError {
   kConstraintViolation = 2,
   // A service-level failure (e.g., on a platform using a keyring, the keyring
   // is temporarily unavailable).
-  kEncrytionServiceFailure = 3,
+  kEncryptionServiceFailure = 3,
   // Database error.
   kDbError = 4,
 
@@ -80,7 +80,7 @@ enum class UpdateLoginError {
   kNoUpdatedRecords = 2,
   // A service-level failure (e.g., on a platform using a keyring, the keyring
   // is temporarily unavailable).
-  kEncrytionServiceFailure = 3,
+  kEncryptionServiceFailure = 3,
   // Database error.
   kDbError = 4,
 
