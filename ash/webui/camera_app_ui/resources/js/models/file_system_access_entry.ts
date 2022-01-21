@@ -176,6 +176,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
       await this.getFile(name);
       return true;
     } catch (e) {
+      assert(e instanceof Error);
       if (e.name === 'NotFoundError') {
         return false;
       }
@@ -188,7 +189,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   }
 
   async createFile(name: string): Promise<FileAccessEntry> {
-    return createFileJobs.push(async () => {
+    const file = await createFileJobs.push(async () => {
       let uniqueName = name;
       for (let i = 0; await this.isExist(uniqueName);) {
         uniqueName = name.replace(/^(.*?)(?=\.)/, `$& (${++i})`);
@@ -197,6 +198,11 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
           await this.handle.getFileHandle(uniqueName, {create: true});
       return new FileAccessEntry(handle, this);
     });
+    // The createFileJobs is never cancelled, so the return file should never
+    // be null.
+    // TODO(b/215662731): Remove this after we have better AsyncJobQueue type.
+    assert(file !== null);
+    return file;
   }
 
   async getDirectory({name, createIfNotExist}:
@@ -208,7 +214,8 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
       assert(handle !== null);
       return new DirectoryAccessEntryImpl(handle);
     } catch (error) {
-      if (!createIfNotExist && error.name === 'NotFoundError') {
+      if (!createIfNotExist && error instanceof Error &&
+          error.name === 'NotFoundError') {
         return null;
       }
       throw error;
