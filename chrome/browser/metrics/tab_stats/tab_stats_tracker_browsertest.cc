@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
                                   tab_stats_tracker_->tab_stats());
 
   // Add a tab and make sure that the counters get updated.
-  AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   ++expected_stats.total_tab_count;
   ++expected_stats.total_tab_count_max;
   ++expected_stats.max_tab_per_window;
@@ -182,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
 
-  AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   ++expected_stats.total_tab_count;
   ++expected_stats.total_tab_count_max;
   EnsureTabStatsMatchExpectations(expected_stats,
@@ -227,8 +227,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   ++expected_stats.total_tab_count;
   ++expected_stats.window_count;
 
-  AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   ++expected_stats.total_tab_count;
 
   test_tab_stats_observers_.push_back(std::make_unique<TestTabStatsObserver>());
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   TabStatsDataStore::TabsStateDuringIntervalMap* interval_map =
       data_store->AddInterval();
 
-  AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
 
   EXPECT_EQ(2U, interval_map->size());
 
@@ -457,8 +457,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EXPECT_CALL(mock_observer,
               OnPrimaryMainFrameNavigationCommitted(::testing::_));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
-  AddTabAtIndexToBrowser(window2, 1, GURL("about:blank"),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(window2, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   auto* window2_tab2 = window2->tab_strip_model()->GetWebContentsAt(1);
@@ -512,8 +512,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabSwitch) {
   EXPECT_CALL(mock_observer,
               OnPrimaryMainFrameNavigationCommitted(::testing::_));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
-  AddTabAtIndexToBrowser(browser(), 1, GURL("about:blank"),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   EXPECT_EQ(content::Visibility::HIDDEN, window1_tab1->GetVisibility());
