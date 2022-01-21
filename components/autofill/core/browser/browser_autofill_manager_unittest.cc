@@ -346,6 +346,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    personal_data_.set_auto_accept_address_imports_for_testing(true);
     personal_data_.Init(/*profile_database=*/database_,
                         /*account_database=*/nullptr,
                         /*pref_service=*/autofill_client_.GetPrefs(),

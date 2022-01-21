@@ -409,6 +409,7 @@ void AutofillMetricsTest::SetUp() {
   autofill_client_.SetPrefs(test::PrefServiceForTesting());
 
   personal_data_ = std::make_unique<TestPersonalDataManager>();
+  personal_data_->set_auto_accept_address_imports_for_testing(true);
   personal_data_->SetPrefService(autofill_client_.GetPrefs());
   personal_data_->OnSyncServiceInitialized(&sync_service_);
 

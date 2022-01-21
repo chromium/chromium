@@ -34,8 +34,9 @@ void AddressProfileSaveManager::ImportProfileFromForm(
   // behavior and directly import the observed profile without recording any
   // additional metrics. However, if only silent updates are allowed, proceed
   // with the profile import process.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAddressProfileSavePrompt) &&
+  if ((!base::FeatureList::IsEnabled(
+           features::kAutofillAddressProfileSavePrompt) ||
+       personal_data_manager_->auto_accept_address_imports_for_testing()) &&
       !allow_only_silent_updates) {
     personal_data_manager_->SaveImportedProfile(observed_profile);
     return;
@@ -71,13 +72,6 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
     case AutofillProfileImportType::kNewProfile:
     case AutofillProfileImportType::kConfirmableMerge:
     case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
-      // Emulates manually accepting new profiles and profile updates for
-      // testing purposes. This should only be applied in tests.
-      if (personal_data_manager_->auto_accept_address_imports_for_testing()) {
-        import_process->AcceptWithoutEdits();
-        FinalizeProfileImport(std::move(import_process));
-        return;
-      }
       OfferSavePrompt(std::move(import_process));
       return;
 

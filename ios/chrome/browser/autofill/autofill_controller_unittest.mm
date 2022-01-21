@@ -387,6 +387,7 @@ TEST_F(AutofillControllerTest, ProfileImport) {
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(GetBrowserState()));
+  personal_data_manager->set_auto_accept_address_imports_for_testing(true);
   // Check there are no registered profiles already.
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));

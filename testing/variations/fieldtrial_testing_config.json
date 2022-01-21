@@ -987,48 +987,6 @@
             ]
         }
     ],
-    "AutofillAddressProfileSavePrompt": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2021-09-02",
-                    "enable_features": [
-                        "AutofillAddressProfileSavePrompt"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillAddressProfileSavePromptWithIOSFixes": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "AutofillAddressProfileSavePromptEnabled_2021-09-10",
-                    "enable_features": [
-                        "AutofillAddressProfileSavePrompt",
-                        "CreatePendingItemForPostFormSubmission"
-                    ]
-                },
-                {
-                    "name": "CreatePendingItemForPostFormSubmissionEnabled_2021-09-10",
-                    "enable_features": [
-                        "CreatePendingItemForPostFormSubmission"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAssistantInCCTTriggering": [
         {
             "platforms": [

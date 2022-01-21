@@ -127,6 +127,7 @@ class CreditCardSaveManagerTest : public testing::Test {
         std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
+    personal_data_.set_auto_accept_address_imports_for_testing(true);
     personal_data_.Init(/*profile_database=*/database_,
                         /*account_database=*/nullptr,
                         /*pref_service=*/autofill_client_.GetPrefs(),

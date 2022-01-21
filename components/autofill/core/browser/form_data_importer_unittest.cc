@@ -349,6 +349,7 @@ class FormDataImporterTestBase {
 
   void ResetPersonalDataManager(UserMode user_mode) {
     personal_data_manager_ = std::make_unique<PersonalDataManager>("en", "US");
+    personal_data_manager_->set_auto_accept_address_imports_for_testing(true);
     personal_data_manager_->Init(
         scoped_refptr<AutofillWebDataService>(autofill_database_service_),
         /*account_database=*/nullptr,
