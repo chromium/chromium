@@ -1247,6 +1247,46 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, UserGestureFromContentScript) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(MessagingApiTest, UserGestureFromExtensionPage) {
+  static constexpr char kBackground[] = R"(
+    chrome.runtime.onMessage.addListener(function() {
+      chrome.test.assertTrue(chrome.test.isProcessingUserGesture());
+      chrome.test.notifyPass();
+    });
+  )";
+
+  static constexpr char kPage[] = R"(
+    <script src='page.js'></script>
+  )";
+
+  static constexpr char kScript[] = R"(
+    chrome.test.runWithUserGesture(function() {
+      chrome.runtime.sendMessage('');
+    });
+  )";
+
+  static constexpr char kManifest[] = R"(
+    {
+      "name": "Test user gesture from extension page.",
+      "version": "1.0",
+      "manifest_version": 3,
+      "background": {
+        "service_worker": "background.js"
+      }
+    }
+  )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPage);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kScript);
+  test_dir.WriteManifest(kManifest);
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(),
+                               {.extension_url = "page.html"}, {}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(MessagingApiTest,
                        RestrictedActivationTriggerBetweenExtensions) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
