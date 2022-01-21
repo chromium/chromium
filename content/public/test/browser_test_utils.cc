@@ -1878,14 +1878,23 @@ void AddToSetIfFrameMatchesPredicate(
 }
 }
 
-RenderFrameHost* FrameMatchingPredicate(
+RenderFrameHost* FrameMatchingPredicateOrNullptr(
     Page& page,
     base::RepeatingCallback<bool(RenderFrameHost*)> predicate) {
   std::set<RenderFrameHost*> frame_set;
   page.GetMainDocument().ForEachRenderFrameHost(base::BindRepeating(
       &AddToSetIfFrameMatchesPredicate, &frame_set, predicate));
-  EXPECT_EQ(1U, frame_set.size());
+  EXPECT_LE(frame_set.size(), 1u);
   return frame_set.size() == 1 ? *frame_set.begin() : nullptr;
+}
+
+RenderFrameHost* FrameMatchingPredicate(
+    Page& page,
+    base::RepeatingCallback<bool(RenderFrameHost*)> predicate) {
+  content::RenderFrameHost* rfh =
+      FrameMatchingPredicateOrNullptr(page, std::move(predicate));
+  EXPECT_TRUE(rfh);
+  return rfh;
 }
 
 bool FrameMatchesName(const std::string& name, RenderFrameHost* frame) {

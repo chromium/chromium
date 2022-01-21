@@ -38,6 +38,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -434,7 +435,7 @@ IFrameWaiter::~IFrameWaiter() {}
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
     const std::string& name,
     const base::TimeDelta timeout) {
-  content::RenderFrameHost* frame = FrameMatchingPredicate(
+  content::RenderFrameHost* frame = FrameMatchingPredicateOrNullptr(
       web_contents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, name));
   if (frame) {
@@ -452,9 +453,9 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingOrigin(
     const GURL origin,
     const base::TimeDelta timeout) {
-  content::RenderFrameHost* frame =
-      FrameMatchingPredicate(web_contents()->GetPrimaryPage(),
-                             base::BindRepeating(&FrameHasOrigin, origin));
+  content::RenderFrameHost* frame = FrameMatchingPredicateOrNullptr(
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&FrameHasOrigin, origin));
   if (frame) {
     return frame;
   } else {
@@ -470,7 +471,7 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingOrigin(
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingUrl(
     const GURL url,
     const base::TimeDelta timeout) {
-  content::RenderFrameHost* frame = FrameMatchingPredicate(
+  content::RenderFrameHost* frame = FrameMatchingPredicateOrNullptr(
       web_contents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameHasSourceUrl, url));
   if (frame) {
@@ -1759,7 +1760,7 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
     ADD_FAILURE() << "The recipe does not specify a way to find the iframe!";
   }
 
-  if (frame == nullptr) {
+  if (*frame == nullptr) {
     ADD_FAILURE() << "Failed to find iframe!";
     return false;
   }

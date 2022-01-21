@@ -23,6 +23,7 @@
 #include "base/scoped_observation.h"
 #include "base/template_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -878,13 +879,19 @@ enum EvalJsOptions {
 
 // Walks the frame tree of the specified `page`, also descending into any inner
 // frame-trees (e.g. GuestView), and returns the sole frame that matches the
-// specified predicate function. This function will DCHECK if no frames match
-// the specified predicate, or if more than one frame matches.
+// specified predicate function. Returns nullptr if no frame matches.
+// EXPECTs that at most one frame matches.
+RenderFrameHost* FrameMatchingPredicateOrNullptr(
+    Page& page,
+    base::RepeatingCallback<bool(RenderFrameHost*)> predicate);
+
+// Same like FrameMatchingPredicateOrNullptr(), but EXPECTs that exactly one
+// frame matches.
 RenderFrameHost* FrameMatchingPredicate(
     Page& page,
     base::RepeatingCallback<bool(RenderFrameHost*)> predicate);
 
-// Predicates for use with FrameMatchingPredicate.
+// Predicates for use with FrameMatchingPredicate[OrNullPtr]().
 bool FrameMatchesName(const std::string& name, RenderFrameHost* frame);
 bool FrameIsChildOfMainFrame(RenderFrameHost* frame);
 bool FrameHasSourceUrl(const GURL& url, RenderFrameHost* frame);
