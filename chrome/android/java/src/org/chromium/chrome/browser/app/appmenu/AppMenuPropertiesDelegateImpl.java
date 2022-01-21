@@ -1100,6 +1100,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected void updatePriceTrackingMenuItemRow(@NonNull MenuItem startPriceTrackingMenuItem,
             @NonNull MenuItem stopPriceTrackingMenuItem, @Nullable Tab currentTab) {
+        PowerBookmarkMeta pageMeta = PowerBookmarkUtils.getPriceTrackingMetadataForTab(currentTab);
         // If price tracking isn't enabled or the page isn't eligible, then hide both items.
         if (!ShoppingFeatures.isShoppingListEnabled()
                 || !PowerBookmarkUtils.isPriceTrackingEligible(currentTab)
@@ -1109,9 +1110,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             return;
         }
 
-        PowerBookmarkMeta meta = PowerBookmarkUtils.getBookmarkBookmarkMetaForTab(
+        PowerBookmarkMeta existingBookmarkMeta = PowerBookmarkUtils.getBookmarkBookmarkMetaForTab(
                 mBookmarkBridgeSupplier.get(), currentTab);
-        if (meta != null && meta.getType() != PowerBookmarkType.SHOPPING) {
+        if (existingBookmarkMeta != null
+                && existingBookmarkMeta.getType() != PowerBookmarkType.SHOPPING) {
             startPriceTrackingMenuItem.setVisible(false);
             stopPriceTrackingMenuItem.setVisible(false);
             return;
@@ -1123,8 +1125,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         startPriceTrackingMenuItem.setEnabled(editEnabled);
         stopPriceTrackingMenuItem.setEnabled(editEnabled);
 
-        boolean priceTrackingEnabled =
-                meta != null && meta.getShoppingSpecifics().getIsPriceTracked();
+        boolean priceTrackingEnabled = PowerBookmarkUtils.isPriceTrackingEnabledForClusterId(
+                pageMeta.getShoppingSpecifics().getProductClusterId(),
+                mBookmarkBridgeSupplier.get());
         startPriceTrackingMenuItem.setVisible(!priceTrackingEnabled);
         stopPriceTrackingMenuItem.setVisible(priceTrackingEnabled);
     }
