@@ -6350,21 +6350,6 @@
             ]
         }
     ],
-    "PrefetchSRPAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_threshold_1_holdback_20190521",
-                    "enable_features": [
-                        "GWSPrefetchHoldback"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrewarmSearchResultsPageFonts": [
         {
             "platforms": [
@@ -6553,40 +6538,6 @@
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
                         "QueryTilesInOmnibox"
-                    ]
-                }
-            ]
-        }
-    ],
-    "QuietNotificationPrompts": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithAdaptiveActivationAndPerSiteInterventions",
-                    "params": {
-                        "availability": "any",
-                        "crowd_deny_hold_back_chance": "0.3",
-                        "enable_abusive_content_triggering": "true",
-                        "enable_abusive_content_warning": "true",
-                        "enable_abusive_request_triggering": "true",
-                        "enable_abusive_request_warning": "true",
-                        "enable_adaptive_activation": "true",
-                        "enable_crowd_deny_triggering": "true",
-                        "event_trigger": "name:tabgroups_dummy;comparator:any;window:1;storage:1",
-                        "event_used": "name:tabgroups_dummy;comparator:any;window:1;storage:1",
-                        "session_rate": "any"
-                    },
-                    "enable_features": [
-                        "IPH_QuietNotificationPrompts",
-                        "QuietNotificationPrompts"
                     ]
                 }
             ]
@@ -8012,6 +7963,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UpdateHistoryEntryPointsInIncognito"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UseNativeThreadPool": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseNativeThreadPool"
                     ]
                 }
             ]
