@@ -1,17 +1,17 @@
-From a46ecfad6b70f941c0817c24a03598624bde17e6 Mon Sep 17 00:00:00 2001
+From 55d9cc2c539871fc335b0083feea2679a7bd0c63 Mon Sep 17 00:00:00 2001
 From: Mohamed Heikal <mheikal@google.com>
 Date: Wed, 26 May 2021 19:03:39 -0400
-Subject: [PATCH 3/3] Add disassemble command to keeps
+Subject: [PATCH 2/3] Add disassemble command to keeps
 
 ---
  src/main/keep.txt | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/src/main/keep.txt b/src/main/keep.txt
-index e03ef61f8..5454561a4 100644
+index e37692451..cdf5cdf4c 100644
 --- a/src/main/keep.txt
 +++ b/src/main/keep.txt
-@@ -7,6 +7,7 @@
+@@ -11,6 +11,7 @@
  
  -keep public class com.android.tools.r8.D8 { public static void main(java.lang.String[]); }
  -keep public class com.android.tools.r8.R8 { public static void main(java.lang.String[]); }
@@ -20,5 +20,5 @@ index e03ef61f8..5454561a4 100644
  -keep public class com.android.tools.r8.dexsplitter.DexSplitter { public static void main(java.lang.String[]); }
  
 -- 
-2.33.0.882.g93a45727a2-goog
+2.35.0.rc0.227.g00780c9af4-goog
 
