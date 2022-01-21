@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "jingle/glue/fake_ssl_client_socket.h"
+#include "components/webrtc/fake_ssl_client_socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -341,9 +341,9 @@ TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {
   set_fake_tls_handshake(true);
 
   base::StringPiece client_hello =
-      jingle_glue::FakeSSLClientSocket::GetSslClientHello();
+      webrtc::FakeSSLClientSocket::GetSslClientHello();
   base::StringPiece server_hello =
-      jingle_glue::FakeSSLClientSocket::GetSslServerHello();
+      webrtc::FakeSSLClientSocket::GetSslServerHello();
   std::vector<net::MockRead> reads = {
       net::MockRead(net::ASYNC, server_hello.data(), server_hello.length(), 1),
       net::MockRead(net::ASYNC, 2, kTestMsg),

@@ -11,10 +11,10 @@ include_rules = [
   "+components/prefs",
   "+components/version_info",
   "+components/web_package",
+  # FakeSSLClientSocket
+  "+components/webrtc",
   "+crypto",
   "+ipc",
-  # FakeSSLClientSocket
-  "+jingle/glue",
   "+net",
   "+sandbox",
   "+services/proxy_resolver/public/mojom",

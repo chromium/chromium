@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "jingle/glue/fake_ssl_client_socket.h"
+#include "components/webrtc/fake_ssl_client_socket.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -29,7 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace jingle_glue {
+namespace webrtc {
 
 namespace {
 
@@ -88,8 +88,10 @@ class MockClientSocket : public net::StreamSocket {
 // Break up |data| into a bunch of chunked MockReads/Writes and push
 // them onto |ops|.
 template <net::MockReadWriteType type>
-void AddChunkedOps(base::StringPiece data, size_t chunk_size, net::IoMode mode,
-                   std::vector<net::MockReadWrite<type> >* ops) {
+void AddChunkedOps(base::StringPiece data,
+                   size_t chunk_size,
+                   net::IoMode mode,
+                   std::vector<net::MockReadWrite<type>>* ops) {
   DCHECK_GT(chunk_size, 0U);
   size_t offset = 0;
   while (offset < data.size()) {
@@ -121,9 +123,10 @@ class FakeSSLClientSocketTest : public testing::Test {
         static_socket_data_provider_.get());
   }
 
-  void ExpectStatus(
-      net::IoMode mode, int expected_status, int immediate_status,
-      net::TestCompletionCallback* test_completion_callback) {
+  void ExpectStatus(net::IoMode mode,
+                    int expected_status,
+                    int immediate_status,
+                    net::TestCompletionCallback* test_completion_callback) {
     if (mode == net::ASYNC) {
       EXPECT_EQ(net::ERR_IO_PENDING, immediate_status);
       int status = test_completion_callback->WaitForResult();
@@ -136,9 +139,10 @@ class FakeSSLClientSocketTest : public testing::Test {
   // Sets up the mock socket to generate a successful handshake
   // (sliced up according to the parameters) and makes sure the
   // FakeSSLClientSocket behaves as expected.
-  void RunSuccessfulHandshakeTest(
-      net::IoMode mode, size_t read_chunk_size, size_t write_chunk_size,
-      int num_resets) {
+  void RunSuccessfulHandshakeTest(net::IoMode mode,
+                                  size_t read_chunk_size,
+                                  size_t write_chunk_size,
+                                  int num_resets) {
     base::StringPiece ssl_client_hello =
         FakeSSLClientSocket::GetSslClientHello();
     base::StringPiece ssl_server_hello =
@@ -198,8 +202,9 @@ class FakeSSLClientSocketTest : public testing::Test {
 
   // Sets up the mock socket to generate an unsuccessful handshake
   // FakeSSLClientSocket fails as expected.
-  void RunUnsuccessfulHandshakeTestHelper(
-      net::IoMode mode, int error, HandshakeErrorLocation location) {
+  void RunUnsuccessfulHandshakeTestHelper(net::IoMode mode,
+                                          int error,
+                                          HandshakeErrorLocation location) {
     DCHECK_NE(error, net::OK);
     base::StringPiece ssl_client_hello =
         FakeSSLClientSocket::GetSslClientHello();
@@ -241,8 +246,7 @@ class FakeSSLClientSocketTest : public testing::Test {
           reads[index].data_len = 0;
         }
         reads.resize(index + 1);
-        if (error ==
-            net::ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ) {
+        if (error == net::ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ) {
           static const char kDummyData[] = "DUMMY";
           reads.push_back(net::MockRead(mode, kDummyData));
         }
@@ -257,19 +261,20 @@ class FakeSSLClientSocketTest : public testing::Test {
     // an unexpected event.
     int expected_status =
         ((error == net::ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ) ||
-         (error == ERR_MALFORMED_SERVER_HELLO)) ?
-        net::ERR_UNEXPECTED : error;
+         (error == ERR_MALFORMED_SERVER_HELLO))
+            ? net::ERR_UNEXPECTED
+            : error;
 
     net::TestCompletionCallback test_completion_callback;
-    int status = fake_ssl_client_socket.Connect(
-        test_completion_callback.callback());
+    int status =
+        fake_ssl_client_socket.Connect(test_completion_callback.callback());
     EXPECT_FALSE(fake_ssl_client_socket.IsConnected());
     ExpectStatus(mode, expected_status, status, &test_completion_callback);
     EXPECT_FALSE(fake_ssl_client_socket.IsConnected());
   }
 
-  void RunUnsuccessfulHandshakeTest(
-      int error, HandshakeErrorLocation location) {
+  void RunUnsuccessfulHandshakeTest(int error,
+                                    HandshakeErrorLocation location) {
     RunUnsuccessfulHandshakeTestHelper(net::SYNCHRONOUS, error, location);
     RunUnsuccessfulHandshakeTestHelper(net::ASYNC, error, location);
   }
@@ -290,16 +295,15 @@ TEST_F(FakeSSLClientSocketTest, PassThroughMethods) {
   net::NetLogWithSource net_log;
   EXPECT_CALL(*mock_client_socket, SetReceiveBufferSize(kReceiveBufferSize));
   EXPECT_CALL(*mock_client_socket, SetSendBufferSize(kSendBufferSize));
-  EXPECT_CALL(*mock_client_socket, GetPeerAddress(&ip_endpoint)).
-      WillOnce(Return(kPeerAddress));
+  EXPECT_CALL(*mock_client_socket, GetPeerAddress(&ip_endpoint))
+      .WillOnce(Return(kPeerAddress));
   EXPECT_CALL(*mock_client_socket, NetLog()).WillOnce(ReturnRef(net_log));
 
   // Takes ownership of |mock_client_socket|.
   FakeSSLClientSocket fake_ssl_client_socket(std::move(mock_client_socket));
   fake_ssl_client_socket.SetReceiveBufferSize(kReceiveBufferSize);
   fake_ssl_client_socket.SetSendBufferSize(kSendBufferSize);
-  EXPECT_EQ(kPeerAddress,
-            fake_ssl_client_socket.GetPeerAddress(&ip_endpoint));
+  EXPECT_EQ(kPeerAddress, fake_ssl_client_socket.GetPeerAddress(&ip_endpoint));
   EXPECT_EQ(&net_log, &fake_ssl_client_socket.NetLog());
 }
 
@@ -332,8 +336,7 @@ TEST_F(FakeSSLClientSocketTest, UnsuccessfulHandshakeConnectError) {
 }
 
 TEST_F(FakeSSLClientSocketTest, UnsuccessfulHandshakeWriteError) {
-  RunUnsuccessfulHandshakeTest(net::ERR_OUT_OF_MEMORY,
-                               SEND_CLIENT_HELLO_ERROR);
+  RunUnsuccessfulHandshakeTest(net::ERR_OUT_OF_MEMORY, SEND_CLIENT_HELLO_ERROR);
 }
 
 TEST_F(FakeSSLClientSocketTest, UnsuccessfulHandshakeReadError) {
@@ -342,9 +345,8 @@ TEST_F(FakeSSLClientSocketTest, UnsuccessfulHandshakeReadError) {
 }
 
 TEST_F(FakeSSLClientSocketTest, PeerClosedDuringHandshake) {
-  RunUnsuccessfulHandshakeTest(
-      net::ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ,
-      VERIFY_SERVER_HELLO_ERROR);
+  RunUnsuccessfulHandshakeTest(net::ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ,
+                               VERIFY_SERVER_HELLO_ERROR);
 }
 
 TEST_F(FakeSSLClientSocketTest, MalformedServerHello) {
@@ -354,4 +356,4 @@ TEST_F(FakeSSLClientSocketTest, MalformedServerHello) {
 
 }  // namespace
 
-}  // namespace jingle_glue
+}  // namespace webrtc

@@ -13,8 +13,8 @@
 // NOTE: This StreamSocket implementation does *not* do a real SSL
 // handshake nor does it do any encryption!
 
-#ifndef JINGLE_GLUE_FAKE_SSL_CLIENT_SOCKET_H_
-#define JINGLE_GLUE_FAKE_SSL_CLIENT_SOCKET_H_
+#ifndef COMPONENTS_WEBRTC_FAKE_SSL_CLIENT_SOCKET_H_
+#define COMPONENTS_WEBRTC_FAKE_SSL_CLIENT_SOCKET_H_
 
 #include <stdint.h>
 
@@ -34,7 +34,7 @@ class DrainableIOBuffer;
 class SSLInfo;
 }  // namespace net
 
-namespace jingle_glue {
+namespace webrtc {
 
 class FakeSSLClientSocket : public net::StreamSocket {
  public:
@@ -120,6 +120,6 @@ class FakeSSLClientSocket : public net::StreamSocket {
   scoped_refptr<net::DrainableIOBuffer> read_buf_;
 };
 
-}  // namespace jingle_glue
+}  // namespace webrtc
 
-#endif  // JINGLE_GLUE_FAKE_SSL_CLIENT_SOCKET_H_
+#endif  // COMPONENTS_WEBRTC_FAKE_SSL_CLIENT_SOCKET_H_

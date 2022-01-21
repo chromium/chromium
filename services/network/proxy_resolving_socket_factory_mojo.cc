@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "jingle/glue/fake_ssl_client_socket.h"
+#include "components/webrtc/fake_ssl_client_socket.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/proxy_resolving_client_socket.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
@@ -33,8 +33,8 @@ void ProxyResolvingSocketFactoryMojo::CreateProxyResolvingSocket(
       url, network_isolation_key, options && options->use_tls);
   if (options && options->fake_tls_handshake) {
     DCHECK(!options->use_tls);
-    net_socket = std::make_unique<jingle_glue::FakeSSLClientSocket>(
-        std::move(net_socket));
+    net_socket =
+        std::make_unique<webrtc::FakeSSLClientSocket>(std::move(net_socket));
   }
 
   auto socket = std::make_unique<ProxyResolvingSocketMojo>(

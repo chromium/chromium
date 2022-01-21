@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "jingle/glue/fake_ssl_client_socket.h"
+#include "components/webrtc/fake_ssl_client_socket.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -17,7 +17,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
-namespace jingle_glue {
+namespace webrtc {
 
 namespace {
 
@@ -375,4 +375,4 @@ void FakeSSLClientSocket::ApplySocketTag(const net::SocketTag& tag) {
   NOTIMPLEMENTED();
 }
 
-}  // namespace jingle_glue
+}  // namespace webrtc
