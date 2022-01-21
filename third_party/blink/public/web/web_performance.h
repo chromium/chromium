@@ -39,10 +39,6 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 
-#if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/heap/handle.h"  // nogncheck
-#endif
-
 namespace blink {
 
 class WindowPerformance;
