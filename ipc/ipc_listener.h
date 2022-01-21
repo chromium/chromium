@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(IPC) Listener {
   // Called on the server side when a channel that listens for connections
   // has an error that causes the listening channel to close.
   virtual void OnChannelListenError() {}
-#endif  // OS_POSIX || OS_FUCHSIA
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
   // Debugging helper for identifying what kind of a Listener this is.
   // TODO(https://crbug.com/1113159): Remove this method once the bug is fixed.

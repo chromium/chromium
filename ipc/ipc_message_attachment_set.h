@@ -70,7 +70,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageAttachmentSet
   // In debugging mode, it's a fatal error to try and add more than this number
   // of descriptors to a MessageAttachmentSet.
   static const size_t kMaxDescriptorsPerMessage = 7;
-#endif  // OS_POSIX || OS_FUCHSIA
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
   // ---------------------------------------------------------------------------
 
