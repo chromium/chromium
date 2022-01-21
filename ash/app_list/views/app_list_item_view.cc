@@ -778,17 +778,25 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
   if (drag_state_ != DragState::kNone)
     return;
 
-  // TODO(ginko) focus and selection should be unified.
   if ((grid_delegate_->IsSelectedView(this) || HasFocus()) &&
       (view_delegate_->KeyboardTraversalEngaged() ||
        waiting_for_context_menu_options_ || IsShowingAppMenu())) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    if (view_delegate_->KeyboardTraversalEngaged()) {
+    // Clamshell ProductivityLauncher always has keyboard traversal engaged, so
+    // explicitly check HasFocus() before drawing focus ring. This allows
+    // right-click "selected" apps to avoid drawing the focus ring.
+    const bool draw_focus_ring =
+        features::IsProductivityLauncherEnabled() &&
+                !view_delegate_->IsInTabletMode()
+            ? HasFocus()
+            : view_delegate_->KeyboardTraversalEngaged();
+    if (draw_focus_ring) {
       flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kFocusRingWidth);
     } else {
+      // Draw a background highlight ("selected" in the UI spec).
       const AppListColorProvider* color_provider = AppListColorProvider::Get();
       const SkColor bg_color = grid_delegate_->IsInFolder()
                                    ? color_provider->GetFolderBackgroundColor()
