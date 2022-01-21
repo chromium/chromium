@@ -215,6 +215,14 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity,
   if (view_structure_.pages().empty())
     return;
 
+  // Do not update opacity when reorder animation is running.
+  if (IsUnderReorderAnimation())
+    return;
+
+  // Return early if the opacity is locked.
+  if (lock_opacity_)
+    return;
+
   // App list view state animations animate the apps grid view opacity rather
   // than individual items' opacity. This method (used during app list view
   // drag) sets up opacity for individual grid item, and assumes that the apps
@@ -662,11 +670,42 @@ void PagedAppsGridView::EnsureViewVisible(const GridIndex& index) {
 
 absl::optional<PagedAppsGridView::VisibleItemIndexRange>
 PagedAppsGridView::GetVisibleItemIndexRange() const {
-  // TODO(https://crbug.com/1287334): implement the reorder animation for tablet
-  // mode.
-  NOTIMPLEMENTED();
+  // Expect that there is no active page transitions. Otherwise, the return
+  // value can be obsolete.
+  DCHECK(!pagination_model_.has_transition());
 
-  return absl::nullopt;
+  const int selected_page = pagination_model_.selected_page();
+  if (selected_page < 0)
+    return absl::nullopt;
+
+  // Get the selected page's item count.
+  const int on_page_item_count = GetNumberOfItemsOnPage(selected_page);
+
+  // Return early if the selected page is empty.
+  if (!on_page_item_count)
+    return absl::nullopt;
+
+  // Calculate the index of the first view on the selected page.
+  int start_view_index = 0;
+  for (int page_index = 0; page_index < selected_page; ++page_index)
+    start_view_index += GetNumberOfItemsOnPage(page_index);
+
+  return VisibleItemIndexRange(start_view_index,
+                               start_view_index + on_page_item_count - 1);
+}
+
+base::ScopedClosureRunner PagedAppsGridView::LockAppsGridOpacity() {
+  lock_opacity_ = true;
+
+  base::OnceClosure reset_closure = base::BindOnce(
+      [](base::WeakPtr<PagedAppsGridView> weak_ptr) {
+        if (!weak_ptr)
+          return;
+
+        weak_ptr->lock_opacity_ = false;
+      },
+      weak_ptr_factory_.GetWeakPtr());
+  return base::ScopedClosureRunner(std::move(reset_closure));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

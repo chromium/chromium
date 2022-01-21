@@ -657,13 +657,24 @@ void AppsContainerView::UpdateForNewSortingOrder(
     bool animate,
     base::OnceClosure update_position_closure) {
   DCHECK(features::IsLauncherAppSortEnabled());
-  reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
+  DCHECK_EQ(animate, !update_position_closure.is_null());
 
-  // TODO(https://crbug.com/1287334): run `update_position_closure` at the end
-  // of the fade out animation when reorder animation in tablet mode is
-  // implemented.
-  if (update_position_closure)
-    std::move(update_position_closure).Run();
+  if (!animate) {
+    // Reordering is not required so update the undo toast and return early.
+    reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
+    return;
+  }
+
+  // If `apps_grid_view_` is under page transition animation, finish the
+  // animation before starting the reorder animation.
+  ash::PaginationModel* pagination_model = apps_grid_view_->pagination_model();
+  if (pagination_model->has_transition())
+    pagination_model->FinishAnimation();
+
+  update_position_closure_ = std::move(update_position_closure);
+  apps_grid_view_->FadeOutVisibleItemsForReorder(base::BindRepeating(
+      &AppsContainerView::OnAppsGridViewFadeOutAnimationEneded,
+      weak_ptr_factory_.GetWeakPtr(), new_order));
 }
 
 ContinueSectionView* AppsContainerView::GetContinueSection() {
@@ -1378,6 +1389,44 @@ void AppsContainerView::UpdateGradientMaskBounds() {
                                                /*fade_in=*/false,
                                                /*is_horizonal=*/false});
   gradient_layer_delegate_->layer()->SetBounds(container_bounds);
+}
+
+void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
+    const absl::optional<AppListSortOrder>& new_order,
+    bool abort) {
+  // Update item positions after the fade out animation but before the fade in
+  // animation. NOTE: `update_position_closure_` can be empty in some edge
+  // cases. For example, the app list is set with a new order denoted by Order
+  // A. Then before the fade out animation is completed, the app list order is
+  // reset with the old value. In this case, `update_position_closure_` for
+  // Order A is never called. As a result, the closure for resetting the order
+  // is empty.
+  // Also update item positions only when the fade out animation ends normally.
+  // Because a fade out animation is aborted when:
+  // (1) Another reorder animation starts, or
+  // (2) The apps grid's view model updates due to the reasons such as app
+  // installation or model reset.
+  // It is meaningless to update item positions in either case.
+  if (update_position_closure_ && !abort)
+    std::move(update_position_closure_).Run();
+
+  // Record the undo toast's visibility before update.
+  const bool old_toast_visible = reorder_undo_container_->is_toast_visible();
+
+  reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
+
+  // Skip the fade in animation if the fade out animation is aborted.
+  if (abort)
+    return;
+
+  // When the undo toast's visibility changes, the apps grid's bounds should
+  // change. Meanwhile, the fade in animation relies on the apps grid's bounds
+  // (because of calculating the visible items). Therefore trigger layout before
+  // starting the fade in animation.
+  if (old_toast_visible != reorder_undo_container_->is_toast_visible())
+    Layout();
+
+  apps_grid_view_->FadeInVisibleItemsForReorder();
 }
 
 }  // namespace ash
