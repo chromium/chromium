@@ -512,7 +512,7 @@ void DesksTemplatesItemView::OnTemplateNameChanged(
   if (is_template_name_being_modified_)
     return;
 
-  name_view_->SetTextAndElideIfNeeded(new_name);
+  name_view_->SetText(new_name);
   name_view_->SetAccessibleName(new_name);
   SetAccessibleName(new_name);
 

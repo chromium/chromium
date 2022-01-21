@@ -250,7 +250,7 @@ void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
   if (is_desk_name_being_modified_)
     return;
 
-  desk_name_view_->SetTextAndElideIfNeeded(new_name);
+  desk_name_view_->SetText(new_name);
   desk_name_view_->SetAccessibleName(new_name);
   desk_preview_->SetAccessibleName(new_name);
 

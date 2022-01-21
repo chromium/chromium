@@ -124,25 +124,6 @@ class DesksTemplatesIconViewTestApi {
   const DesksTemplatesIconView* desks_templates_icon_view_;
 };
 
-// Wrapper for `DesksTemplatesNameView` that exposes internal state to test
-// functions.
-class DesksTemplatesNameViewTestApi {
- public:
-  explicit DesksTemplatesNameViewTestApi(
-      const DesksTemplatesNameView* desks_templates_name_view);
-  DesksTemplatesNameViewTestApi(const DesksTemplatesNameViewTestApi&) = delete;
-  DesksTemplatesNameViewTestApi& operator=(
-      const DesksTemplatesNameViewTestApi&) = delete;
-  ~DesksTemplatesNameViewTestApi();
-
-  const std::u16string full_text() const {
-    return desks_templates_name_view_->full_text_;
-  }
-
- private:
-  const DesksTemplatesNameView* desks_templates_name_view_;
-};
-
 // Return the `grid_item_index`th `DesksTemplatesItemView` from the first
 // `OverviewGrid`'s `DesksTemplatesGridView` in `GetOverviewGridList()`.
 DesksTemplatesItemView* GetItemViewFromTemplatesGrid(int grid_item_index);

@@ -14,7 +14,7 @@ namespace ash {
 
 // Defines a textfield styled so when it's not focused, it looks like a normal
 // label. It can be highlighted and activated by the
-// `OverviewHighlightController`. It provides an API to elide long names.
+// `OverviewHighlightController`.
 // TODO(minch): Unify this to ash/style.
 class ASH_EXPORT DesksTextfield : public views::Textfield,
                                   public OverviewHighlightableView {
@@ -28,10 +28,6 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
 
   // The max number of characters (UTF-16) allowed for the textfield.
   static constexpr size_t kMaxLength = 300;
-
-  // Use the potential max size of `this` to calculate elision, not its current
-  // size to avoid eliding names that don't need to be.
-  virtual void SetTextAndElideIfNeeded(const std::u16string& text);
 
   // If this view has focus, make the view's border visible and change
   // background to its active color. If it doesn't have focus, hide the view's
@@ -47,6 +43,8 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  void OnFocus() override;
+  void OnBlur() override;
 
   // OverviewHighlightableView:
   views::View* GetView() override;
@@ -55,10 +53,6 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
   void MaybeSwapHighlightedView(bool right) override;
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
-
- protected:
-  // Full text without being elided.
-  std::u16string full_text_;
 
  private:
   void UpdateFocusRingState();

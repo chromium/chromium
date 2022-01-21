@@ -1653,54 +1653,7 @@ TEST_F(DesksTemplatesTest, TemplateNameChangeAborted) {
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 }
 
-// When template names exceed the width of the textfield, we elide the text
-// (truncate the string add "..." to the end) for display purposese. The full
-// template name is still stored as the `full_text()`. This test checks to
-// ensure that the elided text is displayed when the textfield is not focused,
-// but the full text is populated into the textfield when it is focused.
-TEST_F(DesksTemplatesTest, TemplateNameEllipsis) {
-  auto test_window = CreateAppWindow();
-
-  const std::string template_name = "desk template name that is very long";
-  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now());
-
-  OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
-
-  // Verify that the template name field has an ellipsis.
-  EXPECT_NE(base::UTF8ToUTF16(template_name), name_view->GetText());
-  EXPECT_NE(std::string::npos, name_view->GetText().find(u"\x2026"));
-
-  // Verify that the full text stored by the textfield is the `template_name`.
-  EXPECT_EQ(base::UTF8ToUTF16(template_name),
-            DesksTemplatesNameViewTestApi(name_view).full_text());
-
-  // Test that when we click on and focus the template name, that the ellipsized
-  // text is replaced with the full template name. Also tests that it's hidden
-  // again when we lose focus.
-  ClickOnView(name_view);
-  EXPECT_TRUE(name_view->HasFocus());
-  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
-  SendKey(ui::VKEY_RETURN);
-  EXPECT_FALSE(name_view->HasFocus());
-  EXPECT_NE(base::UTF8ToUTF16(template_name), name_view->GetText());
-  EXPECT_NE(std::string::npos, name_view->GetText().find(u"\x2026"));
-
-  // Test that adding onto a long `template_name` will still update and
-  // ellipsize correctly.
-  ClickOnView(name_view);
-  SendKey(ui::VKEY_RIGHT);
-  SendKey(ui::VKEY_A);
-  SendKey(ui::VKEY_B);
-  SendKey(ui::VKEY_RETURN);
-  WaitForDesksTemplatesUI();
-  name_view = GetItemViewFromTemplatesGrid(0)->name_view();
-  EXPECT_EQ(base::UTF8ToUTF16(template_name) + u"ab",
-            DesksTemplatesNameViewTestApi(name_view).full_text());
-}
-
-// Tesets that Showing the overview records to the TemplateGrid histogram.
+// Tests that showing the overview records to the TemplateGrid histogram.
 TEST_F(DesksTemplatesTest, RecordDesksTemplateGridShows) {
   // Make sure that LoadTemplateHistogram is recorded.
   base::HistogramTester histogram_tester;

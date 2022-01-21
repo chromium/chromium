@@ -8,7 +8,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget.h"
@@ -65,13 +64,6 @@ void DesksTemplatesNameView::CommitChanges(views::Widget* widget) {
 
 void DesksTemplatesNameView::OnContentsChanged() {
   PreferredSizeChanged();
-}
-
-void DesksTemplatesNameView::SetTextAndElideIfNeeded(
-    const std::u16string& text) {
-  SetText(gfx::ElideText(text, GetFontList(), GetAvailableWidth(),
-                         gfx::ELIDE_TAIL));
-  full_text_ = text;
 }
 
 gfx::Size DesksTemplatesNameView::CalculatePreferredSize() const {

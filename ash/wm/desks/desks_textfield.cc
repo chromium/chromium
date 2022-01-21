@@ -44,22 +44,13 @@ DesksTextfield::DesksTextfield() {
     return static_cast<DesksTextfield*>(view)->IsViewHighlighted() ||
            view->HasFocus();
   });
+  GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
 }
 
 DesksTextfield::~DesksTextfield() = default;
 
 // static
 constexpr size_t DesksTextfield::kMaxLength;
-
-void DesksTextfield::SetTextAndElideIfNeeded(const std::u16string& text) {
-  // Use the potential max size of this to calculate elision, not its current
-  // size to avoid eliding names that don't need to be.
-  SetText(
-      gfx::ElideText(text, GetFontList(),
-                     parent()->GetPreferredSize().width() - GetInsets().width(),
-                     gfx::ELIDE_TAIL));
-  full_text_ = text;
-}
 
 void DesksTextfield::UpdateViewAppearance() {
   background()->SetNativeControlColor(GetBackgroundColor());
@@ -98,7 +89,7 @@ bool DesksTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 
 void DesksTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
-  node_data->SetName(full_text_.empty() ? GetAccessibleName() : full_text_);
+  node_data->SetName(GetAccessibleName());
 }
 
 void DesksTextfield::OnMouseEntered(const ui::MouseEvent& event) {
@@ -131,6 +122,16 @@ void DesksTextfield::OnThemeChanged() {
 
 gfx::NativeCursor DesksTextfield::GetCursor(const ui::MouseEvent& event) {
   return views::GetNativeIBeamCursor();
+}
+
+void DesksTextfield::OnFocus() {
+  GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
+  views::Textfield::OnFocus();
+}
+
+void DesksTextfield::OnBlur() {
+  GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
+  views::Textfield::OnBlur();
 }
 
 views::View* DesksTextfield::GetView() {

@@ -33,12 +33,9 @@ class DesksTemplatesNameView : public DesksTextfield {
   void OnContentsChanged();
 
   // DesksTextfield:
-  void SetTextAndElideIfNeeded(const std::u16string& text) override;
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  friend class DesksTemplatesNameViewTestApi;
-
   // Gets the available width for `this`. It is the largest width `this` can be
   // based on the parent's and visible sibling's preferred sizes. Will always
   // return a value greater than or equal to one.
