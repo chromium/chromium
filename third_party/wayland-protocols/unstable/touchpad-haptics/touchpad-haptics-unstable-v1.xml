@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_touchpad_haptics_v1" version="1">
+  <interface name="zcr_touchpad_haptics_v1" version="2">
     <description summary="Allows to play haptic feedback effects on touchpad">
       Allows to play haptic feedback effects on touchpad.
 
@@ -79,6 +79,14 @@
       </description>
       <arg name="effect" type="uint" enum="effect"/>
       <arg name="strength" type="int"/>
+    </request>
+
+    <!-- Version 2 additions -->
+
+    <request name="request_activation_state" since="2">
+      <description summary="ask to send whether touchpad haptics activated or not">
+	Ask the server to send an event for the current activation state.
+      </description>
     </request>
 
   </interface>
