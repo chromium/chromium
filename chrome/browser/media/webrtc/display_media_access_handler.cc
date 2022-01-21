@@ -459,9 +459,9 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
       base::BindOnce(&DisplayMediaAccessHandler::OnDlpRestrictionChecked,
                      base::Unretained(this), web_contents->GetWeakPtr(),
                      media_id));
-#else   // BUILDFLAG(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS)
   AcceptRequest(web_contents, media_id);
-#endif  // !BUILDFLAG(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
