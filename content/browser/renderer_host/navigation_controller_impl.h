@@ -406,7 +406,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       network::mojom::ReferrerPolicy referrer_policy);
 
   // Returns whether the last NavigationEntry encountered a post-commit error.
-  bool has_post_commit_error_entry() const;
+  bool has_post_commit_error_entry() const {
+    return entry_replaced_by_post_commit_error_ != nullptr;
+  }
 
  private:
   friend class RestoreHelper;

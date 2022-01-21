@@ -1139,10 +1139,6 @@ bool NavigationControllerImpl::PendingEntryMatchesRequest(
          pending_entry_->GetUniqueID() == request->nav_entry_id();
 }
 
-bool NavigationControllerImpl::has_post_commit_error_entry() const {
-  return entry_replaced_by_post_commit_error_ != nullptr;
-}
-
 bool NavigationControllerImpl::RendererDidNavigate(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
