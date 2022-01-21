@@ -100,21 +100,43 @@ class Pointer : public SurfaceTreeHost,
   // Enable the pointer constraint on the given surface. Returns true if the
   // lock was granted, false otherwise.
   //
+  // The delegate must call OnPointerConstraintDelegateDestroying() upon/before
+  // being destroyed, regardless of the return value of ConstrainPointer(),
+  // unless PointerConstraintDelegate::OnDefunct() is called first.
+  //
   // TODO(crbug.com/957455): For legacy reasons, locking the pointer will also
   // hide the cursor.
   bool ConstrainPointer(PointerConstraintDelegate* delegate);
 
-  // Disable the pointer constraint. This is designed to be called by the
-  // delegate, so it does not call OnConstraintBroken(), which should be done
-  // separately if the constraint was broken by something other than the
-  // delegate.
-  void UnconstrainPointer();
+  // Notifies that |delegate| is being destroyed.
+  void OnPointerConstraintDelegateDestroying(
+      PointerConstraintDelegate* delegate);
+
+  // Disable the pointer constraint, notify the delegate, and do not permit
+  // the constraint to be re-established until the user acts on the surface
+  // (by clicking on it).
+  //
+  // Designed to be called by client code, on behalf of a user action to break
+  // the constraint.
+  //
+  // Returns true if an active pointer constraint was disabled.
+  bool UnconstrainPointerByUserAction();
 
   // Set the stylus delegate for handling stylus events.
   void SetStylusDelegate(PointerStylusDelegate* delegate);
   bool HasStylusDelegate() const;
 
  private:
+  // Remove |delegate| from |constraints_|.
+  void RemoveConstraintDelegate(PointerConstraintDelegate* delegate);
+
+  // Disable the pointer constraint and notify the delegate.
+  void UnconstrainPointer();
+
+  // Try to reactivate a pointer constraint previously requested for the given
+  // surface, if any.
+  void MaybeReactivatePointerConstraint(Surface* surface);
+
   // Capture the pointer for the given surface. Returns true iff the capture
   // succeeded.
   bool EnablePointerCapture(Surface* capture_surface);
@@ -165,6 +187,12 @@ class Pointer : public SurfaceTreeHost,
       gfx::PointF location_in_target,
       const absl::optional<gfx::Vector2dF>& ordinal_motion);
 
+  // Whether this Pointer should observe the given |surface|.
+  bool ShouldObserveSurface(Surface* surface);
+
+  // Stop observing |surface| if it's no longer relevant.
+  void MaybeRemoveSurfaceObserver(Surface* surface);
+
   // The delegate instance that all events are dispatched to.
   PointerDelegate* const delegate_;
 
@@ -176,8 +204,12 @@ class Pointer : public SurfaceTreeHost,
   // The delegate instance that relative movement events are dispatched to.
   RelativePointerDelegate* relative_pointer_delegate_ = nullptr;
 
-  // The delegate instance that controls when to lock/unlock this pointer.
+  // Delegate that owns the currently granted pointer lock, if any.
   PointerConstraintDelegate* pointer_constraint_delegate_ = nullptr;
+
+  // All delegates currently requesting a pointer locks, whether granted or
+  // not. Only one such request may exist per surface; others will be denied.
+  base::flat_map<Surface*, PointerConstraintDelegate*> constraints_;
 
   // The delegate instance that stylus/pen events are dispatched to.
   PointerStylusDelegate* stylus_delegate_ = nullptr;
@@ -198,6 +230,12 @@ class Pointer : public SurfaceTreeHost,
   // The window with pointer capture. Pointer capture is enabled if and only if
   // this is not null.
   aura::Window* capture_window_ = nullptr;
+
+  // True if this pointer is permitted to be captured.
+  //
+  // Set false when a user action (except focus loss) breaks pointer capture.
+  // Set true when the user clicks in any Exo window.
+  bool capture_permitted_ = true;
 
   // The position of the pointer surface relative to the pointer location.
   gfx::Point hotspot_;

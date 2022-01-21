@@ -37,6 +37,7 @@ class KeyEvent;
 namespace exo {
 class DragDropOperation;
 class DataExchangeDelegate;
+class Pointer;
 class ScopedDataSource;
 class SeatObserver;
 class Surface;
@@ -81,7 +82,13 @@ class Seat : public aura::client::FocusChangeObserver,
     return 0 <= priority && priority <= kMaxObserverPriority;
   }
 
-  // Returns currently focused surface. This is vertual so that we can override
+  // Notify observers about pointer capture state changes.
+  void NotifyPointerCaptureEnabled(Pointer* pointer,
+                                   aura::Window* capture_window);
+  void NotifyPointerCaptureDisabled(Pointer* pointer,
+                                    aura::Window* capture_window);
+
+  // Returns currently focused surface. This is virtual so that we can override
   // the behavior for testing.
   virtual Surface* GetFocusedSurface();
 

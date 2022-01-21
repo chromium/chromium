@@ -105,6 +105,22 @@ void Seat::RemoveObserver(SeatObserver* observer) {
     observer_list.RemoveObserver(observer);
 }
 
+void Seat::NotifyPointerCaptureEnabled(Pointer* pointer,
+                                       aura::Window* capture_window) {
+  for (auto& observer_list : priority_observer_list_) {
+    for (auto& observer : observer_list)
+      observer.OnPointerCaptureEnabled(pointer, capture_window);
+  }
+}
+
+void Seat::NotifyPointerCaptureDisabled(Pointer* pointer,
+                                        aura::Window* capture_window) {
+  for (auto& observer_list : priority_observer_list_) {
+    for (auto& observer : observer_list)
+      observer.OnPointerCaptureDisabled(pointer, capture_window);
+  }
+}
+
 Surface* Seat::GetFocusedSurface() {
   return GetTargetSurfaceForKeyboardFocus(
       WMHelper::GetInstance()->GetFocusedWindow());
