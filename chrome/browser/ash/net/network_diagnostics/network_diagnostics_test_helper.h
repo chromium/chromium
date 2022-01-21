@@ -38,6 +38,8 @@ class NetworkDiagnosticsTestHelper : public ::testing::Test {
   void SetServiceProperty(const std::string& service_path,
                           const std::string& key,
                           const base::Value& value);
+  NetworkHandlerTestHelper* helper() { return helper_.get(); }
+  const std::string& wifi_path() { return wifi_path_; }
 
  private:
   // Member order declaration done in a way so that members outlive those that
