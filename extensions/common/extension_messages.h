@@ -168,6 +168,9 @@ IPC_STRUCT_BEGIN(ExtensionMsg_TabConnectionInfo)
   // The ID of the frame that initiated the connection.
   // 0 if main frame, positive otherwise. -1 if not initiated from a frame.
   IPC_STRUCT_MEMBER(int, frame_id)
+
+  // The unique ID of the document of the frame that initiated the connection.
+  IPC_STRUCT_MEMBER(std::string, document_id)
 IPC_STRUCT_END()
 
 // Struct containing information about the destination of tab.connect().

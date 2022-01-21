@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -67,6 +68,7 @@ class MessagePort {
       const std::string& channel_name,
       std::unique_ptr<base::DictionaryValue> source_tab,
       int source_frame_id,
+      const ExtensionApiFrameIdMap::DocumentId& source_document_id,
       int guest_process_id,
       int guest_render_frame_routing_id,
       const MessagingEndpoint& source_endpoint,

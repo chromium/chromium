@@ -147,13 +147,12 @@ ExtensionMessagePort::ExtensionMessagePort(
   CHECK(tab);
   frame_tracker_->TrackTabFrames(tab);
   if (include_child_frames) {
-    // TODO(https://crbug.com/1227787) We don't yet support MParch so make sure
-    // `include_child_frames` is only provided for primary pages. If `rfh`
-    // belongs to a non-primary page, then the ForEachFrame iteration below
-    // would actually correspond to a different page than `rfh`'s page.
-    CHECK(rfh->GetPage().IsPrimary());
-    tab->ForEachFrame(base::BindRepeating(&ExtensionMessagePort::RegisterFrame,
-                                          base::Unretained(this)));
+    // TODO(https://crbug.com/1227787) We don't yet support MParch for
+    // prerender so make sure `include_child_frames` is only provided for
+    // primary main frames.
+    CHECK(rfh->IsInPrimaryMainFrame());
+    rfh->ForEachRenderFrameHost(base::BindRepeating(
+        &ExtensionMessagePort::RegisterFrame, base::Unretained(this)));
   } else {
     RegisterFrame(rfh);
   }
@@ -276,6 +275,7 @@ void ExtensionMessagePort::DispatchOnConnect(
     const std::string& channel_name,
     std::unique_ptr<base::DictionaryValue> source_tab,
     int source_frame_id,
+    const ExtensionApiFrameIdMap::DocumentId& source_document_id,
     int guest_process_id,
     int guest_render_frame_routing_id,
     const MessagingEndpoint& source_endpoint,
@@ -286,8 +286,8 @@ void ExtensionMessagePort::DispatchOnConnect(
       &ExtensionMessagePort::BuildDispatchOnConnectIPC,
       // Called synchronously.
       base::Unretained(this), channel_name, source_tab.get(), source_frame_id,
-      guest_process_id, guest_render_frame_routing_id, source_endpoint,
-      target_extension_id, source_url, source_origin));
+      source_document_id, guest_process_id, guest_render_frame_routing_id,
+      source_endpoint, target_extension_id, source_url, source_origin));
 }
 
 void ExtensionMessagePort::DispatchOnDisconnect(
@@ -486,6 +486,7 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
     const std::string& channel_name,
     const base::DictionaryValue* source_tab,
     int source_frame_id,
+    const ExtensionApiFrameIdMap::DocumentId& source_document_id,
     int guest_process_id,
     int guest_render_frame_routing_id,
     const MessagingEndpoint& source_endpoint,
@@ -494,6 +495,9 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
     absl::optional<url::Origin> source_origin,
     const IPCTarget& target) {
   ExtensionMsg_TabConnectionInfo source;
+
+  // Source document ID should exist if and only if there is a source tab.
+  DCHECK_EQ(!!source_tab, !!source_document_id);
   if (source_tab) {
     std::unique_ptr<base::Value> source_tab_value =
         base::Value::ToUniquePtrValue(source_tab->Clone());
@@ -501,6 +505,7 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
     // remove this cast.
     source.tab.Swap(
         static_cast<base::DictionaryValue*>(source_tab_value.get()));
+    source.document_id = source_document_id.ToString();
   }
   source.frame_id = source_frame_id;
 

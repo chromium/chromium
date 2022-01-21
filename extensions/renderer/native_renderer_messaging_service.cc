@@ -447,6 +447,8 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
     sender_builder.Set("origin", info.source_origin->Serialize());
   if (source->frame_id >= 0)
     sender_builder.Set("frameId", source->frame_id);
+  if (!source->document_id.empty())
+    sender_builder.Set("documentId", source->document_id);
 
   const Extension* extension = script_context->extension();
   if (extension) {

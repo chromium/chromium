@@ -64,6 +64,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -1465,6 +1466,31 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, LargeMessages) {
   ASSERT_TRUE(RunExtensionTest("messaging/large_messages"));
 }
+
+class MessagingApiFencedFrameTest
+    : public MessagingApiTest,
+      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+ protected:
+  MessagingApiFencedFrameTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames,
+        {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}});
+  }
+  ~MessagingApiFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(MessagingApiFencedFrameTest, Load) {
+  ASSERT_TRUE(RunExtensionTest("messaging/connect_fenced_frames",
+                               {.custom_arg = GetParam() ? "" : "MPArch"}))
+      << message_;
+}
+
+INSTANTIATE_TEST_SUITE_P(MessagingApiFencedFrameTest,
+                         MessagingApiFencedFrameTest,
+                         testing::Bool());
 
 }  // namespace
 
