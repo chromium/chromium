@@ -713,21 +713,6 @@
             ]
         }
     ],
-    "ArcEnableThrottlingNotification": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ArcEnableThrottlingNotification"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcGuestZram": [
         {
             "platforms": [
