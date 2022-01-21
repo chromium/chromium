@@ -5635,53 +5635,56 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   root.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData child1;
-  AXNodeID child1_id = 2;
-  child1.id = child1_id;
+  child1.id = 2;
   child1.role = ax::mojom::Role::kTable;
-  root.child_ids.push_back(child1_id);
+  root.child_ids.push_back(child1.id);
 
   AXNodeData child2;
-  AXNodeID child2_id = 3;
-  child2.id = child2_id;
+  child2.id = 3;
   child2.role = ax::mojom::Role::kLayoutTable;
-  root.child_ids.push_back(child2_id);
+  root.child_ids.push_back(child2.id);
 
   AXNodeData child3;
-  AXNodeID child3_id = 4;
-  child3.id = child3_id;
+  child3.id = 4;
   child3.role = ax::mojom::Role::kTextField;
   child3.AddState(ax::mojom::State::kEditable);
-  root.child_ids.push_back(child3_id);
+  root.child_ids.push_back(child3.id);
 
   AXNodeData child4;
-  AXNodeID child4_id = 5;
-  child4.id = child4_id;
+  child4.id = 5;
   child4.role = ax::mojom::Role::kSearchBox;
-  root.child_ids.push_back(child4_id);
+  root.child_ids.push_back(child4.id);
 
   AXNodeData child5;
-  AXNodeID child5_id = 6;
-  child5.id = child5_id;
+  child5.id = 6;
   child5.role = ax::mojom::Role::kTitleBar;
-  root.child_ids.push_back(child5_id);
+  root.child_ids.push_back(child5.id);
 
-  Init(root, child1, child2, child3, child4, child5);
+  AXNodeData child6;
+  child6.id = 7;
+  child6.role = ax::mojom::Role::kDialog;
+  root.child_ids.push_back(child6.id);
+
+  Init(root, child1, child2, child3, child4, child5, child6);
 
   EXPECT_UIA_INT_EQ(
-      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child1_id),
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child1.id),
       UIA_ControlTypePropertyId, int{UIA_TableControlTypeId});
   EXPECT_UIA_INT_EQ(
-      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child2_id),
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child2.id),
       UIA_ControlTypePropertyId, int{UIA_TableControlTypeId});
   EXPECT_UIA_INT_EQ(
-      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child3_id),
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child3.id),
       UIA_ControlTypePropertyId, int{UIA_EditControlTypeId});
   EXPECT_UIA_INT_EQ(
-      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child4_id),
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child4.id),
       UIA_ControlTypePropertyId, int{UIA_EditControlTypeId});
   EXPECT_UIA_INT_EQ(
-      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child5_id),
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child5.id),
       UIA_ControlTypePropertyId, int{UIA_TitleBarControlTypeId});
+  EXPECT_UIA_INT_EQ(
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child6.id),
+      UIA_ControlTypePropertyId, int{UIA_WindowControlTypeId});
 }
 
 TEST_F(AXPlatformNodeWinTest, UIALandmarkType) {

@@ -6849,11 +6849,10 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_TextControlTypeId;
 
     case ax::mojom::Role::kAlertDialog:
-      // Our MSAA implementation suggests the use of
-      // |UIA_TextControlTypeId|, not |UIA_PaneControlTypeId| because some
-      // Windows screen readers are not compatible with
-      // |ax::mojom::Role::kAlertDialog| yet.
-      return UIA_TextControlTypeId;
+      // In UIA, all dialogs (including alert dialogs) should return the
+      // UIA_WindowControlTypeId for ATs to be able to "trap" the AT's focus
+      // withing that dialog element.
+      return UIA_WindowControlTypeId;
 
     case ax::mojom::Role::kComment:
     case ax::mojom::Role::kSuggestion:
@@ -6946,7 +6945,7 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_GroupControlTypeId;
 
     case ax::mojom::Role::kDialog:
-      return UIA_PaneControlTypeId;
+      return UIA_WindowControlTypeId;
 
     case ax::mojom::Role::kDisclosureTriangle:
       return UIA_ButtonControlTypeId;
