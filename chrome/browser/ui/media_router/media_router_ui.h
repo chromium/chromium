@@ -56,6 +56,15 @@ class MediaRouterUI : public CastDialogController,
                       public QueryResultManager::Observer,
                       public WebContentsPresentationManager::Observer {
  public:
+  struct RouteRequest {
+   public:
+    explicit RouteRequest(const MediaSink::Id& sink_id);
+    ~RouteRequest();
+
+    int id;
+    MediaSink::Id sink_id;
+  };
+
   explicit MediaRouterUI(content::WebContents* initiator);
 
   MediaRouterUI(const MediaRouterUI&) = delete;
@@ -71,6 +80,8 @@ class MediaRouterUI : public CastDialogController,
   void StopCasting(const std::string& route_id) override;
   void ClearIssue(const Issue::Id& issue_id) override;
   content::WebContents* GetInitiator() override;
+  std::unique_ptr<StartPresentationContext> TakeStartPresentationContext()
+      override;
 
   // Initializes internal state (e.g. starts listening for MediaSinks) for
   // targeting the default MediaSource (if any) of |initiator_|. The contents of
@@ -128,12 +139,6 @@ class MediaRouterUI : public CastDialogController,
 
   void SimulateDocumentAvailableForTest();
 
-#if BUILDFLAG(IS_MAC)
-  void set_screen_capture_allowed_for_testing(bool allowed) {
-    screen_capture_allowed_for_testing_ = allowed;
-  }
-#endif
-
  private:
   friend class MediaRouterViewsUITest;
   friend class MediaRouterCastUiForTest;
@@ -162,15 +167,6 @@ class MediaRouterUI : public CastDialogController,
                            UpdateSinksWhenDialogMovesToAnotherDisplay);
 
   class WebContentsFullscreenOnLoadedObserver;
-
-  struct RouteRequest {
-   public:
-    explicit RouteRequest(const MediaSink::Id& sink_id);
-    ~RouteRequest();
-
-    int id;
-    MediaSink::Id sink_id;
-  };
 
   // This class calls to refresh the UI when the highest priority issue is
   // updated.
@@ -248,11 +244,9 @@ class MediaRouterUI : public CastDialogController,
       const MediaSink::Id& sink_id,
       const std::u16string& presentation_request_source_name);
 
-// Creates and sends an issue if casting fails due to lack of screen
-// permissions.
-#if BUILDFLAG(IS_MAC)
+  // Creates and sends an issue if casting fails due to lack of screen
+  // permissions.
   void SendIssueForScreenPermission(const MediaSink::Id& sink_id);
-#endif
 
   // Creates and sends an issue if casting fails for any reason other than
   // those above.
@@ -377,9 +371,6 @@ class MediaRouterUI : public CastDialogController,
   // controlling window.
   std::unique_ptr<WebContentsDisplayObserver> display_observer_;
 
-#if BUILDFLAG(IS_MAC)
-  absl::optional<bool> screen_capture_allowed_for_testing_;
-#endif
   raw_ptr<LoggerImpl> logger_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

@@ -580,7 +580,7 @@ void SystemTrayClientImpl::SetLocaleAndExit(
 }
 
 void SystemTrayClientImpl::ShowAccessCodeCastingDialog() {
-  AccessCodeCastDialog::Show();
+  AccessCodeCastDialog::ShowForDesktopMirroring();
 }
 
 SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)

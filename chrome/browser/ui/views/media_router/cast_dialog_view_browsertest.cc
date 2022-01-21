@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/test/browser_test.h"
 
@@ -64,6 +65,10 @@ class MockCastDialogController : public media_router::CastDialogController {
   void StopCasting(const media_router::MediaRoute::Id& route_id) override {}
   void ClearIssue(const media_router::Issue::Id& issue_id) override {}
   content::WebContents* GetInitiator() override { return nullptr; }
+  std::unique_ptr<media_router::StartPresentationContext>
+  TakeStartPresentationContext() override {
+    return nullptr;
+  }
 };
 
 }  // namespace

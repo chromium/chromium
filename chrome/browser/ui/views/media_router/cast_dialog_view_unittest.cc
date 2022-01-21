@@ -26,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,6 +89,8 @@ class MockCastDialogController : public CastDialogController {
   MOCK_METHOD1(StopCasting, void(const std::string& route_id));
   MOCK_METHOD1(ClearIssue, void(const Issue::Id& issue_id));
   MOCK_METHOD0(GetInitiator, content::WebContents*());
+  MOCK_METHOD0(TakeStartPresentationContext,
+               std::unique_ptr<StartPresentationContext>());
 };
 
 class CastDialogViewTest : public ChromeViewsTestBase {

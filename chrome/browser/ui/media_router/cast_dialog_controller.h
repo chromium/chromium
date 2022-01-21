@@ -18,6 +18,7 @@ class WebContents;
 namespace media_router {
 
 class CastDialogModel;
+class StartPresentationContext;
 
 // Controller component of the Cast dialog. Responsible for handling user input,
 // updating the CastDialogModel, and notifying CastDialogView of updates.
@@ -54,6 +55,14 @@ class CastDialogController {
 
   // Gets the tab contents (if any) that was used to initiate this dialog box.
   virtual content::WebContents* GetInitiator() = 0;
+
+  // Returns the StartPresentationContext that this dialog was going to use for
+  // presentation mode. The dialog box is relinquishing ownership of the context
+  // and so will not start a presentation mode after this point. It's intended
+  // this API should only be used to transfer ownership to some new component
+  // that will want to start a presentation mode route.
+  virtual std::unique_ptr<StartPresentationContext>
+  TakeStartPresentationContext() = 0;
 };
 
 }  // namespace media_router

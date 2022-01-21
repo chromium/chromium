@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,13 +27,19 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate {
  public:
   AccessCodeCastDialog(content::BrowserContext* context,
                        const media_router::CastModeSet& cast_mode_set,
-                       content::WebContents* web_contents);
+                       content::WebContents* web_contents,
+                       std::unique_ptr<media_router::StartPresentationContext>
+                           start_presentation_context);
   ~AccessCodeCastDialog() override;
   AccessCodeCastDialog(const AccessCodeCastDialog&) = delete;
   AccessCodeCastDialog& operator=(const AccessCodeCastDialog&) = delete;
-  static void Show(const media_router::CastModeSet& cast_mode_set =
-                       {media_router::MediaCastMode::DESKTOP_MIRROR},
-                   content::WebContents* web_contents = nullptr);
+
+  static void Show(const media_router::CastModeSet& cast_mode_set,
+                   content::WebContents* web_contents,
+                   std::unique_ptr<media_router::StartPresentationContext>
+                       start_presentation_context);
+  // Show the access code dialog box for desktop mirroring.
+  static void ShowForDesktopMirroring();
 
  private:
   ui::ModalType GetDialogModalType() const override;
@@ -60,13 +67,17 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate {
   static void Show(gfx::NativeView parent,
                    content::BrowserContext* context,
                    const media_router::CastModeSet& cast_mode_set,
-                   content::WebContents* web_contents);
+                   content::WebContents* web_contents,
+                   std::unique_ptr<media_router::StartPresentationContext>
+                       start_presentation_context);
 
   raw_ptr<content::WebUI> webui_ = nullptr;
   const raw_ptr<content::BrowserContext> context_;
   // Cast modes that should be attempted.
   const media_router::CastModeSet cast_mode_set_;
   const raw_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<media_router::StartPresentationContext>
+      start_presentation_context_;
 };
 
 // The WebUI controller for chrome://access-code-cast.
@@ -95,6 +106,10 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
   // launched. May be null in the case of desktop casting.
   virtual void SetWebContents(content::WebContents* web_contents);
 
+  virtual void SetStartPresentationContext(
+      std::unique_ptr<media_router::StartPresentationContext>
+          start_presentation_context);
+
  private:
   // access_code_cast::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -109,6 +124,8 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
   raw_ptr<content::BrowserContext> context_ = nullptr;
   media_router::CastModeSet cast_mode_set_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+  std::unique_ptr<media_router::StartPresentationContext>
+      start_presentation_context_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -276,7 +276,8 @@ void CastDialogView::ShowAccessCodeCastDialog() {
       break;
   }
 
-  AccessCodeCastDialog::Show(cast_mode_set, controller_->GetInitiator());
+  AccessCodeCastDialog::Show(cast_mode_set, controller_->GetInitiator(),
+                             controller_->TakeStartPresentationContext());
 }
 
 void CastDialogView::MaybeShowAccessCodeCastButton() {

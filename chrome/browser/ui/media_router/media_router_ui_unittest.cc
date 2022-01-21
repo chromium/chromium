@@ -154,6 +154,9 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_MAC)
+    clear_screen_capture_allowed_for_testing();
+#endif
     ui_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -486,7 +489,7 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForTab) {
 TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForDesktop) {
 #if BUILDFLAG(IS_MAC)
   if (base::mac::IsAtLeastOS10_15())
-    ui_->set_screen_capture_allowed_for_testing(true);
+    set_screen_capture_allowed_for_testing(true);
 #endif
 
   StartCastingAndExpectTimeout(
@@ -515,7 +518,7 @@ TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
   if (!base::mac::IsAtLeastOS10_15())
     return;
 
-  ui_->set_screen_capture_allowed_for_testing(false);
+  set_screen_capture_allowed_for_testing(false);
   MockControllerObserver observer(ui_.get());
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
   ui_->OnResultsUpdated({{sink, {MediaCastMode::DESKTOP_MIRROR}}});
