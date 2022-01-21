@@ -86,7 +86,14 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     # Using the software fallback can skew the rendering related metrics. So
     # disable that (unless explicitly run with --allow-software-compositing).
-    if self.allow_software_compositing or self.NeedsSoftwareCompositing():
+    #
+    # TODO(jonross): Catapult's record_wpr.py calls SetExtraBrowserOptions
+    # before calling ProcessCommandLineArgs. This will crash attempting to
+    # record new system health benchmarks. We do not want to support software
+    # compositing for recording, so for now we will just check for the existence
+    # the flag. We will review updating Catapult at a later point.
+    if (hasattr(self, 'allow_software_compositing')
+        and self.allow_software_compositing) or self.NeedsSoftwareCompositing():
       logging.warning('Allowing software compositing. Some of the reported '
                       'metrics will have unreliable values.')
     else:

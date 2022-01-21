@@ -73,7 +73,13 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-gpu-benchmarking')
     options.AppendExtraBrowserArgs('--touch-events=enabled')
-    if self.allow_software_compositing or self.NeedsSoftwareCompositing():
+    # TODO(jonross): Catapult's record_wpr.py calls SetExtraBrowserOptions
+    # before calling ProcessCommandLineArgs. This will crash attempting to
+    # record new rendering benchmarks. We do not want to support software
+    # compositing for recording, so for now we will just check for the existence
+    # the flag. We will review updating Catapult at a later point.
+    if (hasattr(self, 'allow_software_compositing')
+        and self.allow_software_compositing) or self.NeedsSoftwareCompositing():
       logging.warning('Allowing software compositing. Some of the reported '
                       'metrics will have unreliable values.')
     else:
