@@ -13,7 +13,7 @@ namespace invalidation {
 const size_t UnackedInvalidationSet::kMaxBufferedInvalidations = 5;
 
 UnackedInvalidationSet::UnackedInvalidationSet(const Topic& topic)
-    : registered_(false), topic_(topic) {}
+    : topic_(topic) {}
 
 UnackedInvalidationSet::UnackedInvalidationSet(
     const UnackedInvalidationSet& other) = default;
@@ -29,15 +29,13 @@ void UnackedInvalidationSet::Add(
   SingleTopicInvalidationSet set;
   set.Insert(invalidation);
   AddSet(set);
-  if (!registered_)
-    Truncate(kMaxBufferedInvalidations);
+  Truncate(kMaxBufferedInvalidations);
 }
 
 void UnackedInvalidationSet::AddSet(
     const SingleTopicInvalidationSet& invalidations) {
   invalidations_.insert(invalidations.begin(), invalidations.end());
-  if (!registered_)
-    Truncate(kMaxBufferedInvalidations);
+  Truncate(kMaxBufferedInvalidations);
 }
 
 void UnackedInvalidationSet::ExportInvalidations(
@@ -50,19 +48,6 @@ void UnackedInvalidationSet::ExportInvalidations(
     invalidation_copy.SetAckHandler(ack_handler, ack_handler_task_runner);
     out->Insert(invalidation_copy);
   }
-}
-
-void UnackedInvalidationSet::Clear() {
-  invalidations_.clear();
-}
-
-void UnackedInvalidationSet::SetHandlerIsRegistered() {
-  registered_ = true;
-}
-
-void UnackedInvalidationSet::SetHandlerIsUnregistered() {
-  registered_ = false;
-  Truncate(kMaxBufferedInvalidations);
 }
 
 // Removes the matching ack handle from the list.
