@@ -107,6 +107,7 @@ X11SurfaceFactory::GetAllowedGLImplementations() {
       gl::GLImplementationParts(gl::kGLImplementationDesktopGL),
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader),
       gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL)};
 }
 
