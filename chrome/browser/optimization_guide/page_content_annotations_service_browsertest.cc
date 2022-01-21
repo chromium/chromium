@@ -504,8 +504,9 @@ class PageContentAnnotationsServiceBatchVisitTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(1289353): Newly added test is flaky.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
-                       ModelExecutesWithFullBatch) {
+                       DISABLED_ModelExecutesWithFullBatch) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
