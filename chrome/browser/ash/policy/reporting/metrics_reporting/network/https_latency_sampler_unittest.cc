@@ -5,20 +5,26 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 using ::ash::network_diagnostics::NetworkDiagnostics;
 using ::chromeos::network_diagnostics::mojom::HttpsLatencyResultValue;
@@ -34,6 +40,15 @@ using RoutineVerdictMojom =
 
 namespace reporting {
 namespace {
+
+// Network service constants.
+constexpr char kNetworkName[] = "network_name";
+constexpr char kServicePath[] = "/service/path";
+constexpr char kDeviceName[] = "device_name";
+constexpr char kDevicePath[] = "/device/path";
+constexpr char kProfilePath[] = "/profile/path";
+constexpr char kGuid[] = "guid";
+constexpr char kUserHash[] = "user_hash";
 
 class FakeNetworkDiagnostics : public NetworkDiagnostics {
  public:
@@ -288,6 +303,46 @@ TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
   }
 }
 
+struct HttpsLatencyEventDetectorTestCase {
+  std::string test_name;
+  HttpsLatencyProblem problem;
+};
+
+class HttpsLatencyEventDetectorTest
+    : public ::testing::TestWithParam<HttpsLatencyEventDetectorTestCase> {
+ protected:
+  void SetNetworkData(std::vector<std::string> connection_states) {
+    auto* const service_client = network_handler_test_helper_.service_test();
+    auto* const device_client = network_handler_test_helper_.device_test();
+    network_handler_test_helper_.profile_test()->AddProfile(kProfilePath,
+                                                            kUserHash);
+    base::RunLoop().RunUntilIdle();
+    network_handler_test_helper_.service_test()->ClearServices();
+    network_handler_test_helper_.device_test()->ClearDevices();
+    for (int i = 0; i < connection_states.size(); ++i) {
+      std::string index_str = base::StrCat({"_", base::NumberToString(i)});
+      const std::string device_path = base::StrCat({kDevicePath, index_str});
+      const std::string device_name = base::StrCat({kDeviceName, index_str});
+      const std::string service_path = base::StrCat({kServicePath, index_str});
+      const std::string network_name = base::StrCat({kNetworkName, index_str});
+      const std::string guid = base::StrCat({kGuid, index_str});
+      device_client->AddDevice(device_path, shill::kTypeEthernet, device_name);
+      base::RunLoop().RunUntilIdle();
+      service_client->AddService(service_path, guid, network_name,
+                                 shill::kTypeEthernet, connection_states[i],
+                                 /*visible=*/true);
+      service_client->SetServiceProperty(service_path, shill::kDeviceProperty,
+                                         base::Value(device_path));
+      service_client->SetServiceProperty(service_path, shill::kProfileProperty,
+                                         base::Value(kProfilePath));
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
+};
+
 TEST(HttpsLatencyEventDetectorTest, NoEventDetected) {
   MetricData previous_metric_data;
   MetricData current_metric_data;
@@ -325,10 +380,9 @@ TEST(HttpsLatencyEventDetectorTest, NoEventDetected) {
   EXPECT_FALSE(event_type.has_value());
 
   previous_latency_data->set_verdict(RoutineVerdict::PROBLEM);
-  previous_latency_data->set_problem(
-      HttpsLatencyProblem::FAILED_HTTPS_REQUESTS);
+  previous_latency_data->set_problem(HttpsLatencyProblem::HIGH_LATENCY);
   current_latency_data->set_verdict(RoutineVerdict::PROBLEM);
-  current_latency_data->set_problem(HttpsLatencyProblem::FAILED_HTTPS_REQUESTS);
+  current_latency_data->set_problem(HttpsLatencyProblem::HIGH_LATENCY);
 
   event_type = detector.DetectEvent(previous_metric_data, current_metric_data);
 
@@ -399,5 +453,57 @@ TEST(HttpsLatencyEventDetectorTest, EventDetected) {
   ASSERT_TRUE(event_type.has_value());
   EXPECT_EQ(event_type.value(), expected_event_type);
 }
+
+TEST_P(HttpsLatencyEventDetectorTest, RequestError_Offline) {
+  MetricData previous_metric_data;
+  MetricData current_metric_data;
+
+  auto* const current_latency_data =
+      current_metric_data.mutable_telemetry_data()
+          ->mutable_networks_telemetry()
+          ->mutable_https_latency_data();
+  current_latency_data->set_verdict(RoutineVerdict::PROBLEM);
+  current_latency_data->set_problem(GetParam().problem);
+
+  HttpsLatencyEventDetector detector;
+
+  SetNetworkData({shill::kStateReady, shill::kStateConfiguration});
+  auto event_type =
+      detector.DetectEvent(previous_metric_data, current_metric_data);
+
+  // No latency data since the request problem is because that the device is not
+  // online.
+  EXPECT_FALSE(event_type.has_value());
+}
+
+TEST_P(HttpsLatencyEventDetectorTest, RequestError_Online) {
+  MetricData previous_metric_data;
+  MetricData current_metric_data;
+
+  auto* const current_latency_data =
+      current_metric_data.mutable_telemetry_data()
+          ->mutable_networks_telemetry()
+          ->mutable_https_latency_data();
+  current_latency_data->set_verdict(RoutineVerdict::PROBLEM);
+  current_latency_data->set_problem(GetParam().problem);
+
+  HttpsLatencyEventDetector detector;
+
+  SetNetworkData({shill::kStateReady, shill::kStateOnline});
+  auto event_type =
+      detector.DetectEvent(previous_metric_data, current_metric_data);
+
+  ASSERT_TRUE(event_type.has_value());
+  EXPECT_EQ(event_type.value(), MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HttpsLatencyEventDetectorTests,
+    HttpsLatencyEventDetectorTest,
+    ::testing::ValuesIn<HttpsLatencyEventDetectorTestCase>(
+        {{"FailedDnsResolutions", HttpsLatencyProblem::FAILED_DNS_RESOLUTIONS},
+         {"FailedHttpsRequests", HttpsLatencyProblem::FAILED_HTTPS_REQUESTS}}),
+    [](const testing::TestParamInfo<HttpsLatencyEventDetectorTest::ParamType>&
+           info) { return info.param.test_name; });
 }  // namespace
 }  // namespace reporting

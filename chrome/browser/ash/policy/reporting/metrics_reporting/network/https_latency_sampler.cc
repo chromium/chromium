@@ -8,6 +8,9 @@
 
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/net/network_health/network_health_service.h"
+#include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {
@@ -63,6 +66,22 @@ void ConvertMojomRoutineResultToTelemetry(
       https_latency_data->set_problem(HttpsLatencyProblem::VERY_HIGH_LATENCY);
       break;
   }
+}
+
+bool IsDeviceOnline() {
+  ::ash::NetworkStateHandler::NetworkStateList network_state_list;
+  ::ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
+      ::ash::NetworkTypePattern::Default(),
+      /*configured_only=*/true,
+      /*visible_only=*/false,
+      /*limit=*/0,  // no limit to number of results
+      &network_state_list);
+  for (const auto* network : network_state_list) {
+    if (network->IsOnline()) {
+      return true;
+    }
+  }
+  return false;
 }
 }  // namespace
 
@@ -133,6 +152,15 @@ absl::optional<MetricEventType> HttpsLatencyEventDetector::DetectEvent(
   const auto& current_https_latency_data = current_metric_data.telemetry_data()
                                                .networks_telemetry()
                                                .https_latency_data();
+
+  if (current_https_latency_data.has_problem() &&
+      (current_https_latency_data.problem() ==
+           HttpsLatencyProblem::FAILED_HTTPS_REQUESTS ||
+       current_https_latency_data.problem() ==
+           HttpsLatencyProblem::FAILED_DNS_RESOLUTIONS) &&
+      !IsDeviceOnline()) {
+    return absl::nullopt;
+  }
 
   if ((!previous_https_latency_data.has_verdict() &&
        current_https_latency_data.verdict() == RoutineVerdict::PROBLEM) ||
