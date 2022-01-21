@@ -611,8 +611,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     // so (re)apply them here. This might happen if ICE state were already
     // connected and OnIceSelectedCandidatePairChanged() had already set the
     // caps.
-    int min_bitrate_bps, max_bitrate_bps;
-    std::tie(min_bitrate_bps, max_bitrate_bps) = BitratesForConnection();
+    auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
     SetPeerConnectionBitrates(min_bitrate_bps, max_bitrate_bps);
   }
 
@@ -668,8 +667,7 @@ void WebrtcTransport::SetPreferredBitrates(
   preferred_min_bitrate_bps_ = min_bitrate_bps;
   preferred_max_bitrate_bps_ = max_bitrate_bps;
   if (connected_) {
-    int actual_min_bitrate_bps, actual_max_bitrate_bps;
-    std::tie(actual_min_bitrate_bps, actual_max_bitrate_bps) =
+    auto [actual_min_bitrate_bps, actual_max_bitrate_bps] =
         BitratesForConnection();
     SetPeerConnectionBitrates(actual_min_bitrate_bps, actual_max_bitrate_bps);
     SetSenderBitrates(actual_min_bitrate_bps, actual_max_bitrate_bps);
@@ -797,8 +795,7 @@ void WebrtcTransport::OnAudioTransceiverCreated(
 void WebrtcTransport::OnVideoTransceiverCreated(
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) {
   video_transceiver_ = transceiver;
-  int min_bitrate_bps, max_bitrate_bps;
-  std::tie(min_bitrate_bps, max_bitrate_bps) = BitratesForConnection();
+  auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
   SetSenderBitrates(min_bitrate_bps, max_bitrate_bps);
 
   // Sender is always present, regardless of the direction of media
@@ -1043,8 +1040,7 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
     // default value (~600kbps).
     // Set the global bitrate caps in addition to the VideoSender bitrates. The
     // global caps affect the probing configuration used by b/w estimator.
-    int min_bitrate_bps, max_bitrate_bps;
-    std::tie(min_bitrate_bps, max_bitrate_bps) = BitratesForConnection();
+    auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
     SetPeerConnectionBitrates(min_bitrate_bps, max_bitrate_bps);
     SetSenderBitrates(min_bitrate_bps, max_bitrate_bps);
   }
