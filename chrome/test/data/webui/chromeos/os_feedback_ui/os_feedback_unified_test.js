@@ -5,6 +5,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {confirmationPageTest} from './confirmation_page_test.js';
+import {fakeHelpContentProviderTestSuite} from './fake_help_content_provider_test.js';
 import {fakeMojoProviderTestSuite} from './mojo_interface_provider_test.js';
 import {searchPageTestSuite} from './search_page_test.js';
 
@@ -16,5 +17,6 @@ function runSuite(suiteName, testFn) {
 }
 
 runSuite('confirmationPageTest', confirmationPageTest);
+runSuite('fakeHelpContentProviderTest', fakeHelpContentProviderTestSuite);
 runSuite('fakeMojoProviderTest', fakeMojoProviderTestSuite);
 runSuite('searchPageTest', searchPageTestSuite);

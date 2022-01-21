@@ -26,6 +26,8 @@ generate_grd("build_grd") {
     "app_icon_48.png",
     "app_icon_192.png",
     "app_icon_256.png",
+    "fake_data.js",
+    "fake_help_content_provider.js",
     "feedback_types.js",
     "index.html",
     "mojo_interface_provider.js",
@@ -42,6 +44,8 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":confirmation_page",
+    ":fake_data",
+    ":fake_help_content_provider",
     ":feedback_types",
     ":mojo_interface_provider",
     ":search_page",
@@ -53,6 +57,19 @@ js_library("confirmation_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
+
+js_library("fake_data") {
+  deps = [ "//ash/webui/os_feedback_ui/resources:feedback_types" ]
+}
+
+js_library("fake_help_content_provider") {
+  deps = [
+    ":feedback_types",
+    "//ash/webui/common/resources:fake_method_resolver",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("feedback_types") {
 }
 
@@ -63,7 +80,12 @@ js_library("help_resources_icons") {
 }
 
 js_library("mojo_interface_provider") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    ":fake_data",
+    ":fake_help_content_provider",
+    ":feedback_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("search_page") {
