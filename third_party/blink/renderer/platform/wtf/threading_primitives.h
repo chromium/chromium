@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 #include "base/win/windows_types.h"
 
@@ -60,19 +60,19 @@ struct BLINK_CONDITION_VARIABLE {
   PVOID Ptr;
 };
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <pthread.h>
 #endif
 
 namespace WTF {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 struct PlatformMutex {
   BLINK_CRITICAL_SECTION internal_mutex_;
   size_t recursion_count_;
 };
 typedef BLINK_CONDITION_VARIABLE PlatformCondition;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 struct PlatformMutex {
   pthread_mutex_t internal_mutex_;
 #if DCHECK_IS_ON()

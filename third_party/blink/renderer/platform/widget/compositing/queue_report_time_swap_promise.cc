@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/platform/widget/compositing/queue_report_time_swap_promise.h"
 
-#if defined(OS_ANDROID)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/platform/platform.h"
 #endif
 
@@ -42,7 +44,7 @@ QueueReportTimeSwapPromise::QueueReportTimeSwapPromise(
     : source_frame_number_(source_frame_number),
       drain_callback_(std::move(drain_callback)),
       swap_callback_(std::move(swap_callback)),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       call_swap_on_activate_(
           Platform::Current()
               ->IsSynchronousCompositingEnabledForAndroidWebView()),
@@ -89,7 +91,7 @@ cc::SwapPromise::DidNotSwapAction QueueReportTimeSwapPromise::DidNotSwap(
 void QueueReportTimeSwapPromise::DidActivate() {
   if (drain_callback_)
     std::move(drain_callback_).Run(source_frame_number_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (call_swap_on_activate_ && swap_callback_)
     std::move(swap_callback_).Run();
 #endif

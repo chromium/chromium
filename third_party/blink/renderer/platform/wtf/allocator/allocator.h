@@ -14,16 +14,16 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 // FastMalloc() defers to malloc() in this case, and including its header
 // ensures that the compiler knows that malloc() is "special", e.g. that it
 // returns properly-aligned, distinct memory locations.
 #include <malloc.h>
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 // malloc.h doesn't exist on Apple OSes (it's in malloc/malloc.h), but the
 // definitions we want are actually in stdlib.h.
 #include <stdlib.h>
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 #else
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

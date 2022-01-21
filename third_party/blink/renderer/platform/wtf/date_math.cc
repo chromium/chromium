@@ -90,7 +90,7 @@
 #include <unicode/basictz.h>
 #include <unicode/timezone.h>
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #else
 #include <sys/time.h>
@@ -286,7 +286,7 @@ static inline double YmdhmsToSeconds(int year,
 // We follow the recommendation of RFC 2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000".
 static const struct KnownZone {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   const
 #endif
       char tz_name[4];

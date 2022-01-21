@@ -121,7 +121,7 @@ class ScopedDrawBuffer {
 
 // Increase cache to avoid reallocation on fuchsia, see
 // https://crbug.com/1087941.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 const size_t DrawingBuffer::kDefaultColorBufferCacheLimit = 2;
 #else
 const size_t DrawingBuffer::kDefaultColorBufferCacheLimit = 1;
@@ -573,7 +573,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     // there are implicit flushes between contexts at the lowest level.
     gl_->GenUnverifiedSyncTokenCHROMIUM(
         color_buffer_for_mailbox->produce_sync_token.GetData());
-#if defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     // Needed for GPU back-pressure on macOS and Android. Used to be in the
     // middle of the commands above; try to move it to the bottom to allow them
     // to be treated atomically.
@@ -925,7 +925,7 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
 
   texture_target_ = GL_TEXTURE_2D;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (ShouldUseChromiumImage()) {
     // A CHROMIUM_image backed texture requires a specialized set of parameters
     // on OSX.

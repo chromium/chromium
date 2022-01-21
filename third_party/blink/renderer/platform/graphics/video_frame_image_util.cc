@@ -37,7 +37,7 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
   // TODO(sandersd): Handle high bit depth formats.
   // TODO(crbug.com/1203713): Figure out why macOS zero copy ends up with y-flip
   // images in zero copy mode.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   return false;
 #else
   return frame.NumTextures() == 1 &&

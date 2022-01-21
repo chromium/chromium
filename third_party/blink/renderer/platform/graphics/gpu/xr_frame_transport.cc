@@ -104,7 +104,7 @@ void XRFrameTransport::FrameSubmit(
   if (transport_options_->transport_method ==
       device::mojom::blink::XRPresentationTransportMethod::
           SUBMIT_AS_TEXTURE_HANDLE) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     TRACE_EVENT0("gpu", "XRFrameTransport::CopyImage");
     // Update last_transfer_succeeded_ value. This should usually complete
     // without waiting.

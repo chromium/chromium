@@ -139,7 +139,7 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     bundle_->InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetThreadIds(const WTF::Vector<int32_t>& thread_ids) override {
     bundle_->SetThreadIds(frame_sink_id_.sink_id(), thread_ids);
   }
@@ -328,7 +328,7 @@ void VideoFrameSubmitter::OnBeginFrame(
       continue;
     auto& feedback =
         timing_details.find(frame_token)->value.presentation_feedback;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // TODO: On Linux failure flag is unreliable, and perfectly rendered frames
     // are reported as failures all the time.
     bool presentation_failure = false;
@@ -510,7 +510,7 @@ void VideoFrameSubmitter::StartSubmitting() {
       is_media_stream_ ? viz::mojom::CompositorFrameSinkType::kMediaStream
                        : viz::mojom::CompositorFrameSinkType::kVideo);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   WTF::Vector<base::PlatformThreadId> thread_ids;
   thread_ids.push_back(base::PlatformThread::CurrentId());
   thread_ids.push_back(Platform::Current()->GetIOThreadId());

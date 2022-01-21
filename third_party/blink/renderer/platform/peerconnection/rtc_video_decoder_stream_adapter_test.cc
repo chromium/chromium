@@ -196,7 +196,7 @@ class RTCVideoDecoderStreamAdapterTest
         spatial_index_(0) {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     enabled_features.push_back(::media::kD3D11Vp9kSVCHWDecoding);
 #endif
     if (GetParam().use_chrome_sw_decoders ==
@@ -626,7 +626,7 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, LowResSelectsCorrectDecoder) {
   task_environment_.RunUntilIdle();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(RTCVideoDecoderStreamAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
   auto* decoder = decoder_factory_->decoder();
   EXPECT_TRUE(decoder->IsPlatformDecoder());

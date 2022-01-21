@@ -96,7 +96,7 @@ struct VideoCaptureImpl::BufferContext
         InitializeFromMailbox(std::move(buffer_handle->get_mailbox_handles()));
         break;
       case VideoFrameBufferHandleType::GPU_MEMORY_BUFFER_HANDLE:
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
         // On macOS, an IOSurfaces passed as a GpuMemoryBufferHandle can be
         // used by both hardware and software paths.
         // https://crbug.com/1125879
@@ -127,7 +127,7 @@ struct VideoCaptureImpl::BufferContext
   }
 
   gfx::GpuMemoryBufferHandle TakeGpuMemoryBufferHandle() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // The same GpuMemoryBuffersHandles will be reused repeatedly by the
     // unaccelerated macOS path. Each of these uses will call this function.
     // Ensure that this function doesn't invalidate the GpuMemoryBufferHandle
@@ -352,7 +352,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
       break;
     }
     case VideoFrameBufferHandleType::GPU_MEMORY_BUFFER_HANDLE: {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // On macOS, an IOSurfaces passed as a GpuMemoryBufferHandle can be
       // used by both hardware and software paths.
       // https://crbug.com/1125879
@@ -468,7 +468,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif
 
@@ -476,7 +476,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
       buffer_context_->gpu_factories()->ImageTextureTarget(
           gpu_memory_buffer_->GetFormat());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (output_format ==
       media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB) {
     planes.push_back(gfx::BufferPlane::Y);
@@ -499,7 +499,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
       }
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   if (planes.empty()) {
     if (base::FeatureList::IsEnabled(
             media::kMultiPlaneVideoCaptureSharedImages)) {

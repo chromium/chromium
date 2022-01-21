@@ -1080,7 +1080,7 @@ void MainThreadSchedulerImpl::OnMainFrameRequestedForInput() {
       scheduling_settings().prioritize_compositing_after_input);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MainThreadSchedulerImpl::PauseTimersForAndroidWebView() {
   main_thread_only().pause_timers_for_webview = true;
   UpdatePolicy();

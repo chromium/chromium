@@ -369,7 +369,7 @@ bool ImageDecoder::IsSizeAvailable() {
   if (!IsDecodedSizeAvailable())
     return false;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   unsigned decoded_bytes_per_pixel = 4;
   if (ImageIsHighBitDepth() &&
       high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {

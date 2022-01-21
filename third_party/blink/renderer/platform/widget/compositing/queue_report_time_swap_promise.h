@@ -41,7 +41,7 @@ class QueueReportTimeSwapPromise : public cc::SwapPromise {
   int source_frame_number_;
   DrainCallback drain_callback_;
   base::OnceClosure swap_callback_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const bool call_swap_on_activate_;
 #endif
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;

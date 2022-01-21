@@ -249,7 +249,7 @@ static void RasterizeMain(cc::PaintCanvas* canvas, sk_sp<PaintRecord> record) {
 }
 
 // Flaky on Mac. crbug.com/792540.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_decodeOnOtherThread DISABLED_decodeOnOtherThread
 #else
 #define MAYBE_decodeOnOtherThread decodeOnOtherThread

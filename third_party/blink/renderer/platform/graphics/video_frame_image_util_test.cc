@@ -123,7 +123,7 @@ TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
         media::VideoFrame::STORAGE_OPAQUE, media::PIXEL_FORMAT_XRGB);
     EXPECT_EQ(shared_image_frame->NumTextures(), 1u);
     EXPECT_TRUE(shared_image_frame->mailbox_holder(0).mailbox.IsSharedImage());
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
     EXPECT_FALSE(
         WillCreateAcceleratedImagesFromVideoFrame(shared_image_frame.get()));
 #else
@@ -134,7 +134,7 @@ TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
 }
 
 // Some platforms don't support zero copy images.
-#if !defined(OS_ANDROID) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
   auto shared_image_frame = CreateTestFrame(

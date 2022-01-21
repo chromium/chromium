@@ -758,13 +758,13 @@ TEST_F(KeySystemConfigSelectorTest,
   config.distinctive_identifier = MediaKeysRequirement::kOptional;
   configs_.push_back(config);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SelectConfigRequestsPermissionAndReturnsConfig();
   EXPECT_EQ(MediaKeysRequirement::kRequired, config_.distinctive_identifier);
   EXPECT_TRUE(cdm_config_.allow_distinctive_identifier);
 #else
   SelectConfigReturnsError();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(KeySystemConfigSelectorTest,
@@ -777,13 +777,13 @@ TEST_F(KeySystemConfigSelectorTest,
   config.distinctive_identifier = MediaKeysRequirement::kRequired;
   configs_.push_back(config);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SelectConfigRequestsPermissionAndReturnsConfig();
   EXPECT_EQ(MediaKeysRequirement::kRequired, config_.distinctive_identifier);
   EXPECT_TRUE(cdm_config_.allow_distinctive_identifier);
 #else
   SelectConfigReturnsError();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // --- persistentState ---
@@ -1285,11 +1285,11 @@ TEST_F(KeySystemConfigSelectorTest,
   config.video_capabilities = video_capabilities;
   configs_.push_back(config);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SelectConfigRequestsPermissionAndReturnsConfig();
 #else
   SelectConfigReturnsConfig();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(MediaKeysRequirement::kNotAllowed, config_.distinctive_identifier);
   ASSERT_EQ(1u, config_.video_capabilities.size());
 }

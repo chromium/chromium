@@ -17,7 +17,7 @@ using mojom::ColorScheme;
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // The width of a vertical scroll bar in dips.
 int32_t g_vertical_scroll_bar_width;
 
@@ -168,7 +168,7 @@ WebThemeEngineDefault::~WebThemeEngineDefault() = default;
 gfx::Size WebThemeEngineDefault::GetSize(WebThemeEngine::Part part) {
   ui::NativeTheme::ExtraParams extra;
   ui::NativeTheme::Part native_theme_part = NativeThemePart(part);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   switch (native_theme_part) {
     case ui::NativeTheme::kScrollbarDownArrow:
     case ui::NativeTheme::kScrollbarLeftArrow:
@@ -236,7 +236,7 @@ absl::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
       NativeSystemThemeColor(system_theme_color));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 void WebThemeEngineDefault::cacheScrollBarMetrics(
     int32_t vertical_scroll_bar_width,

@@ -91,7 +91,7 @@
 #include "third_party/blink/renderer/platform/media/web_media_source_impl.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
 #endif
 
@@ -327,7 +327,7 @@ bool UsesAudioService(media::RendererType renderer_type) {
   return renderer_type != media::RendererType::kMediaFoundation;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -546,7 +546,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   // it's not interested in recording these events.
   playback_events_recorder_.reset_on_disconnect();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   renderer_factory_selector_->SetRemotePlayStateChangeCB(
       media::BindToCurrentLoop(base::BindRepeating(
           &WebMediaPlayerImpl::OnRemotePlayStateChange, weak_this_)));
@@ -821,7 +821,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   learning::FeatureDictionary dict;
   will_play_helper_.BeginObservation(dict);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Only allow credentials if the crossorigin attribute is unspecified
   // (kCorsModeUnspecified) or "use-credentials" (kCorsModeUseCredentials).
   // This value is only used by the MediaPlayerRenderer.
@@ -831,7 +831,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   // access what we need from `mb_data_source_`->cors_mode() directly, instead
   // of storing it here.
   allow_media_player_renderer_credentials_ = cors_mode != kCorsModeAnonymous;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Note: `url` may be very large, take care when making copies.
   loaded_url_ = GURL(url);
@@ -1841,7 +1841,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
   if (suppress_destruction_errors_)
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // `mb_data_source_` may be nullptr if someone passes in a m3u8 as a data://
   // URL, since MediaPlayer doesn't support data:// URLs, fail playback now.
   const bool found_hls =
@@ -1917,7 +1917,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
   // We found hls in a data:// URL, fail immediately.
   if (found_hls)
     status = media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Hardware context reset is not an error. Restart to recover.
   // TODO(crbug.com/1208618): Find a way to break the potential infinite loop of
   // restart -> PIPELINE_ERROR_HARDWARE_CONTEXT_RESET -> restart.
@@ -1925,7 +1925,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     ScheduleRestart();
     return;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   MaybeSetContainerNameForMetrics();
   simple_watch_timer_.Stop();
@@ -2630,7 +2630,7 @@ void WebMediaPlayerImpl::RequestRemotePlaybackDisabled(bool disabled) {
     observer_->OnRemotePlaybackDisabled(disabled);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebMediaPlayerImpl::FlingingStarted() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(!disable_pipeline_auto_suspend_);
@@ -2671,7 +2671,7 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(
     client_->PausePlayback();
   }
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void WebMediaPlayerImpl::SetPoster(const WebURL& poster) {
   has_poster_ = !poster.IsEmpty();
@@ -2814,7 +2814,7 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
     EnableOverlay();
 
   media::RequestOverlayInfoCB request_overlay_info_cb;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   request_overlay_info_cb = media::BindToCurrentLoop(base::BindRepeating(
       &WebMediaPlayerImpl::OnOverlayInfoRequested, weak_this_));
 #endif
@@ -2855,7 +2855,7 @@ void WebMediaPlayerImpl::StartPipeline() {
                      media::BindToCurrentLoop(base::BindOnce(
                          &WebMediaPlayerImpl::OnFirstFrame, weak_this_))));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (demuxer_found_hls_ || renderer_factory_selector_->GetCurrentFactory()
                                     ->GetRequiredMediaResourceType() ==
                                 media::MediaResource::Type::URL) {
@@ -2875,7 +2875,7 @@ void WebMediaPlayerImpl::StartPipeline() {
                                 demuxer_.get(), this, false, false);
     return;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Figure out which demuxer to use.
   if (demuxer_override_) {
@@ -3386,7 +3386,7 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
     return;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Don't pause videos casted as part of RemotePlayback.
   if (is_flinging_)
     return;
@@ -3567,7 +3567,7 @@ bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
     return false;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (IsInPictureInPicture())
     return false;
 #endif
@@ -3578,7 +3578,7 @@ bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
   // If suspending background video, pause any video that's not remoted or
   // not unlocked to play in the background.
   if (IsBackgroundSuspendEnabled(this)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (is_flinging_)
       return false;
 #endif
@@ -3613,7 +3613,7 @@ bool WebMediaPlayerImpl::IsBackgroundOptimizationCandidate() const {
   if (IsInPictureInPicture())
     return false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Don't optimize videos casted as part of RemotePlayback.
   if (is_flinging_)
     return false;

@@ -100,7 +100,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 #include <errno.h>
 #include <process.h>
@@ -214,4 +214,4 @@ void ThreadCondition::Broadcast() {
 
 }  // namespace WTF
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

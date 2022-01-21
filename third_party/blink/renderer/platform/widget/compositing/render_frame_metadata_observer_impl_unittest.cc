@@ -47,7 +47,7 @@ class MockRenderFrameMetadataObserverClient
                void(uint32_t frame_token,
                     const cc::RenderFrameMetadata& metadata));
   MOCK_METHOD1(OnFrameSubmissionForTesting, void(uint32_t frame_token));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(OnRootScrollOffsetChanged, void(const gfx::PointF& offset));
 #endif
 
@@ -130,7 +130,7 @@ TEST_F(RenderFrameMetadataObserverImplTest, ShouldSendFrameToken) {
 
 // This test verifies that a frame token is not requested from viz when
 // the root scroll offset changes on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(RenderFrameMetadataObserverImplTest, ShouldSendFrameTokenOnAndroid) {
   viz::CompositorFrameMetadata compositor_frame_metadata;
   compositor_frame_metadata.send_frame_token_to_embedder = false;

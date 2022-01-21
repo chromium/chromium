@@ -45,7 +45,7 @@ class MockFrameSinkBundle : public viz::mojom::blink::FrameSinkBundle {
                void(uint32_t,
                     base::ReadOnlySharedMemoryRegion,
                     const gpu::Mailbox&));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD2(SetThreadIds, void(uint32_t, const WTF::Vector<int32_t>&));
 #endif
 

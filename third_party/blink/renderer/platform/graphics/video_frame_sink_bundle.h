@@ -103,7 +103,7 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
                                base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id);
   void DidDeleteSharedBitmap(uint32_t sink_id, const gpu::Mailbox& id);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetThreadIds(uint32_t sink_id, const WTF::Vector<int32_t>& thread_ids);
 #endif
 

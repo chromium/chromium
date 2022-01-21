@@ -47,7 +47,7 @@ TEST(FontCache, NoFallbackForPrivateUseArea) {
   }
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST(FontCache, FallbackForEmojis) {
   FontCache* font_cache = FontCache::GetFontCache();
   ASSERT_TRUE(font_cache);
@@ -96,7 +96,7 @@ TEST(FontCache, FallbackForEmojis) {
     }
   }
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 TEST(FontCache, firstAvailableOrFirst) {
   EXPECT_TRUE(FontCache::FirstAvailableOrFirst("").IsEmpty());
@@ -130,7 +130,7 @@ TEST(FontCache, getLargerThanMaxUnsignedFont) {
   FontFaceCreationParams creation_params;
   scoped_refptr<blink::SimpleFontData> font_data =
       font_cache->GetFontData(font_description, AtomicString());
-#if !defined(OS_ANDROID) && !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   // Unfortunately, we can't ensure a font here since on Android and Mac the
   // unittests can't access the font configuration. However, this test passes
   // when it's not crashing in FontCache.
@@ -138,14 +138,14 @@ TEST(FontCache, getLargerThanMaxUnsignedFont) {
 #endif
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST(FontCache, systemFont) {
   FontCache::SystemFontFamily();
   // Test the function does not crash. Return value varies by system and config.
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST(FontCache, Locale) {
   FontCacheKey key1(FontFaceCreationParams(), /* font_size */ 16,
                     /* options */ 0, /* device_scale_factor */ 1.0f,
@@ -160,6 +160,6 @@ TEST(FontCache, Locale) {
   EXPECT_NE(key1.GetHash(), key2.GetHash());
   EXPECT_NE(key1, key2);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

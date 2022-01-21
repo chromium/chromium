@@ -61,7 +61,7 @@ class FontFaceCreationParams {
         filename_(std::string()),
         fontconfig_interface_id_(0),
         ttc_index_(0) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Leading "@" in the font name enables Windows vertical flow flag for the
     // font.  Because we do vertical flow by ourselves, we don't want to use the
     // Windows feature.  IE disregards "@" regardless of the orientation, so we

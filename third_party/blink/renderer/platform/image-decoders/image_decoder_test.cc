@@ -302,7 +302,7 @@ TEST(ImageDecoderTest, clearCacheExceptFramePreverveClearExceptFrame) {
   }
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 TEST(ImageDecoderTest, decodedSizeLimitBoundary) {
   constexpr unsigned kWidth = 100;
@@ -356,7 +356,7 @@ TEST(ImageDecoderTest, decodedSizeLimitIsIgnored) {
   EXPECT_FALSE(decoder->Failed());
 }
 
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 TEST(ImageDecoderTest, hasSufficientDataToSniffMimeTypeAvif) {

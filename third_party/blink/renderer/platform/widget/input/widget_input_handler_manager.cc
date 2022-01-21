@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/layer_tree_host.h"
@@ -33,7 +34,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_compositor_registry.h"
 #include "third_party/blink/renderer/platform/widget/input/synchronous_compositor_proxy.h"
 #endif
@@ -123,7 +124,7 @@ std::unique_ptr<blink::WebGestureEvent> ScrollBeginFromScrollUpdate(
 
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class SynchronousCompositorProxyRegistry
     : public SynchronousCompositorRegistry {
  public:
@@ -234,7 +235,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
       response_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Response")) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (compositor_thread_default_task_runner_) {
     synchronous_compositor_registry_ =
         std::make_unique<SynchronousCompositorProxyRegistry>(
@@ -245,7 +246,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
 
 void WidgetInputHandlerManager::InitInputHandler() {
   bool sync_compositing = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   sync_compositing =
       Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView();
 #endif
@@ -325,7 +326,7 @@ void WidgetInputHandlerManager::SetNeedsMainFrame() {
 }
 
 void WidgetInputHandlerManager::WillShutdown() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (synchronous_compositor_registry_)
     synchronous_compositor_registry_->DestroyProxy();
 #endif
@@ -419,7 +420,7 @@ WidgetInputHandlerManager::GetWidgetInputHandlerHost() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WidgetInputHandlerManager::AttachSynchronousCompositor(
     mojo::PendingRemote<mojom::blink::SynchronousCompositorControlHost>
         control_host,
@@ -705,7 +706,7 @@ void WidgetInputHandlerManager::InitOnInputHandlingThread(
   input_handler_proxy_ =
       std::make_unique<InputHandlerProxy>(*input_handler.get(), this);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (sync_compositing) {
     DCHECK(synchronous_compositor_registry_);
     synchronous_compositor_registry_->CreateProxy(input_handler_proxy_.get());
@@ -993,7 +994,7 @@ WidgetInputHandlerManager::InputThreadTaskRunner(TaskRunnerType type) const {
   return main_thread_task_runner_;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 SynchronousCompositorRegistry*
 WidgetInputHandlerManager::GetSynchronousCompositorRegistry() {
   DCHECK(synchronous_compositor_registry_);

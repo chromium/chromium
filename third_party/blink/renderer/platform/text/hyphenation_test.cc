@@ -13,7 +13,7 @@
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 
-#if defined(USE_MINIKIN_HYPHENATION) && defined(OS_FUCHSIA)
+#if defined(USE_MINIKIN_HYPHENATION) && BUILDFLAG(IS_FUCHSIA)
 // Fuchsia doesn't include |blink_platform_unittests_data|.
 #undef USE_MINIKIN_HYPHENATION
 #endif
@@ -37,7 +37,7 @@ class HyphenationTest : public testing::Test {
  protected:
   void TearDown() override { LayoutLocale::ClearForTesting(); }
 
-#if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
   // Get a |Hyphenation| instance for the specified locale for testing.
   scoped_refptr<Hyphenation> GetHyphenation(const AtomicString& locale) {
 #if defined(USE_MINIKIN_HYPHENATION)
@@ -45,7 +45,7 @@ class HyphenationTest : public testing::Test {
     // accessible from the unit test, open the dictionary file directly for
     // testing.
     std::string filename = "hyph-" + locale.Ascii() + ".hyb";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::FilePath path("/system/usr/hyphen-data");
 #else
     base::FilePath path = test::HyphenationDictionaryDir();
@@ -126,10 +126,10 @@ TEST_F(HyphenationTest, MapLocale) {
 }
 #endif
 
-#if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
 TEST_F(HyphenationTest, HyphenLocations) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;
@@ -182,7 +182,7 @@ TEST_F(HyphenationTest, WordToHyphenate) {
 
 TEST_F(HyphenationTest, LeadingSpaces) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;
@@ -206,7 +206,7 @@ TEST_F(HyphenationTest, LeadingSpaces) {
 
 TEST_F(HyphenationTest, NonLetters) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;
@@ -223,7 +223,7 @@ TEST_F(HyphenationTest, NonLetters) {
 
 TEST_F(HyphenationTest, English) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;
@@ -241,7 +241,7 @@ TEST_F(HyphenationTest, English) {
 
 TEST_F(HyphenationTest, German) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("de-1996");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
     return;

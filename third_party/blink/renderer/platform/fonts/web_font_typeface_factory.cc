@@ -6,22 +6,23 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/common/dwrite_rasterizer_support/dwrite_rasterizer_support.h"
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "third_party/blink/renderer/platform/fonts/mac/core_text_font_format_support.h"
 #endif
 
@@ -111,12 +112,12 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForVariations() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (DWriteVersionSupportsVariations())
     return DefaultFontManager();
   return FreeTypeFontManager();
 #else
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!CoreTextVersionSupportsVariations())
     return FreeTypeFontManager();
 #endif
@@ -125,7 +126,7 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForVariations() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForSbix() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return DefaultFontManager();
 #else
   return FreeTypeFontManager();
@@ -133,7 +134,7 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForSbix() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::DefaultFontManager() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return FontCache::GetFontCache()->FontManager();
 #else
   return sk_sp<SkFontMgr>(SkFontMgr::RefDefault());
@@ -141,7 +142,7 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::DefaultFontManager() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FreeTypeFontManager() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return sk_sp<SkFontMgr>(SkFontMgr_New_Custom_Empty());
 #else
   return DefaultFontManager();
@@ -149,12 +150,12 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FreeTypeFontManager() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrCpal() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
     return FreeTypeFontManager();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return FreeTypeFontManager();
 #else
   return DefaultFontManager();

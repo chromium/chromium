@@ -65,7 +65,7 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   // longer toggles meaningful processing effects, but it still forces the audio
   // processing module to be created and used.
   bool goog_experimental_echo_cancellation =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       false;
 #else
       true;

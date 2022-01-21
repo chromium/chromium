@@ -49,11 +49,11 @@ bool GPUUploadingPathSupported() {
 // and Windows is the platform that is using passthrough command buffer by
 // default.
 // TODO(shaobo.yan@intel.com): Enable test on more platforms when they're ready.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {

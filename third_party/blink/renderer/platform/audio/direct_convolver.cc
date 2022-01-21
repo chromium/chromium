@@ -33,11 +33,11 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <Accelerate/Accelerate.h>
 #endif
 
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MAC)
+#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_MAC)
 #include <emmintrin.h>
 #endif
 

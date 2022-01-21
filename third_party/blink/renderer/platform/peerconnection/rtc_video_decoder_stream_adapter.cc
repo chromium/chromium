@@ -452,7 +452,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   TRACE_EVENT0("webrtc", "RTCVideoDecoderStreamAdapter::Decode");
 
-#if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   const bool has_software_fallback =
       video_codec_type_ != webrtc::kVideoCodecH264;
 #else
@@ -514,7 +514,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
         !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers() &&
         decoder_configured_ && decoder_info_.is_hardware_accelerated) {
       bool need_fallback_to_software = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       if (video_decoder_type_ == media::VideoDecoderType::kD3D11 &&
           base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
         need_fallback_to_software = false;

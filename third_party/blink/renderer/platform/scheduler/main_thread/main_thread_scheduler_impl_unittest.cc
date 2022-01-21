@@ -3323,7 +3323,7 @@ TEST_F(MainThreadSchedulerImplTest,
   Mock::VerifyAndClearExpectations(page_scheduler_.get());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(MainThreadSchedulerImplTest, PauseTimersForAndroidWebView) {
   // Tasks in some queues don't fire when the throttleable queues are paused.
   Vector<String> run_order;
@@ -3338,7 +3338,7 @@ TEST_F(MainThreadSchedulerImplTest, PauseTimersForAndroidWebView) {
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_THAT(run_order, testing::ElementsAre("T1"));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(MainThreadSchedulerImplTest, FreezesCompositorQueueWhenAllPagesFrozen) {
   main_frame_scheduler_.reset();

@@ -92,7 +92,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   EXPECT_TRUE(provider->SupportsSingleBuffering());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #else
@@ -175,7 +175,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_FALSE(provider->SupportsSingleBuffering());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #else
@@ -345,7 +345,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->SupportsSingleBuffering());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #else

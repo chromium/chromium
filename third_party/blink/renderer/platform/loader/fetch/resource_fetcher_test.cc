@@ -704,7 +704,7 @@ TEST_F(ResourceFetcherTest, RevalidateWhileFinishingLoading) {
 }
 
 // TODO(crbug.com/850785): Reenable this.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DontReuseMediaDataUrl DISABLED_DontReuseMediaDataUrl
 #else
 #define MAYBE_DontReuseMediaDataUrl DontReuseMediaDataUrl
@@ -1159,7 +1159,7 @@ TEST_F(ResourceFetcherTest, LinkPreloadResourceMultipleFetchersAndMove) {
 }
 
 // TODO(crbug.com/850785): Reenable this.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ContentTypeDataURL DISABLED_ContentTypeDataURL
 #else
 #define MAYBE_ContentTypeDataURL ContentTypeDataURL
@@ -1383,7 +1383,7 @@ TEST_F(ResourceFetcherTest, Detach) {
 }
 
 // TODO(crbug.com/850785): Reenable this.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SetIsExternalRequest DISABLED_SetIsExternalRequest
 #else
 #define MAYBE_SetIsExternalRequest SetIsExternalRequest

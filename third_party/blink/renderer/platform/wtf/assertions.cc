@@ -36,24 +36,24 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <asl.h>
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 PRINTF_FORMAT(1, 0)
 void vprintf_stderr_common(const char* format, va_list args) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   va_list copyOfArgs;
   va_copy(copyOfArgs, args);
   asl_vlog(0, 0, ASL_LEVEL_NOTICE, format, copyOfArgs);
   va_end(copyOfArgs);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   __android_log_vprint(ANDROID_LOG_WARN, "WebKit", format, args);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (IsDebuggerPresent()) {
     size_t size = 1024;
 

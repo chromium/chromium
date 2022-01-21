@@ -13,10 +13,10 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <signal.h>
 #define USE_SIGNALS 1
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -152,7 +152,7 @@ void ThreadCPUThrottler::ThrottlingThread::Throttle() {
 #ifdef USE_SIGNALS
   pthread_kill(throttled_thread_handle_.platform_handle(), SIGUSR2);
   Sleep(base::Microseconds(quant_time_us));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   double rate = Acquire_Load(&throttling_rate_percent_) / 100.;
   base::TimeDelta run_duration =
       base::Microseconds(static_cast<int>(quant_time_us / rate));
@@ -166,7 +166,7 @@ void ThreadCPUThrottler::ThrottlingThread::Throttle() {
 }
 
 void ThreadCPUThrottler::ThrottlingThread::Start() {
-#if defined(USE_SIGNALS) || defined(OS_WIN)
+#if defined(USE_SIGNALS) || BUILDFLAG(IS_WIN)
 #if defined(USE_SIGNALS)
   InstallSignalHandler();
 #endif
@@ -179,7 +179,7 @@ void ThreadCPUThrottler::ThrottlingThread::Start() {
 }
 
 void ThreadCPUThrottler::ThrottlingThread::Sleep(base::TimeDelta duration) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We cannot rely on ::Sleep function as it's precision is not enough for
   // the purpose. Could be up to 16ms jitter.
   base::TimeTicks wakeup_time = base::TimeTicks::Now() + duration;

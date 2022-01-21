@@ -534,7 +534,7 @@ void InputHandlerProxy::DispatchQueuedInputEvents() {
 
 void InputHandlerProxy::UpdateElasticOverscroll() {
   bool can_use_elastic_overscroll = true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On android, elastic overscroll introduces quite a bit of motion which can
   // effect those sensitive to it. Disable when prefers_reduced_motion_ is
   // disabled.
@@ -639,7 +639,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
 }
 
 bool HasScrollbarJumpKeyModifier(const WebInputEvent& event) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac uses the "Option" key (which is mapped to the enum "kAltKey").
   return event.GetModifiers() & WebInputEvent::kAltKey;
 #else

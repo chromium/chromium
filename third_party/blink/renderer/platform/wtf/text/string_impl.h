@@ -49,7 +49,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_restriction_verifier.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_cftyperef.h"
 
 typedef const struct __CFString* CFStringRef;
@@ -453,7 +453,7 @@ class WTF_EXPORT StringImpl {
                  wtf_size_t start = 0,
                  wtf_size_t length = UINT_MAX) const;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ScopedCFTypeRef<CFStringRef> CreateCFString();
 #endif
 #ifdef __OBJC__

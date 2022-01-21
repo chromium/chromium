@@ -63,7 +63,7 @@ class Canvas2DLayerBridgeTest;
 class SharedContextRateLimiter;
 class StaticBitmapImage;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Canvas hibernation is currently disabled on MacOS X due to a bug that causes
 // content loss. TODO: Find a better fix for crbug.com/588434
 #define CANVAS2D_HIBERNATION_ENABLED 0

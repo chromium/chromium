@@ -10,7 +10,7 @@
 
 namespace blink {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 static void TestBitmapGlyphsBlockListed(AtomicString windows_family_name,
                                         bool block_listed_expected) {

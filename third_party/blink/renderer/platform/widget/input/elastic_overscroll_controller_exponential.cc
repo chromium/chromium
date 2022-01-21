@@ -9,7 +9,7 @@
 namespace blink {
 
 namespace {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr double kRubberbandStiffness = 20;
 constexpr double kRubberbandAmplitude = 0.2f;
 constexpr double kRubberbandPeriod = 1.1f;

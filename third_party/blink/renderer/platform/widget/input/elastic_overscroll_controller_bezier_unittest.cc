@@ -99,7 +99,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, OverscrollStretch) {
   SendGestureScrollBegin(PhaseState::kNonMomentum);
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
   SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(0, -100));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
 #else
   EXPECT_EQ(Vector2dF(0, -19), helper_.StretchAmount());
@@ -112,7 +112,7 @@ TEST_F(ElasticOverscrollControllerBezierTest, OverscrollStretch) {
   SendGestureScrollBegin(PhaseState::kNonMomentum);
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
   SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(-100, 0));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
 #else
   EXPECT_EQ(Vector2dF(-19, 0), helper_.StretchAmount());

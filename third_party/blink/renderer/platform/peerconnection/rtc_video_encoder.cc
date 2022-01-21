@@ -621,7 +621,7 @@ RTCVideoEncoder::Impl::Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
   // TODO(crbug.com/1228804): These settings should be set at the time
   // RTCVideoEncoder is constructed instead of done here.
   encoder_info_.scaling_settings = webrtc::VideoEncoder::ScalingSettings::kOff;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // MediaCodec requires 16x16 alignment, see https://crbug.com/1084702.
   encoder_info_.requested_resolution_alignment = 16;
   encoder_info_.apply_alignment_to_all_simulcast_layers = true;
@@ -1217,7 +1217,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
     // supporting STORAGE_GPU_MEMORY_BUFFER or NV12? When this is fixed, remove
     // the special casing on platform and the legacy code path.
     bool optimized_scaling =
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
         buffer->type() == webrtc::VideoFrameBuffer::Type::kNative;
 #else
         false;
@@ -1635,7 +1635,7 @@ void RTCVideoEncoder::SetRates(
 
 webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::GetEncoderInfo() const {
   webrtc::VideoEncoder::EncoderInfo info;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // MediaCodec requires 16x16 alignment, see https://crbug.com/1084702. We
   // normally override this in |impl_|, but sometimes this method is called
   // before |impl_| is created, so we need to override it here too.

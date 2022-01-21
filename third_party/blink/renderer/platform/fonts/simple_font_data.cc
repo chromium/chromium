@@ -108,7 +108,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   float x_height;
   if (metrics.fXHeight) {
     x_height = metrics.fXHeight;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Mac OS CTFontGetXHeight reports the bounding box height of x,
     // including parts extending below the baseline and apparently no x-height
     // value from the OS/2 table. However, the CSS ex unit
@@ -141,7 +141,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 // In WebKit/WebCore/platform/graphics/SimpleFontData.cpp, m_spaceWidth is
 // calculated for us, but we need to calculate m_maxCharWidth and
 // m_avgCharWidth in order for text entry widgets to be sized correctly.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   max_char_width_ = SkScalarRoundToInt(metrics.fMaxCharWidth);
 
   // Older version of the DirectWrite API doesn't implement support for max
@@ -149,7 +149,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   // arbitrary but comes pretty close to the expected value in most cases.
   if (max_char_width_ < 1)
     max_char_width_ = ascent * 2;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // FIXME: The current avg/max character width calculation is not ideal,
   // it should check either the OS2 table or, better yet, query FontMetrics.
   // Sadly FontMetrics provides incorrect data on Mac at the moment.
@@ -162,7 +162,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 
 #endif
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (metrics.fAvgCharWidth) {
     avg_char_width_ = SkScalarToFloat(metrics.fAvgCharWidth);
   } else {
@@ -172,7 +172,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
     if (x_glyph) {
       avg_char_width_ = WidthForGlyph(x_glyph);
     }
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   }
 #endif
 

@@ -394,7 +394,7 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
 
  private:
   // The target to use when binding a texture to a Chromium image.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   static constexpr GLuint kImageCHROMIUMTarget = GC3D_TEXTURE_RECTANGLE_ARB;
 #else
   static constexpr GLuint kImageCHROMIUMTarget = GL_TEXTURE_2D;

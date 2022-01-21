@@ -65,7 +65,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/font_list.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 #endif
 
@@ -81,21 +81,21 @@ const base::Feature kAsyncFontAccess{"AsyncFontAccess",
 
 const char kColorEmojiLocale[] = "und-Zsye";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
 #endif
 
 SkFontMgr* FontCache::static_font_manager_ = nullptr;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 float FontCache::device_scale_factor_ = 1.0;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool FontCache::antialiased_text_enabled_ = false;
 bool FontCache::lcd_text_enabled_ = false;
 bool FontCache::use_skia_font_fallback_ = false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 FontCache* FontCache::GetFontCache(CreateIfNeeded create) {
   return FontGlobalContext::GetFontCache(create);
@@ -109,7 +109,7 @@ FontCache::FontCache()
           (static_cast<float>(std::numeric_limits<unsigned>::max()) - 2.f) /
               static_cast<float>(blink::FontCacheKey::PrecisionMultiplier()),
           0.f)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!font_manager_) {
     // This code path is only for unit tests. This SkFontMgr does not work in
     // sandboxed environments, but injecting this initialization code to all
@@ -123,11 +123,11 @@ FontCache::FontCache()
 #endif
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 FontPlatformData* FontCache::SystemFontPlatformData(
     const FontDescription& font_description) {
   const AtomicString& family = FontCache::SystemFontFamily();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   if (family.IsEmpty() || family == font_family_names::kSystemUi)
     return nullptr;
 #else
@@ -149,7 +149,7 @@ FontPlatformData* FontCache::GetFontPlatformData(
     PlatformInit();
   }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (creation_params.CreationType() == kCreateFontByFamily &&
       creation_params.Family() == font_family_names::kSystemUi) {
     return SystemFontPlatformData(font_description);
@@ -248,7 +248,7 @@ std::unique_ptr<FontPlatformData> FontCache::ScaleFontPlatformData(
     float font_size) {
   TRACE_EVENT0("fonts,ui", "FontCache::ScaleFontPlatformData");
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return CreateFontPlatformData(font_description, creation_params, font_size);
 #else
   return std::make_unique<FontPlatformData>(font_platform_data, font_size);
@@ -448,7 +448,7 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   if (FontGlobalContext::Get(kDoNotCreate)) {
     font_cache = FontCache::GetFontCache();
     if (font_cache) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       is_test_font_mgr = font_cache->is_test_font_mgr_;
 #endif
       font_mgr = font_cache->font_manager_.get();

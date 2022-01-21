@@ -241,7 +241,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   // other shared image implementation is implemented on OpenGL via some form of
   // eglSurface and eglBindTexImage (on ANGLE or system drivers) so they use the
   // 2D texture target and cannot always be overlay candidates.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const uint32_t texture_target = GL_TEXTURE_RECTANGLE_ARB;
   const bool is_overlay_candidate = true;
 #else

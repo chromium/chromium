@@ -410,7 +410,7 @@ TEST_F(VectorMathTest, Vsma) {
       // expect only mostly equal floats.
       for (size_t i = 0u; i < source.size(); ++i) {
         if (std::isfinite(expected_dest[i])) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in bigger rounding errors than functions used on other OSes.
           EXPECT_NEAR(expected_dest[i], dest[i],
@@ -519,7 +519,7 @@ TEST_F(VectorMathTest, Zvmul) {
       // Different optimizations may use different precisions for intermediate
       // results which may result in different rounding errors thus let's
       // expect only mostly equal floats.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_ARM64)
       const float threshold = 1.900e-5;
 #else
@@ -528,7 +528,7 @@ TEST_F(VectorMathTest, Zvmul) {
 #endif
       for (size_t i = 0u; i < real1.size(); ++i) {
         if (std::isfinite(expected_dest_real[i])) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in bigger rounding errors than functions used on other OSes.
           EXPECT_NEAR(expected_dest_real[i], dest_real[i],
@@ -537,7 +537,7 @@ TEST_F(VectorMathTest, Zvmul) {
           EXPECT_FLOAT_EQ(expected_dest_real[i], dest_real[i]);
 #endif
         } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in different NaN handling than functions used on other OSes.
           EXPECT_TRUE(!std::isfinite(dest_real[i]));
@@ -546,7 +546,7 @@ TEST_F(VectorMathTest, Zvmul) {
 #endif
         }
         if (std::isfinite(expected_dest_imag[i])) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in bigger rounding errors than functions used on other OSes.
           EXPECT_NEAR(expected_dest_imag[i], dest_imag[i],
@@ -555,7 +555,7 @@ TEST_F(VectorMathTest, Zvmul) {
           EXPECT_FLOAT_EQ(expected_dest_imag[i], dest_imag[i]);
 #endif
         } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in different NaN handling than functions used on other OSes.
           EXPECT_TRUE(!std::isfinite(dest_imag[i]));

@@ -45,7 +45,7 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
       bool force_send) override;
 
   // mojom::RenderFrameMetadataObserver:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ReportAllRootScrolls(bool enabled) override;
 #endif
   void ReportAllFrameSubmissionsForTesting(bool enabled) override;
@@ -65,7 +65,7 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
 
   void SendLastRenderFrameMetadata();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // When true this will notify |render_frame_metadata_observer_client_| of all
   // frame submissions that involve a root scroll offset change.
   bool report_all_root_scrolls_enabled_ = false;

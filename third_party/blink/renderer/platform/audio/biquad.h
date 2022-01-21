@@ -110,7 +110,7 @@ class PLATFORM_EXPORT Biquad final {
   AudioDoubleArray a1_;
   AudioDoubleArray a2_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void ProcessFast(const float* source_p,
                    float* dest_p,
                    uint32_t frames_to_process);

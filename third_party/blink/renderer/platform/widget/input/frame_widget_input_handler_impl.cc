@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -269,7 +270,7 @@ void FrameWidgetInputHandlerImpl::SelectRange(const gfx::Point& base,
       widget_, main_thread_frame_widget_input_handler_, base, extent));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 void FrameWidgetInputHandlerImpl::SelectAroundCaret(
     mojom::blink::SelectionGranularity granularity,
@@ -307,7 +308,7 @@ void FrameWidgetInputHandlerImpl::SelectAroundCaret(
       main_thread_frame_widget_input_handler_, granularity, should_show_handle,
       should_show_context_menu, std::move(callback)));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void FrameWidgetInputHandlerImpl::AdjustSelectionByCharacterOffset(
     int32_t start,

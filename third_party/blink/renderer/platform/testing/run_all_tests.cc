@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
   blink::ScopedUnittestsEnvironmentSetup testEnvironmentSetup(argc, argv);
   int result = 0;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Some unittests depend on specific fonts provided by the system (e.g. some
   // tests load Arial). On Fuchsia the default font set contains only Roboto.
   // Load //third_party/test_fonts to make these tests pass on Fuchsia.

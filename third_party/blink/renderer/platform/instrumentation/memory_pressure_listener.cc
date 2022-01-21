@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/sys_utils.h"
 #endif
 
@@ -43,7 +43,7 @@ bool MemoryPressureListenerRegistry::IsLowEndDevice() {
 
 // static
 bool MemoryPressureListenerRegistry::IsCurrentlyLowMemory() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::android::SysUtils::IsCurrentlyLowMemory();
 #else
   return false;

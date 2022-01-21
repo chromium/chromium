@@ -186,7 +186,7 @@ void VideoFrameSinkBundle::DidDeleteSharedBitmap(uint32_t sink_id,
           id)));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void VideoFrameSinkBundle::SetThreadIds(
     uint32_t sink_id,
     const WTF::Vector<int32_t>& thread_ids) {

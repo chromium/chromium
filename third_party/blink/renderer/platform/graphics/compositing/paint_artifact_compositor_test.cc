@@ -2762,7 +2762,7 @@ TEST_P(
       .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack);
   Update(artifact.Build());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_EQ(2u, LayerCount());
 #else
   ASSERT_EQ(1u, LayerCount());

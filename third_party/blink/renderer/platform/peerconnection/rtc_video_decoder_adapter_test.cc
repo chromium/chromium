@@ -150,7 +150,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
               return std::move(owned_video_decoder_);
             });
     EXPECT_CALL(gpu_factories_, CreateVideoDecoder(_, _)).Times(AtLeast(0));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     feature_list_.InitAndEnableFeature(::media::kD3D11Vp9kSVCHWDecoding);
 #endif
   }
@@ -541,7 +541,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
     RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
   ASSERT_TRUE(BasicSetup());
   SetSpatialIndex(2);

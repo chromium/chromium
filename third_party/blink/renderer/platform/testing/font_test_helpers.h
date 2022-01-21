@@ -22,7 +22,7 @@ Font CreateTestFont(const AtomicString& family_name,
                     float size,
                     const FontDescription::VariantLigatures* = nullptr);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class TestFontPrewarmer : public WebFontPrewarmer {
  public:
   void PrewarmFamily(const WebString& family_name) override;

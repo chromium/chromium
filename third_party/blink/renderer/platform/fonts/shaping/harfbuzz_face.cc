@@ -62,7 +62,7 @@ namespace blink {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void DetermineTrakSbix(SkTypeface* typeface, bool* has_trak, bool* has_sbix) {
   int num_tags = typeface->countTables();
 
@@ -367,7 +367,7 @@ HbScoped<hb_face_t> HarfBuzzFace::CreateFace() {
 
   sk_sp<SkTypeface> typeface = sk_ref_sp(platform_data_->Typeface());
   CHECK(typeface);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   face = HbFaceFromSkTypeface(typeface);
 #endif
 
@@ -406,7 +406,7 @@ scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(hb_face_t* face,
 
   FontGlobalContext::HorizontalAdvanceSource advance_source =
       FontGlobalContext::kSkiaHorizontalAdvances;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool has_trak = false;
   bool has_sbix = false;
   DetermineTrakSbix(typeface, &has_trak, &has_sbix);

@@ -14,6 +14,7 @@
 #include "base/metrics/single_sample_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_switches.h"
 #include "media/base/overlay_info.h"
@@ -64,7 +65,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
  public:
   // Minimum resolution that we'll consider "not low resolution" for the purpose
   // of falling back to software.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Effectively opt-out CrOS, since it may cause tests to fail (b/179724180).
   static constexpr gfx::Size kMinResolution{2, 2};
 #else

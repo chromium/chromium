@@ -96,7 +96,7 @@ WebFakeThreadScheduler::PauseRenderer() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebFakeThreadScheduler::PauseTimersForAndroidWebView() {}
 
 void WebFakeThreadScheduler::ResumeTimersForAndroidWebView() {}

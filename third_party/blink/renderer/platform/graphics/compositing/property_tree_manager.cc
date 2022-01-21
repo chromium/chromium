@@ -888,7 +888,7 @@ bool PropertyTreeManager::SupportsShaderBasedRoundedCorner(
   // on Mac. Instead of letting it fall back to the (worse for memory and
   // battery) non-CALayerOverlay system for such cases, fall back to a
   // non-shader border-radius mask for the effect node.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (radii.TopLeft() != radii.TopRight() ||
       radii.TopLeft() != radii.BottomRight() ||
       radii.TopLeft() != radii.BottomLeft()) {

@@ -344,7 +344,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       size_(info.width(), info.height()),
       is_origin_top_left_(is_origin_top_left),
       is_accelerated_(is_accelerated),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // On Mac, WebGPU usage is always backed by an IOSurface which should
       // should also use the GL_TEXTURE_RECTANGLE target instead of
       // GL_TEXTURE_2D. Setting |is_overlay_candidate_| both allows overlays,
@@ -800,7 +800,7 @@ bool CanvasResourceSkiaDawnSharedImage::IsValid() const {
 }
 
 GLenum CanvasResourceSkiaDawnSharedImage::TextureTarget() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return GL_TEXTURE_RECTANGLE_ARB;
 #else
   return GL_TEXTURE_2D;
@@ -875,7 +875,7 @@ void CanvasResourceSkiaDawnSharedImage::EndAccess() {
 GrBackendTexture CanvasResourceSkiaDawnSharedImage::CreateGrTexture() const {
   GrDawnTextureInfo info = {};
   info.fTexture = texture();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   info.fFormat = wgpu::TextureFormat::BGRA8Unorm;
 #else
   info.fFormat = wgpu::TextureFormat::RGBA8Unorm;

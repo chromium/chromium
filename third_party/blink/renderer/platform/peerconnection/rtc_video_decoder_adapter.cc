@@ -262,7 +262,7 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
     GetDecoderCounter()->IncrementCount();
   }
 
-#if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   const bool has_software_fallback =
       video_codec_type_ != webrtc::kVideoCodecH264;
 #else
@@ -295,7 +295,7 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
     // the OS is windows but not win7, we will return true in
     // 'Vp9HwSupportForSpatialLayers' instead of false.
     bool need_fallback_to_software = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (video_decoder_->GetDecoderType() == media::VideoDecoderType::kD3D11 &&
         base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
       need_fallback_to_software = false;

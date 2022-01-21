@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/keycodes.h>
 #endif
 
@@ -307,7 +307,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
       weak_ptr_factory_.GetWeakPtr();
   HandlingState handling_state(weak_self, IsTouchStartOrMove(input_event));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ImeEventGuard guard(widget_->GetWeakPtr());
 #endif
 
@@ -384,7 +384,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
     }
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (WebInputEvent::IsKeyboardEventType(input_event.GetType())) {
     // The DPAD_CENTER key on Android has a dual semantic: (1) in the general
     // case it should behave like a select key (i.e. causing a click if a button
@@ -519,7 +519,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
 
 // TODO(rouslan): Fix ChromeOS and Windows 8 behavior of autofill popup with
 // virtual keyboard.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Virtual keyboard is not supported, so react to focus change immediately.
   if ((processed != WebInputEventResult::kNotHandled &&
        input_event.GetType() == WebInputEvent::Type::kMouseDown) ||
