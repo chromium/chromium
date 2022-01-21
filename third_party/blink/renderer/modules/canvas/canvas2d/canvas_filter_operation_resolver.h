@@ -20,15 +20,17 @@ namespace blink {
 // third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h but
 // the input is a from a canvas filter object instead of a CSSValue.
 // CanvasFilters are created in javascript by passing in dictionaries like so:
-//  ctx.filter = new CanvasFilter({blur: {stdDeviation: 5}});
+//  ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: 5});
 // This class resolves these inputs into FilterOperations that can be used by
 // CanvasRenderingContext2DState's GetFilter() functions.
 class MODULES_EXPORT CanvasFilterOperationResolver {
   STATIC_ONLY(CanvasFilterOperationResolver);
 
  public:
-  static FilterOperations CreateFilterOperations(HeapVector<ScriptValue>,
-                                                 ExceptionState&);
+  static FilterOperations CreateFilterOperations(
+      ExecutionContext* execution_context,
+      HeapVector<ScriptValue>,
+      ExceptionState&);
 };
 
 }  // namespace blink

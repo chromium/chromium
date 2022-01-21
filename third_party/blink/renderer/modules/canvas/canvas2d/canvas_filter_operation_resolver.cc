@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_convolve_matrix_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_turbulence_element.h"
@@ -11,6 +13,8 @@
 namespace blink {
 
 namespace {
+int num_canvas_filter_errors_to_console_allowed_ = 64;
+
 BlurFilterOperation* ResolveBlur(const Dictionary& blur_dict,
                                  ExceptionState& exception_state) {
   absl::optional<double> std_deviation =
@@ -278,6 +282,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
+    ExecutionContext* execution_context,
     HeapVector<ScriptValue> filters,
     ExceptionState& exception_state) {
   FilterOperations operations;
@@ -286,15 +291,11 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
     Dictionary filter_dict = Dictionary(filter);
     absl::optional<String> name =
         filter_dict.Get<IDLString>("filter", exception_state);
-    if (!name)
-      continue;
-
     if (name == "gaussianBlur") {
       if (auto* blur_operation = ResolveBlur(filter_dict, exception_state)) {
         operations.Operations().push_back(blur_operation);
       }
-    }
-    if (name == "colorMatrix") {
+    } else if (name == "colorMatrix") {
       String type = filter_dict.Get<IDLString>("type", exception_state)
                         .value_or("matrix");
       if (type == "hueRotate") {
@@ -317,23 +318,42 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
                      ResolveColorMatrix(filter_dict, exception_state)) {
         operations.Operations().push_back(color_matrix_operation);
       }
-    }
-    if (name == "convolveMatrix") {
+    } else if (name == "convolveMatrix") {
       if (auto* convolve_operation =
               ResolveConvolveMatrix(filter_dict, exception_state)) {
         operations.Operations().push_back(convolve_operation);
       }
-    }
-    if (name == "componentTransfer") {
+    } else if (name == "componentTransfer") {
       if (auto* component_transfer_operation =
               ResolveComponentTransfer(filter_dict, exception_state)) {
         operations.Operations().push_back(component_transfer_operation);
       }
-    }
-    if (name == "turbulence") {
+    } else if (name == "turbulence") {
       if (auto* turbulence_operation =
               ResolveTurbulence(filter_dict, exception_state)) {
         operations.Operations().push_back(turbulence_operation);
+      }
+    } else {
+      num_canvas_filter_errors_to_console_allowed_--;
+      if (num_canvas_filter_errors_to_console_allowed_ < 0)
+        continue;
+      const String& message =
+          (!name.has_value())
+              ? "CanvasFilters require key 'filter' to specify filter type."
+              : String::Format(
+                    "\"%s\" is not among supported CanvasFilter types.",
+                    name->Utf8().c_str());
+      execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kWarning, message));
+      if (num_canvas_filter_errors_to_console_allowed_ == 0) {
+        const String& message =
+            "CanvasFilter: too many errors, no more errors will be reported to "
+            "the console for this process.";
+        execution_context->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kRendering,
+                mojom::blink::ConsoleMessageLevel::kWarning, message));
       }
     }
   }

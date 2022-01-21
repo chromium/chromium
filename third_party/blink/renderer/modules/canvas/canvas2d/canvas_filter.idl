@@ -7,5 +7,5 @@ typedef (object or FrozenArray<object>) CanvasFilterInput;
     Exposed=(Window,Worker,PaintWorklet), RuntimeEnabled=NewCanvas2DAPI
 ] interface CanvasFilter {
 
-    [RaisesException] constructor(CanvasFilterInput init);
+    [CallWith=ExecutionContext, RaisesException] constructor(CanvasFilterInput init);
 };
