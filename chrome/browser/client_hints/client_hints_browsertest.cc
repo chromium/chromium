@@ -3329,6 +3329,8 @@ class SameOriginUaReducedOriginTrialBrowserTest
     return url_loader_interceptor_->GetLastRequestURL();
   }
 
+  void VerifyNonAcceptCHNotAddedToHeader() {}
+
   void NavigateTwiceAndCheckHeader(const GURL& url,
                                    const bool ch_ua_reduced_expected,
                                    const bool critical_ch_ua_reduced_expected) {
@@ -3365,6 +3367,11 @@ class SameOriginUaReducedOriginTrialBrowserTest
     // client hint sent on the second request, if Sec-CH-UA-Reduced is set and
     // the Origin Trial token is valid.
     NavigateAndCheckHeaders(url, ch_ua_reduced_expected);
+    // Make sure non-default client hints are not added to the request headers
+    // of subresource requests. Here, we just use Sec-CH-UA-Bitness as a high
+    // entropy hint to check against.
+    ASSERT_FALSE(url_loader_interceptor_->GetLastRequestHeaders().HasHeader(
+        "sec-ch-ua-bitness"));
     if (ch_ua_reduced_expected) {
       ++reduced_count;
     } else {
