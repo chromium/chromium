@@ -2737,32 +2737,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GPU.ContextLost"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContextualNudgesNames" separator=".">
-  <obsolete>
-    Removed from code as of 04/2020.
-  </obsolete>
-  <suffix name="BackGesture"
-      label="Metrics related to back gesture's nudes and usage."/>
-  <suffix name="HomeToOverview"
-      label="Metrics related to home to overview gesture's nudes and usage."/>
-  <suffix name="InAppToHome"
-      label="Metrics related to in app to home gesture's nudes and usage."/>
-  <affected-histogram name="Ash.ContextualNudge"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ContextualNudgesTrackedMetrics" separator=".">
-  <obsolete>
-    Removed from code as of 04/2020.
-  </obsolete>
-  <suffix name="ExitNudgeContext"
-      label="Metrics related to back gesture's nudes and usage."/>
-  <suffix name="TimeDelta"
-      label="Metrics related to home to overview gesture's nudes and usage."/>
-  <affected-histogram name="Ash.ContextualNudge.BackGesture"/>
-  <affected-histogram name="Ash.ContextualNudge.HomeToOverview"/>
-  <affected-histogram name="Ash.ContextualNudge.InAppToHome"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContextualSearchQuickActionCategory" separator=".">
   <suffix name="Address" label=""/>
   <suffix name="Email" label=""/>
