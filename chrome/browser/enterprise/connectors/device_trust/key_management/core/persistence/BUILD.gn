@@ -37,6 +37,10 @@ source_set("persistence") {
       "linux_key_persistence_delegate.cc",
       "linux_key_persistence_delegate.h",
     ]
+    deps += [
+      "//build:branding_buildflags",
+      "//third_party/abseil-cpp:absl",
+    ]
   }
 }
 
