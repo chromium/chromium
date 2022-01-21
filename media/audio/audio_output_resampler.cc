@@ -128,10 +128,10 @@ AudioParameters GetFallbackOutputParams(
   const int frames_per_buffer = std::max(
       original_output_params.frames_per_buffer(), kMinLowLatencyFrameSize);
 
-  return AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                         original_output_params.channel_layout(),
-                         original_output_params.sample_rate(),
-                         frames_per_buffer);
+  AudioParameters fallback_params(original_output_params);
+  fallback_params.set_format(AudioParameters::AUDIO_PCM_LINEAR);
+  fallback_params.set_frames_per_buffer(frames_per_buffer);
+  return fallback_params;
 }
 #endif
 
