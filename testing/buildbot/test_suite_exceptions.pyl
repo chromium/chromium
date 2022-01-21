@@ -35,6 +35,10 @@
   'android_browsertests': {
     'modifications': {
       'android-11-x86-rel': {
+        'args': [
+          # https://crbug.com/1289764
+          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
+        ],
         'swarming': {
           'shards': 2,
         },
