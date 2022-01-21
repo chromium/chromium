@@ -590,21 +590,16 @@ export class DestinationStore extends EventTarget {
     }
 
     const isLocal = !matchRules.kind || matchRules.kind === 'local';
-    const isCloud = !matchRules.kind || matchRules.kind === 'cloud';
-    if (!isLocal && !isCloud) {
+    if (!isLocal) {
       console.warn('Unsupported type: "' + matchRules.kind + '"');
       return null;
     }
 
-    const origins = [];
-    if (isLocal) {
-      origins.push(DestinationOrigin.LOCAL);
-      origins.push(DestinationOrigin.EXTENSION);
-      origins.push(DestinationOrigin.CROS);
-    }
-    if (isCloud) {
-      origins.push(...CloudOrigins);
-    }
+    const origins = [
+      DestinationOrigin.LOCAL,
+      DestinationOrigin.EXTENSION,
+      DestinationOrigin.CROS,
+    ];
 
     let idRegExp = null;
     try {
