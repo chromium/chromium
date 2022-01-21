@@ -149,12 +149,6 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
 
     // Animation should be aborted.
     kAborted,
-
-    // Animation does not run.
-    // TODO(https://crbug.com/1287334): Use only because the reorder animation
-    // in tablet mode is not implemented yet. Remove it when the animation in
-    // tablet mode is finished.
-    kNotRun
   };
 
   // Reorders the app list items through the specified context menu indicated by
@@ -191,8 +185,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     gfx::Point point_on_option =
         reorder_option->GetBoundsInScreen().CenterPoint();
 
-    if (target_status != AnimationTargetStatus::kNotRun)
-      RegisterReorderAnimationDoneCallback(target_status);
+    RegisterReorderAnimationDoneCallback(target_status);
 
     // Click at the sorting option.
     event_generator_->MoveMouseTo(point_on_option);
@@ -614,17 +607,15 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
 
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListNonFolderItemMenu,
-                                   AnimationTargetStatus::kNotRun);
+                                   AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
-  // Ensure that the reorder undo toast's bounds update.
-  app_list_test_api_.GetTopLevelAppsGridView()
-      ->GetWidget()
-      ->LayoutRootViewIfNecessary();
-
   // The toast should be visible.
   EXPECT_TRUE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+
+  // Register a callback for the reorder animation triggered by the undo button.
+  RegisterReorderAnimationDoneCallback(AnimationTargetStatus::kCompleted);
 
   // Mouse click at the undo button.
   views::View* reorder_undo_toast_button =
@@ -632,6 +623,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
   event_generator_->MoveMouseTo(
       reorder_undo_toast_button->GetBoundsInScreen().CenterPoint());
   event_generator_->ClickLeftButton();
+
+  WaitForReorderAnimation();
 
   // Verify that the default app order is recovered.
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
@@ -704,14 +697,9 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListNonFolderItemMenu,
-                                   AnimationTargetStatus::kNotRun);
+                                   AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
-
-  // Ensure that the reorder undo toast's bounds update.
-  app_list_test_api_.GetTopLevelAppsGridView()
-      ->GetWidget()
-      ->LayoutRootViewIfNecessary();
 
   // The toast should be visible.
   EXPECT_TRUE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
@@ -769,10 +757,60 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
   app_list_test_api_.WaitForAppListShowAnimation(/*is_bubble_window=*/false);
 
-  // Verify that reordering in tablet mode works.
-  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
-                                   MenuType::kAppListNonFolderItemMenu,
-                                   AnimationTargetStatus::kNotRun);
+  // When switching to the tablet mode, the app list is closed so the
+  // temporary sorting order should be committed.
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Verify that reordering in tablet mode works.
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
+                                   MenuType::kAppListNonFolderItemMenu,
+                                   AnimationTargetStatus::kCompleted);
+
+  // TODO(https://crbug.com/1288880): verify the app order after the color
+  // sorting result becomes consistent.
+}
+
+// Verify that switching to clamshell mode when the app list reorder animation
+// in tablet mode is running works as expected.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
+                       TransitionToClamshellModeDuringReorderAnimation) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForAppListShowAnimation(/*is_bubble_window=*/false);
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
+                                   MenuType::kAppListNonFolderItemMenu,
+                                   AnimationTargetStatus::kAborted);
+
+  // Verify that there is active reorder animations.
+  EXPECT_TRUE(app_list_test_api_.HasAnyWaitingReorderDoneCallback());
+
+  // The app order does not change because the reorder animation is in progress.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
+
+  // Before switching to the tablet mode, the app list is closed so the
+  // temporary sorting order is committed.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Verify that reordering in tablet mode works.
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
+                                   MenuType::kAppListNonFolderItemMenu,
+                                   AnimationTargetStatus::kCompleted);
+
+  // TODO(https://crbug.com/1288880): verify the app order after the color
+  // sorting result becomes consistent.
 }

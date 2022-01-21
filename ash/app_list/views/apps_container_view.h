@@ -281,6 +281,12 @@ class ASH_EXPORT AppsContainerView
   // Removes the gradient mask from being set as the mask layer.
   void MaybeRemoveGradientMask();
 
+  // Called when the animation to fade out app list items is completed.
+  // `aborted` indicates whether the fade out animation is aborted.
+  void OnAppsGridViewFadeOutAnimationEneded(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool aborted);
+
   // While true, the gradient mask will not be removed as a mask layer until
   // cardified state ends.
   bool keep_gradient_mask_for_cardified_state_ = false;
@@ -326,6 +332,10 @@ class ASH_EXPORT AppsContainerView
   CachedContainerMargins cached_container_margins_;
 
   std::unique_ptr<GradientLayerDelegate> gradient_layer_delegate_;
+
+  // A closure to update item positions. It should run at the end of the fade
+  // out animation when items are reordered.
+  base::OnceClosure update_position_closure_;
 
   base::WeakPtrFactory<AppsContainerView> weak_ptr_factory_{this};
 };

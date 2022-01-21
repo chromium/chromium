@@ -348,6 +348,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   friend ScrollableAppsGridViewTest;
 
   struct VisibleItemIndexRange {
+    VisibleItemIndexRange();
+    VisibleItemIndexRange(int first_index, int last_index);
+    ~VisibleItemIndexRange();
+
     // The view index of the first visible item on the apps grid.
     int first_index = 0;
 
@@ -426,6 +430,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   virtual absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const = 0;
 
+  // Disables any change on the apps grid's opacity. Returns an scoped runner
+  // that carries a closure to re-enable opacity updates.
+  virtual base::ScopedClosureRunner LockAppsGridOpacity()
+      WARN_UNUSED_RESULT = 0;
+
   // Sets the max number of columns that the grid can have.
   // For root apps grid view, the grid size depends on the space available to
   // apps grid view only, and `cols()` will match `max_columns`. I.e. if the
@@ -470,6 +479,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
   void BeginHideCurrentGhostImageView();
+
+  // Returns true if a fade in or fade out animation is active.
+  bool IsUnderReorderAnimation() const;
 
   bool ignore_layout() const { return ignore_layout_; }
   views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }

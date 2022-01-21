@@ -365,6 +365,11 @@ ScrollableAppsGridView::GetVisibleItemIndexRange() const {
   return result;
 }
 
+base::ScopedClosureRunner ScrollableAppsGridView::LockAppsGridOpacity() {
+  // Do nothing.
+  return base::ScopedClosureRunner();
+}
+
 const gfx::Vector2d ScrollableAppsGridView::CalculateTransitionOffset(
     int page_of_view) const {
   // The ScrollableAppsGridView has no page transitions.
