@@ -38,7 +38,7 @@ constexpr int kMaxNumberOfMonthsCached =
 
 // Methods for debugging and gathering of metrics.
 
-ALLOW_UNUSED_TYPE int GetEventMapSize(
+[[maybe_unused]] int GetEventMapSize(
     const ash::CalendarViewController::SingleMonthEventMap& event_map) {
   int total_bytes = 0;
   for (auto& event_list : event_map) {

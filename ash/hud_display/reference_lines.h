@@ -63,10 +63,11 @@ class ReferenceLines : public views::View {
  private:
   const SkColor color_;
 
-  // Graph label values.
+  // Graph label values. Note that `right_` is not implemented, thus the
+  // [[maybe_unused]].
   float left_ = 0;
   float top_ = 0;
-  float right_ = 0;
+  [[maybe_unused]] float right_ = 0;
   float bottom_ = 0;
 
   std::u16string x_unit_;
