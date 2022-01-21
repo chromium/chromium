@@ -24,9 +24,6 @@ export class FakeUpdateProvider {
     /** @private {?Promise} */
     this.observePeripheralUpdatesPromise_ = null;
 
-    /** @private {?FirmwareUpdate} */
-    this.inflight_update_ = null;
-
     this.registerObservables();
   }
 
@@ -40,10 +37,6 @@ export class FakeUpdateProvider {
         this.observe_(ON_UPDATE_LIST_CHANGED, (firmwareUpdates) => {
           remote.onUpdateListChanged(firmwareUpdates);
         });
-  }
-
-  fetchInProgressUpdate() {
-    return new Promise((resolve) => resolve({update: this.inflight_update_}));
   }
 
   /**
@@ -64,14 +57,6 @@ export class FakeUpdateProvider {
   setFakeFirmwareUpdates(firmwareUpdates) {
     this.observables_.setObservableData(
         ON_UPDATE_LIST_CHANGED, [firmwareUpdates]);
-  }
-
-  /**
-   * Sets the inflight update.
-   * @param {!FirmwareUpdate} update
-   */
-  setInflightUpdate(update) {
-    this.inflight_update_ = update;
   }
 
   /**

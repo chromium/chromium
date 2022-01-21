@@ -49,8 +49,6 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   void PrepareForUpdate(const std::string& device_id,
                         PrepareForUpdateCallback callback) override;
 
-  void FetchInProgressUpdate(FetchInProgressUpdateCallback callback) override;
-
   // firmware_update::mojom::InstallController
   void BeginUpdate(const std::string& device_id,
                    const base::FilePath& filepath) override;
@@ -155,8 +153,8 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // Only used for testing if StartInstall() queries to a fake URL.
   std::string fake_url_for_testing_;
 
-  // The device update that is currently inflight.
-  firmware_update::mojom::FirmwareUpdatePtr inflight_update_;
+  // The device ID of the device that is currently being updated.
+  std::string inflight_update_id_;
 
   // Remotes for tracking observers that will be notified of changes to the
   // list of firmware updates.

@@ -6,9 +6,7 @@
   </template>
   <dom-repeat id="updateList" items="[[firmwareUpdates_]]" as="update">
     <template>
-      <update-card update="[[update]]"
-          disabled="[[!hasCheckedInitialInflightProgress_]]">
-      </update-card>
+      <update-card update="[[update]]"></update-card>
     </template>
   </dom-repeat>
 </div>

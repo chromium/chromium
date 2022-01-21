@@ -35,12 +35,6 @@ export class PeripheralUpdateListElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
-
-      /** @protected */
-      hasCheckedInitialInflightProgress_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -73,19 +67,6 @@ export class PeripheralUpdateListElement extends PolymerElement {
    */
   onUpdateListChanged(firmwareUpdates) {
     this.firmwareUpdates_ = firmwareUpdates;
-
-    if (!this.hasCheckedInitialInflightProgress_) {
-      this.updateProvider_.fetchInProgressUpdate().then(result => {
-        if (result.update) {
-          this.dispatchEvent(new CustomEvent('open-update-dialog', {
-            bubbles: true,
-            composed: true,
-            detail: {update: result.update, inflight: true}
-          }));
-        }
-        this.hasCheckedInitialInflightProgress_ = true;
-      });
-    }
   }
 
   /**

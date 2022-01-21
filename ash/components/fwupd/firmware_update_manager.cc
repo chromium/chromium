@@ -4,7 +4,6 @@
 
 #include "ash/components/fwupd/firmware_update_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "ash/public/cpp/fwupd_download_client.h"
@@ -250,17 +249,12 @@ void FirmwareUpdateManager::PrepareForUpdate(
     const std::string& device_id,
     PrepareForUpdateCallback callback) {
   DCHECK(!device_id.empty());
-
+  inflight_update_id_ = device_id;
   mojo::PendingRemote<firmware_update::mojom::InstallController>
       pending_remote = install_controller_receiver_.BindNewPipeAndPassRemote();
   install_controller_receiver_.set_disconnect_handler(base::BindOnce(
       &FirmwareUpdateManager::ResetInstallState, base::Unretained(this)));
   std::move(callback).Run(std::move(pending_remote));
-}
-
-void FirmwareUpdateManager::FetchInProgressUpdate(
-    FetchInProgressUpdateCallback callback) {
-  std::move(callback).Run(mojo::Clone(inflight_update_));
 }
 
 // Query all updates for all devices.
@@ -406,14 +400,6 @@ void FirmwareUpdateManager::InstallUpdate(
     return;
   }
 
-  DCHECK(inflight_update_.is_null());
-  for (const auto& update : updates_) {
-    if (update->device_id == device_id) {
-      inflight_update_ = mojo::Clone(update);
-      break;
-    }
-  }
-
   chromeos::FwupdClient::Get()->InstallUpdate(
       device_id, std::move(file_descriptor), options);
 
@@ -465,18 +451,11 @@ void FirmwareUpdateManager::OnUpdateListResponse(
 void FirmwareUpdateManager::OnInstallResponse(bool success) {
   auto state = success ? firmware_update::mojom::UpdateState::kSuccess
                        : firmware_update::mojom::UpdateState::kFailed;
-  // Success or Fail states are both considered 100% done.
   auto update = ash::firmware_update::mojom::InstallationProgress::New(
       /**percentage=*/100, state);
-
-  // If the firmware update app is closed, the observer is no longer bound.
-  if (update_progress_observer_.is_bound()) {
-    update_progress_observer_->OnStatusChanged(std::move(update));
-  }
-
-  // Any updates are completed at this point, reset all cached.
+  update_progress_observer_->OnStatusChanged(std::move(update));
   ResetInstallState();
-  inflight_update_.reset();
+  inflight_update_id_.clear();
 }
 
 void FirmwareUpdateManager::BindInterface(
@@ -508,6 +487,8 @@ void FirmwareUpdateManager::OnPropertiesChangedResponse(
 
 void FirmwareUpdateManager::BeginUpdate(const std::string& device_id,
                                         const base::FilePath& filepath) {
+  DCHECK(!inflight_update_id_.empty());
+  DCHECK(inflight_update_id_ == device_id);
   DCHECK(!filepath.empty());
 
   if (!IsValidFirmwarePatchFile(filepath)) {
