@@ -335,13 +335,13 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, SelectionFailed) {
   select_file_function->set_has_callback(true);
   select_file_function->set_user_gesture(true);
 
-  std::unique_ptr<base::DictionaryValue> result(
+  base::Value::DictStorage result =
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
           select_file_function.get(),
-          "[{\"suggestedName\": \"some_file_name.txt\"}]", browser())));
+          "[{\"suggestedName\": \"some_file_name.txt\"}]", browser()));
 
-  EXPECT_FALSE(extensions::api_test_utils::GetBoolean(result.get(), "success"));
-  EXPECT_FALSE(result->FindDictKey("entry"));
+  EXPECT_FALSE(extensions::api_test_utils::GetBoolean(result, "success"));
+  EXPECT_FALSE(result.contains("entry"));
 }
 
 // Tests that user cannot be suggested a full file path when selecting a file,
@@ -358,14 +358,14 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, SuggestedFullPath) {
   select_file_function->set_has_callback(true);
   select_file_function->set_user_gesture(true);
 
-  std::unique_ptr<base::DictionaryValue> result(
+  base::Value::DictStorage result =
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
           select_file_function.get(),
           "[{\"suggestedName\": \"/path_to_file/some_file_name.txt\"}]",
-          browser())));
+          browser()));
 
-  EXPECT_FALSE(extensions::api_test_utils::GetBoolean(result.get(), "success"));
-  EXPECT_FALSE(result->FindDictKey("entry"));
+  EXPECT_FALSE(extensions::api_test_utils::GetBoolean(result, "success"));
+  EXPECT_FALSE(result.contains("entry"));
 }
 
 }  // namespace

@@ -151,16 +151,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeOpenOptionsPageError) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
-  std::unique_ptr<base::Value> result(
+  base::Value::DictStorage dict = extension_function_test_utils::ToDictionary(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           new RuntimeGetPlatformInfoFunction(), "[]", browser()));
-  ASSERT_TRUE(result);
-  std::unique_ptr<base::DictionaryValue> dict =
-      extension_function_test_utils::ToDictionary(std::move(result));
-  ASSERT_TRUE(dict != nullptr);
-  EXPECT_TRUE(dict->HasKey("os"));
-  EXPECT_TRUE(dict->HasKey("arch"));
-  EXPECT_TRUE(dict->HasKey("nacl_arch"));
+  EXPECT_TRUE(dict.contains("os"));
+  EXPECT_TRUE(dict.contains("arch"));
+  EXPECT_TRUE(dict.contains("nacl_arch"));
 }
 
 // Tests chrome.runtime.getPackageDirectory with an app.

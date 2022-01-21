@@ -111,21 +111,23 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
       "}]",
       browser_context()));
 
-  std::unique_ptr<base::DictionaryValue> set_info =
+  std::unique_ptr<base::DictionaryValue> set_info_value =
       provider_->GetSetInfoValue();
-  ASSERT_TRUE(set_info);
-  EXPECT_TRUE(api_test_utils::GetBoolean(set_info.get(), "isPrimary"));
+  ASSERT_TRUE(set_info_value);
+  base::Value::DictStorage set_info = std::move(*set_info_value).TakeDict();
+
+  EXPECT_TRUE(api_test_utils::GetBoolean(set_info, "isPrimary"));
   EXPECT_EQ("mirroringId",
-            api_test_utils::GetString(set_info.get(), "mirroringSourceId"));
-  EXPECT_EQ(100, api_test_utils::GetInteger(set_info.get(), "boundsOriginX"));
-  EXPECT_EQ(200, api_test_utils::GetInteger(set_info.get(), "boundsOriginY"));
-  EXPECT_EQ(90, api_test_utils::GetInteger(set_info.get(), "rotation"));
-  base::Value* overscan = set_info->FindDictKey("overscan");
-  ASSERT_TRUE(overscan);
-  EXPECT_EQ(1, overscan->FindIntKey("left").value_or(-1));
-  EXPECT_EQ(2, overscan->FindIntKey("top").value_or(-1));
-  EXPECT_EQ(3, overscan->FindIntKey("right").value_or(-1));
-  EXPECT_EQ(4, overscan->FindIntKey("bottom").value_or(-1));
+            api_test_utils::GetString(set_info, "mirroringSourceId"));
+  EXPECT_EQ(100, api_test_utils::GetInteger(set_info, "boundsOriginX"));
+  EXPECT_EQ(200, api_test_utils::GetInteger(set_info, "boundsOriginY"));
+  EXPECT_EQ(90, api_test_utils::GetInteger(set_info, "rotation"));
+  base::Value::DictStorage overscan =
+      api_test_utils::GetDict(set_info, "overscan");
+  EXPECT_EQ(1, api_test_utils::GetInteger(overscan, "left"));
+  EXPECT_EQ(2, api_test_utils::GetInteger(overscan, "top"));
+  EXPECT_EQ(3, api_test_utils::GetInteger(overscan, "right"));
+  EXPECT_EQ(4, api_test_utils::GetInteger(overscan, "bottom"));
 
   EXPECT_EQ("display_id", provider_->GetSetInfoDisplayId());
 }

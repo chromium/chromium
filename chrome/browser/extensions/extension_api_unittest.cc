@@ -29,8 +29,7 @@ std::unique_ptr<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
     ExtensionFunction* function,
     const std::string& args) {
   function->set_extension(extension());
-  return std::unique_ptr<base::Value>(
-      utils::RunFunctionAndReturnSingleResult(function, args, browser()));
+  return utils::RunFunctionAndReturnSingleResult(function, args, browser());
 }
 
 std::unique_ptr<base::DictionaryValue>
