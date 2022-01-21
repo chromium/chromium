@@ -6,13 +6,16 @@ import("//ios/web/js_compile.gni")
 
 source_set("follow") {
   sources = [
-    "rss_link_java_script_feature.h",
-    "rss_link_java_script_feature.mm",
+    "follow_java_script_feature.h",
+    "follow_java_script_feature.mm",
   ]
   deps = [
     ":rss_link_js",
     "//base",
+    "//ios/chrome/browser/ui/follow",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//net",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

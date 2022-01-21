@@ -50,3 +50,5 @@ NSString* const kToolsMenuQRCodeSearch = @"kToolsMenuQRCodeSearch";
 NSString* const kToolsMenuCopiedImageSearch = @"kToolsMenuCopiedImageSearch";
 NSString* const kToolsMenuTextZoom = @"kToolsMenuTextZoom";
 NSString* const kTextMenuEnterpriseInfo = @"kTextMenuEnterpriseInfo";
+NSString* const kToolsMenuFollow = @"kToolsMenuFollow";
+NSString* const kToolsMenuUnfollow = @"kToolsMenuUnfollow";

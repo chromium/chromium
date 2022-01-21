@@ -78,5 +78,9 @@ extern NSString* const kToolsMenuCopiedImageSearch;
 extern NSString* const kToolsMenuTextZoom;
 // Text Enterprise info item accessibility identifier.
 extern NSString* const kTextMenuEnterpriseInfo;
+// Follow item accessibility Identifier.
+extern NSString* const kToolsMenuFollow;
+// Unfollow item accessibility Identifier.
+extern NSString* const kToolsMenuUnfollow;
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_CONSTANTS_H_
