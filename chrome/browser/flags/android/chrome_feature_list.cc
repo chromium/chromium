@@ -622,7 +622,7 @@ const base::Feature kDynamicColorAndroid{"DynamicColorAndroid",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableDangerousDownloadDialog{
-    "EnableDangerousDownloadDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableDangerousDownloadDialog", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableDuplicateDownloadDialog{
     "EnableDuplicateDownloadDialog", base::FEATURE_DISABLED_BY_DEFAULT};
