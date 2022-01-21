@@ -270,7 +270,9 @@ AccessCodeCastDiscoveryInterface::ConstructDiscoveryDeviceFromJson(
     if (capability.has_value()) {
       SetDeviceCapabilitiesField(&device_capabilities_proto, capability.value(),
                                  capability_key);
-    } else {
+    } else if (device_capabilities->FindKey(capability_key)) {
+      // It's ok if the capability isn't present, but if it is, it must be a
+      // bool
       return std::make_pair(absl::nullopt,
                             AddSinkResultCode::RESPONSE_MALFORMED);
     }
@@ -287,9 +289,6 @@ AccessCodeCastDiscoveryInterface::ConstructDiscoveryDeviceFromJson(
     std::string* network_value = network_info->FindStringKey(network_key);
     if (network_value) {
       SetNetworkInfoField(&network_info_proto, *network_value, network_key);
-    } else {
-      return std::make_pair(absl::nullopt,
-                            AddSinkResultCode::RESPONSE_MALFORMED);
     }
   }
 

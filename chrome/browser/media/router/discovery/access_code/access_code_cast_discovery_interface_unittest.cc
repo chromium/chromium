@@ -78,6 +78,26 @@ const char kEndpointResponseSuccess[] =
         }
       }
     })";
+// videoOut and ipV6Address are missing, but that should be ok
+const char kEndpointResponseSuccessPartialData[] =
+    R"({
+      "device": {
+        "displayName": "test_device",
+        "id": "1234",
+        "deviceCapabilities": {
+          "videoIn": true,
+          "audioOut": true,
+          "audioIn": true,
+          "devMode": true
+        },
+        "networkInfo": {
+          "hostName": "GoogleNet",
+          "port": "666",
+          "ipV4Address": "192.0.2.146"
+        }
+      }
+    })";
+// networkInfo is missing
 const char kEndpointResponseFieldsMissing[] =
     R"({
       "device": {
@@ -89,10 +109,6 @@ const char kEndpointResponseFieldsMissing[] =
           "audioOut": true,
           "audioIn": true,
           "devMode": true
-        },
-        "networkInfo": {
-          "hostName": "GoogleNet",
-          "port": "666",
         }
       }
     })";
@@ -293,6 +309,29 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerResponseSucess) {
 
   DiscoveryDevice discovery_device_proto =
       media_router::BuildDiscoveryDeviceProto();
+
+  EXPECT_CALL(mock_callback,
+              Run(DiscoveryDeviceProtoEquals(discovery_device_proto),
+                  AddSinkResultCode::OK));
+
+  stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccessCodeCastDiscoveryInterfaceTest,
+       ServerResponseSucessWithPartialData) {
+  // Test to validate that a successful server response is propagated from
+  // the discovery interface and all fields are set in the returned proto.
+  SetEndpointFetcherMockResponse(GURL(kMockEndpoint),
+                                 kEndpointResponseSuccessPartialData,
+                                 net::HTTP_OK, net::OK);
+
+  MockDiscoveryDeviceCallback mock_callback;
+
+  DiscoveryDevice discovery_device_proto =
+      media_router::BuildDiscoveryDeviceProto();
+  discovery_device_proto.mutable_device_capabilities()->clear_video_out();
+  discovery_device_proto.mutable_network_info()->clear_ip_v6_address();
 
   EXPECT_CALL(mock_callback,
               Run(DiscoveryDeviceProtoEquals(discovery_device_proto),
