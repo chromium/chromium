@@ -436,7 +436,7 @@ void SharedWorkerServiceImpl::StartWorker(
               std::move(subresource_loader_factories), std::move(controller),
               std::move(controller_service_worker_object_host),
               std::move(outside_fetch_client_settings_object),
-              final_response_url);
+              final_response_url, GetContentClient()->browser());
   for (Observer& observer : observers_)
     observer.OnFinalResponseURLDetermined(host->token(), final_response_url);
 }
