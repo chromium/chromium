@@ -2,6 +2,7 @@
 <title>Test COEP properties set for a Fenced Frame Tree</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="resources/utils.js"></script>
 
 <body>
@@ -9,6 +10,10 @@
 // This key is used by `resources/embeddee-coep-require-corp.https.html` to
 // let us know if a script inside has been executed.
 const corp_key = KEYS["embed_coep_require_corp"];
+
+// This key is used by `resources/embeddee-coep-require-corp-cross.https.html` to
+// let us know if a script inside has been executed.
+const corp_key_cross = KEYS["embed_coep_require_corp_cross"];
 
 // This key is used by `resources/embeddee-no-coep.https.html` to let us know
 // if a script inside has been executed.
@@ -18,6 +23,13 @@ async function setupTest(test_type) {
   switch (test_type) {
     case "coep:require-corp":
       return attachFencedFrame(`resources/embeddee-coep-require-corp.https.html`);
+      break;
+    case "cross:coep:require-corp":
+      const tmp_url = new URL(`resources/embeddee-coep-require-corp-cross.https.html`,
+                              self.location);
+      // Make sure a different site is used.
+      tmp_url.hostname = get_host_info().REMOTE_HOST;
+      return attachFencedFrame(tmp_url.href);
       break;
     case "no coep":
       return attachFencedFrame(`resources/embeddee-no-coep.https.html`);
@@ -37,6 +49,13 @@ promise_test(async (t) => {
   const result = await nextValueFromServer(no_coep_key);
   assert_unreached("embedded page should not be loaded.");
 }, "Create fencedframe without COEP header");
+
+promise_test(async (t) => {
+  t.step_timeout(() => t.done(), 3000);
+  const frame = setupTest("cross:coep:require-corp");
+  const result = await nextValueFromServer(corp_key_cross);
+  assert_unreached("violating CORP, embedded page should not be loaded.");
+}, "Create fencedframe with a cross site COEP:require-corp and CORP:same-orign");
 
 </script>
 </body>
