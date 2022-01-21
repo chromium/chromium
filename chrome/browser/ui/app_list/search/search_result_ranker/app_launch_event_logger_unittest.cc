@@ -170,7 +170,8 @@ TEST_F(AppLaunchEventLoggerTest, CheckUkmCodeArc) {
   test_ukm_recorder_.ExpectEntryMetric(entry, "LaunchedFrom", 1);
 }
 
-TEST_F(AppLaunchEventLoggerTest, CheckMultipleClicks) {
+// TODO(1289705): This test is flaky.
+TEST_F(AppLaunchEventLoggerTest, DISABLED_CheckMultipleClicks) {
   web_app::FakeWebAppProvider* provider =
       web_app::FakeWebAppProvider::Get(&profile_);
 
