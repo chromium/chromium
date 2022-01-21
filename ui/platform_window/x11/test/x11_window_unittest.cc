@@ -461,45 +461,27 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
 
   x11::Window x11_window = window->window();
 
-  // Minimize by sending _NET_WM_STATE_HIDDEN
+  // Minimize by iconifying.
   {
-    std::vector<x11::Atom> atom_list;
-    atom_list.push_back(x11::GetAtom("_NET_WM_STATE_HIDDEN"));
-    SetArrayProperty(x11_window, x11::GetAtom("_NET_WM_STATE"), x11::Atom::ATOM,
-                     atom_list);
+    EXPECT_FALSE(window->IsMinimized());
 
-    x11::PropertyNotifyEvent xevent{
-        .send_event = true,
-        .window = x11_window,
-        .atom = x11::GetAtom("_NET_WM_STATE"),
-    };
-    x11::SendEvent(xevent, ui::GetX11RootWindow(),
-                   x11::EventMask::SubstructureNotify |
-                       x11::EventMask::SubstructureRedirect);
-
+    SendClientMessage(x11_window, GetX11RootWindow(),
+                      x11::GetAtom("WM_CHANGE_STATE"),
+                      {WM_STATE_ICONIC, 0, 0, 0, 0});
+    // Wait till set.
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", true);
     waiter.Wait();
   }
   EXPECT_TRUE(window->IsMinimized());
   EXPECT_EQ(delegate.state(), PlatformWindowState::kMinimized);
 
-  // Show from minimized by sending _NET_WM_STATE_FOCUSED
+  // Show from minimized by sending WM_STATE_NORMAL.
   {
-    std::vector<x11::Atom> atom_list;
-    atom_list.push_back(x11::GetAtom("_NET_WM_STATE_FOCUSED"));
-    SetArrayProperty(x11_window, x11::GetAtom("_NET_WM_STATE"), x11::Atom::ATOM,
-                     atom_list);
-
-    x11::PropertyNotifyEvent xevent{
-        .send_event = true,
-        .window = x11_window,
-        .atom = x11::GetAtom("_NET_WM_STATE"),
-    };
-    x11::SendEvent(xevent, ui::GetX11RootWindow(),
-                   x11::EventMask::SubstructureNotify |
-                       x11::EventMask::SubstructureRedirect);
-
-    WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FOCUSED", true);
+    SendClientMessage(x11_window, GetX11RootWindow(),
+                      x11::GetAtom("WM_CHANGE_STATE"),
+                      {WM_STATE_NORMAL, 0, 0, 0, 0});
+    // Wait till unset.
+    WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", false);
     waiter.Wait();
   }
   EXPECT_FALSE(window->IsMinimized());
