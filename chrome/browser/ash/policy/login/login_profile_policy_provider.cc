@@ -130,13 +130,11 @@ void ApplyDevicePolicyAsRecommendedPolicy(const std::string& device_policy,
 
 // Applies |value| as the mandatory value of |user_policy| in |user_policy_map|.
 // If |value| is NULL, does nothing.
-void ApplyValueAsMandatoryPolicy(const base::Value* value,
+void ApplyValueAsMandatoryPolicy(const base::Value& value,
                                  const std::string& user_policy,
                                  PolicyMap* user_policy_map) {
-  if (value) {
-    user_policy_map->Set(user_policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                         POLICY_SOURCE_CLOUD, value->Clone(), nullptr);
-  }
+  user_policy_map->Set(user_policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                       POLICY_SOURCE_CLOUD, value.Clone(), nullptr);
 }
 
 void ApplyDevicePolicyWithPolicyOptions(const std::string& device_policy,
@@ -226,35 +224,34 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
 
   const base::Value* value =
       device_policy_map.GetValue(key::kDeviceLoginScreenPowerManagement);
-  const base::DictionaryValue* dict = NULL;
-  if (value && value->GetAsDictionary(&dict)) {
-    std::unique_ptr<base::DictionaryValue> policy_value(dict->DeepCopy());
-    std::string lid_close_action;
-    base::Value* screen_dim_delay_scale = NULL;
+  if (value && value->is_dict()) {
+    base::Value policy_value = value->Clone();
+    const std::string* lid_close_action =
+        policy_value.FindStringKey(kLidCloseAction);
 
-    if (policy_value->GetString(kLidCloseAction, &lid_close_action)) {
-      std::unique_ptr<base::Value> action = GetAction(lid_close_action);
+    if (lid_close_action) {
+      std::unique_ptr<base::Value> action = GetAction(*lid_close_action);
       if (action) {
-        ApplyValueAsMandatoryPolicy(action.get(), key::kLidCloseAction,
+        ApplyValueAsMandatoryPolicy(*action, key::kLidCloseAction,
                                     &user_policy_map);
       }
-      policy_value->RemoveKey(kLidCloseAction);
+      policy_value.RemoveKey(kLidCloseAction);
     }
 
-    if (policy_value->Get(kUserActivityScreenDimDelayScale,
-                          &screen_dim_delay_scale)) {
-      ApplyValueAsMandatoryPolicy(screen_dim_delay_scale,
+    const base::Value* screen_dim_delay_scale =
+        policy_value.FindKey(kUserActivityScreenDimDelayScale);
+    if (screen_dim_delay_scale) {
+      ApplyValueAsMandatoryPolicy(*screen_dim_delay_scale,
                                   key::kUserActivityScreenDimDelayScale,
                                   &user_policy_map);
-      policy_value->RemoveKey(kUserActivityScreenDimDelayScale);
+      policy_value.RemoveKey(kUserActivityScreenDimDelayScale);
     }
 
     // |policy_value| is expected to be a valid value for the
     // PowerManagementIdleSettings policy now.
-    if (!policy_value->DictEmpty()) {
-      ApplyValueAsMandatoryPolicy(policy_value.get(),
-                                  key::kPowerManagementIdleSettings,
-                                  &user_policy_map);
+    if (!policy_value.DictEmpty()) {
+      ApplyValueAsMandatoryPolicy(
+          policy_value, key::kPowerManagementIdleSettings, &user_policy_map);
     }
   }
 
