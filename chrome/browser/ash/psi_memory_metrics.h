@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/synchronization/atomic_flag.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
@@ -80,7 +79,6 @@ class PSIMemoryMetrics : public base::RefCountedThreadSafe<PSIMemoryMetrics> {
 
   // Task controllers/monitors.
   scoped_refptr<base::SequencedTaskRunner> runner_;
-  base::AtomicFlag stopped_;
   base::DelayedTaskHandle last_timer_;
 };
 

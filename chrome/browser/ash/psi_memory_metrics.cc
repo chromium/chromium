@@ -66,8 +66,6 @@ void PSIMemoryMetrics::CancelTimer() {
 }
 
 void PSIMemoryMetrics::Stop() {
-  stopped_.Set();
-
   // Note that you can't call last_timer.CancelTask() from here,
   // as we may not be running in the correct sequence.
   runner_->PostTask(FROM_HERE,
@@ -99,19 +97,11 @@ void PSIMemoryMetrics::CollectEvents() {
 }
 
 void PSIMemoryMetrics::CollectEventsAndReschedule() {
-  if (stopped_.IsSet()) {
-    return;
-  }
-
   CollectEvents();
   ScheduleCollector();
 }
 
 void PSIMemoryMetrics::ScheduleCollector() {
-  if (stopped_.IsSet()) {
-    return;
-  }
-
   last_timer_ = runner_->PostCancelableDelayedTask(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&PSIMemoryMetrics::CollectEventsAndReschedule, this),
