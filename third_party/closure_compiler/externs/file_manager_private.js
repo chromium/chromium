@@ -1375,6 +1375,13 @@ chrome.fileManagerPrivate.startIOTask = function(type, entries, params) {};
  */
 chrome.fileManagerPrivate.cancelIOTask = function (taskId) { };
 
+/**
+ * Returns color via `callback` for Files app foreground window frame.
+ * @param {function(string): void} callback |color| String containing the color
+ *     of the title bar.
+ */
+chrome.fileManagerPrivate.getFrameColor = function(callback) {};
+
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;
 

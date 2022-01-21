@@ -16,6 +16,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -81,6 +83,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
@@ -205,6 +208,11 @@ std::string Redact(const std::string& s) {
 
 std::string Redact(const base::FilePath& path) {
   return Redact(path.value());
+}
+
+std::string SkColorToHexString(const SkColor color) {
+  return base::StringPrintf("#%02x%02x%02x", SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color));
 }
 
 }  // namespace
@@ -1263,6 +1271,20 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
   Respond(OneArgument(base::Value::FromUniquePtrValue(
       file_manager::util::ConvertEntryDefinitionListToListValue(
           *entry_definition_list))));
+}
+
+// TODO(crbug.com/1212768): Remove this once Files app SWA has fully launched.
+ExtensionFunction::ResponseAction
+FileManagerPrivateGetFrameColorFunction::Run() {
+  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
+  auto* color_provider = ash::ColorProvider::Get();
+  std::string frame_color = SkColorToHexString(SK_ColorWHITE);
+  if (color_provider) {
+    frame_color = SkColorToHexString(cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor, color_provider->IsDarkModeEnabled(),
+        /*use_debug_color=*/false));
+  }
+  return RespondNow(OneArgument(base::Value(frame_color)));
 }
 
 ExtensionFunction::ResponseAction

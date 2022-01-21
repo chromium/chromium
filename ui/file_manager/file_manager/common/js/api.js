@@ -130,3 +130,16 @@ export async function getEntry(directory, filename, isFile, options) {
   const getEntry = isFile ? getFile : getDirectory;
   return getEntry(directory, filename, options);
 }
+
+/**
+ * Returns the color to be used by frames of each foreground window.
+ * @returns {Promise<!string>}
+ */
+export async function getFrameColor() {
+  try {
+    return await promisify(chrome.fileManagerPrivate.getFrameColor);
+  } catch (e) {
+    console.error('Failed to get frame color.', e);
+    return '#ffffff';
+  }
+}

@@ -546,6 +546,27 @@ class FileManagerPrivateInternalGetRecentFilesFunction
           entry_definition_list);
 };
 
+// Implements the chrome.fileManagerPrivate.getFrameColor method.
+// Returns the Chrome app frame color to launch foreground windows.
+// TODO(crbug.com/1212768): Remove this once Files app SWA has fully launched.
+class FileManagerPrivateGetFrameColorFunction : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getFrameColor",
+                             FILEMANAGERPRIVATE_GETFRAMECOLOR)
+  FileManagerPrivateGetFrameColorFunction() = default;
+
+  FileManagerPrivateGetFrameColorFunction(
+      const FileManagerPrivateGetFrameColorFunction&) = delete;
+  FileManagerPrivateGetFrameColorFunction operator=(
+      const FileManagerPrivateGetFrameColorFunction&) = delete;
+
+ protected:
+  ~FileManagerPrivateGetFrameColorFunction() override = default;
+
+ private:
+  ResponseAction Run() override;
+};
+
 // Implements the chrome.fileManagerPrivate.isTabletModeEnabled method.
 class FileManagerPrivateIsTabletModeEnabledFunction : public ExtensionFunction {
  public:

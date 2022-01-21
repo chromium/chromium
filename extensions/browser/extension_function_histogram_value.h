@@ -1676,6 +1676,7 @@ enum HistogramValue {
   ACTION_OPENPOPUP = 1613,
   OS_TELEMETRY_GETCPUINFO = 1614,
   FILEMANAGERPRIVATE_OPENURL = 1615,
+  FILEMANAGERPRIVATE_GETFRAMECOLOR = 1616,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
