@@ -663,9 +663,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
     return;
   }
 
-  if (status.state == io_task::State::kError ||
-      status.state == io_task::State::kCancelled ||
-      status.state == io_task::State::kSuccess) {
+  if (status.IsCompleted()) {
     GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                            id);
     return;

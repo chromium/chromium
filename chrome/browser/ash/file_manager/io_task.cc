@@ -29,6 +29,11 @@ ProgressStatus::~ProgressStatus() = default;
 ProgressStatus::ProgressStatus(ProgressStatus&& other) = default;
 ProgressStatus& ProgressStatus::operator=(ProgressStatus&& other) = default;
 
+bool ProgressStatus::IsCompleted() const {
+  return state == State::kSuccess || state == State::kError ||
+         state == State::kCancelled;
+}
+
 DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
                          storage::FileSystemURL destination_folder,
                          OperationType type) {

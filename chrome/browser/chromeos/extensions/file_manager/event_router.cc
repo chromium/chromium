@@ -1275,29 +1275,21 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
     // Send file watch notifications on I/O task completion. inotify is flaky on
     // some filesystems, so send these notifications so that at least operations
     // made from Files App are always reflected in the UI.
-    switch (status.state) {
-      case io_task::State::kSuccess:
-      case io_task::State::kError:
-      case io_task::State::kCancelled: {
-        std::set<base::FilePath> updated_paths;
-        if (status.destination_folder.is_valid()) {
-          updated_paths.insert(status.destination_folder.path());
-        }
-        for (const auto& source : status.sources) {
-          updated_paths.insert(source.url.path().DirName());
-        }
-        for (const auto& output : status.outputs) {
-          updated_paths.insert(output.url.path().DirName());
-        }
-
-        for (const auto& path : updated_paths) {
-          HandleFileWatchNotification(path, false);
-        }
-        break;
+    if (status.IsCompleted()) {
+      std::set<base::FilePath> updated_paths;
+      if (status.destination_folder.is_valid()) {
+        updated_paths.insert(status.destination_folder.path());
       }
-      case io_task::State::kQueued:
-      case io_task::State::kInProgress:
-        break;
+      for (const auto& source : status.sources) {
+        updated_paths.insert(source.url.path().DirName());
+      }
+      for (const auto& output : status.outputs) {
+        updated_paths.insert(output.url.path().DirName());
+      }
+
+      for (const auto& path : updated_paths) {
+        HandleFileWatchNotification(path, false);
+      }
     }
 
     return;
