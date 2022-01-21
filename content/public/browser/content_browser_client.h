@@ -34,6 +34,7 @@
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
+#include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
@@ -2176,6 +2177,14 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns true if First-Party Sets is enabled.
   virtual bool IsFirstPartySetsEnabled();
+
+  // Gets information required for an alternative error page from web app's
+  // manifest for |url|, including theme color, background color and app short
+  // name. Information is returned in a struct. Default implementation returns
+  // nullptr.
+  virtual mojom::AlternativeErrorPageOverrideInfoPtr
+  GetAlternativeErrorPageOverrideInfo(const GURL& url,
+                                      BrowserContext* browser_context);
 };
 
 }  // namespace content

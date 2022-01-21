@@ -1297,4 +1297,11 @@ bool ContentBrowserClient::IsFirstPartySetsEnabled() {
   return base::FeatureList::IsEnabled(features::kFirstPartySets);
 }
 
+mojom::AlternativeErrorPageOverrideInfoPtr
+ContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
+    const GURL& url,
+    BrowserContext* browser_context) {
+  return nullptr;
+}
+
 }  // namespace content

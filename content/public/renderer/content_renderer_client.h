@@ -18,6 +18,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/content_client.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/supported_types.h"
@@ -136,17 +137,23 @@ class CONTENT_EXPORT ContentRendererClient {
   // be set to a HTML page containing the details of the error and maybe links
   // to more info. Note that |error_html| may be not written to in certain cases
   // (lack of information on the error code) so the caller should take care to
-  // initialize it with a safe default before the call.
-  virtual void PrepareErrorPage(content::RenderFrame* render_frame,
-                                const blink::WebURLError& error,
-                                const std::string& http_method,
-                                std::string* error_html) {}
+  // initialize it with a safe default before the call. |info| contains PWA
+  // information used to customise error page, and is set to null if
+  // the webpage that goes offline is not within the scope of a PWA.
+
+  virtual void PrepareErrorPage(
+      content::RenderFrame* render_frame,
+      const blink::WebURLError& error,
+      const std::string& http_method,
+      mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
+      std::string* error_html) {}
 
   virtual void PrepareErrorPageForHttpStatusError(
       content::RenderFrame* render_frame,
       const blink::WebURLError& error,
       const std::string& http_method,
       int http_status,
+      mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
       std::string* error_html);
 
   // Allows the embedder to control when media resources are loaded. Embedders

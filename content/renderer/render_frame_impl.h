@@ -38,6 +38,7 @@
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/web_ui.mojom.h"
+#include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
 #include "content/public/common/widget_type.h"
@@ -456,6 +457,7 @@ class CONTENT_EXPORT RenderFrameImpl
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       blink::mojom::PolicyContainerPtr policy_container,
+      mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
       mojom::NavigationClient::CommitFailedNavigationCallback
           per_navigation_mojo_interface_callback);
 

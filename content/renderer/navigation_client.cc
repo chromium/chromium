@@ -70,13 +70,15 @@ void NavigationClient::CommitFailedNavigation(
     const absl::optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
     blink::mojom::PolicyContainerPtr policy_container,
+    mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     CommitFailedNavigationCallback callback) {
   ResetDisconnectionHandler();
   render_frame_->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
       has_stale_copy_in_cache, error_code, extended_error_code,
       resolve_error_info, error_page_content, std::move(subresource_loaders),
-      std::move(policy_container), std::move(callback));
+      std::move(policy_container), std::move(alternative_error_page_info),
+      std::move(callback));
 }
 
 void NavigationClient::Bind(

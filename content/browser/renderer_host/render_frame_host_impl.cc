@@ -174,6 +174,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
+#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -11033,6 +11034,8 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
       has_stale_copy_in_cache, error_code, extended_error_code,
       navigation_request->GetResolveErrorInfo(), error_page_content,
       std::move(subresource_loader_factories), std::move(policy_container),
+      GetContentClient()->browser()->GetAlternativeErrorPageOverrideInfo(
+          navigation_request->GetURL(), GetBrowserContext()),
       BuildCommitFailedNavigationCallback(navigation_request));
 }
 

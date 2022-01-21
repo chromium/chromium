@@ -14,6 +14,7 @@
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/error_page/common/net_error_info.h"
+#include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "net/base/net_errors.h"
 #include "url/gurl.h"
 
@@ -60,6 +61,8 @@ class NetErrorHelperCore {
         const error_page::Error& error,
         bool is_failed_post,
         bool can_show_network_diagnostics_dialog,
+        content::mojom::AlternativeErrorPageOverrideInfoPtr
+            alternative_error_page_info,
         std::string* html) const = 0;
 
     // Create extra Javascript bindings in the error page. Will only be invoked
@@ -126,6 +129,8 @@ class NetErrorHelperCore {
   void PrepareErrorPage(FrameType frame_type,
                         const error_page::Error& error,
                         bool is_failed_post,
+                        content::mojom::AlternativeErrorPageOverrideInfoPtr
+                            alternative_error_page_info,
                         std::string* error_html);
 
   // These methods handle tracking the actual state of the page.
@@ -178,8 +183,11 @@ class NetErrorHelperCore {
   // page HTML, and sets error_html to it. Depending on
   // |pending_error_page_info|, may show a DNS probe error page.  May modify
   // |pending_error_page_info|.
-  void PrepareErrorPageForMainFrame(ErrorPageInfo* pending_error_page_info,
-                                    std::string* error_html);
+  void PrepareErrorPageForMainFrame(
+      ErrorPageInfo* pending_error_page_info,
+      content::mojom::AlternativeErrorPageOverrideInfoPtr
+          alternative_error_page_info,
+      std::string* error_html);
 
   // Updates the currently displayed error page with a new error based on the
   // most recently received DNS probe result.  The page must have finished

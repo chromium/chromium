@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "skia/ext/skia_utils_base.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -113,6 +114,42 @@ content::BrowserContext* GetBrowserContextForWebAppMetrics(
       AreWebAppsEnabled(original_profile) &&
       !original_profile->IsGuestSession();
   return is_web_app_metrics_enabled ? original_profile : nullptr;
+}
+
+content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
+    const GURL& url,
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  web_app::WebAppProvider* web_app_provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (web_app_provider == nullptr) {
+    return nullptr;
+  }
+
+  web_app::WebAppRegistrar& web_app_registrar = web_app_provider->registrar();
+  const absl::optional<web_app::AppId> app_id =
+      web_app_registrar.FindAppWithUrlInScope(url);
+  if (!app_id.has_value()) {
+    return nullptr;
+  }
+
+  auto alternative_error_page_info =
+      content::mojom::AlternativeErrorPageOverrideInfo::New();
+  // TODO(crbug.com/1285128): Ensure sufficient contrast.
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(content::mojom::kThemeColor,
+              base::Value(skia::SkColorToHexString(
+                  web_app_registrar.GetAppThemeColor(*app_id).value_or(
+                      SK_ColorBLACK))));
+  dict.SetKey(content::mojom::kBackgroundColor,
+              base::Value(skia::SkColorToHexString(
+                  web_app_registrar.GetAppBackgroundColor(*app_id).value_or(
+                      SK_ColorWHITE))));
+  dict.SetKey(content::mojom::kAppShortName,
+              base::Value(web_app_registrar.GetAppShortName(*app_id)));
+  alternative_error_page_info->alternative_error_page_params = std::move(dict);
+
+  return alternative_error_page_info;
 }
 
 base::FilePath GetWebAppsRootDirectory(Profile* profile) {

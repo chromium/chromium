@@ -154,6 +154,8 @@ void ShellContentRendererClient::PrepareErrorPage(
     RenderFrame* render_frame,
     const blink::WebURLError& error,
     const std::string& http_method,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
     std::string* error_html) {
   if (error_html && error_html->empty()) {
     *error_html =
@@ -171,6 +173,8 @@ void ShellContentRendererClient::PrepareErrorPageForHttpStatusError(
     const blink::WebURLError& error,
     const std::string& http_method,
     int http_status,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
     std::string* error_html) {
   if (error_html) {
     *error_html =

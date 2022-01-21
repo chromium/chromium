@@ -70,6 +70,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/javascript_dialog_type.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-forward.h"

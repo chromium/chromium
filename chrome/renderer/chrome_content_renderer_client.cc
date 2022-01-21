@@ -1291,13 +1291,16 @@ void ChromeContentRendererClient::PrepareErrorPage(
     content::RenderFrame* render_frame,
     const blink::WebURLError& web_error,
     const std::string& http_method,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
     std::string* error_html) {
   NetErrorHelper::Get(render_frame)
       ->PrepareErrorPage(
           error_page::Error::NetError(
               web_error.url(), web_error.reason(), web_error.extended_reason(),
               web_error.resolve_error_info(), web_error.has_copy_in_cache()),
-          http_method == "POST", error_html);
+          http_method == "POST", std::move(alternative_error_page_info),
+          error_html);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserErrorPageControllerDelegateImpl::Get(render_frame)
@@ -1310,10 +1313,13 @@ void ChromeContentRendererClient::PrepareErrorPageForHttpStatusError(
     const blink::WebURLError& error,
     const std::string& http_method,
     int http_status,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
     std::string* error_html) {
   NetErrorHelper::Get(render_frame)
       ->PrepareErrorPage(error_page::Error::HttpError(error.url(), http_status),
-                         http_method == "POST", error_html);
+                         http_method == "POST",
+                         std::move(alternative_error_page_info), error_html);
 }
 
 void ChromeContentRendererClient::PostIOThreadCreated(

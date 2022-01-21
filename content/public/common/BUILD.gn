@@ -325,6 +325,7 @@ mojom("interfaces") {
   ]
 
   sources = [
+    "alternative_error_page_override_info.mojom",
     "drop_data.mojom",
     "resource_usage_reporter.mojom",
     "webplugininfo.mojom",
@@ -338,6 +339,7 @@ mojom("interfaces") {
   deps = [
     "//mojo/public/mojom/base:base",
     "//services/network/public/mojom",
+    "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
 
     # This dependency is really a dependency for the typemaps, but we need

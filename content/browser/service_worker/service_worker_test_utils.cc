@@ -23,6 +23,7 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
+#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/test/policy_container_utils.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -107,6 +108,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       const absl::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
       blink::mojom::PolicyContainerPtr policy_container,
+      mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
       CommitFailedNavigationCallback callback) override {
     std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
   }

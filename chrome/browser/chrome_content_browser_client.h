@@ -25,6 +25,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -778,6 +779,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   };
 
   bool ShouldDisableOriginAgentClusterDefault(
+      content::BrowserContext* browser_context) override;
+
+  content::mojom::AlternativeErrorPageOverrideInfoPtr
+  GetAlternativeErrorPageOverrideInfo(
+      const GURL& url,
       content::BrowserContext* browser_context) override;
 
  protected:

@@ -161,7 +161,8 @@ class NetErrorHelperCoreTest : public testing::Test,
     std::string html;
     core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
                              NetErrorForURL(error, url),
-                             false /* is_failed_post */, &html);
+                             /*is_failed_post=*/false,
+                             /*alternative_error_page_info=*/nullptr, &html);
     EXPECT_FALSE(html.empty());
     EXPECT_EQ(NetErrorStringForURL(error, url), html);
 
@@ -197,6 +198,8 @@ class NetErrorHelperCoreTest : public testing::Test,
       const error_page::Error& error,
       bool is_failed_post,
       bool can_show_network_diagnostics_dialog,
+      content::mojom::AlternativeErrorPageOverrideInfoPtr
+          alternative_error_page_info,
       std::string* html) const override {
     last_can_show_network_diagnostics_dialog_ =
         can_show_network_diagnostics_dialog;
@@ -307,9 +310,9 @@ TEST_F(NetErrorHelperCoreTest, SuccessfulPageLoad) {
 TEST_F(NetErrorHelperCoreTest, MainFrameNonDnsError) {
   // An error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_CONNECTION_RESET),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_CONNECTION_RESET),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page.
   EXPECT_FALSE(html.empty());
   EXPECT_EQ(NetErrorString(net::ERR_CONNECTION_RESET), html);
@@ -328,9 +331,9 @@ TEST_F(NetErrorHelperCoreTest, MainFrameNonDnsErrorSpuriousStatus) {
   // Loading fails, and an error page is requested.
   std::string html;
   core()->OnNetErrorInfo(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_CONNECTION_RESET),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_CONNECTION_RESET),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   core()->OnNetErrorInfo(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
 
   // Should have returned a local error page.
@@ -355,7 +358,8 @@ TEST_F(NetErrorHelperCoreTest, SubFrameErrorWithCustomErrorPage) {
   // indicating a custom error page. Calls below should not crash.
   core()->PrepareErrorPage(
       NetErrorHelperCore::SUB_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
-      false /* is_failed_post */, nullptr /* error_html */);
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr,
+      /*error_html=*/nullptr);
   core()->OnCommitLoad(NetErrorHelperCore::SUB_FRAME, error_url());
   core()->OnFinishLoad(NetErrorHelperCore::SUB_FRAME);
   EXPECT_EQ(0, update_count());
@@ -364,9 +368,9 @@ TEST_F(NetErrorHelperCoreTest, SubFrameErrorWithCustomErrorPage) {
 TEST_F(NetErrorHelperCoreTest, SubFrameDnsError) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::SUB_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::SUB_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page.
   EXPECT_EQ(NetErrorString(net::ERR_NAME_NOT_RESOLVED), html);
 
@@ -382,9 +386,9 @@ TEST_F(NetErrorHelperCoreTest, SubFrameDnsErrorSpuriousStatus) {
   // Loading fails, and an error page is requested.
   std::string html;
   core()->OnNetErrorInfo(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
-  core()->PrepareErrorPage(NetErrorHelperCore::SUB_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::SUB_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   core()->OnNetErrorInfo(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
 
   // Should have returned a local error page.
@@ -412,9 +416,9 @@ TEST_F(NetErrorHelperCoreTest, SubFrameDnsErrorSpuriousStatus) {
 TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbe) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -442,9 +446,9 @@ TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbe) {
 TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbeNotRun) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -469,9 +473,9 @@ TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbeNotRun) {
 TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbeInconclusive) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -501,9 +505,9 @@ TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbeNoInternet) {
 
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -533,9 +537,9 @@ TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbeNoInternet) {
 
   // Perform a second error page load, and confirm that the previous load
   // doesn't affect the result.
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
   core()->OnCommitLoad(NetErrorHelperCore::MAIN_FRAME, error_url());
   core()->OnFinishLoad(NetErrorHelperCore::MAIN_FRAME);
@@ -554,9 +558,9 @@ TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbeNoInternet) {
 TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbeBadConfig) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -586,9 +590,9 @@ TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbeBadConfig) {
 TEST_F(NetErrorHelperCoreTest, FinishedAfterStartProbe) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -622,9 +626,9 @@ TEST_F(NetErrorHelperCoreTest, FinishedAfterStartProbe) {
 TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbePost) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           true /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/true, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ErrorToString(ProbeError(error_page::DNS_PROBE_POSSIBLE), true),
             html);
@@ -652,9 +656,9 @@ TEST_F(NetErrorHelperCoreTest, FinishedBeforeProbePost) {
 TEST_F(NetErrorHelperCoreTest, ProbeFinishesEarly) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -685,9 +689,9 @@ TEST_F(NetErrorHelperCoreTest, ProbeFinishesEarly) {
 TEST_F(NetErrorHelperCoreTest, TwoErrorsWithProbes) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -705,9 +709,9 @@ TEST_F(NetErrorHelperCoreTest, TwoErrorsWithProbes) {
   // The process starts again.
 
   // Loading fails, and an error page is requested.
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -733,9 +737,9 @@ TEST_F(NetErrorHelperCoreTest, TwoErrorsWithProbes) {
 TEST_F(NetErrorHelperCoreTest, TwoErrorsWithProbesAfterSecondStarts) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -746,9 +750,9 @@ TEST_F(NetErrorHelperCoreTest, TwoErrorsWithProbesAfterSecondStarts) {
   // The process starts again.
 
   // Loading fails, and an error page is requested.
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -776,9 +780,9 @@ TEST_F(NetErrorHelperCoreTest, TwoErrorsWithProbesAfterSecondStarts) {
 TEST_F(NetErrorHelperCoreTest, ErrorPageLoadInterrupted) {
   // Loading fails, and an error page is requested.
   std::string html;
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 
@@ -788,9 +792,9 @@ TEST_F(NetErrorHelperCoreTest, ErrorPageLoadInterrupted) {
   EXPECT_EQ(0, update_count());
 
   // A new navigation fails while the error page is loading.
-  core()->PrepareErrorPage(NetErrorHelperCore::MAIN_FRAME,
-                           NetError(net::ERR_NAME_NOT_RESOLVED),
-                           false /* is_failed_post */, &html);
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME, NetError(net::ERR_NAME_NOT_RESOLVED),
+      /*is_failed_post=*/false, /*alternative_error_page_info=*/nullptr, &html);
   // Should have returned a local error page indicating a probe may run.
   EXPECT_EQ(ProbeErrorString(error_page::DNS_PROBE_POSSIBLE), html);
 

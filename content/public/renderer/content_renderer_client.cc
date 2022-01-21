@@ -57,8 +57,10 @@ void ContentRendererClient::PrepareErrorPageForHttpStatusError(
     const blink::WebURLError& error,
     const std::string& http_method,
     int http_status,
+    mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     std::string* error_html) {
-  PrepareErrorPage(render_frame, error, http_method, error_html);
+  PrepareErrorPage(render_frame, error, http_method,
+                   std::move(alternative_error_page_info), error_html);
 }
 
 bool ContentRendererClient::DeferMediaLoad(RenderFrame* render_frame,

@@ -177,11 +177,14 @@ void NetErrorHelper::OnDestruct() {
   delete this;
 }
 
-void NetErrorHelper::PrepareErrorPage(const error_page::Error& error,
-                                      bool is_failed_post,
-                                      std::string* error_html) {
+void NetErrorHelper::PrepareErrorPage(
+    const error_page::Error& error,
+    bool is_failed_post,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
+    std::string* error_html) {
   core_->PrepareErrorPage(GetFrameType(render_frame()), error, is_failed_post,
-                          error_html);
+                          std::move(alternative_error_page_info), error_html);
 }
 
 std::unique_ptr<network::ResourceRequest> NetErrorHelper::CreatePostRequest(
@@ -242,6 +245,8 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
     const error_page::Error& error,
     bool is_failed_post,
     bool can_show_network_diagnostics_dialog,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
     std::string* error_html) const {
   error_html->clear();
 

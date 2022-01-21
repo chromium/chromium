@@ -1479,6 +1479,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/accessibility/interstitial_accessibility_browsertest.cc",
       "../browser/accessibility/live_caption_controller_browsertest.cc",
       "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
+      "../browser/alternative_error_page_override_info_browsertest.cc",
       "../browser/apps/guest_view/app_view_browsertest.cc",
       "../browser/apps/guest_view/web_view_browsertest.cc",
       "../browser/apps/platform_apps/app_browsertest.cc",

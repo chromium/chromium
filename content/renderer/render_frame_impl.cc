@@ -2957,6 +2957,7 @@ void RenderFrameImpl::CommitFailedNavigation(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     blink::mojom::PolicyContainerPtr policy_container,
+    mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     mojom::NavigationClient::CommitFailedNavigationCallback callback) {
   TRACE_EVENT1("navigation,benchmark,rail",
                "RenderFrameImpl::CommitFailedNavigation", "id", routing_id_);
@@ -3029,7 +3030,7 @@ void RenderFrameImpl::CommitFailedNavigation(
     DCHECK_NE(commit_params->http_response_code, -1);
     GetContentClient()->renderer()->PrepareErrorPageForHttpStatusError(
         this, error, navigation_params->http_method.Ascii(),
-        commit_params->http_response_code, error_html_ptr);
+        commit_params->http_response_code, nullptr, error_html_ptr);
   } else {
     if (error_page_content) {
       error_html = error_page_content.value();
@@ -3039,7 +3040,8 @@ void RenderFrameImpl::CommitFailedNavigation(
     // null above, PrepareErrorPage might have other side effects e.g. setting
     // some error-related states, so we should still call it.
     GetContentClient()->renderer()->PrepareErrorPage(
-        this, error, navigation_params->http_method.Ascii(), error_html_ptr);
+        this, error, navigation_params->http_method.Ascii(),
+        std::move(alternative_error_page_info), error_html_ptr);
   }
 
   // Make sure we never show errors in view source mode.

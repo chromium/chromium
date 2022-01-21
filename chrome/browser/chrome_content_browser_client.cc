@@ -516,6 +516,7 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 #include "extensions/browser/extension_navigation_throttle.h"
@@ -6417,4 +6418,19 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
 
 bool ChromeContentBrowserClient::IsFirstPartySetsEnabled() {
   return FirstPartySetsUtil::GetInstance()->IsFirstPartySetsEnabled();
+}
+
+content::mojom::AlternativeErrorPageOverrideInfoPtr
+ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
+    const GURL& url,
+    content::BrowserContext* browser_context) {
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsDefaultOfflinePage)) {
+    return nullptr;
+  }
+
+  return web_app::GetAppManifestInfo(url, browser_context);
+#endif  //  BUILDFLAG(IS_ANDROID)
 }

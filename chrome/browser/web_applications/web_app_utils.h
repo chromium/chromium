@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "content/public/common/alternative_error_page_override_info.mojom.h"
 
 class GURL;
 class Profile;
@@ -46,6 +47,12 @@ content::BrowserContext* GetBrowserContextForWebApps(
     content::BrowserContext* context);
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
     content::BrowserContext* context);
+
+// Gets information from web app's manifest, including theme color, background
+// color and app short name, and returns this inside a struct.
+content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
+    const GURL& url,
+    content::BrowserContext* browser_context);
 
 // Returns a root directory for all Web Apps themed data.
 //
