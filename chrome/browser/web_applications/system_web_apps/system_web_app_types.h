@@ -135,7 +135,7 @@ enum class SystemAppType {
   // 6. Update kMaxValue.
   //
   // 7. Have one of System Web App Platform owners review the CL.
-  //    See: //ash/webui/system_apps/PLATFORM_OWNERS
+  //    See: //ash/webui/PLATFORM_OWNERS
   kMaxValue = OS_FLAGS,
 };
 
