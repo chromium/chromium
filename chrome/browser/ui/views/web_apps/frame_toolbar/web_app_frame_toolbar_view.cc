@@ -135,6 +135,8 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
     int trailing_x,
     int y,
     int available_height) {
+  DCHECK(!browser_view_->IsWindowControlsOverlayEnabled());
+
   SetVisible(available_height > 0);
 
   if (available_height == 0) {
