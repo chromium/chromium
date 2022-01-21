@@ -99,7 +99,8 @@ std::string UiHierarchyDataCollector::GetName() const {
 }
 
 std::string UiHierarchyDataCollector::GetDescription() const {
-  return "Collects UI hiearchy data.";
+  return "Collects UI hiearchy data and exports the data into file named "
+         "ui_hierarchy.";
 }
 
 const PIIMap& UiHierarchyDataCollector::GetDetectedPII() {
