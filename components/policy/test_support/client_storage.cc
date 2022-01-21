@@ -39,6 +39,7 @@ void ClientStorage::RegisterClient(const ClientInfo& client_info) {
   CHECK(!client_info.device_id.empty());
 
   clients_[client_info.device_id] = client_info;
+  registered_tokens_[client_info.device_token] = client_info.device_id;
 }
 
 bool ClientStorage::HasClient(const std::string& device_id) const {
@@ -66,6 +67,21 @@ const ClientStorage::ClientInfo* ClientStorage::LookupByStateKey(
       return &client_info;
   }
   return nullptr;
+}
+
+bool ClientStorage::DeleteClient(const std::string& device_token) {
+  auto it = registered_tokens_.find(device_token);
+  if (it == registered_tokens_.end())
+    return false;
+
+  const std::string& device_id = it->second;
+  DCHECK(!device_id.empty());
+  auto it_clients = clients_.find(device_id);
+  DCHECK(it_clients != clients_.end());
+
+  clients_.erase(it_clients, clients_.end());
+  registered_tokens_.erase(it, registered_tokens_.end());
+  return true;
 }
 
 size_t ClientStorage::GetNumberOfRegisteredClients() const {

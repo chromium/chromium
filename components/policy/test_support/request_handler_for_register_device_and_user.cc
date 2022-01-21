@@ -31,6 +31,11 @@ namespace {
 void AddAllowedPolicyTypes(em::DeviceRegisterRequest::Type type,
                            std::set<std::string>* allowed_policy_types) {
   switch (type) {
+    // TODO(crbug.com/1289442): Remove this case once the type is correctly set
+    // for request type `register`.
+    case em::DeviceRegisterRequest::TT:
+      allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType});
+      break;
     case em::DeviceRegisterRequest::USER:
       allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType,
                                     dm_protocol::kChromeExtensionPolicyType});

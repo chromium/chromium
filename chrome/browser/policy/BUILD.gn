@@ -236,6 +236,7 @@ source_set("browser_tests") {
   sources = [
     "cloud/cloud_policy_browsertest.cc",
     "cloud/cloud_policy_manager_browsertest.cc",
+    "cloud/device_management_service_browsertest.cc",
   ]
 
   deps = [

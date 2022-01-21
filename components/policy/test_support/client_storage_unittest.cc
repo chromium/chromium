@@ -18,6 +18,8 @@ constexpr const char kStateKey1[] = "bbb";
 constexpr const char kStateKey2[] = "ggg";
 constexpr const char kStateKey3[] = "fff";
 constexpr const char kStateKey4[] = "ccc";
+constexpr const char kDeviceToken[] = "device-token";
+constexpr const char kNonExistingDeviceToken[] = "non-existing-device-token";
 constexpr const uint64_t kModulus = 3;
 constexpr const uint64_t kRemainder = 2;
 // Following SHA256 hashes produce |kRemainder| when divided by |kModulus|.
@@ -30,7 +32,35 @@ constexpr base::StringPiece kSHA256HashForStateKey4(
     "\x97\xd8\x32\x41\x58\x1b\x37\xdb\xd7\x0a\x7a\x49\x00\xfe",
     32);
 
+void RegisterClient(const std::string& device_token,
+                    ClientStorage* client_storage) {
+  ClientStorage::ClientInfo client_info;
+  client_info.device_id = kDeviceId1;
+  client_info.device_token = device_token;
+
+  client_storage->RegisterClient(client_info);
+  ASSERT_EQ(client_storage->GetNumberOfRegisteredClients(), 1u);
+  ASSERT_EQ(client_storage->GetClient(kDeviceId1).device_token, device_token);
+}
+
 }  // namespace
+
+TEST(ClientStorageTest, Unregister_Success) {
+  ClientStorage client_storage;
+  RegisterClient(kDeviceToken, &client_storage);
+
+  ASSERT_TRUE(client_storage.DeleteClient(kDeviceToken));
+  EXPECT_EQ(client_storage.GetNumberOfRegisteredClients(), 0u);
+}
+
+TEST(ClientStorageTest, Unregister_NonExistingClient) {
+  ClientStorage client_storage;
+  RegisterClient(kDeviceToken, &client_storage);
+
+  ASSERT_FALSE(client_storage.DeleteClient(kNonExistingDeviceToken));
+  ASSERT_EQ(client_storage.GetNumberOfRegisteredClients(), 1u);
+  EXPECT_EQ(client_storage.GetClient(kDeviceId1).device_token, kDeviceToken);
+}
 
 TEST(ClientStorageTest, GetMatchingStateKeyHashes) {
   ClientStorage client_storage;
