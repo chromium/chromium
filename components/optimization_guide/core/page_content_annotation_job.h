@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,6 +47,10 @@ class PageContentAnnotationJob {
   // Posts a new result after an execution has completed.
   void PostNewResult(const BatchAnnotationResult& result);
 
+  // Returns true if any element of |results_| was a successful execution. We
+  // expect that if one result is successful, many more will be as well.
+  bool HadAnySuccess() const;
+
   AnnotationType type() const { return type_; }
 
   PageContentAnnotationJob(const PageContentAnnotationJob&) = delete;
@@ -65,6 +70,12 @@ class PageContentAnnotationJob {
   // Filled by |PostNewResult| with the complete annotations, specified by
   // |type_|.
   std::vector<BatchAnnotationResult> results_;
+
+  // The time the job was constructed.
+  const base::TimeTicks job_creation_time_;
+
+  // Set when |GetNextInput| is called for the first time.
+  absl::optional<base::TimeTicks> job_execution_start_time_;
 };
 
 }  // namespace optimization_guide

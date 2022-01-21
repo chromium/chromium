@@ -598,6 +598,18 @@ TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_BatchAnnotate_PageTopics) {
       "OptimizationGuide.ModelExecutor.ExecutionStatus.PageTopicsV2",
       ExecutionStatus::kSuccess, 1);
 
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize.PageTopics",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageTopics", true,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobExecutionTime.PageTopics",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobScheduleTime.PageTopics", 1);
+
   EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, nullptr));
 
@@ -635,6 +647,17 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.ExecutionStatus.PageTopicsV2", 0);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize.PageTopics",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageTopics", false,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobExecutionTime.PageTopics",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobScheduleTime.PageTopics", 1);
 
   EXPECT_FALSE(model_observer_tracker()->DidRegisterForTarget(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, nullptr));
@@ -648,6 +671,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   std::vector<BatchAnnotationResult> result;
   BatchAnnotationCallback callback = base::BindOnce(
@@ -661,6 +685,20 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
 
   model_manager()->Annotate(std::move(callback), {"input"},
                             AnnotationType::kPageEntities);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
+      "PageEntities",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageEntities",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobExecutionTime.PageEntities",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobScheduleTime.PageEntities",
+      1);
+
   run_loop.Run();
 
   ASSERT_EQ(result.size(), 1U);
@@ -678,6 +716,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
 #endif
 TEST_F(PageContentAnnotationsModelManagerTest,
        MAYBE_BatchAnnotate_PageVisibility) {
+  base::HistogramTester histogram_tester;
   proto::Any any_metadata;
   any_metadata.set_type_url(
       "type.googleapis.com/com.foo.PageTopicsModelMetadata");
@@ -709,6 +748,21 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 
   EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_VISIBILITY, nullptr));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
+      "ContentVisibility",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.ContentVisibility",
+      true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobExecutionTime."
+      "ContentVisibility",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobScheduleTime."
+      "ContentVisibility",
+      1);
 
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
@@ -719,6 +773,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 
 TEST_F(PageContentAnnotationsModelManagerTest,
        BatchAnnotate_PageVisibilityDisabled) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kPageVisibilityBatchAnnotations);
@@ -751,6 +806,21 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 
   EXPECT_FALSE(model_observer_tracker()->DidRegisterForTarget(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_VISIBILITY, nullptr));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
+      "ContentVisibility",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.ContentVisibility",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobExecutionTime."
+      "ContentVisibility",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobScheduleTime."
+      "ContentVisibility",
+      1);
 
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
@@ -808,6 +878,18 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 
   EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, nullptr));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize.PageTopics",
+      1, 2);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageTopics", true,
+      2);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobExecutionTime.PageTopics",
+      2);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobScheduleTime.PageTopics", 2);
 
   // The model should have only been loaded once and then used for both jobs.
   histogram_tester.ExpectUniqueSample(

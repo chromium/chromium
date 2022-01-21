@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -506,6 +507,11 @@ void PageContentAnnotationsModelManager::Annotate(
     BatchAnnotationCallback callback,
     const std::vector<std::string>& inputs,
     AnnotationType annotation_type) {
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize." +
+          AnnotationTypeToString(annotation_type),
+      inputs.size());
+
   std::unique_ptr<PageContentAnnotationJob> job =
       std::make_unique<PageContentAnnotationJob>(std::move(callback), inputs,
                                                  annotation_type);

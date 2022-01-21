@@ -22,6 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AnnotationType">
+  <variant name="CotentVisibility" summary="Cotent Visibility"/>
+  <variant name="PageEntities" summary="Page Entities"/>
+  <variant name="PageTopics" summary="Page Topics"/>
+  <variant name="Unknown" summary="Unknown"/>
+</variants>
+
 <variants name="OptimizationTarget">
   <variant name="AutofillAssistant" summary="Autofill Assistant"/>
   <variant name="LanguageDetection" summary="Language detection"/>
@@ -552,6 +559,56 @@ chromium-metrics-reviews@google.com.
     pushed to the client. This will be recorded at startup and when a new
     component is received.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentAnnotations.BatchRequestedSize.{AnnotationType}"
+    units="counts" expires_after="M106">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the size of a {AnnotationType} BatchAnnotate request in how many
+    string inputs were given. Recorded once for every call to BatchAnnotate.
+  </summary>
+  <token key="AnnotationType" variants="AnnotationType"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentAnnotations.BatchSuccess.{AnnotationType}"
+    enum="BooleanSuccess" expires_after="M106">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether any input to a {AnnotationType} BatchAnnotate request was
+    executed successfully. Recorded once for every completed callback for
+    BatchAnnotate.
+  </summary>
+  <token key="AnnotationType" variants="AnnotationType"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentAnnotations.JobExecutionTime.{AnnotationType}"
+    units="ms" expires_after="M106">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the total execution time of a {AnnotationType} BatchAnnotate
+    request. Recorded once for every completed callback for BatchAnnotate.
+  </summary>
+  <token key="AnnotationType" variants="AnnotationType"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentAnnotations.JobScheduleTime.{AnnotationType}"
+    units="ms" expires_after="M106">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time a {AnnotationType} BatchAnnotate request was waiting in the
+    queue before execution started. Recorded once for every completed callback
+    for BatchAnnotate.
+  </summary>
+  <token key="AnnotationType" variants="AnnotationType"/>
 </histogram>
 
 <histogram

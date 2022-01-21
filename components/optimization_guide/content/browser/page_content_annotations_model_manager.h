@@ -215,7 +215,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // Runs the next job in |job_queue_| if there is any.
   void MaybeStartNextAnnotationJob();
 
-  // Called when a job finishes executing.
+  // Called when a |job| finishes executing, just before it is deleted.
   void OnJobExecutionComplete();
 
   // The model executor responsible for executing the page topics model.
