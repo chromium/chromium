@@ -39,8 +39,10 @@ void DiscoverySessionManager::StartDiscovery(
   mojo::RemoteSetElementId id = delegates_.Add(std::move(delegate));
 
   // The number of clients has increased from 0 to 1.
-  if (!had_client_before_call)
+  if (!had_client_before_call) {
     OnHasAtLeastOneDiscoveryClientChanged();
+    return;
+  }
 
   // If discovery is already active, notify the delegate that discovery has
   // started and of the current discovered devices list.

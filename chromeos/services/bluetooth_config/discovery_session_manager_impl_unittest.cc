@@ -67,6 +67,10 @@ class DiscoverySessionManagerImplTest : public testing::Test {
                    StartScanCallback& callback) {
               EXPECT_FALSE(start_scan_callback_);
               start_scan_callback_ = std::move(callback);
+
+              if (should_synchronously_invoke_start_scan_callback_) {
+                InvokePendingStartScanCallback(/*success=*/true);
+              }
             }));
     ON_CALL(*mock_adapter_, StopScan(testing::_))
         .WillByDefault(testing::Invoke([this](StopScanCallback callback) {
@@ -163,6 +167,10 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     discovery_session_manager_->FlushForTesting();
   }
 
+  void SetShouldSynchronouslyInvokeStartScanCallback(bool should) {
+    should_synchronously_invoke_start_scan_callback_ = should;
+  }
+
  private:
   class FakeDevicePairingHandlerFactory
       : public DevicePairingHandlerImpl::Factory {
@@ -226,6 +234,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
   std::vector<NiceMockDevice> mock_devices_;
   size_t num_devices_created_ = 0u;
 
+  bool should_synchronously_invoke_start_scan_callback_ = false;
   StartScanCallback start_scan_callback_;
   StopScanCallback stop_scan_callback_;
 
@@ -461,6 +470,26 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   EXPECT_FALSE(delegate2->pairing_handler().is_connected());
   EXPECT_FALSE(pairing_delegate3->IsMojoPipeConnected());
   InvokePendingStopScanCallback(/*success=*/true);
+}
+
+TEST_F(DiscoverySessionManagerImplTest, StartDiscoverySynchronous) {
+  // Simulate adapter finishing starting scanning immediately. This should cause
+  // |delegate.OnBluetoothDiscoveryStarted()| still to only be called once.
+  SetShouldSynchronouslyInvokeStartScanCallback(true);
+  std::unique_ptr<FakeBluetoothDiscoveryDelegate> delegate = StartDiscovery();
+  EXPECT_TRUE(delegate->IsMojoPipeConnected());
+  EXPECT_EQ(1u, delegate->num_start_callbacks());
+  EXPECT_TRUE(delegate->discovered_devices_list().empty());
+
+  // Disconnect the Mojo pipe; this should trigger a StopScan() call.
+  delegate->DisconnectMojoPipe();
+  EXPECT_FALSE(delegate->IsMojoPipeConnected());
+  EXPECT_EQ(1u, delegate->num_start_callbacks());
+
+  // Invoke the StopScan() callback. Since the delegate was already
+  // disconnected, it should not have received a callback.
+  InvokePendingStopScanCallback(/*success=*/true);
+  EXPECT_EQ(0u, delegate->num_stop_callbacks());
 }
 
 }  // namespace bluetooth_config
