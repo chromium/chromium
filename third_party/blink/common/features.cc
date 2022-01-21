@@ -1190,5 +1190,9 @@ const base::Feature kCompositedCaret{"CompositedCaret",
 const base::Feature kBackForwardCacheAppBanner{
     "BackForwardCacheAppBanner", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Initialize CSSDefaultStyleSheets early in renderer startup.
+const base::Feature kDefaultStyleSheetsEarlyInit{
+    "DefaultStyleSheetsEarlyInit", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

@@ -45,6 +45,9 @@ class CSSDefaultStyleSheets final
  public:
   CORE_EXPORT static CSSDefaultStyleSheets& Instance();
 
+  // Performs any initialization that should be done on renderer startup.
+  static void Init();
+
   static StyleSheetContents* ParseUASheet(const String&);
   static const MediaQueryEvaluator& ScreenEval();
 

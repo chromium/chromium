@@ -587,6 +587,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kCompositedCaret;
 // back/forward cache.
 BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheAppBanner;
 
+BLINK_COMMON_EXPORT extern const base::Feature kDefaultStyleSheetsEarlyInit;
+
 }  // namespace features
 }  // namespace blink
 
