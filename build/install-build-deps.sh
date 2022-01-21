@@ -158,7 +158,6 @@ dev_list="\
   flex
   git-core
   gperf
-  libappindicator3-dev
   libasound2-dev
   libatspi2.0-dev
   libbrlapi-dev
@@ -237,7 +236,6 @@ chromeos_lib_list="libpulse0 libbz2-1.0"
 
 # List of required run-time libraries
 common_lib_list="\
-  libappindicator3-1
   libasound2
   libatk1.0-0
   libatspi2.0-0
@@ -317,6 +315,8 @@ backwards_compatible_list="\
   language-pack-zh-hant
   libappindicator-dev
   libappindicator1
+  libappindicator3-1
+  libappindicator3-dev
   libdconf-dev
   libdconf1
   libdconf1:i386
