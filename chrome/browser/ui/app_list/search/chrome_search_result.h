@@ -127,7 +127,7 @@ class ChromeSearchResult {
   void SetIsRecommendation(bool is_recommendation);
   void SetIsInstalling(bool is_installing);
   void SetQueryUrl(const GURL& url);
-  void SetEquivalentResutlId(const std::string& equivlanet_result_id);
+  void SetEquivalentResultId(const std::string& equivalent_result_id);
   void SetIcon(const IconInfo& icon);
   void SetChipIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const ui::ImageModel& badge_icon);
