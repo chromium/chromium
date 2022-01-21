@@ -12,7 +12,7 @@
 
 namespace ui {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 ViewsContentClient::ViewsContentClient(
     HINSTANCE instance, sandbox::SandboxInterfaceInfo* sandbox_info)
     : instance_(instance), sandbox_info_(sandbox_info) {
@@ -30,7 +30,7 @@ int ViewsContentClient::RunMain() {
   ViewsContentMainDelegate delegate(this);
   content::ContentMainParams params(&delegate);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   params.instance = instance_;
   params.sandbox_info = sandbox_info_;
 #else

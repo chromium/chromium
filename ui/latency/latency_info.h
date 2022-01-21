@@ -13,14 +13,14 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "ipc/ipc_param_traits.h"  // nogncheck
 #include "mojo/public/cpp/bindings/struct_traits.h"  // nogncheck
 #endif
 
 namespace ui {
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 namespace mojom {
 class LatencyInfoDataView;
 }
@@ -199,7 +199,7 @@ class LatencyInfo {
   // gesture_scroll_id_.
   int64_t touch_trace_id_ = 0;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   friend struct IPC::ParamTraits<ui::LatencyInfo>;
   friend struct mojo::StructTraits<ui::mojom::LatencyInfoDataView,
                                    ui::LatencyInfo>;

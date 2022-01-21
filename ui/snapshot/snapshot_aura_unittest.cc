@@ -196,24 +196,25 @@ class SnapshotAuraTest : public testing::TestWithParam<bool> {
 
 INSTANTIATE_TEST_SUITE_P(All, SnapshotAuraTest, ::testing::Bool());
 
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // https://crbug.com/852512
 #define MAYBE_FullScreenWindow DISABLED_FullScreenWindow
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 // https://crbug.com/1143031
 #define MAYBE_FullScreenWindow DISABLED_FullScreenWindow
 #else
 #define MAYBE_FullScreenWindow FullScreenWindow
 #endif
 TEST_P(SnapshotAuraTest, MAYBE_FullScreenWindow) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   // TODO(https://crbug.com/1143031): Fix this test to run in < action_timeout()
   // on the Linux Debug & TSAN bots.
   const base::test::ScopedRunLoopTimeout increased_run_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.
   base::win::Version version = base::win::GetVersion();
   if (version >= base::win::Version::WIN10)
@@ -229,7 +230,7 @@ TEST_P(SnapshotAuraTest, MAYBE_FullScreenWindow) {
 }
 
 TEST_P(SnapshotAuraTest, PartialBounds) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.
   base::win::Version version = base::win::GetVersion();
   if (version >= base::win::Version::WIN10)
@@ -245,7 +246,7 @@ TEST_P(SnapshotAuraTest, PartialBounds) {
 }
 
 TEST_P(SnapshotAuraTest, Rotated) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.
   base::win::Version version = base::win::GetVersion();
   if (version >= base::win::Version::WIN10)
@@ -263,7 +264,7 @@ TEST_P(SnapshotAuraTest, Rotated) {
 }
 
 TEST_P(SnapshotAuraTest, UIScale) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.
   base::win::Version version = base::win::GetVersion();
   if (version >= base::win::Version::WIN10)
@@ -287,7 +288,7 @@ TEST_P(SnapshotAuraTest, UIScale) {
 }
 
 TEST_P(SnapshotAuraTest, DeviceScaleFactor) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.
   base::win::Version version = base::win::GetVersion();
   if (version >= base::win::Version::WIN10)
@@ -310,7 +311,7 @@ TEST_P(SnapshotAuraTest, DeviceScaleFactor) {
 }
 
 TEST_P(SnapshotAuraTest, RotateAndUIScale) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.
   base::win::Version version = base::win::GetVersion();
   if (version >= base::win::Version::WIN10)
@@ -335,7 +336,7 @@ TEST_P(SnapshotAuraTest, RotateAndUIScale) {
 }
 
 TEST_P(SnapshotAuraTest, RotateAndUIScaleAndScaleFactor) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.
   base::win::Version version = base::win::GetVersion();
   if (version >= base::win::Version::WIN10)

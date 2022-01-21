@@ -59,7 +59,7 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
   ViewsContentClientMainParts(content::MainFunctionParams content_params,
                               ViewsContentClient* views_content_client);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   views::TestViewsDelegate* views_delegate() { return views_delegate_.get(); }
 #endif
 

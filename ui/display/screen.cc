@@ -30,7 +30,7 @@ Screen::~Screen() = default;
 
 // static
 Screen* Screen::GetScreen() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // TODO(scottmg): https://crbug.com/558054
   if (!g_screen)
     g_screen = CreateNativeScreen();

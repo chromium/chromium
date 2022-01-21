@@ -50,7 +50,7 @@ std::unique_ptr<SkCanvas> TransportDIB::GetPlatformCanvas(int w,
   if (!base::CheckMul(h, base::CheckMul(w, bpp)).AssignIfValid(&canvas_size))
     return nullptr;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This DIB already mapped the file into this process, but PlatformCanvas
   // will map it again.
   DCHECK(!memory()) << "Mapped file twice in the same process.";

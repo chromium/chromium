@@ -102,7 +102,7 @@ void GrabWindowSnapshotAsyncAura(aura::Window* window,
                      std::move(callback)));
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 bool GrabWindowSnapshot(gfx::NativeWindow window,
                         const gfx::Rect& snapshot_bounds,
                         gfx::Image* image) {
