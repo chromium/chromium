@@ -109,7 +109,6 @@ content::WebContents* LensSidePanelView::GetWebContents() {
 void LensSidePanelView::OnThemeChanged() {
   views::FlexLayoutView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
-  separator_->SetColor(color_provider->GetColor(ui::kColorMenuSeparator));
 
   // kGoogleLensFullLogoIcon is rectangular. We should create a tiled image so
   // that the coordinates and scale are correct. The vector icon should have its
@@ -122,6 +121,9 @@ void LensSidePanelView::OnThemeChanged() {
       gfx::CreateVectorIcon(icon, color), 0, 0, kGoogleLensLogoWidth,
       kGoogleLensLogoHeight);
   branding_->SetImage(image);
+  separator_->SetColor(GetNativeTheme()->ShouldUseDarkColors()
+                           ? gfx::kGoogleGrey700
+                           : gfx::kGoogleGrey300);
 }
 
 void LensSidePanelView::CreateAndInstallHeader(
