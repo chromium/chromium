@@ -5267,12 +5267,12 @@ const char kLinkCapturingUiUpdateDescription[] =
     "including the intent picker and an in-app link capturing prompt.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 const char kVaapiVP9kSVCEncoderName[] =
     "VA-API encode acceleration for k-SVC VP9";
 const char kVaapiVP9kSVCEncoderDescription[] =
     "Enable or disable k-SVC VP9 encode acceleration using VA-API.";
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 const char kChromeOSDirectVideoDecoderName[] = "ChromeOS Direct Video Decoder";

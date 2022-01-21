@@ -1656,7 +1656,7 @@ bool RTCVideoEncoder::H264HwSupportForTemporalLayers() {
 
 // static
 bool RTCVideoEncoder::Vp9HwSupportForSpatialLayers() {
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(media::kVaapiVp9kSVCHWEncoding);
 #else
   // Spatial layers are not supported by hardware encoders.

@@ -6955,12 +6955,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(policy::features::kDefaultChromeAppsMigration)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+    // TODO(b/214589754): revisit the need for this flag when the final design
+    // for HW encoding is implemented for lacros-chrome.
+    // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
+    // kOsCrOS.
     {"enable-vaapi-vp9-kSVC-encode-acceleration",
      flag_descriptions::kVaapiVP9kSVCEncoderName,
-     flag_descriptions::kVaapiVP9kSVCEncoderDescription, kOsCrOS,
+     flag_descriptions::kVaapiVP9kSVCEncoderDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(media::kVaapiVp9kSVCHWEncoding)},
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
     {"enable-global-vaapi-lock", flag_descriptions::kGlobalVaapiLockName,
      flag_descriptions::kGlobalVaapiLockDescription, kOsCrOS | kOsLinux,
