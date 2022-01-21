@@ -37,6 +37,8 @@ class MODULES_EXPORT CodecPressureManagerProvider
   CodecPressureManager* GetEncoderPressureManager();
 
  private:
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
+
   Member<CodecPressureManager> decoder_pressure_manager_;
   Member<CodecPressureManager> encoder_pressure_manager_;
 };

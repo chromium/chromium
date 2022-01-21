@@ -31,18 +31,31 @@ CodecPressureManagerProvider::CodecPressureManagerProvider(
 
 CodecPressureManager*
 CodecPressureManagerProvider::GetDecoderPressureManager() {
-  if (!decoder_pressure_manager_)
-    decoder_pressure_manager_ = MakeGarbageCollected<CodecPressureManager>();
+  if (!decoder_pressure_manager_) {
+    decoder_pressure_manager_ = MakeGarbageCollected<CodecPressureManager>(
+        ReclaimableCodec::CodecType::kDecoder, GetTaskRunner());
+  }
 
   return decoder_pressure_manager_;
 }
 
 CodecPressureManager*
 CodecPressureManagerProvider::GetEncoderPressureManager() {
-  if (!encoder_pressure_manager_)
-    encoder_pressure_manager_ = MakeGarbageCollected<CodecPressureManager>();
+  if (!encoder_pressure_manager_) {
+    encoder_pressure_manager_ = MakeGarbageCollected<CodecPressureManager>(
+        ReclaimableCodec::CodecType::kEncoder, GetTaskRunner());
+  }
 
   return encoder_pressure_manager_;
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+CodecPressureManagerProvider::GetTaskRunner() {
+  ExecutionContext* context = GetSupplementable();
+
+  DCHECK(context && !context->IsContextDestroyed());
+
+  return context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 }
 
 void CodecPressureManagerProvider::Trace(Visitor* visitor) const {

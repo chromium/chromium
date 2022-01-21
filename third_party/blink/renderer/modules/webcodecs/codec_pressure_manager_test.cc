@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_gauge.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -51,15 +53,24 @@ class FakeReclaimableCodec final
 class CodecPressureManagerTest
     : public testing::TestWithParam<ReclaimableCodec::CodecType> {
  public:
-  using TestCodecSet = WTF::HashSet<Member<FakeReclaimableCodec>>;
+  using TestCodecSet = HeapHashSet<Member<FakeReclaimableCodec>>;
 
-  CodecPressureManagerTest() = default;
+  CodecPressureManagerTest() {
+    GetCodecPressureGauge().set_pressure_threshold_for_testing(
+        kTestPressureThreshold);
+  }
+
   ~CodecPressureManagerTest() override = default;
 
   void SetUpManager(ExecutionContext* context) {
     manager_ = GetManagerFromContext(context);
+  }
 
-    Manager()->set_pressure_threshold_for_testing(kTestPressureThreshold);
+  void TearDown() override {
+    // Force the pre-finalizer call, otherwise the CodecPressureGauge will have
+    // leftover pressure between tests.
+    if (Manager())
+      CleanUpManager(Manager());
   }
 
   CodecPressureManager* GetManagerFromContext(ExecutionContext* context) {
@@ -75,9 +86,26 @@ class CodecPressureManagerTest
     return nullptr;
   }
 
+  CodecPressureGauge& GetCodecPressureGauge() {
+    return CodecPressureGauge::GetInstance(GetParam());
+  }
+
  protected:
+  void SyncPressureFlags() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   FakeReclaimableCodec* CreateCodec(ExecutionContext* context) {
     return MakeGarbageCollected<FakeReclaimableCodec>(GetParam(), context);
+  }
+
+  void CleanUpManager(CodecPressureManager* manager) {
+    // Manually run the pre-finalizer here. Otherwise, CodecPressureGauge will
+    // have global pressure leftover from tests, and expectations will fail.
+    manager->UnregisterManager();
   }
 
   FakeReclaimableCodec* CreateBackgroundedCodec(ExecutionContext* context) {
@@ -99,8 +127,10 @@ class CodecPressureManagerTest
   CodecPressureManager* Manager() { return manager_; }
 
   void VerifyTimersStarted(const TestCodecSet& codecs) {
+    SyncPressureFlags();
+
     size_t total_started_timers = 0u;
-    for (auto codec : codecs) {
+    for (auto& codec : codecs) {
       if (codec->IsTimerActive())
         ++total_started_timers;
     }
@@ -109,8 +139,10 @@ class CodecPressureManagerTest
   }
 
   void VerifyTimersStopped(const TestCodecSet& codecs) {
+    SyncPressureFlags();
+
     size_t total_stopped_timers = 0u;
-    for (auto codec : codecs) {
+    for (auto& codec : codecs) {
       if (!codec->IsTimerActive())
         ++total_stopped_timers;
     }
@@ -119,6 +151,8 @@ class CodecPressureManagerTest
   }
 
   bool ManagerGlobalPressureExceeded() {
+    SyncPressureFlags();
+
     return Manager()->global_pressure_exceeded_;
   }
 
@@ -136,6 +170,66 @@ TEST_P(CodecPressureManagerTest, OneManagerPerContext) {
 
     EXPECT_NE(GetManagerFromContext(v8_scope.GetExecutionContext()),
               GetManagerFromContext(other_v8_scope.GetExecutionContext()));
+  }
+}
+
+TEST_P(CodecPressureManagerTest, AllManagersIncrementGlobalPressureGauge) {
+  V8TestingScope v8_scope;
+
+  EXPECT_EQ(0u, GetCodecPressureGauge().global_pressure_for_testing());
+
+  auto* codec = CreatePressuringCodec(v8_scope.GetExecutionContext());
+
+  EXPECT_TRUE(codec->is_applying_codec_pressure());
+
+  EXPECT_EQ(1u, GetCodecPressureGauge().global_pressure_for_testing());
+  EXPECT_EQ(1u, GetManagerFromContext(v8_scope.GetExecutionContext())
+                    ->pressure_for_testing());
+
+  {
+    V8TestingScope other_v8_scope;
+    ASSERT_NE(other_v8_scope.GetExecutionContext(),
+              v8_scope.GetExecutionContext());
+
+    auto* other_codec =
+        CreatePressuringCodec(other_v8_scope.GetExecutionContext());
+
+    EXPECT_TRUE(other_codec->is_applying_codec_pressure());
+
+    EXPECT_EQ(2u, GetCodecPressureGauge().global_pressure_for_testing());
+    EXPECT_EQ(1u, GetManagerFromContext(other_v8_scope.GetExecutionContext())
+                      ->pressure_for_testing());
+
+    // Test cleanup.
+    CleanUpManager(GetManagerFromContext(other_v8_scope.GetExecutionContext()));
+  }
+
+  CleanUpManager(GetManagerFromContext(v8_scope.GetExecutionContext()));
+}
+
+TEST_P(CodecPressureManagerTest,
+       ManagersAreInitializedWithGlobalPressureValue) {
+  V8TestingScope v8_scope;
+  SetUpManager(v8_scope.GetExecutionContext());
+
+  TestCodecSet codecs_with_pressure;
+
+  // Add pressure until we exceed the threshold.
+  for (size_t i = 0; i < kTestPressureThreshold + 1; ++i) {
+    codecs_with_pressure.insert(
+        CreatePressuringCodec(v8_scope.GetExecutionContext()));
+  }
+
+  SyncPressureFlags();
+
+  EXPECT_TRUE(Manager()->is_global_pressure_exceeded_for_testing());
+
+  {
+    V8TestingScope other_v8_scope;
+
+    // "New" managers should be created with the correct global value.
+    EXPECT_TRUE(GetManagerFromContext(other_v8_scope.GetExecutionContext())
+                    ->is_global_pressure_exceeded_for_testing());
   }
 }
 
@@ -163,20 +257,23 @@ TEST_P(CodecPressureManagerTest, DisposedCodecsRemovePressure) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   EXPECT_EQ(0u, Manager()->pressure_for_testing());
+  EXPECT_EQ(0u, GetCodecPressureGauge().global_pressure_for_testing());
 }
 
 TEST_P(CodecPressureManagerTest, ZeroPressureThreshold) {
   V8TestingScope v8_scope;
-  SetUpManager(v8_scope.GetExecutionContext());
+  GetCodecPressureGauge().set_pressure_threshold_for_testing(0);
 
-  // Set a pressure threshold of 0.
-  Manager()->set_pressure_threshold_for_testing(0);
+  SetUpManager(v8_scope.GetExecutionContext());
 
   auto* codec = CreatePressuringCodec(v8_scope.GetExecutionContext());
 
   EXPECT_TRUE(codec->is_applying_codec_pressure());
 
-  // Any codec added should have its global pressure flag set.
+  SyncPressureFlags();
+
+  // Any codec added should have its global pressure flag set, if the threshold
+  // is 0.
   EXPECT_TRUE(codec->IsGlobalPressureFlagSet());
 }
 
@@ -225,6 +322,8 @@ TEST_P(CodecPressureManagerTest, PressureDoesntReclaimForegroundCodecs) {
     codec->ApplyCodecPressure();
     codecs.insert(codec);
   }
+
+  SyncPressureFlags();
 
   EXPECT_GT(Manager()->pressure_for_testing(), kTestPressureThreshold);
 
