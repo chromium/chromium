@@ -108,6 +108,8 @@ linux_memory_builder(
     # TODO(crbug.com/1030593): Builds take more than 3 hours sometimes. Remove
     # once the builds are faster.
     execution_timeout = 6 * time.hour,
+    ssd = True,
+    cores = 16,
 )
 
 linux_memory_builder(
@@ -126,6 +128,8 @@ linux_memory_builder(
         short_name = "bld",
     ),
     execution_timeout = 4 * time.hour,
+    ssd = True,
+    cores = 16,
 )
 
 linux_memory_builder(
