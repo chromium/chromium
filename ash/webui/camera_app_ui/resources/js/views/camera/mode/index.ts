@@ -298,7 +298,7 @@ export class Modes {
         isSupported: async () => state.get(state.State.SHOW_SCAN_MODE),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, CaptureIntent.DOCUMENT),
+            constraints, resolution, CaptureIntent.STILL_CAPTURE),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
