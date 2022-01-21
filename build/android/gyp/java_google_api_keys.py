@@ -99,10 +99,6 @@ def _DoMain(argv):
       google_api_keys.GetAPIKeyAndroidNonStable())
   values['GOOGLE_CLIENT_ID_MAIN'] = google_api_keys.GetClientID('MAIN')
   values['GOOGLE_CLIENT_SECRET_MAIN'] = google_api_keys.GetClientSecret('MAIN')
-  values['GOOGLE_CLIENT_ID_CLOUD_PRINT'] = google_api_keys.GetClientID(
-      'CLOUD_PRINT')
-  values['GOOGLE_CLIENT_SECRET_CLOUD_PRINT'] = google_api_keys.GetClientSecret(
-      'CLOUD_PRINT')
   values['GOOGLE_CLIENT_ID_REMOTING'] = google_api_keys.GetClientID('REMOTING')
   values['GOOGLE_CLIENT_SECRET_REMOTING'] = google_api_keys.GetClientSecret(
       'REMOTING')

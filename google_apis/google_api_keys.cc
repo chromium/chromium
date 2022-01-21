@@ -50,14 +50,6 @@
 #define GOOGLE_CLIENT_SECRET_MAIN DUMMY_API_TOKEN
 #endif
 
-#if !defined(GOOGLE_CLIENT_ID_CLOUD_PRINT)
-#define GOOGLE_CLIENT_ID_CLOUD_PRINT DUMMY_API_TOKEN
-#endif
-
-#if !defined(GOOGLE_CLIENT_SECRET_CLOUD_PRINT)
-#define GOOGLE_CLIENT_SECRET_CLOUD_PRINT DUMMY_API_TOKEN
-#endif
-
 #if !defined(GOOGLE_CLIENT_ID_REMOTING)
 #define GOOGLE_CLIENT_ID_REMOTING DUMMY_API_TOKEN
 #endif
@@ -192,15 +184,6 @@ class APIKeyCache {
         STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_MAIN),
         ::switches::kOAuth2ClientSecret, default_client_secret,
         environment.get(), command_line, gaia_config);
-
-    client_ids_[CLIENT_CLOUD_PRINT] = CalculateKeyValue(
-        GOOGLE_CLIENT_ID_CLOUD_PRINT,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_CLOUD_PRINT), nullptr,
-        default_client_id, environment.get(), command_line, gaia_config);
-    client_secrets_[CLIENT_CLOUD_PRINT] = CalculateKeyValue(
-        GOOGLE_CLIENT_SECRET_CLOUD_PRINT,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_CLOUD_PRINT), nullptr,
-        default_client_secret, environment.get(), command_line, gaia_config);
 
     client_ids_[CLIENT_REMOTING] = CalculateKeyValue(
         GOOGLE_CLIENT_ID_REMOTING,

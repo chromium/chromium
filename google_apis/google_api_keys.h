@@ -47,10 +47,8 @@
 // - GOOGLE_DEFAULT_CLIENT_SECRET: If set, this is used as the default
 //   for all client secrets.  This is intended only for development.
 // - GOOGLE_CLIENT_ID_[client name]
-//   (e.g. GOOGLE_CLIENT_ID_CLOUD_PRINT, i.e. one for each item in the
-//   OAuth2Client enumeration below)
 // - GOOGLE_CLIENT_SECRET_[client name]
-//   (e.g. GOOGLE_CLIENT_SECRET_CLOUD_PRINT, i.e. one for each item in
+//   (e.g. GOOGLE_CLIENT_SECRET_REMOTING, i.e. one for each item in
 //   the OAuth2Client enumeration below)
 //
 // If some of the parameters mentioned above are not provided,
@@ -103,12 +101,11 @@ std::string GetMetricsKey();
 
 // Represents the different sets of client IDs and secrets in use.
 enum OAuth2Client {
-  CLIENT_MAIN,         // Several different features use this.
-  CLIENT_CLOUD_PRINT,
+  CLIENT_MAIN,  // Several different features use this.
   CLIENT_REMOTING,
   CLIENT_REMOTING_HOST,
 
-  CLIENT_NUM_ITEMS     // Must be last item.
+  CLIENT_NUM_ITEMS  // Must be last item.
 };
 
 // Returns true if no dummy OAuth2 client ID and secret are set.
