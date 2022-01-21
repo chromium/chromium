@@ -48,7 +48,7 @@ def parse_emoji_metadata(metadata_file):
         return json.load(file)
 
 
-def transform_emoji_data(metadata, names, keywords):
+def transform_emoji_data(metadata, names, keywords, firstOnly):
     def transform(codepoints, emoticons = None, shortcodes = None):
         if emoticons is None:
           emoticons = []
@@ -69,16 +69,26 @@ def transform_emoji_data(metadata, names, keywords):
           keyword_list = emoticons
 
         return {'string': string, 'name': name, 'keywords': keyword_list}
-
-    for group in metadata:
+    if firstOnly:
+      metadata_out = [metadata[0]]
+    else:
+      metadata_out = metadata[1:]
+    for group in metadata_out:
         for emoji in group['emoji']:
             emoji['base'] = transform(emoji['base'],
                                       emoji['emoticons'],
                                       emoji.get('shortcodes',[]))
-            emoji['alternates'] = [
-                transform(e,) for e in emoji['alternates']
-            ]
+            del emoji['emoticons']
+            if emoji.get('shortcodes'):
+              del emoji['shortcodes']
+            if emoji['alternates']:
+              emoji['alternates'] = [
+                  transform(e,) for e in emoji['alternates']
+              ]
+            else:
+              del emoji['alternates']
 
+    return metadata_out
 
 def main(args):
     parser = argparse.ArgumentParser()
@@ -92,12 +102,17 @@ def main(args):
                         required=True,
                         nargs='+',
                         help='emoji keyword files as list of XML files')
+    parser.add_argument('--firstgroup',
+                        required = True,
+                        help='Only output the first group, otherwise output all groups'
+    )
 
     options = parser.parse_args(args)
 
     metadata_file = options.metadata
     keyword_files = options.keywords
     output_file = options.output
+    first_group = options.firstgroup == "True"
 
     # iterate through keyword files and combine them
     names = {}
@@ -109,7 +124,7 @@ def main(args):
 
     # parse emoji ordering data
     metadata = parse_emoji_metadata(metadata_file)
-    transform_emoji_data(metadata, names, keywords)
+    metadata = transform_emoji_data(metadata, names, keywords, first_group)
 
     # write output file atomically in utf-8 format.
     with build_utils.AtomicOutput(output_file) as tmp_file:

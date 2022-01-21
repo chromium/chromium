@@ -21,7 +21,7 @@ import {EMPTY_EMOTICON_DATA, V2_SUBCATEGORY_TABS} from './metadata_extension.js'
 import {RecentEmojiStore} from './store.js';
 import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji, SubcategoryData} from './types.js';
 
-const EMOJI_ORDERING_JSON = '/emoji_14_0_ordering.json';
+const EMOJI_ORDERING_JSON_TEMPLATE = '/emoji_14_0_ordering';
 
 // the name attributes below are used to label the group buttons.
 // the ordering group names are used for the group headings in the emoji picker.
@@ -124,10 +124,11 @@ export class EmojiPicker extends PolymerElement {
 
   static get properties() {
     return {
+      /** {string} */
+      emojiDataUrl: {type: String, value: EMOJI_ORDERING_JSON_TEMPLATE},
       /** @private {string} */
       category: {type: String, value: 'emoji', observer: 'onCategoryChanged'},
       /** @type {string} */
-      emojiDataUrl: {type: String, value: EMOJI_ORDERING_JSON},
       /** @private {!Array<!SubcategoryData>} */
       emojiGroupTabs: {type: Array},
       /** @private {?EmojiGroupData} */
@@ -149,11 +150,7 @@ export class EmojiPicker extends PolymerElement {
         reflectToAttribute: true
       },
       /** @private {boolean} */
-      v2Enabled: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true
-      }
+      v2Enabled: {type: Boolean, value: false, reflectToAttribute: true}
     };
   }
 
@@ -303,7 +300,7 @@ export class EmojiPicker extends PolymerElement {
         this.onEmojiDataLoaded(xhr.responseText);
         resolve();
       };
-      xhr.open('GET', this.emojiDataUrl);
+      xhr.open('GET', this.emojiDataUrl + '_start.json');
       xhr.send();
     });
   }
@@ -674,9 +671,16 @@ export class EmojiPicker extends PolymerElement {
     // other categories (which will be off screen).
     this.emojiData = [emojidata[0]];
     afterNextRender(this, () => {
-      this.emojiData = emojidata;
-      this.updateActiveGroup(/*updateTabsScroll=*/ true);
+      const xhr = new XMLHttpRequest();
+      xhr.onloadend = () => this.onEmojiDataLoadedRemaining(xhr.responseText);
+      xhr.open('GET', this.emojiDataUrl + '_remaining.json');
+      xhr.send();
     });
+  }
+
+  onEmojiDataLoadedRemaining(data) {
+    const emojidata = /** @type {!EmojiGroupData} */ (JSON.parse(data));
+    this.push('emojiData', ...emojidata);
   }
 
   /**
