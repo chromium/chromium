@@ -31,17 +31,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="4dp"/>
 
-    <ImageView
+    <org.chromium.chrome.browser.logo.LogoView
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:layout_width="match_parent"
         android:layout_height="32dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:scaleType="centerInside"
-        android:clickable="false"
-        android:adjustViewBounds="true"
-        android:visibility="gone"
-        android:contentDescription="@null"/>
+        android:layout_centerVertical="true"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

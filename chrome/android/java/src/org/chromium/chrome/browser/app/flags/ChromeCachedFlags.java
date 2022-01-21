@@ -134,6 +134,7 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
                         add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);
+                        add(StartSurfaceConfiguration.IS_DOODLE_SUPPORTED);
                         add(StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON);
                         add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);

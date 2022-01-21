@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.logo;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -40,6 +42,8 @@ public class LogoViewTest extends DummyUiActivityTestCase {
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock
     public TemplateUrlService mTemplateUrlService;
+    @Mock
+    public LogoDelegateImpl mLogoDelegate;
 
     private static final String LOGO_URL = "https://www.google.com";
     private static final String ANIMATED_LOGO_URL =
@@ -111,6 +115,19 @@ public class LogoViewTest extends DummyUiActivityTestCase {
         Assert.assertTrue("Logo with animated URL should be focusable.", mView.isFocusable());
         Assert.assertTrue("Logo should not have a content description.",
                 TextUtils.isEmpty(mView.getContentDescription()));
+    }
+
+    @Test
+    @SmallTest
+    public void testLogoView_WithUrl_Clicked() {
+        mView.setDelegate(mLogoDelegate);
+        Logo logo = new Logo(mBitmap, LOGO_URL, null, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mView.updateLogo(logo);
+            mView.endAnimationsForTesting();
+            mView.performClick();
+        });
+        verify(mLogoDelegate, times(1)).onLogoClicked(false);
     }
 
     @Test

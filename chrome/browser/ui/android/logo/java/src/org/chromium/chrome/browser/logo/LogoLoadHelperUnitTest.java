@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.logo;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,22 +24,20 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.logo.LogoBridge;
-import org.chromium.chrome.browser.logo.LogoBridgeJni;
-import org.chromium.chrome.browser.logo.LogoDelegateImpl;
-import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
-import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -71,7 +68,10 @@ public class LogoLoadHelperUnitTest {
     LogoDelegateImpl mLogoDelegate;
 
     @Mock
-    TopToolbarCoordinator mToolbar;
+    LogoView mLogoView;
+
+    @Mock
+    Callback<LoadUrlParams> mLogoClickedCallback;
 
     private Context mContext;
     private LogoLoadHelper mLogoLoadHelper;
@@ -83,7 +83,7 @@ public class LogoLoadHelperUnitTest {
 
         mProfileSupplier = new ObservableSupplierImpl<>();
         mContext = ApplicationProvider.getApplicationContext();
-        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mToolbar, mContext, null);
+        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mLogoClickedCallback, mLogoView);
         mLogoLoadHelper.setLogoDelegateForTesting(mLogoDelegate);
 
         doReturn(false).when(mMockProfile1).isOffTheRecord();
@@ -100,6 +100,7 @@ public class LogoLoadHelperUnitTest {
         CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(true));
+        mProfileSupplier.set(mMockProfile1);
     }
 
     @After
@@ -109,37 +110,31 @@ public class LogoLoadHelperUnitTest {
 
     @Test
     public void testDSEChangedOnRegularProfileAndGoogleIsDSE() {
-        mProfileSupplier.set(mMockProfile1);
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.setForTesting(true);
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 
-        Bitmap googleLogoBitmap = LogoView.getDefaultGoogleLogo(mContext.getResources());
-        verify(mToolbar, times(1)).onLogoAvailable(eq(googleLogoBitmap), any());
-        verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
+        Assert.assertNotNull(LogoView.getDefaultGoogleLogo(mContext.getResources()));
+        verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
 
     @Test
     public void testDSEChangedOnRegularProfileAndGoogleIsNotDSE() {
-        mProfileSupplier.set(mMockProfile1);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 
+        Assert.assertNull(LogoView.getDefaultGoogleLogo(mContext.getResources()));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
-        // mToolbar#onLogoAvailable should also be called here, but it's a callback from
-        // LogoObserver, which is hard to test. We check mLogoDelegate#getSearchProviderLogo
-        // instead.
     }
 
     @Test
     public void testDSEChangedOnRegularProfileAndDoesNotHaveLogo() {
-        mProfileSupplier.set(mMockProfile1);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 
-        verify(mToolbar, times(1)).onLogoAvailable(null, null);
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
     }
 
@@ -149,32 +144,26 @@ public class LogoLoadHelperUnitTest {
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 
-        verify(mToolbar, times(0)).onLogoAvailable(any(), any());
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
     }
 
     @Test
     public void testLoadLogoOnStartSurfaceHomepageWhenLogoNotLoaded() {
-        mProfileSupplier.set(mMockProfile1);
         mLogoLoadHelper.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
-        // mToolbar#onLogoAvailable should also be called here, but it's a callback from
-        // LogoObserver, which is hard to test. We check mLogoDelegate#getSearchProviderLogo
-        // instead.
     }
 
     @Test
     public void testLoadLogoOnStartSurfaceHomepageWhenLogoHasLoaded() {
-        mProfileSupplier.set(mMockProfile1);
         mLogoLoadHelper.setHasLogoLoadedForCurrentSearchEngineForTesting(true);
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(StartSurfaceState.SHOWN_HOMEPAGE);
 
-        verify(mToolbar, times(0)).onLogoAvailable(any(), any());
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
     }
 }

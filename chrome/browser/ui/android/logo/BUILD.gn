@@ -2,14 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
-import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/logo/LogoBridge.java",
     "java/src/org/chromium/chrome/browser/logo/LogoDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoLoadHelper.java",
     "java/src/org/chromium/chrome/browser/logo/LogoView.java",
   ]
 
@@ -17,6 +16,8 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//base:jni_java",
+    "//chrome/android/features/start_surface:public_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
     "//components/image_fetcher:java",
@@ -59,13 +60,45 @@ android_library("javatests") {
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/search_engines/android:java",
+    "//chrome/test/android:chrome_java_test_support",
     "//components/search_engines/android:java",
+    "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/logo/LogoLoadHelperUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android/features/start_surface:public_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/search_engines/android:java",
+    "//components/search_engines/android:java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

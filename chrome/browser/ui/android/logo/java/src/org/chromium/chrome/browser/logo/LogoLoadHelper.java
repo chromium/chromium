@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
-
-import android.content.Context;
-import android.text.TextUtils;
+package org.chromium.chrome.browser.logo;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -13,16 +10,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
-import org.chromium.chrome.browser.logo.LogoDelegateImpl;
-import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
-import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -31,10 +23,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
  */
 public class LogoLoadHelper {
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private final TopToolbarCoordinator mToolbar;
-    private final Context mContext;
-    private final Supplier<Tab> mParentTabSupplier;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
+    private final LogoView mLogoView;
 
     private CallbackController mCallbackController = new CallbackController();
     private LogoDelegateImpl mLogoDelegate;
@@ -43,29 +33,22 @@ public class LogoLoadHelper {
     /**
      * Creates a LogoLoadHelper object.
      *
-     * @param toolbar The {@link TopToolbarCoordinator}.
-     * @param context The activity context.
-     * @param parentTabSupplier Supplies the StartSurface's parent tab.
+     * @param profileSupplier Supplies the currently applicable profile.
+     * @param logoClickedCallback Supplies the StartSurface's parent tab.
+     * @param logoView The view that shows the search provider logo.
      */
     public LogoLoadHelper(ObservableSupplier<Profile> profileSupplier,
-            TopToolbarCoordinator toolbar, Context context, Supplier<Tab> parentTabSupplier) {
+            Callback<LoadUrlParams> logoClickedCallback, LogoView logoView) {
         mProfileSupplier = profileSupplier;
-        mToolbar = toolbar;
-        mContext = context;
-        mParentTabSupplier = parentTabSupplier;
-        mLogoClickedCallback = mCallbackController.makeCancelable(
-                (urlParams)
-                        -> ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(urlParams,
-                                /*isBackground=*/false,
-                                /*incognito=*/false, mParentTabSupplier.get()));
+        mLogoClickedCallback = logoClickedCallback;
+        mLogoView = logoView;
     }
 
     /**
      * If it's on Start surface homepage, load search provider logo; If it's not on start surface
      * homepage, destroy mLogoDelegate.
      */
-    void maybeLoadSearchProviderLogoOnHomepage(@StartSurfaceState int startSurfaceState) {
-        assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext);
+    public void maybeLoadSearchProviderLogoOnHomepage(@StartSurfaceState int startSurfaceState) {
         if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             if (mProfileSupplier.hasValue()) {
                 loadSearchProviderLogo();
@@ -80,6 +63,7 @@ public class LogoLoadHelper {
                            || startSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
                            || startSurfaceState == StartSurfaceState.DISABLED)
                 && mLogoDelegate != null) {
+            mHasLogoLoadedForCurrentSearchEngine = false;
             // Destroy |mLogoDelegate| when hiding Start surface homepage to save memory.
             mLogoDelegate.destroy();
             mLogoDelegate = null;
@@ -89,7 +73,7 @@ public class LogoLoadHelper {
     /**
      * Update the logo based on default search engine changes.
      */
-    void onDefaultSearchEngineChanged() {
+    public void onDefaultSearchEngineChanged() {
         mHasLogoLoadedForCurrentSearchEngine = false;
         loadSearchProviderLogo();
     }
@@ -97,7 +81,7 @@ public class LogoLoadHelper {
     /**
      * Cleans up any code as necessary.
      */
-    void destroy() {
+    public void destroy() {
         if (mLogoDelegate != null) {
             mLogoDelegate.destroy();
             mLogoDelegate = null;
@@ -112,50 +96,39 @@ public class LogoLoadHelper {
      * Load the search provider logo on Start surface.
      */
     private void loadSearchProviderLogo() {
-        assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext);
-
         // If logo is already updated for the current search provider, or profile is null or off the
         // record, don't bother loading the logo image.
         if (mHasLogoLoadedForCurrentSearchEngine || !mProfileSupplier.hasValue()
-                || mProfileSupplier.get().isOffTheRecord()) {
+                || mProfileSupplier.get().isOffTheRecord()
+                || !TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo()) {
             return;
         }
 
         if (mLogoDelegate == null) {
-            mLogoDelegate = new LogoDelegateImpl(
-                    mLogoClickedCallback, /* logoView = */ null, mProfileSupplier.get());
+            mLogoDelegate =
+                    new LogoDelegateImpl(mLogoClickedCallback, mLogoView, mProfileSupplier.get());
         }
 
-        // If default search engine doesn't have logo, pass in null.
-        if (!TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo()) {
-            mHasLogoLoadedForCurrentSearchEngine = true;
-            mToolbar.onLogoAvailable(/*logoImage=*/null, /*contentDescription=*/null);
-            return;
-        }
+        mHasLogoLoadedForCurrentSearchEngine = true;
+        mLogoView.showSearchProviderInitialView();
 
-        // TODO(crbug.com/1119467): Support Google doodles for Start surface.
-        if (TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) {
-            mHasLogoLoadedForCurrentSearchEngine = true;
-            // TODO(crbug.com/1261631): Separate logo codes and use LogoView for Start surface
-            // toolbar.
-            mToolbar.onLogoAvailable(LogoView.getDefaultGoogleLogo(mContext.getResources()),
-                    /*contentDescription=*/null);
+        // If default search engine is google and doodle is not supported, doesn't bother to fetch
+        // logo image.
+        if (TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
+                && !StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue()) {
             return;
         }
 
         mLogoDelegate.getSearchProviderLogo(new LogoObserver() {
             @Override
             public void onLogoAvailable(Logo logo, boolean fromCache) {
-                mHasLogoLoadedForCurrentSearchEngine = true;
-                if (logo == null) {
-                    mToolbar.onLogoAvailable(/*logoImage=*/null, /*contentDescription=*/null);
-                } else {
-                    // TODO(crbug.com/1119467): When supporting doodles, append
-                    // R.string.accessibility_google_doodle before altText.
-                    String contentDescription =
-                            TextUtils.isEmpty(logo.altText) ? null : logo.altText;
-                    mToolbar.onLogoAvailable(logo.image, contentDescription);
+                if (logo == null && fromCache) {
+                    // There is no cached logo. Wait until we know whether there's a fresh
+                    // one before making any further decisions.
+                    return;
                 }
+                mLogoView.setDelegate(mLogoDelegate);
+                mLogoView.updateLogo(logo);
             }
 
             @Override

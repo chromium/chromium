@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,7 +25,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IMAGE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_IS_VISIBLE;
@@ -35,7 +33,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -57,6 +54,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -96,8 +94,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private Resources mMockResources;
     @Mock
     private Drawable mDrawable;
-    @Mock
-    private Bitmap mBitmap;
     @Mock
     Drawable.ConstantState mMockConstantState;
     @Mock
@@ -167,6 +163,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         doReturn(mMockConstantState).when(mDrawable).getConstantState();
         doReturn(mDrawable).when(mMockConstantState).newDrawable();
 
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
@@ -196,7 +193,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertTrue(mPropertyModel.get(IS_VISIBLE));
 
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        mMediator.onLogoImageAvailable(mBitmap, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -264,7 +260,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        mMediator.onLogoImageAvailable(mBitmap, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -346,15 +341,13 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         // If default search engine doesn't have logo, logo shouldn't be visible.
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
-        mMediator.onLogoImageAvailable(null, null);
+        mMediator.onDefaultSearchEngineChanged();
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertNull(mPropertyModel.get(LOGO_IMAGE));
 
         // If default search engine has logo, logo should be visible.
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-        mMediator.onLogoImageAvailable(mBitmap, null);
+        mMediator.onDefaultSearchEngineChanged();
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertEquals(mBitmap, mPropertyModel.get(LOGO_IMAGE));
     }
 
     @Test
@@ -572,7 +565,10 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
                 new ObservableSupplierImpl<>(), null, shouldShowTabSwitcherButtonOnHomepage,
                 isTabGroupsAndroidContinuationEnabled, mUserEducationHelper,
-                () -> false, /* isAnimationEnabled = */ false);
+                ()
+                        -> false,
+                /* isAnimationEnabled = */ false, /*profileSupplier=*/null,
+                /*logoClickedCallback=*/null);
 
         mMediator.setStartSurfaceHomeButtonIPHControllerForTesting(
                 mStartSurfaceHomeButtonIPHController);

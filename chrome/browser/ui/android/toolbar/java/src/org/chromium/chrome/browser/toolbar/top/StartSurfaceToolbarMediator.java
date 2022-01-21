@@ -21,8 +21,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_CONTENT_DESCRIPTION;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IMAGE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
@@ -33,7 +31,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
-import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -44,6 +41,10 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.logo.LogoLoadHelper;
+import org.chromium.chrome.browser.logo.LogoView;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The mediator implements interacts between the views and the caller. */
@@ -72,6 +74,8 @@ class StartSurfaceToolbarMediator {
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final IncognitoTabModelObserver mIncognitoTabModelObserver;
+    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final Callback<LoadUrlParams> mLogoClickedCallback;
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
@@ -89,6 +93,8 @@ class StartSurfaceToolbarMediator {
     private boolean mShowHomeButtonOnTabSwitcher;
     private StartSurfaceHomeButtonIPHController mStartSurfaceHomeButtonIPHController;
     private View mHomeButtonView;
+    private LogoLoadHelper mLogoLoadHelper;
+    private LogoView mLogoView;
 
     StartSurfaceToolbarMediator(PropertyModel model,
             Callback<IPHCommandBuilder> showIdentityIPHCallback,
@@ -101,7 +107,9 @@ class StartSurfaceToolbarMediator {
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             OnClickListener homeButtonOnClickHandler, boolean shouldShowTabSwitcherButtonOnHomepage,
             boolean isTabGroupsAndroidContinuationEnabled, UserEducationHelper userEducationHelper,
-            BooleanSupplier isIncognitoModeEnabledSupplier, boolean isAnimationEnabled) {
+            BooleanSupplier isIncognitoModeEnabledSupplier, boolean isAnimationEnabled,
+            ObservableSupplier<Profile> profileSupplier,
+            Callback<LoadUrlParams> logoClickedCallback) {
         mPropertyModel = model;
         mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mShowIdentityIPHCallback = showIdentityIPHCallback;
@@ -111,6 +119,9 @@ class StartSurfaceToolbarMediator {
         mIsTabGroupsAndroidContinuationEnabled = isTabGroupsAndroidContinuationEnabled;
         mUserEducationHelper = userEducationHelper;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
+        mProfileSupplier = profileSupplier;
+        mLogoClickedCallback = logoClickedCallback;
+        mDefaultSearchEngineHasLogo = true;
         identityDiscStateSupplier.addObserver((canShowHint) -> {
             // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
@@ -178,6 +189,14 @@ class StartSurfaceToolbarMediator {
         if (mTabModelSelector != null && mIncognitoTabModelObserver != null) {
             mTabModelSelector.removeIncognitoTabModelObserver(mIncognitoTabModelObserver);
         }
+        if (mLogoView != null) {
+            mLogoView.destroy();
+            mLogoView = null;
+        }
+        if (mLogoLoadHelper != null) {
+            mLogoLoadHelper.destroy();
+            mLogoLoadHelper = null;
+        }
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
@@ -202,6 +221,13 @@ class StartSurfaceToolbarMediator {
 
     void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
         updateTranslationY(verticalOffset);
+    }
+
+    void onDefaultSearchEngineChanged() {
+        mDefaultSearchEngineHasLogo =
+                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+        if (mLogoLoadHelper != null) mLogoLoadHelper.onDefaultSearchEngineChanged();
+        updateLogoVisibility();
     }
 
     /**
@@ -324,19 +350,18 @@ class StartSurfaceToolbarMediator {
     }
 
     /**
-     * This method should be called when there is a possibility that logo image became available or
-     * was changed.
-     * @param logoImage The logo image in bitmap format.
-     * @param contentDescription The accessibility text describing the logo.
+     * Called when the logo view is inflated.
+     * @param logoView The logo view.
      */
-    void onLogoImageAvailable(Bitmap logoImage, String contentDescription) {
-        mDefaultSearchEngineHasLogo = logoImage != null;
-        updateLogoVisibility();
-        mPropertyModel.set(LOGO_IMAGE, logoImage);
-        mPropertyModel.set(LOGO_CONTENT_DESCRIPTION, contentDescription);
+    void onLogoViewReady(LogoView logoView) {
+        mLogoView = logoView;
+        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mLogoClickedCallback, logoView);
     }
 
     private void updateLogoVisibility() {
+        if (mLogoLoadHelper != null) {
+            mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(mStartSurfaceState);
+        }
         boolean shouldShowLogo = mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                 && mDefaultSearchEngineHasLogo;
         mPropertyModel.set(LOGO_IS_VISIBLE, shouldShowLogo);
