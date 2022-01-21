@@ -108,18 +108,6 @@
 #define ALIGNAS(byte_alignment) __attribute__((aligned(byte_alignment)))
 #endif
 
-// Annotate a function indicating the caller must examine the return value.
-// Use like:
-//   int foo() WARN_UNUSED_RESULT;
-// To explicitly ignore a result, see |ignore_result()| in
-// base/ignore_result.h.
-#undef WARN_UNUSED_RESULT
-#if defined(COMPILER_GCC) || defined(__clang__)
-#define WARN_UNUSED_RESULT __attribute__((warn_unused_result))
-#else
-#define WARN_UNUSED_RESULT
-#endif
-
 // In case the compiler supports it NO_UNIQUE_ADDRESS evaluates to the C++20
 // attribute [[no_unique_address]]. This allows annotating data members so that
 // they need not have an address distinct from all other non-static data members

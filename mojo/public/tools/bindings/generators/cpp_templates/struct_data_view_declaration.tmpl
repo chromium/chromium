@@ -23,7 +23,7 @@ class {{struct.name}}DataView {
       {{kind|cpp_data_view_type}}* output);
 
   template <typename UserType>
-  WARN_UNUSED_RESULT bool Read{{name|under_to_camel}}(UserType* output) {
+  [[nodiscard]] bool Read{{name|under_to_camel}}(UserType* output) {
     {{struct_macros.assert_nullable_output_type_if_necessary(kind, name)}}
 {%-     if pf.min_version != 0 %}
     auto* pointer = data_->header_.version >= {{pf.min_version}} && !data_->{{name}}.is_null()
@@ -40,7 +40,7 @@ class {{struct.name}}DataView {
       {{kind|cpp_data_view_type}}* output);
 
   template <typename UserType>
-  WARN_UNUSED_RESULT bool Read{{name|under_to_camel}}(UserType* output) {
+  [[nodiscard]] bool Read{{name|under_to_camel}}(UserType* output) {
     {{struct_macros.assert_nullable_output_type_if_necessary(kind, name)}}
 {%-     if pf.min_version != 0 %}
     auto* pointer = data_->header_.version >= {{pf.min_version}}
@@ -54,7 +54,7 @@ class {{struct.name}}DataView {
 
 {%-   elif kind|is_enum_kind %}
   template <typename UserType>
-  WARN_UNUSED_RESULT bool Read{{name|under_to_camel}}(UserType* output) const {
+  [[nodiscard]] bool Read{{name|under_to_camel}}(UserType* output) const {
 {%-     if pf.min_version != 0 %}
     auto data_value = data_->header_.version >= {{pf.min_version}}
                       ? data_->{{name}} : 0;

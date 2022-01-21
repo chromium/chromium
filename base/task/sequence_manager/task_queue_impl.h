@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/memory/raw_ptr.h"
@@ -268,8 +267,8 @@ class BASE_EXPORT TaskQueueImpl {
   // deadlocks. For example, PostTask should not be called directly and
   // ScopedDeferTaskPosting::PostOrDefer should be used instead. `handler` must
   // not be a null callback.
-  std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle> AddOnTaskPostedHandler(
-      OnTaskPostedHandler handler) WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
+  AddOnTaskPostedHandler(OnTaskPostedHandler handler);
 
   // Set a callback to fill trace event arguments associated with the task
   // execution.
