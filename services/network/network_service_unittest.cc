@@ -220,7 +220,7 @@ TEST_F(NetworkServiceTest, AuthSchemesDynamicallyChanging) {
   EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
   EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
   EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(
       auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
 #else
@@ -261,7 +261,7 @@ TEST_F(NetworkServiceTest, AuthSchemesDynamicallyChanging) {
     EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kBasicAuthScheme));
     EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kDigestAuthScheme));
     EXPECT_TRUE(auth_handler_factory->GetSchemeFactory(net::kNtlmAuthScheme));
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(
         auth_handler_factory->GetSchemeFactory(net::kNegotiateAuthScheme));
 #else

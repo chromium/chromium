@@ -34,7 +34,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/posix/global_descriptors.h"
 #include "content/public/common/content_descriptors.h"
 #endif
@@ -71,10 +71,10 @@ void InitializeMojo() {
 
 mojo::IncomingInvitation InitializeMojoIPCChannel() {
   mojo::PlatformChannelEndpoint endpoint;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   endpoint = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
       *base::CommandLine::ForCurrentProcess());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(base::ScopedFD(
       base::GlobalDescriptors::GetInstance()->Get(kMojoIPCChannel))));
 #endif
@@ -120,7 +120,7 @@ bool ReplayProcess::Initialize(int argc, const char** argv) {
   io_thread_.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::GlobalDescriptors* g_fds = base::GlobalDescriptors::GetInstance();
   g_fds->Set(kMojoIPCChannel,
              kMojoIPCChannel + base::GlobalDescriptors::kBaseDescriptor);

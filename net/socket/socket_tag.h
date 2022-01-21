@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace net {
 
@@ -33,8 +33,8 @@ class NET_EXPORT SocketTag {
   SocketTag(uid_t uid, int32_t traffic_stats_tag)
       : uid_(uid), traffic_stats_tag_(traffic_stats_tag) {}
 #else
-  SocketTag() {}
-#endif  // OS_ANDROID
+  SocketTag() = default;
+#endif  // BUILDFLAG(IS_ANDROID)
   ~SocketTag() {}
 
   bool operator<(const SocketTag& other) const;
@@ -57,7 +57,7 @@ class NET_EXPORT SocketTag {
   uid_t uid_;
   // TrafficStats tag to tag with.
   int32_t traffic_stats_tag_;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   // Copying and assignment are allowed.
 };
 

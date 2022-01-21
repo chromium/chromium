@@ -124,7 +124,7 @@ TEST(AddressInfoTest, FailureWin) {
   EXPECT_EQ(err, ERR_NAME_RESOLUTION_FAILED);
   EXPECT_NE(os_error, 0);
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 // Note: this test is descriptive, not prescriptive.
@@ -141,7 +141,7 @@ TEST(AddressInfoTest, FailureAndroid) {
   EXPECT_EQ(err, ERR_NAME_NOT_RESOLVED);
   EXPECT_NE(os_error, 0);
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST(AddressInfoTest, Canonical) {
   absl::optional<AddressInfo> ai;

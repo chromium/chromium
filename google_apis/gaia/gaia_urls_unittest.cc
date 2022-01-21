@@ -19,9 +19,9 @@
 #include "url/gurl.h"
 
 namespace {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kSigninChromeSyncKeysPlatformSuffix[] = "android";
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 const char kSigninChromeSyncKeysPlatformSuffix[] = "ios";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 const char kSigninChromeSyncKeysPlatformSuffix[] = "chromeos";

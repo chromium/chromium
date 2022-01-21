@@ -56,7 +56,7 @@ bool TryConvertNativeToNetIPAttributes(int native_attributes,
   if (native_attributes & (
 #if !BUILDFLAG(IS_ANDROID)
                               IFA_F_OPTIMISTIC | IFA_F_DADFAILED |
-#endif  // !OS_ANDROID
+#endif  // !BUILDFLAG(IS_ANDROID)
                               IFA_F_TENTATIVE)) {
     return false;
   }

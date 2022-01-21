@@ -21,9 +21,9 @@ using ::testing::UnorderedElementsAre;
 
 scoped_refptr<HidDeviceInfo> CreateHidDeviceInfo(
     base::span<const uint8_t> report_descriptor) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const uint64_t kTestDeviceId = 0;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   const wchar_t* const kTestDeviceId = L"0";
 #else
   const char* const kTestDeviceId = "0";

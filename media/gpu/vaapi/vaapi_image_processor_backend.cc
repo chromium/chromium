@@ -67,7 +67,7 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
 // VaapiImageProcessorBackend supports ChromeOS only.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   return nullptr;
 #else
   if (!IsSupported(input_config) || !IsSupported(output_config))

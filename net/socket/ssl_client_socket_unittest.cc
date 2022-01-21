@@ -5125,7 +5125,7 @@ TEST_F(SSLClientSocketTest, Tag) {
   SocketTag tag(0x12345678, 0x87654321);
   sock->ApplySocketTag(tag);
   EXPECT_EQ(tagging_sock->tag(), tag);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(SSLClientSocketTest, ECH) {

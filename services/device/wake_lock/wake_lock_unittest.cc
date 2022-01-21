@@ -270,7 +270,7 @@ TEST_F(WakeLockTest, ChangeType) {
   EXPECT_EQ(0, GetActiveWakeLocks(mojom::WakeLockType::kPreventDisplaySleep));
   EXPECT_EQ(0, GetActiveWakeLocks(
                    mojom::WakeLockType::kPreventDisplaySleepAllowDimming));
-#else  // OS_ANDROID:
+#else  // BUILDFLAG(IS_ANDROID):
   EXPECT_FALSE(ChangeType(device::mojom::WakeLockType::kPreventAppSuspension));
   EXPECT_FALSE(ChangeType(device::mojom::WakeLockType::kPreventDisplaySleep));
   EXPECT_FALSE(ChangeType(

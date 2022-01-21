@@ -11,7 +11,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace net {
 
@@ -24,7 +24,7 @@ enum TrafficStatsUid {
 // Java generator needs explicit integer, verify equality here.
 static_assert(UNSET == SocketTag::UNSET_UID,
               "TrafficStatsUid does not match SocketTag::UNSET_UID");
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool SocketTag::operator<(const SocketTag& other) const {
 #if BUILDFLAG(IS_ANDROID)
@@ -32,7 +32,7 @@ bool SocketTag::operator<(const SocketTag& other) const {
          std::tie(other.uid_, other.traffic_stats_tag_);
 #else
   return false;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool SocketTag::operator==(const SocketTag& other) const {
@@ -41,7 +41,7 @@ bool SocketTag::operator==(const SocketTag& other) const {
          std::tie(other.uid_, other.traffic_stats_tag_);
 #else
   return true;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void SocketTag::Apply(SocketDescriptor socket) const {
@@ -49,7 +49,7 @@ void SocketTag::Apply(SocketDescriptor socket) const {
   net::android::TagSocket(socket, uid_, traffic_stats_tag_);
 #else
   CHECK(false);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace net

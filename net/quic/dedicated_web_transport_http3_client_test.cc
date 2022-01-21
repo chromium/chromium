@@ -206,7 +206,7 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
 }
 
 // TODO(https://crbug.com/1288036): The test is flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CloseTimeout DISABLED_CloseTimeout
 #else
 #define MAYBE_CloseTimeout CloseTimeout

@@ -28,7 +28,7 @@
 // the Mac and Linux linkers).  Therefore these tests are only built
 // and run on Mac and Linux, which should provide plenty of coverage
 // since there are no platform-specific bits in this code.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
 
 // We need to include everything included by google_api_keys.cc once
 // at global scope so that things like STL and classes from base don't
@@ -45,7 +45,7 @@
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "google_apis/google_api_keys_mac.h"
 #endif
 
@@ -511,7 +511,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingEnvironment) {
 
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Override all keys using both preprocessor defines and setters.
 // Setters should win.
 namespace override_all_keys_setters {
@@ -600,7 +600,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingSetters) {
   EXPECT_EQ(secret_remoting_host,
             testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST));
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 // Override all keys using both preprocessor defines and gaia config.
 // Config should win.
@@ -673,4 +673,4 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
   GaiaConfig::ResetInstanceForTesting();
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)

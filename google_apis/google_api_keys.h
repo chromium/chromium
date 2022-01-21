@@ -91,7 +91,7 @@ std::string GetReadAloudAPIKey();
 // Retrieves the Fresnel API Key.
 std::string GetFresnelAPIKey();
 
-#if defined(OS_IOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 // Sets the API key. This should be called as early as possible before this
 // API key is even accessed. It must be called before GetAPIKey.
 // TODO(https://crbug.com/1166007): Enforce this is called before GetAPIKey.
@@ -128,7 +128,7 @@ std::string GetOAuth2ClientID(OAuth2Client client);
 // in, e.g. URL-escaped if you use it in a URL.
 std::string GetOAuth2ClientSecret(OAuth2Client client);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Sets the client id for the specified client. Should be called as early as
 // possible before these ids are accessed.
 void SetOAuth2ClientID(OAuth2Client client, const std::string& client_id);

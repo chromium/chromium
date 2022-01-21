@@ -1373,7 +1373,7 @@ TEST_F(TaskEnvironmentTest, NoCOMEnvironment) {
   InitializeCOMOnWorker(TaskEnvironment::ThreadPoolCOMEnvironment::NONE,
                         ApartmentType::kSTA);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(TaskEnvironmentTest, ParallelExecutionFence) {
   TaskEnvironment task_environment;

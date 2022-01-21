@@ -63,7 +63,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "url/scheme_host_port.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 

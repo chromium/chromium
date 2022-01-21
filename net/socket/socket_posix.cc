@@ -29,7 +29,7 @@
 #if BUILDFLAG(IS_FUCHSIA)
 #include <poll.h>
 #include <sys/ioctl.h>
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace net {
 

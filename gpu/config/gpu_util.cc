@@ -649,7 +649,7 @@ void SetKeysForCrashLogging(const GPUInfo& gpu_info) {
       base::StringPrintf("0x%04x", active_gpu.vendor_id));
   crash_keys::gpu_device_id.Set(
       base::StringPrintf("0x%04x", active_gpu.device_id));
-#endif  // !OS_ANDROID
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
   crash_keys::gpu_sub_sys_id.Set(
       base::StringPrintf("0x%08x", active_gpu.sub_sys_id));

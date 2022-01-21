@@ -36,7 +36,7 @@ TEST(HttpProxyClientSocketTest, Tag) {
   SocketTag tag(0x12345678, 0x87654321);
   socket.ApplySocketTag(tag);
   EXPECT_EQ(tagging_sock->tag(), tag);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

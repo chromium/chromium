@@ -20,7 +20,7 @@
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
 #endif
 
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
           mojo_proxy_resolver_factory);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SetMojoWindowsSystemProxyResolver(
       mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
           mojo_windows_system_proxy_resolver);
@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
   mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
       mojo_proxy_resolver_factory_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
       mojo_windows_system_proxy_resolver_;
 #endif

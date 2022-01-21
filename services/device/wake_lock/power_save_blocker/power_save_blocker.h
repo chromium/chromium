@@ -16,7 +16,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace device {
 

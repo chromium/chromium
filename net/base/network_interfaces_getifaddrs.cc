@@ -28,7 +28,7 @@
 #include <net/if_media.h>
 #include <netinet/in_var.h>
 #include <sys/ioctl.h>
-#endif  // !OS_IOS
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -38,7 +38,7 @@ extern "C" {
 int getifaddrs(struct ifaddrs** __list_ptr) __attribute__((weak_import));
 void freeifaddrs(struct ifaddrs* __ptr) __attribute__((weak_import));
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace net {
 namespace internal {

@@ -20,7 +20,7 @@ char kSafariSwitch[] = "safari";
 
 char kFiltersSwitch[] = "filters";
 
-#if defined(USE_OZONE) || defined(OS_MAC)
+#if defined(USE_OZONE) || BUILDFLAG(IS_MAC)
 char kIdSwitch[] = "pid";
 #else
 char kIdSwitch[] = "window";
@@ -29,7 +29,7 @@ char kIdSwitch[] = "window";
 using ui::AXTreeSelector;
 
 gfx::AcceleratedWidget CastToAcceleratedWidget(unsigned int window_id) {
-#if defined(USE_OZONE) || defined(OS_MAC)
+#if defined(USE_OZONE) || BUILDFLAG(IS_MAC)
   return static_cast<gfx::AcceleratedWidget>(window_id);
 #else
   return reinterpret_cast<gfx::AcceleratedWidget>(window_id);
@@ -70,7 +70,7 @@ void PrintHelpTreeSelectors() {
   printf("    --edge\tEdge browser\n");
 #endif
   printf("    --firefox\tFirefox browser\n");
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   printf("    --safari\tSafari browser\n");
 #endif
   printf(

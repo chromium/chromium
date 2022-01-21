@@ -161,7 +161,7 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
                void(GaiaAuthConsumer::ReAuthProofTokenStatus status));
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ErrorComparator DISABLED_ErrorComparator
 #else
 #define MAYBE_ErrorComparator ErrorComparator

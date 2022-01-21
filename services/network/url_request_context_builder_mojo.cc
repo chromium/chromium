@@ -33,7 +33,7 @@ void URLRequestContextBuilderMojo::SetMojoProxyResolverFactory(
   mojo_proxy_resolver_factory_ = std::move(mojo_proxy_resolver_factory);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void URLRequestContextBuilderMojo::SetMojoWindowsSystemProxyResolver(
     mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
         mojo_windows_system_proxy_resolver) {
@@ -74,7 +74,7 @@ URLRequestContextBuilderMojo::CreateProxyResolutionService(
   DCHECK(url_request_context);
   DCHECK(host_resolver);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1032820): Support both ProxyResolutionService
   // implementations so that they can be swapped around at runtime based on
   // proxy config.

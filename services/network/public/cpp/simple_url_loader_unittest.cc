@@ -2392,7 +2392,7 @@ TEST_P(SimpleURLLoaderTest, CloseClientPipeBeforeBodyStarts) {
 // possible valid orders relative to read events (Which always occur in the same
 // order).
 // TODO(crbug.com/1286251): Flakes on ios simulator.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_CloseClientPipeOrder DISABLED_CloseClientPipeOrder
 #else
 #define MAYBE_CloseClientPipeOrder CloseClientPipeOrder

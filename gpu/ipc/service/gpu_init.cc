@@ -231,7 +231,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, &needs_more_info);
   }
-#endif  // !OS_ANDROID && !BUILDFLAG(IS_CHROMECAST)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
 
   gpu_info_.in_process_gpu = false;
   gl_use_swiftshader_ = false;
@@ -510,14 +510,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // it's necessary to use GL_TEXTURE_2D instead.
   // TODO(crbug.com/1056312): The proper behavior is to check the config
   // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
     SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
     gpu_info_.macos_specific_texture_target = GL_TEXTURE_2D;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] !=
           kGpuFeatureStatusEnabled ||
@@ -783,14 +783,14 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   // it's necessary to use GL_TEXTURE_2D instead.
   // TODO(crbug.com/1056312): The proper behavior is to check the config
   // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
     SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
     gpu_info_.macos_specific_texture_target = GL_TEXTURE_2D;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   if (!gl_disabled) {
     if (!gpu_feature_info_.disabled_extensions.empty()) {

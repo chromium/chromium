@@ -119,7 +119,7 @@ Error MapSystemError(logging::SystemErrorCode os_error) {
       // consider adding custom error in FDIO for the corresponding error.
       DLOG(FATAL) << "EIO was returned by FDIO.";
       return ERR_FAILED;
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
     case 0:
       return OK;

@@ -16,7 +16,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -120,7 +120,7 @@ void ClientTelemetryLogger::PrintLogStatistics(
       ANDROID_LOG_INFO, "stats",
 #else
   VLOG(0) << base::StringPrintf(
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
       "Bandwidth:%.0f FrameRate:%.1f;"
       " (Avg, Max) Capture:%.1f, %" PRId64 " Encode:%.1f, %" PRId64
       " Decode:%.1f, %" PRId64 " Render:%.1f, %" PRId64 " RTL:%.0f, %" PRId64,

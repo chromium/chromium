@@ -49,8 +49,7 @@ SocketDescriptor CreatePlatformSocket(int family, int type, int protocol) {
   }
 #endif
   return result;
-#endif  // OS_WIN
-
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace net

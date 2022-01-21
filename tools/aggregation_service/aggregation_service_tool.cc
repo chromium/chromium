@@ -88,7 +88,7 @@ bool AggregationServiceTool::SetPublicKeys(
 bool AggregationServiceTool::SetPublicKeysFromFile(
     const url::Origin& origin,
     const std::string& json_file_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath json_file(base::UTF8ToWide(json_file_path));
 #else
   base::FilePath json_file(json_file_path);

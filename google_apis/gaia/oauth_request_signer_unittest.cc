@@ -4,6 +4,7 @@
 
 #include "google_apis/gaia/oauth_request_signer.h"
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -55,7 +56,7 @@ TEST(OAuthRequestSignerTest, Encode) {
 }
 
 // http://crbug.com/685352
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DecodeEncoded DISABLED_DecodeEncoded
 #else
 #define MAYBE_DecodeEncoded DecodeEncoded

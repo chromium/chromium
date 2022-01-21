@@ -40,7 +40,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
 
@@ -1176,7 +1176,7 @@ struct FuzzTraits<GURL> {
   }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct FuzzTraits<HWND> {
   static bool Fuzz(HWND* p, Fuzzer* fuzzer) {
@@ -1225,7 +1225,7 @@ struct FuzzTraits<IPC::ChannelHandle> {
   }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct FuzzTraits<LOGFONT> {
   static bool Fuzz(LOGFONT* p, Fuzzer* fuzzer) {
