@@ -33,6 +33,14 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+UIColor* BackgroundColor() {
+  return IsPasswordCreationEnabled()
+             ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
+             : [UIColor colorNamed:kBackgroundColor];
+}
+}
+
 @interface CredentialProviderViewController () <ConfirmationAlertActionHandler,
                                                 SuccessfulReauthTimeAccessor>
 
@@ -68,6 +76,11 @@
 // Loading indicator used for user validation, which APIs can take a long time.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 
+// Identfiers cached in |-prepareCredentialListForServiceIdentifiers:| to show
+// the next time this view appears.
+@property(nonatomic, strong)
+    NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
+
 @end
 
 @implementation CredentialProviderViewController
@@ -80,25 +93,46 @@
   }
 }
 
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.view.backgroundColor = BackgroundColor();
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  // If identifiers were stored in
+  // |-prepareCredentialListForServiceIdentifiers:|, handle that now.
+  if (self.serviceIdentifiers) {
+    NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers =
+        self.serviceIdentifiers;
+    self.serviceIdentifiers = nil;
+    __weak __typeof__(self) weakSelf = self;
+    [self validateUserWithCompletion:^(BOOL userIsValid) {
+      if (!userIsValid) {
+        [weakSelf showStaleCredentials];
+        return;
+      }
+      [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
+                    ReauthenticationResult result) {
+        if (result != ReauthenticationResult::kFailure) {
+          [weakSelf showCredentialListForServiceIdentifiers:serviceIdentifiers];
+        } else {
+          [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
+        }
+      }];
+    }];
+  }
+}
+
 #pragma mark - ASCredentialProviderViewController
 
 - (void)prepareCredentialListForServiceIdentifiers:
     (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers {
-  __weak __typeof__(self) weakSelf = self;
-  [self validateUserWithCompletion:^(BOOL userIsValid) {
-    if (!userIsValid) {
-      [weakSelf showStaleCredentials];
-      return;
-    }
-    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                  ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [weakSelf showCredentialListForServiceIdentifiers:serviceIdentifiers];
-      } else {
-        [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-      }
-    }];
-  }];
+  // Sometimes, this method is called while the authentication framework thinks
+  // the app is not foregrounded, so authentication fails. Instead of directly
+  // authenticating and showing the credentials, store the list of
+  // identifiers and authenticate once the extension is visible.
+  self.serviceIdentifiers = serviceIdentifiers;
 }
 
 - (void)provideCredentialWithoutUserInteractionForIdentity:
