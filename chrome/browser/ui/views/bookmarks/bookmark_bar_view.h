@@ -170,8 +170,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnThemeChanged() override;

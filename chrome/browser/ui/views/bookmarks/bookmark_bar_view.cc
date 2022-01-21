@@ -1145,28 +1145,6 @@ void BookmarkBarView::OnDragExited() {
   drop_info_.reset();
 }
 
-DragOperation BookmarkBarView::OnPerformDrop(const ui::DropTargetEvent& event) {
-  StopShowFolderDropMenuTimer();
-
-  if (bookmark_drop_menu_)
-    bookmark_drop_menu_->Cancel();
-
-  if (!drop_info_ || !drop_info_->valid ||
-      drop_info_->location.operation == DragOperation::kNone)
-    return DragOperation::kNone;
-
-  size_t index = -1;
-  const bookmarks::BookmarkNode* parent_node =
-      GetParentNodeAndIndexForDrop(index);
-  bool copy = drop_info_->location.operation == DragOperation::kCopy;
-  DragOperation output_drag_op = DragOperation::kNone;
-  bookmarks::BookmarkNodeData drop_data = drop_info_->data;
-  drop_info_.reset();
-  PerformDrop(std::move(drop_data), parent_node, index, copy, event,
-              output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback BookmarkBarView::GetDropCallback(
     const ui::DropTargetEvent& event) {
   StopShowFolderDropMenuTimer();
