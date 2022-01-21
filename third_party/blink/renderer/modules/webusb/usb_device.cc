@@ -132,9 +132,9 @@ bool USBDevice::IsInterfaceClaimed(wtf_size_t configuration_index,
          claimed_interfaces_[interface_index];
 }
 
-wtf_size_t USBDevice::SelectedAlternateInterface(
+wtf_size_t USBDevice::SelectedAlternateInterfaceIndex(
     wtf_size_t interface_index) const {
-  return selected_alternates_[interface_index];
+  return selected_alternate_indices_[interface_index];
 }
 
 USBConfiguration* USBDevice::configuration() const {
@@ -302,7 +302,7 @@ ScriptPromise USBDevice::selectAlternateInterface(ScriptState* script_state,
       device_->SetInterfaceAlternateSetting(
           interface_number, alternate_setting,
           WTF::Bind(&USBDevice::AsyncSelectAlternateInterface,
-                    WrapPersistent(this), interface_number, alternate_setting,
+                    WrapPersistent(this), interface_index, alternate_index,
                     WrapPersistent(resolver)));
     }
   }
@@ -744,7 +744,7 @@ void USBDevice::SetEndpointsForInterface(wtf_size_t interface_index, bool set) {
   const auto& configuration = *Info().configurations[configuration_index_];
   const auto& interface = *configuration.interfaces[interface_index];
   const auto& alternate =
-      *interface.alternates[selected_alternates_[interface_index]];
+      *interface.alternates[selected_alternate_indices_[interface_index]];
   for (const auto& endpoint : alternate.endpoints) {
     uint8_t endpoint_number = endpoint->endpoint_number;
     if (endpoint_number == 0 || endpoint_number >= kEndpointsBitsNumber)
@@ -792,7 +792,7 @@ void USBDevice::OnDeviceOpenedOrClosed(bool opened) {
   opened_ = opened;
   if (!opened_) {
     claimed_interfaces_.Fill(false);
-    selected_alternates_.Fill(0);
+    selected_alternate_indices_.Fill(0);
     in_endpoints_.reset();
     out_endpoints_.reset();
   }
@@ -825,8 +825,8 @@ void USBDevice::OnConfigurationSelected(bool success,
     claimed_interfaces_.Fill(false);
     interface_state_change_in_progress_.resize(num_interfaces);
     interface_state_change_in_progress_.Fill(false);
-    selected_alternates_.resize(num_interfaces);
-    selected_alternates_.Fill(0);
+    selected_alternate_indices_.resize(num_interfaces);
+    selected_alternate_indices_.Fill(0);
     in_endpoints_.reset();
     out_endpoints_.reset();
   }
@@ -887,7 +887,7 @@ void USBDevice::OnInterfaceClaimedOrUnclaimed(bool claimed,
     claimed_interfaces_[interface_index] = true;
   } else {
     claimed_interfaces_[interface_index] = false;
-    selected_alternates_[interface_index] = 0;
+    selected_alternate_indices_[interface_index] = 0;
   }
   SetEndpointsForInterface(interface_index, claimed);
   interface_state_change_in_progress_[interface_index] = false;
@@ -901,7 +901,7 @@ void USBDevice::AsyncSelectAlternateInterface(wtf_size_t interface_index,
     return;
 
   if (success)
-    selected_alternates_[interface_index] = alternate_index;
+    selected_alternate_indices_[interface_index] = alternate_index;
   SetEndpointsForInterface(interface_index, success);
   interface_state_change_in_progress_[interface_index] = false;
 
