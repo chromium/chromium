@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -723,12 +722,11 @@ VideoCaptureControlSupport VideoCaptureDeviceMFWin::GetControlSupport(
   VideoCaptureControlSupport control_support;
 
   ComPtr<IAMCameraControl> camera_control;
-  HRESULT hr = source.As(&camera_control);
+  [[maybe_unused]] HRESULT hr = source.As(&camera_control);
   DLOG_IF_FAILED_WITH_HRESULT("Failed to retrieve IAMCameraControl", hr);
   ComPtr<IAMVideoProcAmp> video_control;
   hr = source.As(&video_control);
   DLOG_IF_FAILED_WITH_HRESULT("Failed to retrieve IAMVideoProcAmp", hr);
-  ALLOW_UNUSED_LOCAL(hr);
 
   // On Windows platform, some Image Capture video constraints and settings are
   // get or set using IAMCameraControl interface while the rest are get or set

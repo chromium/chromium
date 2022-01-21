@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
@@ -379,14 +378,14 @@ void VideoCaptureDeviceDeckLinkMac::EnumerateDevices(
     decklink_local.swap(decklink);
 
     CFStringRef device_model_name = NULL;
-    HRESULT hr = decklink_local->GetModelName(&device_model_name);
+    [[maybe_unused]] HRESULT hr =
+        decklink_local->GetModelName(&device_model_name);
     DVLOG_IF(1, hr != S_OK) << "Error reading Blackmagic device model name";
     CFStringRef device_display_name = NULL;
     hr = decklink_local->GetDisplayName(&device_display_name);
     DVLOG_IF(1, hr != S_OK) << "Error reading Blackmagic device display name";
     DVLOG_IF(1, hr == S_OK) << "Blackmagic device found with name: "
                             << base::SysCFStringRefToUTF8(device_display_name);
-    ALLOW_UNUSED_LOCAL(hr);
 
     if (!device_model_name && !device_display_name)
       continue;
