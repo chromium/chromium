@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
@@ -67,7 +66,8 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   ~AddressSorterPosix() override;
 
   // AddressSorter:
-  void Sort(const AddressList& list, CallbackType callback) const override;
+  void Sort(const std::vector<IPEndPoint>& endpoints,
+            CallbackType callback) const override;
 
  private:
   friend class AddressSorterPosixTest;

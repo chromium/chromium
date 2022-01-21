@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <set>
@@ -1800,9 +1801,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     if (at_least_one_ipv6_address) {
       // Sort addresses if needed.  Sort could complete synchronously.
-      AddressList addresses = results.legacy_addresses().value();
+      std::vector<IPEndPoint> endpoints =
+          results.legacy_addresses().value().endpoints();
       client_->GetAddressSorter()->Sort(
-          addresses,
+          endpoints,
           base::BindOnce(&DnsTask::OnSortComplete, AsWeakPtr(),
                          tick_clock_->NowTicks(), std::move(results), secure_));
       return;
@@ -1815,8 +1817,15 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                       HostCache::Entry results,
                       bool secure,
                       bool success,
-                      const AddressList& addr_list) {
-    results.set_legacy_addresses(addr_list);
+                      std::vector<IPEndPoint> sorted) {
+    DCHECK(results.legacy_addresses().has_value());
+    AddressList sorted_list;
+    for (IPEndPoint& endpoint : sorted) {
+      sorted_list.push_back(std::move(endpoint));
+    }
+    sorted_list.SetDnsAliases(results.legacy_addresses()->dns_aliases());
+
+    results.set_legacy_addresses(std::move(sorted_list));
 
     if (!success) {
       OnFailure(ERR_DNS_SORT_ERROR, results.GetOptionalTtl());
@@ -1824,7 +1833,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     // AddressSorter prunes unusable destinations.
-    if (addr_list.empty() &&
+    if (results.legacy_addresses().value().empty() &&
         results.text_records().value_or(std::vector<std::string>()).empty() &&
         results.hostnames().value_or(std::vector<HostPortPair>()).empty()) {
       LOG(WARNING) << "Address list empty after RFC3484 sort";

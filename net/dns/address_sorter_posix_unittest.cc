@@ -6,12 +6,14 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_with_source.h"
@@ -22,6 +24,7 @@
 #include "net/socket/stream_socket.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -182,13 +185,13 @@ class TestSocketFactory : public ClientSocketFactory {
   AddressMapping mapping_;
 };
 
-void OnSortComplete(AddressList* result_buf,
+void OnSortComplete(std::vector<IPEndPoint>* sorted_buf,
                     CompletionOnceCallback callback,
                     bool success,
-                    const AddressList& result) {
+                    std::vector<IPEndPoint> sorted) {
   EXPECT_TRUE(success);
   if (success)
-    *result_buf = result;
+    *sorted_buf = std::move(sorted);
   std::move(callback).Run(OK);
 }
 
@@ -216,25 +219,25 @@ class AddressSorterPosixTest : public TestWithTaskEnvironment {
   // Verify that NULL-terminated |addresses| matches (-1)-terminated |order|
   // after sorting.
   void Verify(const char* const addresses[], const int order[]) {
-    AddressList list;
+    std::vector<IPEndPoint> endpoints;
     for (const char* const* addr = addresses; *addr != NULL; ++addr)
-      list.push_back(IPEndPoint(ParseIP(*addr), 80));
+      endpoints.emplace_back(ParseIP(*addr), 80);
     for (size_t i = 0; order[i] >= 0; ++i)
-      CHECK_LT(order[i], static_cast<int>(list.size()));
+      CHECK_LT(order[i], static_cast<int>(endpoints.size()));
 
-    AddressList result;
+    std::vector<IPEndPoint> sorted;
     TestCompletionCallback callback;
-    sorter_.Sort(list,
-                 base::BindOnce(&OnSortComplete, &result, callback.callback()));
+    sorter_.Sort(endpoints,
+                 base::BindOnce(&OnSortComplete, &sorted, callback.callback()));
     callback.WaitForResult();
 
-    for (size_t i = 0; (i < result.size()) || (order[i] >= 0); ++i) {
-      IPEndPoint expected = order[i] >= 0 ? list[order[i]] : IPEndPoint();
-      IPEndPoint actual = i < result.size() ? result[i] : IPEndPoint();
-      EXPECT_TRUE(expected.address() == actual.address()) <<
-          "Address out of order at position " << i << "\n" <<
-          "  Actual: " << actual.ToStringWithoutPort() << "\n" <<
-          "Expected: " << expected.ToStringWithoutPort();
+    for (size_t i = 0; (i < sorted.size()) || (order[i] >= 0); ++i) {
+      IPEndPoint expected = order[i] >= 0 ? endpoints[order[i]] : IPEndPoint();
+      IPEndPoint actual = i < sorted.size() ? sorted[i] : IPEndPoint();
+      EXPECT_TRUE(expected == actual)
+          << "Endpoint out of order at position " << i << "\n"
+          << "  Actual: " << actual.ToString() << "\n"
+          << "Expected: " << expected.ToString();
     }
   }
 
@@ -378,6 +381,25 @@ TEST_F(AddressSorterPosixTest, MultipleRules) {
                                     "::1", "8.0.0.1", NULL };
   const int order[] = { 4, 3, 0, 2, 1, -1 };
   Verify(addresses, order);
+}
+
+TEST_F(AddressSorterPosixTest, InputPortsAreMaintained) {
+  AddMapping("::1", "::1");
+  AddMapping("::2", "::2");
+  AddMapping("::3", "::3");
+
+  IPEndPoint endpoint1(ParseIP("::1"), /*port=*/111);
+  IPEndPoint endpoint2(ParseIP("::2"), /*port=*/222);
+  IPEndPoint endpoint3(ParseIP("::3"), /*port=*/333);
+
+  std::vector<IPEndPoint> input = {endpoint1, endpoint2, endpoint3};
+  std::vector<IPEndPoint> sorted;
+  TestCompletionCallback callback;
+  sorter_.Sort(input,
+               base::BindOnce(&OnSortComplete, &sorted, callback.callback()));
+  callback.WaitForResult();
+
+  EXPECT_THAT(sorted, testing::ElementsAre(endpoint1, endpoint2, endpoint3));
 }
 
 }  // namespace net

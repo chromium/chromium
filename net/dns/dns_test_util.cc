@@ -22,6 +22,7 @@
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_hosts.h"
@@ -73,9 +74,10 @@ DnsResponse CreateMalformedResponse(std::string hostname, uint16_t type) {
 class MockAddressSorter : public AddressSorter {
  public:
   ~MockAddressSorter() override = default;
-  void Sort(const AddressList& list, CallbackType callback) const override {
+  void Sort(const std::vector<IPEndPoint>& endpoints,
+            CallbackType callback) const override {
     // Do nothing.
-    std::move(callback).Run(true, list);
+    std::move(callback).Run(true, endpoints);
   }
 };
 

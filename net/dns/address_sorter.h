@@ -6,8 +6,10 @@
 #define NET_DNS_ADDRESS_SORTER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -21,17 +23,18 @@ class AddressList;
 class NET_EXPORT AddressSorter {
  public:
   using CallbackType =
-      base::OnceCallback<void(bool success, const AddressList& list)>;
+      base::OnceCallback<void(bool success, std::vector<IPEndPoint> sorted)>;
 
   AddressSorter(const AddressSorter&) = delete;
   AddressSorter& operator=(const AddressSorter&) = delete;
 
   virtual ~AddressSorter() {}
 
-  // Sorts |list|, which must include at least one IPv6 address.
-  // Calls |callback| upon completion. Could complete synchronously. Could
+  // Sorts `endpoints`, which must include at least one IPv6 address.
+  // Calls `callback` upon completion. Could complete synchronously. Could
   // complete after this AddressSorter is destroyed.
-  virtual void Sort(const AddressList& list, CallbackType callback) const = 0;
+  virtual void Sort(const std::vector<IPEndPoint>& endpoints,
+                    CallbackType callback) const = 0;
 
   // Creates platform-dependent AddressSorter.
   static std::unique_ptr<AddressSorter> CreateAddressSorter();

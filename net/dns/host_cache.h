@@ -192,8 +192,8 @@ class NET_EXPORT HostCache {
     const absl::optional<AddressList>& legacy_addresses() const {
       return legacy_addresses_;
     }
-    void set_legacy_addresses(const absl::optional<AddressList>& addresses) {
-      legacy_addresses_ = addresses;
+    void set_legacy_addresses(absl::optional<AddressList> addresses) {
+      legacy_addresses_ = std::move(addresses);
     }
     const absl::optional<std::vector<std::string>>& text_records() const {
       return text_records_;
