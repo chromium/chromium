@@ -147,7 +147,8 @@ void WebAppTestRegistryObserverAdapter::SignalRunLoopAndStoreAppId(
   if (!optional_app_ids_.empty())
     return;
   last_app_id_ = app_id;
-  wait_loop_.Quit();
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   wait_loop_.QuitClosure());
   is_listening_ = false;
 }
 
