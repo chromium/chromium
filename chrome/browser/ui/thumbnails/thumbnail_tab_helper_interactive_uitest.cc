@@ -60,9 +60,9 @@ class ThumbnailWaiter {
 
 // Test fixture for testing interaction of thumbnail tab helper and browser,
 // specifically testing interaction of tab load and thumbnail capture.
-class ThumbnailTabHelperBrowserTest : public InProcessBrowserTest {
+class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
  public:
-  ThumbnailTabHelperBrowserTest() {
+  ThumbnailTabHelperInteractiveTest() {
     url1_ = ui_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot1.html"));
@@ -71,9 +71,10 @@ class ThumbnailTabHelperBrowserTest : public InProcessBrowserTest {
         base::FilePath().AppendASCII("bot2.html"));
   }
 
-  ThumbnailTabHelperBrowserTest(const ThumbnailTabHelperBrowserTest&) = delete;
-  ThumbnailTabHelperBrowserTest& operator=(
-      const ThumbnailTabHelperBrowserTest&) = delete;
+  ThumbnailTabHelperInteractiveTest(const ThumbnailTabHelperInteractiveTest&) =
+      delete;
+  ThumbnailTabHelperInteractiveTest& operator=(
+      const ThumbnailTabHelperInteractiveTest&) = delete;
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   void ConfigureTabLoader(TabLoader* tab_loader) {
@@ -156,14 +157,8 @@ class ThumbnailTabHelperBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky on Mac: https://crbug.com/1288117
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
-#else
-#define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot
-#endif
-IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperBrowserTest,
-                       MAYBE_TabLoadTriggersScreenshot) {
+IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
+                       TabLoadTriggersScreenshot) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
@@ -176,17 +171,10 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperBrowserTest,
 // with ENABLE_SESSION_SERVICE.
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 
-// Flaky on Win: https://crbug.com/1211377
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CapturesRestoredTabWhenRequested \
-  DISABLED_CapturesRestoredTabWhenRequested
-#else
-#define MAYBE_CapturesRestoredTabWhenRequested CapturesRestoredTabWhenRequested
-#endif
 // On browser restore, some tabs may not be loaded. Requesting a
 // thumbnail for one of these tabs should trigger load and capture.
-IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperBrowserTest,
-                       MAYBE_CapturesRestoredTabWhenRequested) {
+IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
+                       CapturesRestoredTabWhenRequested) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2_, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
@@ -199,9 +187,9 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperBrowserTest,
   CloseBrowserSynchronously(browser2);
 
   // Set up the tab loader to ensure tabs are left unloaded.
-  base::RepeatingCallback<void(TabLoader*)> callback =
-      base::BindRepeating(&ThumbnailTabHelperBrowserTest::ConfigureTabLoader,
-                          base::Unretained(this));
+  base::RepeatingCallback<void(TabLoader*)> callback = base::BindRepeating(
+      &ThumbnailTabHelperInteractiveTest::ConfigureTabLoader,
+      base::Unretained(this));
   TabLoaderTester::SetConstructionCallbackForTesting(&callback);
 
   // Restore recently closed window.
