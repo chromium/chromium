@@ -85,7 +85,7 @@ class RTCVideoEncoderTest
             new media::MockGpuVideoAcceleratorFactories(nullptr)),
         idle_waiter_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                      base::WaitableEvent::InitialState::NOT_SIGNALED) {
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/1186051): remove once enabled by default.
     feature_list_.InitAndEnableFeature(media::kVaapiVp9kSVCHWEncoding);
 #endif

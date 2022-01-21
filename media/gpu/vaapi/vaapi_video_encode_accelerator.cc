@@ -193,13 +193,13 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   client_ = client_ptr_factory_->GetWeakPtr();
 
   if (config.HasSpatialLayer()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (!base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
         !IsConfiguredForTesting()) {
       VLOGF(1) << "Spatial layer encoding is not yet enabled by default";
       return false;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (config.inter_layer_pred != Config::InterLayerPredMode::kOnKeyPic) {
       VLOGF(1) << "Only K-SVC encoding is supported.";
