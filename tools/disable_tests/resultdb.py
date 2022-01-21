@@ -159,6 +159,13 @@ def rdb_rpc(method: str, request: dict) -> dict:
 
   stdout, stderr = p.communicate(json.dumps(request))
   if p.returncode != 0:
+    # rdb doesn't return unique status codes for different errors, so we have to
+    # just match on the output.
+    if 'interactive login is required' in stderr:
+      raise errors.UserError(
+          "Authentication is required to fetch test metadata.\n" +
+          "Please run:\n\trdb auth-login\nand try again")
+
     raise Exception(f'rdb rpc {method} failed with: {stderr}')
 
   if CANNED_RESPONSE_FILE:
