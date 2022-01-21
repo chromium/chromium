@@ -176,7 +176,8 @@ bool IsInFreeList(uintptr_t slot_start) {
 }
 
 struct ListBase {
-  ListBase* next = nullptr;
+  // Volatile to prevent the compiler from doing dead store elimination.
+  ListBase* volatile next = nullptr;
 };
 
 template <size_t Size, size_t Alignment = 0>
@@ -415,7 +416,8 @@ namespace {
 template <size_t Size>
 struct ListWithInnerReference {
   char buffer1[Size];
-  char* next = nullptr;
+  // Volatile to prevent the compiler from doing dead store elimination.
+  char* volatile next = nullptr;
   char buffer2[Size];
 
   static ListWithInnerReference* Create(ThreadSafePartitionRoot& root) {
