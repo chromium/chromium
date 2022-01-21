@@ -73,25 +73,25 @@ class AccountManagerUIHandler
   void SetProfileForTesting(Profile* profile);
 
   // WebUI "getAccounts" message callback.
-  void HandleGetAccounts(const base::ListValue* args);
+  void HandleGetAccounts(const base::Value::ConstListView args);
 
   // WebUI "addAccount" message callback.
-  void HandleAddAccount(const base::ListValue* args);
+  void HandleAddAccount(const base::Value::ConstListView args);
 
   // WebUI "reauthenticateAccount" message callback.
-  void HandleReauthenticateAccount(const base::ListValue* args);
+  void HandleReauthenticateAccount(const base::Value::ConstListView args);
 
   // WebUI "migrateAccount" message callback.
-  void HandleMigrateAccount(const base::ListValue* args);
+  void HandleMigrateAccount(const base::Value::ConstListView args);
 
   // WebUI "removeAccount" message callback.
-  void HandleRemoveAccount(const base::ListValue* args);
+  void HandleRemoveAccount(const base::Value::ConstListView args);
 
   // WebUI "showWelcomeDialogIfRequired" message callback.
-  void HandleShowWelcomeDialogIfRequired(const base::ListValue* args);
+  void HandleShowWelcomeDialogIfRequired(const base::Value::ConstListView args);
 
   // WebUI "changeArcAvailability" message callback.
-  void HandleChangeArcAvailability(const base::ListValue* args);
+  void HandleChangeArcAvailability(const base::Value::ConstListView args);
 
   // |account_manager::AccountManager::CheckDummyGaiaTokenForAllAccounts|
   // callback.

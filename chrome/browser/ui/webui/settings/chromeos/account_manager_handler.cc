@@ -48,13 +48,13 @@ constexpr char kAccountRemovedToastId[] =
     "settings_account_manager_account_removed";
 
 ::account_manager::AccountKey GetAccountKeyFromJsCallback(
-    const base::DictionaryValue* const dictionary) {
-  const base::Value* id_value = dictionary->FindKey("id");
+    const base::Value& dictionary) {
+  const base::Value* id_value = dictionary.FindKey("id");
   DCHECK(id_value);
   const std::string id = id_value->GetString();
   DCHECK(!id.empty());
 
-  const base::Value* account_type_value = dictionary->FindKey("accountType");
+  const base::Value* account_type_value = dictionary.FindKey("accountType");
   DCHECK(account_type_value);
   const int account_type_int = account_type_value->GetInt();
   DCHECK((account_type_int >=
@@ -68,9 +68,9 @@ constexpr char kAccountRemovedToastId[] =
 }
 
 ::account_manager::Account GetAccountFromJsCallback(
-    const base::DictionaryValue* const dictionary) {
+    const base::Value& dictionary) {
   ::account_manager::AccountKey key = GetAccountKeyFromJsCallback(dictionary);
-  const std::string* email = dictionary->FindStringKey("email");
+  const std::string* email = dictionary.FindStringKey("email");
   DCHECK(email);
   return ::account_manager::Account{key, *email};
 }
@@ -206,32 +206,32 @@ void AccountManagerUIHandler::RegisterMessages() {
   if (!profile_)
     profile_ = Profile::FromWebUI(web_ui());
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAccounts",
       base::BindRepeating(&AccountManagerUIHandler::HandleGetAccounts,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "addAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleAddAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "reauthenticateAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleReauthenticateAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "migrateAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleMigrateAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "removeAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleRemoveAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "showWelcomeDialogIfRequired",
       base::BindRepeating(
           &AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "changeArcAvailability",
       base::BindRepeating(&AccountManagerUIHandler::HandleChangeArcAvailability,
                           weak_factory_.GetWeakPtr()));
@@ -241,14 +241,14 @@ void AccountManagerUIHandler::SetProfileForTesting(Profile* profile) {
   profile_ = profile;
 }
 
-void AccountManagerUIHandler::HandleGetAccounts(const base::ListValue* args) {
+void AccountManagerUIHandler::HandleGetAccounts(
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  const auto& args_list = args->GetList();
-  CHECK_EQ(args_list.size(), 1u);
-  CHECK(args_list[0].is_string());
+  CHECK_EQ(args.size(), 1u);
+  CHECK(args[0].is_string());
 
-  base::Value callback_id = args_list[0].Clone();
+  base::Value callback_id = args[0].Clone();
 
   account_manager_->CheckDummyGaiaTokenForAllAccounts(base::BindOnce(
       &AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts,
@@ -391,7 +391,8 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
   return accounts;
 }
 
-void AccountManagerUIHandler::HandleAddAccount(const base::ListValue* args) {
+void AccountManagerUIHandler::HandleAddAccount(
+    const base::Value::ConstListView args) {
   AllowJavascript();
   ::GetAccountManagerFacade(profile_->GetPath().value())
       ->ShowAddAccountDialog(
@@ -400,11 +401,11 @@ void AccountManagerUIHandler::HandleAddAccount(const base::ListValue* args) {
 }
 
 void AccountManagerUIHandler::HandleReauthenticateAccount(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK(!args->GetList().empty());
-  const std::string& account_email = args->GetList()[0].GetString();
+  CHECK(!args.empty());
+  const std::string& account_email = args[0].GetString();
 
   ::GetAccountManagerFacade(profile_->GetPath().value())
       ->ShowReauthAccountDialog(
@@ -414,22 +415,22 @@ void AccountManagerUIHandler::HandleReauthenticateAccount(
 }
 
 void AccountManagerUIHandler::HandleMigrateAccount(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK(!args->GetList().empty());
-  const std::string& account_email = args->GetList()[0].GetString();
+  CHECK(!args.empty());
+  const std::string& account_email = args[0].GetString();
 
   chromeos::AccountMigrationWelcomeDialog::Show(account_email);
 }
 
-void AccountManagerUIHandler::HandleRemoveAccount(const base::ListValue* args) {
+void AccountManagerUIHandler::HandleRemoveAccount(
+    const base::Value::ConstListView args) {
   AllowJavascript();
 
-  const base::DictionaryValue* dictionary = nullptr;
-  CHECK(!args->GetList().empty());
-  args->GetList()[0].GetAsDictionary(&dictionary);
-  CHECK(dictionary);
+  CHECK(!args.empty());
+  const base::Value& dictionary = args[0];
+  CHECK(dictionary.is_dict());
 
   const AccountId device_account_id =
       ProfileHelper::Get()->GetUserByProfile(profile_)->GetAccountId();
@@ -443,7 +444,7 @@ void AccountManagerUIHandler::HandleRemoveAccount(const base::ListValue* args) {
   account_manager_->RemoveAccount(account_key);
 
   // Show toast with removal message.
-  const base::Value* email_value = dictionary->FindKey("email");
+  const base::Value* email_value = dictionary.FindKey("email");
   const std::string email = email_value->GetString();
   DCHECK(!email.empty());
 
@@ -454,20 +455,19 @@ void AccountManagerUIHandler::HandleRemoveAccount(const base::ListValue* args) {
 }
 
 void AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   chromeos::AccountManagerWelcomeDialog::ShowIfRequired();
 }
 
 void AccountManagerUIHandler::HandleChangeArcAvailability(
-    const base::ListValue* args) {
+    const base::Value::ConstListView args) {
   DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
 
   // 2 args: account, is_available.
-  CHECK_GT(args->GetList().size(), 1);
-  const base::DictionaryValue* account_dict = nullptr;
-  args->GetList()[0].GetAsDictionary(&account_dict);
-  CHECK(account_dict);
-  const absl::optional<bool> is_available = args->GetList()[1].GetIfBool();
+  CHECK_GT(args.size(), 1u);
+  const base::Value& account_dict = args[0];
+  CHECK(account_dict.is_dict());
+  const absl::optional<bool> is_available = args[1].GetIfBool();
   CHECK(is_available.has_value());
 
   const ::account_manager::Account account =
