@@ -72,11 +72,11 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -115,7 +115,7 @@ using content::RenderViewHost;
 // Flaky on Win7: https://crbug.com/1003252
 
 #if !BUILDFLAG(ENABLE_NACL) || \
-    (defined(OS_MAC) && defined(ADDRESS_SANITIZER)) || defined(OS_WIN)
+    (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_WIN)
 
 #define MAYBE_PPAPI_NACL(test_name) DISABLED_##test_name
 #define MAYBE_PPAPI_PNACL(test_name) DISABLED_##test_name
@@ -129,7 +129,7 @@ using content::RenderViewHost;
 #else
 
 #define MAYBE_PPAPI_NACL(test_name) test_name
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     defined(OS_MACOSX) || defined(ADDRESS_SANITIZER)
 // http://crbug.com/633067, http://crbug.com/727989, http://crbug.com/1076806
 #define MAYBE_PPAPI_PNACL(test_name) DISABLED_##test_name
@@ -179,7 +179,7 @@ using content::RenderViewHost;
 //
 
 // Flaky on Windows https://crbug.com/1059468
-#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_32_BITS)
 TEST_PPAPI_NACL(Console)
 #endif
 
@@ -205,7 +205,7 @@ TEST_PPAPI_NACL(Graphics2D_Flush)
 // TEST_PPAPI_NACL(Graphics2D_FlushOffscreenUpdate)
 TEST_PPAPI_NACL(Graphics2D_BindNull)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #if defined(USE_AURA)
 // These tests fail with the test compositor which is what's used by default for
 // browser tests on Windows Aura. Renable when the software compositor is
@@ -217,7 +217,7 @@ TEST_PPAPI_NACL(Graphics2D_BindNull)
 #define MAYBE_OUT_Graphics3D Graphics3D
 #define MAYBE_NACL_Graphics3D DISABLED_Graphics3D
 #endif  // defined(USE_AURA)
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 // These tests fail when using the legacy software mode. Reenable when the
 // software compositor is enabled crbug.com/286038
 #define MAYBE_OUT_Graphics3D DISABLED_Graphics3D
@@ -251,7 +251,7 @@ TEST_PPAPI_NACL(ImageData)
 PPAPI_SOCKET_TEST(TCPSocket_Connect)
 PPAPI_SOCKET_TEST(TCPSocket_ReadWrite)
 // Flaky on Windows https://crbug.com/1059468#c18
-#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_32_BITS)
 PPAPI_SOCKET_TEST(TCPSocket_SetOption)
 PPAPI_SOCKET_TEST(TCPSocket_Backlog)
 #endif
@@ -259,7 +259,7 @@ PPAPI_SOCKET_TEST(TCPSocket_Listen)
 PPAPI_SOCKET_TEST(TCPSocket_Interface_1_0)
 
 // Flaky on Windows https://crbug.com/1143728
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 PPAPI_SOCKET_TEST(TCPSocket_UnexpectedCalls)
 #endif
 
@@ -967,7 +967,7 @@ PPAPI_SOCKET_TEST(UDPSocket_SetOption_1_0)
 PPAPI_SOCKET_TEST(UDPSocket_SetOption_1_1)
 
 // Fails on MacOS 11, crbug.com/1211138.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 PPAPI_SOCKET_TEST(UDPSocket_Broadcast)
 #endif
 
@@ -979,7 +979,7 @@ TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_Connect)
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_ConnectFailure)
 
 // Fails on MacOS 11, crbug.com/1211138.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_Broadcast)
 #endif
 
@@ -988,7 +988,7 @@ TEST_PPAPI_NACL(UDPSocketPrivate_Connect)
 TEST_PPAPI_NACL(UDPSocketPrivate_ConnectFailure)
 
 // Fails on MacOS 11, crbug.com/1211138.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST_PPAPI_NACL(UDPSocketPrivate_Broadcast)
 #endif
 
@@ -1187,7 +1187,7 @@ UDPSOCKET_FAILURE_TEST(UDPSocket_BindDropPipe,
                        UDPSocket_BindFails,
                        WrappedUDPSocket::FailureType::kBindDropPipe)
 // Flaky on Windows https://crbug.com/1059468#c18
-#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_32_BITS)
 UDPSOCKET_FAILURE_TEST(UDPSocket_SetBroadcastError,
                        UDPSocket_SetBroadcastFails,
                        WrappedUDPSocket::FailureType::kBroadcastError)
@@ -1411,7 +1411,7 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, MAYBE_PPAPI_NACL(URLLoader1)) {
 }
 
 // Flaky on Windows https://crbug.com/1059468#c18
-#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_32_BITS)
 IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, MAYBE_PPAPI_NACL(URLLoader2)) {
   RUN_URLLOADER_SUBTESTS_2;
 }
@@ -1437,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(URLLoader3)) {
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(URLRequest_CreateAndIsURLRequestInfo)
 
 // Timing out on Windows. http://crbug.com/129571
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_URLRequest_CreateAndIsURLRequestInfo \
   DISABLED_URLRequest_CreateAndIsURLRequestInfo
 #else
@@ -1469,7 +1469,7 @@ TEST_PPAPI_NACL(VarResource)
 #if defined(ARCH_CPU_X86)
 IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, NaClIRTStackAlignment) {
   bool is32 = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, we don't know statically if NaCl will actually be 32-bit
   // NaCl or if it will be 64-bit NaCl.  Even chrome (and browser_tests) is
   // built for 32-bit Windows, when the system is actually using a 64-bit
@@ -1505,7 +1505,7 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, NaClIRTStackAlignment) {
 #undef PostMessage
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // http://crbug.com/95557
 #define MAYBE_PostMessage DISABLED_PostMessage
 #else
@@ -1628,7 +1628,7 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, MAYBE_PPAPI_NACL(FileRef1)) {
   RUN_FILEREF_SUBTESTS_1;
 }
 // Flaky on Windows https://crbug.com/1059468#c18
-#if !defined(OS_WIN) || !defined(ARCH_CPU_32_BITS)
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_32_BITS)
 IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, MAYBE_PPAPI_NACL(FileRef2)) {
   RUN_FILEREF_SUBTESTS_2;
 }
@@ -1644,7 +1644,7 @@ TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(FileSystem)
 
 // PPAPINaClTest.FileSystem times out consistently on Windows and Mac.
 // http://crbug.com/130372
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_FileSystem DISABLED_FileSystem
 #else
 #define MAYBE_FileSystem FileSystem
@@ -1652,13 +1652,13 @@ TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(FileSystem)
 
 TEST_PPAPI_NACL(MAYBE_FileSystem)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // http://crbug.com/103912
 #define MAYBE_Fullscreen DISABLED_Fullscreen
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // http://crbug.com/146008
 #define MAYBE_Fullscreen DISABLED_Fullscreen
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 // http://crbug.com/342269
 #define MAYBE_Fullscreen DISABLED_Fullscreen
 #else
@@ -1842,7 +1842,7 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(AudioConfig)) {
       LIST_TEST(Audio_AudioCallback4) \
   )
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // http://crbug.com/396464
 #define MAYBE_Audio DISABLED_Audio
 #else
@@ -1886,7 +1886,7 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest,
 }
 
 TEST_PPAPI_OUT_OF_PROCESS(View_CreatedVisible)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // http://crbug.com/474399
 #define MAYBE_View_CreatedVisible DISABLED_View_CreatedVisible
 #else
@@ -2000,12 +2000,12 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(View)) {
       LIST_TEST(Compositor_GeneralUnbound) \
   )
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This test fails with the test compositor which is what's used by default for
 // browser tests on Windows. Renable when the software compositor is available.
 #define MAYBE_Compositor0 DISABLED_Compositor0
 #define MAYBE_Compositor1 DISABLED_Compositor1
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 // This test fails when using the legacy software mode. Reenable when the
 // software compositor is enabled crbug.com/286038
 #define MAYBE_Compositor0 DISABLED_Compositor0
@@ -2019,8 +2019,8 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(View)) {
 TEST_PPAPI_NACL_SUBTESTS(MAYBE_Compositor0, RUN_COMPOSITOR_SUBTESTS_0)
 TEST_PPAPI_NACL_SUBTESTS(MAYBE_Compositor1, RUN_COMPOSITOR_SUBTESTS_1)
 
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 // Flaky on ChromeOS, Linux, Windows, and Mac (crbug.com/438729)
 #define MAYBE_MediaStreamAudioTrack DISABLED_MediaStreamAudioTrack
 #else
@@ -2028,7 +2028,7 @@ TEST_PPAPI_NACL_SUBTESTS(MAYBE_Compositor1, RUN_COMPOSITOR_SUBTESTS_1)
 #endif
 TEST_PPAPI_NACL(MAYBE_MediaStreamAudioTrack)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky on Windows (crbug.com/633519)
 #define MAYBE_MediaStreamVideoTrack DISABLED_MediaStreamVideoTrack
 #else
@@ -2041,7 +2041,7 @@ TEST_PPAPI_NACL(MouseCursor)
 TEST_PPAPI_NACL(NetworkProxy)
 
 // TODO(crbug.com/602875), TODO(crbug.com/602876) Flaky on Win and CrOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 #define MAYBE_VideoDecoder DISABLED_VideoDecoder
 #else
 #define MAYBE_VideoDecoder VideoDecoder
@@ -2049,7 +2049,7 @@ TEST_PPAPI_NACL(NetworkProxy)
 TEST_PPAPI_NACL(MAYBE_VideoDecoder)
 
 // https://crbug.com/997840.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_VideoEncoder DISABLED_VideoEncoder
 #else
 #define MAYBE_VideoEncoder VideoEncoder
@@ -2060,7 +2060,7 @@ TEST_PPAPI_NACL(MAYBE_VideoEncoder)
 TEST_PPAPI_OUT_OF_PROCESS(Printing)
 
 // https://crbug.com/1038957.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MessageHandler DISABLED_MessageHandler
 #else
 #define MAYBE_MessageHandler MessageHandler
@@ -2120,7 +2120,7 @@ class NewlibPackagedAppTest : public PackagedAppTest {
 
 // Load a packaged app, and wait for it to successfully post a "hello" message
 // back.
-#if defined(OS_WIN) || !defined(NDEBUG) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || !defined(NDEBUG) || BUILDFLAG(IS_MAC)
 // flaky: crbug.com/707068
 // flaky on debug builds: crbug.com/709447
 IN_PROC_BROWSER_TEST_F(NewlibPackagedAppTest, DISABLED_SuccessfulLoad) {
