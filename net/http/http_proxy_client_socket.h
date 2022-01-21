@@ -34,6 +34,7 @@ class IOBuffer;
 class ProxyDelegate;
 class StreamSocket;
 
+// Tunnels a stream socket over an HTTP/1.1 connection.
 class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
  public:
   // Takes ownership of |socket|, which should already be connected by the time
@@ -44,8 +45,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
                         const HostPortPair& endpoint,
                         const ProxyServer& proxy_server,
                         HttpAuthController* http_auth_controller,
-                        bool tunnel,
-                        bool using_spdy,
                         ProxyDelegate* proxy_delegate,
                         const NetworkTrafficAnnotationTag& traffic_annotation);
 
@@ -154,9 +153,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   // specified by the URL, due to Alternate-Protocol or fixed testing ports.
   const HostPortPair endpoint_;
   scoped_refptr<HttpAuthController> auth_;
-  const bool tunnel_;
-  // If true, then the connection to the proxy is a SPDY connection.
-  const bool using_spdy_;
 
   std::string request_line_;
   HttpRequestHeaders request_headers_;

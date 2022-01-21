@@ -226,9 +226,6 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
 
   bool has_restarted_;
 
-  bool using_spdy_;
-  NextProto negotiated_protocol_;
-
   // Set to true once a connection has been successfully established. Remains
   // true even if a new socket is being connected to retry with auth.
   bool has_established_connection_;

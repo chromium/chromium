@@ -37,8 +37,6 @@ HttpProxyClientSocket::HttpProxyClientSocket(
     const HostPortPair& endpoint,
     const ProxyServer& proxy_server,
     HttpAuthController* http_auth_controller,
-    bool tunnel,
-    bool using_spdy,
     ProxyDelegate* proxy_delegate,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : io_callback_(base::BindRepeating(&HttpProxyClientSocket::OnIOComplete,
@@ -48,8 +46,6 @@ HttpProxyClientSocket::HttpProxyClientSocket(
       is_reused_(false),
       endpoint_(endpoint),
       auth_(http_auth_controller),
-      tunnel_(tunnel),
-      using_spdy_(using_spdy),
       proxy_server_(proxy_server),
       proxy_delegate_(proxy_delegate),
       traffic_annotation_(traffic_annotation),
@@ -96,13 +92,6 @@ int HttpProxyClientSocket::Connect(CompletionOnceCallback callback) {
   DCHECK(socket_);
   DCHECK(user_callback_.is_null());
 
-  // TODO(rch): figure out the right way to set up a tunnel with SPDY.
-  // This approach sends the complete HTTPS request to the proxy
-  // which allows the proxy to see "private" data.  Instead, we should
-  // create an SSL tunnel to the origin server using the CONNECT method
-  // inside a single SPDY stream.
-  if (using_spdy_ || !tunnel_)
-    next_state_ = STATE_DONE;
   if (next_state_ == STATE_DONE)
     return OK;
 

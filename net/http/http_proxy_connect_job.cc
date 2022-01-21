@@ -12,7 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,6 +29,7 @@
 #include "net/quic/quic_proxy_client_socket.h"
 #include "net/quic/quic_stream_factory.h"
 #include "net/socket/client_socket_handle.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_client_socket_pool.h"
@@ -189,8 +190,6 @@ HttpProxyConnectJob::HttpProxyConnectJob(
       params_(std::move(params)),
       next_state_(STATE_NONE),
       has_restarted_(false),
-      using_spdy_(false),
-      negotiated_protocol_(kProtoUnknown),
       has_established_connection_(false),
       http_auth_controller_(
           params_->tunnel()
@@ -453,7 +452,6 @@ int HttpProxyConnectJob::DoTransportConnect() {
         common_connect_job_params()->spdy_session_pool->FindAvailableSession(
             CreateSpdySessionKey(), /*enable_ip_based_pooling=*/false,
             /*is_websocket=*/false, net_log())) {
-      using_spdy_ = true;
       next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
       return OK;
     }
@@ -503,19 +501,20 @@ int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
 
   has_established_connection_ = true;
 
-  negotiated_protocol_ = nested_connect_job_->socket()->GetNegotiatedProtocol();
-  using_spdy_ = negotiated_protocol_ == kProtoHTTP2;
-  if (scheme != ProxyServer::SCHEME_HTTPS) {
-    DCHECK_EQ(negotiated_protocol_, kProtoUnknown);
+  if (!params_->tunnel()) {
+    // If not tunneling, this is an HTTP URL being fetched directly over the
+    // proxy. Return the underlying socket directly. The caller will handle the
+    // ALPN protocol, etc., from here. Clear the DNS aliases to match the other
+    // proxy codepaths.
+    SetSocket(nested_connect_job_->PassSocket(),
+              /*dns_aliases=*/std::set<std::string>());
+    return result;
   }
 
-  // TODO(rch): If we ever decide to implement a "trusted" SPDY proxy
-  // (one that we speak SPDY over SSL to, but to which we send HTTPS
-  // request directly instead of through CONNECT tunnels, then we
-  // need to add a predicate to this if statement so we fall through
-  // to the else case. (HttpProxyClientSocket currently acts as
-  // a "trusted" SPDY proxy).
-  if (using_spdy_ && params_->tunnel()) {
+  // Establish a tunnel over the proxy by making a CONNECT request. HTTP/1.1 and
+  // HTTP/2 handle CONNECT differently.
+  if (nested_connect_job_->socket()->GetNegotiatedProtocol() == kProtoHTTP2) {
+    DCHECK_EQ(ProxyServer::SCHEME_HTTPS, scheme);
     next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
   } else {
     next_state_ = STATE_HTTP_PROXY_CONNECT;
@@ -524,6 +523,7 @@ int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
 }
 
 int HttpProxyConnectJob::DoHttpProxyConnect() {
+  DCHECK(params_->tunnel());
   next_state_ = STATE_HTTP_PROXY_CONNECT_COMPLETE;
 
   // Reset the timer to just the length of time allowed for HttpProxy handshake
@@ -535,8 +535,7 @@ int HttpProxyConnectJob::DoHttpProxyConnect() {
   transport_socket_ = std::make_unique<HttpProxyClientSocket>(
       nested_connect_job_->PassSocket(), GetUserAgent(), params_->endpoint(),
       ProxyServer(GetProxyServerScheme(), GetDestination()),
-      http_auth_controller_.get(), params_->tunnel(), using_spdy_,
-      common_connect_job_params()->proxy_delegate,
+      http_auth_controller_.get(), common_connect_job_params()->proxy_delegate,
       params_->traffic_annotation());
   nested_connect_job_.reset();
   return transport_socket_->Connect(base::BindOnce(
@@ -570,7 +569,6 @@ int HttpProxyConnectJob::DoHttpProxyConnectComplete(int result) {
 }
 
 int HttpProxyConnectJob::DoSpdyProxyCreateStream() {
-  DCHECK(using_spdy_);
   DCHECK(params_->tunnel());
   DCHECK(params_->ssl_params());
 
@@ -751,8 +749,6 @@ int HttpProxyConnectJob::DoRestartWithAuthComplete(int result) {
   if (reconnect) {
     // Attempt to create a new one.
     transport_socket_.reset();
-    using_spdy_ = false;
-    negotiated_protocol_ = NextProto();
     next_state_ = STATE_BEGIN_CONNECT;
     return OK;
   }

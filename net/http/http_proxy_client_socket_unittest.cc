@@ -26,9 +26,10 @@ TEST(HttpProxyClientSocketTest, Tag) {
 
   // |socket| takes ownership of |tagging_sock|, but the test keeps a non-owning
   // pointer to it.
-  HttpProxyClientSocket socket(std::unique_ptr<StreamSocket>(tagging_sock), "",
-                               HostPortPair(), ProxyServer(), nullptr, false,
-                               false, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+  HttpProxyClientSocket socket(
+      std::unique_ptr<StreamSocket>(tagging_sock), /*user_agent=*/"",
+      HostPortPair(), ProxyServer(), /*http_auth_controller=*/nullptr,
+      /*proxy_delegate=*/nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   EXPECT_EQ(tagging_sock->tag(), SocketTag());
 #if BUILDFLAG(IS_ANDROID)

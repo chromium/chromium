@@ -23,6 +23,7 @@ class HttpRequestHeaders;
 class HttpAuthController;
 class NetLogWithSource;
 
+// A common base class for a stream socket tunneled through a proxy.
 class NET_EXPORT_PRIVATE ProxyClientSocket : public StreamSocket {
  public:
   ProxyClientSocket() {}

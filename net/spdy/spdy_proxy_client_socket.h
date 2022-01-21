@@ -38,6 +38,7 @@ class IOBuffer;
 class ProxyDelegate;
 class SpdyStream;
 
+// Tunnels a stream socket over an HTTP/2 connection.
 class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
                                                  public SpdyStream::Delegate {
  public:

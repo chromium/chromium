@@ -68,8 +68,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       std::move(fuzzed_socket), "Bond/007", net::HostPortPair("foo", 80),
       net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
                        net::HostPortPair("proxy", 42)),
-      auth_controller.get(), true /* tunnel */, false /* using_spdy */,
-      nullptr /* proxy_delegate */, TRAFFIC_ANNOTATION_FOR_TESTS);
+      auth_controller.get(), nullptr /* proxy_delegate */,
+      TRAFFIC_ANNOTATION_FOR_TESTS);
   int result = socket.Connect(callback.callback());
   result = callback.GetResult(result);
 

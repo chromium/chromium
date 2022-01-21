@@ -23,7 +23,7 @@ namespace net {
 class HttpAuthController;
 class ProxyDelegate;
 
-// QuicProxyClientSocket provides a socket interface to an underlying
+// QuicProxyClientSocket tunnels a stream socket over an underlying
 // QuicChromiumClientStream. Bytes written to/read from a QuicProxyClientSocket
 // are sent/received via STREAM frames in the underlying QUIC stream.
 class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
