@@ -109,6 +109,9 @@ extern const char kDetectFormSubmissionOnFormClearDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
+extern const char kMuteCompromisedPasswordsName[];
+extern const char kMuteCompromisedPasswordsDescription[];
+
 extern const char kEnableBluetoothSerialPortProfileInSerialApiName[];
 extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 

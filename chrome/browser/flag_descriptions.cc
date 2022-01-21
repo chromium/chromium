@@ -148,6 +148,11 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
+const char kMuteCompromisedPasswordsName[] =
+    "Mute & Unmute compromised passwords in bulk leak check";
+const char kMuteCompromisedPasswordsDescription[] =
+    "Enables muting/unmuting compromised passwords in bulk leak check.";
+
 const char kEnableBluetoothSerialPortProfileInSerialApiName[] =
     "Enable Bluetooth Serial Port Profile in Serial API";
 const char kEnableBluetoothSerialPortProfileInSerialApiDescription[] =

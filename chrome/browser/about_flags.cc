@@ -6567,6 +6567,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEditPasswordsInSettingsDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kEditPasswordsInSettings)},
 
+    {"mute-compromised-passwords",
+     flag_descriptions::kMuteCompromisedPasswordsName,
+     flag_descriptions::kMuteCompromisedPasswordsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::kMuteCompromisedPasswords)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"frame-throttle-fps", flag_descriptions::kFrameThrottleFpsName,
      flag_descriptions::kFrameThrottleFpsDescription, kOsCrOS,
