@@ -346,9 +346,6 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,res
 crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="depth-only";type1="render-target";* [ Failure ]
 crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="stencil-only";type1="render-target";* [ Failure ]
 
-# Temporary suppression for change in syntax of attributes.
-crbug.com/tint/1387 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:* [ Failure ]
-
 ###
 ### Mac (Metal) specific
 ###
