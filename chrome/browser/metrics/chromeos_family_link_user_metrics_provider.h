@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
-#define CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
+#ifndef CHROME_BROWSER_METRICS_CHROMEOS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
+#define CHROME_BROWSER_METRICS_CHROMEOS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
 
 #include <memory>
 
@@ -24,7 +24,7 @@ class PrimaryAccountAccessTokenFetcher;
 // This metrics provider categorizes the current user into over or under the age
 // of consent for UMA dashboard filtering. This metrics provider is ChromeOS
 // specific.
-class FamilyLinkUserMetricsProvider
+class ChromeOSFamilyLinkUserMetricsProvider
     : public metrics::MetricsProvider,
       public session_manager::SessionManagerObserver {
  public:
@@ -47,11 +47,12 @@ class FamilyLinkUserMetricsProvider
     kMaxValue = kOverConsentAge
   };
 
-  FamilyLinkUserMetricsProvider();
-  FamilyLinkUserMetricsProvider(const FamilyLinkUserMetricsProvider&) = delete;
-  FamilyLinkUserMetricsProvider& operator=(
-      const FamilyLinkUserMetricsProvider&) = delete;
-  ~FamilyLinkUserMetricsProvider() override;
+  ChromeOSFamilyLinkUserMetricsProvider();
+  ChromeOSFamilyLinkUserMetricsProvider(
+      const ChromeOSFamilyLinkUserMetricsProvider&) = delete;
+  ChromeOSFamilyLinkUserMetricsProvider& operator=(
+      const ChromeOSFamilyLinkUserMetricsProvider&) = delete;
+  ~ChromeOSFamilyLinkUserMetricsProvider() override;
 
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(
@@ -78,4 +79,4 @@ class FamilyLinkUserMetricsProvider
   absl::optional<LogSegment> log_segment_;
 };
 
-#endif  // CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
+#endif  // CHROME_BROWSER_METRICS_CHROMEOS_FAMILY_LINK_USER_METRICS_PROVIDER_H_

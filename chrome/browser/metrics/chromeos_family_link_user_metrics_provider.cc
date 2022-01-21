@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/family_link_user_metrics_provider.h"
+#include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -25,7 +25,7 @@ constexpr char kHistogramName[] = "ChromeOS.FamilyLinkUser.LogSegment";
 
 }  // namespace
 
-FamilyLinkUserMetricsProvider::FamilyLinkUserMetricsProvider() {
+ChromeOSFamilyLinkUserMetricsProvider::ChromeOSFamilyLinkUserMetricsProvider() {
   session_manager::SessionManager* session_manager =
       session_manager::SessionManager::Get();
   // The |session_manager| is nullptr only for unit tests.
@@ -33,7 +33,8 @@ FamilyLinkUserMetricsProvider::FamilyLinkUserMetricsProvider() {
     session_manager->AddObserver(this);
 }
 
-FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() {
+ChromeOSFamilyLinkUserMetricsProvider::
+    ~ChromeOSFamilyLinkUserMetricsProvider() {
   session_manager::SessionManager* session_manager =
       session_manager::SessionManager::Get();
   // The |session_manager| is nullptr only for unit tests.
@@ -43,14 +44,15 @@ FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() {
 
 // This function is called at unpredictable intervals throughout the entire
 // ChromeOS session, so guarantee it will never crash.
-void FamilyLinkUserMetricsProvider::ProvideCurrentSessionData(
+void ChromeOSFamilyLinkUserMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto_unused) {
   if (!log_segment_)
     return;
   base::UmaHistogramEnumeration(kHistogramName, log_segment_.value());
 }
 
-void FamilyLinkUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
+void ChromeOSFamilyLinkUserMetricsProvider::OnUserSessionStarted(
+    bool is_primary_user) {
   if (!is_primary_user)
     return;
 
@@ -72,30 +74,32 @@ void FamilyLinkUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
   DCHECK(identity_manager);
 
   DCHECK(!access_token_fetcher_);
-  access_token_fetcher_ =
-      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          /*consumer_name=*/"FamilyLinkUserMetricsProvider", identity_manager,
-          signin::ScopeSet(),
-          base::BindOnce(
-              &FamilyLinkUserMetricsProvider::OnAccessTokenRequestCompleted,
-              // It is safe to use base::Unretained as |this| owns
-              // |access_token_fetcher_|. See comments in
-              // primary_account_access_token_fetcher.h.
-              base::Unretained(this)),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kSignin);
+  access_token_fetcher_ = std::make_unique<
+      signin::PrimaryAccountAccessTokenFetcher>(
+      /*consumer_name=*/"ChromeOSFamilyLinkUserMetricsProvider",
+      identity_manager, signin::ScopeSet(),
+      base::BindOnce(
+          &ChromeOSFamilyLinkUserMetricsProvider::OnAccessTokenRequestCompleted,
+          // It is safe to use base::Unretained as |this| owns
+          // |access_token_fetcher_|. See comments in
+          // primary_account_access_token_fetcher.h.
+          base::Unretained(this)),
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+      signin::ConsentLevel::kSignin);
 }
 
 // static
-const char* FamilyLinkUserMetricsProvider::GetHistogramNameForTesting() {
+const char*
+ChromeOSFamilyLinkUserMetricsProvider::GetHistogramNameForTesting() {
   return kHistogramName;
 }
 
-void FamilyLinkUserMetricsProvider::SetLogSegment(LogSegment log_segment) {
+void ChromeOSFamilyLinkUserMetricsProvider::SetLogSegment(
+    LogSegment log_segment) {
   log_segment_ = log_segment;
 }
 
-void FamilyLinkUserMetricsProvider::OnAccessTokenRequestCompleted(
+void ChromeOSFamilyLinkUserMetricsProvider::OnAccessTokenRequestCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   access_token_fetcher_.reset();

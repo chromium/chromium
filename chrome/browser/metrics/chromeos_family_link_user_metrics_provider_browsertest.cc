@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/family_link_user_metrics_provider.h"
+#include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
 
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -23,12 +23,12 @@ namespace {
 
 // Returns the user type for logging in.
 ash::LoggedInUserMixin::LogInType GetLogInType(
-    FamilyLinkUserMetricsProvider::LogSegment log_segment) {
+    ChromeOSFamilyLinkUserMetricsProvider::LogSegment log_segment) {
   switch (log_segment) {
-    case FamilyLinkUserMetricsProvider::LogSegment::kOther:
+    case ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kOther:
       return ash::LoggedInUserMixin::LogInType::kRegular;
-    case FamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge:
-    case FamilyLinkUserMetricsProvider::LogSegment::kOverConsentAge:
+    case ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge:
+    case ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kOverConsentAge:
       return ash::LoggedInUserMixin::LogInType::kChild;
   }
 }
@@ -49,15 +49,15 @@ void ProvideCurrentSessionData() {
 
 }  // namespace
 
-class FamilyLinkUserMetricsProviderForTesting
-    : public FamilyLinkUserMetricsProvider {
+class ChromeOSFamilyLinkUserMetricsProviderForTesting
+    : public ChromeOSFamilyLinkUserMetricsProvider {
  public:
-  FamilyLinkUserMetricsProviderForTesting() = default;
-  FamilyLinkUserMetricsProviderForTesting(
-      const FamilyLinkUserMetricsProviderForTesting&) = delete;
-  FamilyLinkUserMetricsProviderForTesting& operator=(
-      const FamilyLinkUserMetricsProviderForTesting&) = delete;
-  ~FamilyLinkUserMetricsProviderForTesting() override = default;
+  ChromeOSFamilyLinkUserMetricsProviderForTesting() = default;
+  ChromeOSFamilyLinkUserMetricsProviderForTesting(
+      const ChromeOSFamilyLinkUserMetricsProviderForTesting&) = delete;
+  ChromeOSFamilyLinkUserMetricsProviderForTesting& operator=(
+      const ChromeOSFamilyLinkUserMetricsProviderForTesting&) = delete;
+  ~ChromeOSFamilyLinkUserMetricsProviderForTesting() override = default;
 
   void SetRunLoopQuitClosure(base::RepeatingClosure closure) {
     quit_closure_ = base::BindOnce(closure);
@@ -65,26 +65,27 @@ class FamilyLinkUserMetricsProviderForTesting
 
  private:
   void SetLogSegment(LogSegment log_segment) override {
-    FamilyLinkUserMetricsProvider::SetLogSegment(log_segment);
+    ChromeOSFamilyLinkUserMetricsProvider::SetLogSegment(log_segment);
     std::move(quit_closure_).Run();
   }
 
   base::OnceClosure quit_closure_;
 };
 
-class FamilyLinkUserMetricsProviderTest
+class ChromeOSFamilyLinkUserMetricsProviderTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<
-          FamilyLinkUserMetricsProvider::LogSegment> {
+          ChromeOSFamilyLinkUserMetricsProvider::LogSegment> {
  protected:
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, GetLogInType(GetParam()), embedded_test_server(),
       /*test_base=*/this};
 };
 
-IN_PROC_BROWSER_TEST_P(FamilyLinkUserMetricsProviderTest, UserCategory) {
+IN_PROC_BROWSER_TEST_P(ChromeOSFamilyLinkUserMetricsProviderTest,
+                       UserCategory) {
   base::HistogramTester histogram_tester;
-  FamilyLinkUserMetricsProviderForTesting provider;
+  ChromeOSFamilyLinkUserMetricsProviderForTesting provider;
   base::RunLoop run_loop;
 
   // Simulate calling ProvideCurrentSessionData() prior to logging in. This call
@@ -93,15 +94,16 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUserMetricsProviderTest, UserCategory) {
 
   // No metrics were recorded.
   histogram_tester.ExpectTotalCount(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(), 0);
+      ChromeOSFamilyLinkUserMetricsProvider::GetHistogramNameForTesting(), 0);
 
   provider.SetRunLoopQuitClosure(run_loop.QuitClosure());
 
-  const FamilyLinkUserMetricsProvider::LogSegment log_segment = GetParam();
+  const ChromeOSFamilyLinkUserMetricsProvider::LogSegment log_segment =
+      GetParam();
   // Set up service flags for children under the age of consent.
   logged_in_user_mixin_.GetFakeGaiaMixin()->set_initialize_child_id_token(
       log_segment ==
-      FamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge);
+      ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge);
   logged_in_user_mixin_.LogInUser(/*issue_any_scope_token=*/true);
 
   run_loop.Run();
@@ -110,31 +112,32 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUserMetricsProviderTest, UserCategory) {
   provider.ProvideCurrentSessionData(/*uma_proto_unused=*/nullptr);
 
   histogram_tester.ExpectUniqueSample(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(), log_segment,
-      1);
+      ChromeOSFamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
+      log_segment, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    FamilyLinkUserMetricsProviderTest,
+    ChromeOSFamilyLinkUserMetricsProviderTest,
     testing::Values(
-        FamilyLinkUserMetricsProvider::LogSegment::kOther,
-        FamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge,
-        FamilyLinkUserMetricsProvider::LogSegment::kOverConsentAge));
+        ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kOther,
+        ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge,
+        ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kOverConsentAge));
 
-class FamilyLinkUserMetricsProviderGuestModeTest
+class ChromeOSFamilyLinkUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {
  private:
   ash::GuestSessionMixin guest_session_mixin_{&mixin_host_};
 };
 
 // Tests that guest users go into the kOther bucket.
-IN_PROC_BROWSER_TEST_F(FamilyLinkUserMetricsProviderGuestModeTest, GuestMode) {
+IN_PROC_BROWSER_TEST_F(ChromeOSFamilyLinkUserMetricsProviderGuestModeTest,
+                       GuestMode) {
   base::HistogramTester histogram_tester;
 
   ProvideCurrentSessionData();
 
   histogram_tester.ExpectUniqueSample(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyLinkUserMetricsProvider::LogSegment::kOther, 1);
+      ChromeOSFamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
+      ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kOther, 1);
 }
