@@ -9,6 +9,8 @@ include_rules = [
   "+components/media_control/mojom",
   "+components/network_hints/renderer",
   "+components/on_load_script_injector/renderer",
+  "+components/url_rewrite/common",
+  "+components/url_rewrite/renderer",
   "+components/version_info",
   "+content/public/common",
   "+content/public/renderer",

@@ -4,6 +4,12 @@
 
 #include "chromecast/common/cors_exempt_headers.h"
 
+#include <string>
+
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
+#include "base/stl_util.h"
+
 namespace chromecast {
 namespace {
 
@@ -35,6 +41,13 @@ const char* kExemptHeaders[] = {
 
 base::span<const char*> GetLegacyCorsExemptHeaders() {
   return base::span<const char*>(kExemptHeaders);
+}
+
+bool IsCorsExemptHeader(base::StringPiece header) {
+  static const base::NoDestructor<base::flat_set<std::string>>
+      exempt_header_set(kExemptHeaders,
+                        kExemptHeaders + base::size(kExemptHeaders));
+  return exempt_header_set->find(header) != exempt_header_set->end();
 }
 
 }  // namespace chromecast

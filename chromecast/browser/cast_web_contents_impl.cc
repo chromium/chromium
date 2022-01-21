@@ -29,6 +29,7 @@
 #include "chromecast/net/connectivity_checker.h"
 #include "components/cast/message_port/cast/message_port_cast.h"
 #include "components/media_control/mojom/media_playback_options.mojom.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "content/public/browser/message_port_provider.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -162,6 +163,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
 
   CastWebContents::GetAll().push_back(this);
   content::WebContentsObserver::Observe(web_contents_);
+  url_rewrite_rules_manager_.AddWebContents(web_contents_);
   if (params_->enabled_for_dev) {
     LOG(INFO) << "Enabling dev console for CastWebContentsImpl";
     remote_debugging_server_->EnableWebContentsForDebugging(web_contents_);
@@ -218,6 +220,12 @@ PageState CastWebContentsImpl::page_state() const {
   return page_state_;
 }
 
+const url_rewrite::UrlRequestRewriteRulesManager*
+CastWebContentsImpl::url_rewrite_rules_manager() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return &url_rewrite_rules_manager_;
+}
+
 void CastWebContentsImpl::AddRendererFeatures(base::Value features) {
   DCHECK(features.is_dict());
   renderer_features_ = std::move(features);
@@ -226,6 +234,13 @@ void CastWebContentsImpl::AddRendererFeatures(base::Value features) {
 void CastWebContentsImpl::SetInterfacesForRenderer(
     mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) {
   remote_interfaces_.SetProvider(std::move(remote_interfaces));
+}
+
+void CastWebContentsImpl::SetUrlRewriteRules(
+    url_rewrite::mojom::UrlRequestRewriteRulesPtr rules) {
+  if (!url_rewrite_rules_manager_.OnRulesUpdated(std::move(rules))) {
+    LOG(ERROR) << "URL rewrite rules update failed.";
+  }
 }
 
 void CastWebContentsImpl::LoadUrl(const GURL& url) {

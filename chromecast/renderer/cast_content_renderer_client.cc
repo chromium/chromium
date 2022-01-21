@@ -19,13 +19,14 @@
 #include "chromecast/public/media/media_capabilities_shlib.h"
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
 #include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
-#include "chromecast/renderer/identification_settings_manager_renderer.h"
 #include "chromecast/renderer/js_channel_bindings.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
+#include "chromecast/renderer/url_rewrite_rules_provider.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -201,15 +202,14 @@ void CastContentRendererClient::RenderFrameCreated(
   activity_url_filter_manager_->OnRenderFrameCreated(render_frame);
 
   // |base::Unretained| is safe here since the callback is triggered before the
-  // destruction of IdentificationSettingsManager by which point
+  // destruction of UrlRewriteRulesProvider by which point
   // CastContentRendererClient should be alive.
-  settings_managers_.emplace(
+  url_rewrite_rules_providers_.emplace(
       render_frame->GetRoutingID(),
-      base::MakeRefCounted<IdentificationSettingsManagerRenderer>(
+      std::make_unique<UrlRewriteRulesProvider>(
           render_frame,
           base::BindOnce(&CastContentRendererClient::OnRenderFrameRemoved,
-                         base::Unretained(this),
-                         render_frame->GetRoutingID())));
+                         base::Unretained(this))));
 }
 
 void CastContentRendererClient::RunScriptsAtDocumentStart(
@@ -406,21 +406,24 @@ CastContentRendererClient::GetAudioRendererAlgorithmParameters(
 #endif
 }
 
-scoped_refptr<IdentificationSettingsManager>
-CastContentRendererClient::GetSettingsManagerFromRenderFrameID(
-    int render_frame_id) {
-  const auto& it = settings_managers_.find(render_frame_id);
-  if (it == settings_managers_.end()) {
+scoped_refptr<url_rewrite::UrlRequestRewriteRules>
+CastContentRendererClient::GetUrlRequestRewriteRules(
+    int render_frame_id) const {
+  auto it = url_rewrite_rules_providers_.find(render_frame_id);
+  if (it == url_rewrite_rules_providers_.end()) {
+    LOG(WARNING)
+        << "Can't find the URL rewrite rules provider for render frame: "
+        << render_frame_id;
     return nullptr;
   }
-  return it->second;
+  return it->second->GetCachedRules();
 }
 
 void CastContentRendererClient::OnRenderFrameRemoved(int render_frame_id) {
-  size_t result = settings_managers_.erase(render_frame_id);
+  size_t result = url_rewrite_rules_providers_.erase(render_frame_id);
   if (result != 1U) {
     LOG(WARNING)
-        << "Can't find the identification settings manager for render frame: "
+        << "Can't find the URL rewrite rules provider for render frame: "
         << render_frame_id;
   }
 }

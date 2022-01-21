@@ -7,6 +7,7 @@ module chromecast.mojom;
 import "chromecast/bindings/public/mojom/api_bindings.mojom";
 import "chromecast/common/mojom/identification_settings.mojom";
 import "chromecast/mojo/mojom/remote_interfaces.mojom";
+import "components/url_rewrite/mojom/url_request_rewrite.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
@@ -105,6 +106,11 @@ interface CastWebContents {
   // used as backends for built-in Cast V8 bindings. Sensitive APIs should
   // *never* be exposed through |remote_interfaces|.
   SetInterfacesForRenderer(pending_remote<RemoteInterfaces> remote_interfaces);
+
+  // Sets URL rewrite rules for modifying navigation requests.
+  // Note: this must be called before LoadUrl in order for the rules to take
+  // effect on the requests.
+  SetUrlRewriteRules(url_rewrite.mojom.UrlRequestRewriteRules rules);
 
   // ===========================================================================
   // Page Lifetime

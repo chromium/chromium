@@ -25,6 +25,7 @@
 #include "chromecast/browser/named_message_port_connector_cast.h"
 #include "chromecast/mojo/remote_interfaces.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -60,6 +61,8 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents() const override;
   PageState page_state() const override;
+  const url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager()
+      const override;
 
   // CastWebContents implementation:
   int tab_id() const override;
@@ -77,6 +80,8 @@ class CastWebContentsImpl : public CastWebContents,
   void AddRendererFeatures(base::Value features) override;
   void SetInterfacesForRenderer(
       mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) override;
+  void SetUrlRewriteRules(
+      url_rewrite::mojom::UrlRequestRewriteRulesPtr rules) override;
   void LoadUrl(const GURL& url) override;
   void ClosePage() override;
   void Stop(int error_code) override;
@@ -172,6 +177,7 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents_;
   mojom::CastWebViewParamsPtr params_;
+  url_rewrite::UrlRequestRewriteRulesManager url_rewrite_rules_manager_;
   PageState page_state_;
   PageState last_state_;
   shell::RemoteDebuggingServer* const remote_debugging_server_;

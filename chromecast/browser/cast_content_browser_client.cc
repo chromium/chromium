@@ -52,6 +52,7 @@
 #include "chromecast/browser/service_connector.h"
 #include "chromecast/browser/service_manager_connection.h"
 #include "chromecast/browser/service_manager_context.h"
+#include "chromecast/common/cors_exempt_headers.h"
 #include "chromecast/common/global_descriptors.h"
 #include "chromecast/common/user_agent.h"
 #include "chromecast/external_mojo/broker_service/broker_service.h"
@@ -65,6 +66,8 @@
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
+#include "components/url_rewrite/common/url_loader_throttle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/certificate_request_result_type.h"
@@ -973,6 +976,33 @@ bool CastContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
   // Some Cast apps hosted over HTTP needs to access the private network so that
   // media can be streamed from a local media server.
   return true;
+}
+
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+CastContentBrowserClient::CreateURLLoaderThrottles(
+    const network::ResourceRequest& request,
+    content::BrowserContext* browser_context,
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    content::NavigationUIData* navigation_ui_data,
+    int frame_tree_node_id) {
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
+    // No support for service workers.
+    return throttles;
+  }
+
+  auto* cast_web_contents = CastWebContents::FromWebContents(wc_getter.Run());
+
+  // |cast_web_contents| may be nullptr in browser tests.
+  if (cast_web_contents) {
+    const auto& rules =
+        cast_web_contents->url_rewrite_rules_manager()->GetCachedRules();
+    if (rules) {
+      throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
+          rules, base::BindRepeating(&IsCorsExemptHeader)));
+    }
+  }
+  return throttles;
 }
 
 std::string CastContentBrowserClient::GetUserAgent() {

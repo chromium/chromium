@@ -36,6 +36,10 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
+namespace url_rewrite {
+class UrlRequestRewriteRulesManager;
+}  // namespace url_rewrite
+
 namespace chromecast {
 
 struct RendererFeature {
@@ -169,6 +173,8 @@ class CastWebContents : public mojom::CastWebContents {
   // TODO(seantopping): Hide this, clients shouldn't use WebContents directly.
   virtual content::WebContents* web_contents() const = 0;
   virtual PageState page_state() const = 0;
+  virtual const url_rewrite::UrlRequestRewriteRulesManager*
+  url_rewrite_rules_manager() const = 0;
 
   // mojom::CastWebContents implementation:
   void SetAppProperties(const std::string& app_id,
@@ -184,6 +190,8 @@ class CastWebContents : public mojom::CastWebContents {
   void AddRendererFeatures(base::Value features) override = 0;
   void SetInterfacesForRenderer(mojo::PendingRemote<mojom::RemoteInterfaces>
                                     remote_interfaces) override = 0;
+  void SetUrlRewriteRules(
+      url_rewrite::mojom::UrlRequestRewriteRulesPtr rules) override = 0;
   void LoadUrl(const GURL& url) override = 0;
   void ClosePage() override = 0;
   void SetWebVisibilityAndPaint(bool visible) override = 0;

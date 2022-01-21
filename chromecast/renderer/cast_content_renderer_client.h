@@ -12,8 +12,8 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
 #include "chromecast/renderer/cast_activity_url_filter_manager.h"
+#include "chromecast/renderer/cast_url_rewrite_rules_store.h"
 #include "chromecast/renderer/feature_manager_on_associated_interface.h"
-#include "chromecast/renderer/identification_settings_manager_store.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
@@ -31,8 +31,8 @@ class GuestViewContainerDispatcher;
 #endif
 
 namespace chromecast {
-class IdentificationSettingsManager;
 class MemoryPressureObserverImpl;
+class UrlRewriteRulesProvider;
 namespace media {
 class MediaCapsObserverImpl;
 class SupportedCodecProfileLevelsMemo;
@@ -47,7 +47,7 @@ namespace shell {
 class CastContentRendererClient
     : public content::ContentRendererClient,
       public mojom::ApplicationMediaCapabilitiesObserver,
-      public IdentificationSettingsManagerStore {
+      public CastURLRewriteRulesStore {
  public:
   // Creates an implementation of CastContentRendererClient. Platform should
   // link in an implementation as needed.
@@ -112,12 +112,12 @@ class CastContentRendererClient
   void OnSupportedBitstreamAudioCodecsChanged(
       const BitstreamAudioCodecsInfo& info) override;
 
+  // CastURLRewriteRulesStore implementation:
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules> GetUrlRequestRewriteRules(
+      int render_frame_id) const override;
+
   bool CheckSupportedBitstreamAudioCodec(::media::AudioCodec codec,
                                          bool check_spatial_rendering);
-
-  // IdentificationSettingsManagerStore implementation:
-  scoped_refptr<IdentificationSettingsManager>
-  GetSettingsManagerFromRenderFrameID(int render_frame_id) override;
 
   // Called when a render frame is removed.
   void OnRenderFrameRemoved(int render_frame_id);
@@ -144,8 +144,9 @@ class CastContentRendererClient
 
   BitstreamAudioCodecsInfo supported_bitstream_audio_codecs_info_;
 
-  base::flat_map<int, scoped_refptr<IdentificationSettingsManager>>
-      settings_managers_;
+  base::flat_map<int /* render_frame_id */,
+                 std::unique_ptr<UrlRewriteRulesProvider>>
+      url_rewrite_rules_providers_;
   std::unique_ptr<CastActivityUrlFilterManager> activity_url_filter_manager_;
 };
 

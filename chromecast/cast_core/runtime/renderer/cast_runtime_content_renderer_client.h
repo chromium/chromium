@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "chromecast/cast_core/runtime/renderer/url_rewrite_rules_provider.h"
 #include "chromecast/renderer/cast_content_renderer_client.h"
+#include "chromecast/renderer/url_rewrite_rules_provider.h"
 #include "components/cast_streaming/renderer/public/demuxer_provider.h"
 
 namespace cast_streaming {

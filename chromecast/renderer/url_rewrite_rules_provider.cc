@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/renderer/url_rewrite_rules_provider.h"
+#include "chromecast/renderer/url_rewrite_rules_provider.h"
 
 #include "base/bind.h"
 #include "content/public/renderer/render_frame.h"

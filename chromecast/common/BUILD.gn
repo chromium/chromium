@@ -53,10 +53,14 @@ cast_source_set("feature_constants") {
 test("cast_common_unittests") {
   testonly = true
 
-  sources = [ "activity_url_filter_unittest.cc" ]
+  sources = [
+    "activity_url_filter_unittest.cc",
+    "cors_exempt_headers_unittest.cc",
+  ]
 
   deps = [
     ":activity_url_filter",
+    ":cors_exempt_headers",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gmock",
