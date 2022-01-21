@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithoutTrialToken) {
     case FeatureEnabledType::kDefault:
       // Currently blink::features::kPrerender2 is default-enabled only on
       // Android.
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
       if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kEnabled) {
         CheckFeatureEnabled(true);
       } else {
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithTrialToken) {
     case FeatureEnabledType::kEnabled:
       if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kDisabled) {
         // Currently Origin Trial for Prerender2 is available only on Android.
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
         CheckFeatureEnabled(false);
 #else   // BUILDFLAG(IS_ANDROID)
         CheckFeatureDisabled();
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithTrialToken) {
       break;
     case FeatureEnabledType::kDefault:
       // Currently Origin Trial for Prerender2 is available only on Android.
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
       if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kEnabled) {
         CheckFeatureEnabled(true);
       } else {

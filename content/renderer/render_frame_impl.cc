@@ -5175,7 +5175,7 @@ void RenderFrameImpl::BeginNavigation(
                      !url.SchemeIs(url::kDataScheme);
   DCHECK(!(use_archive && IsMainFrame()));
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   bool render_view_was_created_by_renderer =
       render_view_->was_created_by_renderer_;
   // The handlenavigation API is deprecated and will be removed once

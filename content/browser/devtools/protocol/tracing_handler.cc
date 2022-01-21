@@ -52,7 +52,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #endif
 
@@ -512,7 +512,7 @@ TracingHandler::TracingHandler(DevToolsIOContext* io_context)
       gzip_compression_(false),
       buffer_usage_reporting_interval_(0) {
   bool use_video_capture_api = true;
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // Video capture API cannot be used on Android WebView.
   if (!CompositorImpl::IsInitialized())
     use_video_capture_api = false;

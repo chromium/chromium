@@ -4263,7 +4263,7 @@ bool WebContentsImpl::ShouldIgnoreUnresponsiveRenderer() {
   // Ignore unresponsive renderers if the debugger is attached to them since the
   // unresponsiveness might be a result of the renderer sitting on a breakpoint.
   //
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
   // Check if a windows debugger is attached to the renderer process.
   base::ProcessHandle process_handle =
       GetMainFrame()->GetProcess()->GetProcess().Handle();

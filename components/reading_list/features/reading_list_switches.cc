@@ -40,7 +40,7 @@ bool IsReadingListEnabled() {
 const base::Feature kReadLaterBackendMigration{
     "ReadLaterBackendMigration", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 // Feature flag used for enabling read later reminder notification.
 const base::Feature kReadLaterReminderNotification{
     "ReadLaterReminderNotification", base::FEATURE_DISABLED_BY_DEFAULT};

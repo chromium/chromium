@@ -69,7 +69,7 @@
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/snapshot/snapshot.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #endif
 
@@ -218,7 +218,7 @@ PageHandler::PageHandler(
       emulation_handler_(emulation_handler),
       browser_handler_(browser_handler) {
   bool create_video_consumer = true;
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   constexpr auto kScreencastPixelFormat = media::PIXEL_FORMAT_I420;
   // Video capture doesn't work on Android WebView. Use CopyFromSurface instead.
   if (!CompositorImpl::IsInitialized())

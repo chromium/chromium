@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "url/url_util.h"
+
 #include <stddef.h>
 
 #include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -13,7 +16,6 @@
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_test_utils.h"
-#include "url/url_util.h"
 
 namespace url {
 
@@ -574,7 +576,7 @@ absl::optional<std::string> CanonicalizeSpec(base::StringPiece spec,
 }
 }  // namespace
 
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
 // Regression test for https://crbug.com/1252658.
 TEST_F(URLUtilTest, TestCanonicalizeWindowsPathWithLeadingNUL) {
   auto PrefixWithNUL = [](std::string&& s) -> std::string { return '\0' + s; };

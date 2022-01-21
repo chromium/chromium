@@ -982,7 +982,7 @@ HangWatchState::HangWatchState(HangWatcher::ThreadType thread_type)
 // On macOS the thread ids used by CrashPad are not the same as the ones
 // provided by PlatformThread. Make sure to use the same for correct
 // attribution.
-#ifdef OS_MAC
+#if BUILDFLAG(IS_MAC)
   pthread_threadid_np(pthread_self(), &thread_id_);
 #else
   thread_id_ = PlatformThread::CurrentId();

@@ -369,7 +369,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   if (sessions().empty()) {
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
     // With video capture API snapshots happen in TracingHandler. However, the
     // video capture API cannot be used with Android WebView so
     // DevToolsFrameTraceRecorder takes snapshots.

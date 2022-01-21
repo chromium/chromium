@@ -20,7 +20,7 @@
 #include "net/base/escape.h"
 #include "url/url_constants.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "components/omnibox/browser/jni_headers/SuggestionAnswer_jni.h"
 
@@ -420,7 +420,7 @@ void SuggestionAnswer::LogAnswerUsed(
 const char SuggestionAnswer::kAnswerUsedUmaHistogramName[] =
     "Omnibox.SuggestionUsed.AnswerInSuggest";
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 
 ScopedJavaLocalRef<jobject> CreateJavaTextField(

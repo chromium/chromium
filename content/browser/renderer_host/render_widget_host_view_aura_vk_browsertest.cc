@@ -4,6 +4,7 @@
 
 #include "base/observer_list.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
@@ -195,7 +196,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
   }
 };
 
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
                        VirtualKeyboardAccessibilityFocusTest) {
   // The keyboard input pane events are not supported on Win7.
@@ -418,6 +419,6 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   SimulateTapAt(web_contents, gfx::Point(left + 1, top + 1));
   type_observer_none.Wait();
 }
-#endif  // #ifdef OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

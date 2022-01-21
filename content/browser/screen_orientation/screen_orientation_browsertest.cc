@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
             EvalJs(root->current_frame_host(), "screen.orientation.angle"));
 }
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 // This test is disabled because th trybots run in system portrait lock, which
 // prevents the test from changing the screen orientation.
 IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,

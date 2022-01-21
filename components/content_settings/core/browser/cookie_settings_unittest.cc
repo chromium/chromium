@@ -86,7 +86,7 @@ class CookieSettingsTest : public testing::Test {
         kHttpsSubdomainSite("https://www.example.com"),
         kHttpsSite8080("https://example.com:8080"),
         kAllHttpsSitesPattern(ContentSettingsPattern::FromString("https://*")) {
-#ifdef OS_IOS
+#if BUILDFLAG(IS_IOS)
     feature_list_.InitAndEnableFeature(kImprovedCookieControls);
 #else
     feature_list_.Init();

@@ -317,7 +317,7 @@ TEST_F(BluetoothTest, LowEnergyDeviceProperties) {
   BluetoothDevice* device = SimulateLowEnergyDevice(1);
   ASSERT_TRUE(device);
 // Bluetooth class information for BLE device is not available on Windows.
-#ifndef OS_WIN
+#if !BUILDFLAG(IS_WIN)
   EXPECT_EQ(0x1F00u, device->GetBluetoothClass());
 #endif
   EXPECT_EQ(kTestDeviceAddress1, device->GetAddress());

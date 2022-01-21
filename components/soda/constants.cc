@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,7 +30,7 @@ const char kSodaBinaryInstallationSuccessTimeTaken[] =
 const char kSodaBinaryInstallationFailureTimeTaken[] =
     "SodaInstaller.BinaryInstallationFailureTime";
 
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
 constexpr base::FilePath::CharType kSodaBinaryRelativePath[] =
     FILE_PATH_LITERAL("SODAFiles/SODA.dll");
 #else

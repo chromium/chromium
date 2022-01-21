@@ -4,7 +4,9 @@
 
 #include "chromeos/services/secure_channel/ble_weave_packet_receiver.h"
 
-#ifdef OS_WIN
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
 #else
 #include <netinet/in.h>

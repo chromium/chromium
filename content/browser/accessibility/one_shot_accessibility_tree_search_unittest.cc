@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #elif OS_FUCHSIA
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
@@ -21,7 +21,7 @@ namespace content {
 
 namespace {
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 class TestBrowserAccessibilityManager
     : public BrowserAccessibilityManagerAndroid {
  public:

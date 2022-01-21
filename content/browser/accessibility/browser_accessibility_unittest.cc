@@ -335,7 +335,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
       root_accessible->PlatformGetChild(0);
   ASSERT_NE(nullptr, static_text_accessible);
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // Android disallows getting inner text from root accessibility nodes.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(),
             root_accessible
@@ -377,7 +377,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
                     ui::AXClippingBehavior::kUnclipped)
                 .ToString());
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // Android disallows getting inner text from root accessibility nodes.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(),
             root_accessible
@@ -548,7 +548,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectMultiElement) {
                     ui::AXClippingBehavior::kUnclipped)
                 .ToString());
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // Android disallows getting inner text from accessibility root nodes.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(),
             root_accessible
