@@ -54,15 +54,7 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
-// TODO(crbug.com/881476) disabled for flaky crashes.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_GetSafeBrowsingExtendedReportingLevel \
-  DISABLED_GetSafeBrowsingExtendedReportingLevel
-#else
-#define MAYBE_GetSafeBrowsingExtendedReportingLevel \
-  GetSafeBrowsingExtendedReportingLevel
-#endif
-TEST_F(SafeBrowsingPrefsTest, MAYBE_GetSafeBrowsingExtendedReportingLevel) {
+TEST_F(SafeBrowsingPrefsTest, GetSafeBrowsingExtendedReportingLevel) {
   // By Default, extended reporting is off.
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
 
@@ -74,15 +66,7 @@ TEST_F(SafeBrowsingPrefsTest, MAYBE_GetSafeBrowsingExtendedReportingLevel) {
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
 }
 
-// TODO(crbug.com/881476) disabled for flaky crashes.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_VerifyMatchesPasswordProtectionLoginURL \
-  DISABLED_VerifyMatchesPasswordProtectionLoginURL
-#else
-#define MAYBE_VerifyMatchesPasswordProtectionLoginURL \
-  VerifyMatchesPasswordProtectionLoginURL
-#endif
-TEST_F(SafeBrowsingPrefsTest, MAYBE_VerifyMatchesPasswordProtectionLoginURL) {
+TEST_F(SafeBrowsingPrefsTest, VerifyMatchesPasswordProtectionLoginURL) {
   GURL url("https://mydomain.com/login.html#ref?username=alice");
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kPasswordProtectionLoginURLs));
   EXPECT_FALSE(MatchesPasswordProtectionLoginURL(url, prefs_));

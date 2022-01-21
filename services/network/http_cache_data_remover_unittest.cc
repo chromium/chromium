@@ -372,14 +372,7 @@ TEST_F(HttpCacheDataRemoverTest, TestDelayedBackend) {
   RemoveData(/*filter=*/nullptr, base::Time(), base::Time());
 }
 
-// TODO(crbug.com/1265408): Flaky.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_FilterDeleteByDomain DISABLED_FilterDeleteByDomain
-#else
-#define MAYBE_FilterDeleteByDomain FilterDeleteByDomain
-#endif
-
-TEST_F(HttpCacheDataRemoverSplitCacheTest, MAYBE_FilterDeleteByDomain) {
+TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterDeleteByDomain) {
   mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
   filter->type = mojom::ClearDataFilter_Type::DELETE_MATCHES;
   filter->domains.push_back("wikipedia.com");
@@ -392,14 +385,7 @@ TEST_F(HttpCacheDataRemoverSplitCacheTest, MAYBE_FilterDeleteByDomain) {
   EXPECT_EQ(4, backend_->GetEntryCount());
 }
 
-// TODO(crbug.com/1265408): Flaky.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_FilterKeepByDomain DISABLED_FilterKeepByDomain
-#else
-#define MAYBE_FilterKeepByDomain FilterKeepByDomain
-#endif
-
-TEST_F(HttpCacheDataRemoverSplitCacheTest, MAYBE_FilterKeepByDomain) {
+TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterKeepByDomain) {
   mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
   filter->type = mojom::ClearDataFilter_Type::KEEP_MATCHES;
   filter->domains.push_back("wikipedia.com");
@@ -412,14 +398,7 @@ TEST_F(HttpCacheDataRemoverSplitCacheTest, MAYBE_FilterKeepByDomain) {
   EXPECT_EQ(4, backend_->GetEntryCount());
 }
 
-// TODO(crbug.com/1265408): Flaky.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_FilterDeleteByOrigin DISABLED_FilterDeleteByOrigin
-#else
-#define MAYBE_FilterDeleteByOrigin FilterDeleteByOrigin
-#endif
-
-TEST_F(HttpCacheDataRemoverSplitCacheTest, MAYBE_FilterDeleteByOrigin) {
+TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterDeleteByOrigin) {
   mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
   filter->type = mojom::ClearDataFilter_Type::DELETE_MATCHES;
   filter->origins.push_back(url::Origin::Create(GURL("http://www.google.com")));
@@ -430,14 +409,7 @@ TEST_F(HttpCacheDataRemoverSplitCacheTest, MAYBE_FilterDeleteByOrigin) {
   EXPECT_EQ(6, backend_->GetEntryCount());
 }
 
-// TODO(crbug.com/1265408): Flaky.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_FilterKeepByOrigin DISABLED_FilterKeepByOrigin
-#else
-#define MAYBE_FilterKeepByOrigin FilterKeepByOrigin
-#endif
-
-TEST_F(HttpCacheDataRemoverSplitCacheTest, MAYBE_FilterKeepByOrigin) {
+TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterKeepByOrigin) {
   mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
   filter->type = mojom::ClearDataFilter_Type::KEEP_MATCHES;
   filter->origins.push_back(url::Origin::Create(GURL("http://www.google.com")));

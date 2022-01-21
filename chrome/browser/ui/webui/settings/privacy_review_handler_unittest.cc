@@ -89,29 +89,12 @@ class PrivacyReviewHandlerEnabledTest : public PrivacyReviewHandlerTest {
   }
 };
 
-// TODO(crbug.com/1277422): Flaky on Linux TSan Tests as one particular instance
-// of crbug/crbug.com/1275502.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_IsDisabledPrivacyReviewAvailable \
-  DISABLED_IsDisabledPrivacyReviewAvailable
-#else
-#define MAYBE_IsDisabledPrivacyReviewAvailable IsDisabledPrivacyReviewAvailable
-#endif
-TEST_F(PrivacyReviewHandlerDisabledTest,
-       MAYBE_IsDisabledPrivacyReviewAvailable) {
+TEST_F(PrivacyReviewHandlerDisabledTest, IsDisabledPrivacyReviewAvailable) {
   // Privacy review is not available when the experimental flag is disabled.
   ValidateIsPrivacyReviewAvailable(false);
 }
 
-// TODO(crbug.com/1277422): Flaky on Linux TSan Tests as one particular instance
-// of crbug/crbug.com/1275502.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_IsEnabledPrivacyReviewAvailable \
-  DISABLED_IsEnabledPrivacyReviewAvailable
-#else
-#define MAYBE_IsEnabledPrivacyReviewAvailable IsEnabledPrivacyReviewAvailable
-#endif
-TEST_F(PrivacyReviewHandlerEnabledTest, MAYBE_IsEnabledPrivacyReviewAvailable) {
+TEST_F(PrivacyReviewHandlerEnabledTest, IsEnabledPrivacyReviewAvailable) {
   // Privacy review is available when the experimental flag is enabled.
   ValidateIsPrivacyReviewAvailable(true);
 

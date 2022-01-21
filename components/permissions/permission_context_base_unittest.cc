@@ -772,13 +772,7 @@ TEST_F(PermissionContextBaseTests, TestDismissUntilBlocked) {
 }
 
 // Test setting a custom number of dismissals before block via variations.
-// TODO(crbug.com/1278842): Fix flaky test on Linux TSan.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_TestDismissVariations DISABLED_TestDismissVariations
-#else
-#define MAYBE_TestDismissVariations TestDismissVariations
-#endif
-TEST_F(PermissionContextBaseTests, MAYBE_TestDismissVariations) {
+TEST_F(PermissionContextBaseTests, TestDismissVariations) {
   TestVariationBlockOnSeveralDismissals_TestContent();
 }
 
@@ -809,13 +803,7 @@ TEST_F(PermissionContextBaseTests, TestGrantAndRevoke) {
 }
 
 // Tests the global kill switch by enabling/disabling the Field Trials.
-// TODO(crbug.com/1278842): Fix flaky test on Linux TSan.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_TestGlobalKillSwitch DISABLED_TestGlobalKillSwitch
-#else
-#define MAYBE_TestGlobalKillSwitch TestGlobalKillSwitch
-#endif
-TEST_F(PermissionContextBaseTests, MAYBE_TestGlobalKillSwitch) {
+TEST_F(PermissionContextBaseTests, TestGlobalKillSwitch) {
   TestGlobalPermissionsKillSwitch(ContentSettingsType::GEOLOCATION);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::NOTIFICATIONS);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::MIDI_SYSEX);
