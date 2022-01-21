@@ -6,14 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
+
 class Document;
+class ExecutionContext;
 
 // The PictureInPictureWindow is meant to be used only by
 // PictureInPictureController and is fundamentally just a simple proxy to get

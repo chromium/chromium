@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/filesystem/entry_sync.h"
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_entry.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_entry_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_path.h"

@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"

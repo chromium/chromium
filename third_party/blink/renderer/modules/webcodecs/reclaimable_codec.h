@@ -5,15 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_RECLAIMABLE_CODEC_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_RECLAIMABLE_CODEC_H_
 
+#include <memory>
+
 #include "base/feature_list.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
-
-#include <memory>
 
 namespace base {
 class TickClock;
@@ -23,6 +22,7 @@ namespace blink {
 
 class CodecPressureManager;
 class DOMException;
+class ExecutionContext;
 
 extern const MODULES_EXPORT base::Feature kReclaimInactiveWebCodecs;
 extern const MODULES_EXPORT base::Feature kOnlyReclaimBackgroundWebCodecs;
@@ -146,4 +146,4 @@ class MODULES_EXPORT ReclaimableCodec
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_RECLAIMABLE_CODEC_H_
