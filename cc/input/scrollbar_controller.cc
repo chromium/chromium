@@ -737,6 +737,17 @@ float ScrollbarController::ScreenSpaceScaleFactor() const {
 gfx::PointF ScrollbarController::GetScrollbarRelativePosition(
     const gfx::PointF position_in_widget,
     bool* clipped) const {
+  // This is a speculative fix for crbug.com/1254865. On Mac, we occasionally
+  // enter into a state where a scrollbar layer becomes null mid interaction. If
+  // this happens, early out.
+  const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
+  if (!scrollbar) {
+    // Set clipped to true so that GetScrollbarPartFromPointerDown returns early
+    // without trying to find a ScrollbarPart (since it wouldn't matter anyway).
+    *clipped = true;
+    return gfx::PointF(0, 0);
+  }
+
   gfx::Transform inverse_screen_space_transform(
       gfx::Transform::kSkipInitialization);
 
@@ -747,7 +758,7 @@ gfx::PointF ScrollbarController::GetScrollbarRelativePosition(
           ? 1.f / layer_tree_host_impl_->active_tree()->device_scale_factor()
           : 1.f;
   gfx::Transform scaled_screen_space_transform(
-      ScrollbarLayer()->ScreenSpaceTransform());
+      scrollbar->ScreenSpaceTransform());
   scaled_screen_space_transform.PostScale(scale, scale);
   if (!scaled_screen_space_transform.GetInverse(
           &inverse_screen_space_transform))
