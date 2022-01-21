@@ -1,4 +1,17 @@
 <style include="mwb-element-shared-style">
+   :host {
+      --audio-icon-color: var(--google-grey-700);
+      --media-recording-icon-color:  var(--google-red-600);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --audio-icon-color: var(--google-grey-300);
+        --media-recording-icon-color:  var(--google-red-300);
+      }
+    }
+
+
   :host(:focus) {
     outline: none;
   }
@@ -64,6 +77,10 @@
     font-size: var(--mwb-secondary-text-font-size);
   }
 
+  #primaryContainer {
+    display: flex;
+  }
+
   #secondaryTimestamp {
     flex-shrink: 0;
   }
@@ -102,21 +119,27 @@
   }
 
   #mediaAlert[display = 'block'] {
+    -webkit-mask: center / contain no-repeat;
+    flex-shrink: 0;
     height: var(--mwb-icon-size);
     margin-inline-end: 8px;
+    margin-inline-start:  4px;
     width: var(--mwb-icon-size);
   }
 
   #mediaAlert[class = 'media-recording'] {
-    content: url(alert_indicators/tab_media_recording.svg);
+    -webkit-mask-image: url(alert_indicators/tab_media_recording.svg);
+    background-color:  var(--media-recording-icon-color);
   }
 
   #mediaAlert[class = 'audio-playing'] {
-    content: url(alert_indicators/tab_audio_rounded.svg);
+    -webkit-mask-image: url(alert_indicators/tab_audio_rounded.svg);
+    background-color:  var(--audio-icon-color);
   }
 
   #mediaAlert[class = 'audio-muting'] {
-    content: url(alert_indicators/tab_audio_muting_rounded.svg);
+  -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+    background-color:  var(--audio-icon-color);
   }
 
 </style>
@@ -124,7 +147,11 @@
 <div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
 <div id="textAriaLabel" title="[[ariaLabelForText_(data)]]"></div>
 <div class="text-container" aria-hidden="true">
-  <div id="primaryText" title="[[data.tab.title]]"></div>
+  <div id="primaryContainer">
+    <div id="primaryText" title="[[data.tab.title]]"></div>
+    <img id="mediaAlert" display$="[[mediaAlertVisibility_(data)]]"
+  class$="[[getMediaAlertImageClass_(data)]]"></img>
+  </div>
   <div id="secondaryContainer">
     <!-- We do not leverage a dom-if element as the element highlighting logic
         may trigger before the stamping has taken place -->
@@ -142,8 +169,6 @@
     </div>
   </div>
 </div>
-<img id="mediaAlert" display$="[[mediaAlertVisibility_(data)]]"
-  class$="[[getMediaAlertImageClass_(data)]]"></img>
 <template is="dom-if" if="[[isCloseable_(data.type)]]">
   <div class$="[[getButtonContainerStyles_(data)]]">
     <cr-icon-button id="closeButton"
