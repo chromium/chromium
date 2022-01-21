@@ -1790,22 +1790,10 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(NetworkMonitor)) {
       LIST_TEST(WebSocket_UtilityBufferedAmount) \
   )
 
-// TODO(https://crbug.com/1277909): Flaky on Mac and Windows builders.
-#if defined(OS_MAC) || defined(OS_WIN)
-#define MAYBE_WebSocket1 DISABLED_WebSocket1
-#else
-#define MAYBE_WebSocket1 WebSocket1
-#endif
-IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, MAYBE_WebSocket1) {
+IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, WebSocket1) {
   RUN_WEBSOCKET_SUBTESTS_1;
 }
-// TODO(https://crbug.com/1277909): Flaky on Mac and Windows builders.
-#if defined(OS_MAC) || defined(OS_WIN)
-#define MAYBE_WebSocket2 DISABLED_WebSocket2
-#else
-#define MAYBE_WebSocket2 WebSocket2
-#endif
-IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, MAYBE_WebSocket2) {
+IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, WebSocket2) {
   RUN_WEBSOCKET_SUBTESTS_2;
 }
 IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, MAYBE_PPAPI_NACL(WebSocket1)) {
