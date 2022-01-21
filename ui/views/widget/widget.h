@@ -16,11 +16,13 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/events/event_source.h"
 #include "ui/gfx/geometry/rect.h"
@@ -286,6 +288,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // A hint about the size of the shadow if the type is ShadowType::kDrop. May
     // be ignored on some platforms. No value indicates no preference.
     absl::optional<int> shadow_elevation;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ui::ColorProviderManager::ElevationMode background_elevation =
+        ui::ColorProviderManager::ElevationMode::kLow;
+#endif
 
     // The window corner radius. May be ignored on some platforms.
     absl::optional<int> corner_radius;
@@ -1201,6 +1208,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // See set_is_secondary_widget().
   bool is_secondary_widget_ = true;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ui::ColorProviderManager::ElevationMode background_elevation_ =
+      ui::ColorProviderManager::ElevationMode::kLow;
+#endif
 
   // The current frame type in use by this window. Defaults to
   // FrameType::kDefault.

@@ -54,6 +54,7 @@ ColorProviderManager::Key::Key(ColorMode color_mode,
                                scoped_refptr<InitializerSupplier> custom_theme)
     : color_mode(color_mode),
       contrast_mode(contrast_mode),
+      elevation_mode(ElevationMode::kLow),
       system_theme(system_theme),
       custom_theme(std::move(custom_theme)) {}
 

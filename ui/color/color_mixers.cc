@@ -16,8 +16,11 @@ void AddColorMixers(ColorProvider* provider,
       key.color_mode == ColorProviderManager::ColorMode::kDark;
   const bool high_contrast =
       key.contrast_mode == ColorProviderManager::ContrastMode::kHigh;
+  const bool high_elevation =
+      key.elevation_mode == ColorProviderManager::ElevationMode::kHigh;
   ui::AddCoreDefaultColorMixer(provider, dark_mode, high_contrast);
-  ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast);
+  ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast,
+                              high_elevation);
   ui::AddUiColorMixer(provider, dark_mode, high_contrast);
   ui::AddNativeUiColorMixer(provider, dark_mode, high_contrast);
   ui::AddNativePostprocessingMixer(provider);

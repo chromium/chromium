@@ -25,7 +25,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -379,6 +378,9 @@ void Widget::Init(InitParams params) {
     params.delegate->WidgetInitializing(this);
 
   ownership_ = params.ownership;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  background_elevation_ = params.background_elevation;
+#endif
   native_widget_ = CreateNativeWidget(params, this)->AsNativeWidgetPrivate();
   root_view_.reset(CreateRootView());
 
@@ -1750,8 +1752,12 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 // Widget, ui::ColorProviderSource:
 
 const ui::ColorProvider* Widget::GetColorProvider() const {
-  return ui::ColorProviderManager::Get().GetColorProviderFor(
-      GetNativeTheme()->GetColorProviderKey(GetCustomTheme()));
+  ui::ColorProviderManager::Key key =
+      GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  key.elevation_mode = background_elevation_;
+#endif
+  return ui::ColorProviderManager::Get().GetColorProviderFor(key);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

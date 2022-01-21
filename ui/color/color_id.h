@@ -174,6 +174,21 @@
   E_CPONLY(kColorTreeNodeForegroundSelectedUnfocused) \
   E(kColorWindowBackground, NativeTheme::kColorId_WindowBackground)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define CHROMEOS_COLOR_IDS \
+  /* ChromeOS native colors */ \
+  E_CPONLY(kColorNativeColor1) \
+  E_CPONLY(kColorNativeColor1Shade1) \
+  E_CPONLY(kColorNativeColor1Shade2) \
+  E_CPONLY(kColorNativeColor2) \
+  E_CPONLY(kColorNativeColor3) \
+  E_CPONLY(kColorNativeColor4) \
+  E_CPONLY(kColorNativeColor5) \
+  E_CPONLY(kColorNativeColor6) \
+  E_CPONLY(kColorNativeBaseColor) \
+  E_CPONLY(kColorNativeSecondaryColor)
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #define WIN_COLOR_IDS \
   /* Windows native colors */ \
@@ -213,6 +228,10 @@
 #define COLOR_IDS \
   CROSS_PLATFORM_COLOR_IDS \
   WIN_COLOR_IDS
+#elif BUILDFLAG(IS_CHROMEOS)
+#define COLOR_IDS \
+  CROSS_PLATFORM_COLOR_IDS \
+  CHROMEOS_COLOR_IDS
 #else
 #define COLOR_IDS CROSS_PLATFORM_COLOR_IDS
 #endif

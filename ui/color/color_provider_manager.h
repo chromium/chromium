@@ -34,6 +34,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     kNormal,
     kHigh,
   };
+  enum class ElevationMode {
+    kLow,
+    kHigh,
+  };
   enum class SystemTheme {
     kDefault,
     kCustom,
@@ -66,14 +70,16 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     ~Key();
     ColorMode color_mode;
     ContrastMode contrast_mode;
+    ElevationMode elevation_mode;
     SystemTheme system_theme;
     scoped_refptr<InitializerSupplier> custom_theme;
 
     bool operator<(const Key& other) const {
-      return std::make_tuple(color_mode, contrast_mode, system_theme,
-                             custom_theme) <
+      return std::make_tuple(color_mode, contrast_mode, elevation_mode,
+                             system_theme, custom_theme) <
              std::make_tuple(other.color_mode, other.contrast_mode,
-                             other.system_theme, other.custom_theme);
+                             other.elevation_mode, other.system_theme,
+                             other.custom_theme);
     }
   };
 

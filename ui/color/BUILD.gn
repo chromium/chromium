@@ -151,7 +151,9 @@ component("mixers") {
 
   public_deps = [ "//base" ]
 
-  if (is_mac) {
+  if (is_chromeos) {
+    sources += [ "chromeos/native_color_mixers_chromeos.cc" ]
+  } else if (is_mac) {
     frameworks = [ "AppKit.framework" ]
     sources += [
       "mac/native_color_mixers_mac.mm",

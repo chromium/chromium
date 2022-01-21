@@ -14,7 +14,8 @@ class ColorProvider;
 // relevant subdirectories.
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              bool dark_window,
-                             bool high_contrast);
+                             bool high_contrast,
+                             bool high_elevation);
 
 // Adds a color mixer to |provider| that can add to kColorSetNative.
 // Intended for colors needed by ui/ that this platform overrides but

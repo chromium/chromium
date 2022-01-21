@@ -22,7 +22,8 @@ namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              bool dark_window,
-                             bool high_contrast) {
+                             bool high_contrast,
+                             bool high_elevation) {
   // TODO(pkasting): Not clear whether this is really the set of interest.
   // Maybe there's some way to query colors used by UxTheme.dll, or maybe we
   // should be hardcoding a list of colors for system light/dark modes based on

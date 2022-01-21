@@ -36,7 +36,8 @@ namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              bool dark_window,
-                             bool high_contrast) {
+                             bool high_contrast,
+                             bool high_elevation) {
   ScopedCurrentNSAppearance scoped_nsappearance(dark_window, high_contrast);
   ColorMixer& mixer = provider->AddMixer();
   mixer.AddSet({kColorSetNative,

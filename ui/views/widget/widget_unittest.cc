@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -13,8 +15,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -23,8 +29,10 @@
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/controls/button/label_button.h"
@@ -252,6 +260,139 @@ TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromContentsViewClassName) {
             widget->native_widget_private()->GetName());
   EXPECT_EQ(contents->GetClassName(), widget->GetName());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
+  struct SkottieColors {
+    bool operator==(const SkottieColors& other) const {
+      return color1 == other.color1 && color1_shade1 == other.color1_shade1 &&
+             color1_shade2 == other.color1_shade2 && color2 == other.color2 &&
+             color3 == other.color3 && color4 == other.color4 &&
+             color5 == other.color5 && color6 == other.color6 &&
+             base_color == other.base_color &&
+             secondary_color == other.secondary_color;
+    }
+    bool operator!=(const SkottieColors& other) const {
+      return !operator==(other);
+    }
+
+    SkColor color1, color1_shade1, color1_shade2, color2, color3, color4,
+        color5, color6, base_color, secondary_color;
+  };
+
+  class ViewObservingSkottieColors : public View {
+   public:
+    void OnThemeChanged() override {
+      View::OnThemeChanged();
+      const ui::ColorProvider* provider = GetColorProvider();
+      history.push_back({provider->GetColor(ui::kColorNativeColor1),
+                         provider->GetColor(ui::kColorNativeColor1Shade1),
+                         provider->GetColor(ui::kColorNativeColor1Shade2),
+                         provider->GetColor(ui::kColorNativeColor2),
+                         provider->GetColor(ui::kColorNativeColor3),
+                         provider->GetColor(ui::kColorNativeColor4),
+                         provider->GetColor(ui::kColorNativeColor5),
+                         provider->GetColor(ui::kColorNativeColor6),
+                         provider->GetColor(ui::kColorNativeBaseColor),
+                         provider->GetColor(ui::kColorNativeSecondaryColor)});
+    }
+
+    std::vector<SkottieColors> history;
+  };
+
+  // |widget1| has low background elevation and is created in light mode.
+  ui::NativeTheme* theme = ui::NativeTheme::GetInstanceForNativeUi();
+  theme->set_use_dark_colors(false);
+  WidgetDelegate delegate1;
+  ViewObservingSkottieColors* contents1 =
+      delegate1.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate1;
+    params->background_elevation =
+        ui::ColorProviderManager::ElevationMode::kLow;
+  }));
+  std::unique_ptr<Widget> widget1 = CreateTestWidget();
+  ASSERT_EQ(1u, contents1->history.size());
+
+  // |widget2| has high background elevation and is created in light mode.
+  WidgetDelegate delegate2;
+  ViewObservingSkottieColors* contents2 =
+      delegate2.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate2;
+    params->background_elevation =
+        ui::ColorProviderManager::ElevationMode::kHigh;
+  }));
+  std::unique_ptr<Widget> widget2 = CreateTestWidget();
+  ASSERT_EQ(1u, contents2->history.size());
+  // Check that |contents1| and |contents2| have the same Skottie colors.
+  // Background elevation should not affect Skottie colors in light mode.
+  EXPECT_EQ(contents1->history[0u], contents2->history[0u]);
+
+  // Switch to dark mode.
+  theme->set_use_dark_colors(true);
+  theme->NotifyOnNativeThemeUpdated();
+  // Check that |contents1| and |contents2| were notified of the theme update.
+  ASSERT_EQ(2u, contents1->history.size());
+  ASSERT_EQ(2u, contents2->history.size());
+  // Check that the Skottie colors were actually changed with the notification.
+  EXPECT_NE(contents1->history[0u], contents1->history[1u]);
+  EXPECT_NE(contents2->history[0u], contents2->history[1u]);
+  // Check that |contents1| and |contents2| have different Skottie colors.
+  // Background elevation should affect Skottie colors in dark mode.
+  EXPECT_NE(contents1->history[1u], contents2->history[1u]);
+
+  // |widget3| has low background elevation and is created in dark mode.
+  WidgetDelegate delegate3;
+  ViewObservingSkottieColors* contents3 =
+      delegate3.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate3;
+    params->background_elevation =
+        ui::ColorProviderManager::ElevationMode::kLow;
+  }));
+  std::unique_ptr<Widget> widget3 = CreateTestWidget();
+  ASSERT_EQ(1u, contents3->history.size());
+  // Check that |contents3| has the same Skottie colors as |contents1|. It
+  // should not matter whether a widget was created before or after dark mode
+  // was toggled.
+  EXPECT_EQ(contents1->history[1u], contents3->history[0u]);
+
+  // |widget4| has high background elevation and is created in dark mode.
+  WidgetDelegate delegate4;
+  ViewObservingSkottieColors* contents4 =
+      delegate4.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate4;
+    params->background_elevation =
+        ui::ColorProviderManager::ElevationMode::kHigh;
+  }));
+  std::unique_ptr<Widget> widget4 = CreateTestWidget();
+  ASSERT_EQ(1u, contents4->history.size());
+  // Check that |contents4| has the same Skottie colors as |contents2|. It
+  // should not matter whether a widget was created before or after dark mode
+  // was toggled.
+  EXPECT_EQ(contents2->history[1u], contents4->history[0u]);
+
+  // Switch to light mode.
+  theme->set_use_dark_colors(false);
+  theme->NotifyOnNativeThemeUpdated();
+  // Check that all four contents views were notified of the theme update.
+  ASSERT_EQ(3u, contents1->history.size());
+  ASSERT_EQ(3u, contents2->history.size());
+  ASSERT_EQ(2u, contents3->history.size());
+  ASSERT_EQ(2u, contents4->history.size());
+  // Check that |contents1| and |contents2| are back to the Skottie colors they
+  // started with. It should not matter if dark mode is toggled on and back off.
+  EXPECT_EQ(contents1->history[0u], contents1->history[2u]);
+  EXPECT_EQ(contents2->history[0u], contents2->history[2u]);
+  // Check that |contents3| and |contents4| still have the same Skottie colors
+  // as |contents1| and |contents2|, respectively. It should not matter when a
+  // widget was created.
+  EXPECT_EQ(contents1->history[2u], contents3->history[1u]);
+  EXPECT_EQ(contents2->history[2u], contents4->history[1u]);
+}
+#endif
 
 TEST_F(WidgetTest, NativeWindowProperty) {
   const char* key = "foo";
