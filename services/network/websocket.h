@@ -265,8 +265,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   const absl::optional<base::UnguessableToken> throttling_profile_id_;
   uint32_t net_log_source_id_ = net::NetLogSource::kInvalidId;
-  std::unique_ptr<WebSocketInterceptor> incoming_frame_interceptor_;
-  std::unique_ptr<WebSocketInterceptor> outgoing_frame_interceptor_;
+  std::unique_ptr<WebSocketInterceptor> frame_interceptor_;
 
   base::WeakPtrFactory<WebSocket> weak_ptr_factory_{this};
 };

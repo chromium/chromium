@@ -27,8 +27,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketInterceptor {
 
   WebSocketInterceptor(
       uint32_t net_log_source_id,
-      const absl::optional<base::UnguessableToken>& throttling_profile_id,
-      FrameDirection direction);
+      const absl::optional<base::UnguessableToken>& throttling_profile_id);
 
   virtual ~WebSocketInterceptor();
 
@@ -46,17 +45,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketInterceptor {
   //   * kShouldWait: frame processing should be paused until `retry_callback`
   //     is invoked.
   //     Calling Intercept again before the callback runs is not allowed.
-  InterceptResult Intercept(size_t size, base::OnceClosure retry_callback);
+  InterceptResult Intercept(FrameDirection direction,
+                            size_t size,
+                            base::OnceClosure retry_callback);
 
  private:
-  void ThrottleCallback(int result, int64_t bytes);
+  void ThrottleCallback(FrameDirection direction, int result, int64_t bytes);
 
-  const ThrottlingNetworkInterceptor::ThrottleCallback throttle_callback_;
+  ThrottlingNetworkInterceptor::ThrottleCallback throttle_callbacks_[2];
   const uint32_t net_log_source_id_;
-  const FrameDirection direction_;
   const std::unique_ptr<ScopedThrottlingToken> throttling_token_;
 
-  base::OnceClosure pending_callback_;
+  base::OnceClosure pending_callbacks_[2];
 };
 
 }  // namespace network

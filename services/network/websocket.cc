@@ -194,12 +194,8 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
   url_request->SetUserData(WebSocket::kUserDataKey,
                            std::make_unique<UnownedPointer>(impl_));
   if (impl_->throttling_profile_id_) {
-    impl_->incoming_frame_interceptor_ = std::make_unique<WebSocketInterceptor>(
-        url_request->net_log().source().id, impl_->throttling_profile_id_,
-        WebSocketInterceptor::kIncoming);
-    impl_->outgoing_frame_interceptor_ = std::make_unique<WebSocketInterceptor>(
-        url_request->net_log().source().id, impl_->throttling_profile_id_,
-        WebSocketInterceptor::kOutgoing);
+    impl_->frame_interceptor_ = std::make_unique<WebSocketInterceptor>(
+        url_request->net_log().source().id, impl_->throttling_profile_id_);
   }
 }
 
@@ -669,13 +665,13 @@ void WebSocket::SendPendingDataFrames(InterruptionReason resume_reason) {
   }
   while (!pending_data_frames_.empty()) {
     base::span<const char>& data_frame = pending_data_frames_.front();
-    if (incoming_frame_interceptor_ &&
-        resume_reason == InterruptionReason::kNone) {
+    if (frame_interceptor_ && resume_reason == InterruptionReason::kNone) {
       // `Intercept` always intercepts sending data per frame.
-      auto intercept_result = incoming_frame_interceptor_->Intercept(
-          data_frame.size(), base::BindOnce(&WebSocket::SendPendingDataFrames,
-                                            base::Unretained(this),
-                                            InterruptionReason::kInterceptor));
+      auto intercept_result = frame_interceptor_->Intercept(
+          WebSocketInterceptor::kIncoming, data_frame.size(),
+          base::BindOnce(&WebSocket::SendPendingDataFrames,
+                         base::Unretained(this),
+                         InterruptionReason::kInterceptor));
       if (intercept_result == WebSocketInterceptor::kShouldWait) {
         DCHECK_EQ(incoming_frames_interrupted_, InterruptionReason::kNone);
         incoming_frames_interrupted_ = InterruptionReason::kInterceptor;
@@ -754,11 +750,10 @@ void WebSocket::ReadAndSendFromDataPipe(InterruptionReason resume_reason) {
     DataFrame& data_frame = pending_send_data_frames_.front();
     DVLOG(2) << " ConsumePendingDataFrame frame=(" << data_frame.type
              << ", (data_length = " << data_frame.data_length << "))";
-    if (outgoing_frame_interceptor_ &&
-        resume_reason == InterruptionReason::kNone) {
+    if (frame_interceptor_ && resume_reason == InterruptionReason::kNone) {
       // `Intercept` always intercepts reading data per frame.
-      auto intercept_result = outgoing_frame_interceptor_->Intercept(
-          data_frame.data_length,
+      auto intercept_result = frame_interceptor_->Intercept(
+          WebSocketInterceptor::kOutgoing, data_frame.data_length,
           base::BindOnce(&WebSocket::ReadAndSendFromDataPipe,
                          base::Unretained(this),
                          InterruptionReason::kInterceptor));
