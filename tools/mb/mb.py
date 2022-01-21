@@ -1778,8 +1778,7 @@ class MetaBuildWrapper(object):
           # Enable lsan when asan is enabled except on Windows where LSAN isn't
           # supported.
           # TODO(https://crbug.com/948939): Enable on Mac once things pass.
-          # TODO(https://crbug.com/974478): Enable on ChromeOS once things pass.
-          '--lsan=%d' % (asan and not is_mac and not is_win and not is_cros),
+          '--lsan=%d' % (asan and not is_mac and not is_win),
           '--msan=%d' % msan,
           '--tsan=%d' % tsan,
           '--cfi-diag=%d' % cfi_diag,
