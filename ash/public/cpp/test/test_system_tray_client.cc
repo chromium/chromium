@@ -54,8 +54,6 @@ void TestSystemTrayClient::ShowWifiSyncSettings() {
 
 void TestSystemTrayClient::ShowAboutChromeOS() {}
 
-void TestSystemTrayClient::ShowHelp() {}
-
 void TestSystemTrayClient::ShowAccessibilityHelp() {}
 
 void TestSystemTrayClient::ShowAccessibilitySettings() {}
@@ -69,8 +67,6 @@ void TestSystemTrayClient::ShowPaletteSettings() {}
 void TestSystemTrayClient::ShowPrivacyAndSecuritySettings() {
   show_os_settings_privacy_and_security_count_++;
 }
-
-void TestSystemTrayClient::ShowPublicAccountInfo() {}
 
 void TestSystemTrayClient::ShowEnterpriseInfo() {}
 

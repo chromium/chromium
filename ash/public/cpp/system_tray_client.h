@@ -74,9 +74,6 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // loaded.
   virtual void ShowAboutChromeOS() = 0;
 
-  // Shows the Chromebook help app.
-  virtual void ShowHelp() = 0;
-
   // Shows accessibility help.
   virtual void ShowAccessibilityHelp() = 0;
 
@@ -91,9 +88,6 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
 
   // Shows the settings related to the stylus tool palette.
   virtual void ShowPaletteSettings() = 0;
-
-  // Shows information about public account mode.
-  virtual void ShowPublicAccountInfo() = 0;
 
   // Shows information about enterprise enrolled devices.
   virtual void ShowEnterpriseInfo() = 0;

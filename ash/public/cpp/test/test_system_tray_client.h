@@ -40,14 +40,12 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowTetherNetworkSettings() override;
   void ShowWifiSyncSettings() override;
   void ShowAboutChromeOS() override;
-  void ShowHelp() override;
   void ShowAccessibilityHelp() override;
   void ShowAccessibilitySettings() override;
   void ShowGestureEducationHelp() override;
   void ShowPaletteHelp() override;
   void ShowPaletteSettings() override;
   void ShowPrivacyAndSecuritySettings() override;
-  void ShowPublicAccountInfo() override;
   void ShowEnterpriseInfo() override;
   void ShowNetworkConfigure(const std::string& network_id) override;
   void ShowNetworkCreate(const std::string& type) override;

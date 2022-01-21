@@ -391,11 +391,6 @@ void SystemTrayClientImpl::ShowAboutChromeOS() {
       "?checkForUpdate=true");
 }
 
-void SystemTrayClientImpl::ShowHelp() {
-  chrome::ShowHelpForProfile(ProfileManager::GetActiveUserProfile(),
-                             chrome::HELP_SOURCE_MENU);
-}
-
 void SystemTrayClientImpl::ShowAccessibilityHelp() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
@@ -431,12 +426,6 @@ void SystemTrayClientImpl::ShowPaletteSettings() {
   base::RecordAction(base::UserMetricsAction("ShowPaletteOptions"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kStylusSubpagePath);
-}
-
-void SystemTrayClientImpl::ShowPublicAccountInfo() {
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  chrome::ShowPolicy(displayer.browser());
 }
 
 void SystemTrayClientImpl::ShowEnterpriseInfo() {
