@@ -5,9 +5,9 @@
 #include "components/password_manager/core/browser/password_store_backend.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_store_built_in_backend.h"
-#include "components/password_manager/core/common/password_manager_buildflags.h"
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
