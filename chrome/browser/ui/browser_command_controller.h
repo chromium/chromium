@@ -121,6 +121,9 @@ class BrowserCommandController : public CommandUpdater,
   // be shown. Used for updating window command states only.
   bool IsShowingLocationBar();
 
+  // Returns true if the browser window is for a web app or custom tab.
+  bool IsWebAppOrCustomTab() const;
+
   // Initialize state for all browser commands.
   void InitCommandState();
 

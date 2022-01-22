@@ -8,7 +8,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "manifest_test_page.html",
+  "start_url": "isolated/simple.html",
   "display": "standalone",
   "orientation": "landscape",
   "isolated_storage": true

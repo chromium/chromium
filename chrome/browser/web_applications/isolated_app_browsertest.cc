@@ -15,10 +15,13 @@
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -275,6 +278,25 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest,
   EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
                 kMaybeIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
+}
+
+// Tests that the app menu doesn't have an 'Open in Chrome' option.
+IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, NoOpenInChrome) {
+  AppId app_id = InstallIsolatedApp(kAppHost);
+  auto* app_frame = OpenApp(app_id);
+  auto* app_browser = GetBrowserFromFrame(app_frame);
+
+  EXPECT_FALSE(
+      app_browser->command_controller()->IsCommandEnabled(IDC_OPEN_IN_CHROME));
+
+  auto app_menu_model = std::make_unique<WebAppMenuModel>(
+      /*provider=*/nullptr, app_browser);
+  app_menu_model->Init();
+  ui::MenuModel* model = app_menu_model.get();
+  int index = -1;
+  const bool found = app_menu_model->GetModelAndIndexForCommandId(
+      IDC_OPEN_IN_CHROME, &model, &index);
+  EXPECT_FALSE(found);
 }
 
 class IsolatedAppBrowserCookieTest : public IsolatedAppBrowserTest {
