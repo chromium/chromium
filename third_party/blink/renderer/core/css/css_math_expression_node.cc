@@ -394,7 +394,10 @@ static CalculationCategory DetermineCategory(
   return kCalcOther;
 }
 
-// ------ Start of CSSMathExpressionBinaryOperation member functions ------
+// ------ Start of CSSMathExpressionOperation member functions ------
+
+// TODO(pjh0718): Integrate CSSMathExpressionBinary/VariadicOperation to
+// CSSMathExpressionOperation.
 
 // static
 CSSMathExpressionNode* CSSMathExpressionBinaryOperation::Create(
@@ -411,6 +414,28 @@ CSSMathExpressionNode* CSSMathExpressionBinaryOperation::Create(
 
   return MakeGarbageCollected<CSSMathExpressionBinaryOperation>(
       left_side, right_side, op, new_category);
+}
+
+// static
+CSSMathExpressionVariadicOperation* CSSMathExpressionVariadicOperation::Create(
+    Operands&& operands,
+    CSSMathOperator op) {
+  DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax);
+  DCHECK(operands.size());
+  bool is_first = true;
+  CalculationCategory category;
+  for (const auto& operand : operands) {
+    if (is_first)
+      category = operand->Category();
+    else
+      category = kAddSubtractResult[category][operand->Category()];
+
+    is_first = false;
+    if (category == kCalcOther)
+      return nullptr;
+  }
+  return MakeGarbageCollected<CSSMathExpressionVariadicOperation>(
+      category, std::move(operands), op);
 }
 
 // static
@@ -512,8 +537,21 @@ CSSMathExpressionBinaryOperation::CSSMathExpressionBinaryOperation(
       right_side_(right_side),
       operator_(op) {}
 
+CSSMathExpressionVariadicOperation::CSSMathExpressionVariadicOperation(
+    CalculationCategory category,
+    Operands&& operands,
+    CSSMathOperator op)
+    : CSSMathExpressionNode(category, true /* has_comparisons */),
+      operands_(std::move(operands)),
+      operator_(op) {}
+
 bool CSSMathExpressionBinaryOperation::IsZero() const {
   return !DoubleValue();
+}
+
+bool CSSMathExpressionVariadicOperation::IsZero() const {
+  absl::optional<double> maybe_value = ComputeValueInCanonicalUnit();
+  return maybe_value && !*maybe_value;
 }
 
 absl::optional<PixelsAndPercent>
@@ -560,6 +598,12 @@ CSSMathExpressionBinaryOperation::ToPixelsAndPercent(
       NOTREACHED();
   }
   return result;
+}
+
+absl::optional<PixelsAndPercent>
+CSSMathExpressionVariadicOperation::ToPixelsAndPercent(
+    const CSSToLengthConversionData& conversion_data) const {
+  return absl::nullopt;
 }
 
 scoped_refptr<const CalculationExpressionNode>
@@ -609,9 +653,31 @@ CSSMathExpressionBinaryOperation::ToCalculationExpression(
   }
 }
 
+scoped_refptr<const CalculationExpressionNode>
+CSSMathExpressionVariadicOperation::ToCalculationExpression(
+    const CSSToLengthConversionData& data) const {
+  Vector<scoped_refptr<const CalculationExpressionNode>> operands;
+  operands.ReserveCapacity(operands_.size());
+  for (const auto& operand : operands_)
+    operands.push_back(operand->ToCalculationExpression(data));
+  auto expression_operator = operator_ == CSSMathOperator::kMin
+                                 ? CalculationOperator::kMin
+                                 : CalculationOperator::kMax;
+  return CalculationExpressionOperationNode::CreateSimplified(
+      std::move(operands), expression_operator);
+}
+
 double CSSMathExpressionBinaryOperation::DoubleValue() const {
   DCHECK(HasDoubleValue(ResolvedUnitType())) << CustomCSSText();
   return Evaluate(left_side_->DoubleValue(), right_side_->DoubleValue());
+}
+
+double CSSMathExpressionVariadicOperation::DoubleValue() const {
+  DCHECK(HasDoubleValue(ResolvedUnitType()));
+  double result = operands_.front()->DoubleValue();
+  for (const auto& operand : SecondToLastOperands())
+    result = EvaluateBinary(result, operand->DoubleValue());
+  return result;
 }
 
 static bool HasCanonicalUnit(CalculationCategory category) {
@@ -637,6 +703,23 @@ CSSMathExpressionBinaryOperation::ComputeValueInCanonicalUnit() const {
   return Evaluate(*left_value, *right_value);
 }
 
+absl::optional<double>
+CSSMathExpressionVariadicOperation::ComputeValueInCanonicalUnit() const {
+  absl::optional<double> first_value =
+      operands_.front()->ComputeValueInCanonicalUnit();
+  if (!first_value)
+    return absl::nullopt;
+
+  double result = *first_value;
+  for (const auto& operand : SecondToLastOperands()) {
+    absl::optional<double> maybe_value = operand->ComputeValueInCanonicalUnit();
+    if (!maybe_value)
+      return absl::nullopt;
+    result = EvaluateBinary(result, *maybe_value);
+  }
+  return result;
+}
+
 double CSSMathExpressionBinaryOperation::ComputeLengthPx(
     const CSSToLengthConversionData& conversion_data) const {
   DCHECK_EQ(kCalcLength, Category());
@@ -655,6 +738,15 @@ double CSSMathExpressionBinaryOperation::ComputeLengthPx(
     right_value = right_side_->DoubleValue();
   }
   return Evaluate(left_value, right_value);
+}
+
+double CSSMathExpressionVariadicOperation::ComputeLengthPx(
+    const CSSToLengthConversionData& data) const {
+  DCHECK_EQ(kCalcLength, Category());
+  double result = operands_.front()->ComputeLengthPx(data);
+  for (const auto& operand : SecondToLastOperands())
+    result = EvaluateBinary(result, operand->ComputeLengthPx(data));
+  return result;
 }
 
 bool CSSMathExpressionBinaryOperation::AccumulateLengthArray(
@@ -693,10 +785,25 @@ bool CSSMathExpressionBinaryOperation::AccumulateLengthArray(
   }
 }
 
+bool CSSMathExpressionVariadicOperation::AccumulateLengthArray(CSSLengthArray&,
+                                                               double) const {
+  // When comparison function are involved, we can't resolve the expression into
+  // a length array.
+  // TODO(crbug.com/991672): We need a more general length interpolation
+  // implementation that doesn't rely on CSSLengthArray.
+  return false;
+}
+
 void CSSMathExpressionBinaryOperation::AccumulateLengthUnitTypes(
     CSSPrimitiveValue::LengthTypeFlags& types) const {
   left_side_->AccumulateLengthUnitTypes(types);
   right_side_->AccumulateLengthUnitTypes(types);
+}
+
+void CSSMathExpressionVariadicOperation::AccumulateLengthUnitTypes(
+    CSSPrimitiveValue::LengthTypeFlags& types) const {
+  for (const auto& operand : operands_)
+    operand->AccumulateLengthUnitTypes(types);
 }
 
 bool CSSMathExpressionBinaryOperation::IsComputationallyIndependent() const {
@@ -704,6 +811,14 @@ bool CSSMathExpressionBinaryOperation::IsComputationallyIndependent() const {
     return true;
   return left_side_->IsComputationallyIndependent() &&
          right_side_->IsComputationallyIndependent();
+}
+
+bool CSSMathExpressionVariadicOperation::IsComputationallyIndependent() const {
+  for (const auto& operand : operands_) {
+    if (!operand->IsComputationallyIndependent())
+      return false;
+  }
+  return true;
 }
 
 String CSSMathExpressionBinaryOperation::CustomCSSText() const {
@@ -732,6 +847,44 @@ String CSSMathExpressionBinaryOperation::CustomCSSText() const {
   return result.ReleaseString();
 }
 
+String CSSMathExpressionVariadicOperation::CustomCSSText() const {
+  if (is_clamp_)
+    return CSSTextAsClamp();
+
+  StringBuilder result;
+  result.Append(ToString(operator_));
+  result.Append('(');
+  result.Append(operands_.front()->CustomCSSText());
+  for (const auto& operand : SecondToLastOperands()) {
+    result.Append(", ");
+    result.Append(operand->CustomCSSText());
+  }
+  result.Append(')');
+
+  return result.ReleaseString();
+}
+
+String CSSMathExpressionVariadicOperation::CSSTextAsClamp() const {
+  DCHECK(is_clamp_);
+  DCHECK_EQ(CSSMathOperator::kMax, operator_);
+  DCHECK_EQ(2u, operands_.size());
+  DCHECK(operands_[1]->IsVariadicOperation());
+  const auto& nested = To<CSSMathExpressionVariadicOperation>(*operands_[1]);
+  DCHECK(!nested.is_clamp_);
+  DCHECK_EQ(CSSMathOperator::kMin, nested.operator_);
+  DCHECK_EQ(2u, nested.operands_.size());
+
+  StringBuilder result;
+  result.Append("clamp(");
+  result.Append(operands_[0]->CustomCSSText());
+  result.Append(", ");
+  result.Append(nested.operands_[0]->CustomCSSText());
+  result.Append(", ");
+  result.Append(nested.operands_[1]->CustomCSSText());
+  result.Append(")");
+  return result.ReleaseString();
+}
+
 bool CSSMathExpressionBinaryOperation::operator==(
     const CSSMathExpressionNode& exp) const {
   if (!exp.IsBinaryOperation())
@@ -742,6 +895,23 @@ bool CSSMathExpressionBinaryOperation::operator==(
   return base::ValuesEquivalent(left_side_, other.left_side_) &&
          base::ValuesEquivalent(right_side_, other.right_side_) &&
          operator_ == other.operator_;
+}
+
+bool CSSMathExpressionVariadicOperation::operator==(
+    const CSSMathExpressionNode& exp) const {
+  if (!exp.IsVariadicOperation())
+    return false;
+  const CSSMathExpressionVariadicOperation& other =
+      To<CSSMathExpressionVariadicOperation>(exp);
+  if (operator_ != other.operator_)
+    return false;
+  if (operands_.size() != other.operands_.size())
+    return false;
+  for (wtf_size_t i = 0; i < operands_.size(); ++i) {
+    if (!base::ValuesEquivalent(operands_[i], other.operands_[i]))
+      return false;
+  }
+  return true;
 }
 
 CSSPrimitiveValue::UnitType CSSMathExpressionBinaryOperation::ResolvedUnitType()
@@ -776,9 +946,30 @@ CSSPrimitiveValue::UnitType CSSMathExpressionBinaryOperation::ResolvedUnitType()
   return CSSPrimitiveValue::UnitType::kUnknown;
 }
 
+CSSPrimitiveValue::UnitType
+CSSMathExpressionVariadicOperation::ResolvedUnitType() const {
+  if (Category() == kCalcNumber)
+    return CSSPrimitiveValue::UnitType::kNumber;
+
+  CSSPrimitiveValue::UnitType result = operands_.front()->ResolvedUnitType();
+  if (result == CSSPrimitiveValue::UnitType::kUnknown)
+    return CSSPrimitiveValue::UnitType::kUnknown;
+  for (const auto& operand : SecondToLastOperands()) {
+    CSSPrimitiveValue::UnitType next = operand->ResolvedUnitType();
+    if (next == CSSPrimitiveValue::UnitType::kUnknown || next != result)
+      return CSSPrimitiveValue::UnitType::kUnknown;
+  }
+  return result;
+}
+
 void CSSMathExpressionBinaryOperation::Trace(Visitor* visitor) const {
   visitor->Trace(left_side_);
   visitor->Trace(right_side_);
+  CSSMathExpressionNode::Trace(visitor);
+}
+
+void CSSMathExpressionVariadicOperation::Trace(Visitor* visitor) const {
+  visitor->Trace(operands_);
   CSSMathExpressionNode::Trace(visitor);
 }
 
@@ -824,57 +1015,6 @@ double CSSMathExpressionBinaryOperation::EvaluateOperator(double left_value,
   return 0;
 }
 
-#if DCHECK_IS_ON()
-bool CSSMathExpressionBinaryOperation::InvolvesPercentageComparisons() const {
-  return left_side_->InvolvesPercentageComparisons() ||
-         right_side_->InvolvesPercentageComparisons();
-}
-#endif
-
-// ------ End of CSSMathExpressionBinaryOperation member functions ------
-
-// ------ Start of CSSMathExpressionVariadicOperation member functions ------
-
-// static
-CSSMathExpressionVariadicOperation* CSSMathExpressionVariadicOperation::Create(
-    Operands&& operands,
-    CSSMathOperator op) {
-  DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax);
-  DCHECK(operands.size());
-  bool is_first = true;
-  CalculationCategory category;
-  for (const auto& operand : operands) {
-    if (is_first)
-      category = operand->Category();
-    else
-      category = kAddSubtractResult[category][operand->Category()];
-
-    is_first = false;
-    if (category == kCalcOther)
-      return nullptr;
-  }
-  return MakeGarbageCollected<CSSMathExpressionVariadicOperation>(
-      category, std::move(operands), op);
-}
-
-CSSMathExpressionVariadicOperation::CSSMathExpressionVariadicOperation(
-    CalculationCategory category,
-    Operands&& operands,
-    CSSMathOperator op)
-    : CSSMathExpressionNode(category, true /* has_comparisons */),
-      operands_(std::move(operands)),
-      operator_(op) {}
-
-void CSSMathExpressionVariadicOperation::Trace(Visitor* visitor) const {
-  visitor->Trace(operands_);
-  CSSMathExpressionNode::Trace(visitor);
-}
-
-bool CSSMathExpressionVariadicOperation::IsZero() const {
-  absl::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  return maybe_value && !*maybe_value;
-}
-
 double CSSMathExpressionVariadicOperation::EvaluateBinary(double lhs,
                                                           double rhs) const {
   if (std::isnan(lhs) || std::isnan(rhs))
@@ -891,155 +1031,12 @@ double CSSMathExpressionVariadicOperation::EvaluateBinary(double lhs,
   }
 }
 
-absl::optional<double>
-CSSMathExpressionVariadicOperation::ComputeValueInCanonicalUnit() const {
-  absl::optional<double> first_value =
-      operands_.front()->ComputeValueInCanonicalUnit();
-  if (!first_value)
-    return absl::nullopt;
-
-  double result = *first_value;
-  for (const auto& operand : SecondToLastOperands()) {
-    absl::optional<double> maybe_value = operand->ComputeValueInCanonicalUnit();
-    if (!maybe_value)
-      return absl::nullopt;
-    result = EvaluateBinary(result, *maybe_value);
-  }
-  return result;
-}
-
-double CSSMathExpressionVariadicOperation::DoubleValue() const {
-  DCHECK(HasDoubleValue(ResolvedUnitType()));
-  double result = operands_.front()->DoubleValue();
-  for (const auto& operand : SecondToLastOperands())
-    result = EvaluateBinary(result, operand->DoubleValue());
-  return result;
-}
-
-double CSSMathExpressionVariadicOperation::ComputeLengthPx(
-    const CSSToLengthConversionData& data) const {
-  DCHECK_EQ(kCalcLength, Category());
-  double result = operands_.front()->ComputeLengthPx(data);
-  for (const auto& operand : SecondToLastOperands())
-    result = EvaluateBinary(result, operand->ComputeLengthPx(data));
-  return result;
-}
-
-String CSSMathExpressionVariadicOperation::CSSTextAsClamp() const {
-  DCHECK(is_clamp_);
-  DCHECK_EQ(CSSMathOperator::kMax, operator_);
-  DCHECK_EQ(2u, operands_.size());
-  DCHECK(operands_[1]->IsVariadicOperation());
-  const auto& nested = To<CSSMathExpressionVariadicOperation>(*operands_[1]);
-  DCHECK(!nested.is_clamp_);
-  DCHECK_EQ(CSSMathOperator::kMin, nested.operator_);
-  DCHECK_EQ(2u, nested.operands_.size());
-
-  StringBuilder result;
-  result.Append("clamp(");
-  result.Append(operands_[0]->CustomCSSText());
-  result.Append(", ");
-  result.Append(nested.operands_[0]->CustomCSSText());
-  result.Append(", ");
-  result.Append(nested.operands_[1]->CustomCSSText());
-  result.Append(")");
-  return result.ReleaseString();
-}
-
-String CSSMathExpressionVariadicOperation::CustomCSSText() const {
-  if (is_clamp_)
-    return CSSTextAsClamp();
-
-  StringBuilder result;
-  result.Append(ToString(operator_));
-  result.Append('(');
-  result.Append(operands_.front()->CustomCSSText());
-  for (const auto& operand : SecondToLastOperands()) {
-    result.Append(", ");
-    result.Append(operand->CustomCSSText());
-  }
-  result.Append(')');
-
-  return result.ReleaseString();
-}
-
-absl::optional<PixelsAndPercent>
-CSSMathExpressionVariadicOperation::ToPixelsAndPercent(
-    const CSSToLengthConversionData& conversion_data) const {
-  return absl::nullopt;
-}
-
-scoped_refptr<const CalculationExpressionNode>
-CSSMathExpressionVariadicOperation::ToCalculationExpression(
-    const CSSToLengthConversionData& data) const {
-  Vector<scoped_refptr<const CalculationExpressionNode>> operands;
-  operands.ReserveCapacity(operands_.size());
-  for (const auto& operand : operands_)
-    operands.push_back(operand->ToCalculationExpression(data));
-  auto expression_operator = operator_ == CSSMathOperator::kMin
-                                 ? CalculationOperator::kMin
-                                 : CalculationOperator::kMax;
-  return CalculationExpressionOperationNode::CreateSimplified(
-      std::move(operands), expression_operator);
-}
-
-bool CSSMathExpressionVariadicOperation::AccumulateLengthArray(CSSLengthArray&,
-                                                               double) const {
-  // When comparison function are involved, we can't resolve the expression into
-  // a length array.
-  // TODO(crbug.com/991672): We need a more general length interpolation
-  // implemetation that doesn't rely on CSSLengthArray.
-  return false;
-}
-
-void CSSMathExpressionVariadicOperation::AccumulateLengthUnitTypes(
-    CSSPrimitiveValue::LengthTypeFlags& types) const {
-  for (const auto& operand : operands_)
-    operand->AccumulateLengthUnitTypes(types);
-}
-
-bool CSSMathExpressionVariadicOperation::IsComputationallyIndependent() const {
-  for (const auto& operand : operands_) {
-    if (!operand->IsComputationallyIndependent())
-      return false;
-  }
-  return true;
-}
-
-bool CSSMathExpressionVariadicOperation::operator==(
-    const CSSMathExpressionNode& exp) const {
-  if (!exp.IsVariadicOperation())
-    return false;
-  const CSSMathExpressionVariadicOperation& other =
-      To<CSSMathExpressionVariadicOperation>(exp);
-  if (operator_ != other.operator_)
-    return false;
-  if (operands_.size() != other.operands_.size())
-    return false;
-  for (wtf_size_t i = 0; i < operands_.size(); ++i) {
-    if (!base::ValuesEquivalent(operands_[i], other.operands_[i]))
-      return false;
-  }
-  return true;
-}
-
-CSSPrimitiveValue::UnitType
-CSSMathExpressionVariadicOperation::ResolvedUnitType() const {
-  if (Category() == kCalcNumber)
-    return CSSPrimitiveValue::UnitType::kNumber;
-
-  CSSPrimitiveValue::UnitType result = operands_.front()->ResolvedUnitType();
-  if (result == CSSPrimitiveValue::UnitType::kUnknown)
-    return CSSPrimitiveValue::UnitType::kUnknown;
-  for (const auto& operand : SecondToLastOperands()) {
-    CSSPrimitiveValue::UnitType next = operand->ResolvedUnitType();
-    if (next == CSSPrimitiveValue::UnitType::kUnknown || next != result)
-      return CSSPrimitiveValue::UnitType::kUnknown;
-  }
-  return result;
-}
-
 #if DCHECK_IS_ON()
+bool CSSMathExpressionBinaryOperation::InvolvesPercentageComparisons() const {
+  return left_side_->InvolvesPercentageComparisons() ||
+         right_side_->InvolvesPercentageComparisons();
+}
+
 bool CSSMathExpressionVariadicOperation::InvolvesPercentageComparisons() const {
   if (Category() == kCalcPercent && operands_.size() > 1u)
     return true;
@@ -1051,7 +1048,7 @@ bool CSSMathExpressionVariadicOperation::InvolvesPercentageComparisons() const {
 }
 #endif
 
-// ------ End of CSSMathExpressionVariadicOperation member functions
+// ------ End of CSSMathExpressionOperation member functions ------
 
 class CSSMathExpressionNodeParser {
   STACK_ALLOCATED();
