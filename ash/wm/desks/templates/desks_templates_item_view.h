@@ -28,7 +28,37 @@ class DeskTemplate;
 class PillButton;
 
 // A view that represents each individual template item in the desks templates
-// grid.
+// grid. The view has different shown contents depending on whether the mouse is
+// hovered over it.
+//   _________________________          _________________________
+//   |  _______________  _   |          |                    _  |
+//   |  |_____________| |_|  |          |                   |_| |
+//   |  |_______|            |          |     ______________    |
+//   |   _________________   |          |     |            |    |
+//   |  |                 |  |          |     |____________|    |
+//   |  |_________________|  |          |                       |
+//   |_______________________|          |_______________________|
+//            regular                             hover
+//
+// In the regular view we have the:
+// `name_view_`: top-left: DesksTemplatesNameView: It's an editable textbox that
+// contains the name of the template.
+// `time_view_`: middle-left: Label: A label that lets the user know when the
+// template was created.
+// `icon_container_view_`: bottom-center: DesksTemplatesIconContainer: A
+// container that houses a couple icons/text that give an indication of which
+// apps are part of the template.
+// `managed_status_indicator`: top-right: ImageView: A icon that is visible if
+// the template was created by an admin.
+//
+// In the hover view we have the:
+// `delete_button_`: top-right: Button: Shows a confirmation for deleting the
+// template when clicked.
+// `launch_button_`: bottom-center: Button: Launches the apps associated with
+// the template when clicked.
+//
+// The whole view is also a button which does the same thing as `launch_button_`
+// when clicked.
 class ASH_EXPORT DesksTemplatesItemView : public views::Button,
                                           public OverviewHighlightableView,
                                           public views::ViewTargeterDelegate,

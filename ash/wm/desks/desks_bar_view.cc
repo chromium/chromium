@@ -1202,11 +1202,7 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
 }
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {
-  // Record template grid histogram.
   RecordLoadTemplateHistogram();
-
-  // TODO(sammiequon): The button might be changed to be a toggle and this
-  // callback will need to be updated to reflect that.
   overview_grid_->overview_session()->ShowDesksTemplatesGrids(IsZeroState());
 }
 

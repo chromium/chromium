@@ -31,7 +31,6 @@ constexpr int kLandscapeMaxColumns = 3;
 // Ditto for when width < height.
 constexpr int kPortraitMaxColumns = 2;
 
-// TODO(richui): Replace these temporary values once specs come out.
 constexpr int kGridPaddingDp = 25;
 
 }  // namespace
@@ -111,7 +110,8 @@ void DesksTemplatesGridView::UpdateGridUI(
   // and notify the highlight controller. This should only be needed when a
   // template item is deleted, but currently we call `UpdateGridUI` every time
   // the model changes.
-  // TODO(richui): Remove this when `UpdateGridUI` is not rebuilt every time.
+  // TODO(crbug.com/1266552): Remove this when `UpdateGridUI` is not rebuilt
+  // every time.
   if (!grid_items_.empty()) {
     auto* highlight_controller = Shell::Get()
                                      ->overview_controller()

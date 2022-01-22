@@ -25,6 +25,17 @@ class DesksTemplatesIconView;
 // template and creates the according DesksTemplatesIconView's for them.
 // The last DesksTemplatesIconView in the layout is used for storing the
 // overflow count of icons. Not every view in the container is visible.
+//   _______________________________________________________________________
+//   |  _________  _________   _________________   _________   _________   |
+//   |  |       |  |       |   |       |       |   |       |   |       |   |
+//   |  |   I   |  |   I   |   |   I      + N  |   |   I   |   |  + N  |   |
+//   |  |_______|  |_______|   |_______|_______|   |_______|   |_______|   |
+//   |_____________________________________________________________________|
+//
+// If there are multiple apps associated with a certain icon, the icon is drawn
+// once with a +N label attached, up to +99. If there are too many icons to be
+// displayed within the given width, we draw as many and a label at the end that
+// says +N, up to +99.
 class DesksTemplatesIconContainer : public views::BoxLayoutView {
  public:
   METADATA_HEADER(DesksTemplatesIconContainer);

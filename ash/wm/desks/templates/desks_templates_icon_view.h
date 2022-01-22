@@ -73,7 +73,7 @@ class DesksTemplatesIconView : public views::View {
 
   // The number of instances of this icon's respective app/url stored in this's
   // respective DeskTemplate.
-  int count_;
+  int count_ = 0;
 
   // Owned by the views hierarchy.
   views::Label* count_label_ = nullptr;

@@ -71,8 +71,8 @@ constexpr int kManagedStatusIndicatorSize = 20;
 
 constexpr char kAmPmTimeDateFmtStr[] = "%d:%02d%s, %d-%02d-%02d";
 
-// TODO(richui): This is a placeholder text format. Update this once specs are
-// done.
+// TODO(crbug.com/1268922): This is a placeholder text format. Update this once
+// specs are done.
 std::u16string GetTimeStr(base::Time timestamp) {
   base::Time::Exploded exploded_time;
   timestamp.LocalExplode(&exploded_time);
@@ -159,7 +159,6 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
           views::Builder<views::View>().CopyAddressTo(&hover_container_))
       .BuildChildren();
 
-  // TODO(crbug.com/1267470): Make `PillButton` work with views::Builder.
   launch_button_ = hover_container_->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&DesksTemplatesItemView::OnGridItemPressed,
                           base::Unretained(this)),

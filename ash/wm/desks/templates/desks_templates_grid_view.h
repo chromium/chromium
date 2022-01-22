@@ -17,8 +17,8 @@ class DesksTemplatesEventHandler;
 class DesksTemplatesItemView;
 class DeskTemplate;
 
-// A view that acts as the content view of the desks templates widget.
-// TODO(richui): Add details and ASCII.
+// A view that acts as the content view of the desks templates widget. Displays
+// each desk template as a DesksTemplatesItemView.
 class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
  public:
   METADATA_HEADER(DesksTemplatesGridView);
@@ -30,8 +30,6 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
 
   // Creates and returns the widget that contains the DesksTemplatesGridView in
   // overview mode. This does not show the widget.
-  // TODO(sammiequon): We might want this view to be part of the DesksWidget
-  // depending on the animations.
   static std::unique_ptr<views::Widget> CreateDesksTemplatesGridWidget(
       aura::Window* root);
 
