@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
@@ -65,21 +66,20 @@ void SetupLoopToWaitForCaptureFileToBeSaved(base::RunLoop* loop) {
 
 // Defines a waiter that waits for the DLP warning dialog to be added as a child
 // of the system modal container window under the given `root`.
+// A single instance of `DlpWarningDialogWaiter` can be used only once for
+// waiting.
 class DlpWarningDialogWaiter : public aura::WindowObserver {
  public:
   explicit DlpWarningDialogWaiter(aura::Window* root) {
     observation_.Observe(
         root->GetChildById(ash::kShellWindowId_SystemModalContainer));
+    on_window_added_callback_ = loop_.QuitClosure();
   }
   DlpWarningDialogWaiter(const DlpWarningDialogWaiter&) = delete;
   DlpWarningDialogWaiter& operator=(const DlpWarningDialogWaiter&) = delete;
   ~DlpWarningDialogWaiter() override = default;
 
-  void Wait() {
-    base::RunLoop loop;
-    on_window_added_callback_ = loop.QuitClosure();
-    loop.Run();
-  }
+  void Wait() { loop_.Run(); }
 
   // aura::WindowObserver:
   void OnWindowAdded(aura::Window* new_window) override {
@@ -90,6 +90,7 @@ class DlpWarningDialogWaiter : public aura::WindowObserver {
  private:
   base::ScopedObservation<aura::Window, aura::WindowObserver> observation_{
       this};
+  base::RunLoop loop_;
   base::OnceClosure on_window_added_callback_;
 };
 
@@ -114,6 +115,20 @@ void MarkActiveTabAsDlpWarnedForScreenCapture(Browser* browser) {
   ASSERT_TRUE(web_contents);
   dlp_content_observer->OnConfidentialityChanged(web_contents,
                                                  kScreenCaptureWarned);
+}
+
+// TODO(1289370): Replace spinning on test_api.IsInCountDownAnimation() with non
+//  active waiting for video capture countdown end.
+//
+// Waits for video countdown end.
+void WaitForCountDownToFinish() {
+  ash::CaptureModeTestApi test_api;
+  while (test_api.IsInCountDownAnimation()) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+    run_loop.Run();
+  }
 }
 
 // Stops the video recording and waits for the DLP warning dialog to be added.
@@ -208,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, ContextMenuStaysOpen) {
 }
 
 // Checks that video capture emits exactly one DLP reporting event.
-IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReporting) {
+IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReportingVideoCapture) {
   // Set DLP restriction.
   auto* dlp_content_observer = policy::DlpContentObserver::Get();
   ASSERT_TRUE(dlp_content_observer);
@@ -351,14 +366,31 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
           kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
 }
 
-IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
+// Parametrize capture mode browser tests to check both making screenshots and
+// video capture. This is particularly important for DLP which handles reporting
+// of user activity differently for screenshots and video capture.
+class CaptureModeParamBrowserTest : public CaptureModeBrowserTest,
+                                    public ::testing::WithParamInterface<bool> {
+ public:
+  CaptureModeParamBrowserTest() : for_video_(GetParam()) {}
+  ~CaptureModeParamBrowserTest() override = default;
+
+ protected:
+  const bool for_video_;
+};
+
+INSTANTIATE_TEST_SUITE_P(CaptureModeParamBrowserTest,
+                         CaptureModeParamBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
                        DlpWarningDialogOnSessionInitDismissed) {
   ASSERT_TRUE(browser());
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 
-  test_api.StartForFullscreen(/*for_video=*/false);
+  test_api.StartForFullscreen(for_video_);
   // A capture mode session doesn't start immediately. The controller should be
   // in a pending state waiting for a reply from the DLP manager.
   EXPECT_FALSE(test_api.IsSessionActive());
@@ -377,14 +409,14 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                               policy::DlpRulesManager::Level::kWarn)));
 }
 
-IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
+IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
                        DlpWarningDialogOnSessionInitAccepted) {
   ASSERT_TRUE(browser());
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 
-  test_api.StartForFullscreen(/*for_video=*/true);
+  test_api.StartForFullscreen(for_video_);
   // A capture mode session doesn't start immediately. The controller should be
   // in a pending state waiting for a reply from the DLP manager.
   EXPECT_FALSE(test_api.IsSessionActive());
@@ -405,13 +437,13 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                               policy::DlpRulesManager::Level::kWarn)));
 }
 
-IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
+IN_PROC_BROWSER_TEST_P(CaptureModeParamBrowserTest,
                        DlpWarningDialogOnPerformingCaptureDismissed) {
   ASSERT_TRUE(browser());
   // Start the session before a window becomes restricted.
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
-  test_api.StartForFullscreen(/*for_video=*/false);
+  test_api.StartForFullscreen(for_video_);
   ASSERT_TRUE(test_api.IsSessionActive());
 
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
@@ -439,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       DlpWarningDialogOnPerformingCaptureAccepted) {
+                       DlpWarningDialogOnPerformingScreenCaptureAccepted) {
   ASSERT_TRUE(browser());
   // Start the session before a window becomes restricted.
   ash::CaptureModeTestApi test_api;
@@ -465,6 +497,68 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   SendKeyEvent(browser(), ui::VKEY_RETURN);
   EXPECT_FALSE(test_api.IsSessionActive());
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
+  loop.Run();
+
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[1],
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
+                       DlpWarningDialogOnPerformingVideoCaptureAccepted) {
+  ASSERT_TRUE(browser());
+  SetupDlpReporting();
+
+  ash::CaptureModeTestApi test_api;
+  test_api.StartForFullscreen(/*for_video=*/true);
+  ASSERT_TRUE(test_api.IsSessionActive());
+
+  auto* root = GetBrowserWindow(browser())->GetRootWindow();
+  ASSERT_TRUE(root);
+  DlpWarningDialogWaiter waiter{root};
+
+  // Mark the window as restricted and perform video capture.
+  MarkActiveTabAsDlpWarnedForScreenCapture(browser());
+  test_api.PerformCapture(/*skip_count_down=*/false);
+  EXPECT_FALSE(test_api.IsInCountDownAnimation());
+  EXPECT_FALSE(test_api.IsVideoRecordingInProgress());
+  EXPECT_TRUE(test_api.IsSessionActive());
+  EXPECT_TRUE(test_api.IsPendingDlpCheck());
+  EXPECT_TRUE(test_api.IsSessionWaitingForDlpConfirmation());
+
+  // Wait for the dialog to show before the countdown starts.
+  waiter.Wait();
+  EXPECT_FALSE(test_api.IsInCountDownAnimation());
+  EXPECT_FALSE(test_api.IsVideoRecordingInProgress());
+  EXPECT_TRUE(test_api.IsSessionActive());
+  EXPECT_TRUE(test_api.IsPendingDlpCheck());
+  EXPECT_TRUE(test_api.IsSessionWaitingForDlpConfirmation());
+
+  // Accept the dialog by hitting the ENTER key, and expect countdown to start.
+  SendKeyEvent(browser(), ui::VKEY_RETURN);
+  EXPECT_TRUE(test_api.IsInCountDownAnimation());
+  EXPECT_FALSE(test_api.IsVideoRecordingInProgress());
+  EXPECT_TRUE(test_api.IsSessionActive());
+  EXPECT_FALSE(test_api.IsPendingDlpCheck());
+  EXPECT_FALSE(test_api.IsSessionWaitingForDlpConfirmation());
+
+  // Start the video recording.
+  WaitForCountDownToFinish();
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_FALSE(test_api.IsInCountDownAnimation());
+  EXPECT_TRUE(test_api.IsVideoRecordingInProgress());
+  EXPECT_FALSE(test_api.IsSessionActive());
+
+  // Stop recording and wait for file to be saved successfully.
+  base::RunLoop loop;
+  SetupLoopToWaitForCaptureFileToBeSaved(&loop);
+  test_api.StopVideoRecording();
   loop.Run();
 
   ASSERT_EQ(events_.size(), 2u);
