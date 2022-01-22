@@ -1092,39 +1092,52 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   if (!dst.IsValid())
     return;
 
-  skcms_TransferFunction src_to_linear_fn;
-  if (src.GetTransferFunction(&src_to_linear_fn)) {
-    steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
-        src_to_linear_fn, src.HasExtendedSkTransferFn()));
-  } else if (src.GetTransferID() == ColorSpace::TransferID::ARIB_STD_B67) {
-    if (dst.IsHDR()) {
-      float sdr_white_level = 0.f;
-      src.GetSDRWhiteLevel(&sdr_white_level);
-      steps_.push_back(
-          std::make_unique<ColorTransformHLGToLinear>(sdr_white_level));
-    } else {
-      // HLG is designed such that treating it as 2.2 gamma content works well.
-      constexpr skcms_TransferFunction kGamma22 = {2.2, 1, 0, 0, 0, 0, 0};
-      steps_.push_back(
-          std::make_unique<ColorTransformSkTransferFn>(kGamma22, false));
+  const bool tone_map_pq_and_hlg = !dst.IsHDR();
+  switch (src.GetTransferID()) {
+    case ColorSpace::TransferID::ARIB_STD_B67: {
+      if (tone_map_pq_and_hlg) {
+        // HLG is designed such that treating it as 2.2 gamma content works
+        // well.
+        constexpr skcms_TransferFunction kGamma22 = {2.2, 1, 0, 0, 0, 0, 0};
+        steps_.push_back(
+            std::make_unique<ColorTransformSkTransferFn>(kGamma22, false));
+      } else {
+        float sdr_white_level = 0.f;
+        src.GetSDRWhiteLevel(&sdr_white_level);
+        steps_.push_back(
+            std::make_unique<ColorTransformHLGToLinear>(sdr_white_level));
+      }
+      break;
     }
-  } else if (src.GetTransferID() == ColorSpace::TransferID::SMPTEST2084) {
-    if (dst.IsHDR()) {
-      float sdr_white_level = 0.f;
-      src.GetSDRWhiteLevel(&sdr_white_level);
-      steps_.push_back(
-          std::make_unique<ColorTransformPQToLinear>(sdr_white_level));
-    } else {
-      steps_.push_back(std::make_unique<ColorTransformPQToneMapToLinear>());
+    case ColorSpace::TransferID::SMPTEST2084: {
+      if (tone_map_pq_and_hlg) {
+        steps_.push_back(std::make_unique<ColorTransformPQToneMapToLinear>());
+      } else {
+        float sdr_white_level = 0.f;
+        src.GetSDRWhiteLevel(&sdr_white_level);
+        steps_.push_back(
+            std::make_unique<ColorTransformPQToLinear>(sdr_white_level));
+      }
+      break;
     }
-  } else if (src.GetTransferID() == ColorSpace::TransferID::PIECEWISE_HDR) {
-    skcms_TransferFunction fn;
-    float p, q, r;
-    ColorTransformPiecewiseHDR::GetParams(src, &fn, &p, &q, &r);
-    steps_.push_back(std::make_unique<ColorTransformPiecewiseHDR>(fn, p, q, r));
-  } else {
-    steps_.push_back(
-        std::make_unique<ColorTransformToLinear>(src.GetTransferID()));
+    case ColorSpace::TransferID::PIECEWISE_HDR: {
+      skcms_TransferFunction fn;
+      float p, q, r;
+      ColorTransformPiecewiseHDR::GetParams(src, &fn, &p, &q, &r);
+      steps_.push_back(
+          std::make_unique<ColorTransformPiecewiseHDR>(fn, p, q, r));
+      break;
+    }
+    default: {
+      skcms_TransferFunction src_to_linear_fn;
+      if (src.GetTransferFunction(&src_to_linear_fn)) {
+        steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
+            src_to_linear_fn, src.HasExtendedSkTransferFn()));
+      } else {
+        steps_.push_back(
+            std::make_unique<ColorTransformToLinear>(src.GetTransferID()));
+      }
+    }
   }
 
   if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
@@ -1143,29 +1156,41 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
         GetTransferMatrix(dst, options.dst_bit_depth)));
   }
 
-  skcms_TransferFunction dst_from_linear_fn;
-  if (dst.GetInverseTransferFunction(&dst_from_linear_fn)) {
-    steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
-        dst_from_linear_fn, dst.HasExtendedSkTransferFn()));
-  } else if (dst.GetTransferID() == ColorSpace::TransferID::ARIB_STD_B67) {
-    float sdr_white_level = 0.f;
-    dst.GetSDRWhiteLevel(&sdr_white_level);
-    steps_.push_back(
-        std::make_unique<ColorTransformHLGFromLinear>(sdr_white_level));
-  } else if (dst.GetTransferID() == ColorSpace::TransferID::SMPTEST2084) {
-    float sdr_white_level = 0.f;
-    dst.GetSDRWhiteLevel(&sdr_white_level);
-    steps_.push_back(
-        std::make_unique<ColorTransformPQFromLinear>(sdr_white_level));
-  } else if (dst.GetTransferID() == ColorSpace::TransferID::PIECEWISE_HDR) {
-    skcms_TransferFunction fn;
-    float p, q, r;
-    ColorTransformPiecewiseHDR::GetParams(dst, &fn, &p, &q, &r);
-    ColorTransformPiecewiseHDR::InvertParams(&fn, &p, &q, &r);
-    steps_.push_back(std::make_unique<ColorTransformPiecewiseHDR>(fn, p, q, r));
-  } else {
-    steps_.push_back(
-        std::make_unique<ColorTransformFromLinear>(dst.GetTransferID()));
+  switch (dst.GetTransferID()) {
+    case ColorSpace::TransferID::ARIB_STD_B67: {
+      float sdr_white_level = 0.f;
+      dst.GetSDRWhiteLevel(&sdr_white_level);
+      steps_.push_back(
+          std::make_unique<ColorTransformHLGFromLinear>(sdr_white_level));
+      break;
+    }
+    case ColorSpace::TransferID::SMPTEST2084: {
+      float sdr_white_level = 0.f;
+      dst.GetSDRWhiteLevel(&sdr_white_level);
+      steps_.push_back(
+          std::make_unique<ColorTransformPQFromLinear>(sdr_white_level));
+      break;
+    }
+    case ColorSpace::TransferID::PIECEWISE_HDR: {
+      skcms_TransferFunction fn;
+      float p, q, r;
+      ColorTransformPiecewiseHDR::GetParams(dst, &fn, &p, &q, &r);
+      ColorTransformPiecewiseHDR::InvertParams(&fn, &p, &q, &r);
+      steps_.push_back(
+          std::make_unique<ColorTransformPiecewiseHDR>(fn, p, q, r));
+      break;
+    }
+    default: {
+      skcms_TransferFunction dst_from_linear_fn;
+      if (dst.GetInverseTransferFunction(&dst_from_linear_fn)) {
+        steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
+            dst_from_linear_fn, dst.HasExtendedSkTransferFn()));
+      } else {
+        steps_.push_back(
+            std::make_unique<ColorTransformFromLinear>(dst.GetTransferID()));
+      }
+      break;
+    }
   }
 
   // ITU-T H.273: If MatrixCoefficients is equal to 0 (Identity) or 8 (YCgCo),
