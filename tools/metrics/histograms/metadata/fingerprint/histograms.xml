@@ -73,6 +73,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.FingerprintPowerButtonRace" units="units"
+    expires_after="2022-06-01">
+  <owner>emaamari@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the event where a fingerprint scan and a power button press occured
+    within 1 second of each other. Recorded when FingerprintStorage and
+    PowerManagerClient notify FingerprintPowerButtonRaceDetector of a
+    fingerprint scan and power button press respectively, within 1 second.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.FingerprintScanDone" units="units"
+    expires_after="2022-06-01">
+  <owner>emaamari@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Indicates a scan was recorded by the finperprint sensor. Recorded when an
+    AuthScanDone signal is received by FinperprintStorage from biod, and
+    notifies FingerprintPowerButtonRaceDetector.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.Reset.ResetContextMode"
     enum="FingerprintSensorMode" expires_after="2022-05-01">
   <owner>tomhughes@chromium.org</owner>

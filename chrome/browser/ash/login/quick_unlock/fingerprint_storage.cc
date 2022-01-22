@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
+#include <memory>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/biod/biod_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/device_service.h"
@@ -47,6 +49,12 @@ FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
   feature_usage_metrics_service_ =
       std::make_unique<feature_usage::FeatureUsageMetrics>(
           kFingerprintUMAFeatureName, this);
+
+  fingerprint_power_button_race_detector_ =
+      IsFingerprintSupported()
+          ? std::make_unique<FingerprintPowerButtonRaceDetector>(
+                chromeos::PowerManagerClient::Get())
+          : nullptr;
 }
 
 FingerprintStorage::~FingerprintStorage() = default;
@@ -119,6 +127,11 @@ void FingerprintStorage::OnEnrollScanDone(device::mojom::ScanResult scan_result,
 void FingerprintStorage::OnAuthScanDone(
     const device::mojom::FingerprintMessagePtr msg,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
+  // could be null in tests
+  if (fingerprint_power_button_race_detector_ != nullptr) {
+    fingerprint_power_button_race_detector_->FingerprintScanReceived(
+        base::TimeTicks::Now());
+  }
   switch (msg->which()) {
     case device::mojom::FingerprintMessage::Tag::kScanResult:
       base::UmaHistogramEnumeration("Fingerprint.Auth.ScanResult",

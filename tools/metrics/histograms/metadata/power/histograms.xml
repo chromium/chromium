@@ -1108,6 +1108,17 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   <summary>Actions performed while the power button menu is open.</summary>
 </histogram>
 
+<histogram name="Power.PowerButtonPressed" units="units"
+    expires_after="2022-06-01">
+  <owner>emaamari@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Indicates a press of the power button, recorded when PowerManagerClient
+    receives a signal that the power button was pressed and notifies
+    FingerprintPowerButtonRaceDetector.
+  </summary>
+</histogram>
+
 <histogram name="Power.PowerButtonPressInLaptopMode"
     enum="PowerButtonPressType" expires_after="2022-10-01">
   <owner>minch@chromium.org</owner>

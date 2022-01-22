@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 
+#include "base/time/time.h"
+#include "chrome/browser/ash/login/quick_unlock/fingerprint_power_button_race_detector.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
@@ -105,6 +108,9 @@ class FingerprintStorage final
 
   std::unique_ptr<feature_usage::FeatureUsageMetrics>
       feature_usage_metrics_service_;
+
+  std::unique_ptr<FingerprintPowerButtonRaceDetector>
+      fingerprint_power_button_race_detector_;
 
   base::WeakPtrFactory<FingerprintStorage> weak_factory_{this};
 };
