@@ -265,6 +265,14 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->CallServiceUpdate(app_id, policy_same_version_update);
   }
 
+  void SetupFakeLegacyUpdaterData() {
+    test_commands_->SetupFakeLegacyUpdaterData();
+  }
+
+  void ExpectLegacyUpdaterDataMigrated() {
+    test_commands_->ExpectLegacyUpdaterDataMigrated();
+  }
+
   scoped_refptr<IntegrationTestCommands> test_commands_;
 
  private:
@@ -666,6 +674,14 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
       response);
   CallServiceUpdate(app_id,
                     UpdateService::PolicySameVersionUpdate::kNotAllowed);
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, MigrateLegacyUpdater) {
+  SetupFakeLegacyUpdaterData();
+  Install();
+  ExpectInstalled();
+  ExpectLegacyUpdaterDataMigrated();
   Uninstall();
 }
 

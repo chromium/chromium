@@ -199,6 +199,14 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
             UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
+  void SetupFakeLegacyUpdaterData() const override {
+    updater::test::SetupFakeLegacyUpdaterData(updater_scope_);
+  }
+
+  void ExpectLegacyUpdaterDataMigrated() const override {
+    updater::test::ExpectLegacyUpdaterDataMigrated(updater_scope_);
+  }
+
  private:
   ~IntegrationTestCommandsUser() override = default;
 

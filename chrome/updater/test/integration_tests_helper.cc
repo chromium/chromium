@@ -250,6 +250,10 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch(
          "same_version_update_allowed",
          WithSwitch("app_id", WithSystemScope(Wrap(&CallServiceUpdate))))},
+    {"setup_fake_legacy_updater_data",
+     WithSystemScope(Wrap(&SetupFakeLegacyUpdaterData))},
+    {"expect_legacy_updater_data_migrated",
+     WithSystemScope(Wrap(&ExpectLegacyUpdaterDataMigrated))},
   };
 
   const base::CommandLine* command_line =

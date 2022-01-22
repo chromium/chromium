@@ -29,6 +29,7 @@
 #include "chrome/updater/launchd_util.h"
 #import "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_branding.h"
@@ -351,6 +352,56 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   int exit_code = -1;
   ASSERT_TRUE(Run(scope, command_line, &exit_code));
   ASSERT_EQ(exit_code, 0);
+}
+
+void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+  base::FilePath test_ticket_store_path;
+  ASSERT_TRUE(
+      base::PathService::Get(chrome::DIR_TEST_DATA, &test_ticket_store_path));
+  test_ticket_store_path =
+      test_ticket_store_path.Append(FILE_PATH_LITERAL("updater"))
+          .Append(FILE_PATH_LITERAL("Keystone.legacy.ticketstore"));
+
+  base::FilePath keystone_ticket_store_path =
+      GetKeystoneFolderPath(scope)->Append(FILE_PATH_LITERAL("TicketStore"));
+  ASSERT_TRUE(base::CreateDirectory(keystone_ticket_store_path));
+  ASSERT_TRUE(base::CopyFile(test_ticket_store_path,
+                             keystone_ticket_store_path.Append(
+                                 FILE_PATH_LITERAL("Keystone.ticketstore"))));
+}
+
+void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
+  auto persisted_data =
+      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+
+  // Keystone should not be migrated.
+  persisted_data->GetProductVersion("com.google.keystone");
+
+  // Uninstalled app should not be migrated.
+  persisted_data->GetProductVersion("com.chromium.NonExistApp");
+
+  // App Kipple.
+  const std::string kKippleApp = "com.chromium.kipple";
+  EXPECT_EQ(persisted_data->GetProductVersion(kKippleApp),
+            base::Version("1.2.3.4"));
+  EXPECT_EQ(persisted_data->GetExistenceCheckerPath(kKippleApp),
+            base::FilePath("/"));
+  EXPECT_TRUE(persisted_data->GetAP(kKippleApp).empty());
+  EXPECT_TRUE(persisted_data->GetBrandCode(kKippleApp).empty());
+  EXPECT_TRUE(persisted_data->GetBrandPath(kKippleApp).empty());
+  EXPECT_TRUE(persisted_data->GetFingerprint(kKippleApp).empty());
+
+  // App PopularApp.
+  const std::string kPopularApp = "com.chromium.PopularApp";
+  EXPECT_EQ(persisted_data->GetProductVersion(kPopularApp),
+            base::Version("101.100.1000.9999"));
+  EXPECT_EQ(persisted_data->GetExistenceCheckerPath(kPopularApp),
+            base::FilePath("/"));
+  EXPECT_EQ(persisted_data->GetAP(kPopularApp), "GOOG");
+  EXPECT_TRUE(persisted_data->GetBrandCode(kKippleApp).empty());
+  EXPECT_EQ(persisted_data->GetBrandPath(kPopularApp), base::FilePath("/"));
+  EXPECT_TRUE(persisted_data->GetFingerprint(kPopularApp).empty());
 }
 
 }  // namespace test

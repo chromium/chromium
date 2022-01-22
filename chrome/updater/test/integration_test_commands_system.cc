@@ -222,6 +222,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                           : "false")});
   }
 
+  void SetupFakeLegacyUpdaterData() const override {
+    RunCommand("setup_fake_legacy_updater_data");
+  }
+
+  void ExpectLegacyUpdaterDataMigrated() const override {
+    RunCommand("expect_legacy_updater_data_migrated");
+  }
+
  private:
   ~IntegrationTestCommandsSystem() override = default;
 

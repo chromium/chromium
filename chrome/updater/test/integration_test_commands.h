@@ -80,6 +80,9 @@ class IntegrationTestCommands
                                  UpdateService::PolicySameVersionUpdate
                                      policy_same_version_update) const = 0;
 
+  virtual void SetupFakeLegacyUpdaterData() const = 0;
+  virtual void ExpectLegacyUpdaterDataMigrated() const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;
 

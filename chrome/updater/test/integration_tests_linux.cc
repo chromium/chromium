@@ -85,5 +85,13 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   NOTREACHED();
 }
 
+void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+  NOTREACHED();
+}
+
+void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+  NOTREACHED();
+}
+
 }  // namespace test
 }  // namespace updater

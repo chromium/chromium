@@ -820,5 +820,13 @@ void RunUninstallCmdLine(UpdaterScope scope) {
   EXPECT_EQ(0, exit_code);
 }
 
+void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+  // TODO(crbug.com/1288681).
+}
+
+void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+  // TODO(crbug.com/1288681).
+}
+
 }  // namespace test
 }  // namespace updater
