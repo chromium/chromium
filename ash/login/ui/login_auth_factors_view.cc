@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/login_auth_factors_view.h"
 
+#include "ash/login/ui/animated_auth_factors_label_wrapper.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_icon_view.h"
 #include "ash/login/ui/lock_screen.h"
@@ -16,9 +17,9 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -39,9 +40,6 @@ constexpr int kSpacingBetweenIconsAndLabelDp = 8;
 constexpr int kIconTopSpacingDp = 10;
 constexpr int kArrowButtonSizeDp = 32;
 constexpr base::TimeDelta kErrorTimeout = base::Seconds(3);
-constexpr int kLabelMaxLines = 3;
-constexpr int kLabelLineHeightDp = 20;
-constexpr int kLabelHeightDp = kLabelMaxLines * kLabelLineHeightDp;
 
 // The values of this enum should be nearly the same as the values of
 // AuthFactorState, except instead of kErrorTemporary and kErrorPermanent, we
@@ -133,51 +131,6 @@ AuthFactorModel* GetHighestPriorityAuthFactor(
 
 }  // namespace
 
-class AuthFactorsLabel : public views::Label {
- public:
-  AuthFactorsLabel() {
-    SetSubpixelRenderingEnabled(false);
-    SetAutoColorReadabilityEnabled(false);
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
-    SetMultiLine(true);
-    SetMaxLines(kLabelMaxLines);
-    SetLineHeight(kLabelLineHeightDp);
-    SizeToFit(kAuthFactorsViewWidthDp);
-    SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
-  }
-
-  AuthFactorsLabel(const AuthFactorsLabel&) = delete;
-  AuthFactorsLabel& operator=(const AuthFactorsLabel&) = delete;
-
-  // views::Label:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kStaticText;
-    node_data->SetName(accessible_name_);
-  }
-
-  // views::Label:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
-  }
-
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(kAuthFactorsViewWidthDp, kLabelHeightDp);
-  }
-
-  void SetAccessibleName(const std::u16string& name) {
-    accessible_name_ = name;
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
-                             /*send_native_event=*/true);
-  }
-
- private:
-  std::u16string accessible_name_;
-};
-
 LoginAuthFactorsView::TestApi::TestApi(LoginAuthFactorsView* view)
     : view_(view) {}
 
@@ -193,7 +146,7 @@ LoginAuthFactorsView::TestApi::auth_factors() {
 }
 
 views::Label* LoginAuthFactorsView::TestApi::label() {
-  return view_->label_;
+  return view_->label_wrapper_->label();
 }
 
 views::View* LoginAuthFactorsView::TestApi::auth_factor_icon_row() {
@@ -272,8 +225,9 @@ LoginAuthFactorsView::LoginAuthFactorsView(
                            AuthIconView::Color::kPositive);
   checkmark_icon_->SetVisible(false);
 
-  label_ = AddChildView(std::make_unique<AuthFactorsLabel>());
-  label_->SetProperty(
+  label_wrapper_ =
+      AddChildView(std::make_unique<AnimatedAuthFactorsLabelWrapper>());
+  label_wrapper_->SetProperty(
       views::kMarginsKey,
       gfx::Insets(/*top=*/kSpacingBetweenIconsAndLabelDp, /*left=*/0,
                   /*bottom=*/0,
@@ -343,18 +297,19 @@ void LoginAuthFactorsView::UpdateState() {
       // An auth factor has successfully authenticated. Show a green checkmark.
       ShowCheckmark();
       if (LockScreen::Get()->screen_type() == LockScreen::ScreenType::kLogin) {
-        SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_SIGNED_IN,
-                                      IDS_AUTH_FACTOR_LABEL_SIGNED_IN);
+        label_wrapper_->SetLabelTextAndAccessibleName(
+            IDS_AUTH_FACTOR_LABEL_SIGNED_IN, IDS_AUTH_FACTOR_LABEL_SIGNED_IN);
       } else {
-        SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCKED,
-                                      IDS_AUTH_FACTOR_LABEL_UNLOCKED);
+        label_wrapper_->SetLabelTextAndAccessibleName(
+            IDS_AUTH_FACTOR_LABEL_UNLOCKED, IDS_AUTH_FACTOR_LABEL_UNLOCKED);
       }
       return;
     case PrioritizedAuthFactorViewState::kClickRequired:
       // An auth factor requires a click to enter. Show arrow button.
       ShowArrowButton();
-      SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER,
-                                    IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER);
+      label_wrapper_->SetLabelTextAndAccessibleName(
+          IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER,
+          IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER);
       FireAlert();
 
       // Dismiss any errors in the background.
@@ -365,7 +320,9 @@ void LoginAuthFactorsView::UpdateState() {
       // factors.
       ShowReadyAndDisabledAuthFactors();
       ready_label_id = GetReadyLabelId();
-      SetLabelTextAndAccessibleName(ready_label_id, ready_label_id);
+      label_wrapper_->SetLabelTextAndAccessibleName(ready_label_id,
+                                                    ready_label_id,
+                                                    /*animate=*/true);
       // TODO(crbug.com/1233614): Should FireAlert() be called here?
       FireAlert();
       return;
@@ -373,8 +330,9 @@ void LoginAuthFactorsView::UpdateState() {
       // At least one auth factor is available, but none are ready. Show first
       // available auth factor.
       ShowSingleAuthFactor(active_auth_factor);
-      SetLabelTextAndAccessibleName(active_auth_factor->GetLabelId(),
-                                    active_auth_factor->GetAccessibleNameId());
+      label_wrapper_->SetLabelTextAndAccessibleName(
+          active_auth_factor->GetLabelId(),
+          active_auth_factor->GetAccessibleNameId(), /*animate=*/true);
       if (active_auth_factor->ShouldAnnounceLabel()) {
         FireAlert();
       }
@@ -392,8 +350,9 @@ void LoginAuthFactorsView::UpdateState() {
                                         base::Unretained(this)));
 
       ShowSingleAuthFactor(active_auth_factor);
-      SetLabelTextAndAccessibleName(active_auth_factor->GetLabelId(),
-                                    active_auth_factor->GetAccessibleNameId());
+      label_wrapper_->SetLabelTextAndAccessibleName(
+          active_auth_factor->GetLabelId(),
+          active_auth_factor->GetAccessibleNameId());
       if (active_auth_factor->ShouldAnnounceLabel()) {
         FireAlert();
       }
@@ -412,11 +371,12 @@ void LoginAuthFactorsView::UpdateState() {
           });
 
       if (num_factors_in_error_background_state == 1) {
-        SetLabelTextAndAccessibleName(
+        label_wrapper_->SetLabelTextAndAccessibleName(
             active_auth_factor->GetLabelId(),
             active_auth_factor->GetAccessibleNameId());
       } else {
-        SetLabelTextAndAccessibleName(GetDefaultLabelId(), GetDefaultLabelId());
+        label_wrapper_->SetLabelTextAndAccessibleName(GetDefaultLabelId(),
+                                                      GetDefaultLabelId());
       }
       return;
     case PrioritizedAuthFactorViewState::kUnavailable:
@@ -460,23 +420,6 @@ void LoginAuthFactorsView::ShowCheckmark() {
   SetArrowVisibility(false);
   // TODO(crbug.com/1233614): If transitioning from Click Required state, show
   // animation.
-}
-
-void LoginAuthFactorsView::SetLabelTextAndAccessibleName(
-    int label_id,
-    int accessible_name_id) {
-  label_->SetText(l10n_util::GetStringUTF16(label_id));
-  label_->SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
-
-  // Add margin to the bottom of the label to ensure that the total height of
-  // the label and margin is always |kLabelMaxLines| lines.
-  int bottom_margin =
-      (kLabelMaxLines - label_->GetRequiredLines()) * label_->GetLineHeight();
-  label_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets(/*top=*/kSpacingBetweenIconsAndLabelDp, /*left=*/0,
-                  /*bottom=*/std::max(bottom_margin, 0),
-                  /*right=*/0));
 }
 
 int LoginAuthFactorsView::GetReadyLabelId() const {
@@ -533,8 +476,8 @@ void LoginAuthFactorsView::OnThemeChanged() {
 }
 
 void LoginAuthFactorsView::FireAlert() {
-  label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                   /*send_native_event=*/true);
+  label_wrapper_->label()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                                    /*send_native_event=*/true);
 }
 
 void LoginAuthFactorsView::ArrowButtonPressed(const ui::Event& event) {
