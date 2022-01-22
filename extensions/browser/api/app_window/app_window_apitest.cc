@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
   if (!ui::win::IsAeroGlassEnabled()) {
     test_dir = kNoAlphaDir;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // USE_AURA && !(OS_LINUX || IS_CHROMEOS_LACROS)
 
   EXPECT_TRUE(RunExtensionTest(test_dir, {.launch_as_platform_app = true}))

@@ -73,4 +73,4 @@ TEST_P(LayerTreeHostSynchronousPixelTest, OneContentLayerGpuRasterization) {
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

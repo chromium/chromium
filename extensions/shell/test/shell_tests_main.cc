@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
   // Load and pin user32.dll to avoid having to load it once tests start while
   // on the main thread loop where blocking calls are disallowed.
   base::win::PinUser32();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   extensions::AppShellTestLauncherDelegate launcher_delegate;
   return content::LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);

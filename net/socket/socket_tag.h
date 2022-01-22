@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif
 
 namespace net {
 

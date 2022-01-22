@@ -591,4 +591,4 @@ INSTANTIATE_TEST_SUITE_P(All,
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

@@ -1256,4 +1256,4 @@ TEST_P(BackdropFilterInvertTest, HiDpi) {
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

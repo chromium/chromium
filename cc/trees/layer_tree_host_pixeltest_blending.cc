@@ -465,4 +465,4 @@ TEST_P(LayerTreeHostBlendingPixelTest,
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

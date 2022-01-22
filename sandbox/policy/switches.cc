@@ -45,11 +45,11 @@ const char kXrCompositingSandbox[] = "xr_compositing";
 const char kIconReaderSandbox[] = "icon_reader";
 const char kMediaFoundationCdmSandbox[] = "mf_cdm";
 const char kWindowsSystemProxyResolverSandbox[] = "proxy_resolver_win";
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 const char kMirroringSandbox[] = "mirroring";
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kHardwareVideoDecodingSandbox[] = "hardware_video_decoding";

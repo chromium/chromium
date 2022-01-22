@@ -262,7 +262,7 @@ class MemoryAllocator {
   }
 };
 
-#else  // OS_WIN
+#else  // BUILDFLAG(IS_WIN)
 
 // On Mac, Linux, we use a bare bones implementation that only does
 // heap allocations.
@@ -326,7 +326,7 @@ class MemoryAllocator {
   }
 };
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Manages a growable buffer.  The buffer allocation is done by the
 // MemoryAllocator class.  This class will not throw exceptions so call sites

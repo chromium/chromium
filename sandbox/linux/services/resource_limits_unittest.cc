@@ -24,7 +24,7 @@ namespace {
 #define MAYBE_NoFork DISABLE_ON_ASAN(NoFork)
 #else
 #define MAYBE_NoFork DISABLED_NoFork
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Not being able to fork breaks LeakSanitizer, so disable on
 // all ASAN builds.

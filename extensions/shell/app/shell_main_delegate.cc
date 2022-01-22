@@ -176,7 +176,7 @@ void ShellMainDelegate::ZygoteStarting(
   nacl::AddNaClZygoteForkDelegates(delegates);
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
-#endif  // OS_POSIX && !OS_MAC && !OS_ANDROID
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

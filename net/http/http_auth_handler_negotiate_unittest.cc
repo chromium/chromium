@@ -84,7 +84,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     MockAuthLibrary::EnsureTestAccountExists();
 #else
     factory_->set_library(base::WrapUnique(auth_library_.get()));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -187,7 +187,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
                                           queries[i].expected_input_token,
                                           queries[i].output_token);
     }
-#endif  // !BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
 #if BUILDFLAG(IS_POSIX)

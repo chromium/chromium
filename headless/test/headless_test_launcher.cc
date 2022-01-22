@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
   // Load and pin user32.dll to avoid having to load it once tests start while
   // on the main thread loop where blocking calls are disallowed.
   base::win::PinUser32();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Setup a working test environment for the network service in case it's used.
   // Only create this object in the utility process, so that its members don't

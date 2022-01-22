@@ -28,7 +28,7 @@
 #include <net/if_media.h>
 #include <netinet/in_var.h>
 #include <sys/ioctl.h>
-#endif  // !BUILDFLAG(IS_IOS)
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"

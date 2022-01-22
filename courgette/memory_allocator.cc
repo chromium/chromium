@@ -137,4 +137,4 @@ TempMapping* TempMapping::GetMappingFromPtr(void* mem) {
 
 }  // namespace courgette
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
