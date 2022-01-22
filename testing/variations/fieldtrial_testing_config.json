@@ -246,30 +246,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpContextualSearchWebSearch": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "WebSearchExperiment",
-                    "params": {
-                        "availability": ">=14",
-                        "event_1": "name:web_search_performed;comparator:>=1;window:90;storage:90",
-                        "event_2": "name:contextual_search_web_search_iph_trigger;comparator:<2;window:680;storage:680",
-                        "event_3": "name:contextual_search_panel_opened;comparator:>0;window:680;storage:680",
-                        "event_trigger": "name:contextual_search_web_search_iph_trigger;comparator:==0;window:90;storage:680",
-                        "event_used": "name:contextual_search_panel_opened;comparator:==0;window:30;storage:90",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_ContextualSearchWebSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidInProductHelpDownloadInfoBarDownloadContinuing": [
         {
             "platforms": [
