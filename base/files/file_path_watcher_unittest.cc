@@ -649,7 +649,7 @@ TEST_F(FilePathWatcherTest, MoveChild) {
 // TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
 // the |temp_dir_| in /data.
 #define FileAttributesChanged DISABLED_FileAttributesChanged
-#endif  // defined(OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 TEST_F(FilePathWatcherTest, FileAttributesChanged) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   FilePathWatcher watcher;

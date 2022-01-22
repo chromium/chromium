@@ -108,7 +108,7 @@ void ChromeCrashReporterClient::GetProductNameAndVersion(
   *product_name = "Chrome_ChromeOS";
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   *product_name = "Chrome_Lacros";
-#else  // defined(OS_LINUX
+#else  // BUILDFLAG(IS_ANDROID)
 #if !defined(ADDRESS_SANITIZER)
   *product_name = "Chrome_Linux";
 #else
