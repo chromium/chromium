@@ -5218,8 +5218,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
 
 // Tests that prerendering is cancelled when a mixed content subframe is
 // detected.
-// TODO(crbug.com/1251966): Flaky on multiple bots. 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DISABLED_MixedContent) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
