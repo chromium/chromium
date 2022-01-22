@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_APP_RESTORE_FULL_RESTORE_READ_HANDLER_H_
 #define COMPONENTS_APP_RESTORE_FULL_RESTORE_READ_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -187,6 +187,14 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
       int32_t restore_window_id);
 
+  // Returns true if ARC restore launching is thought to be underway on
+  // `primary_profile_path_`.
+  bool IsArcRestoreRunning() const;
+
+  // Returns true if Lacros restore launching is thought to be underway on
+  // `primary_profile_path_`.
+  bool IsLacrosRestoreRunning() const;
+
   // Invoked when reading the restore data from |profile_path| is finished, and
   // calls |callback| to notify that the reading operation is done.
   void OnGetRestoreData(const base::FilePath& profile_path,
@@ -205,19 +213,20 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   base::FilePath active_profile_path_;
 
   // The restore data read from the full restore files.
-  std::map<base::FilePath, std::unique_ptr<app_restore::RestoreData>>
+  base::flat_map<base::FilePath, std::unique_ptr<app_restore::RestoreData>>
       profile_path_to_restore_data_;
 
   // The map from the window id to the full restore file path and the
   // app id. The window id is saved in the window property
   // |kRestoreWindowIdKey|. This map is used to find the file path and the app
   // id when get the window info. This map is not used for ARC app windows.
-  std::map<int32_t, std::pair<base::FilePath, std::string>>
+  base::flat_map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 
   // The start time of full restore for each profile. There won't be an entry if
   // full restore hasn't started for the profile.
-  std::map<base::FilePath, base::TimeTicks> profile_path_to_start_time_data_;
+  base::flat_map<base::FilePath, base::TimeTicks>
+      profile_path_to_start_time_data_;
 
   std::unique_ptr<app_restore::ArcReadHandler> arc_read_handler_;
 

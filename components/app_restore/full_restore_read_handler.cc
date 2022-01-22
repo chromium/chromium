@@ -34,7 +34,7 @@ namespace {
 //  These are temporary estimate of how long it takes full restore to launch
 //  apps.
 constexpr base::TimeDelta kFullRestoreEstimateDuration = base::Seconds(5);
-constexpr base::TimeDelta kFullRestoreARCEstimateDuration = base::Minutes(5);
+constexpr base::TimeDelta kFullRestoreARCEstimateDuration = base::Minutes(3);
 constexpr base::TimeDelta kFullRestoreLacrosEstimateDuration = base::Minutes(1);
 
 }  // namespace
@@ -327,22 +327,12 @@ bool FullRestoreReadHandler::IsFullRestoreRunning() const {
   if (it == profile_path_to_start_time_data_.end())
     return false;
 
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - it->second;
-
-  // We estimate that full restore is still running if it has been less than
-  // five minutes since it started, when there is at least one ARC app, since it
-  // might take long time to boot ARC.
-  if (arc_read_handler_)
-    return elapsed_time < kFullRestoreARCEstimateDuration;
-
-  // We estimate that full restore is still running if it has been less than
-  // one minute since it started, when Lacros is available.
-  if (lacros_read_handler_)
-    return elapsed_time < kFullRestoreLacrosEstimateDuration;
+  if (IsArcRestoreRunning() || IsLacrosRestoreRunning())
+    return true;
 
   // We estimate that full restore is still running if it has been less than
   // five seconds since it started.
-  return elapsed_time < kFullRestoreEstimateDuration;
+  return base::TimeTicks::Now() - it->second < kFullRestoreEstimateDuration;
 }
 
 void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
@@ -376,6 +366,34 @@ std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
   const base::FilePath& profile_path = it->second.first;
   const std::string& app_id = it->second.second;
   return GetWindowInfo(profile_path, app_id, restore_window_id);
+}
+
+bool FullRestoreReadHandler::IsArcRestoreRunning() const {
+  if (!arc_read_handler_ || active_profile_path_ != primary_profile_path_)
+    return false;
+
+  auto it = profile_path_to_start_time_data_.find(primary_profile_path_);
+  if (it == profile_path_to_start_time_data_.end())
+    return false;
+
+  // We estimate that full restore is still running for ARC windows if it has
+  // been less than five minutes since it started, when there is at least one
+  // ARC app, since it might take long time to boot ARC.
+  return base::TimeTicks::Now() - it->second < kFullRestoreARCEstimateDuration;
+}
+
+bool FullRestoreReadHandler::IsLacrosRestoreRunning() const {
+  if (!lacros_read_handler_ || active_profile_path_ != primary_profile_path_)
+    return false;
+
+  auto it = profile_path_to_start_time_data_.find(primary_profile_path_);
+  if (it == profile_path_to_start_time_data_.end())
+    return false;
+
+  // We estimate that full restore is still running if it has been less than
+  // one minute since it started, when Lacros is available.
+  return base::TimeTicks::Now() - it->second <
+         kFullRestoreLacrosEstimateDuration;
 }
 
 void FullRestoreReadHandler::OnGetRestoreData(
