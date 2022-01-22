@@ -200,29 +200,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpContextualSearchPromotePanelOpen": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "PromotePanelOpeningExperiment",
-                    "params": {
-                        "availability": ">=14",
-                        "event_1": "name:contextual_search_promote_panel_open_iph_trigger;comparator:<2;window:680;storage:680",
-                        "event_2": "name:contextual_search_panel_opened;comparator:<3;window:90;storage:90",
-                        "event_trigger": "name:contextual_search_promote_panel_open_iph_trigger;comparator:==0;window:90;storage:680",
-                        "event_used": "name:contextual_search_panel_opened_for_entity;comparator:==0;window:90;storage:90",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_ContextualSearchPromotePanelOpen"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidInProductHelpContextualSearchPromoteTap": [
         {
             "platforms": [
