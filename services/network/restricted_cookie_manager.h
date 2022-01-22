@@ -67,6 +67,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // `isolation_info` must be fully populated, its `frame_origin` field should
   // not be used for cookie access decisions, but should be the same as `origin`
   // if the `role` is mojom::RestrictedCookieManagerRole::SCRIPT.
+  //
+  // `cookie_partition_key` should have been previously computed by
+  // `ComputePartitionKey` using the same `cookie_store` and `isolation_info` as
+  // were passed in here.
   RestrictedCookieManager(
       mojom::RestrictedCookieManagerRole role,
       net::CookieStore* cookie_store,
@@ -74,7 +78,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-      bool first_party_sets_enabled);
+      bool first_party_sets_enabled,
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key);
 
   RestrictedCookieManager(const RestrictedCookieManager&) = delete;
   RestrictedCookieManager& operator=(const RestrictedCookieManager&) = delete;
@@ -84,6 +89,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   void OverrideOriginForTesting(const url::Origin& new_origin) {
     origin_ = new_origin;
   }
+
+  // This spins the event loop, since the cookie partition key may be computed
+  // asynchronously.
   void OverrideIsolationInfoForTesting(
       const net::IsolationInfo& new_isolation_info);
 
@@ -122,6 +130,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                          const net::SiteForCookies& site_for_cookies,
                          const url::Origin& top_frame_origin,
                          CookiesEnabledForCallback callback) override;
+
+  // Computes the cookie partition key that corresponds to the given
+  // `cookie_store` and `isolation_info`.
+  //
+  // May invoke `callback` either synchronously or asynchronously.
+  static void ComputeCookiePartitionKey(
+      const net::CookieStore* cookie_store,
+      const net::IsolationInfo& isolation_info,
+      base::OnceCallback<void(absl::optional<net::CookiePartitionKey>)>
+          callback);
 
  private:
   // The state associated with a CookieChangeListener.
@@ -215,6 +233,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   bool SkipAccessNotificationForCookieItem(
       CookieAccesses* cookie_accesses,
       const net::CookieWithAccessResult& cookie_item);
+
+  // Called while overriding the cookie_partition_key during testing.
+  void OnGotCookiePartitionKeyForTesting(
+      base::OnceClosure done_closure,
+      absl::optional<net::CookiePartitionKey> cookie_partition_key);
 
   const mojom::RestrictedCookieManagerRole role_;
   const raw_ptr<net::CookieStore> cookie_store_;

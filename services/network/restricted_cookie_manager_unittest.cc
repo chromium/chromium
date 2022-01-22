@@ -52,6 +52,26 @@ bool operator==(const net::SiteForCookies& a, const net::SiteForCookies& b) {
 
 namespace network {
 
+namespace {
+
+absl::optional<net::CookiePartitionKey> ComputePartitionKeySync(
+    const net::CookieStore* cookie_store,
+    const net::IsolationInfo& isolation_info) {
+  base::RunLoop run_loop;
+  absl::optional<net::CookiePartitionKey> cookie_partition_key;
+  RestrictedCookieManager::ComputeCookiePartitionKey(
+      cookie_store, isolation_info,
+      base::BindLambdaForTesting(
+          [&](absl::optional<net::CookiePartitionKey> key) {
+            cookie_partition_key = key;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  return cookie_partition_key;
+}
+
+}  // namespace
+
 class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
  public:
   struct CookieOp {
@@ -248,7 +268,8 @@ class RestrictedCookieManagerTest
             kDefaultOrigin,
             isolation_info_,
             recording_client_.GetRemote(),
-            kFirstPartySetsEnabled)),
+            kFirstPartySetsEnabled,
+            ComputePartitionKeySync(&cookie_monster_, isolation_info_))),
         receiver_(service_.get(),
                   service_remote_.BindNewPipeAndPassReceiver()) {
     sync_service_ =

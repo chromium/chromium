@@ -45,8 +45,10 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const override;
-  absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
-      const net::SchemefulSite& site) const override;
+  void FindFirstPartySetOwner(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
+      const override;
   void RetrieveFirstPartySets(
       base::OnceCallback<void(
           base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>

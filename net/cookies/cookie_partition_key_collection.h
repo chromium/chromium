@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_partition_key.h"
 
@@ -53,8 +54,11 @@ class NET_EXPORT CookiePartitionKeyCollection {
   // the correct First-Party-Sets-aware CookiePartitionKeyCollection, replacing
   // any CookiePartitionKeys whose sites which are members of a set with a new
   // partition key containing the set's owner site.
-  CookiePartitionKeyCollection FirstPartySetify(
-      const CookieAccessDelegate* cookie_access_delegate) const;
+  //
+  // `callback` may be invoked either synchronously or asynchronously.
+  void FirstPartySetify(
+      const CookieAccessDelegate* cookie_access_delegate,
+      base::OnceCallback<void(CookiePartitionKeyCollection)> callback) const;
 
   // Temporary method used to record where we need to decide how to build the
   // CookiePartitionKeyCollection.

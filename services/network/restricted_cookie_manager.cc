@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -126,17 +127,18 @@ net::CookieOptions MakeOptionsForGet(
   return options;
 }
 
-// Computes the cookie partition key that corresponds to the given
-// `cookie_store` and `isolation_info`.
-absl::optional<net::CookiePartitionKey> ComputeCookiePartitionKey(
-    const net::CookieStore* cookie_store,
-    const net::IsolationInfo& isolation_info) {
-  return net::CookieAccessDelegate::CreateCookiePartitionKey(
-      cookie_store->cookie_access_delegate(),
-      isolation_info.network_isolation_key());
-}
-
 }  // namespace
+
+// static
+void RestrictedCookieManager::ComputeCookiePartitionKey(
+    const net::CookieStore* cookie_store,
+    const net::IsolationInfo& isolation_info,
+    base::OnceCallback<void(absl::optional<net::CookiePartitionKey>)>
+        callback) {
+  net::CookieAccessDelegate::CreateCookiePartitionKey(
+      cookie_store->cookie_access_delegate(),
+      isolation_info.network_isolation_key(), std::move(callback));
+}
 
 bool CookieWithAccessResultComparer::operator()(
     const net::CookieWithAccessResult& cookie_with_access_result1,
@@ -326,21 +328,22 @@ RestrictedCookieManager::RestrictedCookieManager(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-    const bool first_party_sets_enabled)
+    const bool first_party_sets_enabled,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key)
     : role_(role),
       cookie_store_(cookie_store),
       cookie_settings_(cookie_settings),
       origin_(origin),
       isolation_info_(isolation_info),
       cookie_observer_(std::move(cookie_observer)),
+      cookie_partition_key_(cookie_partition_key),
+      cookie_partition_key_collection_(
+          net::CookiePartitionKeyCollection::FromOptional(
+              cookie_partition_key_)),
       first_party_sets_enabled_(first_party_sets_enabled) {
   DCHECK(cookie_store);
   CHECK(origin_ == isolation_info_.frame_origin().value() ||
         role_ != mojom::RestrictedCookieManagerRole::SCRIPT);
-  cookie_partition_key_ =
-      ComputeCookiePartitionKey(cookie_store, isolation_info);
-  cookie_partition_key_collection_ =
-      net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
@@ -357,11 +360,23 @@ RestrictedCookieManager::~RestrictedCookieManager() {
 
 void RestrictedCookieManager::OverrideIsolationInfoForTesting(
     const net::IsolationInfo& new_isolation_info) {
+  base::RunLoop run_loop;
   isolation_info_ = new_isolation_info;
-  cookie_partition_key_ =
-      ComputeCookiePartitionKey(cookie_store_, isolation_info_);
+  ComputeCookiePartitionKey(
+      cookie_store_, isolation_info_,
+      base::BindOnce(
+          &RestrictedCookieManager::OnGotCookiePartitionKeyForTesting,
+          weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+void RestrictedCookieManager::OnGotCookiePartitionKeyForTesting(
+    base::OnceClosure done_closure,
+    absl::optional<net::CookiePartitionKey> cookie_partition_key) {
+  cookie_partition_key_ = cookie_partition_key;
   cookie_partition_key_collection_ =
       net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
+  std::move(done_closure).Run();
 }
 
 bool RestrictedCookieManager::IsPartitionedCookiesEnabled() const {

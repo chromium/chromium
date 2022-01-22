@@ -610,6 +610,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // On connection errors the NetworkContext destroys itself.
   void OnConnectionError();
 
+  // Invoked with the CookiePartitionKey to be associated with the given
+  // RestrictedCookieManager that is being set up.
+  void OnComputedCookiePartitionKey(
+      mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
+      mojom::RestrictedCookieManagerRole role,
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info,
+      mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
+      absl::optional<net::CookiePartitionKey> cookie_partition_key);
+
   GURL GetHSTSRedirect(const GURL& original_url);
 
 #if BUILDFLAG(IS_P2P_ENABLED)

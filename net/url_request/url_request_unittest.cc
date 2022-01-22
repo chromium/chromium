@@ -13062,14 +13062,22 @@ class URLRequestMaybeAsyncFirstPartySetsTest
 };
 
 TEST_P(URLRequestMaybeAsyncFirstPartySetsTest, SimpleRequest) {
+  const std::string kHost = "example.test";
+  const url::Origin kOrigin =
+      url::Origin::Create(test_server().GetURL(kHost, "/"));
+  const SiteForCookies kSiteForCookies = SiteForCookies::FromOrigin(kOrigin);
+
   TestURLRequestContext context(/*delay_initialization=*/true);
   context.set_cookie_store(cookie_store());
   context.Init();
 
   TestDelegate d;
-  std::unique_ptr<URLRequest> req(
-      context.CreateRequest(test_server().GetURL("/echo"), DEFAULT_PRIORITY, &d,
-                            TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      test_server().GetURL(kHost, "/echo"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_isolation_info(
+      IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin,
+                            kOrigin, kSiteForCookies, {} /* party_context */));
   req->Start();
   d.RunUntilComplete();
 
@@ -13079,17 +13087,26 @@ TEST_P(URLRequestMaybeAsyncFirstPartySetsTest, SimpleRequest) {
 }
 
 TEST_P(URLRequestMaybeAsyncFirstPartySetsTest, SingleRedirect) {
+  const std::string kHost = "example.test";
+  const url::Origin kOrigin =
+      url::Origin::Create(test_server().GetURL(kHost, "/"));
+  const SiteForCookies kSiteForCookies = SiteForCookies::FromOrigin(kOrigin);
+
   TestURLRequestContext context(/*delay_initialization=*/true);
   context.set_cookie_store(cookie_store());
   context.Init();
 
   TestDelegate d;
   std::unique_ptr<URLRequest> req(context.CreateRequest(
-      test_server().GetURL(base::StrCat({
-          "/server-redirect?",
-          test_server().GetURL("/echo").spec(),
-      })),
+      test_server().GetURL(kHost,
+                           base::StrCat({
+                               "/server-redirect?",
+                               test_server().GetURL(kHost, "/echo").spec(),
+                           })),
       DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_isolation_info(
+      IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin,
+                            kOrigin, kSiteForCookies, {} /* party_context */));
   req->Start();
   d.RunUntilComplete();
 

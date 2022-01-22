@@ -24,20 +24,36 @@ bool CookieAccessDelegate::ShouldTreatUrlAsTrustworthy(const GURL& url) const {
 }
 
 // static
-absl::optional<CookiePartitionKey>
-CookieAccessDelegate::CreateCookiePartitionKey(
+void CookieAccessDelegate::CreateCookiePartitionKey(
     const CookieAccessDelegate* delegate,
-    const NetworkIsolationKey& network_isolation_key) {
-  absl::optional<SchemefulSite> fps_owner_site = absl::nullopt;
-  if (delegate) {
-    absl::optional<SchemefulSite> top_frame_site =
-        network_isolation_key.GetTopFrameSite();
-    if (!top_frame_site)
-      return absl::nullopt;
-    fps_owner_site = delegate->FindFirstPartySetOwner(top_frame_site.value());
+    const NetworkIsolationKey& network_isolation_key,
+    base::OnceCallback<void(absl::optional<net::CookiePartitionKey>)>
+        callback) {
+  if (!delegate) {
+    std::move(callback).Run(CookiePartitionKey::FromNetworkIsolationKey(
+        network_isolation_key, nullptr));
+    return;
   }
-  return CookiePartitionKey::FromNetworkIsolationKey(
-      network_isolation_key, base::OptionalOrNullptr(fps_owner_site));
+
+  absl::optional<SchemefulSite> top_frame_site =
+      network_isolation_key.GetTopFrameSite();
+  if (!top_frame_site) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  delegate->FindFirstPartySetOwner(
+      top_frame_site.value(),
+      base::BindOnce(
+          [](const NetworkIsolationKey& network_isolation_key,
+             base::OnceCallback<void(absl::optional<net::CookiePartitionKey>)>
+                 callback,
+             absl::optional<net::SchemefulSite> first_party_set_owner) {
+            std::move(callback).Run(CookiePartitionKey::FromNetworkIsolationKey(
+                network_isolation_key,
+                base::OptionalOrNullptr(first_party_set_owner)));
+          },
+          network_isolation_key, std::move(callback)));
 }
 
 // static
@@ -49,14 +65,21 @@ void CookieAccessDelegate::FirstPartySetifyPartitionKey(
     std::move(callback).Run(cookie_partition_key);
     return;
   }
-  absl::optional<SchemefulSite> fps_owner_site =
-      delegate->FindFirstPartySetOwner(cookie_partition_key.site());
-  if (!fps_owner_site) {
-    std::move(callback).Run(cookie_partition_key);
-    return;
-  }
-  std::move(callback).Run(CookiePartitionKey::FromWire(
-      fps_owner_site.value(), cookie_partition_key.nonce()));
+  delegate->FindFirstPartySetOwner(
+      cookie_partition_key.site(),
+      base::BindOnce(
+          [](const CookiePartitionKey& cookie_partition_key,
+             base::OnceCallback<void(absl::optional<CookiePartitionKey>)>
+                 callback,
+             absl::optional<SchemefulSite> first_party_set_owner) {
+            if (!first_party_set_owner) {
+              std::move(callback).Run(cookie_partition_key);
+              return;
+            }
+            std::move(callback).Run(CookiePartitionKey::FromWire(
+                first_party_set_owner.value(), cookie_partition_key.nonce()));
+          },
+          cookie_partition_key, std::move(callback)));
 }
 
 }  // namespace net

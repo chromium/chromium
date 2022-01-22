@@ -62,10 +62,14 @@ class NET_EXPORT CookieAccessDelegate {
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const = 0;
 
-  // Returns the owner of a `site`'s First-Party Set if `site` is in a
-  // non-trivial set. Returns nullopt otherwise.
-  virtual absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
-      const net::SchemefulSite& site) const = 0;
+  // Computes the owner of a `site`'s First-Party Set if `site` is in a
+  // non-trivial set; `nullopt` otherwise.
+  //
+  // `callback` may be invoked either synchronously or asynchronously.
+  virtual void FindFirstPartySetOwner(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
+      const = 0;
 
   // Creates a CookiePartitionKey that takes whether the top-frame site is in a
   // First-Party Set into account. If FPS are not enabled, it returns a cookie
@@ -73,9 +77,13 @@ class NET_EXPORT CookieAccessDelegate {
   //
   // Should always return nullopt if partitioned cookies are disabled or if
   // the NIK has no top-frame site.
-  static absl::optional<CookiePartitionKey> CreateCookiePartitionKey(
+  //
+  // May invoke `callback` either synchronously or asynchronously.
+  static void CreateCookiePartitionKey(
       const CookieAccessDelegate* delegate,
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkIsolationKey& network_isolation_key,
+      base::OnceCallback<void(absl::optional<net::CookiePartitionKey>)>
+          callback);
 
   // Converts the CookiePartitionKey's site to its First-Party Set owner if
   // the site is in a nontrivial set.

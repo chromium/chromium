@@ -73,12 +73,15 @@ void CookieAccessDelegateImpl::ComputeFirstPartySetMetadataMaybeAsync(
                                      std::move(callback));
 }
 
-absl::optional<net::SchemefulSite>
-CookieAccessDelegateImpl::FindFirstPartySetOwner(
-    const net::SchemefulSite& site) const {
-  if (!first_party_sets_)
-    return absl::nullopt;
-  return first_party_sets_->FindOwner(site);
+void CookieAccessDelegateImpl::FindFirstPartySetOwner(
+    const net::SchemefulSite& site,
+    base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
+    const {
+  if (!first_party_sets_) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::move(callback).Run(first_party_sets_->FindOwner(site));
 }
 
 void CookieAccessDelegateImpl::RetrieveFirstPartySets(

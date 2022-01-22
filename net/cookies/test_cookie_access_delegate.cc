@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
@@ -56,14 +57,33 @@ void TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
   std::move(callback).Run(FirstPartySetMetadata());
 }
 
-absl::optional<net::SchemefulSite>
-TestCookieAccessDelegate::FindFirstPartySetOwner(
-    const net::SchemefulSite& site) const {
-  for (const auto& all_sets_iter : first_party_sets_) {
-    if (base::Contains(all_sets_iter.second, site))
-      return all_sets_iter.first;
+void TestCookieAccessDelegate::FindFirstPartySetOwner(
+    const net::SchemefulSite& site,
+    base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
+    const {
+  auto owner_set_iter =
+      base::ranges::find_if(first_party_sets_, [&](const auto& set_iter) {
+        return base::Contains(set_iter.second, site);
+      });
+
+  absl::optional<net::SchemefulSite> owner =
+      owner_set_iter != first_party_sets_.end()
+          ? absl::make_optional(owner_set_iter->first)
+          : absl::nullopt;
+
+  if (invoke_callbacks_asynchronously_) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](const absl::optional<net::SchemefulSite>& owner) {
+              return owner;
+            },
+            owner),
+        std::move(callback));
+    return;
   }
-  return absl::nullopt;
+
+  std::move(callback).Run(owner);
 }
 
 void TestCookieAccessDelegate::RetrieveFirstPartySets(

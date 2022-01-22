@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_store_factory.h"
 #include "extensions/common/constants.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/restricted_cookie_manager.h"
 
@@ -77,9 +78,10 @@ void ChromeExtensionCookies::CreateRestrictedCookieManager(
   // Safe since |io_data_| is non-null so no IOData deletion is queued.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&IOData::CreateRestrictedCookieManager,
-                     base::Unretained(io_data_.get()), origin, isolation_info,
-                     first_party_sets_enabled_, std::move(receiver)));
+      base::BindOnce(
+          &IOData::ComputeCookiePartitionKeyAndCreateRestrictedCookieManager,
+          base::Unretained(io_data_.get()), origin, isolation_info,
+          first_party_sets_enabled_, std::move(receiver)));
 }
 
 void ChromeExtensionCookies::ClearCookies(const GURL& origin,
@@ -123,11 +125,26 @@ ChromeExtensionCookies::IOData::~IOData() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
+void ChromeExtensionCookies::IOData::
+    ComputeCookiePartitionKeyAndCreateRestrictedCookieManager(
+        const url::Origin& origin,
+        const net::IsolationInfo& isolation_info,
+        const bool first_party_sets_enabled,
+        mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
+            receiver) {
+  network::RestrictedCookieManager::ComputeCookiePartitionKey(
+      GetOrCreateCookieStore(), isolation_info,
+      base::BindOnce(&IOData::CreateRestrictedCookieManager,
+                     weak_factory_.GetWeakPtr(), origin, isolation_info,
+                     first_party_sets_enabled, std::move(receiver)));
+}
+
 void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     const bool first_party_sets_enabled,
-    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
+    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
+    absl::optional<net::CookiePartitionKey> cookie_partition_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   restricted_cookie_managers_.Add(
@@ -136,7 +153,7 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
           GetOrCreateCookieStore(), network_cookie_settings_, origin,
           isolation_info,
           /* null cookies_observer disables logging */
-          mojo::NullRemote(), first_party_sets_enabled),
+          mojo::NullRemote(), first_party_sets_enabled, cookie_partition_key),
       std::move(receiver));
 }
 

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -83,10 +84,15 @@ class ChromeExtensionCookies
 
     ~IOData();
 
-    void CreateRestrictedCookieManager(
+    // Computes the cookie partition key associated with this instance, and
+    // finishes creating the RestrictedCookieManager.
+    //
+    // The RestrictedCookieManager instance may be created either synchronously
+    // or asynchronously.
+    void ComputeCookiePartitionKeyAndCreateRestrictedCookieManager(
         const url::Origin& origin,
         const net::IsolationInfo& isolation_info,
-        bool first_party_sets_enabled,
+        const bool first_party_sets_enabled,
         mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
             receiver);
 
@@ -104,6 +110,14 @@ class ChromeExtensionCookies
     // Syncs |mojo_cookie_settings_| -> |network_cookie_settings_|.
     void UpdateNetworkCookieSettings();
 
+    // Asynchronously creates a RestrictedCookieManager.
+    void CreateRestrictedCookieManager(
+        const url::Origin& origin,
+        const net::IsolationInfo& isolation_info,
+        bool first_party_sets_enabled,
+        mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
+        absl::optional<net::CookiePartitionKey> cookie_partition_key);
+
     std::unique_ptr<content::CookieStoreConfig> creation_config_;
 
     std::unique_ptr<net::CookieStore> cookie_store_;
@@ -116,6 +130,8 @@ class ChromeExtensionCookies
 
     mojo::UniqueReceiverSet<network::mojom::RestrictedCookieManager>
         restricted_cookie_managers_;
+
+    base::WeakPtrFactory<IOData> weak_factory_{this};
   };
 
   explicit ChromeExtensionCookies(Profile* profile);

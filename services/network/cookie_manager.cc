@@ -102,11 +102,21 @@ void CookieManager::GetCookieList(
     base::Process::TerminateCurrentProcessImmediately(1);
 #endif
 
-  cookie_store_->GetCookieListWithOptionsAsync(
-      url, cookie_options,
-      cookie_partition_key_collection.FirstPartySetify(
-          cookie_store_->cookie_access_delegate()),
-      std::move(callback));
+  cookie_partition_key_collection.FirstPartySetify(
+      cookie_store_->cookie_access_delegate(),
+      base::BindOnce(&CookieManager::OnGotCookiePartitionKeyCollection,
+                     weak_factory_.GetWeakPtr(), url, cookie_options,
+                     std::move(callback)));
+}
+
+void CookieManager::OnGotCookiePartitionKeyCollection(
+    const GURL& url,
+    const net::CookieOptions& cookie_options,
+    GetCookieListCallback callback,
+    net::CookiePartitionKeyCollection cookie_partition_key_collection) {
+  cookie_store_->GetCookieListWithOptionsAsync(url, cookie_options,
+                                               cookie_partition_key_collection,
+                                               std::move(callback));
 }
 
 void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,

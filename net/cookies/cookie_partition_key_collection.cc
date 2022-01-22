@@ -4,8 +4,12 @@
 
 #include "net/cookies/cookie_partition_key_collection.h"
 
+#include "base/barrier_callback.h"
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "net/cookies/cookie_access_delegate.h"
+#include "net/cookies/cookie_partition_key.h"
 
 namespace net {
 
@@ -38,23 +42,54 @@ CookiePartitionKeyCollection& CookiePartitionKeyCollection::operator=(
 
 CookiePartitionKeyCollection::~CookiePartitionKeyCollection() = default;
 
-CookiePartitionKeyCollection CookiePartitionKeyCollection::FirstPartySetify(
-    const CookieAccessDelegate* cookie_access_delegate) const {
-  if (!cookie_access_delegate || IsEmpty() || ContainsAllKeys())
-    return *this;
-  std::vector<CookiePartitionKey> keys;
-  keys.reserve(PartitionKeys().size());
-  for (const auto& key : PartitionKeys()) {
-    absl::optional<SchemefulSite> fps_owner =
-        cookie_access_delegate->FindFirstPartySetOwner(key.site());
-    if (fps_owner) {
-      keys.push_back(
-          CookiePartitionKey::FromWire(fps_owner.value(), key.nonce()));
-    } else {
-      keys.push_back(key);
-    }
+void CookiePartitionKeyCollection::FirstPartySetify(
+    const CookieAccessDelegate* cookie_access_delegate,
+    base::OnceCallback<void(CookiePartitionKeyCollection)> callback) const {
+  if (!cookie_access_delegate || IsEmpty() || ContainsAllKeys()) {
+    std::move(callback).Run(*this);
+    return;
   }
-  return CookiePartitionKeyCollection(keys);
+
+  // TODO(cfredric): rewrite this to make a single round trip (batched) instead
+  // of 1 trip for each key.
+  auto barrier = base::BarrierCallback<
+      std::pair<net::CookiePartitionKey, absl::optional<net::SchemefulSite>>>(
+      PartitionKeys().size(),
+      base::BindOnce(
+          [](base::OnceCallback<void(CookiePartitionKeyCollection)> callback,
+             const std::vector<std::pair<net::CookiePartitionKey,
+                                         absl::optional<net::SchemefulSite>>>&
+                 keys_and_owners) {
+            std::vector<net::CookiePartitionKey> keys;
+            keys.reserve(keys_and_owners.size());
+            for (const auto& key_and_owner : keys_and_owners) {
+              const net::CookiePartitionKey& key = key_and_owner.first;
+              const absl::optional<SchemefulSite>& first_party_set_owner =
+                  key_and_owner.second;
+              if (first_party_set_owner) {
+                keys.push_back(CookiePartitionKey::FromWire(
+                    first_party_set_owner.value(), key.nonce()));
+              } else {
+                keys.push_back(key);
+              }
+            }
+            std::move(callback).Run(CookiePartitionKeyCollection(keys));
+          },
+          std::move(callback)));
+
+  for (const auto& key : PartitionKeys()) {
+    cookie_access_delegate->FindFirstPartySetOwner(
+        key.site(),
+        base::BindOnce(
+            [](base::RepeatingCallback<void(
+                   std::pair<net::CookiePartitionKey,
+                             absl::optional<net::SchemefulSite>>)> barrier,
+               CookiePartitionKey key,
+               absl::optional<net::SchemefulSite> owner) {
+              barrier.Run(std::make_pair(key, owner));
+            },
+            barrier, key));
+  }
 }
 
 bool CookiePartitionKeyCollection::Contains(
