@@ -39,10 +39,14 @@ static constexpr double kMaximumScalePreventsZoomingThreshold = 1.2;
 // it takes more than 5ms.
 static constexpr base::TimeDelta kTimeBudgetForBadTapTarget =
     base::Milliseconds(5);
+// Extracting tap targets phase is the major part of finding bad tap targets.
+static constexpr base::TimeDelta kTimeBudgetForTapTargetExtraction =
+    base::Milliseconds(4);
+// Checking clock itself is heavy on excessive call, skip checking by this
+// stride.
+constexpr int kTimeBudgetCheckStride = 32;
 static constexpr base::TimeDelta kEvaluationDelay = base::Milliseconds(3000);
 static constexpr base::TimeDelta kEvaluationInterval = base::Minutes(1);
-// Consider a fixed number of tap targets.
-static constexpr int kMaxTapTargets = 1000;
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
@@ -156,42 +160,45 @@ bool IsTapTargetCandidate(const Node* node) {
 // Skip the whole subtree if the object is invisible. Some elements in subtree
 // may have visibility: visible property which should not be ignored for
 // correctness, but it is rare and we prioritize performance.
-bool ShouldSkipSubree(const LayoutObject* object) {
+bool ShouldSkipSubtree(const LayoutObject* object) {
   const auto& style = object->StyleRef();
   return object->IsElementContinuation() ||
          style.Visibility() != EVisibility::kVisible ||
          style.ContentVisibility() != EContentVisibility::kVisible;
 }
 
-void AddElement(const LayoutObject* object,
+// Appends |object| to evaluation targets if the object is a tap target.
+// Returns false only if |object| is already inserted.
+bool AddElement(const LayoutObject* object,
                 WTF::HashSet<Member<const LayoutObject>>* tap_targets,
                 int finger_radius,
                 Vector<int>& x_positions,
                 Vector<std::pair<int, EdgeOrCenter>>& vertices) {
   Node* node = object->GetNode();
-  if (!node || !IsTapTargetCandidate(node)) {
-    return;
-  }
+  if (!node || !IsTapTargetCandidate(node))
+    return true;
+
   if (Element* element = DynamicTo<Element>(object->GetNode())) {
     // Expand each corner by the size of fingertips.
     const gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
-    if (!rect.IsEmpty()) {
-      if (!tap_targets->insert(object).is_new_entry) {
-        const int top = ClampTo<int>(rect.y() - finger_radius);
-        const int bottom = ClampTo<int>(rect.bottom() + finger_radius);
-        const int left = ClampTo<int>(rect.x() - finger_radius);
-        const int right = ClampTo<int>(rect.right() + finger_radius);
-        const int center = right / 2 + left / 2;
-        vertices.emplace_back(top, EdgeOrCenter::StartEdge(left, right));
-        vertices.emplace_back(bottom / 2 + top / 2,
-                              EdgeOrCenter::Center(center));
-        vertices.emplace_back(bottom, EdgeOrCenter::EndEdge(left, right));
-        x_positions.push_back(left);
-        x_positions.push_back(right);
-        x_positions.push_back(center);
-      }
+    if (!tap_targets->insert(object).is_new_entry)
+      return false;
+
+    if (!rect.IsEmpty() && !tap_targets->insert(object).is_new_entry) {
+      const int top = ClampTo<int>(rect.y() - finger_radius);
+      const int bottom = ClampTo<int>(rect.bottom() + finger_radius);
+      const int left = ClampTo<int>(rect.x() - finger_radius);
+      const int right = ClampTo<int>(rect.right() + finger_radius);
+      const int center = right / 2 + left / 2;
+      vertices.emplace_back(top, EdgeOrCenter::StartEdge(left, right));
+      vertices.emplace_back(bottom / 2 + top / 2, EdgeOrCenter::Center(center));
+      vertices.emplace_back(bottom, EdgeOrCenter::EndEdge(left, right));
+      x_positions.push_back(left);
+      x_positions.push_back(right);
+      x_positions.push_back(center);
     }
   }
+  return true;
 }
 
 // Scans full DOM tree and register all tap regions.
@@ -200,7 +207,6 @@ void AddElement(const LayoutObject* object,
 // x_positions: Collects and inserts every x dimension positions.
 // vertices: Inserts y dimension keyed vertex positions with its attribute.
 // Returns total count of tap targets.
-// Returns kTimeBudgetExceeded if time limit exceeded.
 int ExtractAndCountAllTapTargets(
     const LocalFrameView& frame_view,
     int finger_radius,
@@ -211,25 +217,35 @@ int ExtractAndCountAllTapTargets(
       frame_view.GetFrame().GetDocument()->GetLayoutView();
   WTF::HashSet<Member<const LayoutObject>> tap_targets;
 
+  int object_count = 0;
   // Simultaneously iterate front-to-back and back-to-front to consider
   // both page headers and footers using the same time budget.
   for (const LayoutObject *forward = root, *backward = root;
-       forward && backward && tap_targets.size() < kMaxTapTargets;) {
-    if (IsTimeBudgetExpired(started)) {
-      return kTimeBudgetExceeded;
+       forward && backward;) {
+    if ((++object_count % kTimeBudgetCheckStride) == 0 &&
+        base::Time::Now() - started > kTimeBudgetForTapTargetExtraction) {
+      return static_cast<int>(tap_targets.size());
     }
 
-    if (ShouldSkipSubree(forward)) {
+    if (ShouldSkipSubtree(forward)) {
       forward = forward->NextInPreOrderAfterChildren();
     } else {
-      AddElement(forward, &tap_targets, finger_radius, x_positions, vertices);
+      if (!AddElement(forward, &tap_targets, finger_radius, x_positions,
+                      vertices)) {
+        break;
+      }
+
       forward = forward->NextInPreOrder();
     }
 
-    if (ShouldSkipSubree(backward)) {
+    if (ShouldSkipSubtree(backward)) {
       backward = backward->PreviousInPostOrderBeforeChildren(nullptr);
     } else {
-      AddElement(backward, &tap_targets, finger_radius, x_positions, vertices);
+      if (!AddElement(backward, &tap_targets, finger_radius, x_positions,
+                      vertices)) {
+        break;
+      }
+
       backward = backward->PreviousInPostOrder(nullptr);
     }
   }
@@ -327,7 +343,9 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
       std::floor((3 / kOneDipInMm) / initial_scale);  // 3mm in logical pixel.
 
   Vector<std::pair<int, EdgeOrCenter>> vertices;
+  vertices.ReserveInitialCapacity(1024);
   Vector<int> x_positions;
+  x_positions.ReserveInitialCapacity(1024);
 
   // Recursively evaluate MF values into subframes.
   int all_tap_targets = 0;
@@ -343,13 +361,14 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
     // targets.
     const int got_tap_targets = ExtractAndCountAllTapTargets(
         *view, finger_radius, x_positions, started, vertices);
-    if (got_tap_targets < 0)
-      return got_tap_targets;
 
     all_tap_targets += got_tap_targets;
+
+    if (base::Time::Now() - started > kTimeBudgetForTapTargetExtraction)
+      break;
   }
-  if (all_tap_targets <= 0)
-    return all_tap_targets;  // Means there is no tap target or timeout.
+  if (all_tap_targets == 0)
+    return 0;  // Means there is no tap target.
 
   // Compress x dimension of all vertices to save memory.
   // This will reduce rightmost position of vertices without sacrificing
@@ -358,6 +377,8 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   x_positions.erase(std::unique(x_positions.begin(), x_positions.end()),
                     x_positions.end());
   CompressKeyWithVector(x_positions, vertices);
+  if (IsTimeBudgetExpired(started))
+    return kTimeBudgetExceeded;
 
   // Reorder vertices by y dimension for sweeping full page from top to bottom.
   std::sort(vertices.begin(), vertices.end(),
@@ -367,6 +388,8 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
               return std::tie(a.first, a.second.type) <
                      std::tie(b.first, b.second.type);
             });
+  if (IsTimeBudgetExpired(started))
+    return kTimeBudgetExceeded;
 
   // Sweep x-compressed y-ordered vertices to detect bad tap targets.
   const int bad_tap_targets =
