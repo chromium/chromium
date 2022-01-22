@@ -13,7 +13,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/message_center_controller.h"
-#include "ash/system/power/battery_notification.h"
+#include "ash/system/network/sms_observer.h"
 #include "ash/system/unified/hps_notify_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
@@ -48,14 +48,17 @@ void SetBlockerPref(bool enabled) {
 }
 
 // Add a notification to the message center.
-void AddNotification(const std::string& notification_id) {
+void AddNotification(const std::string& notification_id, bool system_priority) {
+  const message_center::NotifierType type =
+      system_priority ? message_center::NotifierType::SYSTEM_COMPONENT
+                      : message_center::NotifierType::APPLICATION;
+
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
           message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
           u"test_title", u"test message", /*icon=*/gfx::Image(),
           /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-          message_center::NotifierId(message_center::NotifierType::APPLICATION,
-                                     "test app"),
+          message_center::NotifierId(type, "test"),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::NotificationDelegate>()));
 }
@@ -121,7 +124,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
   SetBlockerPref(true);
 
   // By default, no snooper detected.
-  AddNotification("notification 1");
+  AddNotification("notification 1", /*system_priority=*/false);
   EXPECT_EQ(VisiblePopupCount(), 1u);
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
@@ -135,8 +138,8 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
   // Add notifications while a snooper is present.
-  AddNotification("notification 2");
-  AddNotification("notification 3");
+  AddNotification("notification 2", /*system_priority=*/false);
+  AddNotification("notification 3", /*system_priority=*/false);
   EXPECT_EQ(VisiblePopupCount(), 0u);
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 
@@ -152,7 +155,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
   SetBlockerPref(false);
 
   // Start with one notification that shouldn't be hidden.
-  AddNotification("notification 1");
+  AddNotification("notification 1", /*system_priority=*/false);
   EXPECT_EQ(VisiblePopupCount(), 1u);
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
@@ -170,8 +173,8 @@ TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
   EXPECT_EQ(VisibleNotificationCount(), 1u);
 
   // Add a notification while the feature is disabled.
-  AddNotification("notification 2");
-  AddNotification("notification 3");
+  AddNotification("notification 2", /*system_priority=*/false);
+  AddNotification("notification 3", /*system_priority=*/false);
   EXPECT_EQ(VisiblePopupCount(), 0u);
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 
@@ -187,19 +190,24 @@ TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
 TEST_F(HpsNotifyNotificationBlockerTest, SystemNotification) {
   SetBlockerPref(true);
 
-  // One regular notification, and one important notification that should be
-  // allowlisted.
-  AddNotification("notification 1");
-  AddNotification(BatteryNotification::kNotificationId);
-  EXPECT_EQ(VisiblePopupCount(), 2u);
-  EXPECT_EQ(VisibleNotificationCount(), 2u);
+  // One regular notification, one important notification that should be
+  // allowlisted, and one important notification that could contain sensitive
+  // information (and should therefore still be blocked).
+  AddNotification("notification 1", /*system_priority=*/false);
+  AddNotification("notification 2", /*system_priority=*/true);
+  AddNotification(
+      SmsObserver::kNotificationPrefix + std::string("_notification_3"),
+      /*system_priority=*/true);
+  EXPECT_EQ(VisiblePopupCount(), 3u);
+  EXPECT_EQ(VisibleNotificationCount(), 3u);
 
   // Simulate snooper presence.
   controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
 
-  // The important notification shouldn't be suppressed.
+  // The safe notification shouldn't be suppressed, but the sensitive
+  // notification should be.
   EXPECT_EQ(VisiblePopupCount(), 1u);
-  EXPECT_EQ(VisibleNotificationCount(), 2u);
+  EXPECT_EQ(VisibleNotificationCount(), 3u);
 }
 
 }  // namespace

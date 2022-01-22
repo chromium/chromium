@@ -8,15 +8,17 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/power/battery_notification.h"
+#include "ash/system/network/sms_observer.h"
 #include "ash/system/unified/hps_notify_controller.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
 
@@ -52,21 +54,23 @@ void HpsNotifyNotificationBlocker::OnActiveUserPrefServiceChanged(
 
 bool HpsNotifyNotificationBlocker::ShouldShowNotificationAsPopup(
     const message_center::Notification& notification) const {
-  // For polling the current user pref state.
+  // Always show important system notifications.
+  // An exception: SMS content is personal information.
+  if (notification.notifier_id().type ==
+          message_center::NotifierType::SYSTEM_COMPONENT &&
+      !base::StartsWith(notification.id(), SmsObserver::kNotificationPrefix))
+    return true;
+
+  // Always show if snooping protection is disabled.
   const PrefService* const pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service ||
+      !pref_service->GetBoolean(
+          prefs::kSnoopingProtectionNotificationSuppressionEnabled))
+    return true;
 
-  // Show pop up notifications if the feature is disabled or if there isn't a
-  // snooper looking over the user's shoulder.
-  //
-  // In addition, always show important system notifications.
-  // TODO(crbug.com/1276903): expand allowlisted notifications beyond just
-  // battery status.
-  return notification.id() == BatteryNotification::kNotificationId ||
-         !pref_service ||
-         !pref_service->GetBoolean(
-             prefs::kSnoopingProtectionNotificationSuppressionEnabled) ||
-         !controller_->SnooperPresent();
+  // Only show notifications when there isn't a snooper detected.
+  return !controller_->SnooperPresent();
 }
 
 void HpsNotifyNotificationBlocker::OnSnoopingStatusChanged(bool /*snooper*/) {
