@@ -2823,8 +2823,8 @@
       "vendor_id": "0x8086",
       "driver_version": {
         "schema": "intel_driver",
-        "op": "<",
-        "value": "0.0.100.0"
+        "op": "<=",
+        "value": "0.0.99.9999"
       },
       "features": [
         "disable_nv12_dynamic_textures"

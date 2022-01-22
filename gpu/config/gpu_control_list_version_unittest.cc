@@ -210,6 +210,18 @@ TEST_F(VersionTest, IntelDriverSchema) {
     EXPECT_TRUE(info.Contains("10.18.15.4279"));
     EXPECT_FALSE(info.Contains("15.40.15.4058"));
   }
+  {
+    // Old driver versions cannot be compared against new driver versions.
+    Version info = {kLT, kNumerical, kIntelDriver, "0.0.100.0", nullptr};
+    EXPECT_FALSE(info.Contains("23.20.16.4973"));
+    EXPECT_FALSE(info.Contains("20.19.15.4364"));
+  }
+  {
+    // Old driver versions can only be compared against old driver versions.
+    Version info = {kLE, kNumerical, kIntelDriver, "0.0.99.9999", nullptr};
+    EXPECT_TRUE(info.Contains("23.20.16.4973"));
+    EXPECT_TRUE(info.Contains("20.19.15.4364"));
+  }
 }
 
 TEST_F(VersionTest, NvidiaDriverSchema) {
