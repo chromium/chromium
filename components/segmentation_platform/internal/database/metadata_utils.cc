@@ -23,7 +23,7 @@ namespace segmentation_platform {
 namespace metadata_utils {
 
 namespace {
-uint64_t GetExpectedTensorLength(const proto::Feature& feature) {
+uint64_t GetExpectedTensorLength(const proto::UMAFeature& feature) {
   switch (feature.aggregation()) {
     case proto::Aggregation::COUNT:
     case proto::Aggregation::COUNT_BOOLEAN:
@@ -45,7 +45,7 @@ uint64_t GetExpectedTensorLength(const proto::Feature& feature) {
   }
 }
 
-std::string FeatureToString(const proto::Feature& feature) {
+std::string FeatureToString(const proto::UMAFeature& feature) {
   std::string result;
   if (feature.has_type()) {
     result = "type:" + proto::SignalType_Name(feature.type()) + ", ";
@@ -98,10 +98,15 @@ ValidationResult ValidateMetadata(
   if (model_metadata.time_unit() == proto::TimeUnit::UNKNOWN_TIME_UNIT)
     return ValidationResult::kTimeUnitInvald;
 
+  if (model_metadata.features_size() != 0 &&
+      model_metadata.input_features_size() != 0) {
+    return ValidationResult::kFeatureListInvalid;
+  }
+
   return ValidationResult::kValidationSuccess;
 }
 
-ValidationResult ValidateMetadataFeature(const proto::Feature& feature) {
+ValidationResult ValidateMetadataUmaFeature(const proto::UMAFeature& feature) {
   if (feature.type() == proto::SignalType::UNKNOWN_SIGNAL_TYPE)
     return ValidationResult::kSignalTypeInvalid;
 
@@ -136,9 +141,20 @@ ValidationResult ValidateMetadataAndFeatures(
 
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     auto feature = model_metadata.features(i);
-    auto feature_result = ValidateMetadataFeature(feature);
+    auto feature_result = ValidateMetadataUmaFeature(feature);
     if (feature_result != ValidationResult::kValidationSuccess)
       return feature_result;
+  }
+
+  for (int i = 0; i < model_metadata.input_features_size(); ++i) {
+    auto feature = model_metadata.input_features(i);
+    if (feature.has_uma_feature()) {
+      auto feature_result = ValidateMetadataUmaFeature(feature.uma_feature());
+      if (feature_result != ValidationResult::kValidationSuccess)
+        return feature_result;
+    } else {
+      return ValidationResult::kFeatureListInvalid;
+    }
   }
 
   return ValidationResult::kValidationSuccess;
@@ -156,7 +172,7 @@ ValidationResult ValidateSegmentInfoMetadataAndFeatures(
 void SetFeatureNameHashesFromName(
     proto::SegmentationModelMetadata* model_metadata) {
   for (int i = 0; i < model_metadata->features_size(); ++i) {
-    proto::Feature* feature = model_metadata->mutable_features(i);
+    proto::UMAFeature* feature = model_metadata->mutable_features(i);
     feature->set_name_hash(base::HashMetricName(feature->name()));
   }
 }
@@ -292,6 +308,23 @@ std::string SegmetationModelMetadataToString(
   if (base::EndsWith(result, ", "))
     result.resize(result.size() - 2);
   return result;
+}
+
+std::vector<proto::UMAFeature> GetAllUmaFeatures(
+    const proto::SegmentationModelMetadata& model_metadata) {
+  std::vector<proto::UMAFeature> features;
+  for (int i = 0; i < model_metadata.features_size(); ++i) {
+    features.push_back(model_metadata.features(i));
+  }
+
+  for (int i = 0; i < model_metadata.input_features_size(); ++i) {
+    auto feature = model_metadata.input_features(i);
+    if (feature.has_uma_feature()) {
+      features.push_back(feature.uma_feature());
+    }
+  }
+
+  return features;
 }
 
 }  // namespace metadata_utils

@@ -43,7 +43,7 @@ enum TimeUnit {
   SECOND = 7;
 }
 
-message Feature {
+message UMAFeature {
   // The type of signal this feature refers to.
   optional SignalType type = 1;
 
@@ -72,14 +72,26 @@ message Feature {
   repeated int32 enum_ids = 7;
 }
 
+// Contains a feature used as an input to the ML model.
+message InputFeature {
+  // An UMAFeature type of input feature.
+  optional UMAFeature uma_feature = 1;
+}
+
 // Metadata about a segmentation model for a given segment. Contains information
 // on how to use the model such as collecting signals, interpreting results etc.
 message SegmentationModelMetadata {
   // The version information needed to validate segmentation models.
   optional VersionInfo version_info = 9;
 
-  // An ordered list of required features.
-  repeated Feature features = 1;
+  // DEPRECATED: Use |input_features.uma_feature| instead. Only one of
+  // |features| or |input_features| can be used in the config, not both. An
+  // ordered list of required features.
+  repeated UMAFeature features = 1;
+
+  // An ordered list of required features and custom inputs. Only one of
+  // |features| or |input_features| can be used in the config, not both.
+  repeated InputFeature input_features = 10;
 
   // The time unit to be used for the rest of this proto.
   optional TimeUnit time_unit = 2;

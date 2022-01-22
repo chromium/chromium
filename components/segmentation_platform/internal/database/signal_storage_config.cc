@@ -83,14 +83,14 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
 
   // Loop through all the signals specified in the model, and check if they have
   // been collected long enough.
-  for (int i = 0; i < model_metadata.features_size(); ++i) {
-    const proto::Feature& feature = model_metadata.features(i);
+  auto features = metadata_utils::GetAllUmaFeatures(model_metadata);
+  for (auto const& feature : features) {
     // Skip the signals that has bucket_count set to 0. These ones are only for
     // collection purposes and hence don't get used in model evaluation.
     if (feature.bucket_count() == 0)
       continue;
 
-    if (metadata_utils::ValidateMetadataFeature(feature) !=
+    if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
         metadata_utils::ValidationResult::kValidationSuccess) {
       continue;
     }
@@ -117,9 +117,9 @@ void SignalStorageConfig::OnSignalCollectionStarted(
 
   // Run through the model and calculate for each signal.
   bool is_dirty = false;
-  for (int i = 0; i < model_metadata.features_size(); ++i) {
-    const proto::Feature& feature = model_metadata.features(i);
-    if (metadata_utils::ValidateMetadataFeature(feature) !=
+  auto features = metadata_utils::GetAllUmaFeatures(model_metadata);
+  for (auto const& feature : features) {
+    if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
         metadata_utils::ValidationResult::kValidationSuccess) {
       continue;
     }

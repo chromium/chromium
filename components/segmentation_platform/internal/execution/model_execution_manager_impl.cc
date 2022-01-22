@@ -76,7 +76,7 @@ struct ModelExecutionManagerImpl::ExecutionState {
   raw_ptr<SegmentationModelHandler> model_handler = nullptr;
   ModelExecutionCallback callback;
   base::TimeDelta bucket_duration;
-  std::deque<proto::Feature> features;
+  std::deque<proto::InputFeature> input_features;
   std::vector<float> input_tensor;
   base::Time end_time;
   base::Time total_execution_start_time;
@@ -190,40 +190,53 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForExecution(
 
   // Grab the metadata for all the features, which will be processed one at a
   // time, before executing the model.
-  for (int i = 0; i < model_metadata.features_size(); ++i)
-    state->features.emplace_back(model_metadata.features(i));
+  for (int i = 0; i < model_metadata.features_size(); ++i) {
+    proto::InputFeature input_feature;
+    input_feature.mutable_uma_feature()->CopyFrom(model_metadata.features(i));
+    state->input_features.emplace_back(input_feature);
+  }
+  for (int i = 0; i < model_metadata.input_features_size(); ++i)
+    state->input_features.emplace_back(model_metadata.input_features(i));
 
-  // Process all the features in-order, starting with the first feature.
-  ProcessFeatures(std::move(state));
+  ProcessInputFeatures(std::move(state));
 }
 
-void ModelExecutionManagerImpl::ProcessFeatures(
+void ModelExecutionManagerImpl::ProcessInputFeatures(
+    std::unique_ptr<ExecutionState> state) {
+  if (state->input_features.empty()) {
+    ExecuteModel(std::move(state));
+  } else {
+    if (state->input_features.front().has_uma_feature()) {
+      // Process all the features in-order, starting with the first feature.
+      proto::InputFeature input_feature;
+      input_feature = state->input_features.front();
+      state->input_features.pop_front();
+      ProcessNextUmaFeature(input_feature.uma_feature(), std::move(state));
+    }
+  }
+}
+
+void ModelExecutionManagerImpl::ProcessNextUmaFeature(
+    proto::UMAFeature feature,
     std::unique_ptr<ExecutionState> state) {
   ModelExecutionTraceEvent trace_event(
-      "ModelExecutionManagerImpl::ProcessFeatures", *state);
-  // When there are no more features to process, we are done, so we execute the
-  // model.
-  if (state->features.empty()) {
-    ExecuteModel(std::move(state));
+      "ModelExecutionManagerImpl::ProcessNextUmaFeature", *state);
+
+  // Skip collection-only features.
+  if (feature.bucket_count() == 0) {
+    ProcessInputFeatures(std::move(state));
     return;
   }
 
-  proto::Feature feature;
-  do {
-    // Copy and pop the next feature.
-    feature = state->features.front();
-    state->features.pop_front();
+  // Validate the proto::UMAFeature metadata.
+  if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
+      metadata_utils::ValidationResult::kValidationSuccess) {
+    RunModelExecutionCallback(std::move(state), 0,
+                              ModelExecutionStatus::kInvalidMetadata);
+    return;
+  }
 
-    // Validate the proto::Feature metadata.
-    if (metadata_utils::ValidateMetadataFeature(feature) !=
-        metadata_utils::ValidationResult::kValidationSuccess) {
-      RunModelExecutionCallback(std::move(state), 0,
-                                ModelExecutionStatus::kInvalidMetadata);
-      return;
-    }
-  } while (feature.bucket_count() == 0);  // Skip collection-only features.
-
-  // Capture all relevant metadata for the current proto::Feature into the
+  // Capture all relevant metadata for the current proto::UMAFeature into the
   // FeatureState.
   auto feature_state = std::make_unique<FeatureState>();
   feature_state->signal_type = feature.type();
@@ -234,9 +247,9 @@ void ModelExecutionManagerImpl::ProcessFeatures(
   auto name_hash = feature.name_hash();
 
   // Enum histograms can optionally only accept some of the enum values.
-  // While the proto::Feature is available, capture a vector of the accepted
-  // enum values. An empty vector is ignored (all values are considered
-  // accepted).
+  // While the proto::UMAFeature is available, capture a vector of the
+  // accepted enum values. An empty vector is ignored (all values are
+  // considered accepted).
   if (feature_state->signal_type == proto::SignalType::HISTOGRAM_ENUM) {
     std::vector<int32_t> accepted_enum_ids{};
     for (int i = 0; i < feature.enum_ids_size(); ++i)
@@ -245,20 +258,20 @@ void ModelExecutionManagerImpl::ProcessFeatures(
     feature_state->accepted_enum_ids = absl::make_optional(accepted_enum_ids);
   }
 
-  // Only fetch data that is relevant for the current proto::Feature, since
+  // Only fetch data that is relevant for the current proto::UMAFeature, since
   // the FeatureAggregator assumes that only relevant data is given to it.
   base::TimeDelta duration =
       state->bucket_duration * feature_state->bucket_count;
   base::Time start_time = state->end_time - duration;
 
-  // Fetch the relevant samples for the current proto::Feature. Once the result
-  // has come back, it will be processed and inserted into the
-  // ExecutorState::input_tensor and will then invoke ProcessFeatures(...)
-  // again to ensure we continue until all features have been processed.
-  // Note: All parameters from the ExecutorState need to be captured locally
-  // before invoking GetSamples, because the state is moved with the callback,
-  // and the order of the move and accessing the members while invoking
-  // GetSamples is not guaranteed.
+  // Fetch the relevant samples for the current proto::UMAFeature. Once the
+  // result has come back, it will be processed and inserted into the
+  // ExecutorState::input_tensor and will then invoke
+  // ProcessInputFeatures(...) again to ensure we continue until all features
+  // have been processed. Note: All parameters from the ExecutorState need to
+  // be captured locally before invoking GetSamples, because the state is
+  // moved with the callback, and the order of the move and accessing the
+  // members while invoking GetSamples is not guaranteed.
   auto signal_type = feature_state->signal_type;
   auto end_time = state->end_time;
   signal_database_->GetSamples(
@@ -304,7 +317,7 @@ void ModelExecutionManagerImpl::OnGetSamplesForFeature(
   // Continue with the rest of the features.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ModelExecutionManagerImpl::ProcessFeatures,
+      base::BindOnce(&ModelExecutionManagerImpl::ProcessInputFeatures,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }
 
@@ -380,7 +393,8 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
     return;
   }
 
-  // Set or overwrite name hashes for metadata features based on the name field.
+  // Set or overwrite name hashes for metadata features based on the name
+  // field.
   metadata_utils::SetFeatureNameHashesFromName(&metadata);
 
   auto validation = metadata_utils::ValidateMetadataAndFeatures(metadata);
@@ -442,8 +456,8 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
 
   stats::RecordModelDeliveryMetadataFeatureCount(
       segment_id, new_segment_info.model_metadata().features_size());
-  // Now that we've merged the old and the new SegmentInfo, we want to store the
-  // new version in the database.
+  // Now that we've merged the old and the new SegmentInfo, we want to store
+  // the new version in the database.
   segment_database_->UpdateSegment(
       segment_id, absl::make_optional(new_segment_info),
       base::BindOnce(&ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored,
@@ -459,7 +473,8 @@ void ModelExecutionManagerImpl::OnUpdatedSegmentInfoStored(
   if (!success)
     return;
 
-  // We are now ready to receive requests for execution, so invoke the callback.
+  // We are now ready to receive requests for execution, so invoke the
+  // callback.
   model_updated_callback_.Run(std::move(segment_info));
 }
 

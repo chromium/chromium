@@ -88,11 +88,15 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       std::unique_ptr<ExecutionState> state,
       absl::optional<proto::SegmentInfo> segment_info);
 
-  // ProcessFeatures is the core function for processing all the required ML
-  // features in the correct order. It fetches samples for one feature at a
-  // time, makes sure the data is processed, and then is invoked again to
-  // process the next feature.
-  void ProcessFeatures(std::unique_ptr<ExecutionState> state);
+  // ProcessInputFeatures is the core function for processing all the required
+  // ML input features in the correct order. It fetches samples for one input at
+  // a time, makes sure the data is processed, and then is invoked again to
+  // process the next input.
+  void ProcessInputFeatures(std::unique_ptr<ExecutionState> state);
+
+  // Function for processing the next UMAFeature type of input for ML model.
+  void ProcessNextUmaFeature(proto::UMAFeature feature,
+                             std::unique_ptr<ExecutionState> state);
 
   // Callback method for when all relevant samples for a particular feature has
   // been loaded. Processes the samples, and inserts them into the input tensor

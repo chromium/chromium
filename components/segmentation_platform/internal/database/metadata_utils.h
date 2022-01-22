@@ -32,7 +32,8 @@ enum class ValidationResult {
   kFeatureTensorLengthInvalid = 8,
   kFeatureNameHashDoesNotMatchName = 9,
   kVersionNotSupported = 10,
-  kMaxValue = kVersionNotSupported,
+  kFeatureListInvalid = 11,
+  kMaxValue = kFeatureListInvalid,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the
@@ -46,7 +47,7 @@ ValidationResult ValidateMetadata(
 
 // Whether the given feature metadata is valid to be used for the current
 // segmentation platform.
-ValidationResult ValidateMetadataFeature(const proto::Feature& feature);
+ValidationResult ValidateMetadataUmaFeature(const proto::UMAFeature& feature);
 
 // Whether the given metadata and feature metadata is valid to be used for the
 // current segmentation platform.
@@ -86,6 +87,10 @@ int ConvertToDiscreteScore(const std::string& mapping_key,
                            const proto::SegmentationModelMetadata& metadata);
 
 std::string SegmetationModelMetadataToString(
+    const proto::SegmentationModelMetadata& model_metadata);
+
+// Helper method to get all UMAFeatures from a segmentation model's metadata.
+std::vector<proto::UMAFeature> GetAllUmaFeatures(
     const proto::SegmentationModelMetadata& model_metadata);
 
 }  // namespace metadata_utils

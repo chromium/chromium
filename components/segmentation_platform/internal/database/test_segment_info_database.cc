@@ -29,7 +29,7 @@ void AddFeature(proto::SegmentInfo* segment_info,
                 const std::vector<int32_t>& accepted_enum_ids) {
   proto::SegmentationModelMetadata* metadata =
       segment_info->mutable_model_metadata();
-  proto::Feature* feature = metadata->add_features();
+  proto::UMAFeature* feature = metadata->add_features();
   feature->set_type(signal_type);
   feature->set_name(name);
   feature->set_name_hash(base::HashMetricName(name));

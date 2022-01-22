@@ -80,14 +80,14 @@ TEST_F(SignalStorageConfigTest,
   metadata2.set_min_signal_collection_length(4);
 
   // Add a user action feature to the both models.
-  proto::Feature* feature = metadata.add_features();
+  proto::UMAFeature* feature = metadata.add_features();
   uint64_t name_hash = base::HashMetricName("some user action");
   feature->set_type(proto::SignalType::USER_ACTION);
   feature->set_name_hash(name_hash);
   feature->set_bucket_count(1);
   feature->set_tensor_length(1);
   feature->set_aggregation(proto::Aggregation::COUNT);
-  proto::Feature* feature2 = metadata2.add_features();
+  proto::UMAFeature* feature2 = metadata2.add_features();
   feature2->set_type(proto::SignalType::USER_ACTION);
   feature2->set_name_hash(name_hash);
   feature2->set_bucket_count(1);

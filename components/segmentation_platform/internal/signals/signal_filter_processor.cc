@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/logging.h"
+#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
@@ -39,8 +40,8 @@ void SignalFilterProcessor::FilterSignals(
   for (const auto& pair : segment_infos) {
     const proto::SegmentInfo& segment_info = pair.second;
     const auto& metadata = segment_info.model_metadata();
-    for (int i = 0; i < metadata.features_size(); i++) {
-      const auto& feature = metadata.features(i);
+    auto features = metadata_utils::GetAllUmaFeatures(metadata);
+    for (auto const& feature : features) {
       if (feature.type() == proto::SignalType::USER_ACTION &&
           feature.name_hash() != 0) {
         user_actions.insert(feature.name_hash());
