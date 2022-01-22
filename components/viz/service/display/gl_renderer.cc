@@ -3776,8 +3776,9 @@ const gfx::ColorTransform* GLRenderer::GetColorTransform(
   std::unique_ptr<gfx::ColorTransform>& transform = color_transform_cache_[key];
   if (!transform) {
     gfx::ColorTransform::Options options;
+    options.tone_map_pq_and_hlg_to_sdr = !dst.IsHDR();
     options.sdr_max_luminance_nits = key.sdr_max_luminance_nits;
-    transform = gfx::ColorTransform::NewColorTransform(src, dst);
+    transform = gfx::ColorTransform::NewColorTransform(src, dst, options);
   }
   return transform.get();
 }

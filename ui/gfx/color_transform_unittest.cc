@@ -718,17 +718,12 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
   };
   float nits[] = {80.f, 100.f, 200.f};
 
-  for (size_t i = 0; i < 4; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     // We'll set the SDR white level to the values in |nits| and also the
     // default.
-    ColorSpace hdr10 =
-        i < 3 ? ColorSpace::CreateHDR10(nits[i]) : ColorSpace::CreateHDR10();
-    float white_level = 0;
-    EXPECT_TRUE(hdr10.GetSDRWhiteLevel(&white_level));
-    if (i < 3)
-      EXPECT_EQ(white_level, nits[i]);
-    else
-      EXPECT_EQ(white_level, ColorSpace::kDefaultSDRWhiteLevel);
+    const ColorSpace hdr10 = ColorSpace::CreateHDR10();
+    ColorTransform::Options options;
+    options.sdr_max_luminance_nits = nits[i];
 
     // Transform to the same color space, but with the LINEAR_HDR transfer
     // function.
@@ -736,7 +731,7 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
                       ColorSpace::TransferID::LINEAR_HDR,
                       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
     std::unique_ptr<ColorTransform> xform(
-        ColorTransform::NewColorTransform(hdr10, target));
+        ColorTransform::NewColorTransform(hdr10, target, options));
 
     // Do the transform to the values in |pq_encoded_nits|.
     ColorTransform::TriStim val(pq_encoded_nits[0], pq_encoded_nits[1],
@@ -766,7 +761,7 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
 
     // Test the inverse transform.
     std::unique_ptr<ColorTransform> xform_inv(
-        ColorTransform::NewColorTransform(target, hdr10));
+        ColorTransform::NewColorTransform(target, hdr10, options));
     xform_inv->Transform(&val, 1);
     EXPECT_NEAR(val.x(), pq_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), pq_encoded_nits[1], kMathEpsilon);
@@ -784,18 +779,12 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
   };
   constexpr float nits[] = {80.f, 100.f, 200.f};
 
-  for (size_t i = 0; i < 4; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     // We'll set the SDR white level to the values in |nits| and also the
     // default.
-    ColorSpace hlg = i < 3
-                         ? ColorSpace::CreateHLG().GetWithSDRWhiteLevel(nits[i])
-                         : ColorSpace::CreateHLG();
-    float white_level = 0;
-    EXPECT_TRUE(hlg.GetSDRWhiteLevel(&white_level));
-    if (i < 3)
-      EXPECT_EQ(white_level, nits[i]);
-    else
-      EXPECT_EQ(white_level, ColorSpace::kDefaultSDRWhiteLevel);
+    const ColorSpace hlg = ColorSpace::CreateHLG();
+    ColorTransform::Options options;
+    options.sdr_max_luminance_nits = nits[i];
 
     // Transform to the same color space, but with the LINEAR_HDR transfer
     // function.
@@ -803,7 +792,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
                       ColorSpace::TransferID::LINEAR_HDR,
                       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
     std::unique_ptr<ColorTransform> xform(
-        ColorTransform::NewColorTransform(hlg, target));
+        ColorTransform::NewColorTransform(hlg, target, options));
 
     // Do the transform to the values in |hlg_encoded_nits|.
     ColorTransform::TriStim val(hlg_encoded_nits[0], hlg_encoded_nits[1],
@@ -834,7 +823,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
 
     // Test the inverse transform.
     std::unique_ptr<ColorTransform> xform_inv(
-        ColorTransform::NewColorTransform(target, hlg));
+        ColorTransform::NewColorTransform(target, hlg, options));
     xform_inv->Transform(&val, 1);
     EXPECT_NEAR(val.x(), hlg_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), hlg_encoded_nits[1], kMathEpsilon);
@@ -928,8 +917,10 @@ TEST(ColorSpaceTest, HLGHDRToSDR) {
                     ColorSpace::TransferID::ARIB_STD_B67);
   ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
                          ColorSpace::TransferID::LINEAR);
-
-  auto sdr_transform = ColorTransform::NewColorTransform(hlg_cs, dest_sdr_cs);
+  gfx::ColorTransform::Options sdr_options;
+  sdr_options.tone_map_pq_and_hlg_to_sdr = true;
+  auto sdr_transform =
+      ColorTransform::NewColorTransform(hlg_cs, dest_sdr_cs, sdr_options);
 
   // HLG conversion will produce values above 1 w/o intervention.
   ColorTransform::TriStim sdr_val = {1, 1, 1};
@@ -940,7 +931,10 @@ TEST(ColorSpaceTest, HLGHDRToSDR) {
 
   ColorSpace dest_hdr_cs(ColorSpace::PrimaryID::BT709,
                          ColorSpace::TransferID::LINEAR_HDR);
-  auto hdr_transform = ColorTransform::NewColorTransform(hlg_cs, dest_hdr_cs);
+  gfx::ColorTransform::Options hdr_options;
+  hdr_options.tone_map_pq_and_hlg_to_sdr = false;
+  auto hdr_transform =
+      ColorTransform::NewColorTransform(hlg_cs, dest_hdr_cs, hdr_options);
 
   ColorTransform::TriStim hdr_val = {1, 1, 1};
   hdr_transform->Transform(&hdr_val, 1);
@@ -952,8 +946,10 @@ TEST(ColorSpaceTest, PQHDRToSDR) {
                    ColorSpace::TransferID::SMPTEST2084);
   ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
                          ColorSpace::TransferID::LINEAR);
-
-  auto sdr_transform = ColorTransform::NewColorTransform(pq_cs, dest_sdr_cs);
+  gfx::ColorTransform::Options sdr_options;
+  sdr_options.tone_map_pq_and_hlg_to_sdr = true;
+  auto sdr_transform =
+      ColorTransform::NewColorTransform(pq_cs, dest_sdr_cs, sdr_options);
 
   // PQ conversion will produce values above 1 w/o intervention.
   ColorTransform::TriStim sdr_val = {1, 1, 1};
@@ -964,7 +960,10 @@ TEST(ColorSpaceTest, PQHDRToSDR) {
 
   ColorSpace dest_hdr_cs(ColorSpace::PrimaryID::BT709,
                          ColorSpace::TransferID::LINEAR_HDR);
-  auto hdr_transform = ColorTransform::NewColorTransform(pq_cs, dest_hdr_cs);
+  gfx::ColorTransform::Options hdr_options;
+  hdr_options.tone_map_pq_and_hlg_to_sdr = false;
+  auto hdr_transform =
+      ColorTransform::NewColorTransform(pq_cs, dest_hdr_cs, hdr_options);
 
   ColorTransform::TriStim hdr_val = {1, 1, 1};
   hdr_transform->Transform(&hdr_val, 1);

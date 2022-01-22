@@ -1092,34 +1092,27 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   if (!dst.IsValid())
     return;
 
-  const bool tone_map_pq_and_hlg = !dst.IsHDR();
   switch (src.GetTransferID()) {
-    case ColorSpace::TransferID::ARIB_STD_B67: {
-      if (tone_map_pq_and_hlg) {
+    case ColorSpace::TransferID::ARIB_STD_B67:
+      if (options.tone_map_pq_and_hlg_to_sdr) {
         // HLG is designed such that treating it as 2.2 gamma content works
         // well.
         constexpr skcms_TransferFunction kGamma22 = {2.2, 1, 0, 0, 0, 0, 0};
         steps_.push_back(
             std::make_unique<ColorTransformSkTransferFn>(kGamma22, false));
       } else {
-        float sdr_white_level = 0.f;
-        src.GetSDRWhiteLevel(&sdr_white_level);
-        steps_.push_back(
-            std::make_unique<ColorTransformHLGToLinear>(sdr_white_level));
+        steps_.push_back(std::make_unique<ColorTransformHLGToLinear>(
+            options.sdr_max_luminance_nits));
       }
       break;
-    }
-    case ColorSpace::TransferID::SMPTEST2084: {
-      if (tone_map_pq_and_hlg) {
+    case ColorSpace::TransferID::SMPTEST2084:
+      if (options.tone_map_pq_and_hlg_to_sdr) {
         steps_.push_back(std::make_unique<ColorTransformPQToneMapToLinear>());
       } else {
-        float sdr_white_level = 0.f;
-        src.GetSDRWhiteLevel(&sdr_white_level);
-        steps_.push_back(
-            std::make_unique<ColorTransformPQToLinear>(sdr_white_level));
+        steps_.push_back(std::make_unique<ColorTransformPQToLinear>(
+            options.sdr_max_luminance_nits));
       }
       break;
-    }
     case ColorSpace::TransferID::PIECEWISE_HDR: {
       skcms_TransferFunction fn;
       float p, q, r;
@@ -1157,20 +1150,14 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   }
 
   switch (dst.GetTransferID()) {
-    case ColorSpace::TransferID::ARIB_STD_B67: {
-      float sdr_white_level = 0.f;
-      dst.GetSDRWhiteLevel(&sdr_white_level);
-      steps_.push_back(
-          std::make_unique<ColorTransformHLGFromLinear>(sdr_white_level));
+    case ColorSpace::TransferID::ARIB_STD_B67:
+      steps_.push_back(std::make_unique<ColorTransformHLGFromLinear>(
+          options.sdr_max_luminance_nits));
       break;
-    }
-    case ColorSpace::TransferID::SMPTEST2084: {
-      float sdr_white_level = 0.f;
-      dst.GetSDRWhiteLevel(&sdr_white_level);
-      steps_.push_back(
-          std::make_unique<ColorTransformPQFromLinear>(sdr_white_level));
+    case ColorSpace::TransferID::SMPTEST2084:
+      steps_.push_back(std::make_unique<ColorTransformPQFromLinear>(
+          options.sdr_max_luminance_nits));
       break;
-    }
     case ColorSpace::TransferID::PIECEWISE_HDR: {
       skcms_TransferFunction fn;
       float p, q, r;

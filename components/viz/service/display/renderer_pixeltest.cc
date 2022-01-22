@@ -5119,6 +5119,12 @@ class ColorTransformPixelTest
     }
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(this->dst_color_space_);
+    float sdr_max_luminance_nits =
+        this->display_color_spaces_.GetSDRMaxLuminanceNits();
+    if (src_color_space_.GetSDRWhiteLevel(&sdr_max_luminance_nits)) {
+      this->display_color_spaces_.SetSDRMaxLuminanceNits(
+          sdr_max_luminance_nits);
+    }
     this->premultiplied_alpha_ = std::get<3>(GetParam());
   }
 
@@ -5168,9 +5174,12 @@ class ColorTransformPixelTest
       }
     }
 
+    gfx::ColorTransform::Options options;
+    options.sdr_max_luminance_nits =
+        display_color_spaces_.GetSDRMaxLuminanceNits();
     std::unique_ptr<gfx::ColorTransform> transform =
         gfx::ColorTransform::NewColorTransform(this->src_color_space_,
-                                               this->dst_color_space_);
+                                               this->dst_color_space_, options);
 
     for (size_t i = 0; i < expected_output_colors.size(); ++i) {
       gfx::ColorTransform::TriStim color;

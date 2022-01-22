@@ -2488,6 +2488,7 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
   sk_sp<SkRuntimeEffect>& effect = color_filter_cache_[key];
   if (!effect) {
     gfx::ColorTransform::Options options;
+    options.tone_map_pq_and_hlg_to_sdr = !dst.IsHDR();
     options.sdr_max_luminance_nits = key.sdr_max_luminance_nits;
     options.dst_max_luminance_relative = key.dst_max_luminance_relative;
     std::unique_ptr<gfx::ColorTransform> transform =

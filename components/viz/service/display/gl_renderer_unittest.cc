@@ -231,8 +231,12 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
                                  adjusted_color_space.ToString().c_str(),
                                  dst_color_space.ToString().c_str()));
 
+          gfx::ColorTransform::Options options;
+          options.tone_map_pq_and_hlg_to_sdr = !dst_color_space.IsHDR();
+          options.sdr_max_luminance_nits =
+              drawing_frame.display_color_spaces.GetSDRMaxLuminanceNits();
           auto color_transform = gfx::ColorTransform::NewColorTransform(
-              adjusted_color_space, dst_color_space);
+              adjusted_color_space, dst_color_space, options);
 
           ASSERT_EQ(color_transform->GetShaderSource(),
                     renderer()

@@ -24,6 +24,12 @@ class GFX_EXPORT ColorTransform {
     uint32_t src_bit_depth = kDefaultBitDepth;
     uint32_t dst_bit_depth = kDefaultBitDepth;
 
+    // If set to true, then PQ and HLS inputs are tone mapped to fit into
+    // the SDR range.
+    // TODO(https://crbug.com/1286076): Make this take into account
+    // `dst_max_luminance_relative`.
+    bool tone_map_pq_and_hlg_to_sdr = false;
+
     // Used for tone mapping and for interpreting color spaces whose
     // definition depends on an SDR white point.
     // TODO(https://crbug.com/1286082): Use this value in the transform.
