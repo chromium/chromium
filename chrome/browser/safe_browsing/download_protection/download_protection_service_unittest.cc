@@ -3799,6 +3799,26 @@ TEST_F(DownloadProtectionServiceTest,
 }
 
 TEST_F(DownloadProtectionServiceTest,
+       FileSystemAccessWriteRequest_ProfileDestroyed) {
+  Profile* profile1 =
+      testing_profile_manager_.CreateTestingProfile("profile 1");
+  auto item = PrepareBasicFileSystemAccessWriteItem(
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+  item->browser_context = profile1;
+
+  RunLoop run_loop;
+  download_service_->CheckFileSystemAccessWrite(
+      CloneFileSystemAccessWriteItem(item.get()),
+      base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
+  // RemovePendingDownloadRequests is called when profile is destroyed.
+  download_service_->RemovePendingDownloadRequests(profile1);
+  testing_profile_manager_.DeleteTestingProfile("profile 1");
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(DownloadProtectionServiceTest,
        FileSystemAccessWriteRequest_AllowlistedByPolicy) {
   AddDomainToEnterpriseAllowlist("example.com");
 
