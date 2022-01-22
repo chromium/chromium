@@ -22,7 +22,7 @@ const mojo::Remote<printing::mojom::PrintingService>& GetPrintingService() {
     // Ensure that if the interface is ever disconnected (e.g. the service
     // process crashes) or goes idle for a short period of time -- meaning there
     // are no in-flight messages and no other interfaces bound through this
-    // one -- then we will reset |remote|, causing the service process to be
+    // one -- then we will reset `remote`, causing the service process to be
     // terminated if it isn't already.
     remote->reset_on_disconnect();
     remote->reset_on_idle_timeout(base::Seconds(5));

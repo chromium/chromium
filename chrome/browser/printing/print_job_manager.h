@@ -51,7 +51,7 @@ class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
   friend class base::RefCountedThreadSafe<PrintQueriesQueue>;
   using PrinterQueries = std::vector<std::unique_ptr<PrinterQuery>>;
 
-  // Used to serialize access to |queued_queries_|.
+  // Used to serialize access to `queued_queries_`.
   base::Lock lock_;
 
   PrinterQueries queued_queries_;

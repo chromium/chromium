@@ -1087,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintSubframeABA) {
       content::ChildFrameAt(child_frame, 0);
   ASSERT_TRUE(grandchild_frame);
   ASSERT_NE(grandchild_frame, child_frame);
-  // |grandchild_frame| is in the same site as |frame|, so whether OOPIF is
+  // `grandchild_frame` is in the same site as `frame`, so whether OOPIF is
   // enabled, they will be in the same process.
   ASSERT_EQ(grandchild_frame->GetProcess(), main_frame->GetProcess());
 
@@ -1150,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
 
   // When there is no mojom::PrintCompositor, PrintCompositeClient queues
   // subframes and handles them when mojom::PrintCompositor is created.
-  // |requested_subframes_| should have the requested subframes.
+  // `requested_subframes_` should have the requested subframes.
   ASSERT_EQ(1u, client->requested_subframes_.size());
   PrintCompositeClient::RequestedSubFrame* subframe_in_queue =
       client->requested_subframes_.begin()->get();
@@ -1165,7 +1165,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
       *TestPrintRenderFrame::GetDefaultDidPrintContentParams(),
       base::DoNothing());
   ASSERT_TRUE(client->GetCompositeRequest(kDefaultDocumentCookie));
-  // |requested_subframes_| should be empty.
+  // `requested_subframes_` should be empty.
   ASSERT_TRUE(client->requested_subframes_.empty());
 }
 
@@ -1238,7 +1238,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest,
              /*print_renderer=*/mojo::NullAssociatedRemote(),
              /*print_preview_disabled=*/false, /*has_selection*/ false);
 
-  // Makes sure that |subframe_rph| is terminated.
+  // Makes sure that `subframe_rph` is terminated.
   process_watcher.Wait();
   // Confirms that the preview pages are rendered.
   print_preview_observer.WaitUntilPreviewIsReady();

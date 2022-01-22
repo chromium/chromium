@@ -424,7 +424,7 @@ void PrintJobWorker::OnNewPage() {
   }
 
   OnDocumentDone();
-  // Don't touch |this| anymore since the instance could be destroyed.
+  // Don't touch `this` anymore since the instance could be destroyed.
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -436,7 +436,7 @@ bool PrintJobWorker::OnNewPageHelperGdi() {
       // We still don't know how many pages the document contains.
       return false;
     }
-    // We have enough information to initialize |page_number_|.
+    // We have enough information to initialize `page_number_`.
     page_number_.Init(document_->settings(), page_count);
   }
 

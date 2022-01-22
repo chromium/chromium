@@ -156,7 +156,7 @@ class PrintBackendServiceManager {
   std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
 
   // Acquires a remote handle to the Print Backend Service instance, launching a
-  // process to host the service if necessary. |is_sandboxed| is set if the
+  // process to host the service if necessary. `is_sandboxed` is set if the
   // service was launched within a sandbox.
   const mojo::Remote<printing::mojom::PrintBackendService>& GetService(
       const std::string& printer_name,

@@ -37,7 +37,7 @@ class PrintPreviewDialogController
 
   static PrintPreviewDialogController* GetInstance();
 
-  // Initiate print preview for |initiator|.
+  // Initiate print preview for `initiator`.
   // Call this instead of GetOrCreatePreviewDialog().
   static void PrintPreview(content::WebContents* initiator);
 
@@ -49,26 +49,26 @@ class PrintPreviewDialogController
   // `chrome-untrusted://print` origin).
   static bool IsPrintPreviewContentURL(const GURL& url);
 
-  // Get/Create the print preview dialog for |initiator|.
+  // Get/Create the print preview dialog for `initiator`.
   // Exposed for unit tests.
   content::WebContents* GetOrCreatePreviewDialog(
       content::WebContents* initiator);
 
-  // Returns the preview dialog for |contents|.
-  // Returns |contents| if |contents| is a preview dialog.
-  // Returns NULL if no preview dialog exists for |contents|.
+  // Returns the preview dialog for `contents`.
+  // Returns `contents` if `contents` is a preview dialog.
+  // Returns NULL if no preview dialog exists for `contents`.
   content::WebContents* GetPrintPreviewForContents(
       content::WebContents* contents) const;
 
-  // Returns the initiator for |preview_dialog|.
-  // Returns NULL if no initiator exists for |preview_dialog|.
+  // Returns the initiator for `preview_dialog`.
+  // Returns NULL if no initiator exists for `preview_dialog`.
   content::WebContents* GetInitiator(content::WebContents* preview_dialog);
 
-  // Run |callback| on the dialog of each active print preview operation.
+  // Run `callback` on the dialog of each active print preview operation.
   void ForEachPreviewDialog(
       base::RepeatingCallback<void(content::WebContents*)> callback);
 
-  // Erase the initiator info associated with |preview_dialog|.
+  // Erase the initiator info associated with `preview_dialog`.
   void EraseInitiatorInfo(content::WebContents* preview_dialog);
 
   bool is_creating_print_preview_dialog() const {
@@ -92,11 +92,11 @@ class PrintPreviewDialogController
   void RenderProcessGone(content::WebContents* contents,
                          base::TerminationStatus status) override;
 
-  // Handles the destruction of |contents|. This is observed when either
+  // Handles the destruction of `contents`. This is observed when either
   // the initiator or preview WebContents is closed.
   void WebContentsDestroyed(content::WebContents* contents) override;
 
-  // Handles the commit of a navigation entry for |contents|. This is observed
+  // Handles the commit of a navigation entry for `contents`. This is observed
   // when the renderer for either WebContents is navigated to a different page.
   void NavigationEntryCommitted(
       content::WebContents* contents,
@@ -113,7 +113,7 @@ class PrintPreviewDialogController
       content::WebContents* initiator);
 
   // Helper function to store the title of the initiator associated with
-  // |preview_dialog| in |preview_dialog|'s PrintPreviewUI.
+  // `preview_dialog` in `preview_dialog`'s PrintPreviewUI.
   void SaveInitiatorTitle(content::WebContents* preview_dialog);
 
   // Removes WebContents when they close/crash/navigate.

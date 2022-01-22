@@ -54,7 +54,7 @@ BackgroundPrintingManager::BackgroundPrintingManager() {
 
 BackgroundPrintingManager::~BackgroundPrintingManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The might be some WebContentses still in |printing_contents_map_| at this
+  // The might be some WebContentses still in `printing_contents_map_` at this
   // point (e.g. when the last remaining tab closes and there is still a print
   // preview WebContents trying to print). In such a case it will fail to print,
   // but we should at least clean up the observers.
@@ -110,7 +110,7 @@ void BackgroundPrintingManager::DeletePreviewContents(
     WebContents* preview_contents) {
   auto i = printing_contents_map_.find(preview_contents);
   if (i == printing_contents_map_.end()) {
-    // Everyone is racing to be the first to delete the |preview_contents|. If
+    // Everyone is racing to be the first to delete the `preview_contents`. If
     // this case is hit, someone else won the race, so there is no need to
     // continue. <http://crbug.com/100806>
     return;
@@ -121,7 +121,7 @@ void BackgroundPrintingManager::DeletePreviewContents(
   printing_contents_map_.erase(i);
 
   // ... and mortally wound the contents. Deletion immediately is not a good
-  // idea in case this was triggered by |preview_contents| far up the
+  // idea in case this was triggered by `preview_contents` far up the
   // callstack. (Trace where the NOTIFICATION_PRINT_JOB_RELEASED comes from.)
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
       FROM_HERE, std::move(contents_to_delete));

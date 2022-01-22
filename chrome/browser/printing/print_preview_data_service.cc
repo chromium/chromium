@@ -31,9 +31,9 @@ void ValidatePreviewData(scoped_refptr<base::RefCountedMemory> data) {
 // workflow.
 //
 // NOTE:
-//   This class stores a list of PDFs. The list |index| is zero-based and can
-// be |printing::COMPLETE_PREVIEW_DOCUMENT_INDEX| to represent complete preview
-// document. The PDF stored at |printing::COMPLETE_PREVIEW_DOCUMENT_INDEX| is
+//   This class stores a list of PDFs. The list `index` is zero-based and can
+// be `printing::COMPLETE_PREVIEW_DOCUMENT_INDEX` to represent complete preview
+// document. The PDF stored at `printing::COMPLETE_PREVIEW_DOCUMENT_INDEX` is
 // optimized with font subsetting, compression, etc. PDF's stored at all other
 // indices are unoptimized.
 //
@@ -51,7 +51,7 @@ class PrintPreviewDataStore {
 
   ~PrintPreviewDataStore() {}
 
-  // Get the preview page for the specified |index|.
+  // Get the preview page for the specified `index`.
   void GetPreviewDataForIndex(
       int index,
       scoped_refptr<base::RefCountedMemory>* data) const {
@@ -63,7 +63,7 @@ class PrintPreviewDataStore {
       *data = it->second.get();
   }
 
-  // Set/Update the preview data entry for the specified |index|.
+  // Set/Update the preview data entry for the specified `index`.
   void SetPreviewDataForIndex(int index,
                               scoped_refptr<base::RefCountedMemory> data) {
     if (IsInvalidIndex(index))
@@ -79,7 +79,7 @@ class PrintPreviewDataStore {
  private:
   // 1:1 relationship between page index and its associated preview data.
   // Key: Page index is zero-based and can be
-  // |printing::COMPLETE_PREVIEW_DOCUMENT_INDEX| to represent complete preview
+  // `printing::COMPLETE_PREVIEW_DOCUMENT_INDEX` to represent complete preview
   // document.
   // Value: Preview data.
   using PreviewPageDataMap =

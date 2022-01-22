@@ -49,10 +49,10 @@ class PrintJobWorker {
 
   /* The following functions may only be called before calling SetPrintJob(). */
 
-  // Initializes the print settings. If |ask_user_for_settings| is true, a
+  // Initializes the print settings. If `ask_user_for_settings` is true, a
   // Print... dialog box will be shown to ask the user their preference.
-  // |is_scripted| should be true for calls coming straight from window.print().
-  // |is_modifiable| implies HTML and not other formats like PDF.
+  // `is_scripted` should be true for calls coming straight from window.print().
+  // `is_modifiable` implies HTML and not other formats like PDF.
   void GetSettings(bool ask_user_for_settings,
                    uint32_t document_page_count,
                    bool has_selection,
@@ -124,7 +124,7 @@ class PrintJobWorker {
   // Closes the job since spooling is done.
   virtual void OnDocumentDone();
 
-  // Reports settings back to |callback|.
+  // Reports settings back to `callback`.
   void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
   // Called on the UI thread to update the print settings.
@@ -199,7 +199,7 @@ class PrintJobWorker {
   // Thread to run worker tasks.
   base::Thread thread_;
 
-  // Thread-safe pointer to task runner of the |thread_|.
+  // Thread-safe pointer to task runner of the `thread_`.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Used to generate a WeakPtr for callbacks.

@@ -54,7 +54,7 @@ class PdfNupConverterClient
   // Get the mojo::Remote or create a new one if none exists.
   mojo::Remote<mojom::PdfNupConverter>& GetPdfNupConverterRemote(int cookie);
 
-  // Remove an existing mojo::Remote from |pdf_nup_converter_map_|.
+  // Remove an existing mojo::Remote from `pdf_nup_converter_map_`.
   void RemovePdfNupConverterRemote(int cookie);
 
   mojo::Remote<mojom::PdfNupConverter> CreatePdfNupConverterRemote();

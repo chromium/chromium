@@ -61,9 +61,9 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   virtual bool PrintNow(content::RenderFrameHost* rfh);
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  // Prints the document in |print_data| with settings specified in
-  // |job_settings|. Runs |callback| with an error string on failure and with an
-  // empty string if the print job is started successfully. |rfh| is the render
+  // Prints the document in `print_data` with settings specified in
+  // `job_settings`. Runs `callback` with an error string on failure and with an
+  // empty string if the print job is started successfully. `rfh` is the render
   // frame host for the preview initiator contents respectively.
   void PrintForPrintPreview(base::Value job_settings,
                             scoped_refptr<base::RefCountedMemory> print_data,
@@ -201,11 +201,11 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // WARNING: `this` may not be alive after RenderAllMissingPagesNow() returns.
   bool RenderAllMissingPagesNow();
 
-  // Checks that synchronization is correct with |print_job_| based on |cookie|.
+  // Checks that synchronization is correct with `print_job_` based on `cookie`.
   bool PrintJobHasDocument(int cookie);
 
-  // Starts printing the |document| in |print_job_| with the given |print_data|.
-  // This method assumes PrintJobHasDocument() has been called, and |print_data|
+  // Starts printing the `document` in `print_job_` with the given `print_data`.
+  // This method assumes PrintJobHasDocument() has been called, and `print_data`
   // contains valid data.
   void PrintDocument(scoped_refptr<base::RefCountedMemory> print_data,
                      const gfx::Size& page_size,
@@ -219,7 +219,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void ShouldQuitFromInnerMessageLoop();
 
   // Terminates the print job. No-op if no print job has been created. If
-  // |cancel| is true, cancel it instead of waiting for the job to finish. Will
+  // `cancel` is true, cancel it instead of waiting for the job to finish. Will
   // call ReleasePrintJob().
   void TerminatePrintJob(bool cancel);
 
@@ -239,7 +239,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // print_job_ is initialized.
   bool OpportunisticallyCreatePrintJob(int cookie);
 
-  // Release the PrinterQuery associated with our |cookie_|.
+  // Release the PrinterQuery associated with our `cookie_`.
   void ReleasePrinterQuery();
 
   // Notifies `rfh` about whether printing is `enabled`.
