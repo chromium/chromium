@@ -176,7 +176,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       NGBaselineAlgorithmType baseline_algorithm_type =
           NGBaselineAlgorithmType::kInlineBlock);
 
-  void InsertIntoLegacyPositionedObjects() const;
+  void InsertIntoLegacyPositionedObjectsOf(LayoutBlock*) const;
 
   // Write back resolved margins to legacy.
   void StoreMargins(const NGConstraintSpace&, const NGBoxStrut& margins);

@@ -649,6 +649,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     minimal_space_shortage_ = LayoutUnit::Max();
   }
 
+  void InsertLegacyPositionedObject(const NGBlockNode& positioned) const {
+    positioned.InsertIntoLegacyPositionedObjectsOf(
+        To<LayoutBlock>(layout_object_));
+  }
+
  private:
   // Propagate fragmentation details. This includes checking whether we have
   // fragmented in this flow, break appeal, column spanner detection, and column

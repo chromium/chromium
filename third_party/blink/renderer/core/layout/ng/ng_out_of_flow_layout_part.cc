@@ -717,7 +717,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
       if (IsContainingBlockForCandidate(candidate) &&
           (!only_layout || layout_box == only_layout)) {
         if (layout_box != only_layout)
-          candidate.Node().InsertIntoLegacyPositionedObjects();
+          container_builder_->InsertLegacyPositionedObject(candidate.Node());
         if (has_block_fragmentation_ &&
             !container_builder_->IsInitialColumnBalancingPass()) {
           container_builder_->AdjustOffsetsForFragmentainerDescendant(

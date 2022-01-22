@@ -1964,9 +1964,12 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
       percentage_resolution_inline_size);
 }
 
-void NGBlockNode::InsertIntoLegacyPositionedObjects() const {
+void NGBlockNode::InsertIntoLegacyPositionedObjectsOf(
+    LayoutBlock* containing_block) const {
   DCHECK(box_->IsOutOfFlowPositioned());
-  box_->ContainingBlock()->InsertPositionedObject(box_);
+  DCHECK(containing_block);
+  DCHECK_EQ(containing_block, box_->ContainingBlock());
+  containing_block->InsertPositionedObject(box_);
 }
 
 void NGBlockNode::StoreMargins(const NGConstraintSpace& constraint_space,
