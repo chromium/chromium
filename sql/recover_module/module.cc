@@ -101,9 +101,7 @@ int ModuleCreate(sqlite3* sqlite_db,
     return SQLITE_MISUSE;
   }
 
-  int sqlite_status;
-  std::unique_ptr<VirtualTable> table;
-  std::tie(sqlite_status, table) = VirtualTable::Create(
+  auto [sqlite_status, table] = VirtualTable::Create(
       sqlite_db, std::move(backing_table_spec), std::move(column_specs));
   if (sqlite_status != SQLITE_OK)
     return sqlite_status;
