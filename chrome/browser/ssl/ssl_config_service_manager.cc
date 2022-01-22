@@ -36,10 +36,6 @@
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "url/url_canon.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace {
 
 const char* kVariationsRestrictionsByPolicy =
@@ -120,81 +116,13 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
   return out;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  SSLConfigServiceManagerPref
+}  // namespace
 
-// The manager for holding and updating one or more
-// network::mojom::SSLConfigClients.
-class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
- public:
-  explicit SSLConfigServiceManagerPref(PrefService* local_state);
-
-  SSLConfigServiceManagerPref(const SSLConfigServiceManagerPref&) = delete;
-  SSLConfigServiceManagerPref& operator=(const SSLConfigServiceManagerPref&) =
-      delete;
-
-  ~SSLConfigServiceManagerPref() override {}
-
-  // Register local_state SSL preferences.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  void AddToNetworkContextParams(
-      network::mojom::NetworkContextParams* network_context_params) override;
-
-  void FlushForTesting() override;
-
- private:
-  // Callback for preference changes.  This will post the changes to the IO
-  // thread with SetNewSSLConfig.
-  void OnPreferenceChanged(PrefService* prefs, const std::string& pref_name);
-
-  // Returns the current SSLConfig settings from preferences. Assumes
-  // |disabled_cipher_suites_| is up-to-date, but reads all other settings from
-  // live prefs.
-  network::mojom::SSLConfigPtr GetSSLConfigFromPrefs() const;
-
-  // Processes changes to the disabled cipher suites preference, updating the
-  // cached list of parsed SSL/TLS cipher suites that are disabled.
-  void OnDisabledCipherSuitesChange(PrefService* local_state);
-
-  void CacheVariationsPolicy(PrefService* local_state) {
-    const PrefService::Preference* const pref =
-        local_state->FindPreference(kVariationsRestrictionsByPolicy);
-    // kVariationsRestrictionsByPolicy may not be registered in test contexts
-    // therefore that case is handled by assuming that it has the default value
-    // of |NO_RESTRICTIONS|.
-    variations_unrestricted_ =
-        !pref ||
-        pref->GetValue()->GetInt() ==
-            static_cast<int>(variations::RestrictionPolicy::NO_RESTRICTIONS);
-  }
-
-  PrefChangeRegistrar local_state_change_registrar_;
-
-  // The local_state prefs.
-  BooleanPrefMember rev_checking_enabled_;
-  BooleanPrefMember rev_checking_required_local_anchors_;
-  StringPrefMember ssl_version_min_;
-  StringPrefMember ssl_version_max_;
-  StringListPrefMember h2_client_cert_coalescing_host_patterns_;
-  BooleanPrefMember cecpq2_enabled_;
-
-  // The cached list of disabled SSL cipher suites.
-  std::vector<uint16_t> disabled_cipher_suites_;
-
-  // variations_unrestricted_ is true iff the ChromeVariations policy has not
-  // been set to anything more restrictive than the default NO_RESTRICTIONS.
-  bool variations_unrestricted_ = true;
-
-  mojo::RemoteSet<network::mojom::SSLConfigClient> ssl_config_client_set_;
-};
-
-SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
-    PrefService* local_state) {
+SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
   DCHECK(local_state);
 
   PrefChangeRegistrar::NamedChangeCallback local_state_callback =
-      base::BindRepeating(&SSLConfigServiceManagerPref::OnPreferenceChanged,
+      base::BindRepeating(&SSLConfigServiceManager::OnPreferenceChanged,
                           base::Unretained(this), local_state);
 
   rev_checking_enabled_.Init(prefs::kCertRevocationCheckingEnabled, local_state,
@@ -223,8 +151,10 @@ SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
   CacheVariationsPolicy(local_state);
 }
 
+SSLConfigServiceManager::~SSLConfigServiceManager() = default;
+
 // static
-void SSLConfigServiceManagerPref::RegisterPrefs(PrefRegistrySimple* registry) {
+void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   net::CertVerifier::Config default_verifier_config;
   registry->RegisterBooleanPref(prefs::kCertRevocationCheckingEnabled,
                                 default_verifier_config.enable_rev_checking);
@@ -240,7 +170,7 @@ void SSLConfigServiceManagerPref::RegisterPrefs(PrefRegistrySimple* registry) {
                                 default_context_config.cecpq2_enabled);
 }
 
-void SSLConfigServiceManagerPref::AddToNetworkContextParams(
+void SSLConfigServiceManager::AddToNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
   network_context_params->initial_ssl_config = GetSSLConfigFromPrefs();
   mojo::Remote<network::mojom::SSLConfigClient> ssl_config_client;
@@ -249,11 +179,11 @@ void SSLConfigServiceManagerPref::AddToNetworkContextParams(
   ssl_config_client_set_.Add(std::move(ssl_config_client));
 }
 
-void SSLConfigServiceManagerPref::FlushForTesting() {
+void SSLConfigServiceManager::FlushForTesting() {
   ssl_config_client_set_.FlushForTesting();
 }
 
-void SSLConfigServiceManagerPref::OnPreferenceChanged(
+void SSLConfigServiceManager::OnPreferenceChanged(
     PrefService* prefs,
     const std::string& pref_name_in) {
   DCHECK(prefs);
@@ -272,8 +202,8 @@ void SSLConfigServiceManagerPref::OnPreferenceChanged(
   }
 }
 
-network::mojom::SSLConfigPtr
-SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
+network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
+    const {
   network::mojom::SSLConfigPtr config = network::mojom::SSLConfig::New();
 
   // rev_checking_enabled was formerly a user-settable preference, but now
@@ -309,25 +239,21 @@ SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
   return config;
 }
 
-void SSLConfigServiceManagerPref::OnDisabledCipherSuitesChange(
+void SSLConfigServiceManager::OnDisabledCipherSuitesChange(
     PrefService* local_state) {
   const base::ListValue* value = &base::Value::AsListValue(
       *local_state->GetList(prefs::kCipherSuiteBlacklist));
   disabled_cipher_suites_ = ParseCipherSuites(ListValueToStringVector(value));
 }
 
-}  // namespace
-
-////////////////////////////////////////////////////////////////////////////////
-//  SSLConfigServiceManager
-
-// static
-SSLConfigServiceManager* SSLConfigServiceManager::CreateDefaultManager(
-    PrefService* local_state) {
-  return new SSLConfigServiceManagerPref(local_state);
-}
-
-// static
-void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
-  SSLConfigServiceManagerPref::RegisterPrefs(registry);
+void SSLConfigServiceManager::CacheVariationsPolicy(PrefService* local_state) {
+  const PrefService::Preference* const pref =
+      local_state->FindPreference(kVariationsRestrictionsByPolicy);
+  // kVariationsRestrictionsByPolicy may not be registered in test contexts
+  // therefore that case is handled by assuming that it has the default value
+  // of |NO_RESTRICTIONS|.
+  variations_unrestricted_ =
+      !pref ||
+      pref->GetValue()->GetInt() ==
+          static_cast<int>(variations::RestrictionPolicy::NO_RESTRICTIONS);
 }

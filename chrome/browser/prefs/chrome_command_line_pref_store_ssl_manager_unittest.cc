@@ -48,9 +48,8 @@ TEST_F(CommandLinePrefStoreSSLManagerTest, CommandLinePrefs) {
       network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  std::unique_ptr<SSLConfigServiceManager> config_manager(
-      SSLConfigServiceManager::CreateDefaultManager(local_state.get()));
-  config_manager->AddToNetworkContextParams(context_params.get());
+  SSLConfigServiceManager config_manager(local_state.get());
+  config_manager.AddToNetworkContextParams(context_params.get());
 
   // Command-line flags should be respected.
   EXPECT_EQ(network::mojom::SSLVersion::kTLS12,

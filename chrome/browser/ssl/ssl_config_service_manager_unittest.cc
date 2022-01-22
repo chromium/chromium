@@ -27,21 +27,19 @@
 
 using base::ListValue;
 
-class SSLConfigServiceManagerPrefTest : public testing::Test,
-                                        public network::mojom::SSLConfigClient {
+class SSLConfigServiceManagerTest : public testing::Test,
+                                    public network::mojom::SSLConfigClient {
  public:
-  SSLConfigServiceManagerPrefTest() = default;
+  SSLConfigServiceManagerTest() = default;
 
-  ~SSLConfigServiceManagerPrefTest() override {
+  ~SSLConfigServiceManagerTest() override {
     EXPECT_EQ(updates_waited_for_, observed_configs_.size());
   }
 
   std::unique_ptr<SSLConfigServiceManager> SetUpConfigServiceManager(
       TestingPrefServiceSimple* local_state) {
-    std::unique_ptr<SSLConfigServiceManager> config_manager(
-        SSLConfigServiceManager::CreateDefaultManager(local_state));
-    if (!config_manager)
-      return nullptr;
+    auto config_manager =
+        std::make_unique<SSLConfigServiceManager>(local_state);
 
     // Create NetworkContextParams, pass it to the |config_manager|, and then
     // steal the only two params that the |config_manager| populates.
@@ -105,7 +103,7 @@ class SSLConfigServiceManagerPrefTest : public testing::Test,
 
 // Test that cipher suites can be disabled. "Good" refers to the fact that
 // every value is expected to be successfully parsed into a cipher suite.
-TEST_F(SSLConfigServiceManagerPrefTest, GoodDisabledCipherSuites) {
+TEST_F(SSLConfigServiceManagerTest, GoodDisabledCipherSuites) {
   TestingPrefServiceSimple local_state;
   SSLConfigServiceManager::RegisterPrefs(local_state.registry());
   std::unique_ptr<SSLConfigServiceManager> config_manager =
@@ -132,7 +130,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, GoodDisabledCipherSuites) {
 // Test that cipher suites can be disabled. "Bad" refers to the fact that
 // there are one or more non-cipher suite strings in the preference. They
 // should be ignored.
-TEST_F(SSLConfigServiceManagerPrefTest, BadDisabledCipherSuites) {
+TEST_F(SSLConfigServiceManagerTest, BadDisabledCipherSuites) {
   TestingPrefServiceSimple local_state;
   SSLConfigServiceManager::RegisterPrefs(local_state.registry());
   std::unique_ptr<SSLConfigServiceManager> config_manager =
@@ -160,7 +158,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, BadDisabledCipherSuites) {
 
 // Test that without command-line settings for minimum and maximum SSL versions,
 // TLS versions from 1.2 are enabled.
-TEST_F(SSLConfigServiceManagerPrefTest, NoCommandLinePrefs) {
+TEST_F(SSLConfigServiceManagerTest, NoCommandLinePrefs) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
   TestingPrefServiceSimple local_state;
   SSLConfigServiceManager::RegisterPrefs(local_state.registry());
@@ -181,7 +179,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, NoCommandLinePrefs) {
 }
 
 // Tests that "ssl3" is not treated as a valid minimum version.
-TEST_F(SSLConfigServiceManagerPrefTest, NoSSL3) {
+TEST_F(SSLConfigServiceManagerTest, NoSSL3) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;
@@ -199,7 +197,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, NoSSL3) {
 }
 
 // Tests that "tls1" is not treated as a valid minimum version.
-TEST_F(SSLConfigServiceManagerPrefTest, NoTLS10) {
+TEST_F(SSLConfigServiceManagerTest, NoTLS10) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;
@@ -215,7 +213,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, NoTLS10) {
 }
 
 // Tests that "tls1.1" is not treated as a valid minimum version.
-TEST_F(SSLConfigServiceManagerPrefTest, NoTLS11) {
+TEST_F(SSLConfigServiceManagerTest, NoTLS11) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;
@@ -231,7 +229,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, NoTLS11) {
 }
 
 // Tests that SSLVersionMin correctly sets the minimum version.
-TEST_F(SSLConfigServiceManagerPrefTest, SSLVersionMin) {
+TEST_F(SSLConfigServiceManagerTest, SSLVersionMin) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;
@@ -246,7 +244,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, SSLVersionMin) {
 }
 
 // Tests that SSL max version correctly sets the maximum version.
-TEST_F(SSLConfigServiceManagerPrefTest, SSLVersionMax) {
+TEST_F(SSLConfigServiceManagerTest, SSLVersionMax) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;
@@ -261,7 +259,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, SSLVersionMax) {
 }
 
 // Tests that SSL max version can not be set below TLS 1.2.
-TEST_F(SSLConfigServiceManagerPrefTest, NoTLS11Max) {
+TEST_F(SSLConfigServiceManagerTest, NoTLS11Max) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;
@@ -276,7 +274,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, NoTLS11Max) {
   EXPECT_LE(network::mojom::SSLVersion::kTLS12, initial_config_->version_max);
 }
 
-TEST_F(SSLConfigServiceManagerPrefTest, H2ClientCertCoalescingPref) {
+TEST_F(SSLConfigServiceManagerTest, H2ClientCertCoalescingPref) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 
   TestingPrefServiceSimple local_state;
@@ -314,7 +312,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, H2ClientCertCoalescingPref) {
 
 // Tests that the cert revocation checking pref correctly sets the corresponding
 // value in SSL configs.
-TEST_F(SSLConfigServiceManagerPrefTest,
+TEST_F(SSLConfigServiceManagerTest,
        RequireOnlineRevocationChecksForLocalAnchors) {
   scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
 

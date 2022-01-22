@@ -4826,7 +4826,7 @@ test("unit_tests") {
     "../browser/ssl/certificate_reporting_test_utils.cc",
     "../browser/ssl/certificate_reporting_test_utils.h",
     "../browser/ssl/security_state_tab_helper_unittest.cc",
-    "../browser/ssl/ssl_config_service_manager_pref_unittest.cc",
+    "../browser/ssl/ssl_config_service_manager_unittest.cc",
     "../browser/status_icons/status_icon_menu_model_unittest.cc",
     "../browser/status_icons/status_icon_unittest.cc",
     "../browser/status_icons/status_tray_unittest.cc",

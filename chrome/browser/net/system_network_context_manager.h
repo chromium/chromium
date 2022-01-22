@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,7 +28,6 @@
 
 class PrefRegistrySimple;
 class PrefService;
-class SSLConfigServiceManager;
 
 namespace network {
 namespace mojom {
@@ -200,7 +200,7 @@ class SystemNetworkContextManager {
   // This is an instance of the default SSLConfigServiceManager for the current
   // platform and it gets SSL preferences from the BrowserProcess's local_state
   // object. It's shared with other NetworkContexts.
-  std::unique_ptr<SSLConfigServiceManager> ssl_config_service_manager_;
+  SSLConfigServiceManager ssl_config_service_manager_;
 
   ProxyConfigMonitor proxy_config_monitor_;
 

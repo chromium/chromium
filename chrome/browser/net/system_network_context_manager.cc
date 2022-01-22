@@ -337,8 +337,7 @@ void SystemNetworkContextManager::DeleteInstance() {
 SystemNetworkContextManager::SystemNetworkContextManager(
     PrefService* local_state)
     : local_state_(local_state),
-      ssl_config_service_manager_(
-          SSLConfigServiceManager::CreateDefaultManager(local_state_)),
+      ssl_config_service_manager_(local_state_),
       proxy_config_monitor_(local_state_),
       stub_resolver_config_reader_(local_state_) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -609,8 +608,7 @@ void SystemNetworkContextManager::DisableQuic() {
 
 void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
-  ssl_config_service_manager_->AddToNetworkContextParams(
-      network_context_params);
+  ssl_config_service_manager_.AddToNetworkContextParams(network_context_params);
 }
 
 void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
@@ -745,7 +743,7 @@ bool SystemNetworkContextManager::IsNetworkSandboxEnabled() {
 }
 
 void SystemNetworkContextManager::FlushSSLConfigManagerForTesting() {
-  ssl_config_service_manager_->FlushForTesting();
+  ssl_config_service_manager_.FlushForTesting();
 }
 
 void SystemNetworkContextManager::FlushProxyConfigMonitorForTesting() {
