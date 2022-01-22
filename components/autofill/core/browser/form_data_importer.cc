@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -268,7 +269,11 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
           std::make_unique<UpiVpaSaveManager>(client, personal_data_manager)),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       personal_data_manager_(personal_data_manager),
-      app_locale_(app_locale) {
+      app_locale_(app_locale),
+      virtual_card_enrollment_manager_(
+          std::make_unique<VirtualCardEnrollmentManager>(
+              client,
+              personal_data_manager)) {
 }
 
 FormDataImporter::~FormDataImporter() = default;
@@ -807,6 +812,16 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   // Do not offer credit card save at all if Autofill Assistant is running.
   if (client_->IsAutofillAssistantShowing())
     return false;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableUpdateVirtualCardEnrollment)) {
+    if (imported_credit_card->virtual_card_enrollment_state() ==
+        CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+      virtual_card_enrollment_manager_->OfferVirtualCardEnroll(
+          imported_credit_card.get(), VirtualCardEnrollmentSource::kDownstream);
+      return true;
+    }
+  }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // A credit card was successfully imported, but it's possible it is already a

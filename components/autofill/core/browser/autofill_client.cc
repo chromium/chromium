@@ -75,6 +75,13 @@ void AutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
+raw_ptr<VirtualCardEnrollmentManager>
+AutofillClient::GetVirtualCardEnrollmentManager() {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
+  return nullptr;
+}
+
 #if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 AutofillClient::CreateCreditCardInternalAuthenticator(

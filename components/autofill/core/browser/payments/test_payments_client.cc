@@ -111,6 +111,14 @@ void TestPaymentsClient::SelectChallengeOption(
                           "context_token from SelectChallengeOption");
 }
 
+void TestPaymentsClient::UpdateVirtualCardEnrollment(
+    const TestPaymentsClient::UpdateVirtualCardEnrollmentRequestDetails&
+        request_details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
+  update_virtual_card_enrollment_request_details_ = std::move(request_details);
+  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess);
+}
+
 void TestPaymentsClient::ShouldReturnUnmaskDetailsImmediately(
     bool should_return_unmask_details) {
   should_return_unmask_details_ = should_return_unmask_details;

@@ -1,0 +1,46 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_VIRTUAL_CARD_ENROLLMENT_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_VIRTUAL_CARD_ENROLLMENT_MANAGER_H_
+
+#include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
+
+namespace autofill {
+
+class TestPersonalDataManager;
+
+class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
+ public:
+  TestVirtualCardEnrollmentManager(
+      raw_ptr<TestAutofillClient> autofill_client,
+      raw_ptr<TestPersonalDataManager> personal_data_manager);
+  TestVirtualCardEnrollmentManager(const TestVirtualCardEnrollmentManager&) =
+      delete;
+  TestVirtualCardEnrollmentManager& operator=(
+      const TestVirtualCardEnrollmentManager&) = delete;
+  ~TestVirtualCardEnrollmentManager() override;
+
+  AutofillClient::PaymentsRpcResult GetPaymentsRpcResult() { return result_; }
+
+  bool GetResetCalled() { return reset_called_; }
+
+  void SetResetCalled(bool reset_called) { reset_called_ = reset_called; }
+
+  // VirtualCardEnrollmentManager:
+  void OnDidGetUpdateVirtualCardEnrollmentResponse(
+      AutofillClient::PaymentsRpcResult result) override;
+  void Reset() override;
+
+ private:
+  AutofillClient::PaymentsRpcResult result_;
+
+  bool reset_called_ = false;
+};
+
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_VIRTUAL_CARD_ENROLLMENT_MANAGER_H_

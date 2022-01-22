@@ -258,6 +258,7 @@ void TestAutofillClient::HideAutofillPopup(PopupHidingReason reason) {}
 
 void TestAutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
   virtual_card_error_dialog_shown_ = true;
+  virtual_card_error_dialog_is_permanent_error_ = is_permanent_error;
 }
 
 bool TestAutofillClient::IsAutocompleteEnabled() {

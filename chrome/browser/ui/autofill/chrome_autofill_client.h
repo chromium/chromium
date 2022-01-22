@@ -40,6 +40,7 @@
 namespace autofill {
 
 class AutofillPopupControllerImpl;
+class VirtualCardEnrollmentManager;
 
 // Chrome implementation of AutofillClient.
 class ChromeAutofillClient
@@ -96,6 +97,8 @@ class ChromeAutofillClient
           confirm_unmask_challenge_option_callback,
       base::OnceClosure cancel_unmasking_closure) override;
   void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
+  raw_ptr<VirtualCardEnrollmentManager> GetVirtualCardEnrollmentManager()
+      override;
 #if !BUILDFLAG(IS_ANDROID)
   std::vector<std::string> GetAllowedMerchantsForVirtualCards() override;
   std::vector<std::string> GetAllowedBinRangesForVirtualCards() override;

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/upi_vpa_save_manager.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -84,6 +85,10 @@ class FormDataImporter {
     return local_card_migration_manager_.get();
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  raw_ptr<VirtualCardEnrollmentManager> GetVirtualCardEnrollmentManager() {
+    return virtual_card_enrollment_manager_.get();
+  }
 
  protected:
   // Exposed for testing.
@@ -232,6 +237,10 @@ class FormDataImporter {
 
   // Used to store the last four digits of the fetched virtual cards.
   base::flat_set<std::u16string> fetched_virtual_cards_;
+
+  // Responsible for managing the virtual card enrollment flow through chrome.
+  std::unique_ptr<VirtualCardEnrollmentManager>
+      virtual_card_enrollment_manager_;
 
   friend class AutofillMergeTest;
   friend class FormDataImporterTest;

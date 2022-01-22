@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -73,6 +74,11 @@ class TestPaymentsClient : public payments::PaymentsClient {
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::string&)> callback) override;
 
+  void UpdateVirtualCardEnrollment(
+      const UpdateVirtualCardEnrollmentRequestDetails& request_details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback)
+      override;
+
   // Some metrics are affected by the latency of GetUnmaskDetails, so it is
   // useful to control whether or not GetUnmaskDetails() is responded to.
   void ShouldReturnUnmaskDetailsImmediately(bool should_return_unmask_details);
@@ -128,6 +134,11 @@ class TestPaymentsClient : public payments::PaymentsClient {
     return upload_card_source_;
   }
 
+  const UpdateVirtualCardEnrollmentRequestDetails&
+  GetUpdateVirtualCardEnrollmentRequestDetails() {
+    return update_virtual_card_enrollment_request_details_;
+  }
+
  private:
   PaymentsClient::UploadCardResponseDetails upload_card_response_details_;
   // Some metrics are affected by the latency of GetUnmaskDetails, so it is
@@ -151,6 +162,8 @@ class TestPaymentsClient : public payments::PaymentsClient {
   std::unique_ptr<base::Value> LegalMessage();
   absl::optional<AutofillClient::PaymentsRpcResult>
       select_challenge_option_result_;
+  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
+      update_virtual_card_enrollment_request_details_;
 };
 
 }  // namespace payments

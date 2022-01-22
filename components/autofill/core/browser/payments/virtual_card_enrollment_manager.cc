@@ -4,50 +4,159 @@
 
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
+#include "ui/gfx/image/image.h"
+
 namespace autofill {
 
 VirtualCardEnrollmentFields::VirtualCardEnrollmentFields() = default;
+VirtualCardEnrollmentFields::VirtualCardEnrollmentFields(
+    const VirtualCardEnrollmentFields&) = default;
+VirtualCardEnrollmentFields& VirtualCardEnrollmentFields::operator=(
+    const VirtualCardEnrollmentFields&) = default;
 VirtualCardEnrollmentFields::~VirtualCardEnrollmentFields() = default;
 
 VirtualCardEnrollmentProcessState::VirtualCardEnrollmentProcessState() =
     default;
+VirtualCardEnrollmentProcessState::VirtualCardEnrollmentProcessState(
+    const VirtualCardEnrollmentProcessState&) = default;
+VirtualCardEnrollmentProcessState& VirtualCardEnrollmentProcessState::operator=(
+    const VirtualCardEnrollmentProcessState&) = default;
+
 VirtualCardEnrollmentProcessState::~VirtualCardEnrollmentProcessState() =
     default;
 
 VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
-    raw_ptr<AutofillClient> client,
-    const std::string& app_locale) {}
+    raw_ptr<AutofillClient> autofill_client,
+    raw_ptr<PersonalDataManager> personal_data_manager)
+    : autofill_client_(autofill_client),
+      personal_data_manager_(personal_data_manager) {}
 
 VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 
 void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
     raw_ptr<CreditCard> credit_card,
-    VirtualCardEnrollmentSource virtual_card_enrollment_source) {}
+    VirtualCardEnrollmentSource virtual_card_enrollment_source) {
+  DCHECK(credit_card);
+  DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
+  state_.virtual_card_enrollment_fields.credit_card = credit_card;
+
+  // The |card_art_image| might not be synced yet from the sync server which
+  // will result in a nullptr. This situation can occur in the upstream flow. If
+  // it is not synced, GetCreditCardArtImageForUrl() will send a fetch request
+  // to sync the |card_art_image|, and before showing the
+  // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image| from
+  // the local cache.
+  state_.virtual_card_enrollment_fields.card_art_image =
+      personal_data_manager_->GetCreditCardArtImageForUrl(
+          credit_card->card_art_url());
+
+  state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
+      virtual_card_enrollment_source;
+  autofill_client_->LoadRiskData(base::BindOnce(
+      &VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard,
+      weak_ptr_factory_.GetWeakPtr()));
+}
 
 void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {}
 
-void OnRiskDataLoadedForVirtualCard(
-    std::unique_ptr<VirtualCardEnrollmentProcessState> state,
-    const std::string& risk_data) {}
-
-void GetDetailsForEnroll(
-    std::unique_ptr<VirtualCardEnrollmentProcessState> state) {}
-
-void OnDidGetDetailsForEnrollResponse(
-    std::unique_ptr<VirtualCardEnrollmentProcessState> state,
-    AutofillClient::PaymentsRpcResult result,
-    payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails
-        get_details_for_enrollment_response_details) {}
-
-void VirtualCardEnrollmentManager::ShowVirtualCardEnrollmentBubble(
-    std::unique_ptr<VirtualCardEnrollmentProcessState> state) {}
-
-void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted(
-    raw_ptr<CreditCard> credit_card) {}
-
 void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
-    AutofillClient::PaymentsRpcResult result) {}
+    AutofillClient::PaymentsRpcResult result) {
+  Reset();
+}
 
-void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {}
+void VirtualCardEnrollmentManager::Reset() {
+  autofill_client_->GetPaymentsClient()->CancelRequest();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  state_ = VirtualCardEnrollmentProcessState();
+}
+
+void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
+    const std::string& risk_data) {
+  state_.risk_data = risk_data;
+  GetDetailsForEnroll();
+}
+
+void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
+  // TODO(crbug.com/1281695): Add integration with GetDetailsForEnrollRequest.
+}
+
+void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
+    AutofillClient::PaymentsRpcResult result,
+    const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
+        response) {
+  // Show the virtual card permanent error dialog if server explicitly returned
+  // permanent error, show temporary error dialog for the rest of the failure
+  // cases since currently only virtual card is supported.
+  if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
+    autofill_client_->ShowVirtualCardErrorDialog(
+        /*is_permanent_error=*/result ==
+        AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
+    Reset();
+    return;
+  }
+
+  // The controller will only expect one |legal_message_lines| vector, so we
+  // need to combine all of the legal message lines we receive from the server.
+  std::vector<LegalMessageLine> legal_message_lines;
+  legal_message_lines.reserve(response.google_legal_message.size() +
+                              response.issuer_legal_message.size());
+  base::ranges::copy(response.google_legal_message,
+                     std::back_inserter(legal_message_lines));
+  base::ranges::copy(response.issuer_legal_message,
+                     std::back_inserter(legal_message_lines));
+  state_.virtual_card_enrollment_fields.legal_message_lines =
+      std::move(legal_message_lines);
+
+  // The |vcn_context_token| will be used by the server to link the previous
+  // GetDetailsForEnrollRequest to the future UpdateVirtualCardEnrollmentRequest
+  // if the user decides to enroll |state_|'s |virtual_card_enrollment_fields|'s
+  // |credit_card| as a virtual card.
+  state_.vcn_context_token = response.vcn_context_token;
+
+  // Tries to get the card art image again from the local cache. If the card art
+  // image is not available, then |state_|'s |virtual_card_enrollment_fields|'s
+  // |card_art_image| will be nullptr. The view will set it to the network image
+  // if it ends up being nullptr. The card art image might not be present
+  // in the upstream flow if the sync server has not synced the card art image
+  // yet.
+  if (!state_.virtual_card_enrollment_fields.card_art_image) {
+    state_.virtual_card_enrollment_fields.card_art_image =
+        personal_data_manager_->GetCachedCardArtImageForUrl(
+            state_.virtual_card_enrollment_fields.credit_card->card_art_url());
+  }
+
+  ShowVirtualCardEnrollmentBubble();
+}
+
+void VirtualCardEnrollmentManager::ShowVirtualCardEnrollmentBubble() {
+  // TODO(crbug.com/1281695): Link backend components to
+  //  VirtualCardEnrollmentBubble here.
+}
+
+void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted() {
+  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
+      request_details;
+  request_details.virtual_card_enrollment_source =
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
+  request_details.virtual_card_enrollment_request_type =
+      VirtualCardEnrollmentRequestType::kEnroll;
+  request_details.billing_customer_number =
+      payments::GetBillingCustomerId(personal_data_manager_);
+  request_details.vcn_context_token = state_.vcn_context_token;
+
+  autofill_client_->GetPaymentsClient()->UpdateVirtualCardEnrollment(
+      request_details,
+      base::BindOnce(&VirtualCardEnrollmentManager::
+                         OnDidGetUpdateVirtualCardEnrollmentResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
+  Reset();
+}
 
 }  // namespace autofill

@@ -228,8 +228,17 @@ class TestAutofillClient : public AutofillClient {
     return offer_to_save_credit_card_bubble_was_shown_.value();
   }
 
+  void set_virtual_card_error_dialog_shown(
+      bool virtual_card_error_dialog_shown) {
+    virtual_card_error_dialog_shown_ = virtual_card_error_dialog_shown;
+  }
+
   bool virtual_card_error_dialog_shown() {
     return virtual_card_error_dialog_shown_;
+  }
+
+  bool virtual_card_error_dialog_is_permanent_error() {
+    return virtual_card_error_dialog_is_permanent_error_;
   }
 
   SaveCreditCardOptions get_save_credit_card_options() {
@@ -285,6 +294,8 @@ class TestAutofillClient : public AutofillClient {
   bool confirm_save_credit_card_locally_called_ = false;
 
   bool virtual_card_error_dialog_shown_ = false;
+
+  bool virtual_card_error_dialog_is_permanent_error_ = false;
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
   absl::optional<bool> offer_to_save_credit_card_bubble_was_shown_;

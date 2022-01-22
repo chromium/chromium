@@ -59,10 +59,12 @@ namespace autofill {
 
 class AddressNormalizer;
 class AutofillAblationStudy;
+struct AutofillOfferData;
 class AutofillProfile;
 class AutocompleteHistoryManager;
 class AutofillOfferManager;
 class AutofillPopupDelegate;
+struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 class CreditCard;
 enum class CreditCardFetchResult;
@@ -75,11 +77,10 @@ enum class OtpUnmaskResult;
 class PersonalDataManager;
 class SingleFieldFormFillRouter;
 class StrikeDatabase;
+struct Suggestion;
+class VirtualCardEnrollmentManager;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
-struct AutofillOfferData;
-struct CardUnmaskChallengeOption;
-struct Suggestion;
 
 namespace payments {
 class PaymentsClient;
@@ -410,6 +411,13 @@ class AutofillClient : public RiskDataLoader {
   // failure. A successful server response means that the issuer has sent an OTP
   // and we can move on to the next portion of this flow.
   virtual void DismissUnmaskAuthenticatorSelectionDialog(bool server_success);
+
+  // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
+  // AutofillClient. VirtualCardEnrollmentManager is used for virtual card
+  // enroll and unenroll related flows. This function may return a nullptr on
+  // some platforms.
+  virtual raw_ptr<VirtualCardEnrollmentManager>
+  GetVirtualCardEnrollmentManager();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the list of allowed merchants and BIN ranges for virtual cards.

@@ -584,6 +584,7 @@ class PersonalDataManager : public KeyedService,
   friend class PersonalDataManagerHelper;
   friend class PersonalDataManagerMockTest;
   friend class SaveImportedProfileTest;
+  friend class VirtualCardEnrollmentManagerTest;
   friend class ::RemoveAutofillTester;
   friend std::default_delete<PersonalDataManager>;
   friend void autofill_helper::SetProfiles(

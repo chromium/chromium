@@ -1015,6 +1015,9 @@ PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
 PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
     UpdateVirtualCardEnrollmentRequestDetails(
         const UpdateVirtualCardEnrollmentRequestDetails&) = default;
+PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails&
+PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::operator=(
+    const UpdateVirtualCardEnrollmentRequestDetails&) = default;
 PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
     ~UpdateVirtualCardEnrollmentRequestDetails() = default;
 

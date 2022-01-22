@@ -12,9 +12,14 @@
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
+namespace gfx {
+class Image;
+}
+
 namespace autofill {
 
 class CreditCard;
+class PersonalDataManager;
 
 // This struct is passed into the controller when we show the
 // VirtualCardEnrollmentBubble, and it lets the controller customize the
@@ -23,9 +28,8 @@ class CreditCard;
 // in this struct.
 struct VirtualCardEnrollmentFields {
   VirtualCardEnrollmentFields();
-  VirtualCardEnrollmentFields(const VirtualCardEnrollmentFields&) = delete;
-  VirtualCardEnrollmentFields& operator=(const VirtualCardEnrollmentFields&) =
-      delete;
+  VirtualCardEnrollmentFields(const VirtualCardEnrollmentFields&);
+  VirtualCardEnrollmentFields& operator=(const VirtualCardEnrollmentFields&);
   ~VirtualCardEnrollmentFields();
   // Pointer to the credit card to enroll. The |credit_card| object is owned
   // by PersonalDataManager.
@@ -46,10 +50,9 @@ struct VirtualCardEnrollmentFields {
 // where needed. It is created and owned by VirtualCardEnrollmentManager.
 struct VirtualCardEnrollmentProcessState {
   VirtualCardEnrollmentProcessState();
-  VirtualCardEnrollmentProcessState(const VirtualCardEnrollmentProcessState&) =
-      delete;
+  VirtualCardEnrollmentProcessState(const VirtualCardEnrollmentProcessState&);
   VirtualCardEnrollmentProcessState& operator=(
-      const VirtualCardEnrollmentProcessState&) = delete;
+      const VirtualCardEnrollmentProcessState&);
   ~VirtualCardEnrollmentProcessState();
   // Only populated once the risk engine responded.
   absl::optional<std::string> risk_data;
@@ -72,12 +75,13 @@ struct VirtualCardEnrollmentProcessState {
 class VirtualCardEnrollmentManager {
  public:
   // The parameters should outlive the VirtualCardEnrollmentManager.
-  VirtualCardEnrollmentManager(raw_ptr<AutofillClient> client,
-                               const std::string& app_locale);
+  VirtualCardEnrollmentManager(
+      raw_ptr<AutofillClient> autofill_client,
+      raw_ptr<PersonalDataManager> personal_data_manager);
   VirtualCardEnrollmentManager(const VirtualCardEnrollmentManager&) = delete;
   VirtualCardEnrollmentManager& operator=(const VirtualCardEnrollmentManager&) =
       delete;
-  ~VirtualCardEnrollmentManager();
+  virtual ~VirtualCardEnrollmentManager();
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
   // card specific fields for the bubble to display.
@@ -91,59 +95,95 @@ class VirtualCardEnrollmentManager {
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id);
 
- private:
-  // Called once the risk data is loaded. The |risk_data| will be used with
-  // |state|'s |virtual_card_enrollment_fields|'s |credit_card|'s
-  // |instrument_id_| field to make a GetDetailsForEnroll request, and
-  // |state|'s |virtual_card_enrollment_source| will be passed down to when we
-  // show the bubble so that we show the correct bubble version.
-  void OnRiskDataLoadedForVirtualCard(
-      std::unique_ptr<VirtualCardEnrollmentProcessState> state,
-      const std::string& risk_data);
+#if defined(UNIT_TEST)
+  void SetVirtualCardEnrollmentProcessStateForTest(
+      const VirtualCardEnrollmentProcessState& state) {
+    state_ = state;
+  }
 
-  // TODO(crbug.com/1281695): Add |client_| data member.
-  // Sends the GetDetailsForEnrollRequest using |client_|'s
-  // |payments_client_|. |state|'s |risk_data| and its
-  // |virtual_card_enrollment_fields|'s |credit_card|'s |instrument_id| are the
-  // fields the server requires for the GetDetailsForEnrollRequest, and will be
-  // used by |client_|'s |payments_client_|. |state|'s
-  // |virtual_card_enrollment_fields_|'s |virtual_card_enrollment_source| is
-  // passed here so that it can be forwarded to ShowVirtualCardEnrollBubble.
-  void GetDetailsForEnroll(
-      std::unique_ptr<VirtualCardEnrollmentProcessState> state);
-
-  // Handles the response from the GetDetailsForEnrollRequest. |result| and
-  // |get_details_for_enrollment_response_details| are received from the
-  // GetDetailsForEnroll server call response, while |state| is passed down from
-  // GetDetailsForEnroll() to track the current process' state.
-  void OnDidGetDetailsForEnrollResponse(
-      std::unique_ptr<VirtualCardEnrollmentProcessState> state,
-      AutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
-          get_details_for_enrollment_response_details);
-
-  // Shows the VirtualCardEnrollmentBubble. |state|'s
-  // |virtual_card_enrollment_fields| will contain all of the dynamic fields
-  // VirtualCardEnrollmentBubbleController needs to display the correct bubble.
-  void ShowVirtualCardEnrollmentBubble(
-      std::unique_ptr<VirtualCardEnrollmentProcessState> state);
-
-  // TODO(crbug.com/1281695): Add |client_| data member.
-  // Uses |client_|'s |payments_client_| to send the enroll request when
-  // the user accepts the bubble. |state|'s |vcn_context_token_|, which
-  // should be set when we receive the GetDetailsForEnrollResponse, is used in
-  // the UpdateVirtualCardEnrollmentRequest to enroll the correct card.
-  void OnVirtualCardEnrollmentBubbleAccepted(raw_ptr<CreditCard> credit_card);
-
+  VirtualCardEnrollmentProcessState
+  GetVirtualCardEnrollmentProcessStateForTest() {
+    return state_;
+  }
+#endif
+ protected:
   // Handles the response from the UpdateVirtualCardEnrollmentRequest.
   // |result| represents the result from the server call to change the virtual
   // card enrollment state for the credit card passed into
   // OfferVirtualCardEnroll().
-  void OnDidGetUpdateVirtualCardEnrollmentResponse(
+  virtual void OnDidGetUpdateVirtualCardEnrollmentResponse(
       AutofillClient::PaymentsRpcResult result);
+
+  // Resets the state of this VirtualCardEnrollmentManager.
+  virtual void Reset();
+
+ private:
+  // Called once the risk data is loaded. The |risk_data| will be used with
+  // |state_|'s |virtual_card_enrollment_fields|'s |credit_card|'s
+  // |instrument_id_| field to make a GetDetailsForEnroll request, and
+  // |state_|'s |virtual_card_enrollment_source| will be passed down to when we
+  // show the bubble so that we show the correct bubble version.
+  void OnRiskDataLoadedForVirtualCard(const std::string& risk_data);
+
+  // Sends the GetDetailsForEnrollRequest using |autofill_client_|'s
+  // |payments_client_|. |state_|'s |risk_data| and its
+  // |virtual_card_enrollment_fields|'s |credit_card|'s |instrument_id| are the
+  // fields the server requires for the GetDetailsForEnrollRequest, and will be
+  // used by |autofill_client_|'s |payments_client_|. |state_|'s
+  // |virtual_card_enrollment_fields_|'s |virtual_card_enrollment_source| is
+  // passed here so that it can be forwarded to ShowVirtualCardEnrollBubble.
+  void GetDetailsForEnroll();
+
+  // Handles the response from the GetDetailsForEnrollRequest. |result| and
+  // |response| are received from the GetDetailsForEnroll server call response,
+  // while |state_| is passed down from GetDetailsForEnroll() to track the
+  // current process' state.
+  void OnDidGetDetailsForEnrollResponse(
+      AutofillClient::PaymentsRpcResult result,
+      const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
+          response);
+
+  // Shows the VirtualCardEnrollmentBubble. |state_|'s
+  // |virtual_card_enrollment_fields| will contain all of the dynamic fields
+  // VirtualCardEnrollmentBubbleController needs to display the correct bubble.
+  void ShowVirtualCardEnrollmentBubble();
+
+  // Uses |autofill_client_|'s |payments_client_| to send the enroll request
+  // when the user accepts the bubble. |state_|'s |vcn_context_token_|, which
+  // should be set when we receive the GetDetailsForEnrollResponse, is used in
+  // the UpdateVirtualCardEnrollmentRequest to enroll the correct card.
+  void OnVirtualCardEnrollmentBubbleAccepted();
 
   // Cancels the entire Virtual Card Enrollment process.
   void OnVirtualCardEnrollmentBubbleCancelled();
+
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnDidGetDetailsForEnrollResponse);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnDidGetDetailsForEnrollResponse_Reset);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnRiskDataLoadedForVirtualCard);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnVirtualCardEnrollmentBubbleAccepted);
+
+  // The associated autofill client, used to load risk data at the point that we
+  // need it. Weak reference.
+  raw_ptr<AutofillClient> autofill_client_;
+
+  // The associated personal data manager, used to save and load personal data
+  // to/from the web database. Weak reference. May be nullptr, which indicates
+  // OTR.
+  raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  // Data in |state_| will be populated with the data we have at the current
+  // point of the virtual card enrollment flow we are in. This data will then be
+  // used by future points of the flow for actions such as populating request
+  // fields, and sending data to the VirtualCardEnrollmentBubbleController to
+  // display in the UI. VirtualCardEnrollmentManager::Reset() will reset
+  // |state_|.
+  VirtualCardEnrollmentProcessState state_;
+
+  base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

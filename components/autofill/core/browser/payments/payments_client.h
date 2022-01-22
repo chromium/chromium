@@ -312,8 +312,8 @@ class PaymentsClient {
     UpdateVirtualCardEnrollmentRequestDetails();
     UpdateVirtualCardEnrollmentRequestDetails(
         const UpdateVirtualCardEnrollmentRequestDetails&);
-    UpdateVirtualCardEnrollmentRequestDetails operator=(
-        const UpdateVirtualCardEnrollmentRequestDetails&) = delete;
+    UpdateVirtualCardEnrollmentRequestDetails& operator=(
+        const UpdateVirtualCardEnrollmentRequestDetails&);
     ~UpdateVirtualCardEnrollmentRequestDetails();
     // Denotes the source that the corresponding
     // UpdateVirtualCardEnrollmentRequest for this
