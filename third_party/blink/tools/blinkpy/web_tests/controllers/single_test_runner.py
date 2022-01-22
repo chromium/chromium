@@ -618,7 +618,9 @@ class SingleTestRunner(object):
 
             if err_str:
                 _log.error('  %s : %s', self._test_name, err_str)
-                driver_output.error = (driver_output.error or '') + err_str
+                driver_output.error = (driver_output.error
+                                       or b'') + err_str.encode(
+                                           'utf8', 'replace')
 
             if diff or err_str:
                 return [
@@ -759,7 +761,8 @@ class SingleTestRunner(object):
             if err_str:
                 _log.error(err_str)
                 actual_driver_output.error = (actual_driver_output.error
-                                              or '') + err_str
+                                              or b'') + err_str.encode(
+                                                  'utf8', 'replace')
 
             if diff or err_str:
                 failures.append(
