@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -952,6 +953,33 @@ TEST_P(NativeIOManagerTest, GetStorageKeyUsage_NonexistingStorageKeyUsage) {
       blink::mojom::StorageType::kTemporary);
 
   EXPECT_EQ(0u, usage);
+}
+
+TEST_P(NativeIOManagerTest, IncognitoQuota) {
+  auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
+      /*is_incognito=*/true, base::FilePath(),
+      base::ThreadTaskRunnerHandle::Get().get(),
+      /*special storage policy=*/nullptr);
+  auto quota_manager_proxy =
+      base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+          quota_manager.get(), base::ThreadTaskRunnerHandle::Get());
+  auto manager = std::make_unique<NativeIOManager>(
+      base::FilePath(),
+#if BUILDFLAG(IS_MAC)
+      allow_set_length_ipc(),
+#endif  // BUILDFLAG(IS_MAC)
+      /*special storage policy=*/nullptr, quota_manager_proxy);
+  auto sync_manager = std::make_unique<NativeIOManagerSync>(manager.get());
+
+  EXPECT_THAT(sync_manager->GetStorageKeysForType(
+                  blink::mojom::StorageType::kTemporary),
+              testing::SizeIs(0));
+  EXPECT_THAT(sync_manager->GetStorageKeysForHost(
+                  blink::mojom::StorageType::kTemporary, "example.com"),
+              testing::SizeIs(0));
+  EXPECT_EQ(0, sync_manager->GetStorageKeyUsage(
+                   StorageKey::CreateFromStringForTesting(kExampleStorageKey),
+                   blink::mojom::StorageType::kTemporary));
 }
 
 INSTANTIATE_TEST_CASE_P(,

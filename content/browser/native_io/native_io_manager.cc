@@ -65,6 +65,11 @@ std::vector<blink::StorageKey> DoGetStorageKeys(
 }
 
 int64_t DoGetStorageKeyUsage(const base::FilePath& storage_key_root) {
+  // base::ComputeDirectorySize() spins on Windows when given an empty path.
+  // `storage_key_root` can be empty in Incognito.
+  if (storage_key_root.empty())
+    return 0;
+
   // Returns 0 if `storage_key_root` does not exist.
   return base::ComputeDirectorySize(storage_key_root);
 }
