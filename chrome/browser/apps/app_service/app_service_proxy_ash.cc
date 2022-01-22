@@ -87,8 +87,7 @@ void AppServiceProxyAsh::Initialize() {
 
   if (full_restore::features::IsFullRestoreEnabled()) {
     if (user == user_manager::UserManager::Get()->GetPrimaryUser()) {
-      ::full_restore::FullRestoreSaveHandler::GetInstance()
-          ->SetPrimaryProfilePath(profile_->GetPath());
+      ::full_restore::SetPrimaryProfilePath(profile_->GetPath());
 
       // In Multi-Profile mode, only set for the primary user. For other users,
       // active profile path is set when switch users.

@@ -40,6 +40,11 @@ void SetActiveProfilePath(const base::FilePath& profile_path) {
   FullRestoreReadHandler::GetInstance()->SetActiveProfilePath(profile_path);
 }
 
+void SetPrimaryProfilePath(const base::FilePath& profile_path) {
+  FullRestoreSaveHandler::GetInstance()->SetPrimaryProfilePath(profile_path);
+  FullRestoreReadHandler::GetInstance()->SetPrimaryProfilePath(profile_path);
+}
+
 bool HasAppTypeBrowser(const base::FilePath& profile_path) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return false;

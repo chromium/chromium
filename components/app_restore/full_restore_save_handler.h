@@ -278,9 +278,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // The current active user profile path.
   base::FilePath active_profile_path_;
 
-  // The primary user profile path for ARC apps.
-  base::FilePath primary_profile_path_;
-
   // Timer used to delay the restore data writing to the full restore file.
   base::OneShotTimer save_timer_;
 

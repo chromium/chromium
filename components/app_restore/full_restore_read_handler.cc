@@ -151,6 +151,15 @@ void FullRestoreReadHandler::OnLacrosBrowserWindowAdded(
   }
 }
 
+void FullRestoreReadHandler::SetPrimaryProfilePath(
+    const base::FilePath& profile_path) {
+  primary_profile_path_ = profile_path;
+  if (::full_restore::features::IsFullRestoreForLacrosEnabled()) {
+    lacros_read_handler_ =
+        std::make_unique<app_restore::LacrosReadHandler>(profile_path);
+  }
+}
+
 void FullRestoreReadHandler::SetActiveProfilePath(
     const base::FilePath& profile_path) {
   active_profile_path_ = profile_path;
@@ -375,12 +384,6 @@ void FullRestoreReadHandler::OnGetRestoreData(
     std::unique_ptr<app_restore::RestoreData> restore_data) {
   if (restore_data) {
     profile_path_to_restore_data_[profile_path] = restore_data->Clone();
-
-    if (::full_restore::features::IsFullRestoreForLacrosEnabled()) {
-      lacros_read_handler_ =
-          std::make_unique<app_restore::LacrosReadHandler>(profile_path);
-    }
-
     for (auto it = restore_data->app_id_to_launch_list().begin();
          it != restore_data->app_id_to_launch_list().end(); it++) {
       const std::string& app_id = it->first;
@@ -399,8 +402,10 @@ void FullRestoreReadHandler::OnGetRestoreData(
               std::make_pair(profile_path, app_id);
           // TODO(crbug.com/1239984): Remove restore data from
           // `lacros_read_handler_` for ash browser apps.
-          if (lacros_read_handler_ && app_id != extension_misc::kChromeAppId)
+          if (lacros_read_handler_ && app_id != extension_misc::kChromeAppId &&
+              primary_profile_path_ == profile_path) {
             lacros_read_handler_->AddRestoreData(app_id, window_id);
+          }
         }
       }
     }

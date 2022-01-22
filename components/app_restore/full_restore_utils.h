@@ -35,9 +35,14 @@ void SaveAppLaunchInfo(
 // Saves the window information to the full restore file.
 COMPONENT_EXPORT(APP_RESTORE)
 void SaveWindowInfo(const app_restore::WindowInfo& window_info);
+
 // Sets the current active profile path.
 COMPONENT_EXPORT(APP_RESTORE)
 void SetActiveProfilePath(const base::FilePath& profile_path);
+
+// Sets the primary user profile path.
+COMPONENT_EXPORT(APP_RESTORE)
+void SetPrimaryProfilePath(const base::FilePath& profile_path);
 
 // Returns true if there are app type browsers from the full restore file.
 // Otherwise, returns false.

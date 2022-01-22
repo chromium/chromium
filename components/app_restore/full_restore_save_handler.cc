@@ -54,11 +54,9 @@ FullRestoreSaveHandler::~FullRestoreSaveHandler() = default;
 
 void FullRestoreSaveHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
-  primary_profile_path_ = profile_path;
-  arc_save_handler_ = std::make_unique<ArcSaveHandler>(primary_profile_path_);
+  arc_save_handler_ = std::make_unique<ArcSaveHandler>(profile_path);
   if (::full_restore::features::IsFullRestoreForLacrosEnabled()) {
-    lacros_save_handler_ =
-        std::make_unique<LacrosSaveHandler>(primary_profile_path_);
+    lacros_save_handler_ = std::make_unique<LacrosSaveHandler>(profile_path);
   }
 }
 
@@ -575,7 +573,6 @@ void FullRestoreSaveHandler::ClearForTesting() {
   profile_path_to_file_handler_.clear();
   profile_path_to_restore_data_.clear();
   app_id_to_app_launch_infos_.clear();
-  primary_profile_path_.clear();
   save_running_.clear();
   pending_save_profile_paths_.clear();
   window_id_to_app_restore_info_.clear();

@@ -98,6 +98,8 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   void OnLacrosBrowserWindowAdded(aura::Window* const window,
                                   uint32_t restored_browser_session_id);
 
+  void SetPrimaryProfilePath(const base::FilePath& profile_path);
+
   void SetActiveProfilePath(const base::FilePath& profile_path);
 
   // Sets whether we should check the restore data for `profile_path`. If the
@@ -195,6 +197,9 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   void RemoveAppRestoreData(int32_t restore_window_id);
 
   app_restore::RestoreData* GetRestoreData(const base::FilePath& profile_path);
+
+  // The primary user profile path.
+  base::FilePath primary_profile_path_;
 
   // The current active user profile path.
   base::FilePath active_profile_path_;
