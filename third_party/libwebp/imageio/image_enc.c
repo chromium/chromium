@@ -280,7 +280,7 @@ int WebPWrite16bAsPGM(FILE* fout, const WebPDecBuffer* const buffer) {
 }
 
 //------------------------------------------------------------------------------
-// BMP
+// BMP (see https://en.wikipedia.org/wiki/BMP_file_format#Pixel_storage)
 
 static void PutLE16(uint8_t* const dst, uint32_t value) {
   dst[0] = (value >> 0) & 0xff;
@@ -293,8 +293,11 @@ static void PutLE32(uint8_t* const dst, uint32_t value) {
 }
 
 #define BMP_HEADER_SIZE 54
+#define BMP_HEADER_ALPHA_EXTRA_SIZE 16  // for alpha info
 int WebPWriteBMP(FILE* fout, const WebPDecBuffer* const buffer) {
   const int has_alpha = WebPIsAlphaMode(buffer->colorspace);
+  const int header_size =
+      BMP_HEADER_SIZE + (has_alpha ? BMP_HEADER_ALPHA_EXTRA_SIZE : 0);
   const uint32_t width = buffer->width;
   const uint32_t height = buffer->height;
   const uint8_t* rgba = buffer->u.RGBA.rgba;
@@ -303,8 +306,9 @@ int WebPWriteBMP(FILE* fout, const WebPDecBuffer* const buffer) {
   uint32_t y;
   const uint32_t line_size = bytes_per_px * width;
   const uint32_t bmp_stride = (line_size + 3) & ~3;   // pad to 4
-  const uint32_t total_size = bmp_stride * height + BMP_HEADER_SIZE;
-  uint8_t bmp_header[BMP_HEADER_SIZE] = { 0 };
+  const uint32_t image_size = bmp_stride * height;
+  const uint32_t total_size =  image_size + header_size;
+  uint8_t bmp_header[BMP_HEADER_SIZE + BMP_HEADER_ALPHA_EXTRA_SIZE] = { 0 };
 
   if (fout == NULL || buffer == NULL || rgba == NULL) return 0;
 
@@ -312,30 +316,37 @@ int WebPWriteBMP(FILE* fout, const WebPDecBuffer* const buffer) {
   PutLE16(bmp_header + 0, 0x4d42);                // signature 'BM'
   PutLE32(bmp_header + 2, total_size);            // size including header
   PutLE32(bmp_header + 6, 0);                     // reserved
-  PutLE32(bmp_header + 10, BMP_HEADER_SIZE);      // offset to pixel array
+  PutLE32(bmp_header + 10, header_size);          // offset to pixel array
   // bitmap info header
-  PutLE32(bmp_header + 14, 40);                   // DIB header size
+  PutLE32(bmp_header + 14, header_size - 14);     // DIB header size
   PutLE32(bmp_header + 18, width);                // dimensions
-  PutLE32(bmp_header + 22, -(int)height);         // vertical flip!
+  PutLE32(bmp_header + 22, height);               // no vertical flip
   PutLE16(bmp_header + 26, 1);                    // number of planes
   PutLE16(bmp_header + 28, bytes_per_px * 8);     // bits per pixel
-  PutLE32(bmp_header + 30, 0);                    // no compression (BI_RGB)
-  PutLE32(bmp_header + 34, 0);                    // image size (placeholder)
+  PutLE32(bmp_header + 30, has_alpha ? 3 : 0);    // BI_BITFIELDS or BI_RGB
+  PutLE32(bmp_header + 34, image_size);
   PutLE32(bmp_header + 38, 2400);                 // x pixels/meter
   PutLE32(bmp_header + 42, 2400);                 // y pixels/meter
   PutLE32(bmp_header + 46, 0);                    // number of palette colors
   PutLE32(bmp_header + 50, 0);                    // important color count
+  if (has_alpha) {  // BITMAPV3INFOHEADER complement
+    PutLE32(bmp_header + 54, 0x00ff0000);         // red mask
+    PutLE32(bmp_header + 58, 0x0000ff00);         // green mask
+    PutLE32(bmp_header + 62, 0x000000ff);         // blue mask
+    PutLE32(bmp_header + 66, 0xff000000);         // alpha mask
+  }
 
   // TODO(skal): color profile
 
   // write header
-  if (fwrite(bmp_header, sizeof(bmp_header), 1, fout) != 1) {
+  if (fwrite(bmp_header, header_size, 1, fout) != 1) {
     return 0;
   }
 
-  // write pixel array
+  // write pixel array, bottom to top
   for (y = 0; y < height; ++y) {
-    if (fwrite(rgba, line_size, 1, fout) != 1) {
+    const uint8_t* const src = &rgba[(uint64_t)(height - 1 - y) * stride];
+    if (fwrite(src, line_size, 1, fout) != 1) {
       return 0;
     }
     // write padding zeroes
@@ -345,11 +356,11 @@ int WebPWriteBMP(FILE* fout, const WebPDecBuffer* const buffer) {
         return 0;
       }
     }
-    rgba += stride;
   }
   return 1;
 }
 #undef BMP_HEADER_SIZE
+#undef BMP_HEADER_ALPHA_EXTRA_SIZE
 
 //------------------------------------------------------------------------------
 // TIFF
