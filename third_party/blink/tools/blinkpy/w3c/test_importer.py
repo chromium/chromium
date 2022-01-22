@@ -294,7 +294,7 @@ class TestImporter(object):
                 'CR+1 and commit. The sheriff has one hour to respond.')
             self.git_cl.run([
                 'upload', '-f', '--send-mail', '--enable-auto-submit',
-                '--reviewers', self.sheriff_email()
+                '--cc', self.sheriff_email()
             ])
             timeout = 3600
         else:
@@ -556,7 +556,6 @@ class TestImporter(object):
         _log.info('Uploading change list.')
         directory_owners = self.get_directory_owners()
         description = self._cl_description(directory_owners)
-        sheriff_email = self.sheriff_email()
 
         temp_file, temp_path = self.fs.open_text_tempfile()
         temp_file.write(description)
