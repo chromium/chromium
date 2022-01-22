@@ -4,7 +4,8 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/pickle.h"
 
 namespace {
@@ -32,90 +33,90 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     switch (read_type % kReadDataTypes) {
       case 0: {
         bool result = 0;
-        ignore_result(iter.ReadBool(&result));
+        std::ignore = iter.ReadBool(&result);
         break;
       }
       case 1: {
         int result = 0;
-        ignore_result(iter.ReadInt(&result));
+        std::ignore = iter.ReadInt(&result);
         break;
       }
       case 2: {
         long result = 0;
-        ignore_result(iter.ReadLong(&result));
+        std::ignore = iter.ReadLong(&result);
         break;
       }
       case 3: {
         uint16_t result = 0;
-        ignore_result(iter.ReadUInt16(&result));
+        std::ignore = iter.ReadUInt16(&result);
         break;
       }
       case 4: {
         uint32_t result = 0;
-        ignore_result(iter.ReadUInt32(&result));
+        std::ignore = iter.ReadUInt32(&result);
         break;
       }
       case 5: {
         int64_t result = 0;
-        ignore_result(iter.ReadInt64(&result));
+        std::ignore = iter.ReadInt64(&result);
         break;
       }
       case 6: {
         uint64_t result = 0;
-        ignore_result(iter.ReadUInt64(&result));
+        std::ignore = iter.ReadUInt64(&result);
         break;
       }
       case 7: {
         float result = 0;
-        ignore_result(iter.ReadFloat(&result));
+        std::ignore = iter.ReadFloat(&result);
         break;
       }
       case 8: {
         double result = 0;
-        ignore_result(iter.ReadDouble(&result));
+        std::ignore = iter.ReadDouble(&result);
         break;
       }
       case 9: {
         std::string result;
-        ignore_result(iter.ReadString(&result));
+        std::ignore = iter.ReadString(&result);
         break;
       }
       case 10: {
         base::StringPiece result;
-        ignore_result(iter.ReadStringPiece(&result));
+        std::ignore = iter.ReadStringPiece(&result);
         break;
       }
       case 11: {
         std::u16string result;
-        ignore_result(iter.ReadString16(&result));
+        std::ignore = iter.ReadString16(&result);
         break;
       }
       case 12: {
         base::StringPiece16 result;
-        ignore_result(iter.ReadStringPiece16(&result));
+        std::ignore = iter.ReadStringPiece16(&result);
         break;
       }
       case 13: {
         const char* data_result = nullptr;
         int length_result = 0;
-        ignore_result(iter.ReadData(&data_result, &length_result));
+        std::ignore = iter.ReadData(&data_result, &length_result);
         break;
       }
       case 14: {
         const char* data_result = nullptr;
         int read_length =
             data_provider.ConsumeIntegralInRange(0, kMaxReadLength);
-        ignore_result(iter.ReadBytes(&data_result, read_length));
+        std::ignore = iter.ReadBytes(&data_result, read_length);
         break;
       }
       case 15: {
         int result = 0;
-        ignore_result(iter.ReadLength(&result));
+        std::ignore = iter.ReadLength(&result);
         break;
       }
       case 16: {
-        ignore_result(iter.SkipBytes(
-            data_provider.ConsumeIntegralInRange(0, kMaxSkipBytes)));
+        std::ignore = iter.SkipBytes(
+            data_provider.ConsumeIntegralInRange(0, kMaxSkipBytes));
         break;
       }
     }

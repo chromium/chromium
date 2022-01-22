@@ -19,7 +19,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -72,12 +71,11 @@ constexpr const char* MutatorIdToTracingString(
 class StatsReporterImpl final : public StatsReporter {
  public:
   void ReportTraceEvent(internal::StatsCollector::ScannerId id,
-                        const PlatformThreadId tid,
+                        [[maybe_unused]] const PlatformThreadId tid,
                         TimeTicks start_time,
                         TimeTicks end_time) override {
     // TRACE_EVENT_* macros below drop most parameters when tracing is
     // disabled at compile time.
-    ignore_result(tid);
     const char* tracing_id = ScannerIdToTracingString(id);
     TRACE_EVENT_BEGIN(kTraceCategory, perfetto::StaticString(tracing_id),
                       perfetto::ThreadTrack::ForThread(tid), start_time);
@@ -86,12 +84,11 @@ class StatsReporterImpl final : public StatsReporter {
   }
 
   void ReportTraceEvent(internal::StatsCollector::MutatorId id,
-                        const PlatformThreadId tid,
+                        [[maybe_unused]] const PlatformThreadId tid,
                         TimeTicks start_time,
                         TimeTicks end_time) override {
     // TRACE_EVENT_* macros below drop most parameters when tracing is
     // disabled at compile time.
-    ignore_result(tid);
     const char* tracing_id = MutatorIdToTracingString(id);
     TRACE_EVENT_BEGIN(kTraceCategory, perfetto::StaticString(tracing_id),
                       perfetto::ThreadTrack::ForThread(tid), start_time);

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
@@ -96,7 +97,7 @@ TEST_F(CheckTest, Basics) {
 
 TEST_F(CheckTest, PCheck) {
   const char file[] = "/nonexistentfile123";
-  ignore_result(fopen(file, "r"));
+  std::ignore = fopen(file, "r");
   std::string err =
       logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode());
 

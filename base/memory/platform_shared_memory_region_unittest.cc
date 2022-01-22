@@ -4,8 +4,9 @@
 
 #include "base/memory/platform_shared_memory_region.h"
 
+#include <tuple>
+
 #include "base/check.h"
-#include "base/ignore_result.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/process/process_metrics.h"
 #include "base/ranges/algorithm.h"
@@ -139,7 +140,7 @@ TEST_F(PlatformSharedMemoryRegionTest, InvalidAfterPass) {
   PlatformSharedMemoryRegion region =
       PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
   ASSERT_TRUE(region.IsValid());
-  ignore_result(region.PassPlatformHandle());
+  std::ignore = region.PassPlatformHandle();
   EXPECT_FALSE(region.IsValid());
 }
 

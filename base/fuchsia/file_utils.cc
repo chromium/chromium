@@ -10,12 +10,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <tuple>
 #include <utility>
 
 #include "base/files/scoped_file.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/ignore_result.h"
-
 namespace base {
 
 const char kPersistedDataDirectoryPath[] = "/data";
@@ -35,7 +34,7 @@ fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
   zx_status_t status =
       fdio_fd_transfer(fd.get(), channel.reset_and_get_address());
   if (status != ZX_ERR_UNAVAILABLE)
-    ignore_result(fd.release());
+    std::ignore = fd.release();
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fdio_fd_transfer";
     return fidl::InterfaceHandle<::fuchsia::io::Directory>();

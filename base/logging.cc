@@ -18,11 +18,11 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <tuple>
 #include <vector>
 
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
-#include "base/ignore_result.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
@@ -860,8 +860,8 @@ LogMessage::~LogMessage() {
                 &num_written,
                 nullptr);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-      ignore_result(fwrite(
-          str_newline.data(), str_newline.size(), 1, g_log_file));
+      std::ignore =
+          fwrite(str_newline.data(), str_newline.size(), 1, g_log_file);
       fflush(g_log_file);
 #else
 #error Unsupported platform
@@ -1070,7 +1070,7 @@ FILE* DuplicateLogFILE() {
   FILE* duplicate = fdopen(dup_fd.get(), "a");
   if (!duplicate)
     return nullptr;
-  ignore_result(dup_fd.release());
+  std::ignore = dup_fd.release();
   return duplicate;
 }
 #endif

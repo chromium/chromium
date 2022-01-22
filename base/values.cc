@@ -22,7 +22,6 @@
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -1078,7 +1077,7 @@ std::unique_ptr<DictionaryValue> DictionaryValue::From(
     std::unique_ptr<Value> value) {
   DictionaryValue* out;
   if (value && value->GetAsDictionary(&out)) {
-    ignore_result(value.release());
+    std::ignore = value.release();
     return WrapUnique(out);
   }
   return nullptr;
@@ -1337,7 +1336,7 @@ std::unique_ptr<DictionaryValue> DictionaryValue::CreateDeepCopy() const {
 std::unique_ptr<ListValue> ListValue::From(std::unique_ptr<Value> value) {
   ListValue* out;
   if (value && value->GetAsList(&out)) {
-    ignore_result(value.release());
+    std::ignore = value.release();
     return WrapUnique(out);
   }
   return nullptr;

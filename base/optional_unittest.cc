@@ -8,7 +8,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/ignore_result.h"
 #include "base/template_util.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -407,8 +406,7 @@ TEST(OptionalTest, ConvertingCopyConstructor) {
 
   // Make sure explicit is not marked for convertible case.
   {
-    absl::optional<int> o(1);
-    ignore_result<absl::optional<double>>(o);
+    [[maybe_unused]] absl::optional<int> o(1);
   }
 }
 
@@ -422,8 +420,7 @@ TEST(OptionalTest, ConvertingMoveConstructor) {
 
   // Make sure explicit is not marked for convertible case.
   {
-    absl::optional<int> o(1);
-    ignore_result<absl::optional<double>>(std::move(o));
+    [[maybe_unused]] absl::optional<int> o(1);
   }
 
   {

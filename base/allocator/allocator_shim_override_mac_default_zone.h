@@ -13,10 +13,11 @@
 
 #include <string.h>
 
+#include <tuple>
+
 #include "base/allocator/early_zone_registration_mac.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 
 namespace base {
@@ -313,8 +314,8 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   // Instantiate the existing regular and purgeable zones in order to make the
   // existing purgeable zone use the existing regular zone since PartitionAlloc
   // doesn't support a purgeable zone.
-  ignore_result(malloc_default_zone());
-  ignore_result(malloc_default_purgeable_zone());
+  std::ignore = malloc_default_zone();
+  std::ignore = malloc_default_purgeable_zone();
 
   // Initialize the default allocator's PartitionRoot with the existing zone.
   InitializeDefaultAllocatorPartitionRoot();

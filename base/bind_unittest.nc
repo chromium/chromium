@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/ignore_result.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
 

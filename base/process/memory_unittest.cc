@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <tuple>
 #include <vector>
 
 #include "base/allocator/allocator_check.h"
@@ -16,7 +17,6 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/ignore_result.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
@@ -627,7 +627,7 @@ TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedMallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     void* data;
-    ignore_result(base::UncheckedMalloc(test_size_, &data));
+    std::ignore = base::UncheckedMalloc(test_size_, &data);
     // Death expected here.
   });
 }
@@ -636,7 +636,7 @@ TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedCallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     void* data;
-    ignore_result(base::UncheckedCalloc(1, test_size_, &data));
+    std::ignore = base::UncheckedCalloc(1, test_size_, &data);
     // Death expected here.
   });
 }

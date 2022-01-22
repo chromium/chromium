@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -17,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
@@ -447,7 +447,7 @@ TEST_F(ProcessUtilTest, HandlesToTransferClosedOnSpawnFailure) {
       zx_object_wait_one(handles[1].get(), ZX_CHANNEL_PEER_CLOSED, 0, nullptr),
       ZX_OK);
   EXPECT_EQ(ZX_ERR_BAD_HANDLE, zx_handle_close(handles[0].get()));
-  ignore_result(handles[0].release());
+  std::ignore = handles[0].release();
 }
 
 TEST_F(ProcessUtilTest, HandlesToTransferClosedOnBadPathToMapFailure) {
@@ -473,7 +473,7 @@ TEST_F(ProcessUtilTest, HandlesToTransferClosedOnBadPathToMapFailure) {
       zx_object_wait_one(handles[1].get(), ZX_CHANNEL_PEER_CLOSED, 0, nullptr),
       ZX_OK);
   EXPECT_EQ(ZX_ERR_BAD_HANDLE, zx_handle_close(handles[0].get()));
-  ignore_result(handles[0].release());
+  std::ignore = handles[0].release();
 }
 
 TEST_F(ProcessUtilTest, FuchsiaProcessNameSuffix) {

@@ -4,8 +4,9 @@
 
 #include "base/test/test_future.h"
 
+#include <tuple>
+
 #include "base/dcheck_is_on.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -223,7 +224,7 @@ TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueThroughGetMethod) {
   RunLater(base::BindOnce(future.GetCallback(), expected_int_value,
                           expected_string_value));
 
-  ignore_result(future.Get());
+  std::ignore = future.Get();
 
   EXPECT_EQ(expected_int_value, future.Get<0>());
   EXPECT_EQ(expected_string_value, future.Get<1>());

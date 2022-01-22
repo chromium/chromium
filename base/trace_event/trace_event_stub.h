@@ -66,7 +66,7 @@ struct IgnoredValue {
 // may include a lambda that refers to protozero message types (which aren't
 // available in the stub). This may trigger "unused variable" errors at the
 // callsite, which have to be addressed at the callsite (e.g. via
-// ignore_result()).
+// [[maybe_unused]]).
 #define TRACE_EVENT_BEGIN(category, name, ...) \
   INTERNAL_TRACE_IGNORE(category, name)
 #define TRACE_EVENT_END(category, ...) INTERNAL_TRACE_IGNORE(category)

@@ -4,6 +4,8 @@
 
 #include "base/process/launch.h"
 
+#include <tuple>
+
 #include <lib/fdio/limits.h>
 #include <lib/fdio/namespace.h>
 #include <lib/fdio/spawn.h>
@@ -17,7 +19,6 @@
 #include "base/fuchsia/default_job.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/environment_internal.h"
@@ -244,7 +245,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   // fdio_spawn_etc() will close all handles specified in add-handle actions,
   // regardless of whether it succeeds or fails, so release our copies.
   for (auto& transferred_handle : transferred_handles)
-    ignore_result(transferred_handle.release());
+    std::ignore = transferred_handle.release();
 
   if (status != ZX_OK) {
     ZX_LOG(ERROR, status) << "fdio_spawn: " << error_message;

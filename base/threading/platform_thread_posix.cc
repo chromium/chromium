@@ -14,10 +14,10 @@
 #include <unistd.h>
 
 #include <memory>
+#include <tuple>
 
 #include "base/allocator/buildflags.h"
 #include "base/debug/activity_tracker.h"
-#include "base/ignore_result.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -143,7 +143,7 @@ bool CreateThread(size_t stack_size,
   bool success = !err;
   if (success) {
     // ThreadParams should be deleted on the created thread after used.
-    ignore_result(params.release());
+    std::ignore = params.release();
   } else {
     // Value of |handle| is undefined if pthread_create fails.
     handle = 0;

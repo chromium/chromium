@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <map>
 #include <string>
+#include <tuple>
 
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/buildflags.h"
@@ -23,7 +24,6 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
@@ -696,7 +696,7 @@ void InitializeDefaultAllocatorPartitionRoot() {
   // internally, e.g. __builtin_available, and it's not easy to avoid it.
   // Thus, we initialize the PartitionRoot with using the system default
   // allocator before we intercept the system default allocator.
-  ignore_result(Allocator());
+  std::ignore = Allocator();
 }
 
 }  // namespace allocator

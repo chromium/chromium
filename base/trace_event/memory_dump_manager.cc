@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/allocator/buildflags.h"
@@ -16,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -377,8 +377,8 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
                  Unretained(pmd_async_state.get())));
 
     if (did_post_task) {
-      // Ownership is tranferred to the posted task.
-      ignore_result(pmd_async_state.release());
+      // Ownership is transferred to the posted task.
+      std::ignore = pmd_async_state.release();
       return;
     }
 

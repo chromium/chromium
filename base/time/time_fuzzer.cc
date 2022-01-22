@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include <string>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 
@@ -18,8 +18,8 @@ void FuzzStringConversions(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
   std::string str = provider.ConsumeRemainingBytesAsString();
   base::Time dummy;
-  ignore_result(base::Time::FromString(str.c_str(), &dummy));
-  ignore_result(base::Time::FromUTCString(str.c_str(), &dummy));
+  std::ignore = base::Time::FromString(str.c_str(), &dummy);
+  std::ignore = base::Time::FromUTCString(str.c_str(), &dummy);
 }
 
 void FuzzExplodedConversions(const uint8_t* data, size_t size) {
@@ -36,8 +36,8 @@ void FuzzExplodedConversions(const uint8_t* data, size_t size) {
   };
 
   base::Time dummy;
-  ignore_result(base::Time::FromUTCExploded(exploded, &dummy));
-  ignore_result(base::Time::FromLocalExploded(exploded, &dummy));
+  std::ignore = base::Time::FromUTCExploded(exploded, &dummy);
+  std::ignore = base::Time::FromLocalExploded(exploded, &dummy);
 }
 
 }  // namespace
