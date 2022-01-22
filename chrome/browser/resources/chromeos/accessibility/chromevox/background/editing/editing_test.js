@@ -585,14 +585,13 @@ TEST_F('ChromeVoxEditingTest', 'RichTextExtendByCharacter', function() {
         mockFeedback.call(moveByChar)
             .expectSpeech('T', 'selected')
             .call(moveByChar)
-            .expectSpeech('e', 'added to selection')
+            .expectSpeech('e', 'selected')
             .call(moveByChar)
             .expectSpeech('selected')
             .call(moveByChar)
-            // This gets described by the line logic in EditableLine.
             .expectSpeech('s', 'selected')
             .call(moveByChar)
-            .expectSpeech('t', 'added to selection')
+            .expectSpeech('t', 'selected')
 
             .replay();
       });
@@ -721,7 +720,7 @@ TEST_F('ChromeVoxEditingTest', 'RichTextSelectByLine', function() {
             .expectSpeech('1', 'selected')
             .expectBraille('11111 line\nmled', {startIndex: 0, endIndex: 1})
             .call(move)
-            .expectSpeech('1', 'added to selection')
+            .expectSpeech('1', 'selected')
             .expectBraille('11111 line\nmled', {startIndex: 0, endIndex: 2})
 
             // Forward selection by line (notice the partial selections from the
@@ -740,7 +739,7 @@ TEST_F('ChromeVoxEditingTest', 'RichTextSelectByLine', function() {
             .expectBraille('22222 line\n', {startIndex: 0, endIndex: 2})
 
             .call(move)
-            .expectSpeech('11', 'selected')
+            .expectSpeech('111 line', '22', 'unselected')
             .expectBraille('11111 line\nmled', {startIndex: 0, endIndex: 2})
 
             // Document boundary.
@@ -827,10 +826,10 @@ TEST_F('ChromeVoxEditingTest', 'RichTextSelectComplexStructure', function() {
 
         // By character.
         mockFeedback.call(move)
-            .expectSpeech('1', 'selected')
+            .expectSpeech('1', 'Heading 1', 'selected')
             .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 1})
             .call(move)
-            .expectSpeech('1', 'added to selection')
+            .expectSpeech('1', 'Heading 1', 'selected')
             .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 2})
 
             // Forward selection by line (notice the partial selections from the
@@ -850,7 +849,7 @@ TEST_F('ChromeVoxEditingTest', 'RichTextSelectComplexStructure', function() {
             .expectBraille('22222 line lnk', {startIndex: 0, endIndex: 3})
 
             .call(move)
-            .expectSpeech('11', 'Heading 1', 'selected')
+            .expectSpeech('111 line', 'Heading 1', '222', 'Link', 'unselected')
             .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 2})
 
             // Document boundary.

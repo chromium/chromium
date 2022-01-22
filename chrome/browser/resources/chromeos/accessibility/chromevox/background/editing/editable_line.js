@@ -548,10 +548,14 @@ editing.EditableLine = class {
    * @return {boolean}
    */
   isBeforeLine(otherLine) {
-    if (this.isSameLine(otherLine) || !this.lineStartContainer_ ||
-        !otherLine.lineStartContainer_) {
+    if (!this.lineStartContainer_ || !otherLine.lineStartContainer_) {
       return false;
     }
+
+    if (this.isSameLine(otherLine)) {
+      return this.endOffset <= otherLine.endOffset;
+    }
+
     return AutomationUtil.getDirection(
                this.lineStartContainer_, otherLine.lineStartContainer_) ===
         Dir.FORWARD;

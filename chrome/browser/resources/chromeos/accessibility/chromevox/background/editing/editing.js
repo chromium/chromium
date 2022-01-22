@@ -512,11 +512,17 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       return;
     }
 
-    // Selection stayed within the same line(s) and didn't cross into new lines.
+    // We must validate the previous lines below as state changes in the
+    // accessibility tree may have invalidated the lines.
 
-    // We must validate the previous lines as state changes in the accessibility
-    // tree may have invalidated the lines.
-    if (startLine.isSameLine(prevStartLine) &&
+    // Selection stayed within the same line(s) and didn't cross into new lines.
+    // Handle speech output for collapsed selections and all selections on text
+    // areas using EditableTextBase.
+    // TODO(accessibility): eventually remove usage of the EditableTextBase
+    // plain text state machine by migrating all cases to be handled by
+    // EditableLine.
+    if ((cur.hasCollapsedSelection() || this.node_.htmlTag === 'textarea') &&
+        startLine.isSameLine(prevStartLine) &&
         endLine.isSameLine(prevEndLine)) {
       // Intra-line changes.
 
