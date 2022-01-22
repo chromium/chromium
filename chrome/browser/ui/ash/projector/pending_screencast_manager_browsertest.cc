@@ -9,9 +9,11 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -42,7 +44,6 @@ constexpr int64_t kTestMetadataFileBytes = 100 * 1024;
 
 }  // namespace
 
-// TODO(b/211000693) Replace all RunAllTasksUntilIdle with a waiting condition.
 class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
   bool SetUpUserDataDirectory() override {
@@ -50,6 +51,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     create_drive_integration_service_ = base::BindRepeating(
         &PendingScreencastMangerBrowserTest::CreateDriveIntegrationService,
         base::Unretained(this));
@@ -73,7 +75,6 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
     if (!ProfileHelper::IsRegularProfile(profile))
       return nullptr;
 
-    base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath mount_path = profile->GetPath().Append("drivefs");
 
     fake_drivefs_helper_ =
@@ -137,6 +138,16 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
         drivefs::mojom::ItemEventReason::kTransfer);
   }
 
+  void NotifySyncingStatusUpdateAndExpectInvokeCallbackOnce(
+      const drivefs::mojom::SyncingStatus& syncing_status) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_))
+        .Times(1)
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+    run_loop.Run();
+  }
+
   MOCK_METHOD1(PendingScreencastChangeCallback,
                void(const PendingScreencastSet&));
 
@@ -169,10 +180,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
                                    /*total_bytes=*/kTestMetadataFileBytes,
                                    /*transferred_bytes=*/0, syncing_status);
   }
-
-  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
-  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
-  content::RunAllTasksUntilIdle();
+  NotifySyncingStatusUpdateAndExpectInvokeCallbackOnce(syncing_status);
 
   const PendingScreencastSet pending_screencasts =
       pending_screencast_manager()->GetPendingScreencasts();
@@ -182,16 +190,14 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   EXPECT_EQ(ps.name, kTestScreencastName);
 
   // Tests PendingScreencastChangeCallback won't be invoked if pending
-  // screencast status doesn't change.
+  // screencast status doesn't change:
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(0);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
-  content::RunAllTasksUntilIdle();
 
   // Tests PendingScreencastChangeCallback will be invoked if pending
-  // screencast status changes.
-  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
+  // screencast status changes by clear all events:
   syncing_status.item_events.clear();
-  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  NotifySyncingStatusUpdateAndExpectInvokeCallbackOnce(syncing_status);
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, InvalidScreencasts) {
@@ -226,8 +232,6 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, InvalidScreencasts) {
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(0);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
 
-  content::RunAllTasksUntilIdle();
-
   EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
 }
 
@@ -250,8 +254,6 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
 
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(0);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
-
-  content::RunAllTasksUntilIdle();
 
   EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
 }
@@ -292,11 +294,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
     CreateFileAndTransferItemEvent(non_screencast, /*total_bytes=*/100,
                                    /*transferred_bytes=*/0, syncing_status);
   }
+  NotifySyncingStatusUpdateAndExpectInvokeCallbackOnce(syncing_status);
 
-  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
-  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
-
-  content::RunAllTasksUntilIdle();
   const PendingScreencastSet pending_screencasts =
       pending_screencast_manager()->GetPendingScreencasts();
   int64_t total_size = kTestMediaFileBytes + kTestMetadataFileBytes;
@@ -330,10 +329,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
                                    /*transferred_bytes=*/0, syncing_status);
   }
 
-  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
-  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
-
-  content::RunAllTasksUntilIdle();
+  NotifySyncingStatusUpdateAndExpectInvokeCallbackOnce(syncing_status);
 
   const PendingScreencastSet pending_screencasts_1 =
       pending_screencast_manager()->GetPendingScreencasts();
@@ -358,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
                        /*total_bytes=*/kTestMetadataFileBytes,
                        /*transferred_bytes=*/metadata_transferred_bytes);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
-  content::RunAllTasksUntilIdle();
+
   const PendingScreencastSet pending_screencasts_2 =
       pending_screencast_manager()->GetPendingScreencasts();
   ps = *(pending_screencasts_2.begin());
@@ -368,7 +364,6 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
 
   // Tests PendingScreencastChangeCallback will be invoked if the difference of
   // transferred bytes is greater than kPendingScreencastDiffThresholdInBytes.
-  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
   syncing_status.item_events.clear();
   AddTransferItemEvent(syncing_status, media_file_path,
                        /*total_bytes=*/kTestMediaFileBytes,
@@ -377,8 +372,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
   AddTransferItemEvent(syncing_status, metadata_file_path,
                        /*total_bytes=*/kTestMetadataFileBytes,
                        /*transferred_bytes=*/metadata_transferred_bytes);
-  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
-  content::RunAllTasksUntilIdle();
+  NotifySyncingStatusUpdateAndExpectInvokeCallbackOnce(syncing_status);
+
   const PendingScreencastSet pending_screencasts_3 =
       pending_screencast_manager()->GetPendingScreencasts();
   ps = *(pending_screencasts_3.begin());
@@ -391,7 +386,6 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
 
   // Tests PendingScreencastChangeCallback will be invoked when all files
   // finished transferred.
-  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
   syncing_status.item_events.clear();
   // Create completed transferred events for both files.
   AddTransferItemEvent(syncing_status, media_file_path,
@@ -400,8 +394,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
   AddTransferItemEvent(syncing_status, metadata_file_path,
                        /*total_bytes=*/kTestMetadataFileBytes,
                        /*transferred_bytes=*/kTestMetadataFileBytes);
-  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
-  content::RunAllTasksUntilIdle();
+  NotifySyncingStatusUpdateAndExpectInvokeCallbackOnce(syncing_status);
   EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
 }
 
