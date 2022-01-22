@@ -2292,9 +2292,13 @@ const FeatureEntry::FeatureVariation kDrawPredictedPointVariations[] = {
      kDrawPredictedPointExperiment2Points3Ms,
      base::size(kDrawPredictedPointExperiment2Points3Ms), nullptr}};
 
+const FeatureEntry::FeatureParam kFedCmVariationAutoSignin[] = {
+    {features::kFedCmAutoSigninFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureParam kFedCmVariationInterception[] = {
     {features::kFedCmInterceptionFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
+    {"- with FedCM auto-signin", kFedCmVariationAutoSignin,
+     base::size(kFedCmVariationAutoSignin), nullptr},
     {"- with FedCM HTTP filtering (very experimental)",
      kFedCmVariationInterception, base::size(kFedCmVariationInterception),
      nullptr}};

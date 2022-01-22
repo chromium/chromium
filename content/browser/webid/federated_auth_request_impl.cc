@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/flags.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -108,7 +109,7 @@ void FederatedAuthRequestImpl::RequestIdToken(
   client_id_ = client_id;
   nonce_ = nonce;
   mode_ = mode;
-  prefer_auto_sign_in_ = prefer_auto_sign_in;
+  prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
 
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {

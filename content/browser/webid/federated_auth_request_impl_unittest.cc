@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/browser/webid/federated_auth_request_service.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
@@ -22,6 +23,7 @@
 #include "content/browser/webid/test/mock_sharing_permission_delegate.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -942,6 +944,11 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmAutoSigninFieldTrialParamName, "true"}});
+
   AccountList displayed_accounts;
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
   auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
@@ -989,6 +996,11 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmAutoSigninFieldTrialParamName, "true"}});
+
   AccountList displayed_accounts;
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
   CreateAuthRequest(GURL(test_case.inputs.provider));
@@ -1020,6 +1032,11 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmAutoSigninFieldTrialParamName, "true"}});
+
   content::BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
       ui::AXMode::kScreenReader);
 

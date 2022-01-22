@@ -15,6 +15,11 @@ bool IsFedCmEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCm);
 }
 
+bool IsFedCmAutoSigninEnabled() {
+  return GetFieldTrialParamByFeatureAsBool(
+      features::kFedCm, features::kFedCmAutoSigninFieldTrialParamName, false);
+}
+
 bool IsFedCmInterceptionEnabled() {
   return GetFieldTrialParamByFeatureAsBool(
       features::kFedCm, features::kFedCmInterceptionFieldTrialParamName, false);

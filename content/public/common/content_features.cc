@@ -324,6 +324,10 @@ const base::Feature kExtraSafelistedRequestHeadersForOutOfBlinkCors{
 // Enables JavaScript API to intermediate federated identity requests.
 const base::Feature kFedCm{"FedCm", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Field trial boolean parameter which indicates whether FedCM auto
+// sign-in is enabled.
+const char kFedCmAutoSigninFieldTrialParamName[] = "AutoSignin";
+
 // Field trial boolean parameter which indicates whether FedCM HTTP filtering is
 // enabled.
 const char kFedCmInterceptionFieldTrialParamName[] = "Interception";
