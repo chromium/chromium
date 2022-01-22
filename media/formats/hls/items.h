@@ -23,7 +23,12 @@ enum class TagKind {
   kM3u,
   kXVersion,
   kInf,
-  kMaxValue = kInf,
+  kXIndependentSegments,
+  kXEndList,
+  kXIFramesOnly,
+  kXDiscontinuity,
+  kXGap,
+  kMaxValue = kXGap,
 };
 
 // An item which has been determined to of a known or unknown tag type, but not

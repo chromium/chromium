@@ -10,13 +10,22 @@
 namespace media {
 namespace hls {
 
-ParseStatus::Or<M3uTag> M3uTag::Parse(TagItem tag) {
-  DCHECK(tag.kind == TagKind::kM3u);
+namespace {
+
+template <typename T>
+ParseStatus::Or<T> ParseEmptyTag(TagItem tag) {
+  DCHECK(tag.kind == T::kKind);
   if (!tag.content.Str().empty()) {
     return ParseStatusCode::kMalformedTag;
   }
 
-  return M3uTag{};
+  return T{};
+}
+
+}  // namespace
+
+ParseStatus::Or<M3uTag> M3uTag::Parse(TagItem tag) {
+  return ParseEmptyTag<M3uTag>(tag);
 }
 
 ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
@@ -61,6 +70,27 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   }
 
   return InfTag{.duration = std::move(duration).value(), .title = title_str};
+}
+
+ParseStatus::Or<XIndependentSegmentsTag> XIndependentSegmentsTag::Parse(
+    TagItem tag) {
+  return ParseEmptyTag<XIndependentSegmentsTag>(tag);
+}
+
+ParseStatus::Or<XEndListTag> XEndListTag::Parse(TagItem tag) {
+  return ParseEmptyTag<XEndListTag>(tag);
+}
+
+ParseStatus::Or<XIFramesOnlyTag> XIFramesOnlyTag::Parse(TagItem tag) {
+  return ParseEmptyTag<XIFramesOnlyTag>(tag);
+}
+
+ParseStatus::Or<XDiscontinuityTag> XDiscontinuityTag::Parse(TagItem tag) {
+  return ParseEmptyTag<XDiscontinuityTag>(tag);
+}
+
+ParseStatus::Or<XGapTag> XGapTag::Parse(TagItem tag) {
+  return ParseEmptyTag<XGapTag>(tag);
 }
 
 }  // namespace hls

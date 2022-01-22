@@ -39,6 +39,36 @@ struct InfTag {
   SourceString title;
 };
 
+// Represents the contents of the #EXT-X-INDEPENDENT-SEGMENTS tag
+struct XIndependentSegmentsTag {
+  static constexpr TagKind kKind = TagKind::kXIndependentSegments;
+  static MEDIA_EXPORT ParseStatus::Or<XIndependentSegmentsTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-ENDLIST tag
+struct XEndListTag {
+  static constexpr TagKind kKind = TagKind::kXEndList;
+  static MEDIA_EXPORT ParseStatus::Or<XEndListTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-I-FRAMES-ONLY tag
+struct XIFramesOnlyTag {
+  static constexpr TagKind kKind = TagKind::kXIFramesOnly;
+  static MEDIA_EXPORT ParseStatus::Or<XIFramesOnlyTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-DISCONTINUITY tag
+struct XDiscontinuityTag {
+  static constexpr TagKind kKind = TagKind::kXDiscontinuity;
+  static MEDIA_EXPORT ParseStatus::Or<XDiscontinuityTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-GAP tag
+struct XGapTag {
+  static constexpr TagKind kKind = TagKind::kXGap;
+  static MEDIA_EXPORT ParseStatus::Or<XGapTag> Parse(TagItem);
+};
+
 }  // namespace hls
 }  // namespace media
 
