@@ -83,7 +83,8 @@
         },
         {
             "files": [
-                "headless_lib.pak",
+                "headless_lib_data.pak",
+                "headless_lib_strings.pak",
                 "headless_shell"
             ],
             "rename_dirs": [
