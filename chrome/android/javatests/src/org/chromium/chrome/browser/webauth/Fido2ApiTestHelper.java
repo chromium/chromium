@@ -13,8 +13,6 @@ import android.util.Base64;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.fido.Fido;
-import com.google.android.gms.fido.fido2.api.common.ErrorCode;
 import com.google.common.io.BaseEncoding;
 
 import org.junit.Assert;
@@ -38,6 +36,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialUserEntity;
 import org.chromium.blink.mojom.UvmEntry;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentFeatureListJni;
+import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.mojo_base.mojom.TimeDelta;
@@ -222,7 +221,7 @@ public class Fido2ApiTestHelper {
      */
     public static Intent createSuccessfulMakeCredentialIntent() {
         Intent intent = new Intent();
-        intent.putExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA, TEST_AUTHENTICATOR_ATTESTATION_RESPONSE);
+        intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, TEST_AUTHENTICATOR_ATTESTATION_RESPONSE);
         return intent;
     }
 
@@ -312,7 +311,7 @@ public class Fido2ApiTestHelper {
      */
     public static Intent createSuccessfulGetAssertionIntent() {
         Intent intent = new Intent();
-        intent.putExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA, TEST_AUTHENTICATOR_ASSERTION_RESPONSE);
+        intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, TEST_AUTHENTICATOR_ASSERTION_RESPONSE);
         return intent;
     }
 
@@ -323,7 +322,7 @@ public class Fido2ApiTestHelper {
      */
     public static Intent createSuccessfulGetAssertionIntentWithUvm() {
         Intent intent = new Intent();
-        intent.putExtra(FIDO2_KEY_CREDENTIAL_EXTRA, TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_UVM);
+        intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_UVM);
         return intent;
     }
 
@@ -414,12 +413,12 @@ public class Fido2ApiTestHelper {
      * @param errorCode Numeric values corresponding to a Fido2 error.
      * @return an Intent containing the error response.
      */
-    public static Intent createErrorIntent(ErrorCode errorCode, @Nullable String errorMsg) {
+    public static Intent createErrorIntent(int errorCode, @Nullable String errorMsg) {
         Parcel parcel = Parcel.obtain();
-        appendErrorResponseToParcel(errorCode.getCode(), errorMsg, parcel);
+        appendErrorResponseToParcel(errorCode, errorMsg, parcel);
 
         Intent intent = new Intent();
-        intent.putExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA, parcel.marshall());
+        intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, parcel.marshall());
         return intent;
     }
 

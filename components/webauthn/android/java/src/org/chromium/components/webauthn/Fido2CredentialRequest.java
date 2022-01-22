@@ -8,22 +8,14 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.IBinder;
+import android.os.Parcel;
 import android.os.SystemClock;
+import android.util.Pair;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.google.android.gms.fido.Fido;
-import com.google.android.gms.fido.fido2.Fido2PrivilegedApiClient;
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse;
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse;
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse;
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorResponse;
-import com.google.android.gms.fido.fido2.api.common.BrowserPublicKeyCredentialCreationOptions;
-import com.google.android.gms.fido.fido2.api.common.BrowserPublicKeyCredentialRequestOptions;
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential;
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialCreationOptions;
 import com.google.android.gms.tasks.Task;
 
 import org.chromium.base.ContextUtils;
@@ -44,8 +36,6 @@ import org.chromium.net.GURLUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -55,35 +45,26 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     private static final String TAG = "Fido2Request";
+    static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
+            "Authentication request must have non-empty allowList";
+    static final String NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG =
+            "Request doesn't have a valid list of allowed credentials.";
+    static final String NO_SCREENLOCK_ERROR_MSG = "The device is not secured with any screen lock";
+    static final String CREDENTIAL_EXISTS_ERROR_MSG =
+            "One of the excluded credentials exists on the local device";
+    static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
+
     private GetAssertionResponseCallback mGetAssertionCallback;
     private MakeCredentialResponseCallback mMakeCredentialCallback;
     private FidoErrorResponseCallback mErrorCallback;
-    private Fido2PrivilegedApiClient mFido2ApiClient;
     private WebContents mWebContents;
     private WindowAndroid mWindow;
-    private @RequestStatus int mRequestStatus;
     private boolean mAppIdExtensionUsed;
     private long mStartTimeMs;
 
     // Not null when the GMSCore-created ClientDataJson needs to be overridden.
     @Nullable
     private String mClientDataJson;
-
-    @IntDef({
-            REGISTER_REQUEST,
-            SIGN_REQUEST,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface RequestStatus {}
-
-    /** Request status: processing a register request. */
-    public static final int REGISTER_REQUEST = 1;
-
-    /** Request status: processing a sign request. */
-    public static final int SIGN_REQUEST = 2;
-
-    /** The key used to retrieve PublicKeyCredential. */
-    public static final String FIDO2_KEY_CREDENTIAL_EXTRA = "FIDO2_CREDENTIAL_EXTRA";
 
     private void returnErrorAndResetCallback(int error) {
         assert mErrorCallback != null;
@@ -105,9 +86,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             mWebContents = WebContentsStatics.fromRenderFrameHost(frameHost);
         }
 
-        mRequestStatus = REGISTER_REQUEST;
-
-        if (!initFido2ApiClient()) {
+        if (!apiAvailable()) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
@@ -120,23 +99,30 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             return;
         }
 
-        PublicKeyCredentialCreationOptions credentialCreationOptions;
+        Fido2ApiCall call =
+                new Fido2ApiCall(ContextUtils.getApplicationContext(), /* appMode= */ false);
+        Parcel args = call.start();
+        Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
+        args.writeStrongBinder(result);
+        args.writeInt(1); // This indicates that the following options are present.
+
         try {
-            credentialCreationOptions = Fido2Helper.toMakeCredentialOptions(options);
+            Fido2Api.appendBrowserMakeCredentialOptionsToParcel(options,
+                    Uri.parse(convertOriginToString(origin)), /* clientDataHash= */ null, args);
         } catch (NoSuchAlgorithmException e) {
             returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
             return;
         }
 
-        BrowserPublicKeyCredentialCreationOptions browserRequestOptions =
-                new BrowserPublicKeyCredentialCreationOptions.Builder()
-                        .setPublicKeyCredentialCreationOptions(credentialCreationOptions)
-                        .setOrigin(Uri.parse(convertOriginToString(origin)))
-                        .build();
+        Task<PendingIntent> task = call.run(Fido2ApiCall.METHOD_BROWSER_REGISTER,
+                Fido2ApiCall.TRANSACTION_REGISTER, args, result);
+        task.addOnSuccessListener(this::onGotPendingIntent);
+        task.addOnFailureListener(this::onBinderCallException);
+    }
 
-        Task<PendingIntent> result =
-                mFido2ApiClient.getRegisterPendingIntent(browserRequestOptions);
-        result.addOnSuccessListener(this::onGotPendingIntent);
+    private void onBinderCallException(Exception e) {
+        Log.e(TAG, "FIDO2 API call failed", e);
+        returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
     }
 
     public void handleGetAssertionRequest(PublicKeyCredentialRequestOptions options,
@@ -149,9 +135,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             mWebContents = WebContentsStatics.fromRenderFrameHost(frameHost);
         }
 
-        mRequestStatus = SIGN_REQUEST;
-
-        if (!initFido2ApiClient()) {
+        if (!apiAvailable()) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
@@ -169,15 +153,8 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             mAppIdExtensionUsed = true;
         }
 
-        com.google.android.gms.fido.fido2.api.common
-                .PublicKeyCredentialRequestOptions getAssertionOptions;
-        getAssertionOptions = Fido2Helper.toGetAssertionOptions(options);
-
         String callerOriginString = convertOriginToString(callerOrigin);
-        BrowserPublicKeyCredentialRequestOptions.Builder browserRequestOptionsBuilder =
-                new BrowserPublicKeyCredentialRequestOptions.Builder()
-                        .setPublicKeyCredentialRequestOptions(getAssertionOptions)
-                        .setOrigin(Uri.parse(callerOriginString));
+        byte[] clientDataHash = null;
 
         if (payment != null
                 && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
@@ -198,17 +175,26 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
                 return;
             }
             messageDigest.update(mClientDataJson.getBytes());
-            byte[] clientDataHash = messageDigest.digest();
+            clientDataHash = messageDigest.digest();
             if (clientDataHash == null) {
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 return;
             }
-            browserRequestOptionsBuilder.setClientDataHash(clientDataHash);
         }
 
-        Task<PendingIntent> result =
-                mFido2ApiClient.getSignPendingIntent(browserRequestOptionsBuilder.build());
-        result.addOnSuccessListener(this::onGotPendingIntent);
+        Fido2ApiCall call =
+                new Fido2ApiCall(ContextUtils.getApplicationContext(), /* appMode= */ false);
+        Parcel args = call.start();
+        Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
+        args.writeStrongBinder(result);
+        args.writeInt(1); // This indicates that the following options are present.
+        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
+                options, Uri.parse(callerOriginString), clientDataHash, args);
+
+        Task<PendingIntent> task = call.run(
+                Fido2ApiCall.METHOD_BROWSER_SIGN, Fido2ApiCall.TRANSACTION_SIGN, args, result);
+        task.addOnSuccessListener(this::onGotPendingIntent);
+        task.addOnFailureListener(this::onBinderCallException);
     }
 
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
@@ -216,7 +202,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
         if (mWebContents == null) {
             mWebContents = WebContentsStatics.fromRenderFrameHost(frameHost);
         }
-        if (!initFido2ApiClient()) {
+        if (!apiAvailable()) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             // Note that |IsUserVerifyingPlatformAuthenticatorAvailable| only returns
             // true or false, making it unable to handle any error status.
@@ -225,33 +211,26 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             return;
         }
 
-        Task<Boolean> result =
-                mFido2ApiClient.isUserVerifyingPlatformAuthenticatorAvailable()
-                        .addOnSuccessListener((isUVPAA) -> {
-                            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                                    isUVPAA);
-                        });
+        Fido2ApiCall call =
+                new Fido2ApiCall(ContextUtils.getApplicationContext(), /* appMode= */ false);
+        Fido2ApiCall.BooleanResult result = new Fido2ApiCall.BooleanResult();
+        Parcel args = call.start();
+        args.writeStrongBinder(result);
+
+        Task<Boolean> task = call.run(Fido2ApiCall.METHOD_BROWSER_ISUVPAA,
+                IBinder.FIRST_CALL_TRANSACTION + 2, args, result);
+        task.addOnSuccessListener((isUVPAA) -> {
+            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUVPAA);
+        });
+        task.addOnFailureListener((e) -> { Log.e(TAG, "FIDO2 API call failed", e); });
     }
 
-    /* Initialize the FIDO2 browser API client. */
-    private boolean initFido2ApiClient() {
-        if (mFido2ApiClient != null) {
-            return true;
-        }
-
-        if (!ExternalAuthUtils.getInstance().canUseGooglePlayServices(
-                    new UserRecoverableErrorHandler.Silent())) {
-            return false;
-        }
-
-        mFido2ApiClient = Fido.getFido2PrivilegedApiClient(ContextUtils.getApplicationContext());
-        if (mFido2ApiClient == null) {
-            return false;
-        }
-        return true;
+    private boolean apiAvailable() {
+        return ExternalAuthUtils.getInstance().canUseGooglePlayServices(
+                new UserRecoverableErrorHandler.Silent());
     }
 
-    // Handles a PendingIntent from the GMSCore Fido library.
+    // Handles a PendingIntent from the GMSCore FIDO library.
     private void onGotPendingIntent(PendingIntent pendingIntent) {
         if (pendingIntent == null) {
             Log.e(TAG, "Didn't receive a pending intent.");
@@ -292,104 +271,119 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     // Handles the result.
     @Override
     public void onIntentCompleted(int resultCode, Intent data) {
-        if (data == null) {
-            Log.e(TAG, "Received a null intent.");
-            // The user canceled the request.
-            returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-            return;
-        }
+        int errorCode = AuthenticatorStatus.UNKNOWN_ERROR;
+        Object response = null;
 
         switch (resultCode) {
-            case Activity.RESULT_CANCELED:
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                break;
             case Activity.RESULT_OK:
-                processIntentResult(data);
-                break;
-            default:
-                // Something went wrong.
-                Log.e(TAG, "Failed with result code" + resultCode);
-                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                break;
-        }
-    }
-
-    private void processPublicKeyCredential(Intent data) {
-        PublicKeyCredential publicKeyCredential = PublicKeyCredential.deserializeFromBytes(
-                data.getByteArrayExtra(FIDO2_KEY_CREDENTIAL_EXTRA));
-        AuthenticatorResponse response = publicKeyCredential.getResponse();
-        if (response instanceof AuthenticatorErrorResponse) {
-            processErrorResponse((AuthenticatorErrorResponse) response);
-        } else if (response instanceof AuthenticatorAttestationResponse) {
-            try {
-                mMakeCredentialCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS,
-                        Fido2Helper.toMakeCredentialResponse(publicKeyCredential));
-                mMakeCredentialCallback = null;
-            } catch (NoSuchAlgorithmException e) {
-                returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
-            }
-        } else if (response instanceof AuthenticatorAssertionResponse) {
-            mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS,
-                    Fido2Helper.toGetAssertionResponse(
-                            publicKeyCredential, mAppIdExtensionUsed, mClientDataJson));
-            mClientDataJson = null;
-            mGetAssertionCallback = null;
-        }
-    }
-
-    private void processErrorResponse(AuthenticatorErrorResponse errorResponse) {
-        Log.e(TAG,
-                "Google Play Services FIDO2 API returned an error: "
-                        + errorResponse.getErrorMessage());
-        int authenticatorStatus = Fido2Helper.convertError(
-                errorResponse.getErrorCode(), errorResponse.getErrorMessage());
-        returnErrorAndResetCallback(authenticatorStatus);
-    }
-
-    private void processKeyResponse(Intent data) {
-        switch (mRequestStatus) {
-            case REGISTER_REQUEST:
-                Log.e(TAG, "Received a register response from Google Play Services FIDO2 API");
-                try {
-                    mMakeCredentialCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS,
-                            Fido2Helper.toMakeCredentialResponse(
-                                    AuthenticatorAttestationResponse.deserializeFromBytes(
-                                            data.getByteArrayExtra(
-                                                    Fido.FIDO2_KEY_RESPONSE_EXTRA))));
-                } catch (NoSuchAlgorithmException e) {
-                    returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
+                if (data == null) {
+                    errorCode = AuthenticatorStatus.NOT_ALLOWED_ERROR;
+                } else {
+                    try {
+                        response = Fido2Api.parseIntentResponse(data);
+                    } catch (IllegalArgumentException e) {
+                        response = null;
+                    }
                 }
                 break;
-            case SIGN_REQUEST:
-                Log.e(TAG, "Received a sign response from Google Play Services FIDO2 API");
-                mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS,
-                        Fido2Helper.toGetAssertionResponse(
-                                AuthenticatorAssertionResponse.deserializeFromBytes(
-                                        data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)),
-                                mAppIdExtensionUsed));
+
+            case Activity.RESULT_CANCELED:
+                errorCode = AuthenticatorStatus.NOT_ALLOWED_ERROR;
+                break;
+
+            default:
+                Log.e(TAG, "FIDO2 PendingIntent resulted in code: " + resultCode);
                 break;
         }
-        mMakeCredentialCallback = null;
-        mGetAssertionCallback = null;
+
+        if (response == null) {
+            // Use the error already set.
+        } else if (response instanceof Pair) {
+            Pair<Integer, String> error = (Pair<Integer, String>) response;
+            Log.e(TAG,
+                    "FIDO2 API call resulted in error: " + error.first + " "
+                            + (error.second != null ? error.second : ""));
+            errorCode = convertError(error);
+        } else if (mMakeCredentialCallback != null) {
+            if (response instanceof org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse) {
+                mMakeCredentialCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS,
+                        (org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse) response);
+                mMakeCredentialCallback = null;
+                return;
+            }
+        } else if (mGetAssertionCallback != null) {
+            if (response instanceof org.chromium.blink.mojom.GetAssertionAuthenticatorResponse) {
+                org.chromium.blink.mojom.GetAssertionAuthenticatorResponse r =
+                        (org.chromium.blink.mojom.GetAssertionAuthenticatorResponse) response;
+                if (mClientDataJson != null) {
+                    r.info.clientDataJson = mClientDataJson.getBytes();
+                }
+                r.echoAppidExtension = mAppIdExtensionUsed;
+                mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS, r);
+                mGetAssertionCallback = null;
+                return;
+            }
+        }
+
+        returnErrorAndResetCallback(errorCode);
     }
 
-    private void processIntentResult(Intent data) {
-        // If returned PublicKeyCredential, use PublicKeyCredential to retrieve
-        // [Attestation/Assertion/Error] Response, else directly retrieve
-        // [Attestation/Assertion/Error] Response.
-        if (data.hasExtra(FIDO2_KEY_CREDENTIAL_EXTRA)) {
-            processPublicKeyCredential(data);
-        } else if (data.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-            processErrorResponse(AuthenticatorErrorResponse.deserializeFromBytes(
-                    data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)));
-        } else if (data.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-            processKeyResponse(data);
-        } else {
-            // Something went wrong.
-            Log.e(TAG,
-                    "The response is missing FIDO2_KEY_RESPONSE_EXTRA "
-                            + "and FIDO2_KEY_CREDENTIAL_EXTRA.");
-            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+    /**
+     * Helper method to convert AuthenticatorErrorResponse errors.
+     * @param errorCode
+     * @return error code corresponding to an AuthenticatorStatus.
+     */
+    private static int convertError(Pair<Integer, String> error) {
+        final int errorCode = error.first;
+        @Nullable
+        final String errorMsg = error.second;
+
+        // TODO(b/113347251): Use specific error codes instead of strings when GmsCore Fido2
+        // provides them.
+        switch (errorCode) {
+            case Fido2Api.SECURITY_ERR:
+                // AppId or rpID fails validation.
+                return AuthenticatorStatus.INVALID_DOMAIN;
+            case Fido2Api.TIMEOUT_ERR:
+                return AuthenticatorStatus.NOT_ALLOWED_ERROR;
+            case Fido2Api.ENCODING_ERR:
+                // Error encoding results (after user consent).
+                return AuthenticatorStatus.UNKNOWN_ERROR;
+            case Fido2Api.NOT_ALLOWED_ERR:
+                // The implementation doesn't support resident keys.
+                if (errorMsg != null
+                        && (errorMsg.equals(NON_EMPTY_ALLOWLIST_ERROR_MSG)
+                                || errorMsg.equals(NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG))) {
+                    return AuthenticatorStatus.EMPTY_ALLOW_CREDENTIALS;
+                }
+                // The request is not allowed, possibly because the user denied permission.
+                return AuthenticatorStatus.NOT_ALLOWED_ERROR;
+            case Fido2Api.DATA_ERR:
+            // Incoming requests were malformed/inadequate. Fallthrough.
+            case Fido2Api.NOT_SUPPORTED_ERR:
+                // Request parameters were not supported.
+                return AuthenticatorStatus.ANDROID_NOT_SUPPORTED_ERROR;
+            case Fido2Api.CONSTRAINT_ERR:
+                if (errorMsg != null && errorMsg.equals(NO_SCREENLOCK_ERROR_MSG)) {
+                    return AuthenticatorStatus.USER_VERIFICATION_UNSUPPORTED;
+                } else {
+                    // The user attempted to use a credential that was already registered.
+                    return AuthenticatorStatus.CREDENTIAL_EXCLUDED;
+                }
+            case Fido2Api.INVALID_STATE_ERR:
+                if (errorMsg != null && errorMsg.equals(CREDENTIAL_EXISTS_ERROR_MSG)) {
+                    return AuthenticatorStatus.CREDENTIAL_EXCLUDED;
+                }
+            // else fallthrough.
+            case Fido2Api.UNKNOWN_ERR:
+                if (errorMsg != null && errorMsg.equals(LOW_LEVEL_ERROR_MSG)) {
+                    // The error message returned from GmsCore when the user attempted to use a
+                    // credential that is not registered with a U2F security key.
+                    return AuthenticatorStatus.NOT_ALLOWED_ERROR;
+                }
+            // fall through
+            default:
+                return AuthenticatorStatus.UNKNOWN_ERROR;
         }
     }
 

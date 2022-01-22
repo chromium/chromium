@@ -823,11 +823,6 @@
   <fields>;
 }
 
-# File: obj/third_party/android_deps/google_play_services_fido_java/proguard.txt
-# Methods enable and disable in this class are complained as unresolved
-# references, but they are system APIs and are not used by Fido client apps.
--dontwarn android.nfc.NfcAdapter
-
 # File: obj/third_party/android_deps/google_play_services_gcm_java/proguard.txt
 # Ensure that proguard will not strip the handleIntent method.
 -keepclassmembers class com.google.android.gms.gcm.GcmListenerService {

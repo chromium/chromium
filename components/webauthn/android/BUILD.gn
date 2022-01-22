@@ -6,7 +6,7 @@ import("//build/config/android/rules.gni")
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/components/webauthn/Fido2Helper.java",
+    "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
   ]
 }
@@ -15,9 +15,10 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
+    "java/src/org/chromium/components/webauthn/Fido2Api.java",
+    "java/src/org/chromium/components/webauthn/Fido2ApiCall.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiHandler.java",
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
-    "java/src/org/chromium/components/webauthn/Fido2Helper.java",
     "java/src/org/chromium/components/webauthn/FidoErrorResponseCallback.java",
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
@@ -27,7 +28,8 @@ android_library("java") {
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
-    "$google_play_services_package:google_play_services_fido_java",
+    "$google_play_services_package:google_play_services_base_java",
+    "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:jni_java",
@@ -62,7 +64,7 @@ android_library("test_support_java") {
 
 source_set("android") {
   sources = [
-    "fido2helper_native_android.cc",
+    "fido2api_native_android.cc",
     "internal_authenticator_android.cc",
     "internal_authenticator_android.h",
   ]

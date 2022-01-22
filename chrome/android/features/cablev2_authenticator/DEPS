@@ -1,6 +1,7 @@
 include_rules = [
   "+components/cbor",
   "+components/device_event_log",
+  "+components/webauthn",
   "+device/fido",
   "+third_party/boringssl",
   "-content/public/android",

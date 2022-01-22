@@ -17,15 +17,15 @@ android_library("java") {
     ":java_resources",
     ":logging_java",
     "$google_play_services_package:google_play_services_base_java",
-    "$google_play_services_package:google_play_services_fido_java",
     "$google_play_services_package:google_play_services_tasks_java",
-    "$google_play_services_package:google_play_services_vision_common_java",
-    "$google_play_services_package:google_play_services_vision_java",
     "//base:base_java",
     "//chrome/browser/webauthn/android:java_resources",
+    "//components/webauthn/android:java",
     "//content/public/android:content_java",
+    "//mojo/public/mojom/base:base_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_full_java",
   ]
 

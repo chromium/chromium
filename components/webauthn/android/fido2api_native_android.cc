@@ -6,7 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "components/cbor/reader.h"
-#include "components/webauthn/android/jni_headers/Fido2Helper_jni.h"
+#include "components/webauthn/android/jni_headers/Fido2Api_jni.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/public_key.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -18,11 +18,11 @@ namespace webauthn {
 
 // Parses a CTAP2 attestation[1] and extracts the
 // parts that the browser provides via Javascript API [2]. Called
-// Fido2Helper.java when constructing the makeCredential reply.
+// Fido2Api.java when constructing the makeCredential reply.
 //
 // [1] https://www.w3.org/TR/webauthn/#attestation-object
 // [2] https://w3c.github.io/webauthn/#sctn-public-key-easy
-static jboolean JNI_Fido2Helper_ParseAttestationObject(
+static jboolean JNI_Fido2Api_ParseAttestationObject(
     JNIEnv* env,
     const base::android::JavaParamRef<jbyteArray>& jattestation_object_bytes,
     const base::android::JavaParamRef<jobject>& out_result) {
