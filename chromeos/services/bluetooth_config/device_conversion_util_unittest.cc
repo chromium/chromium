@@ -25,6 +25,16 @@ constexpr char kTestLeftBudImage[] = "data:image/png;base64,TestLeftBudImage";
 constexpr char kTestRightBudImage[] = "data:image/png;base64,TestRightBudImage";
 constexpr char kTestCaseImage[] = "data:image/png;base64,TestCaseImage";
 
+constexpr int kRenderingBitPosition = 18;
+constexpr int kAudioBitPosition = 21;
+
+const std::array<device::BluetoothUUID, 3> kAudioServiceUuids{
+    device::BluetoothUUID("00001108-0000-1000-8000-00805f9b34fb"),  // Headset
+    device::BluetoothUUID(
+        "0000110b-0000-1000-8000-00805f9b34fb"),  // Audio Sink
+    device::BluetoothUUID("0000111e-0000-1000-8000-00805f9b34fb"),  // Handsfree
+};
+
 }  // namespace
 
 // Tests basic usage of the GenerateBluetoothDeviceMojoProperties() conversion
@@ -62,6 +72,10 @@ class DeviceConversionUtilTest : public testing::Test {
   void ChangeDeviceConnected(bool connected) {
     ON_CALL(*mock_device_, IsConnected())
         .WillByDefault(testing::Return(connected));
+  }
+
+  void ChangeDeviceUUIDs(base::flat_set<device::BluetoothUUID> uuids) {
+    ON_CALL(*mock_device_, GetUUIDs()).WillByDefault(testing::Return(uuids));
   }
 
   FakeFastPairDelegate* fake_fast_pair_delegate() {
@@ -275,6 +289,45 @@ TEST_F(DeviceConversionUtilTest, TestConversion_PartialTrueWirelessImages) {
   EXPECT_EQ(properties->image_info->default_image_url, GURL(kTestDefaultImage));
   // True Wireless images should only display if the full set exists.
   EXPECT_FALSE(properties->image_info->true_wireless_images);
+}
+
+TEST_F(DeviceConversionUtilTest,
+       TestConversion_AudioOutputCapableBluetoothClass) {
+  // Create a device with a Bluetooth class with the "rendering" and
+  // "audio" bits set.
+  uint32_t bluetooth_class =
+      1u << kRenderingBitPosition | 1u << kAudioBitPosition;
+
+  device::BluetoothDevice* device = InitDevice(
+      bluetooth_class, /*name=*/"name", /*address=*/"address",
+      /*paired=*/true, /*connected=*/true, /*is_blocked_by_policy=*/true);
+  mojom::BluetoothDevicePropertiesPtr properties =
+      GenerateBluetoothDeviceMojoProperties(device,
+                                            /*fast_pair_delegate=*/nullptr);
+  ASSERT_TRUE(properties);
+  EXPECT_EQ(mojom::AudioOutputCapability::kCapableOfAudioOutput,
+            properties->audio_capability);
+}
+
+TEST_F(DeviceConversionUtilTest, TestConversion_AudioOutputCapableUUIDs) {
+  // Create a device with a non-audio output capable Bluetooth class.
+  device::BluetoothDevice* device = InitDevice(
+      /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
+      /*paired=*/true, /*connected=*/true, /*is_blocked_by_policy=*/true);
+
+  // Set the device's UUIDs with a UUID corresponding to an audio output capable
+  // device. This simulates the case where a device does not have the correct
+  // Bluetooth class bits set but still contains a UUID corresponding to an
+  // audio service.
+  for (device::BluetoothUUID uuid : kAudioServiceUuids) {
+    ChangeDeviceUUIDs({uuid});
+    mojom::BluetoothDevicePropertiesPtr properties =
+        GenerateBluetoothDeviceMojoProperties(device,
+                                              /*fast_pair_delegate=*/nullptr);
+    ASSERT_TRUE(properties);
+    EXPECT_EQ(mojom::AudioOutputCapability::kCapableOfAudioOutput,
+              properties->audio_capability);
+  }
 }
 
 }  // namespace bluetooth_config

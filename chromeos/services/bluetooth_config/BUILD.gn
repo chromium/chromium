@@ -66,6 +66,7 @@ static_library("bluetooth_config") {
     "//components/session_manager/core",
     "//components/user_manager",
     "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
     "//mojo/public/cpp/bindings",
   ]
 }

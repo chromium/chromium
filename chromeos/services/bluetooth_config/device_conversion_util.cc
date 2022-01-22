@@ -11,6 +11,7 @@
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/string_util_icu.h"
 #include "url/gurl.h"
 
@@ -71,10 +72,30 @@ mojom::AudioOutputCapability ComputeAudioOutputCapability(
   static constexpr int kRenderingBitPosition = 18;
   static constexpr int kAudioBitPosition = 21;
 
+  // Alternatively, audio output capable devices may have any of the following
+  // UUIDs in its UUID list.
+  static const std::array<device::BluetoothUUID, 3> kAudioServiceUuids{
+      device::BluetoothUUID("00001108-0000-1000-8000-00805f9b34fb"),  // Headset
+      device::BluetoothUUID(
+          "0000110b-0000-1000-8000-00805f9b34fb"),  // Audio Sink
+      device::BluetoothUUID(
+          "0000111e-0000-1000-8000-00805f9b34fb"),  // Handsfree
+  };
+
   const std::bitset<32> bluetooth_class_bitset(device->GetBluetoothClass());
   if (bluetooth_class_bitset.test(kRenderingBitPosition) &&
       bluetooth_class_bitset.test(kAudioBitPosition)) {
     return mojom::AudioOutputCapability::kCapableOfAudioOutput;
+  }
+
+  // Some audio devices won't have both the rendering and audio bit set
+  // (b/209666215). Check if any of the device's UUIDs correspond with an audio
+  // service.
+  base::flat_set<device::BluetoothUUID> uuids = device->GetUUIDs();
+  for (device::BluetoothUUID audio_service_uuid : kAudioServiceUuids) {
+    if (uuids.contains(audio_service_uuid)) {
+      return mojom::AudioOutputCapability::kCapableOfAudioOutput;
+    }
   }
 
   return mojom::AudioOutputCapability::kNotCapableOfAudioOutput;
