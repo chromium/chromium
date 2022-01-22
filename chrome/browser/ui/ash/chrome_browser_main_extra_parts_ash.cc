@@ -56,9 +56,12 @@
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
+#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
@@ -288,6 +291,12 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
 
+  quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
+  QuickAnswersController::Get()->SetClient(
+      std::make_unique<quick_answers::QuickAnswersClient>(
+          g_browser_process->shared_url_loader_factory(),
+          QuickAnswersController::Get()->GetQuickAnswersDelegate()));
+
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
 }
@@ -317,6 +326,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   tab_cluster_ui_client_.reset();
 
   // Initialized in PostProfileInit (which may not get called in some tests).
+  quick_answers_controller_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
   display_settings_handler_.reset();

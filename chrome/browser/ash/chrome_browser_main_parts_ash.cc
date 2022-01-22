@@ -177,7 +177,6 @@
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -188,8 +187,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
-#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
-#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
@@ -1142,12 +1139,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         std::make_unique<LoginScreenExtensionsLifetimeManager>();
     login_screen_extensions_storage_cleaner_ =
         std::make_unique<LoginScreenExtensionsStorageCleaner>();
-
-    quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
-    QuickAnswersController::Get()->SetClient(
-        std::make_unique<quick_answers::QuickAnswersClient>(
-            g_browser_process->shared_url_loader_factory(),
-            QuickAnswersController::Get()->GetQuickAnswersDelegate()));
   }
 
   ChromeBrowserMainPartsLinux::PostProfileInit(profile, is_initial_profile);
@@ -1390,7 +1381,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
-  quick_answers_controller_.reset();
   if (features::IsBluetoothRevampEnabled())
     bluetooth_pref_state_observer_.reset();
 

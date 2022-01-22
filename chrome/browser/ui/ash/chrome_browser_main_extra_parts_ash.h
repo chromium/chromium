@@ -37,6 +37,10 @@ class MediaClientImpl;
 class MicrophoneMuteNotificationDelegateImpl;
 class MobileDataNotifications;
 class NetworkConnectDelegateChromeOS;
+class NightLightClient;
+class ProjectorAppClientImpl;
+class ProjectorClientImpl;
+class QuickAnswersController;
 class ScreenOrientationDelegateChromeos;
 class SessionControllerClientImpl;
 class SystemTrayClientImpl;
@@ -44,8 +48,6 @@ class TabClusterUIClient;
 class TabletModePageBehavior;
 class VpnListForwarder;
 class WallpaperControllerClientImpl;
-class ProjectorAppClientImpl;
-class ProjectorClientImpl;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
 class ExoParts;
@@ -105,6 +107,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   std::unique_ptr<ProjectorAppClientImpl> projector_app_client_;
   std::unique_ptr<ProjectorClientImpl> projector_client_;
+  std::unique_ptr<QuickAnswersController> quick_answers_controller_;
   // TODO(stevenjb): Move NetworkPortalNotificationController to c/b/ui/ash and
   // elim chromeos:: namespace. https://crbug.com/798569.
   std::unique_ptr<chromeos::NetworkPortalNotificationController>

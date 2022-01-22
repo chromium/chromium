@@ -2458,6 +2458,7 @@ static_library("browser") {
       "//chrome/browser/ash/system_extensions/api/window_management",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/policy:onc",
+      "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/audio:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
@@ -2498,10 +2499,14 @@ static_library("browser") {
       "//device/vr/public/mojom:isolated_xr_service",
     ]
 
-    # TODO(crbug.com/1253318): Refactor window_management into ash/ and expose
-    # the InstanceRegistry via an InstanceRegistryWrapper, then remove this.
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ash/system_extensions/api/window_management" ]
+    allow_circular_includes_from += [
+      # TODO(crbug.com/1253318): Refactor window_management into ash/ and expose
+      # the InstanceRegistry via an InstanceRegistryWrapper, then remove this.
+      "//chrome/browser/ash/system_extensions/api/window_management",
+
+      # TODO(b/215757706): Find a way to avoid the circular include.
+      "//chrome/browser/ui/quick_answers",
+    ]
     public_deps += [ "//ui/lottie" ]
     if (!is_official_build) {
       deps += [

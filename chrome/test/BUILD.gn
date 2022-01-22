@@ -6336,6 +6336,7 @@ test("unit_tests") {
         "//chrome/browser/policy:onc",
         "//chrome/browser/policy:unit_tests",
         "//chrome/browser/supervised_user/kids_chrome_management:proto",
+        "//chrome/browser/ui/quick_answers",
         "//chrome/browser/ui/webui/nearby_share:mojom",
         "//chrome/browser/ui/webui/nearby_share/public/mojom",
         "//chrome/common/performance_manager/mojom",
@@ -7999,7 +8000,10 @@ static_library("test_support_unit") {
       "base/chrome_ash_test_base.h",
     ]
 
-    deps += [ "//ash:test_support" ]
+    deps += [
+      "//ash:test_support",
+      "//chrome/browser/ui/quick_answers",
+    ]
   }
 
   if (is_chromeos_lacros) {
