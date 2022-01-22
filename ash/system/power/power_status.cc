@@ -362,9 +362,7 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
 }
 
 std::u16string PowerStatus::GetInlinedStatusString() const {
-  std::u16string percentage_text;
-  std::u16string status_text;
-  std::tie(percentage_text, status_text) = GetStatusStrings();
+  auto [percentage_text, status_text] = GetStatusStrings();
 
   if (!percentage_text.empty() && !status_text.empty()) {
     return percentage_text +

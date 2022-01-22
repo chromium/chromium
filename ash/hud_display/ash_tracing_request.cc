@@ -96,9 +96,7 @@ std::unique_ptr<AshTraceDestination> GenerateTraceDestinationFile(
 
   base::FilePath path =
       tracng_directory_path.AppendASCII(GenerateTraceFileName(timestamp));
-  base::File file;
-  bool success;
-  std::tie(file, success) = io->CreateTracingFile(path);
+  auto [file, success] = io->CreateTracingFile(path);
   if (!success) {
     LOG(ERROR) << "Failed to create Ash trace '" << path.value() << "' : error "
                << file.error_details();
@@ -113,9 +111,7 @@ std::unique_ptr<AshTraceDestination> GenerateTraceDestinationFile(
 std::unique_ptr<AshTraceDestination> GenerateTraceDestinationMemFD(
     std::unique_ptr<AshTraceDestinationIO> io) {
   constexpr char kMemFDDebugName[] = "ash-trace-buffer.dat";
-  base::PlatformFile memfd;
-  bool success;
-  std::tie(memfd, success) = io->CreateMemFD(kMemFDDebugName, MFD_CLOEXEC);
+  auto [memfd, success] = io->CreateMemFD(kMemFDDebugName, MFD_CLOEXEC);
   if (!success) {
     LOG(ERROR) << "Failed to create memfd for '" << kMemFDDebugName
                << "', error:" << base::safe_strerror(errno);
