@@ -25,9 +25,11 @@ builder definition its and it must be using a bootstrappable recipe. See
 load("@stdlib//internal/graph.star", "graph")
 load("//project.star", "settings")
 
-# builder_config.star has a generator that modifies properties, so load it first
-# to ensure that the modified properties get written out to the property files
+# builder_config.star and orchestrator.star have generators that modify
+# properties, so load them first to ensure that the modified properties get
+# written out to the property files
 load("./builder_config.star", _ = "builder_config")  # @unused
+load("./orchestrator.star", _2 = "register_orchestrator")  # @unused
 
 PROPERTIES_OPTIONAL = "PROPERTIES_OPTIONAL"
 

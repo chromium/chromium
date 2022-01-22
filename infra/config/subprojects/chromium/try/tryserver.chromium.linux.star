@@ -12,9 +12,12 @@ load("//project.star", "settings")
 try_.defaults.set(
     builder_group = "tryserver.chromium.linux",
     cores = 8,
+    orchestrator_cores = 2,
+    compilator_cores = 16,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
+    compilator_goma_jobs = goma.jobs.J150,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
@@ -303,17 +306,20 @@ try_.builder(
     ),
 )
 
-try_.orchestrator_pair_builders(
+try_.orchestrator_builder(
     name = "linux-rel",
+    compilator = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    orchestrator_cores = 2,
-    orchestrator_tryjob = try_.job(),
-    compilator_cores = 16,
-    compilator_goma_jobs = goma.jobs.J150,
-    compilator_name = "linux-rel-compilator",
+    tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "linux-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -377,15 +383,18 @@ try_.builder(
     name = "linux_chromium_archive_rel_ng",
 )
 
-try_.orchestrator_pair_builders(
+try_.orchestrator_builder(
     name = "linux_chromium_asan_rel_ng",
+    compilator = "linux_chromium_asan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    orchestrator_cores = 2,
-    orchestrator_tryjob = try_.job(),
-    compilator_cores = 16,
-    compilator_goma_jobs = goma.jobs.J150,
-    compilator_name = "linux_chromium_asan_rel_ng-compilator",
+    tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "linux_chromium_asan_rel_ng-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -474,15 +483,18 @@ try_.builder(
     goma_jobs = goma.jobs.J150,
 )
 
-try_.orchestrator_pair_builders(
+try_.orchestrator_builder(
     name = "linux_chromium_tsan_rel_ng",
+    compilator = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    orchestrator_cores = 2,
-    orchestrator_tryjob = try_.job(),
-    compilator_cores = 16,
-    compilator_goma_jobs = goma.jobs.J150,
-    compilator_name = "linux_chromium_tsan_rel_ng-compilator",
+    tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "linux_chromium_tsan_rel_ng-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
 )
 
 try_.builder(

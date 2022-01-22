@@ -19,7 +19,8 @@ to set the default value. Can also be accessed through `try_.defaults`.
 
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builder_url", "builders", "compilator_watcher_git_revision", "os", "os_category")
+load("./builders.star", "builders", "os", "os_category")
+load("./orchestrator.star", "register_compilator", "register_orchestrator")
 load("//project.star", "settings")
 
 DEFAULT_EXCLUDE_REGEXPS = [
@@ -36,6 +37,13 @@ defaults = args.defaults(
     main_list_view = None,
     subproject_list_view = None,
     resultdb_bigquery_exports = [],
+    # Default overrides for more specific wrapper functions. The value is set to
+    # args.DEFAULT so that when they are passed to the corresponding standard
+    # argument, if the more-specific default has not been set it will fall back
+    # to the standard default.
+    compilator_cores = args.DEFAULT,
+    compilator_goma_jobs = args.DEFAULT,
+    orchestrator_cores = args.DEFAULT,
 )
 
 def tryjob(
@@ -222,97 +230,110 @@ def try_builder(
             includable_only = True,
         )
 
+def _orchestrator_builder(
+        *,
+        name,
+        compilator,
+        **kwargs):
+    """Define an orchestrator builder.
+
+    An orchestrator builder is part of a pair of try builders. The orchestrator
+    triggers an associated compilator builder, which performs compilation and
+    isolation on behalf of the orchestrator. The orchestrator extracts from the
+    compilator the information necessary to trigger tests. This allows the
+    orchestrator to run on a small machine and improves compilation times
+    because the compilator will be compiling more often and can run on a larger
+    machine.
+
+    The properties set for the orchestrator will be copied to the compilator,
+    with the exception of the $build/orchestrator property that is automatically
+    added to the orchestrator.
+
+
+    Args:
+      name: The name of the orchestrator.
+      compilator: A string identifying the associated compilator. Compilators
+        can be defined using try_.compilator_builder.
+      **kwargs: Additional kwargs to be forwarded to try_.builder.
+        The following kwargs will have defaults applied if not set:
+        * builderless: True on branches, False on main
+        * cores: The orchestrator_cores module-level default.
+        * executable: "recipe:chromium/orchestrator"
+        * os: os.LINUX_BIONIC_SWITCH_TO_DEFAULT
+        * service_account: "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com"
+        * ssd: None
+    """
+    builder_group = defaults.get_value_from_kwargs("builder_group", kwargs)
+    if not builder_group:
+        fail("builder_group must be specified")
+
+    kwargs.setdefault("builderless", not settings.is_main)
+    kwargs.setdefault("cores", defaults.orchestrator_cores.get())
+    kwargs.setdefault("executable", "recipe:chromium/orchestrator")
+
+    # TODO(gbeaty) After prod freeze, remove goma details, the
+    # orchestrator doesn't compile
+    # kwargs.setdefault("goma_backend", None)
+    kwargs.setdefault("os", os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
+    kwargs.setdefault("service_account", "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com")
+    kwargs.setdefault("ssd", None)
+
+    ret = try_.builder(name = name, **kwargs)
+
+    bucket = defaults.get_value_from_kwargs("bucket", kwargs)
+
+    register_orchestrator(bucket, name, builder_group, compilator)
+
+    return ret
+
+def _compilator_builder(*, name, **kwargs):
+    """Define a compilator builder.
+
+    An orchestrator builder is part of a pair of try builders. The compilator is
+    triggered by an associated compilator builder, which performs compilation and
+    isolation on behalf of the orchestrator. The orchestrator extracts from the
+    compilator the information necessary to trigger tests. This allows the
+    orchestrator to run on a small machine and improves compilation times
+    because the compilator will be compiling more often and can run on a larger
+    machine.
+
+    The properties set for the orchestrator will be copied to the compilator,
+    with the exception of the $build/orchestrator property that is automatically
+    added to the orchestrator.
+
+    Args:
+      name: The name of the compilator.
+      **kwargs: Additional kwargs to be forwarded to try_.builder.
+        The following kwargs will have defaults applied if not set:
+        * builderless: True on branches, False on main
+        * cores: The compilator_cores module-level default.
+        * goma_jobs: The compilator_goma_jobs module-level default.
+        * executable: "recipe:chromium/compilator"
+        * ssd: True
+    """
+    builder_group = defaults.get_value_from_kwargs("builder_group", kwargs)
+    if not builder_group:
+        fail("builder_group must be specified")
+
+    kwargs.setdefault("builderless", not settings.is_main)
+    kwargs.setdefault("cores", defaults.compilator_cores.get())
+    kwargs.setdefault("executable", "recipe:chromium/compilator")
+    kwargs.setdefault("goma_jobs", defaults.compilator_goma_jobs.get())
+    kwargs.setdefault("ssd", True)
+
+    ret = try_.builder(name = name, **kwargs)
+
+    bucket = defaults.get_value_from_kwargs("bucket", kwargs)
+
+    register_compilator(bucket, name)
+
+    return ret
+
 def _gpu_optional_tests_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", False)
     kwargs.setdefault("execution_timeout", 6 * time.hour)
     kwargs.setdefault("service_account", try_.gpu.SERVICE_ACCOUNT)
     return try_.builder(name = name, **kwargs)
-
-# TODO(gbeaty) Replace with separate functions for orchestrator and compilator
-# so that the arguments interact with the module-level defaults in a more
-# standard manner
-def orchestrator_pair_builders(
-        *,
-        name,
-        orchestrator_cores = None,
-        orchestrator_tryjob = None,
-        compilator_cores = None,
-        compilator_name = None,
-        compilator_goma_jobs = None,
-        compilator_grace_period = None,
-        compilator_builderless = not settings.is_main,
-        orchestrator_builderless = not settings.is_main,
-        **kwargs):
-    builder_group = defaults.get_value_from_kwargs("builder_group", kwargs)
-    if not builder_group:
-        fail("builder_group must be specified")
-
-    common_description = kwargs.pop("description_html", "")
-    if common_description:
-        common_description += "<br>"
-    orchestrator_url = builder_url("try", name)
-    compilator_url = builder_url("try", compilator_name)
-    orchestrator_description = common_description + (
-        "This is the orchestrator half of an orchestrator + compilator pair of " +
-        "builders. The compilator is <a href=\"{}\">{}</a>.".format(
-            compilator_url,
-            compilator_name,
-        )
-    )
-    compilator_description = common_description + (
-        "This is the compilator half of an orchestrator + compilator pair of " +
-        "builders. The orchestrator is <a href=\"{}\">{}</a>.".format(
-            orchestrator_url,
-            name,
-        )
-    )
-
-    orchestrator_kwargs = dict(kwargs)
-    orchestrator_kwargs.update(dict(
-        description_html = orchestrator_description,
-        executable = "recipe:chromium/orchestrator",
-        # TODO(gbeaty) After prod freeze, remove goma details, the
-        # orchestrator doesn't compile
-        # goma_backend = None,
-        os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-        properties = {
-            "$build/chromium_orchestrator": {
-                "compilator": compilator_name,
-                "compilator_watcher_git_revision": compilator_watcher_git_revision,
-            },
-        },
-        service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-        ssd = None,
-    ))
-    orchestrator_builder = try_.builder(
-        name = name,
-        cores = orchestrator_cores,
-        builderless = orchestrator_builderless,
-        tryjob = orchestrator_tryjob,
-        **orchestrator_kwargs
-    )
-
-    compilator_kwargs = dict(kwargs)
-    compilator_kwargs.update(dict(
-        executable = "recipe:chromium/compilator",
-        properties = {
-            "orchestrator": {
-                "builder_name": name,
-                "builder_group": builder_group,
-            },
-        },
-        ssd = True,
-    ))
-    compilator_builder = try_.builder(
-        name = compilator_name,
-        cores = compilator_cores,
-        builderless = compilator_builderless,
-        goma_jobs = compilator_goma_jobs,
-        description_html = compilator_description,
-        grace_period = compilator_grace_period,
-        **compilator_kwargs
-    )
-    return orchestrator_builder, compilator_builder
 
 try_ = struct(
     # Module-level defaults for try functions
@@ -321,7 +342,8 @@ try_ = struct(
     # Functions for declaring try builders
     builder = try_builder,
     job = tryjob,
-    orchestrator_pair_builders = orchestrator_pair_builders,
+    orchestrator_builder = _orchestrator_builder,
+    compilator_builder = _compilator_builder,
 
     # CONSTANTS
     DEFAULT_EXECUTABLE = "recipe:chromium_trybot",

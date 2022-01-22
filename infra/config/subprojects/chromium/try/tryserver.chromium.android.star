@@ -12,9 +12,12 @@ load("//project.star", "settings")
 try_.defaults.set(
     builder_group = "tryserver.chromium.android",
     cores = 8,
+    compilator_cores = 32,
+    orchestrator_cores = 4,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
+    compilator_goma_jobs = goma.jobs.J300,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
@@ -158,17 +161,21 @@ try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
 )
 
-try_.orchestrator_pair_builders(
+try_.orchestrator_builder(
     name = "android-marshmallow-arm64-rel",
+    compilator = "android-marshmallow-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    orchestrator_cores = 4,
-    orchestrator_tryjob = try_.job(),
-    compilator_cores = 64 if settings.is_main else 32,
-    compilator_goma_jobs = goma.jobs.J300,
-    compilator_name = "android-marshmallow-arm64-rel-compilator",
+    tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "android-marshmallow-arm64-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    cores = 64 if settings.is_main else 32,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -187,17 +194,20 @@ try_.builder(
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
-try_.orchestrator_pair_builders(
+try_.orchestrator_builder(
     name = "android-marshmallow-x86-rel",
+    compilator = "android-marshmallow-x86-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    orchestrator_cores = 4,
-    orchestrator_tryjob = try_.job(),
-    compilator_cores = 32,
-    compilator_goma_jobs = goma.jobs.J300,
-    compilator_name = "android-marshmallow-x86-rel-compilator",
+    tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "android-marshmallow-x86-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -253,15 +263,18 @@ try_.builder(
     ),
 )
 
-try_.orchestrator_pair_builders(
+try_.orchestrator_builder(
     name = "android-pie-arm64-rel",
+    compilator = "android-pie-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    orchestrator_cores = 4,
-    orchestrator_tryjob = try_.job(),
-    compilator_cores = 32,
-    compilator_goma_jobs = goma.jobs.J300,
-    compilator_name = "android-pie-arm64-rel-compilator",
+    tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "android-pie-arm64-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
 )
 
 try_.builder(
