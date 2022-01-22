@@ -597,6 +597,9 @@ const base::Feature kDisableCompositedProgressBar{
 const base::Feature kDownloadAutoResumptionThrottling{
     "DownloadAutoResumptionThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
 
+extern const base::Feature kDownloadHomeForExternalApp{
+    "DownloadHomeForExternalApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDownloadProgressInfoBar{"DownloadProgressInfoBar",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 

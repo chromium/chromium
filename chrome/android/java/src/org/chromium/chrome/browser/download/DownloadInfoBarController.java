@@ -1011,7 +1011,7 @@ public class DownloadInfoBarController implements DownloadMessageUiController {
                 recordLinkClicked(true /*openItem*/);
             } else {
                 DownloadManagerService.openDownloadsPage(
-                        context, mOtrProfileID, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
+                        mOtrProfileID, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
                 recordLinkClicked(false /*openItem*/);
             }
             closePreviousInfoBar();

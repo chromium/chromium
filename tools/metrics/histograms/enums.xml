@@ -1929,6 +1929,7 @@ Unknown properties are collapsed to zero. -->
   <int value="12" label="OFFLINE_CONTENT_NOTIFICATION"/>
   <int value="13" label="DOWNLOAD_PROGRESS_MESSAGE"/>
   <int value="14" label="DUPLICATE_DOWNLOAD_DIALOG"/>
+  <int value="15" label="EXTERNAL_APP"/>
 </enum>
 
 <enum name="AndroidEnhancedProtectionPromoAction">

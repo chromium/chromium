@@ -387,7 +387,7 @@ public class DownloadUtils {
             OfflineContentAggregatorFactory.get().openItem(openParams, contentId);
         } else {
             DownloadManagerService.getDownloadManagerService().openDownload(
-                    contentId, otrProfileID, source, context);
+                    contentId, otrProfileID, source);
         }
     }
 

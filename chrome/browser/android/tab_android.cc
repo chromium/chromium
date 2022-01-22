@@ -170,6 +170,11 @@ int TabAndroid::GetAndroidId() const {
   return Java_TabImpl_getId(env, weak_java_tab_.get(env));
 }
 
+int TabAndroid::GetLaunchType() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_getLaunchType(env, weak_java_tab_.get(env));
+}
+
 bool TabAndroid::IsNativePage() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isNativePage(env, weak_java_tab_.get(env));

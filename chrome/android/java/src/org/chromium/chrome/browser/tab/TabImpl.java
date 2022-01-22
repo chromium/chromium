@@ -424,6 +424,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @Override
+    @CalledByNative
     public @TabLaunchType int getLaunchType() {
         return mLaunchType;
     }
