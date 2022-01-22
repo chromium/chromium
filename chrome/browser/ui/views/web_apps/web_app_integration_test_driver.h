@@ -180,8 +180,6 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckAppInListTabbed(const std::string& site_mode);
   void CheckAppNavigationIsStartUrl();
   void CheckAppNotInList(const std::string& site_mode);
-  void CheckAppShortcutExists(const std::string& site_mode);
-  void CheckAppShortcutNotExists(const std::string& site_mode);
   void CheckAppWindowMode(const std::string& site_mode,
                           apps::mojom::WindowMode window_mode);
   void CheckInstallable();
@@ -191,6 +189,8 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckLaunchIconNotShown();
   void CheckTabCreated();
   void CheckCustomToolbar();
+  void CheckPlatformShortcutAndIcon(const std::string& site_mode);
+  void CheckPlatformShortcutNotExists(const std::string& site_mode);
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
@@ -246,9 +246,9 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   Browser* GetAppBrowserForSite(const std::string& site_mode,
                                 bool launch_if_not_open = true);
 
-  bool IsShortcutCreated(Profile* profile,
-                         const std::string& name,
-                         const AppId& id);
+  bool IsShortcutAndIconCreated(Profile* profile,
+                                const std::string& name,
+                                const AppId& id);
 
   Browser* browser();
   const net::EmbeddedTestServer* embedded_test_server();
