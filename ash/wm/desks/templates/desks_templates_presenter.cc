@@ -168,16 +168,14 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
   if (!desk_template)
     return;
 
-  auto desk_template_clone = desk_template->Clone();
-
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   if (!is_update)
     RecordWindowAndTabCountHistogram(desk_template.get());
 
-  // Save or update `desk_template_clone` as an entry in DeskModel.
+  // Save or update `desk_template` as an entry in DeskModel.
   GetDeskModel()->AddOrUpdateEntry(
-      std::move(desk_template_clone),
+      std::move(desk_template),
       base::BindOnce(&DesksTemplatesPresenter::OnAddOrUpdateEntry,
                      weak_ptr_factory_.GetWeakPtr(), is_update));
 }

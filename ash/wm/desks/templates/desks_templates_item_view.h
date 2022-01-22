@@ -133,8 +133,8 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
 
-  // A pointer to the associated desk template.
-  DeskTemplate* desk_template_ = nullptr;
+  // A copy of the associated desk template.
+  std::unique_ptr<DeskTemplate> desk_template_;
 
   // Owned by the views hierarchy.
   DesksTemplatesNameView* name_view_ = nullptr;

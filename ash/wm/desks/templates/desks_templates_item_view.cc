@@ -92,7 +92,7 @@ std::u16string GetTimeStr(base::Time timestamp) {
 }  // namespace
 
 DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
-    : desk_template_(desk_template) {
+    : desk_template_(desk_template->Clone()) {
   auto launch_template_callback = base::BindRepeating(
       &DesksTemplatesItemView::OnGridItemPressed, base::Unretained(this));
 
@@ -176,7 +176,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
   hover_container_->SetUseDefaultFillLayout(true);
   hover_container_->SetVisible(false);
 
-  icon_container_view_->PopulateIconContainerFromTemplate(desk_template_);
+  icon_container_view_->PopulateIconContainerFromTemplate(desk_template_.get());
   icon_container_view_->SetVisible(true);
   card_container->SetFlexForView(spacer, 1);
 
@@ -339,16 +339,17 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
 
   // Collapse the whitespace for the text first before comparing it or trying to
   // commit the name in order to prevent duplicate name issues.
-  name_view_->SetText(
+  const std::u16string user_entered_name =
       base::CollapseWhitespace(name_view_->GetText(),
-                               /*trim_sequences_with_line_breaks=*/false));
+                               /*trim_sequences_with_line_breaks=*/false);
+  name_view_->SetText(user_entered_name);
 
   // When committing the name, do not allow an empty template name. Also, don't
   // commit the name changes if the view was blurred from the user pressing the
   // escape key (identified by `should_commit_name_changes_`). Revert back to
   // the original name.
-  if (!should_commit_name_changes_ || name_view_->GetText().empty() ||
-      desk_template_->template_name() == name_view_->GetText()) {
+  if (!should_commit_name_changes_ || user_entered_name.empty() ||
+      desk_template_->template_name() == user_entered_name) {
     OnTemplateNameChanged(desk_template_->template_name());
     return;
   }
@@ -394,22 +395,21 @@ views::Button::KeyClickAction DesksTemplatesItemView::GetKeyClickActionForEvent(
 }
 
 void DesksTemplatesItemView::UpdateTemplateName() {
-  auto updated_template = desk_template_->Clone();
-  updated_template->set_template_name(name_view_->GetText());
-  OnTemplateNameChanged(updated_template->template_name());
+  desk_template_->set_template_name(name_view_->GetText());
+  OnTemplateNameChanged(desk_template_->template_name());
 
   // Calling `SaveOrUpdateDeskTemplate` will trigger rebuilding the desks
   // templates grid views hierarchy which includes `this`. Use a post task as
   // some other `ViewObserver`'s may still be using `this`.
   // TODO(crbug.com/1266552): Remove the post task once saving and updating does
-  // not cause a `this` to be deleted anymore.
+  // not cause `this` to be deleted anymore.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](std::unique_ptr<DeskTemplate> desk_template) {
                        DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
-                           /*is_update=*/false, std::move(desk_template));
+                           /*is_update=*/true, std::move(desk_template));
                      },
-                     std::move(updated_template)));
+                     std::move(desk_template_)));
 }
 
 void DesksTemplatesItemView::ContentsChanged(
