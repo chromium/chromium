@@ -116,6 +116,26 @@ action("updater_install_script") {
   ]
 }
 
+action("updater_test_install_script") {
+  script = "embed_variables.py"
+
+  inputs = [
+    script,
+    "setup/.install.sh",
+  ]
+
+  outputs = [ "$root_out_dir/.install" ]
+
+  args = [
+    "-i",
+    rebase_path("setup/.install.sh"),
+    "-o",
+    rebase_path(root_out_dir + "/.install"),
+    "-p",
+    updater_product_full_name + "_test",
+  ]
+}
+
 action("browser_install_script") {
   script = "embed_variables.py"
 
@@ -225,6 +245,10 @@ bundle_data("keystone_agent_bundle_resource_executable") {
 
   outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/{{source_file_part}}" ]
   public_deps = [ ":keystone_agent_bundle" ]
+
+  if (is_asan) {
+    sources += [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+  }
 }
 
 bundle_data("keystone_agent_bundle_resource_plist") {
@@ -254,6 +278,10 @@ bundle_data("updater_bundle_keystone_executable") {
   outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/MacOS/{{source_file_part}}" ]
 
   public_deps = [ ":keystone_bundle" ]
+
+  if (is_asan) {
+    sources += [ "$root_out_dir/${keystone_app_name}.bundle/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+  }
 }
 
 bundle_data("updater_bundle_keystone_plist") {

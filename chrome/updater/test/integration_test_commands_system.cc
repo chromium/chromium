@@ -68,6 +68,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("enter_test_mode", {Param("url", url.spec())});
   }
 
+  void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
+    updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
+  }
+
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
                             const base::Version& from_version,
@@ -104,6 +108,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("setup_fake_updater_lower_version");
   }
 
+  void SetupRealUpdaterLowerVersion() const override {
+    RunCommand("setup_real_updater_lower_version");
+  }
+
   void SetExistenceCheckerPath(const std::string& app_id,
                                const base::FilePath& path) const override {
     RunCommand("set_existence_checker_path",
@@ -133,6 +141,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void RunWake(int expected_exit_code) const override {
     RunCommand("run_wake",
+               {Param("exit_code", base::NumberToString(expected_exit_code))});
+  }
+
+  void RunWakeActive(int expected_exit_code) const override {
+    RunCommand("run_wake_active",
                {Param("exit_code", base::NumberToString(expected_exit_code))});
   }
 
