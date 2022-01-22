@@ -350,28 +350,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpReengagementNotification": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": ">=2",
-                        "event_trigger": "name:reengagement_notification_iph_trigger;comparator:==0;window:90;storage:360",
-                        "event_used": "name:started_from_main_intent;comparator:==0;window:2;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_ChromeReengagementNotification1",
-                        "ReengagementNotification"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMediaPickerVideoSupport": [
         {
             "platforms": [
