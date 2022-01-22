@@ -410,6 +410,38 @@ void LegacyCacheStorageManager::GetStorageKeyUsage(
     storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (IsMemoryBacked()) {
+    auto it = cache_storage_map_.find({storage_key, owner});
+    if (it == cache_storage_map_.end()) {
+      scheduler_task_runner_->PostTask(FROM_HERE,
+                                       base::BindOnce(std::move(callback),
+                                                      /*usage=*/0));
+      return;
+    }
+    CacheStorageHandle cache_storage = OpenCacheStorage(storage_key, owner);
+    LegacyCacheStorage::From(cache_storage)->Size(std::move(callback));
+    return;
+  }
+  cache_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&base::PathExists,
+                     ConstructStorageKeyPath(root_path_, storage_key, owner)),
+      base::BindOnce(&LegacyCacheStorageManager::GetStorageKeyUsageDidGetExists,
+                     base::WrapRefCounted(this), storage_key, owner,
+                     std::move(callback)));
+}
+
+void LegacyCacheStorageManager::GetStorageKeyUsageDidGetExists(
+    const blink::StorageKey& storage_key,
+    storage::mojom::CacheStorageOwner owner,
+    storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback,
+    bool exists) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!exists) {
+    scheduler_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*usage=*/0));
+    return;
+  }
   CacheStorageHandle cache_storage = OpenCacheStorage(storage_key, owner);
   LegacyCacheStorage::From(cache_storage)->Size(std::move(callback));
 }
@@ -470,7 +502,43 @@ void LegacyCacheStorageManager::DeleteStorageKeyData(
     storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Create the CacheStorage for the origin if it hasn't been loaded yet.
+  if (IsMemoryBacked()) {
+    auto it = cache_storage_map_.find({storage_key, owner});
+    if (it == cache_storage_map_.end()) {
+      scheduler_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    blink::mojom::QuotaStatusCode::kOk));
+      return;
+    }
+    DeleteStorageKeyDataDidGetExists(storage_key, owner, std::move(callback),
+                                     /*exists=*/true);
+    return;
+  }
+
+  cache_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&base::PathExists,
+                     ConstructStorageKeyPath(root_path_, storage_key, owner)),
+      base::BindOnce(
+          &LegacyCacheStorageManager::DeleteStorageKeyDataDidGetExists,
+          base::WrapRefCounted(this), storage_key, owner, std::move(callback)));
+}
+
+void LegacyCacheStorageManager::DeleteStorageKeyDataDidGetExists(
+    const blink::StorageKey& storage_key,
+    storage::mojom::CacheStorageOwner owner,
+    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
+    bool exists) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!exists) {
+    scheduler_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::mojom::QuotaStatusCode::kOk));
+    return;
+  }
+
+  // Create the CacheStorage for the storage key if it hasn't been loaded yet.
   CacheStorageHandle handle = OpenCacheStorage(storage_key, owner);
 
   auto it = cache_storage_map_.find({storage_key, owner});

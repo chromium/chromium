@@ -133,6 +133,18 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
           callback,
       std::vector<storage::mojom::StorageUsageInfoPtr> usage_info);
 
+  void GetStorageKeyUsageDidGetExists(
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback,
+      bool exists);
+
+  void DeleteStorageKeyDataDidGetExists(
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
+      bool exists);
+
   void DeleteStorageKeyDidClose(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
