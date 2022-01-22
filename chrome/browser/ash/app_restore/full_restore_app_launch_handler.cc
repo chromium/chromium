@@ -324,12 +324,6 @@ void FullRestoreAppLaunchHandler::LaunchBrowserForFirstRunFullRestore() {
   UserSessionManager::GetInstance()->MaybeLaunchSettings(profile());
 }
 
-void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
-    apps::AppTypeName app_type_name) {
-  base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
-                                app_type_name);
-}
-
 void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
   if (!crosapi::browser_util::IsLacrosEnabled() ||
       !::full_restore::features::IsFullRestoreForLacrosEnabled()) {
@@ -345,6 +339,8 @@ void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
     return;
   }
 
+  restore_data()->RemoveApp(extension_misc::kLacrosAppId);
+
   if (crosapi::BrowserManager::Get()->IsRunning()) {
     crosapi::BrowserManager::Get()->NewWindow(
         /*incognito=*/false, /*should_trigger_session_restore=*/true);
@@ -353,6 +349,12 @@ void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
 
   if (!crosapi::BrowserManager::Get()->IsTerminated())
     observation_.Observe(crosapi::BrowserManager::Get());
+}
+
+void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
+    apps::AppTypeName app_type_name) {
+  base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
+                                app_type_name);
 }
 
 void FullRestoreAppLaunchHandler::RecordLaunchBrowserResult() {
