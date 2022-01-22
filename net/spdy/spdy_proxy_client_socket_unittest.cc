@@ -30,6 +30,7 @@
 #include "net/log/test_net_log_util.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/connect_job_test_util.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/socks_connect_job.h"
@@ -259,6 +260,7 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
   ssl_.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   ASSERT_TRUE(ssl_.ssl_info.cert);
+  ssl_.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_);
 
   session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
@@ -311,6 +313,13 @@ void SpdyProxyClientSocketTest::AssertConnectionEstablished() {
   const HttpResponseInfo* response = sock_->GetConnectResponseInfo();
   ASSERT_TRUE(response != nullptr);
   ASSERT_EQ(200, response->headers->response_code());
+  // Although the underlying HTTP/2 connection uses TLS and negotiates ALPN, the
+  // tunnel itself is a TCP connection to the origin and should not report these
+  // values.
+  net::SSLInfo ssl_info;
+  EXPECT_FALSE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(sock_->WasAlpnNegotiated());
+  EXPECT_EQ(sock_->GetNegotiatedProtocol(), NextProto::kProtoUnknown);
 }
 
 void SpdyProxyClientSocketTest::AssertSyncReadEquals(const char* data,

@@ -36,7 +36,9 @@
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/spdy/spdy_test_util_common.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
+#include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -407,6 +409,9 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
   SequencedSocketData* sequenced_data = nullptr;
 
   SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(ssl_data.ssl_info.cert);
 
   switch (GetParam()) {
     case HTTP:
@@ -414,6 +419,7 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
       break;
     case HTTPS:
       sequenced_data = &http1_data;
+      ssl_data.next_proto = NextProto::kProtoHTTP11;
       session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
       break;
     case SPDY:
@@ -455,6 +461,15 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
 
   // Proxies should not set any DNS aliases.
   EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
+
+  // Although the underlying proxy connection may use TLS or negotiate ALPN, the
+  // tunnel itself is a TCP connection to the origin and should not report these
+  // values.
+  SSLInfo ssl_info;
+  EXPECT_FALSE(test_delegate.socket()->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(test_delegate.socket()->WasAlpnNegotiated());
+  EXPECT_EQ(test_delegate.socket()->GetNegotiatedProtocol(),
+            NextProto::kProtoUnknown);
 }
 
 TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {

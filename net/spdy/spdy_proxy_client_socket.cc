@@ -157,15 +157,24 @@ bool SpdyProxyClientSocket::WasEverUsed() const {
 }
 
 bool SpdyProxyClientSocket::WasAlpnNegotiated() const {
+  // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
+  // with the proxy, this object represents the tunneled TCP connection to the
+  // origin.
   return false;
 }
 
 NextProto SpdyProxyClientSocket::GetNegotiatedProtocol() const {
+  // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
+  // with the proxy, this object represents the tunneled TCP connection to the
+  // origin.
   return kProtoUnknown;
 }
 
 bool SpdyProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
-  return spdy_stream_->GetSSLInfo(ssl_info);
+  // Do not delegate to `spdy_stream_`. While `spdy_stream_` connected to the
+  // proxy with TLS, this object represents the tunneled TCP connection to the
+  // origin.
+  return false;
 }
 
 void SpdyProxyClientSocket::GetConnectionAttempts(

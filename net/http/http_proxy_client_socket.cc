@@ -134,23 +134,20 @@ bool HttpProxyClientSocket::WasEverUsed() const {
 }
 
 bool HttpProxyClientSocket::WasAlpnNegotiated() const {
-  if (socket_)
-    return socket_->WasAlpnNegotiated();
-  NOTREACHED();
+  // Do not delegate to `socket_`. While `socket_` may negotiate ALPN with the
+  // proxy, this object represents the tunneled TCP connection to the origin.
   return false;
 }
 
 NextProto HttpProxyClientSocket::GetNegotiatedProtocol() const {
-  if (socket_)
-    return socket_->GetNegotiatedProtocol();
-  NOTREACHED();
+  // Do not delegate to `socket_`. While `socket_` may negotiate ALPN with the
+  // proxy, this object represents the tunneled TCP connection to the origin.
   return kProtoUnknown;
 }
 
 bool HttpProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
-  if (socket_)
-    return socket_->GetSSLInfo(ssl_info);
-  NOTREACHED();
+  // Do not delegate to `socket_`. While `socket_` may connect to the proxy with
+  // TLS, this object represents the tunneled TCP connection to the origin.
   return false;
 }
 

@@ -132,15 +132,21 @@ bool QuicProxyClientSocket::WasEverUsed() const {
 }
 
 bool QuicProxyClientSocket::WasAlpnNegotiated() const {
+  // Do not delegate to `session_`. While `session_` negotiates ALPN with the
+  // proxy, this object represents the tunneled TCP connection to the origin.
   return false;
 }
 
 NextProto QuicProxyClientSocket::GetNegotiatedProtocol() const {
+  // Do not delegate to `session_`. While `session_` negotiates ALPN with the
+  // proxy, this object represents the tunneled TCP connection to the origin.
   return kProtoUnknown;
 }
 
 bool QuicProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
-  return session_->GetSSLInfo(ssl_info);
+  // Do not delegate to `session_`. While `session_` has a secure channel to the
+  // proxy, this object represents the tunneled TCP connection to the origin.
+  return false;
 }
 
 void QuicProxyClientSocket::GetConnectionAttempts(

@@ -293,9 +293,6 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
 
     writer->set_delegate(session_.get());
 
-    session_handle_ = session_->CreateHandle(
-        url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 80));
-
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.
@@ -308,6 +305,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     EXPECT_THAT(session_->CryptoConnect(callback.callback()), IsOk());
     EXPECT_TRUE(session_->OneRttKeysAvailable());
 
+    session_handle_ = session_->CreateHandle(
+        url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 80));
     EXPECT_THAT(session_handle_->RequestStream(true, callback.callback(),
                                                TRAFFIC_ANNOTATION_FOR_TESTS),
                 IsOk());
@@ -680,6 +679,14 @@ TEST_P(QuicProxyClientSocketTest, ConnectSendsCorrectRequest) {
   const HttpResponseInfo* response = sock_->GetConnectResponseInfo();
   ASSERT_TRUE(response != nullptr);
   ASSERT_EQ(200, response->headers->response_code());
+
+  // Although the underlying HTTP/3 connection uses TLS and negotiates ALPN, the
+  // tunnel itself is a TCP connection to the origin and should not report these
+  // values.
+  net::SSLInfo ssl_info;
+  EXPECT_FALSE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(sock_->WasAlpnNegotiated());
+  EXPECT_EQ(sock_->GetNegotiatedProtocol(), NextProto::kProtoUnknown);
 }
 
 TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
