@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/window_controls_overlay_geometry_change_event.h"
+#include "third_party/blink/renderer/modules/window_controls_overlay/window_controls_overlay_geometry_change_event.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_window_controls_overlay_geometry_change_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "ui/gfx/geometry/rect.h"
 

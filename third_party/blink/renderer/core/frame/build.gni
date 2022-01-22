@@ -223,10 +223,8 @@ blink_core_sources_frame = [
   "web_local_frame_client.cc",
   "web_remote_frame_impl.h",
   "window_event_handlers.h",
-  "window_controls_overlay.cc",
-  "window_controls_overlay.h",
-  "window_controls_overlay_geometry_change_event.cc",
-  "window_controls_overlay_geometry_change_event.h",
+  "window_controls_overlay_changed_delegate.cc",
+  "window_controls_overlay_changed_delegate.h",
   "window_or_worker_global_scope.cc",
   "window_or_worker_global_scope.h",
 ]

@@ -85,5 +85,6 @@
     },
     "USB",
     "WakeLockSentinel",
+    "WindowControlsOverlay",
   ],
 }
