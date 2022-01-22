@@ -88,6 +88,17 @@ GURL GetInlineLoginUrl(const std::string& email) {
   return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
 }
 
+// Convert `options` to `base::Value`. Keep fields in sync with
+// chrome/browser/resources/inline_login/inline_login_app.js
+base::Value AccountAdditionOptionsToValue(
+    const account_manager::AccountAdditionOptions& options) {
+  base::Value args(base::Value::Type::DICTIONARY);
+  args.SetKey("isAvailableInArc", base::Value(options.is_available_in_arc));
+  args.SetKey("showArcAvailabilityPicker",
+              base::Value(options.show_arc_availability_picker));
+  return args;
+}
+
 }  // namespace
 
 // Cleans up the delegate for a WebContentsModalDialogManager on destruction, or
@@ -226,17 +237,15 @@ void InlineLoginDialogChromeOS::OnDialogClosed(const std::string& json_retval) {
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 
+// The args value will be available from JS via
+// chrome.getVariableValue('dialogArguments').
 std::string InlineLoginDialogChromeOS::GetDialogArgs() const {
   if (!add_account_options_)
     return std::string();
 
-  base::DictionaryValue args;
-  args.SetKey("isAvailableInArc",
-              base::Value(add_account_options_->is_available_in_arc));
-  args.SetKey("showArcAvailabilityPicker",
-              base::Value(add_account_options_->show_arc_availability_picker));
   std::string json;
-  base::JSONWriter::Write(args, &json);
+  base::JSONWriter::Write(
+      AccountAdditionOptionsToValue(add_account_options_.value()), &json);
   return json;
 }
 

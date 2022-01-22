@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {AuthCompletedCredentials} from '../gaia_auth_host/authenticator.m.js';
@@ -62,6 +63,11 @@ export class InlineLoginBrowserProxy {
    * @param {boolean} skip Whether the welcome page should be skipped.
    */
   skipWelcomePage(skip) {}
+
+  /**
+   * @return {?string} JSON-encoded dialog arguments.
+   */
+  getDialogArguments() {}
   // </if>
 }
 
@@ -116,6 +122,11 @@ export class InlineLoginBrowserProxyImpl {
   /** @override */
   skipWelcomePage(skip) {
     chrome.send('skipWelcomePage', [skip]);
+  }
+
+  /** @override */
+  getDialogArguments() {
+    return chrome.getVariableValue('dialogArguments');
   }
   // </if>
 }

@@ -119,6 +119,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"inline_login_browser_proxy.js", IDR_INLINE_LOGIN_BROWSER_PROXY_JS},
     {"webview_saml_injected.js", IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"inline_login_util.js", IDR_INLINE_LOGIN_UTIL_JS},
     {"welcome_page_app.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS},
     {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
     {"gaia_action_buttons.js", IDR_GAIA_ACTION_BUTTONS_JS},
@@ -179,6 +180,14 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddBoolean(
       "isArcAccountRestrictionsEnabled",
       ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  source->AddString(
+      "accountManagerDialogArcToggleLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL,
+          base::UTF8ToUTF16(
+              chrome::GetOSSettingsUrl(
+                  chromeos::settings::mojom::kGooglePlayStoreSubpagePath)
+                  .spec())));
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(
                          chromeos::prefs::kShouldSkipInlineLoginWelcomePage));

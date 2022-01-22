@@ -69,7 +69,8 @@
          available in ARC. -->
     <if expr="chromeos">
       <div id="[[View.welcome]]" slot="view">
-        <welcome-page-app on-opened-new-window="closeDialog_">
+        <welcome-page-app is-available-in-arc="{{isAvailableInArc_}}"
+            on-opened-new-window="closeDialog_">
         </welcome-page-app>
       </div>
     </if>

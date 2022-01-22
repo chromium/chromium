@@ -4,33 +4,97 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import './account_manager_shared_css.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
+import {getAccountAdditionOptionsFromJSON} from './inline_login_util.js';
 
 Polymer({
   is: 'welcome-page-app',
 
   _template: html`{__html_template__}`,
 
+  properties: {
+    /* The value of the 'available in ARC' toggle.*/
+    isAvailableInArc: {
+      type: Boolean,
+      notify: true,
+    },
+
+    /*
+     * True if the ARC toggle should be hidden.
+     * @private
+     */
+    isArcToggleHidden_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /*
+     * True if `kArcAccountRestrictions` feature is enabled.
+     * @private
+     */
+    isArcAccountRestrictionsEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+      },
+      readOnly: true,
+    },
+  },
+
   /** @override */
   ready() {
-    this.$$('#osSettingsLink')
-        .addEventListener(
-            'click',
-            () => this.dispatchEvent(new CustomEvent('opened-new-window')));
+    [this.$$('#osSettingsLink'), this.$$('#appsSettingsLink')]
+        .filter(link => !!link)
+        .forEach(link => {
+          link.addEventListener(
+              'click',
+              () => this.dispatchEvent(new CustomEvent('opened-new-window')));
+        });
     const incognitoLink = this.$$('#incognitoLink');
     if (incognitoLink) {
       incognitoLink.addEventListener('click', () => this.openIncognitoLink_());
     }
   },
 
+  /** @override */
+  attached() {
+    if (!this.isArcAccountRestrictionsEnabled_) {
+      return;
+    }
+
+    const options = getAccountAdditionOptionsFromJSON(
+        InlineLoginBrowserProxyImpl.getInstance().getDialogArguments());
+    if (!options) {
+      // Options are not available during reauthentication.
+      return;
+    }
+
+    // Set the default value.
+    this.isAvailableInArc = options.isAvailableInArc;
+    if (options.showArcAvailabilityPicker) {
+      this.isArcToggleHidden_ = true;
+      assert(this.isAvailableInArc);
+    }
+  },
+
   /** @return {boolean} */
   isSkipCheckboxChecked() {
-    return this.$.checkbox.checked;
+    return !!this.$.checkbox && this.$.checkbox.checked;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isArcToggleVisible_() {
+    return this.isArcAccountRestrictionsEnabled_ && !this.isArcToggleHidden_;
   },
 
   /**

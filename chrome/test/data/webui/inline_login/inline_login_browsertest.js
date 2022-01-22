@@ -103,6 +103,15 @@ var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
   get suiteName() {
     return inline_login_welcome_page_test.suiteName;
   }
+
+  /** @override */
+  get featureList() {
+    return {
+      disabled: [
+        'chromeos::features::kArcAccountRestrictions',
+      ]
+    };
+  }
 };
 
 TEST_F('InlineLoginWelcomePageBrowserTest', 'Reauthentication', function() {
@@ -120,4 +129,52 @@ TEST_F('InlineLoginWelcomePageBrowserTest', 'Checkbox', function() {
 TEST_F('InlineLoginWelcomePageBrowserTest', 'GoBack', function() {
   this.runMochaTest(inline_login_welcome_page_test.TestNames.GoBack);
 });
+
+// TODO(crbug.com/1275568): Make this test the default one, and remove the test
+// suite above when the feature is enabled by default.
+// eslint-disable-next-line no-var
+var InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled =
+    class extends InlineLoginWelcomePageBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kArcAccountRestrictions',
+        'chromeos::features::kLacrosSupport'
+      ]
+    };
+  }
+};
+
+TEST_F(
+    'InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled',
+    'Reauthentication', function() {
+      this.runMochaTest(
+          inline_login_welcome_page_test.TestNames.Reauthentication);
+    });
+
+TEST_F(
+    'InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled',
+    'OkButton', function() {
+      this.runMochaTest(inline_login_welcome_page_test.TestNames.OkButton);
+    });
+
+TEST_F(
+    'InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled',
+    'GoBack', function() {
+      this.runMochaTest(inline_login_welcome_page_test.TestNames.GoBack);
+    });
+
+TEST_F(
+    'InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled',
+    'IsAvailableInArc', function() {
+      this.runMochaTest(
+          inline_login_welcome_page_test.TestNames.IsAvailableInArc);
+    });
+
+TEST_F(
+    'InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled',
+    'ToggleHidden', function() {
+      this.runMochaTest(inline_login_welcome_page_test.TestNames.ToggleHidden);
+    });
 GEN('#endif');

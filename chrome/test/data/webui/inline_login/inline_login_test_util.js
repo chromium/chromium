@@ -4,7 +4,9 @@
 
 import {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-
+// <if expr="chromeos">
+import {AccountAdditionOptions} from 'chrome://chrome-signin/inline_login_util.js';
+// </if>
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @return {!Array<string>} */
@@ -86,9 +88,26 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
       'dialogClose',
       // <if expr="chromeos">
       'skipWelcomePage',
+      'getDialogArguments',
       // </if>
     ]);
+
+    // <if expr="chromeos">
+    /**
+     * @private {?AccountAdditionOptions}
+     */
+    this.dialogArguments_ = null;
+    // </if>
   }
+
+  // <if expr="chromeos">
+  /**
+   * @param {?AccountAdditionOptions} dialogArguments
+   */
+  setDialogArguments(dialogArguments) {
+    this.dialogArguments_ = dialogArguments;
+  }
+  // </if>
 
   /** @override */
   initialize() {
@@ -140,6 +159,11 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
   /** @override */
   skipWelcomePage(skip) {
     this.methodCalled('skipWelcomePage', skip);
+  }
+
+  /** @override */
+  getDialogArguments() {
+    return JSON.stringify(this.dialogArguments_);
   }
   // </if>
 }
