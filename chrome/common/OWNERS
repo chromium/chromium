@@ -35,8 +35,8 @@ per-file chrome_content_client.h=*
 per-file chrome_content_client_unittest.cc=*
 
 # Pepper files.
-per-file pepper_*=bbudge@chromium.org
 per-file pepper_*=raymes@chromium.org
+per-file pepper_*=dschuff@chromium.org
 
 # Other stuff.
 per-file autocomplete_match_type.*=mpearson@chromium.org
