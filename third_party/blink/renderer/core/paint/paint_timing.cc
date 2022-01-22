@@ -433,4 +433,15 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
                                                                      index));
 }
 
+bool PaintTiming::IsLCPMouseoverDispatchedRecently() {
+  static constexpr base::TimeDelta kRecencyDelta = base::Milliseconds(500);
+  return (
+      !lcp_mouse_over_dispatch_time_.is_null() &&
+      ((clock_->NowTicks() - lcp_mouse_over_dispatch_time_) < kRecencyDelta));
+}
+
+void PaintTiming::SetLCPMouseoverDispatched() {
+  lcp_mouse_over_dispatch_time_ = clock_->NowTicks();
+}
+
 }  // namespace blink

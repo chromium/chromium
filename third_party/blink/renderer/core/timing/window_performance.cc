@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
@@ -673,6 +674,9 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint))
     NotifyObserversOfEntry(*entry);
   AddLargestContentfulPaint(entry);
+  if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
+    image_element->SetIsLCPElement();
+  }
 }
 
 void WindowPerformance::OnPaintFinished() {
