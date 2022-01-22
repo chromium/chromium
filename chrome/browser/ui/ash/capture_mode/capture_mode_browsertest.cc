@@ -159,11 +159,14 @@ class CaptureModeBrowserTest : public InProcessBrowserTest {
     // set up because |DlpReportingManager| needs a sequenced task runner handle
     // to set up the report queue.
     helper_ = std::make_unique<policy::DlpContentManagerAshTestHelper>();
+
     // TODO(https://crbug.com/1283065): Remove this.
     // Currently, setting the notifier explicitly is needed since otherwise, due
     // to a wrongly initialized notifier, calling the virtual
     // ShowDlpWarningDialog() method causes a crash.
     helper_->ResetWarnNotifierForTesting();
+
+    SetupDlpReporting();
   }
 
   void TearDownOnMainThread() override { helper_.reset(); }
@@ -206,8 +209,6 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, ContextMenuStaysOpen) {
 
 // Checks that video capture emits exactly one DLP reporting event.
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReporting) {
-  SetupDlpReporting();
-
   // Set DLP restriction.
   auto* dlp_content_observer = policy::DlpContentObserver::Get();
   ASSERT_TRUE(dlp_content_observer);
@@ -259,8 +260,6 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, DlpReporting) {
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                        DlpReportingDialogOnFullscreenScreenCaptureShortcut) {
   ASSERT_TRUE(browser());
-  SetupDlpReporting();
-
   // Set DLP restriction.
   auto* dlp_content_observer = policy::DlpContentObserver::Get();
   ASSERT_TRUE(dlp_content_observer);
@@ -312,6 +311,12 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   // deleted.
   SendKeyEvent(browser(), ui::VKEY_ESCAPE);
   loop.Run();
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -334,12 +339,21 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   // saved.
   SendKeyEvent(browser(), ui::VKEY_RETURN);
   loop.Run();
+
+  ASSERT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[1],
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                        DlpWarningDialogOnSessionInitDismissed) {
   ASSERT_TRUE(browser());
-
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
@@ -355,12 +369,17 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   SendKeyEvent(browser(), ui::VKEY_ESCAPE);
   EXPECT_FALSE(test_api.IsSessionActive());
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                        DlpWarningDialogOnSessionInitAccepted) {
   ASSERT_TRUE(browser());
-
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
@@ -376,12 +395,19 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   SendKeyEvent(browser(), ui::VKEY_RETURN);
   EXPECT_TRUE(test_api.IsSessionActive());
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
+
+  // Don't send warning proceeded event as the video capture didn't start.
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                        DlpWarningDialogOnPerformingCaptureDismissed) {
   ASSERT_TRUE(browser());
-
   // Start the session before a window becomes restricted.
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
@@ -404,12 +430,17 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   SendKeyEvent(browser(), ui::VKEY_ESCAPE);
   EXPECT_FALSE(test_api.IsSessionActive());
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                        DlpWarningDialogOnPerformingCaptureAccepted) {
   ASSERT_TRUE(browser());
-
   // Start the session before a window becomes restricted.
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
@@ -435,6 +466,16 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   EXPECT_FALSE(test_api.IsSessionActive());
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
   loop.Run();
+
+  ASSERT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[1],
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -464,6 +505,12 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   EXPECT_FALSE(test_api.IsVideoRecordingInProgress());
   EXPECT_FALSE(test_api.IsSessionActive());
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
@@ -499,13 +546,22 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   SetupLoopToWaitForCaptureFileToBeSaved(&loop);
   test_api.StopVideoRecording();
   loop.Run();
+
+  ASSERT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[1],
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
 }
 
 IN_PROC_BROWSER_TEST_F(
     CaptureModeBrowserTest,
     DlpWarningDialogOnCaptureScreenshotsOfAllDisplaysDismissed) {
   ASSERT_TRUE(browser());
-
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
@@ -520,13 +576,18 @@ IN_PROC_BROWSER_TEST_F(
   // aborted and the pending state should end.
   SendKeyEvent(browser(), ui::VKEY_ESCAPE);
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
+
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
 }
 
 IN_PROC_BROWSER_TEST_F(
     CaptureModeBrowserTest,
     DlpWarningDialogOnFullscreenScreenCaptureShortcutAccepted) {
   ASSERT_TRUE(browser());
-
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
@@ -553,6 +614,16 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for the file to be saved.
   loop.Run();
+
+  ASSERT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[0], policy::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kSrcPattern,
+                              policy::DlpRulesManager::Restriction::kScreenshot,
+                              policy::DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(
+      events_[1],
+      policy::IsDlpPolicyEvent(policy::CreateDlpPolicyWarningProceededEvent(
+          kSrcPattern, policy::DlpRulesManager::Restriction::kScreenshot)));
 }
 
 class CaptureModeSettingsBrowserTest : public extensions::ExtensionBrowserTest {

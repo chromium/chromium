@@ -225,6 +225,10 @@ class DlpContentManagerAsh : public DlpContentManager,
     // For a single video capture there should be sent at most one reporting
     // event. This flag informs if we already sent an event for the report mode.
     bool was_reported = false;
+    // Analogous to `was_reported` flag. `was_reported_warning_proceeded` flag
+    // informs if we already sent a warning proceeded event for the warning
+    // mode.
+    bool was_reported_warning_proceeded = false;
   };
 
   DlpContentManagerAsh();

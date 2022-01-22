@@ -168,6 +168,13 @@ void DlpContentManagerAsh::OnVideoCaptureStarted(const ScreenshotArea& area) {
                      DlpRulesManager::Restriction::kScreenshot);
     running_video_capture_info_->was_reported = true;
   }
+  if (IsWarn(info.restriction_info) && reporting_manager_) {
+    DCHECK(!running_video_capture_info_->was_reported_warning_proceeded);
+    ReportWarningProceededEvent(info.restriction_info.url,
+                                DlpRulesManager::Restriction::kScreenshot,
+                                reporting_manager_);
+    running_video_capture_info_->was_reported_warning_proceeded = true;
+  }
 }
 
 void DlpContentManagerAsh::CheckStoppedVideoCapture(
@@ -183,17 +190,19 @@ void DlpContentManagerAsh::CheckStoppedVideoCapture(
 
     ReportWarningEvent(url, DlpRulesManager::Restriction::kScreenshot);
 
-    auto reporting_callback = base::BindOnce(
-        &MaybeReportWarningProceededEvent, url,
-        DlpRulesManager::Restriction::kScreenshot, reporting_manager_);
+    if (!running_video_capture_info_->was_reported_warning_proceeded) {
+      auto reporting_callback = base::BindOnce(
+          &MaybeReportWarningProceededEvent, url,
+          DlpRulesManager::Restriction::kScreenshot, reporting_manager_);
+      callback = std::move(reporting_callback).Then(std::move(callback));
+    }
     // base::Unretained(this) is safe here because DlpContentManagerAsh is
     // initialized as a singleton that's always available in the system.
     warn_notifier_->ShowDlpVideoCaptureWarningDialog(
-        base::BindOnce(&DlpContentManagerAsh::OnDlpWarnDialogReply,
-                       base::Unretained(this),
-                       running_video_capture_info_->confidential_contents,
-                       DlpRulesManager::Restriction::kScreenshot,
-                       std::move(reporting_callback).Then(std::move(callback))),
+        base::BindOnce(
+            &DlpContentManagerAsh::OnDlpWarnDialogReply, base::Unretained(this),
+            running_video_capture_info_->confidential_contents,
+            DlpRulesManager::Restriction::kScreenshot, std::move(callback)),
         running_video_capture_info_->confidential_contents);
   } else {
     std::move(callback).Run(/*proceed=*/true);
@@ -212,6 +221,11 @@ void DlpContentManagerAsh::OnImageCapture(const ScreenshotArea& area) {
   if (IsReported(info.restriction_info)) {
     MaybeReportEvent(info.restriction_info,
                      DlpRulesManager::Restriction::kScreenshot);
+  }
+  if (IsWarn(info.restriction_info) && reporting_manager_) {
+    ReportWarningProceededEvent(info.restriction_info.url,
+                                DlpRulesManager::Restriction::kScreenshot,
+                                reporting_manager_);
   }
 }
 
@@ -848,9 +862,6 @@ void DlpContentManagerAsh::CheckScreenCaptureRestriction(
                           DlpRulesManager::Restriction::kScreenshot);
     if (info.confidential_contents.IsEmpty()) {
       // The user already allowed all the visible content.
-      ReportWarningProceededEvent(info.restriction_info.url,
-                                  DlpRulesManager::Restriction::kScreenshot,
-                                  reporting_manager_);
       std::move(callback).Run(true);
       return;
     }
@@ -858,16 +869,13 @@ void DlpContentManagerAsh::CheckScreenCaptureRestriction(
     ReportWarningEvent(info.restriction_info.url,
                        DlpRulesManager::Restriction::kScreenshot);
 
-    auto reporting_callback = base::BindOnce(
-        &MaybeReportWarningProceededEvent, info.restriction_info.url,
-        DlpRulesManager::Restriction::kScreenshot, reporting_manager_);
     // base::Unretained(this) is safe here because DlpContentManagerAsh is
     // initialized as a singleton that's always available in the system.
     warn_notifier_->ShowDlpScreenCaptureWarningDialog(
         base::BindOnce(&DlpContentManagerAsh::OnDlpWarnDialogReply,
                        base::Unretained(this), info.confidential_contents,
                        DlpRulesManager::Restriction::kScreenshot,
-                       std::move(reporting_callback).Then(std::move(callback))),
+                       std::move(callback)),
         info.confidential_contents);
     return;
   }
