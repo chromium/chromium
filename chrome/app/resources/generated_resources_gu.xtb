@@ -73,6 +73,11 @@
 <translation id="1071917609930274619">ડેટા ચિહ્નિકરણ</translation>
 <translation id="1072700771426194907">USB ડિવાઇસ મળ્યું</translation>
 <translation id="107278043869924952">પાસવર્ડના ઉપરાંત પિનનો પણ ઉપયોગ કરો</translation>
+<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં શું સુધારવું અને શું બહેતર બનાવવું તેને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં કઈ સુવિધાઓનો ઉપયોગ કરવામાં આવ્યો હતો, સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરવામાં આવ્યો હતો અને Android ઍપ નિદાન અને વપરાશના ડેટા જેવી બાબતોનો સમાવેશ થઈ શકે છે. કેટલોક કુલ ડેટા Googleની ઍપ અને Android ડેવલપર જેવા તેના ભાગીદારોને પણ સહાય કરશે.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />તમે તમારા બાળકના ChromeOS ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />આ સુવિધા બંધ કરવાથી સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે જરૂરી માહિતી મોકલવાની આ ડિવાઇસની ક્ષમતાને અસર થતી નથી.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />જો તમારા બાળકના Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા બાળકનો ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. આ સેટિંગ તેમજ તેમને ગોઠવવાની રીત વિશે families.google.com પર વધુ જાણો.<ph name="END_PARAGRAPH4" />
+    <ph name="BEGIN_PARAGRAPH4" />જો ડિવાઇસના માલિક "વપરાશ અને નિદાન ડેટા મોકલો" ચાલુ કરે, તો ક્રૅશ રિપોર્ટ Google પર અપલોડ પણ થઈ શકે છે.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">કોઈ ટેક્સ્ટ કર્સર વડે પેજ નૅવિગેટ કરો</translation>
 <translation id="1076698951459398590">થીમ ચાલુ કરો</translation>
 <translation id="1076766328672150609">ડિવાઇસ અનલૉક કરવા માટે, તમારું બાળક કોઈ પિનનો ઉપયોગ કરી શકે છે.</translation>
@@ -961,6 +966,7 @@
 <translation id="1965624977906726414">તેને કોઈ વિશેષ પરવાનગીઓ નથી.</translation>
 <translation id="1969654639948595766">WebRTC ટેક્સ્ટ લૉગ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">વીડિયો મોડ પર સ્વિચ કર્યું</translation>
+<translation id="1972325230031091483">વેબપેજની તમારી વર્તમાન મુલાકાતના આધારે કન્ટેન્ટ સક્રિય રીતે લોડ કરવામાં આવતું હોવાને કારણે તમે વધુ ઝડપથી બ્રાઉઝ કરી શકશો</translation>
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> સુરક્ષિતપણે ડાઉનલોડ કરી શકાતી નથી. ડાઉનલોડ બાર વિભાગમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="1974043046396539880">CRL વિતરણ પૉઇન્ટ્સ</translation>
@@ -1185,6 +1191,7 @@
 <translation id="2191754378957563929">ચાલુ</translation>
 <translation id="2192505247865591433">તરફથી:</translation>
 <translation id="2193365732679659387">ટ્રસ્ટ સેટિંગ</translation>
+<translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="2195331105963583686">તેમ તે સમય પછી પણ આ <ph name="DEVICE_TYPE" />નો ઉપયોગ કરી શકશો પણ હવેથી ઑટોમૅટિક સૉફ્ટવેર અને સુરક્ષા અપડેટ મળશે નહીં</translation>
 <translation id="2195729137168608510">ઇમેઇલ સુરક્ષા</translation>
 <translation id="2198625180564913276">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
@@ -1209,6 +1216,9 @@
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">નામ વગરનો મીડિયા સૉર્સ</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />શ્રેષ્ઠ અનુભવ પ્રદાન કરવા માટે, <ph name="DEVICE_OS" /> ડિવાઇસ વિશેનો હાર્ડવેર ડેટા એકત્રિત કરે છે અને કઈ અપડેટ ડિલિવર કરવી જોઈએ તે નક્કી કરવા માટે તેને Google સાથે શેર કરે છે. વૈકલ્પિક રીતે, તમે <ph name="DEVICE_OS" />માંનો અનુભવ અને સેવા સંબંધિત સપોર્ટ અને સુધારણાઓ જેવા વધારાના હેતુઓ માટે Googleને આ ડેટાનો ઉપયોગ કરવાની મંજૂરી આપી શકો છો.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />અપડેટ ફિલ્ટરિંગ માટે Googleને મોકલવામાં આવેલો ડેટા તેમજ તમે Google સાથે ડેટા શેર કરવાનું પસંદ કરો છો તે કોઈપણ અન્ય ઉદાહરણો જોવા માટે, તમે આ ડિવાઇસ પર લૉગ ઇન કરી શકો છો અને chrome://system વિભાગમાં CLOUDREADY_HARDWARE_INFO વિભાગની મુલાકાત લઈ શકો છો.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />For more details on data <ph name="DEVICE_OS" />, Google સાથે કયો ડેટા શેર કરી શકે છે અને તેનો ઉપયોગ કેવી રીતે કરવામાં આવે છે, તેના વિશે વધુ વિગતો જાણવા માટે g.co/CR2/HWDataCollection પર જાઓ.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">આ સેટિંગ <ph name="OWNER_EMAIL" /> ની છે.</translation>
 <translation id="222447520299472966">ઓછામાં ઓછું એક આર્ટ ગૅલરી આલ્બમ પસંદ કરો</translation>
 <translation id="2224551243087462610">ફોલ્ડરના નામમાં ફેરફાર કરો</translation>
@@ -1327,7 +1337,12 @@
 <translation id="2326931316514688470">ઍપ્લિકેશન &amp;ફરીથી લોડ કરો</translation>
 <translation id="2327492829706409234">ઍપ ચાલુ કરો</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" />નો ઉપયોગ કરવા માટે કૃપા કરીને તમારું ડિવાઇસ ફરી શરૂ કરો.</translation>
+<translation id="2328636661627946415">જ્યારે તમે છૂપા મોડમાં હો, ત્યારે કોઈ સાઇટ તેમની પોતાની સાઇટ પર તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે, માત્ર કુકીનો ઉપયોગ કરી શકે છે. છૂપા મોડના સત્રના અંતે કુકી ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="2329597144923131178">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવવા માટે સાઇન ઇન કરો.</translation>
+<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />તમારાં ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં શું સુધારવું અને શું બહેતર બનાવવું તેને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં તમે કઈ સુવિધાઓનો ઉપયોગ કરો છો, તમે સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરો છો, Android ઍપ નિદાન અને વપરાશના ડેટા તથા ભૂલો જેવી બાબતોનો સમાવેશ હોઈ શકે છે. કેટલોક કુલ ડેટા Googleની ઍપ અને Android ડેવલપર જેવા તેના ભાગીદારોને પણ સહાય કરશે.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />તમે તમારા ChromeOS ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />જો તમારા Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા Google એકાઉન્ટમાં તમારો Android ડેટા સાચવવામાં આવી શકે છે. તમે account.google.com પર તમારો ડેટા જોઈ શકો છો, તેને ડિલીટ કરી શકો છો અને તમારા એકાઉન્ટ સેટિંગમાં ફેરફાર કરી શકો છો.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />જો ડિવાઇસના માલિક "વપરાશ અને નિદાન ડેટા મોકલો" ચાલુ કરે, તો ક્રૅશ રિપોર્ટ Google પર અપલોડ પણ થઈ શકે છે.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">સ્ટોરમાં જુઓ</translation>
 <translation id="2332192922827071008">પસંદગીઓ ખોલો</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
@@ -1757,6 +1772,15 @@
 <translation id="2766161002040448006">માતાપિતાને પૂછો</translation>
 <translation id="2767077837043621282">તમારી Chromebook અપડેટ કરી શકાઈ નથી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="2767127727915954024">આ સાઇટ માટે, જ્યાં સુધી તમે બધી ટૅબ બંધ નહીં કરો ત્યાં સુધી <ph name="ORIGIN" />, <ph name="FILENAME" />માં ફેરફાર કરી શકશે</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />સમસ્યા નિવારણ કરવાના આ પગલાં અજમાવી જુઓ:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />તમારા ડિવાઇસમાં HDD, SSD અથવા eMMC જેવા કામ કરતા આંતરિક સ્ટોરેજ શામેલ હોવાની ખાતરી કરો
+    <ph name="LIST_ITEM" />તમારા આંતરિક સ્ટોરેજ ડિવાઇસમાં 16GB કરતાં વધુ સ્પેસ છે, તે ચેક કરો
+    <ph name="LIST_ITEM" />જો પ્રત્યક્ષ રીતે ઍક્સેસિબલ હોય, તો આંતરિક સ્ટોરેજ સાથેનું કનેક્શન ચેક કરો
+    <ph name="LIST_ITEM" />તમે પ્રમાણિત મૉડલનો ઉપયોગ કરી રહ્યાં છો તેની ખાતરી કરો અને ઇન્સ્ટૉલ નોંધ ચેક કરો
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />વધુ સહાય માટે, અહીં મુલાકાત લો: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">સૂચિમાંથી દૂર કરો</translation>
 <translation id="2770690685823456775">એક બીજા ફોલ્ડરમાં તમારા બધા પાસવર્ડની નિકાસ કરો</translation>
 <translation id="2770929488047004208">મોનિટરનું રિઝોલ્યુશન</translation>
@@ -2030,6 +2054,7 @@
 <translation id="3030967311408872958">સૂર્યોદયથી સૂર્યાસ્ત સુધી</translation>
 <translation id="3031417829280473749">એજંટ X</translation>
 <translation id="3031557471081358569">આયાત કરવા માટે આઇટમ્સ પસંદ કરો:</translation>
+<translation id="3032587662022429783">નિદાન અને વપરાશના ડેટા વિશે વધુ જાણો.</translation>
 <translation id="3033348223765101500">તમારો ડેટા નિયંત્રિત કરો</translation>
 <translation id="3036327949511794916">આ <ph name="DEVICE_TYPE" />ને પરત કરવાની સમયસીમા સમાપ્ત થઈ ગઈ છે.</translation>
 <translation id="3036546437875325427">ફ્લૅશ ચાલુ કરો</translation>
@@ -2579,6 +2604,9 @@
 <translation id="3629631988386925734">Smart Lock ચાલુ કરવા માટે તમારો પાસવર્ડ દાખલ કરો. આગલી વખતે, તમારો ફોન તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો.</translation>
 <translation id="3630132874740063857">તમારો ફોન</translation>
 <translation id="3630995161997703415">આ સાઇટને ગમે ત્યારે ઉપયોગમાં લેવા માટે તેને તમારા શેલ્ફમાં ઉમેરો</translation>
+<translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />તમારાં ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં શું સુધારવું અને શું બહેતર બનાવવું તેને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં ChromeOS ક્યારે ક્રૅશ થાય છે, તમે કઈ સુવિધાઓનો ઉપયોગ કરો છો અને તમે સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરો છો, તેના જેવી બાબતોનો સમાવેશ થઈ શકે છે.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />તમે તમારા Chrome ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />આ સુવિધા બંધ કરવાથી તમારા ડિવાઇસની સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે જરૂરી માહિતી મોકલવાની ક્ષમતાને અસર થતી નથી.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3634652306074934350">પરવાનગીની વિનંતીનો સમય સમાપ્ત થયો</translation>
 <translation id="3635199270495525546">વિશ્વસનીય પ્લૅટફૉર્મ મૉડ્યૂલ (TPM)ની ભાળ મળી</translation>
 <translation id="3635353578505343390">Googleને પ્રતિસાદ મોકલો</translation>
@@ -2599,6 +2627,10 @@
 <translation id="3651488188562686558">વાઇ-ફાઇથી ડિસ્કનેક્ટ કરો</translation>
 <translation id="3652817283076144888">પ્રારંભ થઈ રહ્યું છે</translation>
 <translation id="3653160965917900914">નેટવર્ક ફાઇલ શેર</translation>
+<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં શું સુધારવું અને શું બહેતર બનાવવું તેને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં કઈ સુવિધાઓનો ઉપયોગ કરવામાં આવ્યો હતો અને સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરવામાં આવ્યો હતો, જેવી બાબતોનો સમાવેશ થઈ શકે છે.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />તમે તમારા બાળકના ChromeOS ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />આ સુવિધા બંધ કરવાથી સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે જરૂરી માહિતી મોકલવાની આ ડિવાઇસની ક્ષમતાને અસર થતી નથી.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />જો ડિવાઇસના માલિક "વપરાશ અને નિદાન ડેટા મોકલો" ચાલુ કરે, તો ક્રૅશ રિપોર્ટ Google પર અપલોડ પણ થઈ શકે છે.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" /> ને તમારા માઇક્રોફોનને ઍક્સેસ કરવા દેવાનું ચાલુ રાખો</translation>
 <translation id="3654045516529121250">તમારા ઍક્સેસિબિલિટી સેટિંગ વાંચો</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{તેને એક ફાઇલ માટે કાયમી ઍક્સેસ છે.}one{તેને # ફાઇલ માટે કાયમી ઍક્સેસ છે.}other{તેને # ફાઇલ માટે કાયમી ઍક્સેસ છે.}}</translation>
@@ -2638,6 +2670,7 @@
 <translation id="3694027410380121301">પાછલું ટૅબ પસંદ કરો</translation>
 <translation id="369489984217678710">પાસવર્ડ અને બીજા સાઇન ઇન ડેટા</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{સુરક્ષા તપાસ પૂરી થઈ. તમારો ડેટા અપલોડ કરવામાં આવશે.}=1{સુરક્ષા તપાસ પૂરી થઈ. તમારી ફાઇલ અપલોડ કરવામાં આવશે.}one{સુરક્ષા તપાસ પૂરી થઈ. તમારી ફાઇલો અપલોડ કરવામાં આવશે.}other{સુરક્ષા તપાસ પૂરી થઈ. તમારી ફાઇલો અપલોડ કરવામાં આવશે.}}</translation>
+<translation id="3698471669415859717">રિવ્યૂ પૂર્ણ થયો</translation>
 <translation id="3699624789011381381">ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="3699920817649120894">સિંક અને વૈયક્તિકરણ બંધ કરીએ?</translation>
 <translation id="3700888195348409686">(<ph name="PAGE_ORIGIN" />) પ્રસ્તુત કરીએ છીએ</translation>
@@ -2944,6 +2977,7 @@
 <translation id="3975565978598857337">ક્ષેત્ર માટે સર્વરનો સંપર્ક કરવામાં નિષ્ફળ થયાં</translation>
 <translation id="3976108569178263973">કોઈ પ્રિન્ટર ઉપલબ્ધ નથી.</translation>
 <translation id="397703832102027365">ફાઇનલ કરી રહ્યું છે...</translation>
+<translation id="3977145907578671392">છૂપા મોડમાં અમુક સાઇટ પર અમુક સુવિધાઓ કામ કરી શકશે નહીં</translation>
 <translation id="3977886311744775419">ઑટોમૅટિક અપડેટ આ નેટવર્ક પ્રકાર પર ડાઉનલોડ થતાં નથી, પણ તમે અપડેટ મેન્યુઅલી ચેક કરી શકો છો.</translation>
 <translation id="3979395879372752341">નવું એક્સ્ટેંશન ઉમેરાયું (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> ચાલુ કરો</translation>
@@ -2976,6 +3010,7 @@
 <translation id="4005817994523282006">સમય ઝોન ઓળખ પદ્ધતિ</translation>
 <translation id="4007856537951125667">શૉર્ટકટ છુપાવો</translation>
 <translation id="4008291085758151621">VRમાં સાઇટ વિશેની માહિતી ઉપલબ્ધ નથી</translation>
+<translation id="4009955655170295852">શરૂ કરતા પહેલાં, ખાતરી કરો કે તમારી પાસે તમારા ડેટાનું બૅકઅપ ઉપલબ્ધ છે. <ph name="DEVICE_OS" />ને ઇન્સ્ટૉલ કરવાથી, તમારી હાર્ડ ડ્રાઇવ ઓવરરાઇટ થઈ જશે. g.co/CR2/InstallGuide પર વધુ જાણો.</translation>
 <translation id="4010917659463429001">તમારા મોબાઇલ ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ને સુધારીએ?</translation>
 <translation id="4015163439792426608">શું તમારી પાસે એક્સ્ટેંશન છે? એક અનુકૂળ જગ્યાએથી <ph name="BEGIN_LINK" />તમારા એક્સ્ટેંશનને મેનેજ કરો<ph name="END_LINK" />.</translation>
@@ -3091,6 +3126,7 @@
 <translation id="4132183752438206707">Google Play Store પરથી ઍપ મેળવો</translation>
 <translation id="4132364317545104286">ઇ-સિમ પ્રોફાઇલનું નામ બદલો</translation>
 <translation id="4133076602192971179">તમારો પાસવર્ડ બદલવા માટે ઍપ ખોલો</translation>
+<translation id="4135746311382563554">Google Chrome અને Chrome OSની વધારાની સેવાની શરતો</translation>
 <translation id="4136203100490971508">રાત્રિ પ્રકાશ સૂર્યોદય સમયે ઑટોમૅટિક રીતે બંધ થઈ જશે</translation>
 <translation id="41365691917097717">ચાલુ રાખવાથી Android ઍપ બનાવવા અને તેનું પરીક્ષણ કરવા માટે ADB ડિબગીંગ ચાલુ થશે. ધ્યાનમાં રાખો કે આ ક્રિયા દ્વારા ચકાસણી થઈ ન હોય એવી Android ઍપના ઇન્સ્ટૉલેશનની મંજૂરી આપે છે અને ફેક્ટરી રીસેટ બંધ કરવું જરૂરી છે.</translation>
 <translation id="4138267921960073861">સાઇન-ઇન સ્ક્રીન પર વપરાશકર્તા નામ અને ફોટો બતાવો</translation>
@@ -3698,6 +3734,9 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{{COUNT} બુકમાર્ક ડિલીટ કર્યું}other{{COUNT} બુકમાર્ક ડિલીટ કર્યા}}</translation>
 <translation id="4819607494758673676">Google Assistantનાં નોટિફિકેશન</translation>
 <translation id="4820236583224459650">સક્રિય ટિકિટ તરીકે સેટ કરો</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />નોંધણી કરતા પહેલાં તમારે TPM સાફ કરવું જરૂરી છે, જેથી <ph name="DEVICE_OS" /> ડિવાઇસ પર માલિકીનો અધિકાર પ્રાપ્ત કરી શકે.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />તમે TPM ડિવાઇસ સંપૂર્ણપણે બંધ પણ કરી શકો છો. આમ છતાં તમારો ડેટા સૉફ્ટવેર એન્ક્રિપ્શન વડે સલામત રીતે સ્ટોર કરવામાં આવશે, પરંતુ સુરક્ષિત સ્ટોરેજ ધરાવતા હાર્ડવેર સંબંધિત પ્રમાણપત્રો જેવી અમુક ચોક્કસ સુરક્ષા સુવિધાઓ બંધ કરવામાં આવશે.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />તમે તમારા TPM સેટિંગ રીબૂટ કરીને અને સિસ્ટમ BIOS/UEFI સેટિંગ દાખલ કરીને તેમાં ફેરફાર કરી શકો છો. ડિવાઇસના મૉડલ અનુસાર આ પગલાં અલગ-અલગ હોઈ શકે છે. વધુ માહિતી માટે, તમે રીબૂટ કરો એ પહેલાં અલગ ડિવાઇસ પર <ph name="DEVICE_OS" /> દસ્તાવેજ ખોલો: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;પ્રોફાઇલિંગ સક્ષમ</translation>
 <translation id="4823484602432206655">વપરાશકર્તા અને ડિવાઇસ સેટિંગ વાંચો અને બદલો</translation>
 <translation id="4824037980212326045">Linux બૅકઅપ લો અને રિસ્ટોર કરો</translation>
@@ -3787,6 +3826,7 @@
 <translation id="4900652253009739885">“પસંદ કરો”ના એકમાત્ર સોંપણી કરવામાં આવેલા સ્વિચને કાઢી નાખી શકાતું નથી. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> પ્રયોગ માટે, પ્રયોગનું સ્ટેટસ પસંદ કરો.</translation>
 <translation id="49027928311173603">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904511036057277323">Googleને નિદાન અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને Chrome અને ChromeOSની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો. કુલ ડેટામાંથી કેટલોક ડેટા Android ઍપ અને Googleના ભાગીદારોને પણ સહાય કરશે. જો તમારા બાળકના Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા બાળકના Google એકાઉન્ટમાં તમારા બાળકનો Android ડેટા સાચવવામાં આવી શકે છે.</translation>
 <translation id="4906490889887219338">નેટવર્ક ફાઇલ શેર સેટઅપ કરો અથવા મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">આ એક્સ્ટેન્શન તમારી સાઇટનો ડેટા ક્યારે વાંચી અને તેમાં ફેરફાર કરી શકે તે પસંદ કરો</translation>
 <translation id="4907161631261076876">આ ફાઇલ સામાન્ય રીતે ડાઉનલોડ કરવામાં આવતી નથી અને તે જોખમી હોઈ શકે છે.</translation>
@@ -3887,6 +3927,7 @@
 <translation id="5018207570537526145">એક્સ્ટેંશન વેબસાઇટ ખોલો</translation>
 <translation id="5018526990965779848">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આ સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્ર કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો તમારી વધારાની વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
 <translation id="5021750053540820849">હજુ સુધી અપડેટ થયું નથી</translation>
+<translation id="5024511550058813796">તમને તમારા સિંક કરેલા તમામ ડિવાઇસ પર તમારો ઇતિહાસ મળશે, જેથી તમે જે કરતા હતા તે ચાલુ રાખી શકો</translation>
 <translation id="5026492829171796515">Google એકાઉન્ટ ઉમેરવા માટે સાઇન ઇન કરો</translation>
 <translation id="5026806129670917316">વાઇ-ફાઇ ચાલુ કરો</translation>
 <translation id="5026874946691314267">આ ફરી બતાવશો નહીં</translation>
@@ -3955,6 +3996,7 @@
 <translation id="5093569275467863761">બૅક/ફૉરવર્ડ કૅશ મેમરીમાં સ્ટોર કરેલી છૂપી સબફ્રેમ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">સહયોગ કરતી મૂળ ઍપ્લિકેશન સાથે સંચાર કરો</translation>
 <translation id="5097002363526479830">નેટવર્ક '<ph name="NAME" />' થી કનેક્ટ કરવામાં નિષ્ફળ: <ph name="DETAILS" /></translation>
+<translation id="5097306410549350357">સ્થાનનો ઉપયોગ કરવા વિશે વધુ જાણો</translation>
 <translation id="5097649414558628673">સાધન: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">કર્સર રોકાય ત્યારે ઑટોમૅટિક રીતે ક્લિક કરવાનાં સેટિંગ</translation>
 <translation id="5101839224773798795">કર્સર રોકાઈ જાય ત્યારે ઑટોમૅટિક રીતે ક્લિક કરો</translation>
@@ -4244,6 +4286,7 @@
 <translation id="5407167491482639988">અસ્પષ્ટ</translation>
 <translation id="5408750356094797285">ઝૂમ કરો: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">તમારા Google એકાઉન્ટમાંથી</translation>
+<translation id="5413640305322530561">નિદાન અને વપરાશના ડેટા વિશે વધુ જાણો</translation>
 <translation id="5414198321558177633">પ્રોફાઇલની સૂચિ રિફ્રેશ કરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="5414566801737831689">તમે મુલાકાત લો છો તે વેબસાઇટ્સના આયકન્સ વાંચો</translation>
 <translation id="5417312524372586921">બ્રાઉઝરની થીમ</translation>
@@ -4407,6 +4450,7 @@
 <translation id="5571066253365925590">Bluetooth સક્ષમ છે</translation>
 <translation id="5571092938913434726">વૈશ્વિક મીડિયા નિયંત્રણો</translation>
 <translation id="5571832155627049070">તમારી પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
+<translation id="5572648434713976849">ઍડ્રેસ બારમાં તમે બહેતર સૂચનો મેળવશો</translation>
 <translation id="5572851009514199876">કૃપા કરીને Chrome ને પ્રારંભ કરો અને સાઇન ઇન કરો જેથી કરીને Chrome તપાસી શકે કે તમને આ સાઇટની ઍક્સેસની મંજૂરી છે કે કેમ.</translation>
 <translation id="5575473780076478375">છુપું એક્સ્ટેંશન: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ડેમો નોંધણીની વિનંતીમાં સમસ્યા આવી.</translation>
@@ -5172,6 +5216,10 @@ USB ડિવાઇસ</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{અનામાંકિત ગ્રૂપ - 1 ટૅબ}one{અનામાંકિત ગ્રૂપ - # ટૅબ}other{અનામાંકિત ગ્રૂપ - # ટૅબ}}</translation>
 <translation id="6385149369087767061">ઇન્ટરનેટથી કનેક્ટ કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="6385543213911723544">સાઇટ કુકી ડેટા સાચવી અને વાંચી શકે છે</translation>
+<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />તમારાં ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં શું સુધારવું અને શું બહેતર બનાવવું તેને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં તમે કઈ સુવિધાઓનો ઉપયોગ કરો છો અને તમે સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરો છો, તેના જેવી બાબતોનો સમાવેશ થઈ શકે છે.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />તમે તમારા Chrome ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />આ સુવિધા બંધ કરવાથી તમારા ડિવાઇસની સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે જરૂરી માહિતી મોકલવાની ક્ષમતાને અસર થતી નથી.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />જો ડિવાઇસના માલિક "વપરાશ અને નિદાન ડેટા મોકલો" ચાલુ કરે, તો ક્રૅશ રિપોર્ટ Google પર અપલોડ પણ થઈ શકે છે.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">ચેતવણી - વિગતવાર લૉગિંગ ચાલુ છે; નીચેના લૉગમાં URL અથવા અન્ય સંવેદનશીલ માહિતી શામેલ હોઈ શકે છે. કૃપા કરીને રિવ્યૂ કરી અને ખાતરી કરો કે તમે આ માહિતી સબમિટ કરવામાં તમને કોઈ મુશ્કેલી નથી.</translation>
 <translation id="6387674443318562538">સ્ક્રીનને ઊભી વિભાજિત કરો</translation>
 <translation id="6388429472088318283">ભાષાઓ શોધો</translation>
@@ -5288,6 +5336,7 @@ USB ડિવાઇસ</translation>
 <translation id="6504601948739128893">તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="6504611359718185067">કોઈ પ્રિન્ટર ઉમેરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો</translation>
 <translation id="6506374932220792071">SHA-256 સાથે X9.62 ECDSA સહી</translation>
+<translation id="6507936476364432879">Googleને નિદાન અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને Chrome અને ChromeOSની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો.</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" />થી સંબંધિત</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">મીડિયા લાઇસન્સ</translation>
@@ -5383,6 +5432,7 @@ USB ડિવાઇસ</translation>
 <translation id="6602937173026466876">તમારા પ્રિન્ટરને ઍક્સેસ કરો</translation>
 <translation id="6602956230557165253">નૅવિગેટ કરવા માટે ડાબી અને જમણી Arrow કીનો ઉપયોગ કરો.</translation>
 <translation id="6602998402703530379"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, વીડિયો કૅમેરા.</translation>
+<translation id="6603185457265641428">ઇતિહાસ સિંક કરવો કે નહીં, તે પસંદ કરો</translation>
 <translation id="6605847144724004692">કોઈ વપરાશકર્તાએ હજુ રેટ કરેલ નથી.</translation>
 <translation id="6606671997164410857">એવું લાગે છે કે તમે પહેલેથી જ અન્ય ડિવાઇસ પર Google Assistantનું સેટઅપ કરી લીધું છે. આ ડિવાઇસ પર સ્ક્રીન સંદર્ભ ચાલુ કરીને તમારા Assistantનો હજી પણ વધુ લાભ મેળવો.</translation>
 <translation id="6607831829715835317">વધુ સા&amp;ધનો</translation>
@@ -5421,6 +5471,7 @@ USB ડિવાઇસ</translation>
 <translation id="6644846457769259194">તમારું ઉપકરણ અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">પસંદ કરેલું Google ક્લાઉડ પ્રિન્ટ ડિવાઇસ હવે સમર્થિત રહ્યું નથી. <ph name="BR" /> તમારા કમ્પ્યુટરની સિસ્ટમ સેટિંગમાં પ્રિન્ટરનું સેટઅપ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6647228709620733774">નેટસ્કેપ પ્રમાણન અધિકારી રિવોકેશન URL</translation>
+<translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6648911618876616409">મહત્ત્વપૂર્ણ અપડેટ ઇન્સ્ટૉલ થવા માટે તૈયાર છે. શરૂ કરવા માટે, સાઇન ઇન કરો.</translation>
 <translation id="6649018507441623493">માત્ર એક જ સેકંડ…</translation>
 <translation id="6650234781371031356"><ph name="WEBSITE" />નો તમારો પાસવર્ડ આ ડિવાઇસ પર અને તમારા Google એકાઉન્ટમાં સ્ટોર કરવામાં આવ્યો છે. તમે કયો પાસવર્ડ ડિલીટ કરવા માગો છો?</translation>
@@ -5604,6 +5655,7 @@ USB ડિવાઇસ</translation>
 <translation id="6834652994408928492">ઘેરો મોડ સૂર્યાસ્ત સમયે ઑટોમૅટિક રીતે ચાલુ થઈ જશે</translation>
 <translation id="6835762382653651563">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> ને અપડેટ કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="6839225236531462745">પ્રમાણપત્ર કાઢી નાખવામાં ભૂલ</translation>
+<translation id="6839882458129755986">કોઈપણ પ્રકારના ડેટાના નુકસાન બદલ Google જવાબદાર નથી અને અપ્રમાણિત હોય એવા મૉડલ પર <ph name="DEVICE_OS" /> કદાચ કામ કરશે નહીં. g.co/CR2/InstallGuide પર વધુ જાણો.</translation>
 <translation id="6839916869147598086">સાઇન-ઇન બદલાઈ ગયું છે</translation>
 <translation id="6840155290835956714">મોકલતાં પહેલાં પૂછો</translation>
 <translation id="6840184929775541289">કોઈ પ્રમાણન અધિકારી નથી</translation>
@@ -5731,6 +5783,7 @@ USB ડિવાઇસ</translation>
 <translation id="6972887130317925583">ચેડાં કરાયેલો પાસવર્ડ સફળતાપૂર્વક બદલ્યો. કોઈપણ સમયે <ph name="SETTINGS" />માં તમારા પાસવર્ડ ચેક કરો.</translation>
 <translation id="697312151395002334">પૉપ-અપ મોકલવા અને રીડાયરેક્ટનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="6973611239564315524">Debian 10 માટેનું અપગ્રેડ (Buster) ઉપલબ્ધ છે</translation>
+<translation id="69739764870135975">જો Google તમારું ડિફૉલ્ટ શોધ એન્જિન પણ હોય, તો તમને બહેતર અને સંદર્ભ સાથે સંબંધિત સૂચનો જોવા મળશે</translation>
 <translation id="6974609594866392343">ઑફલાઇન ડેમો મોડ</translation>
 <translation id="697508444536771064">Linux શટ ડાઉન કરો</translation>
 <translation id="6977739184256564679"><ph name="DEVICE_COUNT" />માંથી <ph name="DEVICE_INDEX" /> ડિવાઇસ, <ph name="DEVICE_NAME" />, ટૅબ્લેટ.</translation>
@@ -5920,6 +5973,7 @@ USB ડિવાઇસ</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
 <translation id="7182791023900310535">તમારો પાસવર્ડ ખસેડો</translation>
+<translation id="7183193772170782394"><ph name="DEVICE_OS" />ને બહેતર બનાવવામાં સહાય કરવા માટે, Googleને તમારા હાર્ડવેર ડેટાનો ઉપયોગ કરવા દો. જો તમે નકારશો, તો પણ આ ડેટા યોગ્ય અપડેટ નક્કી કરવા માટે Googleને મોકલવામાં આવે છે, પરંતુ ન તો તેને સ્ટોર કરવામાં આવે છે કે ન તો તેનો ઉપયોગ કરવામાં આવે છે. g.co/CR2/HWDataCollection પર વધુ જાણો.</translation>
 <translation id="7183420126213758623">બાજુની શોધ ટૉગલ કરો. બાજુની શોધ સક્રિય નથી.</translation>
 <translation id="7186088072322679094">ટુલબારમાં રાખો</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> આ ફોલ્ડર ખોલી શકતું નથી, કારણ કે તેમાં સિસ્ટમ ફાઇલો શામેલ છે</translation>
@@ -5972,6 +6026,7 @@ USB ડિવાઇસ</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> દ્વારા ટ્રાન્સફર રદ કરવામાં આવ્યું</translation>
 <translation id="7240339475467890413">નવા હોટસ્પોટથી કનેક્ટ કરીએ?</translation>
 <translation id="7241389281993241388">ક્લાયંટ પ્રમાણપત્ર આયાત કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> પર સાઇન ઇન કરો.</translation>
+<translation id="7241763419756062043">તમારી શોધ અને બ્રાઉઝિંગ ક્વૉલિટી પસંદ કરો</translation>
 <translation id="7243632151880336635">સાફ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="7243784282103630670">Linux અપગ્રેડ કરતી વખતે ભૂલ આવી હતી. તમારા બૅકઅપનો ઉપયોગ કરીને અમે કન્ટેનરને રિસ્ટોર કરીશું.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (શ્રેષ્ઠ)</translation>
@@ -6077,6 +6132,7 @@ USB ડિવાઇસ</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> પેજને <ph name="PRINTER_NAME" /> પર મોકલ્યાં</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> ચલાવવા માટે રાઇટ-ક્લિક કરો</translation>
 <translation id="7362387053578559123">સાઇટ બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
+<translation id="7363349185727752629">તમારી પ્રાઇવસીની પસંદગીઓની માર્ગદર્શિકા</translation>
 <translation id="7364591875953874521">ઍક્સેસની વિનંતી કરી</translation>
 <translation id="7364745943115323529">કાસ્ટ કરો...</translation>
 <translation id="7364796246159120393">ફાઇલ પસંદ કરો</translation>
@@ -6539,6 +6595,7 @@ USB ડિવાઇસ</translation>
 <translation id="7807711621188256451"><ph name="HOST" />ને હંમેશા તમારા કૅમેરાને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="7810202088502699111">આ પેજ પરનાં પૉપ-અપ બ્લૉક હતા.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> કાસ્ટ કરો</translation>
+<translation id="7811886112806886172">Googleને નિદાન અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને Chrome અને ChromeOSની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો. કુલ ડેટામાંથી કેટલોક ડેટા Android ઍપ અને Googleના ભાગીદારોને પણ સહાય કરશે. જો તમારા Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા Google એકાઉન્ટમાં તમારો Android ડેટા સાચવવામાં આવી શકે છે.</translation>
 <translation id="7814277578404816512">તમારી <ph name="DEVICE_TYPE" /> પર નવું શું છે તે જુઓ</translation>
 <translation id="7814458197256864873">&amp;કૉપિ કરો</translation>
 <translation id="7815680994978050279">જોખમી ડાઉનલોડને અવરોધ્યું</translation>
@@ -6591,6 +6648,9 @@ USB ડિવાઇસ</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> પર સ્વિચ કરવા માટે Ctrl + Alt + S દબાવો</translation>
 <translation id="7849264908733290972">નવા ટૅબમાં &amp;છબી ખોલો</translation>
 <translation id="784934925303690534">સમય શ્રેણી</translation>
+<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />તમારાં ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં શું સુધારવું અને શું બહેતર બનાવવું તેને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં ChromeOS ક્યારે ક્રૅશ થાય છે, તમે કઈ સુવિધાઓનો ઉપયોગ કરો છો, તમે સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરો છો તથા Android ઍપ નિદાન અને વપરાશના ડેટા જેવી બાબતોનો સમાવેશ હોઈ શકે છે. કેટલોક કુલ ડેટા Googleની ઍપ અને Android ડેવલપર જેવા તેના ભાગીદારોને પણ સહાય કરશે.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />તમે તમારા ChromeOS ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />જો તમારા Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા Google એકાઉન્ટમાં તમારો Android ડેટા સાચવવામાં આવી શકે છે. તમે account.google.com પર તમારો ડેટા જોઈ શકો છો, તેને ડિલીટ કરી શકો છો અને તમારા એકાઉન્ટ સેટિંગમાં ફેરફાર કરી શકો છો.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />નોંધ<ph name="END_BOLD" />: સમાન વૉઇસ અથવા રેકોર્ડિંગ કદાચ તમારા વ્યક્તિગત પરિણામો અથવા તમારા Assistantને ઍક્સેસ કરી શકે છે. બૅટરીની બચત કરવા માટે, આ ડિવાઇસ પાવર સૉર્સ સાથે કનેક્ટ કરેલું હોય, માત્ર ત્યારે જ તમે તમારા Assistantના સેટિંગમાં “Ok Google”ની સુવિધા ચાલુ રાખવાનું પસંદ કરી શકો છો.</translation>
 <translation id="7851457902707056880">સાઇન ઇન માત્ર માલિકનાં એકાઉન્ટ માટે જ પ્રતિબંધિત છે. કૃપા કરીને રીબૂટ કરો અને માલિકનાં એકાઉન્ટથી સાઇન ઇન કરો. મશીન 30 સેકન્ડમાં સ્વતઃ રીબૂટ થશે.</translation>
 <translation id="7851716364080026749">હંમેશા કૅમેરા અને માઇક્રોફોનના ઍક્સેસને બ્લૉક કરો</translation>
@@ -6628,6 +6688,7 @@ USB ડિવાઇસ</translation>
 <translation id="7885253890047913815">તાજેતરનાં ગંતવ્યો</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{એક આઇટમ}one{# આઇટમ}other{# આઇટમ}}</translation>
 <translation id="7886605625338676841">ઇ-સિમ</translation>
+<translation id="7887174313503389866">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોની મુલાકાત લો. વધુ વિકલ્પો માટે, વ્યક્તિગત સેટિંગ પર જાઓ.</translation>
 <translation id="7887334752153342268">ડુપ્લિકેટ</translation>
 <translation id="7887864092952184874">Bluetooth માઉસ જોડાયું</translation>
 <translation id="7889371445710865055">ડિક્ટેશનની ભાષા બદલો</translation>
@@ -6998,6 +7059,8 @@ USB ડિવાઇસ</translation>
 <translation id="8260864402787962391">માઉસ</translation>
 <translation id="8261378640211443080">આ એક્સટેન્શન <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />કંઈક ખોટું થયું અને <ph name="DEVICE_OS" /> ઇન્સ્ટૉલ કરી શકાયું નથી.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />વધુ સહાય માટે, આની મુલાકાત લો: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">આ ગ્રૂપને નામ આપો</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> એ તમારા માઉસ કર્સરને અક્ષમ કર્યું છે.</translation>
 <translation id="8264024885325823677">આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે.</translation>
@@ -7165,6 +7228,7 @@ USB ડિવાઇસ</translation>
 <translation id="8457451314607652708">બુકમાર્ક આયાત કરો</translation>
 <translation id="8458341576712814616">શૉર્ટકટ</translation>
 <translation id="8458627787104127436">બધી (<ph name="URL_COUNT" />) URL નવી વિન્ડોમાં ખોલો</translation>
+<translation id="8460448946170646641">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>
 <translation id="8460490661223303637">મેમરી સાચવવા માટે, Chrome દ્વારા અમુક કન્ટેન્ટ કાઢી નાખવામાં આવ્યું છે</translation>
 <translation id="8460932807646981183">શોધ એન્જિન અને સાઇટમાં શોધવાની સુવિધા મેનેજ કરો</translation>
 <translation id="84613761564611563">નેટવર્ક કોન્ફિગર UIની વિનંતી કરી, કૃપા કરીને રાહ જુઓ...</translation>
@@ -7470,7 +7534,7 @@ USB ડિવાઇસ</translation>
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}}</translation>
 <translation id="8777259617149177596">કેસમાં બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />% છે.</translation>
 <translation id="8777628254805677039">રુટ પાસવર્ડ</translation>
-<translation id="8778328560035799409">તમારી હાલની સોંપણી કરેલી સ્વિચ સાફ કરવામાં આવશે</translation>
+<translation id="8779944680596936487">અલગ-અલગ સાઇટ પોતપોતાની સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે માત્ર કુકીનો ઉપયોગ કરી શકશે</translation>
 <translation id="8780123805589053431">Google તરફથી છબીનાં વર્ણનો મેળવો</translation>
 <translation id="8780443667474968681">વૉઇસ શોધ સેવા બંધ કરવામાં આવી છે.</translation>
 <translation id="8781834595282316166">ગ્રૂપમાં નવું ટૅબ</translation>
@@ -7487,6 +7551,7 @@ USB ડિવાઇસ</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
 <translation id="8800004011501252845">આના માટે ગંતવ્યો બતાવી રહ્યું છે</translation>
 <translation id="8800034312320686233">સાઇટ કામ નથી કરતી?</translation>
+<translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
 <translation id="8803953437405899238">એક નવી ટૅબ એક ક્લિકમાં ખોલો</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ટૅબને બીજી વિંડોમાં ખસેડો}one{ટૅબને બીજી વિંડોમાં ખસેડો}other{ટૅબને બીજી વિંડોમાં ખસેડો}}</translation>
 <translation id="8805140816472474147">સિંક શરૂ કરવા સિંક સેટિંગ કન્ફર્મ કરો.</translation>
@@ -7884,6 +7949,7 @@ USB ડિવાઇસ</translation>
 <translation id="9186963452600581158">બાળકના Google એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="9187967020623675250">કીનો મેળ થતો નથી. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>
 <translation id="9188732951356337132">વપરાશ અને નિદાનનો ડેટા મોકલો. આ ડિવાઇસ હાલમાં Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલી રહ્યું છે. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્રીકરણ કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારોને પણ મદદ કરશે, જેમ કે Android ડેવલપર. જો તમારા બાળક માટે વધારાની વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK2" />વધુ જાણો<ph name="END_LINK2" /></translation>
+<translation id="919686179725692564">તમારી ઍપનું બૅકઅપ લેવા વિશે વધુ જાણો</translation>
 <translation id="9198090666959937775">સિક્યુરિટી કી તરીકે તમારા Android ફોનનો ઉપયોગ કરો</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" />માં રહેલી ફાઇલોમાં ફેરફાર કરી શકશે</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />માં શોધો</translation>

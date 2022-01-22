@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Os meus ficheiros</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1894023287452300670">Fai un seguimento do prezo aquí</translation>
+<translation id="1900260903084164610">Ao continuar, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Calquera que utilice este dispositivo poderá ver os ficheiros que descargues no modo de incógnito.</translation>
 <translation id="1910950723001426294">A lista de opcións para compartir está pechada.</translation>
 <translation id="1918175104945982129">A interface de consentimento para a busca por voz a través do Asistente está aberta ata a metade da pantalla</translation>
@@ -206,6 +207,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2172905120685242547">Queres pechar a ventá?</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="218608176142494674">Uso compartido</translation>
+<translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2200113223741723867">Xestionar uso compartido dos datos de uso</translation>
 <translation id="2218567645332692482">Usa HTTPS cando navegas e mostra unha advertencia antes de cargar sitios que non o admiten</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Produciuse un erro en 1 descarga.}other{Produciuse un erro en # descargas.}}</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
+<translation id="517734441743343109">Ao continuar, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo<ph name="END_TOS_LINK" /> e a <ph name="BEGIN_PRIVACY_LINK" />Política\u00A0de\u00A0privacidade<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5188992787241350004">Realiza buscas coa voz</translation>
 <translation id="5191251636205085390">Obtén información sobre novas tecnoloxías desenvolvidas co obxectivo de substituír as cookies de terceiros e aprende a manexalas</translation>
@@ -995,6 +998,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6633067410344541938">Desbloquear modo de incógnito</translation>
 <translation id="6636623428211296678">Explora máis opcións de configuración a continuación ou remata agora</translation>
 <translation id="663674369910034433">Para ver máis opcións de configuración relacionadas coa privacidade, a seguranza e a recompilación de datos, consulta <ph name="BEGIN_LINK1" />Sincronización<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Servizos de Google<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_UMA_LINK" />Xestionar<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6643649862576733715">Ordenar por cantidade de datos aforrados</translation>
@@ -1395,6 +1399,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8788265440806329501">O historial de navegación está pechado</translation>
 <translation id="8788968922598763114">Volver abrir a última pestana que se pechou</translation>
 <translation id="8798449543960971550">Lido</translation>
+<translation id="8803526663383843427">Se a función está activada</translation>
 <translation id="8805097383171548551">Para escanear un código QR, utiliza un dispositivo con cámara.</translation>
 <translation id="8812260976093120287">Nalgúns sitios web, podes pagar no teu dispositivo coas aplicacións de pago compatibles mencionadas anteriormente.</translation>
 <translation id="881688628773363275">A vista previa do contido da pestana non está dispoñible.</translation>

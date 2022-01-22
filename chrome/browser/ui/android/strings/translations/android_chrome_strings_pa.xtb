@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="189358972401248634">ਹੋਰ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="1894023287452300670">ਇੱਥੇ ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰੋ</translation>
+<translation id="1900260903084164610">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_TOS_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_TOS_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="1905320231301365059">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਹਾਲੇ ਵੀ ਇਸ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੇ ਹਰੇਕ ਵਿਅਕਤੀ ਨੂੰ ਦਿਖਣਯੋਗ ਹਨ।</translation>
 <translation id="1910950723001426294">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਬੰਦ ਹੈ।</translation>
 <translation id="1918175104945982129">Assistant ਦੀ ਅਵਾਜ਼ੀ ਖੋਜ ਲਈ ਸਹਿਮਤੀ ਵਾਲਾ UI ਅੱਧੀ ਸਕ੍ਰੀਨ ਵਿੱਚ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
@@ -206,6 +207,7 @@
 <translation id="2172905120685242547">ਕੀ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2175927920773552910">QR ਕੋਡ</translation>
 <translation id="218608176142494674">ਸਾਂਝਾਕਰਨ</translation>
+<translation id="2194856509914051091">ਵਿਚਾਰੇ ਜਾਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
 <translation id="2200113223741723867">ਵਰਤੋਂ ਡਾਟੇ ਸੰਬੰਧੀ ਸਾਂਝੇਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2218567645332692482">ਨੈਵੀਗੇਸ਼ਨਾਂ ਨੂੰ HTTPS 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰੋ ਅਤੇ ਇੰਝ ਕਰਨ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦੇ ਲੋਡ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਮਿਲੇਗੀ ਜੋ ਇਸਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀਆਂ</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
@@ -586,6 +588,7 @@
 <translation id="4472118726404937099">ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਸਿੰਕ ਕਰਨ ਅਤੇ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰਕੇ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4479839115899251637">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚੋਂ ਮਿਟਾਓ</translation>
 <translation id="4479972344484327217">Chrome ਲਈ <ph name="MODULE" /> ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
+<translation id="4484496141267039529">ਕੋਈ ਕਨੈਕਸ਼ਨ ਨਹੀਂ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4487967297491345095">Chrome ਦਾ ਸਾਰਾ ਐਪ ਡਾਟਾ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਸ ਵਿੱਚ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੈਟਿੰਗਾਂ, ਖਾਤੇ, ਡਾਟਾਬੇਸ ਆਦਿ ਸ਼ਾਮਲ ਹਨ।</translation>
 <translation id="449126573531210296">ਸਮਕਾਲੀਕਿਰਤ ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕਰੋ</translation>
 <translation id="4504667196171871375">ਵਾਈ-ਫਾਈ ਅਤੇ ਮੋਬਾਈਲ ਡਾਟੇ 'ਤੇ</translation>
@@ -718,6 +721,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ।}one{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ।}other{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਹੇ।}}</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="5171045022955879922">ਖੋਜੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
+<translation id="517734441743343109">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_TOS_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_TOS_LINK" /> ਅਤੇ <ph name="BEGIN_PRIVACY_LINK" />ਪਰਦੇਦਾਰੀ\u00A0ਨੀਤੀ<ph name="END_PRIVACY_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="5184329579814168207">Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="5188992787241350004">ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਖੋਜੋ</translation>
 <translation id="5191251636205085390">ਨਵੀਆਂ ਤਕਨੀਕਾਂ ਬਾਰੇ ਜਾਣੋ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ ਜਿਨ੍ਹਾਂ ਦਾ ਉਦੇਸ਼ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਦਲਣਾ ਹੈ</translation>
@@ -995,6 +999,7 @@
 <translation id="6633067410344541938">ਇਨਕੋਗਨਿਟੋ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="6636623428211296678">ਹੇਠਾਂ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ ਜਾਂ ਹੁਣੇ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="663674369910034433">ਪਰਦੇਦਾਰੀ, ਸੁਰੱਖਿਆ ਅਤੇ ਡਾਟਾ ਸੰਗ੍ਰਹਿ ਨਾਲ ਸੰਬੰਧਿਤ ਹੋਰ ਸੈਟਿੰਗਾਂ ਲਈ, <ph name="BEGIN_LINK1" />ਸਿੰਕ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google ਸੇਵਾਵਾਂ<ph name="END_LINK2" /> ਦੇਖੋ</translation>
+<translation id="6637100877383020115">ਐਪ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, Chrome ਵਰਤੋਂ ਅਤੇ ਕ੍ਰੈਸ਼ ਡਾਟਾ Google ਨੂੰ ਭੇਜਦਾ ਹੈ। <ph name="BEGIN_UMA_LINK" />ਪ੍ਰਬੰਧਨ ਕਰੋ<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">ਹਮੇਸ਼ਾਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
 <translation id="6643649862576733715">ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
@@ -1395,6 +1400,7 @@
 <translation id="8788265440806329501">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="8788968922598763114">ਆਖਰੀ ਬੰਦ ਕੀਤੀ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="8798449543960971550">ਪੜ੍ਹ ਲਿਆ</translation>
+<translation id="8803526663383843427">ਚਾਲੂ ਹੋਣ 'ਤੇ</translation>
 <translation id="8805097383171548551">QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਲਈ, ਕਿਸੇ ਕੈਮਰੇ ਵਾਲੇ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="8812260976093120287">ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ, ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਉਪਰੋਕਤ ਸਮਰਥਿਤ ਭੁਗਤਾਨ ਐਪਾਂ ਨਾਲ ਭੁਗਤਾਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="881688628773363275">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਦੀ ਸਮੱਗਰੀ ਦੇਖਣਯੋਗ ਨਹੀਂ ਹੈ।</translation>

@@ -3026,13 +3026,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
       Untuk informasi selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /> Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="4567137030726189378">Izinkan penggunaan Developer Tools</translation>
-<translation id="4567818663772614440">Kebijakan ini mengontrol pelaporan cloud <ph name="PRODUCT_NAME" /> yang mengupload informasi tentang operasi browser ke konsol Google Admin.
-
-      Jika kebijakan ini tidak disetel atau disetel ke Salah (False), tidak ada data yang akan dikumpulkan atau diupload.
-      Jika kebijakan ini disetel ke Benar (True), data akan dikumpulkan dan diupload ke konsol Google Admin.
-
-      Untuk <ph name="PRODUCT_NAME" />, Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-      Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
 <translation id="4570859815763368584">Tidak digunakan lagi di M68. Sebagai gantinya, gunakan DefaultPopupsSetting.
 
       Untuk penjelasan selengkapnya, lihat https://www.chromestatus.com/feature/5675755719622656.

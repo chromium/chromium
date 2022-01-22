@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Dosyalarım</translation>
 <translation id="189358972401248634">Diğer diller</translation>
 <translation id="1894023287452300670">Fiyatı buradan takip edin</translation>
+<translation id="1900260903084164610">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" />'nı kabul etmiş olursunuz.</translation>
 <translation id="1905320231301365059">Bu cihazı kullanan kişiler, gizli modda indirdiğiniz dosyaları görmeye devam eder.</translation>
 <translation id="1910950723001426294">Paylaşım seçenekleri listesi kapalı.</translation>
 <translation id="1918175104945982129">Asistan sesli arama izni kullanıcı arayüzü yarım yükseklikte açıldı</translation>
@@ -206,6 +207,7 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="2172905120685242547">Pencere kapatılsın mı?</translation>
 <translation id="2175927920773552910">QR Kodu</translation>
 <translation id="218608176142494674">Paylaşım</translation>
+<translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
 <translation id="2200113223741723867">Kullanım verileri paylaşımını yönetin</translation>
 <translation id="2218567645332692482">Gezinmeleri HTTPS'ye yükseltip bu uzantıyı desteklemeyen siteleri yüklemeden önce sizi uyarır</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> olarak devam edin</translation>
@@ -718,6 +720,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 indirme işlemi başarısız oldu.}other{# indirme işlemi başarısız oldu.}}</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5171045022955879922">Arayın veya URL'yi yazın</translation>
+<translation id="517734441743343109">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" /> ve <ph name="BEGIN_PRIVACY_LINK" />Gizlilik Politikası<ph name="END_PRIVACY_LINK" />'nı kabul etmiş olursunuz.</translation>
 <translation id="5184329579814168207">Chrome'da aç</translation>
 <translation id="5188992787241350004">Sesle arama yapma</translation>
 <translation id="5191251636205085390">Üçüncü taraf çerezlerin yerini alması amaçlanan yeni teknolojileri öğrenip kontrol edin</translation>
@@ -995,6 +998,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6633067410344541938">Gizli modun kilidini aç</translation>
 <translation id="6636623428211296678">Aşağıda diğer ayarlara bakın veya şimdi tamamlayın</translation>
 <translation id="663674369910034433">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK1" />Senkronizasyon<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />Google hizmetleri<ph name="END_LINK2" /> konularına bakın.</translation>
+<translation id="6637100877383020115">Chrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_UMA_LINK" />Yönetin<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Her zaman engelle</translation>
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6643649862576733715">Tasarruf edilen veri miktarına göre sırala</translation>
@@ -1395,6 +1399,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="8788265440806329501">Gezinme geçmişi kapalı</translation>
 <translation id="8788968922598763114">Son kapatılan sekmeyi yeniden açar</translation>
 <translation id="8798449543960971550">Okunanlar</translation>
+<translation id="8803526663383843427">Açık olduğunda</translation>
 <translation id="8805097383171548551">QR Kodu taramak için kamerası olan bir cihaz kullanın.</translation>
 <translation id="8812260976093120287">Bazı web sitelerinde, yukarıdaki desteklenen ödeme uygulamalarıyla cihazınızdan ödeme yapabilirsiniz.</translation>
 <translation id="881688628773363275">Önizleme sekmesinin içeriği görüntülenemiyor.</translation>

@@ -2986,13 +2986,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode voor meer informatie over het <ph name="IEEM_SITELIST_POLICY" />-beleid van Internet Explorer</translation>
 <translation id="4567137030726189378">Het gebruik van de hulpprogramma's voor ontwikkelaars toestaan</translation>
-<translation id="4567818663772614440">Dit beleid beheert cloudrapportage voor <ph name="PRODUCT_NAME" /> waarmee informatie over de browseractiviteit naar de Google Beheerdersconsole wordt geüpload.
-
-      Als dit beleid niet is ingesteld of is ingesteld op False, worden er geen gegevens verzameld of geüpload.
-      Als dit beleid is ingesteld op True, worden er gegevens verzameld en geüpload naar de Google Beheerdersconsole.
-
-      Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-      Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid altijd van kracht.</translation>
 <translation id="4570859815763368584">Beëindigd in M68. Gebruik in plaats hiervan DefaultPopupsSetting.
 
 Ga naar https://www.chromestatus.com/feature/5675755719622656 voor een volledige uitleg.

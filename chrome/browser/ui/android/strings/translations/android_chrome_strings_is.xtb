@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Skrárnar mínar</translation>
 <translation id="189358972401248634">Önnur tungumál</translation>
 <translation id="1894023287452300670">Vakta verð hér</translation>
+<translation id="1900260903084164610">Með því að halda áfram samþykkirðu <ph name="BEGIN_TOS_LINK" />þjónustuskilmálana<ph name="END_TOS_LINK" /></translation>
 <translation id="1905320231301365059">Skrár sem þú hleður niður í huliðsstillingu eru áfram sýnilegar öllum sem nota þetta tæki.</translation>
 <translation id="1910950723001426294">Listi yfir deilingarvalkosti er lokaður.</translation>
 <translation id="1918175104945982129">Samþykkisviðmót raddleitar Hjálpara opið á hálfum skjánum</translation>
@@ -206,6 +207,7 @@
 <translation id="2172905120685242547">Loka glugga?</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="218608176142494674">Deiling</translation>
+<translation id="2194856509914051091">Atriði til að hafa í huga</translation>
 <translation id="2200113223741723867">Stjórna deilingu notkunargagna</translation>
 <translation id="2218567645332692482">Uppfæra flettingar í HTTPS og vara þig við áður en vefsvæðum sem ekki styðja það er hlaðið</translation>
 <translation id="2227444325776770048">Halda áfram sem <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Mistókst að sækja 1 skrá.}one{Mistókst að sækja # skrá.}other{Mistókst að sækja # skrár.}}</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5171045022955879922">Leitaðu eða sláðu inn vefslóð</translation>
+<translation id="517734441743343109">Með því að halda áfram samþykkirðu <ph name="BEGIN_TOS_LINK" />þjónustuskilmálana<ph name="END_TOS_LINK" /> og <ph name="BEGIN_PRIVACY_LINK" />persónuverndarstefnuna<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Opna í Chrome</translation>
 <translation id="5188992787241350004">Nota raddleit</translation>
 <translation id="5191251636205085390">Kynntu þér og hafðu umsjón með nýrri tækni sem er ætlað að koma í stað fótspora þriðja aðila</translation>
@@ -995,6 +998,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6633067410344541938">Taka huliðsstillingu úr lás</translation>
 <translation id="6636623428211296678">Skoðaðu fleiri stillingar hér að neðan eða ljúktu þessu núna</translation>
 <translation id="663674369910034433">Frekari upplýsingar sem tengjast persónuvernd, öryggi og gagnasöfnun má finna í <ph name="BEGIN_LINK1" />Samstilling<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />Google þjónustur<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Chrome sendir gögn um notkun og hrun til Google til að bæta forritið. <ph name="BEGIN_UMA_LINK" />Stjórna<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Útiloka alltaf</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6643649862576733715">Raða eftir gagnasparnaði</translation>
@@ -1395,6 +1399,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8788265440806329501">Ferill er lokaður</translation>
 <translation id="8788968922598763114">Opna aftur flipann sem síðast var lokað</translation>
 <translation id="8798449543960971550">Lesið</translation>
+<translation id="8803526663383843427">Þegar kveikt er á þessu</translation>
 <translation id="8805097383171548551">Notaðu tæki með myndavél til að skanna inn QR-kóða.</translation>
 <translation id="8812260976093120287">Á sumum vefsvæðum er hægt að greiða í tækinu þínu með studdum greiðsluforritum hér að ofan.</translation>
 <translation id="881688628773363275">Ekki er hægt að sjá efni forskoðunarflipa</translation>

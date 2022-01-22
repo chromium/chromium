@@ -1216,6 +1216,9 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2220572644011485463">PIN alebo heslo</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Nepomenovaný mediálny zdroj</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> zaisťuje to najlepšie prostredie zhromažďovaním údajov o hardvéri zariadení a ich zdieľaním s Googlom, aby bolo možné určiť, ktoré aktualizácie majú byť doručené. Voliteľne môžete Googlu povoliť používanie týchto údajov na ďalšie účely, napríklad na podporu a zlepšovanie prostredia a služieb zariadenia <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />V tomto zariadení sa môžete prihlásiť a prejsť do sekcie CLOUDREADY_HARDWARE_INFO na chrome://system, kde nájdete údaje odoslané Googlu na filtrovanie aktualizácií, ako aj ďalšie prípady, kedy ste povolili zdieľanie údajov s Googlom.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Viac o údajoch, ktoré zariadenie <ph name="DEVICE_OS" /> môže zdieľať s Googlom, a o tom, ako sú používané, nájdete na g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Nastavenie patrí používateľovi <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Je potrebné vybrať aspoň jeden album z umeleckej galérie</translation>
 <translation id="2224551243087462610">Upraviť názov priečinka</translation>
@@ -1764,6 +1767,15 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2766161002040448006">Opýtať sa rodiča</translation>
 <translation id="2767077837043621282">Chromebook sa nepodarilo aktualizovať. Skúste to neskôr.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> bude môcť upravovať súbor <ph name="FILENAME" />, dokým nezavriete všetky karty tohto webu</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Vyskúšajte tieto kroky na riešenie problémov:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Uistite sa, že v zariadení máte fungujúce interné úložisko, ako je HDD, SSD alebo eMMC.
+    <ph name="LIST_ITEM" />Skontrolujte, či je interné úložisko väčšie ako 16 GB.
+    <ph name="LIST_ITEM" />Skontrolujte pripojenie k internému úložisku (ak je fyzicky k dispozícii).
+    <ph name="LIST_ITEM" />Uistite sa, že používate certifikovaný model a prezrite si poznámky k inštalácii.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ďalšiu pomoc získate na g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Odstrániť zo zoznamu</translation>
 <translation id="2770690685823456775">Exportujte heslá do iného priečinka</translation>
 <translation id="2770929488047004208">Rozlíšenie monitora</translation>
@@ -2985,6 +2997,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4005817994523282006">Metóda zisťovania časového pásma</translation>
 <translation id="4007856537951125667">Skryť skratky</translation>
 <translation id="4008291085758151621">Informácie o webe nie sú v režime VR k dispozícii</translation>
+<translation id="4009955655170295852">Pred začatím sa uistite, že máte zálohu údajov. Inštaláciou operačného systému <ph name="DEVICE_OS" /> prepíšete pevný disk. Viac sa dozviete na g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Ak chcete získať záložky na mobilnom zariadení, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Chcete opraviť rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Používate rozšírenia? <ph name="BEGIN_LINK" />Uľahčite si správu rozšírení<ph name="END_LINK" /> na jednom mieste.</translation>
@@ -3707,6 +3720,9 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4816336393325437908">{COUNT,plural, =1{Bola odstránená 1 záložka}few{Boli odstránené {COUNT} záložky}many{{COUNT} bookmarks deleted}other{Bolo odstránených {COUNT} záložiek}}</translation>
 <translation id="4819607494758673676">Upozornenia Asistenta Google</translation>
 <translation id="4820236583224459650">Nastaviť ako aktívny tiket</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Než sa zaregistrujete, musíte vymazať TPM, aby mohol kontrolu nad týmto zariadením prevziať operačný systém <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Zariadenie TPM môžete tiež úplne vypnúť. Vaše údaje budú naďalej bezpečne ukladané pomocou softvérového šifrovania, ale určité bezpečnostné funkcie (ako certifikáty zálohované hardvérom) budú deaktivované.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Nastavenia TPM môžete zmeniť reštartovaním a prejdením do nastavení systému BIOS/UEFI. Postup sa v rôznych modeloch zariadení líši. Ďalšie informácie si prečítajte ešte pred reštartovaním v dokumentácii k systému <ph name="DEVICE_OS" /> v inom zariadení na g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profilovanie povolené</translation>
 <translation id="4823484602432206655">Čítať a meniť nastavenia používateľa a zariadenia</translation>
 <translation id="4824037980212326045">Zálohovanie a obnova v systéme Linux</translation>
@@ -5615,6 +5631,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6834652994408928492">Tmavý režim sa automaticky zapne pri západe slnka</translation>
 <translation id="6835762382653651563">Ak chcete aktualizovať zariadenie <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="6839225236531462745">Chyba odstránenia certifikátu</translation>
+<translation id="6839882458129755986">Google nezodpovedá za stratu údajov. <ph name="DEVICE_OS" /> nemusí fungovať v necertifikovaných modeloch. Viac sa dozviete na g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Prihlásenie sa zmenilo</translation>
 <translation id="6840155290835956714">Spýtať sa pred odoslaním</translation>
 <translation id="6840184929775541289">Nie je certifikačnou autoritou</translation>
@@ -5898,7 +5915,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7125148293026877011">Odstrániť systém Crostini</translation>
 <translation id="7127980134843952133">História sťahovania</translation>
 <translation id="7128151990937044829">Zobraziť indikátor v paneli s adresou pri zablokovaní upozornenia</translation>
-<translation id="7130890260487814974">Odosielajte údaje o využití a diagnostiku.</translation>
+<translation id="7130890260487814974">Odosielať údaje o využití a diagnostiky.</translation>
 <translation id="7131040479572660648">Čítať vaše údaje na weboch <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> a <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Pridať strán&amp;ku...</translation>
 <translation id="7134098520442464001">Zmenšiť text</translation>
@@ -5932,6 +5949,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7180865173735832675">Prispôsobiť</translation>
 <translation id="7182791023900310535">Presuňte svoje heslo</translation>
+<translation id="7183193772170782394">Umožnite Googlu zlepšovať systém <ph name="DEVICE_OS" /> pomocou vašich údajov o hardvéri. Ak to odmietnete, tieto údaje sa budú stále odosielať Googlu na stanovenie správnych aktualizácií, ale nebudú sa ukladať ani používať iným spôsobom. Viac sa dozviete na g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Prepnúť bočné vyhľadávanie Bočné vyhľadávanie nebolo aktivované.</translation>
 <translation id="7186088072322679094">Ponechať na paneli s nástrojmi</translation>
 <translation id="7186303001964993981">Web <ph name="ORIGIN" /> nemôže otvoriť tento priečinok, pretože obsahuje súbory systému</translation>
@@ -7018,6 +7036,8 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8260864402787962391">Myš</translation>
 <translation id="8261378640211443080">Toto rozšírenie nedodáva <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohlo byť pridané bez vášho vedomia.</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Vyskytol sa problém a <ph name="DEVICE_OS" /> sa nepodarilo nainštalovať.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ďalšiu pomoc získate na g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Pomenujte túto skupinu</translation>
 <translation id="8263744495942430914">Stránka <ph name="FULLSCREEN_ORIGIN" /> zakázala kurzor myši.</translation>
 <translation id="8264024885325823677">Toto nastavenie ovláda váš správca.</translation>
@@ -7492,7 +7512,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.}}</translation>
 <translation id="8777259617149177596">Úroveň batérie puzdra je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8777628254805677039">heslo používateľa typu root</translation>
-<translation id="8778328560035799409">Momentálne pridelené prepínače budú vymazané</translation>
+<translation id="8779944680596936487">Weby si môžu pomocou súborov cookie zobrazovať iba vašu aktivitu prehliadania na nich</translation>
 <translation id="8780123805589053431">Získavať popisy obrázkov od Googlu</translation>
 <translation id="8780443667474968681">Hlasové vyhľadávanie bolo vypnuté</translation>
 <translation id="8781834595282316166">Nová karta v skupine</translation>

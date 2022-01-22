@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Mina filer</translation>
 <translation id="189358972401248634">Övriga språk</translation>
 <translation id="1894023287452300670">Bevaka pris här</translation>
+<translation id="1900260903084164610">Genom att fortsätta godkänner du <ph name="BEGIN_TOS_LINK" />användarvillkoren<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Andra som använder den här enheten kan fortfarande se filer som du laddat ned i inkognitoläge.</translation>
 <translation id="1910950723001426294">Lista över delningsalternativ har stängts.</translation>
 <translation id="1918175104945982129">Användargränssnittet för samtycke till röstsökning med assistenten har öppnats över halva skärmen</translation>
@@ -206,6 +207,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2172905120685242547">Vill du stänga fönstret?</translation>
 <translation id="2175927920773552910">QR-kod</translation>
 <translation id="218608176142494674">Delar</translation>
+<translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2200113223741723867">Hantera delning av data om användning</translation>
 <translation id="2218567645332692482">Uppgradera anslutningar till HTTPS och visa en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
@@ -719,6 +721,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 nedladdning misslyckades.}other{# nedladdningar misslyckades.}}</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5171045022955879922">Sök eller ange webbadress</translation>
+<translation id="517734441743343109">Genom att fortsätta godkänner du <ph name="BEGIN_TOS_LINK" />användarvillkoren<ph name="END_TOS_LINK" /> och <ph name="BEGIN_PRIVACY_LINK" />integritetspolicyn<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5188992787241350004">Sök med rösten</translation>
 <translation id="5191251636205085390">Läs mer om ny teknik som med tiden kan ersätta tredjepartscookies och hur du kan styra den</translation>
@@ -996,6 +999,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6633067410344541938">Lås upp inkognito</translation>
 <translation id="6636623428211296678">Utforska fler inställningar nedan eller avsluta nu</translation>
 <translation id="663674369910034433">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK1" />Synk<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />Googles tjänster<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_UMA_LINK" />Hantera<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blockera alltid</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6643649862576733715">Sortera efter databesparing</translation>
@@ -1396,6 +1400,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8788265440806329501">Navigeringshistoriken har stängts</translation>
 <translation id="8788968922598763114">Öppna den senast stängda fliken igen</translation>
 <translation id="8798449543960971550">Lästa</translation>
+<translation id="8803526663383843427">När funktionen är aktiverad</translation>
 <translation id="8805097383171548551">Du behöver en enhet med kamera för att skanna en QR-kod.</translation>
 <translation id="8812260976093120287">På vissa webbplatser kan du betala med ovanstående betalningsappar som stöds på enheten.</translation>
 <translation id="881688628773363275">Det går inte att förhandsgranska innehållet.</translation>

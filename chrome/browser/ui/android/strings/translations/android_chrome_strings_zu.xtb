@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Amafayela ami</translation>
 <translation id="189358972401248634">Ezinye izilimi</translation>
 <translation id="1894023287452300670">Landelela intengo lapha</translation>
+<translation id="1900260903084164610">Ngokuqhubeka, wamukela <ph name="BEGIN_TOS_LINK" />Imigomo Yesevisi<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Amafayela owadawuniloda kumodi ye-Incognito asabonakala kunoma ubani osebenzisa le divayisi.</translation>
 <translation id="1910950723001426294">Uhlu lwezinketho zokwabelana luvaliwe.</translation>
 <translation id="1918175104945982129">Imvume ye-ui yomsizi wokusesha ngezwi ivulwe ngokuphakama okuyisigamu</translation>
@@ -206,6 +207,7 @@ Thepha noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho lwakho, thinta 
 <translation id="2172905120685242547">Vala iwindi?</translation>
 <translation id="2175927920773552910">Ikhodi ye-QR</translation>
 <translation id="218608176142494674">Ukwabelana</translation>
+<translation id="2194856509914051091">Izinto okufanele uzicabangele</translation>
 <translation id="2200113223741723867">Phatha ukwabiwa kwedatha yokusetshenziswa</translation>
 <translation id="2218567645332692482">Thuthukisa ukuzula ku-HTTPS futhi ikuxwayise ngaphambi kokulayisha amasayithi angayisekeli</translation>
 <translation id="2227444325776770048">Qhubeka njengo-<ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ukulanda kuhlulekile.}one{# ukulandwa kuhlulekile.}other{# ukulandwa kuhlulekile.}}</translation>
 <translation id="5170568018924773124">Bonisa kufolda</translation>
 <translation id="5171045022955879922">Sesha noma thayipha i-URL</translation>
+<translation id="517734441743343109">Ngokuqhubeka, wamukela <ph name="BEGIN_TOS_LINK" />Imigomo Yesevisi<ph name="END_TOS_LINK" /> kanye <ph name="BEGIN_PRIVACY_LINK" />Nenqubomgomo\u00A0Yobumfihlo<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Vula ku-Chrome</translation>
 <translation id="5188992787241350004">Sesha ngezwi lakho</translation>
 <translation id="5191251636205085390">Funda kabanzi ngokulawula ubuchwepheshe obusha obohlose ukubuyekeza amakhukhi wenkampani yangaphandle</translation>
@@ -995,6 +998,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="6633067410344541938">Vula i-Incognito</translation>
 <translation id="6636623428211296678">Hlola amasethingi amaningi ngezansi noma uqede manje</translation>
 <translation id="663674369910034433">Ukuze uthole amanye amasethingi ahambisana nobumfihlo, ukuvikeleka, nokuqoqwa kwedatha, bona okuthi <ph name="BEGIN_LINK1" />Ukuvumelanisa<ph name="END_LINK1" /> nokuthi <ph name="BEGIN_LINK2" />Amasevisi we-Google<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Ukusiza ekuthuthukiseni i-app, i-Chrome ithumela idatha yokusetshenziswa neyokuphahlazeka ku-Google. <ph name="BEGIN_UMA_LINK" />Phatha<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Vimba ngaso sonke isikhathi</translation>
 <translation id="6643016212128521049">Sula</translation>
 <translation id="6643649862576733715">Hlunga ngenani ledatha elondoloziwe</translation>
@@ -1395,6 +1399,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="8788265440806329501">Umlando wokuzula uvaliwe</translation>
 <translation id="8788968922598763114">Phinda uvule ithebhu yokugcina evaliwe</translation>
 <translation id="8798449543960971550">Funda</translation>
+<translation id="8803526663383843427">Lapho kuvuliwe</translation>
 <translation id="8805097383171548551">Ukuze uskene Ikhodi ye-QR, sebenzisa idivayisi enekhamera.</translation>
 <translation id="8812260976093120287">Kwamanye amawebhusayithi, ungakhokha ngezinhlelo zokusebenza ezisekelwayo ezingenhla kudivayisi yakho.</translation>
 <translation id="881688628773363275">Ukubuka kuqala okuqukethwe kwethebhu akubukeki.</translation>

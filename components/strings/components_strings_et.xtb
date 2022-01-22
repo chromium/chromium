@@ -208,6 +208,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1559572115229829303">&lt;p&gt;Domeeniga <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ei saa privaatset ühendust luua, kuna seadme kuupäev ja kellaaeg (<ph name="DATE_AND_TIME" />DATE_AND_TIME) on valed.&lt;/p&gt;
 
           &lt;p&gt;Kohandage kuupäeva ja kellaaega rakenduse &lt;strong&gt;Seaded&lt;/strong&gt; jaotises &lt;strong&gt;Üldine&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="156703335097561114">Võrguteave, nagu aadressid, liidese seadistus ja ühenduse kvaliteet</translation>
 <translation id="1567040042588613346">See reegel töötab eesmärgipäraselt, kuid mujal on seadistatud sama väärtus, mis on selle reegliga asendatud.</translation>
 <translation id="1569487616857761740">Sisestage aegumiskuupäev</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -703,6 +704,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3234666976984236645">Sellel saidil olulise sisu alati tuvastamine</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma brauseri ilme kohandamiseks vajutage tabulaatorit ja siis sisestusklahvi</translation>
 <translation id="3240791268468473923">Turvalise maksemandaadi leht selle kohta, et pole ühtegi sobivat mandaati, on avatud</translation>
+<translation id="324180406144491771">Hosti „<ph name="HOST_NAME" />“ lingid on blokeeritud</translation>
 <translation id="3249845759089040423">Särtsakas</translation>
 <translation id="3252266817569339921">prantsuse keel</translation>
 <translation id="3257954757204451555">Kelle selle teabe taga on?</translation>

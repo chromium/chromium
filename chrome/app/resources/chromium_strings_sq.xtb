@@ -16,6 +16,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1524282610922162960">Ndaj një skedë të Chromium</translation>
 <translation id="1553461853655228091">Chromium ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
+<translation id="1625909126243026060">Shqyrto kontrollet kryesore të sigurisë dhe privatësisë në Chromium</translation>
 <translation id="1708666629004767631">Ofrohet një version i ri më i sigurt i Chromium.</translation>
 <translation id="1774152462503052664">Lejo që Chromium të ekzekutohet në sfond</translation>
 <translation id="1779356040007214683">Për ta bërë më të sigurt Chromium, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
@@ -119,6 +120,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="459535195905078186">Aplikacionet Chromium</translation>
 <translation id="4621240073146040695">Pothuajse i përditësuar! Hape përsëri Chromium për të përfunduar përditësimin.</translation>
 <translation id="4665829708273112819">Paralajmërim: Chromium nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për të çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>
+<translation id="4673151026126227699">Nëse ndan edhe raportet e përdorimit të Chromium, ato raporte përfshijnë URL-të që ti viziton</translation>
 <translation id="4677944499843243528">Profili duket të jetë në përdorim nga një tjetër proces i Chromium (<ph name="PROCESS_ID" />) në një tjetër kompjuter (<ph name="HOST_NAME" />). Chromium ka kyçur profilin që të mos dëmtohet. Nëse je i sigurt që asnjë proces tjetër nuk po e përdor këtë profil, mund të shkyçësh profilin dhe ta rinisësh Chromium.</translation>
 <translation id="469338717132742108">Merr ndihmë me Chromium OS</translation>
 <translation id="4708774505295300557">Dikush është identifikuar më parë në Chromium në këtë kompjuter si <ph name="ACCOUNT_EMAIL_LAST" />. Krijo një përdorues të ri të Chromium për t'i mbajtur të ndara informacionet e tua.</translation>
@@ -239,6 +241,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7597596667193879455">Ke aktivizuar "Shfletimin e sigurt të përmirësuar" në llogarinë tënde. Tani merre për Chromium.</translation>
 <translation id="761356813943268536">Chromium po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="7617377681829253106">Chromium sapo është përmirësuar</translation>
+<translation id="7682601070171973634">Chromium po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga të dhënat e tua</translation>
 <translation id="7686590090926151193">Chromium nuk është shfletuesi i parazgjedhur</translation>
 <translation id="7689606757190482937">Sinkronizo dhe personalizo Chromium nëpër pajisjet e tua</translation>
 <translation id="7729447699958282447">Chromium nuk mundi të sinkronizonte të dhënat e tua, sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>

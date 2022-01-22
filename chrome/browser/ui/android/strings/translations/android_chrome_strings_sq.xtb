@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Skedarët e mi</translation>
 <translation id="189358972401248634">Gjuhë të tjera</translation>
 <translation id="1894023287452300670">Monitoro çmimin këtu</translation>
+<translation id="1900260903084164610">Duke vazhduar, ti pranon <ph name="BEGIN_TOS_LINK" />Kushtet e shërbimit<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Skedarët që shkarkon në "Modalitetin 'e fshehtë'" janë ende të dukshëm për këdo që përdor këtë pajisje.</translation>
 <translation id="1910950723001426294">Lista e opsioneve të shpërndarjes është e mbyllur.</translation>
 <translation id="1918175104945982129">Ndërfaqja e përdoruesit e miratimit të kërkimit zanor të "Asistentit" e hapur në gjysmë lartësi</translation>
@@ -206,6 +207,7 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2172905120685242547">Të mbyllet dritarja?</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="218608176142494674">Ndarja</translation>
+<translation id="2194856509914051091">Gjëra për të pasur parasysh</translation>
 <translation id="2200113223741723867">Menaxho ndarjen e të dhënave të përdorimit</translation>
 <translation id="2218567645332692482">Përmirëso navigimet në HTTPS dhe paralajmëro përpara ngarkimit të faqeve që nuk e mbështetin</translation>
 <translation id="2227444325776770048">Vazhdo si <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 shkarkim pa sukses.}other{# shkarkime pa sukses.}}</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5171045022955879922">Kërko ose shkruaj URL-në</translation>
+<translation id="517734441743343109">Duke vazhduar, ti pranon <ph name="BEGIN_TOS_LINK" />Kushtet e shërbimit<ph name="END_TOS_LINK" /> dhe <ph name="BEGIN_PRIVACY_LINK" />Politikën e privatësisë<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5188992787241350004">Kërko me zë</translation>
 <translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
@@ -995,6 +998,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6633067410344541938">Shkyç modalitetin "I fshehtë"</translation>
 <translation id="6636623428211296678">Eksploro më shumë cilësime më poshtë ose përfundo tani</translation>
 <translation id="663674369910034433">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK1" />Shinkronizimi <ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Shërbimet e Google<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Për të ndihmuar në përmirësimin e aplikacionit, Chrome dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_UMA_LINK" />Menaxho<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bllokoji gjithmonë</translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6643649862576733715">Rendit sipas sasisë së të dhënave të ruajtura</translation>
@@ -1395,6 +1399,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8788265440806329501">Historiku i navigimit është mbyllur</translation>
 <translation id="8788968922598763114">Hap përsëri skedën e fundit të mbyllur</translation>
 <translation id="8798449543960971550">Të lexuara</translation>
+<translation id="8803526663383843427">Kur është e aktive</translation>
 <translation id="8805097383171548551">Për të skanuar një kod QR, përdor një pajisje me kamerë.</translation>
 <translation id="8812260976093120287">Në disa sajte uebi, mund të paguash me aplikacionet e mësipërme të mbështetura të pagesës në pajisjen tënde.</translation>
 <translation id="881688628773363275">Përmbajtja e skedës së shikimit paraprak nuk është e shikueshme.</translation>

@@ -3025,13 +3025,6 @@
 
       Докладніше про правило <ph name="IEEM_SITELIST_POLICY" /> в Internet Explorer читайте на сторінці https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="4567137030726189378">Дозволяє використання Інструментів розробника</translation>
-<translation id="4567818663772614440">Це правило керує хмарним звітуванням <ph name="PRODUCT_NAME" />, що завантажує інформацію про роботу веб-переглядача на консоль Google Адміністратора.
-
-      Якщо це правило не налаштовано або для нього вибрано значення false, дані не збираються й не завантажуються.
-      Якщо для нього вибрано значення true, дані збираються й завантажуються на консоль Google Адміністратора.
-
-      Це правило працює для <ph name="PRODUCT_NAME" />, лише якщо комп'ютер зареєстровано відповідно до правила <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-      Для <ph name="PRODUCT_OS_NAME" /> це правило діє завжди.</translation>
 <translation id="4570859815763368584">Не підтримується у версії M68. Натомість використовуйте правило DefaultPopupsSetting.
 
       Докладніше пояснення можна переглянути за посиланням: https://www.chromestatus.com/feature/5675755719622656.

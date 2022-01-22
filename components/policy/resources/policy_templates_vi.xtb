@@ -3015,13 +3015,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 
       Để biết thêm thông tin về chính sách <ph name="IEEM_SITELIST_POLICY" /> của Internet Explorer, hãy truy cập vào trang web: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="4567137030726189378">Cho phép sử dụng Công cụ dành cho nhà phát triển</translation>
-<translation id="4567818663772614440">Chính sách này kiểm soát hoạt động báo cáo của <ph name="PRODUCT_NAME" /> trong đám mây, tức là có cho phép tải thông tin về hoạt động của trình duyệt lên Bảng điều khiển dành cho quản trị viên của Google hay không.
-
-      Khi bạn không đặt chính sách này hoặc đặt thành False, thì dữ liệu sẽ không được thu thập hoặc tải lên.
-      Khi bạn đặt chính sách này thành True, thì dữ liệu sẽ được thu thập và tải lên Bảng điều khiển dành cho quản trị viên của Google.
-
-      Đối với <ph name="PRODUCT_NAME" />, chính sách này chỉ có hiệu lực khi máy được đăng ký bằng <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-      Đối với <ph name="PRODUCT_OS_NAME" />, chính sách này luôn có hiệu lực.</translation>
 <translation id="4570859815763368584">Không còn dùng trong M68. Hãy sử dụng lựa chọn DefaultPopupsSetting để thay thế.
 
       Để biết thông tin giải thích đầy đủ, hãy truy cập https://www.chromestatus.com/feature/5675755719622656.

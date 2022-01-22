@@ -16,6 +16,7 @@
 <translation id="1524282610922162960">Compartir unha pestana de Chromium</translation>
 <translation id="1553461853655228091">Chromium necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{O teu administrador require que reinicies Chromium para aplicar unha actualización}=1{O teu administrador require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
+<translation id="1625909126243026060">Revisa os controis clave de privacidade e seguranza en Chromium</translation>
 <translation id="1708666629004767631">Hai unha versión nova e máis segura de Chromium dispoñible.</translation>
 <translation id="1774152462503052664">Deixar que Chromium se execute en segundo plano</translation>
 <translation id="1779356040007214683">Para conseguir que Chromium resulte máis seguro, desactivamos algunhas extensións que non aparecen en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>
@@ -119,6 +120,7 @@
 <translation id="459535195905078186">Aplicacións de Chromium</translation>
 <translation id="4621240073146040695">A actualización case rematou. Volve iniciar Chromium para finalizala.</translation>
 <translation id="4665829708273112819">Advertencia: Chromium non pode evitar que as extensións rexistren o teu historial de navegación. Para desactivar esta extensión no modo de incógnito, anula a selección desta opción.</translation>
+<translation id="4673151026126227699">Se, ademais, compartes os informes de uso de Chromium, neles inclúense os URL que visites</translation>
 <translation id="4677944499843243528">Parece que outro proceso de Chromium (<ph name="PROCESS_ID" />) está utilizando o perfil noutro ordenador (<ph name="HOST_NAME" />). Chromium bloqueou o perfil para que non se dane. Se estás seguro de que ningún outro proceso está utilizando este perfil, podes desbloquear o perfil e volver iniciar Chromium.</translation>
 <translation id="469338717132742108">Obter axuda sobre Chromium OS</translation>
 <translation id="4708774505295300557">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chromium neste ordenador. Crea un novo usuario de Chromium para manter a túa información por separado.</translation>
@@ -239,6 +241,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7597596667193879455">Activaches na túa conta a función Navegación segura mellorada. Agora comeza a utilizala en Chromium.</translation>
 <translation id="761356813943268536">Chromium está utilizando a túa cámara e micrófono.</translation>
 <translation id="7617377681829253106">Chromium introduciu melloras</translation>
+<translation id="7682601070171973634">Chromium está explorando novas funcións que lles permiten aos sitios ofrecer a mesma experiencia de navegación usando menos datos</translation>
 <translation id="7686590090926151193">Chromium non é o teu navegador predeterminado</translation>
 <translation id="7689606757190482937">Sincroniza e personaliza Chromium nos teus dispositivos</translation>
 <translation id="7729447699958282447">Chromium non puido sincronizar os teus datos debido a que a sincronización non está dispoñible para o teu dominio.</translation>

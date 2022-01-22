@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Mani faili</translation>
 <translation id="189358972401248634">Citas valodas</translation>
 <translation id="1894023287452300670">Šeit varat izsekot cenu</translation>
+<translation id="1900260903084164610">Turpinot jūs piekrītat <ph name="BEGIN_TOS_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Arī inkognito režīmā lejupielādētie faili ir redzami visiem ierīces lietotājiem.</translation>
 <translation id="1910950723001426294">Kopīgošanas opciju saraksts ir aizvērts.</translation>
 <translation id="1918175104945982129">Piekrišanas lietotāja saskarne Asistenta izmantošanai meklēšanā ar balsi (atvērta pusekrāna augstumā)</translation>
@@ -206,6 +207,7 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="2172905120685242547">Vai aizvērt logu?</translation>
 <translation id="2175927920773552910">QR kods</translation>
 <translation id="218608176142494674">Kopīgošana</translation>
+<translation id="2194856509914051091">Svarīgi apsvērumi</translation>
 <translation id="2200113223741723867">Pārvaldīt lietojuma datu kopīgošanu</translation>
 <translation id="2218567645332692482">Navigācijai izmantot HTTPS un brīdināt pirms tādu vietņu ielādes, kas to neatbalsta</translation>
 <translation id="2227444325776770048">Turpināt kā: <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 lejupielāde neizdevās.}zero{# lejupielādes neizdevās.}one{# lejupielāde neizdevās.}other{# lejupielādes neizdevās.}}</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5171045022955879922">Meklējiet vai ievadiet URL.</translation>
+<translation id="517734441743343109">Turpinot jūs piekrītat <ph name="BEGIN_TOS_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_TOS_LINK" /> un <ph name="BEGIN_PRIVACY_LINK" />konfidencialitātes politikai<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Atvērt pārlūkā Chrome</translation>
 <translation id="5188992787241350004">Meklējiet ar balsi</translation>
 <translation id="5191251636205085390">Uzziniet par jaunām tehnoloģijām, kas izstrādātas, lai aizstātu trešo pušu sīkfailus, un pārvaldiet tās.</translation>
@@ -995,6 +998,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6633067410344541938">Atbloķēt inkognito režīmu</translation>
 <translation id="6636623428211296678">Tālāk izpētīt citus iestatījumus vai beigt tūlīt</translation>
 <translation id="663674369910034433">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu vākšanu, skatiet sadaļās <ph name="BEGIN_LINK1" />Sinhronizēšana<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Google pakalpojumi<ph name="END_LINK2" />.</translation>
+<translation id="6637100877383020115">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju dati no pārlūka Chrome. <ph name="BEGIN_UMA_LINK" />Pārvaldīt<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Vienmēr bloķēt</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6643649862576733715">Kārtot pēc saglabāto datu apjoma</translation>
@@ -1395,6 +1399,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8788265440806329501">Navigācijas vēsture ir aizvērta</translation>
 <translation id="8788968922598763114">Atkārtoti atvērt pēdējo aizvērto cilni</translation>
 <translation id="8798449543960971550">Lasītas</translation>
+<translation id="8803526663383843427">Ja ieslēgta</translation>
 <translation id="8805097383171548551">Lai varētu skenēt QR kodu, izmantojiet ierīci ar kameru.</translation>
 <translation id="8812260976093120287">Dažās vietnēs var norēķināties, ierīcē izmantojot iepriekš norādītās atbalstītās maksājumu lietotnes.</translation>
 <translation id="881688628773363275">Priekšskatāmās cilnes saturu nevar skatīt.</translation>

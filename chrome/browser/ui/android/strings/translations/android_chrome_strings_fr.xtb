@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
 <translation id="1894023287452300670">Effectuez le suivi du prix ici</translation>
+<translation id="1900260903084164610">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Tout utilisateur de cet appareil voit les fichiers que vous téléchargez en mode navigation privée.</translation>
 <translation id="1910950723001426294">La liste des options de partage est fermée.</translation>
 <translation id="1918175104945982129">Interface d'autorisation pour la recherche vocale de l'Assistant ouverte à mi-hauteur</translation>
@@ -206,6 +207,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2172905120685242547">Fermer la fenêtre ?</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="218608176142494674">Partage</translation>
+<translation id="2194856509914051091">Éléments à prendre en compte</translation>
 <translation id="2200113223741723867">Gérer le partage des données d'utilisation</translation>
 <translation id="2218567645332692482">Met à niveau les navigations en HTTPS et vous avertit avant de charger les sites qui ne prennent pas en charge ce protocole</translation>
 <translation id="2227444325776770048">Continuer en tant que <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Échec de 1 téléchargement.}one{Échec de # téléchargement.}other{Échec de # téléchargements.}}</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
+<translation id="517734441743343109">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_PRIVACY_LINK" />Règles de confidentialité<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5188992787241350004">Faites une recherche vocale</translation>
 <translation id="5191251636205085390">Découvrez et contrôlez les nouvelles technologies qui visent à remplacer les cookies tiers</translation>
@@ -995,6 +998,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6633067410344541938">Déverrouiller la navigation privée</translation>
 <translation id="6636623428211296678">Découvrez d'autres paramètres ci-dessous ou terminez maintenant</translation>
 <translation id="663674369910034433">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez les pages <ph name="BEGIN_LINK1" />Synchronisation<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />Services Google<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Pour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Toujours bloquer</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6643649862576733715">Trier en fonction de la quantité de données économisées</translation>
@@ -1395,6 +1399,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8788265440806329501">Historique de navigation fermé</translation>
 <translation id="8788968922598763114">Rouvrir le dernier onglet fermé</translation>
 <translation id="8798449543960971550">Lu</translation>
+<translation id="8803526663383843427">Lorsque la fonctionnalité est activée</translation>
 <translation id="8805097383171548551">Pour scanner un code QR, utilisez un appareil doté d'un appareil photo.</translation>
 <translation id="8812260976093120287">Sur certains sites Web, vous pouvez payer depuis votre appareil avec les applications de paiement compatibles indiquées ci-dessus.</translation>
 <translation id="881688628773363275">Le contenu de l'onglet "Aperçu" n'est pas visible.</translation>

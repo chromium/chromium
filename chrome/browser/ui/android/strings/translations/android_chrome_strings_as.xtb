@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">মোৰ ফাইল</translation>
 <translation id="189358972401248634">অন্য ভাষা</translation>
 <translation id="1894023287452300670">ইয়াত মূল্য ট্ৰেক কৰক</translation>
+<translation id="1900260903084164610">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_TOS_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" />ত সন্মত হৈছে।</translation>
 <translation id="1905320231301365059">আপুনি ইনক’গনিট’ ম’ডত ডাউনল’ড কৰা ফাইলসমূহ তথাপি এই ডিভাইচটো ব্যৱহাৰ কৰা যিকোনো লোকৰ বাবে দৃশ্যমান হয়।</translation>
 <translation id="1910950723001426294">শ্বেয়াৰ কৰাৰ বিকল্পৰ সূচীখন বন্ধ কৰা হৈছে।</translation>
 <translation id="1918175104945982129">Assistantৰ কণ্ঠধ্বনিৰদ্বাৰা সন্ধানৰ সন্মতিৰ ইউআই অৰ্ধ উচ্চতাত খোল খাইছে</translation>
@@ -206,6 +207,7 @@
 <translation id="2172905120685242547">ৱিণ্ড’ বন্ধ কৰিবনে?</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
 <translation id="218608176142494674">শ্বেয়াৰ কৰি থকা হৈছে</translation>
+<translation id="2194856509914051091">বিবেচনা কৰিব লগা বিষয়</translation>
 <translation id="2200113223741723867">ব্যৱহাৰৰ ডেটা শ্বেয়াৰ কৰাটো পৰিচালনা কৰক</translation>
 <translation id="2218567645332692482">HTTPSলৈ আটাইবোৰ নেভিগেশ্বন আপগ্ৰে’ড কৰক আৰু এইটো সমৰ্থন নকৰা ছাইট ল’ড কৰাৰ পূৰ্বে আপোনাক সতৰ্ক কৰক</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
@@ -718,6 +720,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{১টা ডাউনল’ড কৰিব পৰা নগ’ল।}one{#টা ডাউনল’ড কৰিব পৰা নগ’ল।}other{#টা ডাউনল’ড কৰিব পৰা নগ’ল।}}</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5171045022955879922">সন্ধান কৰক বা URL টাইপ কৰক</translation>
+<translation id="517734441743343109">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_TOS_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" /> আৰু <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তাৰ নীতি<ph name="END_PRIVACY_LINK" />ত সন্মত হৈছে।</translation>
 <translation id="5184329579814168207">Chromeত খোলক</translation>
 <translation id="5188992787241350004">আপোনাৰ কণ্ঠধ্বনিৰে সন্ধান কৰক</translation>
 <translation id="5191251636205085390">তৃতীয় পক্ষৰ কুকিৰ স্থান ল'বলৈ বিচৰা নতুন প্ৰযুক্তিৰ বিষয়ে জানক আৰু সেইবোৰ নিয়ন্ত্ৰণ কৰক</translation>
@@ -995,6 +998,7 @@
 <translation id="6633067410344541938">ইনক’গনিট’ আনলক কৰক</translation>
 <translation id="6636623428211296678">তলত অধিক ছেটিং অন্বেষণ কৰক অথবা এতিয়া শেষ কৰক</translation>
 <translation id="663674369910034433">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিংসমূহৰ বাবে <ph name="BEGIN_LINK1" />ছিংক কৰক<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google সেৱাসমূহ<ph name="END_LINK2" /> চাওক</translation>
+<translation id="6637100877383020115">এপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_UMA_LINK" />পৰিচালনা কৰক<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">সকলো সময়তে অৱৰোধ কৰক</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6643649862576733715">ছেভ কৰা ডেটাৰ পৰিমাণ অনুসৰি সজাওক</translation>
@@ -1395,6 +1399,7 @@
 <translation id="8788265440806329501">নেভিগেশ্বন ইতিহাস বন্ধ কৰা আছে</translation>
 <translation id="8788968922598763114">অন্তিমবাৰ খোলা টেবটো পুনৰ খোলক</translation>
 <translation id="8798449543960971550">পঢ়ক</translation>
+<translation id="8803526663383843427">অন কৰা থাকিলে</translation>
 <translation id="8805097383171548551">কোনো কিউআৰ ক’ড স্কেন কৰিবলৈ, এটা কেমেৰা থকা ডিভাইচ ব্যৱহাৰ কৰক।</translation>
 <translation id="8812260976093120287">কিছুমান ৱেবছাইটত আপোনাৰ ডিভাইচত থকা ওপৰত উল্লেখ কৰা সমৰ্থিত পৰিশোধ এপ্‌ ব্যৱহাৰ কৰি পৰিশোধ কৰিব পাৰিব।</translation>
 <translation id="881688628773363275">পূৰ্বদৰ্শন টেবত থকা সমল চাব নোৱাৰি।</translation>

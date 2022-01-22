@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Omat tiedostot</translation>
 <translation id="189358972401248634">Muut kielet</translation>
 <translation id="1894023287452300670">Seuraa hintaa täältä</translation>
+<translation id="1900260903084164610">Jatkamalla hyväksyt <ph name="BEGIN_TOS_LINK" />käyttöehdot<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Incognito-tilassa lataamasi tiedostot näkyvät edelleen kaikille, jotka käyttävät laitetta.</translation>
 <translation id="1910950723001426294">Jakamisvaihtoehtojen lista on suljettu.</translation>
 <translation id="1918175104945982129">Assistantin puhehaun suostumus-UI avattu puolen näytön kokoisena</translation>
@@ -206,6 +207,7 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <translation id="2172905120685242547">Suljetaanko ikkuna?</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="218608176142494674">Jakaminen</translation>
+<translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="2200113223741723867">Valitse käyttödatan jakamisasetukset</translation>
 <translation id="2218567645332692482">Siirtymiset päivitetään HTTPS-protokollaan ja saat varoituksen ennen kuin sitä ei-tukevat sivustot ladataan</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 lataus epäonnistui}other{# latausta epäonnistui}}</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="5171045022955879922">Kirjoita hakusanoja tai URL-osoite</translation>
+<translation id="517734441743343109">Jatkamalla hyväksyt <ph name="BEGIN_TOS_LINK" />käyttöehdot<ph name="END_TOS_LINK" /> ja <ph name="BEGIN_PRIVACY_LINK" />tietosuojakäytännön<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Avaa Chromessa</translation>
 <translation id="5188992787241350004">Tee puhehaku</translation>
 <translation id="5191251636205085390">Lue lisää uusista teknologioista, joilla on tarkoitus korvata kolmannen osapuolen evästeet, ja tee haluamasi valinnat</translation>
@@ -995,6 +998,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6633067410344541938">Avaa incognito-välilehden lukitus</translation>
 <translation id="6636623428211296678">Katso muita asetuksia alla tai lopeta nyt</translation>
 <translation id="663674369910034433">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia kohdista <ph name="BEGIN_LINK1" />Synkronointi<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Googlen palvelut<ph name="END_LINK2" />.</translation>
+<translation id="6637100877383020115">Chrome lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_UMA_LINK" />Muokkaa<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Estä aina</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6643649862576733715">Lajittele säästetyn datan määrän mukaan</translation>
@@ -1395,6 +1399,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8788265440806329501">Navigointihistoria suljettu</translation>
 <translation id="8788968922598763114">Avaa viimeksi suljettu välilehti uudelleen</translation>
 <translation id="8798449543960971550">Lue</translation>
+<translation id="8803526663383843427">Toiminnon ollessa päällä</translation>
 <translation id="8805097383171548551">Jos haluat lukea QR-koodin, käytä laitetta, jossa on kamera.</translation>
 <translation id="8812260976093120287">Tietyt sivustot tukevat yllä mainittuja laitteesi yhteensopivia maksusovelluksia.</translation>
 <translation id="881688628773363275">Esikatseluvälilehden sisältö ei ole katsottavissa.</translation>

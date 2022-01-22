@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Els meus fitxers</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
 <translation id="1894023287452300670">Fes un seguiment del preu aquí</translation>
+<translation id="1900260903084164610">En continuar, acceptes les <ph name="BEGIN_TOS_LINK" />condicions del servei<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Tothom que utilitzi aquest dispositiu podrà veure els fitxers que baixis en mode d'incògnit.</translation>
 <translation id="1910950723001426294">La llista d'opcions de compartició està tancada.</translation>
 <translation id="1918175104945982129">La IU de consentiment de la cerca per veu de l'Assistent s'ha obert a mitja alçada</translation>
@@ -206,6 +207,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="2172905120685242547">Vols tancar la finestra?</translation>
 <translation id="2175927920773552910">Codi QR</translation>
 <translation id="218608176142494674">Compartició</translation>
+<translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
 <translation id="2200113223741723867">Gestiona la compartició de les dades d'ús</translation>
 <translation id="2218567645332692482">Actualitza les navegacions a HTTPS i t'avisa abans de carregar llocs web que no l'admeten</translation>
 <translation id="2227444325776770048">Continua com a <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{No s'ha pogut completar 1 baixada.}other{No s'han pogut completar # baixades.}}</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
+<translation id="517734441743343109">En continuar, acceptes les <ph name="BEGIN_TOS_LINK" />condicions del servei<ph name="END_TOS_LINK" /> i la <ph name="BEGIN_PRIVACY_LINK" />política de privadesa<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Obre a Chrome</translation>
 <translation id="5188992787241350004">Cerca amb la veu</translation>
 <translation id="5191251636205085390">Obtén informació sobre les noves tecnologies per substituir les galetes de tercers i controla-les</translation>
@@ -995,6 +998,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6633067410344541938">Desbloqueja el mode d'incògnit</translation>
 <translation id="6636623428211296678">Explora més opcions de configuració a continuació o acaba ara</translation>
 <translation id="663674369910034433">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK1" />Sincronització<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />serveis de Google<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Per ajudar a millorar l'aplicació, Chrome envia les dades d'ús i de bloqueig a Google. <ph name="BEGIN_UMA_LINK" />Gestiona<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloqueja sempre</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6643649862576733715">Ordena per quantitat de dades estalviades</translation>
@@ -1395,6 +1399,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8788265440806329501">L'historial de navegació està tancat</translation>
 <translation id="8788968922598763114">Torna a obrir l'última pestanya tancada</translation>
 <translation id="8798449543960971550">Llegits</translation>
+<translation id="8803526663383843427">Quan està activada</translation>
 <translation id="8805097383171548551">Per escanejar un codi QR, utilitza un dispositiu amb càmera.</translation>
 <translation id="8812260976093120287">En alguns llocs web, pots fer servir el teu dispositiu per pagar amb les aplicacions de pagament anteriors admeses.</translation>
 <translation id="881688628773363275">El contingut de la pestanya de previsualització no es pot veure.</translation>

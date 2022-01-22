@@ -73,6 +73,11 @@
 <translation id="1071917609930274619">Omsætning af data til kode</translation>
 <translation id="1072700771426194907">Der blev registreret en USB-enhed</translation>
 <translation id="107278043869924952">Brug pinkode og adgangskode</translation>
+<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ved at give Chrome OS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i Chrome OS. Disse rapporter kan f.eks. indeholde oplysninger om, hvilke funktioner der blev brugt, hvor meget hukommelse der normalt bruges, samt diagnostik- og brugsdata for Android-apps. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for disse rapporter i indstillingerne på dit barns Chrome OS-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Hvis indstillingen Web- og appaktivitet er aktiveret for dit barns Google-konto, gemmes dit barns data muligvis på barnets Google-konto. Få flere oplysninger om disse indstillinger og om, hvordan du ændrer dem, ved at gå til families.google.com.<ph name="END_PARAGRAPH4" />
+    <ph name="BEGIN_PARAGRAPH4" />Hvis ejeren af enheden aktiverer "Send brugs- og diagnosticeringsdata", uploades nedbrudsrapporter muligvis også til Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Naviger på sider med en tekstmarkør</translation>
 <translation id="1076698951459398590">Aktivér tema</translation>
 <translation id="1076766328672150609">Dit barn kan bruge en pinkode til at låse enheden op.</translation>
@@ -977,6 +982,7 @@
 <translation id="1965624977906726414">Har ingen særlige tilladelser.</translation>
 <translation id="1969654639948595766">WebRTC-tekstlogfiler (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Videotilstand er aktiveret</translation>
+<translation id="1972325230031091483">Du får hurtigere browsing, da indholdet indlæses proaktivt på baggrund af den webside, du aktuelt er på</translation>
 <translation id="197288927597451399">Behold</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> kan ikke downloades sikkert. Tryk på Shift+F6 for at skifte til downloadlinjen.</translation>
 <translation id="1974043046396539880">CRL-distributionspoint</translation>
@@ -1201,6 +1207,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2191754378957563929">Til</translation>
 <translation id="2192505247865591433">Fra:</translation>
 <translation id="2193365732679659387">Tillidsindstillinger</translation>
+<translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2195331105963583686">Du kan stadig bruge denne <ph name="DEVICE_TYPE" /> efter denne dato, men den vil ikke længere modtage automatiske software- og sikkerhedsopdateringer.</translation>
 <translation id="2195729137168608510">Mail-beskyttelse</translation>
 <translation id="2198625180564913276">Profilen tilføjes. Dette kan tage et par minutter.</translation>
@@ -1345,7 +1352,12 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2326931316514688470">&amp;Genindlæs app</translation>
 <translation id="2327492829706409234">Aktivér app</translation>
 <translation id="2328561734797404498">Genstart enheden for at bruge <ph name="APP_NAME" />.</translation>
+<translation id="2328636661627946415">Når du er i inkognitotilstand, kan websites kun bruge cookies til at se din browseraktivitet på deres eget website. Cookies slettes, når inkognitosessionen afsluttes.</translation>
 <translation id="2329597144923131178">Log ind for at hente bogmærker, historik, adgangskoder og andre indstillinger på alle dine enheder.</translation>
+<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ved at give dine Chrome OS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i Chrome OS. Disse rapporter kan f.eks. indeholde oplysninger om, hvilke funktioner du bruger, hvor meget hukommelse du normalt anvender, diagnostik- og brugsdata for Android-apps samt fejl. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for disse rapporter i indstillingerne for din Chrome OS-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Hvis indstillingen Web- og appaktivitet er aktiveret for din Google-konto, gemmes dine Android-data muligvis på din Google-konto. Du kan se og slette dine data samt ændre dine kontoindstillinger på account.google.com.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Hvis ejeren af enheden aktiverer "Send brugs- og diagnosticeringsdata", uploades nedbrudsrapporter muligvis også til Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Vis i Webshop</translation>
 <translation id="2332192922827071008">Åbn præferencer</translation>
 <translation id="2332515770639153015">Udvidet beskyttet browsing er aktiveret</translation>
@@ -2048,6 +2060,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3030967311408872958">Fra solnedgang til solopgang</translation>
 <translation id="3031417829280473749">Scully</translation>
 <translation id="3031557471081358569">Vælg at importere følgende:</translation>
+<translation id="3032587662022429783">Få flere oplysninger om diagnostik- og brugsdata.</translation>
 <translation id="3033348223765101500">Administrer dine data</translation>
 <translation id="3036327949511794916">Fristen for at returnere denne <ph name="DEVICE_TYPE" /> er overskredet.</translation>
 <translation id="3036546437875325427">Aktivér Flash</translation>
@@ -2597,6 +2610,9 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3629631988386925734">Angiv din adgangskode for at aktivere Smart Lock. Næste gang låser din telefon din <ph name="DEVICE_TYPE" /> op. Du kan deaktivere Smart Lock i Indstillinger.</translation>
 <translation id="3630132874740063857">Din telefon</translation>
 <translation id="3630995161997703415">Føj dette website til din hylde for at bruge det når som helst</translation>
+<translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Ved at give dine Chrome OS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i Chrome OS. Disse rapporter kan f.eks. indeholde oplysninger om, hvornår Chrome OS oplever nedbrud, hvilke funktioner du bruger, og hvor meget hukommelse du normalt anvender.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for disse rapporter i indstillingerne for din Chrome-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Deaktivering af denne funktion påvirker ikke enhedens evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3634652306074934350">Anmodningen om tilladelse udløb</translation>
 <translation id="3635199270495525546">En TPM-enhed (Trusted Platform Module) blev registreret</translation>
 <translation id="3635353578505343390">Send feedback til Google</translation>
@@ -2617,6 +2633,10 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3651488188562686558">Afbryd Wi-Fi-forbindelsen</translation>
 <translation id="3652817283076144888">Initialiserer</translation>
 <translation id="3653160965917900914">Fildeling via netværk</translation>
+<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ved at give Chrome OS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i Chrome OS. Disse rapporter kan f.eks. indeholde oplysninger om, hvilke funktioner der blev brugt, og hvor meget hukommelse der normalt bruges.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for disse rapporter i indstillingerne på dit barns Chrome OS-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Hvis ejeren af enheden aktiverer "Send brugs- og diagnosticeringsdata", uploades nedbrudsrapporter muligvis også til Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Tillad fortsat, at <ph name="HOST" /> har adgang til din mikrofon</translation>
 <translation id="3654045516529121250">Læse dine indstillinger for hjælpefunktioner</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent adgang til én fil.}one{Den har permanent adgang til # filer.}other{Den har permanent adgang til # filer.}}</translation>
@@ -2656,6 +2676,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3694027410380121301">Vælg forrige fane</translation>
 <translation id="369489984217678710">Adgangskoder og andre logindata</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Sikkerhedstjekket blev gennemført. Dine data uploades.}=1{Sikkerhedstjekket blev gennemført. Din fil uploades.}one{Sikkerhedstjekket blev gennemført. Din fil uploades.}other{Sikkerhedstjekket blev gennemført. Dine filer uploades.}}</translation>
+<translation id="3698471669415859717">Gennemgangen er fuldført</translation>
 <translation id="3699624789011381381">Mailadresse</translation>
 <translation id="3699920817649120894">Vil du deaktivere synkronisering og tilpasning?</translation>
 <translation id="3700888195348409686">Præsenterer (<ph name="PAGE_ORIGIN" />)</translation>
@@ -2962,6 +2983,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3975565978598857337">Det var ikke muligt at kontakte serveren for domænet</translation>
 <translation id="3976108569178263973">Der er ingen tilgængelige printere.</translation>
 <translation id="397703832102027365">Afslutter...</translation>
+<translation id="3977145907578671392">Funktioner på visse websites fungerer muligvis ikke i inkognito</translation>
 <translation id="3977886311744775419">Automatiske opdateringer downloades ikke på denne netværkstype, men du kan kigge efter opdateringer manuelt.</translation>
 <translation id="3979395879372752341">Ny udvidelse er tilføjet (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Aktivér <ph name="NETWORKDEVICE" /></translation>
@@ -3109,6 +3131,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4132183752438206707">Find apps i Google Play Butik</translation>
 <translation id="4132364317545104286">Omdøb eSIM-profil</translation>
 <translation id="4133076602192971179">Åbn appen for at ændre din adgangskode</translation>
+<translation id="4135746311382563554">Yderligere servicevilkår for Google Chrome og Chrome OS</translation>
 <translation id="4136203100490971508">Nattelys slukkes automatisk ved solopgang</translation>
 <translation id="41365691917097717">Hvis du fortsætter, aktiveres ADB-fejlretning til oprettelse og test af Android-apps. Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet bekræftet af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
 <translation id="4138267921960073861">Vis brugernavne og billeder på loginskærmen</translation>
@@ -3806,6 +3829,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4900652253009739885">Dette er den sidste kontakt, der er tildelt handlingen "Vælg", og den kan derfor ikke fjernes. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Vælg eksperimenttilstand for eksperimentet <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Den politik, der er downloadet fra serveren, er ugyldig: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904511036057277323">Vær med til at forbedre funktionerne og ydeevnen i Chrome og Chrome OS ved automatisk at sende diagnostik- og brugsdata til Google. Visse samlede data er også nyttige for Android-apps og Google-partnere. Hvis indstillingen Web- og appaktivitet er aktiveret for dit barns Google-konto, gemmes dit barns Android-data muligvis på dit barns Google-konto.</translation>
 <translation id="4906490889887219338">Konfigurer eller administrer fildeling via netværk. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Vælg, hvornår denne udvidelse kan læse og ændre dine websitedata</translation>
 <translation id="4907161631261076876">Denne fil er ikke downloadet på almindelig vis og kan være farlig.</translation>
@@ -3906,6 +3930,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5018207570537526145">Åbn udvidelsens website</translation>
 <translation id="5018526990965779848">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre din Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto.</translation>
 <translation id="5021750053540820849">Endnu ikke opdateret</translation>
+<translation id="5024511550058813796">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="5026492829171796515">Log ind for at tilføje en Google-konto</translation>
 <translation id="5026806129670917316">Aktivér Wi-Fi</translation>
 <translation id="5026874946691314267">Vis ikke denne notifikation igen</translation>
@@ -3974,6 +3999,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5093569275467863761">Inkognito-underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">Kommunikere med indbyggede apps</translation>
 <translation id="5097002363526479830">Der kunne ikke oprettes forbindelse til netværket "<ph name="NAME" />": <ph name="DETAILS" /></translation>
+<translation id="5097306410549350357">Få flere oplysninger om lokationstilladelse</translation>
 <translation id="5097649414558628673">Værktøj: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klik automatisk, når markøren stopper</translation>
 <translation id="5101839224773798795">Klik automatisk, når markøren stopper</translation>
@@ -4263,6 +4289,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5407167491482639988">Uforståelig</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Fra din Google-konto</translation>
+<translation id="5413640305322530561">Få flere oplysninger om diagnostik- og brugsdata</translation>
 <translation id="5414198321558177633">Profillisten opdateres. Dette kan tage et par minutter.</translation>
 <translation id="5414566801737831689">Læs ikonerne for de websites, du besøger</translation>
 <translation id="5417312524372586921">Browsertemaer</translation>
@@ -4426,6 +4453,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5571066253365925590">Bluetooth er aktiveret</translation>
 <translation id="5571092938913434726">Global mediestyring</translation>
 <translation id="5571832155627049070">Tilpas din profil</translation>
+<translation id="5572648434713976849">Du får vist forbedrede forslag i adresselinjen</translation>
 <translation id="5572851009514199876">Start og log ind på Chrome, så Chrome kan kontrollere, om du har adgang til dette website.</translation>
 <translation id="5575473780076478375">Inkognitoudvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Der opstod et problem med anmodningen om demoregistrering.</translation>
@@ -5189,6 +5217,10 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Unavngivet gruppe – 1 fane}one{Unavngivet gruppe – # fane}other{Unavngivet gruppe – # faner}}</translation>
 <translation id="6385149369087767061">Opret forbindelse til internettet, og prøv igen</translation>
 <translation id="6385543213911723544">Websites kan gemme og læse cookiedata</translation>
+<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ved at give dine Chrome OS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i Chrome OS. Disse rapporter kan f.eks. indeholde oplysninger om, hvilke funktioner du bruger, og hvor meget hukommelse du normalt anvender.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for disse rapporter i indstillingerne for din Chrome-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Deaktivering af denne funktion påvirker ikke enhedens evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Hvis ejeren af enheden aktiverer "Send brugs- og diagnosticeringsdata", uploades nedbrudsrapporter muligvis også til Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Advarsel! Detaljeret logging er aktiveret. Loggerne nedenfor indeholder muligvis webadresser eller andre følsomme oplysninger. Gennemse loggerne, så du er sikker på, at du gerne vil indsende disse oplysninger.</translation>
 <translation id="6387674443318562538">Opdel lodret</translation>
 <translation id="6388429472088318283">Søg efter sprog</translation>
@@ -5305,6 +5337,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6504601948739128893">Har ikke tilladelse til at bruge de skrifttyper, der er installeret på din enhed</translation>
 <translation id="6504611359718185067">Opret forbindelse til internettet for at tilføje en printer</translation>
 <translation id="6506374932220792071">X9.62 ECDSA-signatur med SHA-256</translation>
+<translation id="6507936476364432879">Vær med til at forbedre funktionerne og ydeevnen i Chrome og Chrome OS ved automatisk at sende diagnostik- og brugsdata til Google.</translation>
 <translation id="6508248480704296122">Relateret til <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielicens</translation>
@@ -5400,6 +5433,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6602937173026466876">Adgang til dine printere</translation>
 <translation id="6602956230557165253">Brug venstre og højre piletast til at navigere.</translation>
 <translation id="6602998402703530379">Enhed <ph name="DEVICE_INDEX" /> af <ph name="DEVICE_COUNT" /> – <ph name="DEVICE_NAME" />, videokamera.</translation>
+<translation id="6603185457265641428">Vælg, om historikken skal synkroniseres</translation>
 <translation id="6605847144724004692">Endnu ikke bedømt af nogen brugere.</translation>
 <translation id="6606671997164410857">Det ser ud til, at du allerede har konfigureret Google Assistent på en anden enhed. Du kan få endnu mere ud af Google Assistent ved at aktivere Skærmkontekst på denne enhed.</translation>
 <translation id="6607831829715835317">F&amp;lere værktøjer</translation>
@@ -5438,6 +5472,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6644846457769259194">Opdaterer din enhed (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">Den valgte Google Cloudprinter-enhed understøttes ikke længere.<ph name="BR" />Prøv at konfigurere printeren i systemindstillingerne på din computer.</translation>
 <translation id="6647228709620733774">Webadresse for tilbagekaldelse af Netscape-certifikatautoritet</translation>
+<translation id="6647441008198474441">De websites, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste</translation>
 <translation id="6648911618876616409">En vigtig opdatering er klar til at blive installeret. Log ind for at komme godt i gang.</translation>
 <translation id="6649018507441623493">Vent et øjeblik…</translation>
 <translation id="6650234781371031356">Din adgangskode til <ph name="WEBSITE" /> er gemt på denne enhed og på din Google-konto. Hvilken en skal slettes?</translation>
@@ -5748,6 +5783,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6972887130317925583">Den kompromitterede adgangskode er blevet ændret. Du kan til enhver tid tjekke dine adgangskoder i <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Har tilladelse til at sende pop op-vinduer og bruge omdirigeringer</translation>
 <translation id="6973611239564315524">Der er en tilgængelig opdatering til Debian 10 (Buster)</translation>
+<translation id="69739764870135975">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
 <translation id="6974609594866392343">Offline demotilstand</translation>
 <translation id="697508444536771064">Luk Linux</translation>
 <translation id="6977739184256564679">Enhed <ph name="DEVICE_INDEX" /> af <ph name="DEVICE_COUNT" /> – <ph name="DEVICE_NAME" />, tablet.</translation>
@@ -5989,6 +6025,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> annullerede overførslen</translation>
 <translation id="7240339475467890413">Vil du oprette forbindelse til et nyt hotspot?</translation>
 <translation id="7241389281993241388">Log ind på <ph name="TOKEN_NAME" /> for at importere klientcertifikatet.</translation>
+<translation id="7241763419756062043">Vælg din søge- og browsingkvalitet</translation>
 <translation id="7243632151880336635">Ryd, og log ud</translation>
 <translation id="7243784282103630670">Der opstod en fejl under forsøget på at opgradere Linux. Vi gendanner containeren ved hjælp af din backup.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Bedste)</translation>
@@ -6094,6 +6131,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> sider til <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Klik for at køre <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Websites kan anmode om tilladelse til at oprette forbindelse til Bluetooth-enheder</translation>
+<translation id="7363349185727752629">En guide til dine privatlivsindstillinger</translation>
 <translation id="7364591875953874521">Har anmodet om adgang</translation>
 <translation id="7364745943115323529">Cast...</translation>
 <translation id="7364796246159120393">Vælg fil</translation>
@@ -6556,6 +6594,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7807711621188256451">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera</translation>
 <translation id="7810202088502699111">Pop op-vinduer blev blokeret på denne side.</translation>
 <translation id="781167124805380294">Cast <ph name="FILE_NAME" /></translation>
+<translation id="7811886112806886172">Vær med til at forbedre funktionerne og ydeevnen i Chrome og Chrome OS ved automatisk at sende diagnostik- og brugsdata til Google. Visse samlede data er også nyttige for Android-apps og Google-partnere. Hvis indstillingen Web- og appaktivitet er aktiveret for din Google-konto, gemmes dine Android-data muligvis på din Google-konto.</translation>
 <translation id="7814277578404816512">Se nyheder på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
@@ -6608,6 +6647,9 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7847212883280406910">Tryk på Ctrl+Alt+S for at skifte til <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Åbn &amp;billede på ny fane</translation>
 <translation id="784934925303690534">Tidsinterval</translation>
+<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ved at give dine Chrome OS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i Chrome OS. Disse rapporter kan f.eks. indeholde oplysninger om, hvornår Chrome OS oplever nedbrud, hvilke funktioner du bruger, hvor meget hukommelse du normalt anvender, samt diagnostik- og brugsdata for Android-apps. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for disse rapporter i indstillingerne for din Chrome OS-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Hvis indstillingen Web- og appaktivitet er aktiveret for din Google-konto, gemmes dine Android-data muligvis på din Google-konto. Du kan se og slette dine data samt ændre dine kontoindstillinger på account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis bruges til at få adgang til dit personlige indhold eller Google Assistent. Du kan spare på batteriet ved at gå til indstillingerne for Google Assistent og angive, at "Hey Google" kun skal aktiveres, når denne enhed er sluttet til en strømkilde.</translation>
 <translation id="7851457902707056880">Login er begrænset til ejerens konto. Genstart, og log ind med ejerens konto. Maskinen genstartes automatisk om 30 sekunder.</translation>
 <translation id="7851716364080026749">Bloker altid adgang til kamera og mikrofon</translation>
@@ -6645,6 +6687,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7885253890047913815">Seneste destinationer</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{et element}one{# element}other{# elementer}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
+<translation id="7887174313503389866">Få en rundvisning i vigtige privatlivs- og sikkerhedsindstillinger. Gå til de individuelle indstillinger for at se flere valgmuligheder.</translation>
 <translation id="7887334752153342268">Dupliker</translation>
 <translation id="7887864092952184874">Bluetooth-mus er parret</translation>
 <translation id="7889371445710865055">Skift dikteringssprog</translation>
@@ -7187,6 +7230,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8457451314607652708">Importér bogmærker</translation>
 <translation id="8458341576712814616">Genvej</translation>
 <translation id="8458627787104127436">Åbn alle (<ph name="URL_COUNT" />) i et nyt vindue</translation>
+<translation id="8460448946170646641">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger</translation>
 <translation id="8460490661223303637">Chrome har fjernet noget indhold for at spare på hukommelsen</translation>
 <translation id="8460932807646981183">Administrer søgemaskiner og websitesøgning</translation>
 <translation id="84613761564611563">Der er anmodet om grænseflade for netværkskonfiguration. Vent...</translation>
@@ -7493,7 +7537,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <ph name="DOMAIN" /> kræver, at chipkortet er indsat.}}</translation>
 <translation id="8777259617149177596">Batteriniveau på <ph name="BATTERY_PERCENTAGE" /> % for etui.</translation>
 <translation id="8777628254805677039">adgangskoderod</translation>
-<translation id="8778328560035799409">Dine kontakter, som i øjeblikket er tildelt en handling, ryddes</translation>
 <translation id="8780123805589053431">Hent billedbeskrivelser fra Google</translation>
 <translation id="8780443667474968681">Talesøgning er deaktiveret.</translation>
 <translation id="8781834595282316166">Ny fane i gruppe</translation>
@@ -7510,6 +7553,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8800004011501252845">Viser destinationer for</translation>
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>
+<translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8803953437405899238">Åbn en ny fane med et enkelt klik</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Flyt fanen til et andet vindue}one{Flyt fanen til et andet vindue}other{Flyt fanerne til et andet vindue}}</translation>
 <translation id="8805140816472474147">Bekræft synkroniseringsindstillingerne for at starte synkronisering.</translation>
@@ -7907,6 +7951,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
 <translation id="9187967020623675250">Tasterne stemmer ikke overens. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
 <translation id="9188732951356337132">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
+<translation id="919686179725692564">Få flere oplysninger om, hvordan du sikkerhedskopierer dine apps</translation>
 <translation id="9198090666959937775">Brug din Android-telefon som sikkerhedsnøgle</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> vil kunne redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Søg via <ph name="SEARCH_ENGINE" /></translation>

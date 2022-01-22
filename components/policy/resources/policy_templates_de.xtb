@@ -2689,6 +2689,9 @@ Mit der Richtlinie wird konfiguriert, ob <ph name="PRODUCT_NAME" /> unter Linux 
 Wird sie auf „True“ gesetzt oder nicht konfiguriert, kann <ph name="PRODUCT_NAME" /> native Benachrichtigungen verwenden.
 
 Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /> keine nativen Benachrichtigungen. Das Message Center von <ph name="PRODUCT_NAME" /> wird als Fallback genutzt.</translation>
+<translation id="412394201461298128">Wenn die Richtlinie auf „Wahr“ gesetzt ist, bleibt die Bildschirmtastatur aktiviert. Wenn die Richtlinie auf „Falsch“ gesetzt ist, bleibt die Bildschirmtastatur deaktiviert, sofern sie nicht durch andere Faktoren aktiviert wird. In der Richtlinie „<ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />“ können Sie ein Beispiel dieser Faktoren sehen.
+
+      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Bildschirmtastatur erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
 <translation id="412697421478384751">Nutzern erlauben, schwache PINs als Sperrbildschirm-PIN festzulegen</translation>
 <translation id="4138655880188755661">Zeitlimit</translation>
 <translation id="4147818922357566987">Nur Variationen für wichtige Fehlerbehebungen aktivieren</translation>
@@ -3000,13 +3003,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Weitere Informationen zur Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="4567137030726189378">Nutzung der Entwicklertools zulassen</translation>
-<translation id="4567818663772614440">Mit dieser Richtlinie wird festgelegt, ob Cloud-Berichte für <ph name="PRODUCT_NAME" /> erstellt werden. Dabei werden Daten zum Betrieb des Browsers an die Google Admin-Konsole gesendet.
-
-      Wenn die Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, werden keine Daten erhoben oder hochgeladen.
-      Wenn sie auf "True" gesetzt ist, werden die Daten erhoben und in die Google Admin-Konsole hochgeladen.
-
-      Sie wird für <ph name="PRODUCT_NAME" /> nur angewendet, wenn das Gerät mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
-      Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="4570859815763368584">In M68 nicht mehr verfügbar. Verwenden Sie stattdessen „DefaultPopupsSetting“.
 
       Eine vollständige Erläuterung finden Sie unter https://www.chromestatus.com/feature/5675755719622656.
@@ -5109,6 +5105,18 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 <translation id="7041170641363384736">Mit dieser Richtlinie kann ein benutzerdefinierter Zeitplan zum Neustart von Geräten festgelegt werden. Zurzeit gilt die Richtlinie nur für Geräte, auf denen „auto-launch app“ in der Kiosk-Sitzung aktiviert wurde. Sobald sie auf „true“ gesetzt ist, startet das Gerät wie im Zeitplan festgelegt neu. Wenn keine geplanten Neustarts mehr durchgeführt werden sollen, muss die Richtlinie entfernt werden.</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7047495632846973438">Gibt an, ob die Richtlinie für Berechtigungen zur Display-Erfassung ausgewählt ist oder übersprungen wird.</translation>
+<translation id="7054461992790881782">Steuert die Bildschirmtastatur als ergänzende Richtlinie zur Richtlinie „<ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />“.
+
+      Diese Richtlinie ist nicht wirksam, wenn die Richtlinie „<ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />“ auf „Wahr“ gesetzt ist oder die Bildschirmtastatur über die entsprechende Chrome OS-Einstellung aktiviert ist.
+
+      Wenn die Richtlinie „<ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />“ auf „Falsch“ gesetzt oder nicht konfiguriert ist und die Bildschirmtastatur über die entsprechende Chrome OS-Einstellung deaktiviert ist, wirkt sich die Richtlinie folgendermaßen aus:
+      Falls diese Richtlinie nicht konfiguriert ist, wird die Bildschirmtastatur angezeigt, sofern sich das Gerät im Tabletmodus befindet.
+      Ist die Richtlinie auf „Wahr“ gesetzt, wird die Bildschirmtastatur immer angezeigt.
+      Ist sie auf „Falsch“ gesetzt, wird die Bildschirmtastatur nie angezeigt.
+
+      In Abhängigkeit von der Eingabemethode wird die Bildschirmtastatur möglicherweise in einem kompakten Layout angezeigt.
+
+      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden.</translation>
 <translation id="7060497964524144376">Wenn die Richtlinie aktiviert ist, vertraut Safe Browsing den Domains, die Sie festlegen. Es findet keine Prüfung auf gefährliche Ressourcen wie Phishing, Malware oder unerwünschte Software statt. Es findet keine Prüfung von in diesen Domains gehosteten Downloads durch den Downloadschutzdienst statt. Eine Wiederverwendung von Passwörtern wird nicht durch den Passwortschutzdienst geprüft.
 
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Safe Browsing-Standardschutz auf alle Ressourcen angewendet.

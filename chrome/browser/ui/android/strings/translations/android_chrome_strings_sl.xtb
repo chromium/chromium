@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jeziki</translation>
 <translation id="1894023287452300670">Spremljajte ceno tukaj.</translation>
+<translation id="1900260903084164610">Z nadaljevanjem se strinjate s <ph name="BEGIN_TOS_LINK" />pogoji storitve<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Datoteke, ki jih prenesete v anonimnem načinu so še vedno vidne vsem, ki uporabljajo to napravo.</translation>
 <translation id="1910950723001426294">Seznam možnosti deljenja z drugimi je zaprt.</translation>
 <translation id="1918175104945982129">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku, odprt pri polovični višini.</translation>
@@ -206,6 +207,7 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 <translation id="2172905120685242547">Želite zapreti okno?</translation>
 <translation id="2175927920773552910">Koda QR</translation>
 <translation id="218608176142494674">Deljenje z drugimi</translation>
+<translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2200113223741723867">Upravljanje deljenja podatkov o uporabi</translation>
 <translation id="2218567645332692482">Nadgraditev krmarjenj do HTTPS-ja in opozorilo pred nalaganjem spletnih mest, ki ga ne podpirajo.</translation>
 <translation id="2227444325776770048">Nadaljujte kot <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 prenos ni uspel.}one{# prenos ni uspel.}two{# prenosa nista uspela.}few{# prenosi niso uspeli.}other{# prenosov ni uspelo.}}</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5171045022955879922">Poiščite ali vnesite URL</translation>
+<translation id="517734441743343109">Če nadaljujete, se strinjate s <ph name="BEGIN_TOS_LINK" />pogoji storitve<ph name="END_TOS_LINK" /> in <ph name="BEGIN_PRIVACY_LINK" />pravilnikom o zasebnosti<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Odpri v Chromu</translation>
 <translation id="5188992787241350004">Iskanje z glasom</translation>
 <translation id="5191251636205085390">Preberite več o novih tehnologijah, katerih namen je zamenjava piškotkov drugih ponudnikov, in jih nadzirajte.</translation>
@@ -995,6 +998,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6633067410344541938">Odkleni anonimni način</translation>
 <translation id="6636623428211296678">Spodaj lahko raziščete več nastavitev ali zaključite zdaj.</translation>
 <translation id="663674369910034433">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelka <ph name="BEGIN_LINK1" />Sinhronizacija<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />Googlove storitve<ph name="END_LINK2" />.</translation>
+<translation id="6637100877383020115">Zaradi izboljšanja aplikacije Chrome Googlu pošlje podatke o uporabi in zrušitvah. <ph name="BEGIN_UMA_LINK" />Upravljanje<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokiraj ves čas</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6643649862576733715">Razvrsti glede na prihranek pri količini prenesenih podatkov</translation>
@@ -1395,6 +1399,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8788265440806329501">Zgodovina krmarjenja je zaprta</translation>
 <translation id="8788968922598763114">Vnovično odpiranje nazadnje zaprtega zavihka</translation>
 <translation id="8798449543960971550">Branje</translation>
+<translation id="8803526663383843427">Če je to vklopljeno</translation>
 <translation id="8805097383171548551">Če želite optično prebrati kodo QR, uporabite napravo s fotoaparatom.</translation>
 <translation id="8812260976093120287">Na nekaterih spletnih mestih je mogoče plačevati z zgoraj navedenimi podprtimi aplikacijami v napravi.</translation>
 <translation id="881688628773363275">Predogleda vsebine zavihka si ni mogoče ogledati.</translation>

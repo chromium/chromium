@@ -3005,13 +3005,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
       Per ulteriori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="4567137030726189378">Consenti l'utilizzo degli Strumenti per sviluppatori</translation>
-<translation id="4567818663772614440">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" />, che consente di caricare informazioni sul funzionamento del browser nella Console di amministrazione Google.
-
-      Se il criterio non viene configurato o viene impostato su False, i dati non vengono raccolti o caricati.
-      Se il criterio viene impostato su True, i dati vengono raccolti e caricati nella Console di amministrazione Google.
-
-      Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-      Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</translation>
 <translation id="4570859815763368584">Criterio ritirato nella versione M68. Usa il criterio DefaultPopupsSetting.
 
       Per una spiegazione completa, visita la pagina https://www.chromestatus.com/feature/5675755719622656.

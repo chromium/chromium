@@ -2695,6 +2695,9 @@ Linux'ta <ph name="PRODUCT_NAME" /> tarafından yerel bildirimlerin kullanılıp
 Bu politika Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa yerel bildirimlerin <ph name="PRODUCT_NAME" /> tarafından kullanılmasına izin verilir.
 
 Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bildirimleri kullanmaz. <ph name="PRODUCT_NAME" /> Mesaj Merkezi yedek olarak kullanılır.</translation>
+<translation id="412394201461298128">Politikayı Doğru değerine ayarlamak, dokunmatik klavyeyi açık tutar. Politikayı Yanlış değerine ayarlamak, başka unsurlarla açılmadığı sürece dokunmatik klavyeyi kapalı tutar. Bu unsurların örneği için <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasına göz atın.
+
+      Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa dokunmatik klavye ilk başta kapalıdır, ancak kullanıcılar istedikleri zaman açabilir.</translation>
 <translation id="412697421478384751">Kullanıcıların kilit ekranı PIN'i için zayıf PIN'ler ayarlamasına izin ver</translation>
 <translation id="4138655880188755661">Zaman Limiti</translation>
 <translation id="4147818922357566987">Yalnızca önemli düzeltmelerle ilgili varyasyonları etkinleştir</translation>
@@ -3006,13 +3009,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 
       Internet Explorer'ın <ph name="IEEM_SITELIST_POLICY" /> politikası hakkında daha fazla bilgiyi https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode adresinde bulabilirsiniz.</translation>
 <translation id="4567137030726189378">Geliştirici Araçları'nın kullanımına izin verir</translation>
-<translation id="4567818663772614440">Bu politika, tarayıcı işlemi hakkındaki bilgileri Google Yönetici konsoluna yükleyen <ph name="PRODUCT_NAME" /> bulut raporlamasını denetler.
-
-      Bu politika ayarlanmadığında veya False (Yanlış) değerine ayarlandığında hiç veri toplanmaz veya yüklenmez.
-      Bu politika True (Doğru) değerine ayarlandığında veriler toplanıp Google Yönetici konsoluna yüklenir.
-
-      <ph name="PRODUCT_NAME" /> için bu politika yalnızca makinenin <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> kaydı yapıldığında geçerli olur.
-      <ph name="PRODUCT_OS_NAME" /> için bu politika her zaman geçerlidir.</translation>
 <translation id="4570859815763368584">M68 sürümünde kullanımdan kaldırılmıştır. Bunun yerine DefaultPopupsSetting politikasını kullanın.
 
       Tam açıklama için https://www.chromestatus.com/feature/5675755719622656 adresine bakın.
@@ -5113,6 +5109,18 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7041170641363384736">Cihazların yeniden başlatılması için özel bir program belirlenmesini sağlar. Bu politika şu anda yalnızca Kiosk oturumunda otomatik başlatma uygulaması etkinleştirilmiş cihazlarda geçerlidir. Politika, Doğru değerine ayarlandığında cihaz programa uygun olarak yeniden başlatılır. Programlı yeniden başlatmaların artık iptal olması için politikanın kaldırılması gerekir.</translation>
 <translation id="7044883996351280650">Android yedekleme ve geri yükleme hizmetini kontrol etme</translation>
 <translation id="7047495632846973438">Görüntü yakalama izinleri politikasının kontrol edilip edilmediğini veya atlanıp atlanmadığını belirtir.</translation>
+<translation id="7054461992790881782"><ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasının ek politikası işlevi görerek dokunmatik klavyeyi kontrol eder.
+
+      <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikası Doğru değerine ayarlanırsa veya Chrome OS'teki Dokunmatik klavyeyi etkinleştir ayarı açıksa bu politikanın hiçbir etkisi olmaz.
+
+      <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikası Yanlış değerine ayarlanırsa ya da ayarlanmadan bırakılırsa ve Chrome OS'teki Dokunmatik klavyeyi etkinleştir ayarı kapalıysa bu politikanın şu gibi etkileri olur:
+      Bu politika ayarlanmadan bırakılırsa cihaz tablet modundayken dokunmatik klavye gösterilir.
+      Bu politika Doğru değerine ayarlanırsa dokunmatik klavye her zaman gösterilir.
+      Bu politika Yanlış değerine ayarlanırsa dokunmatik klavye hiçbir zaman gösterilmez.
+
+      Dokunmatik klavye, giriş yöntemine bağlı olarak küçük boyuta geçebilir.
+
+      Bu politikayı ayarlarsanız kullanıcılar değiştiremez.</translation>
 <translation id="7060497964524144376">Politika, Etkin değerine ayarlanırsa Güvenli Tarama, belirttiğiniz alan adlarına güvenir. Bu alan adlarında kimlik avı, kötü amaçlı yazılım veya istenmeyen yazılım gibi tehlikeli kaynakların bulunup bulunmadığı kontrol edilmez. Güvenli Tarama'nın indirme koruma hizmeti, bu alan adlarında barındırılan indirmeleri kontrol etmez. Şifre koruma hizmeti, şifre yeniden kullanımını kontrol etmez.
 
       Politika ayarlanmadan bırakılırsa varsayılan Güvenli Tarama koruması tüm kaynaklar için geçerli olur.

@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Mine filer</translation>
 <translation id="189358972401248634">Andre sprog</translation>
 <translation id="1894023287452300670">Hold øje med prisen her</translation>
+<translation id="1900260903084164610">Ved at fortsætte accepterer du <ph name="BEGIN_TOS_LINK" />servicevilkårene<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">De filer, du downloader i inkognitotilstand, kan stadig ses af alle, der bruger denne enhed.</translation>
 <translation id="1910950723001426294">Listen over delingsindstillinger er lukket.</translation>
 <translation id="1918175104945982129">Brugerfladen for samtykke i forbindelse med stemmesøgning i Assistent er åbnet i halv højde</translation>
@@ -206,6 +207,7 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <translation id="2172905120685242547">Vil du lukke vinduet?</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="218608176142494674">Deling</translation>
+<translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2200113223741723867">Administrer deling af brugsdata</translation>
 <translation id="2218567645332692482">Opgrader navigation til HTTPS, og få en advarsel, før websites, der ikke understøtter dette, indlæses</translation>
 <translation id="2227444325776770048">Fortsæt som <ph name="USER_FULL_NAME" /></translation>
@@ -586,6 +588,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4472118726404937099">Log ind, og aktivér synkronisering for at synkronisere og tilpasse på alle dine enheder</translation>
 <translation id="4479839115899251637">Slet fra læseliste</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> til Chrome…</translation>
+<translation id="4484496141267039529">Der er ingen forbindelse. Prøv igen senere.</translation>
 <translation id="4487967297491345095">Alle Chromes appdata slettes permanent. Dette omfatter alle filer, indstillinger, konti, databaser osv.</translation>
 <translation id="449126573531210296">Krypter synkroniserede adgangskoder med din Google-konto</translation>
 <translation id="4504667196171871375">Via Wi-Fi og mobildata</translation>
@@ -718,6 +721,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download mislykkedes.}one{# download mislykkedes.}other{# downloads mislykkedes.}}</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
+<translation id="517734441743343109">Ved at fortsætte accepterer du <ph name="BEGIN_TOS_LINK" />servicevilkårene<ph name="END_TOS_LINK" /> og <ph name="BEGIN_PRIVACY_LINK" />privatlivspolitikken<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Åbn i Chrome</translation>
 <translation id="5188992787241350004">Søg med din stemme</translation>
 <translation id="5191251636205085390">Få indblik i og styr nye teknologier, der har til formål at erstatte tredjepartscookies</translation>
@@ -995,6 +999,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6633067410344541938">Lås op for inkognito</translation>
 <translation id="6636623428211296678">Find flere indstillinger nedenfor, eller afslut nu</translation>
 <translation id="663674369910034433">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK1" />Synkronisering<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />Google-tjenester<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloker altid</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6643649862576733715">Sortér efter mængden af data, der blev sparet</translation>
@@ -1395,6 +1400,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8788265440806329501">Navigationsoversigt er lukket</translation>
 <translation id="8788968922598763114">Åbn den senest lukkede fane igen</translation>
 <translation id="8798449543960971550">Læst</translation>
+<translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8805097383171548551">Hvis du vil scanne en QR-kode, skal du bruge en enhed med et kamera.</translation>
 <translation id="8812260976093120287">På nogle websites kan du betale med ovenstående understøttede betalingsapps på din enhed.</translation>
 <translation id="881688628773363275">Indholdet på fanen Forhåndsvisning kan ikke vises.</translation>

@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Мае файлы</translation>
 <translation id="189358972401248634">Іншыя мовы</translation>
 <translation id="1894023287452300670">Вы можаце сачыць за цаной тут</translation>
+<translation id="1900260903084164610">Працягваючы, вы прымаеце <ph name="BEGIN_TOS_LINK" />Умовы выкарыстання<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Файлы, спампаваныя ў рэжыме інкогніта, па-ранейшаму бачныя ўсім карыстальнікам гэтай прылады.</translation>
 <translation id="1910950723001426294">Спіс варыянтаў абагульвання закрыты.</translation>
 <translation id="1918175104945982129">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку адкрыта на палову экрана</translation>
@@ -206,6 +207,7 @@
 <translation id="2172905120685242547">Закрыць акно?</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Абагульванне</translation>
+<translation id="2194856509914051091">Інфармацыя для разгляду</translation>
 <translation id="2200113223741723867">Кіруйце наладамі абагульвання даных пра выкарыстанне</translation>
 <translation id="2218567645332692482">Выкарыстоўваць пратакол HTTPS пры наведванні сайтаў і папярэджваць, калі ён не падтрымліваецца, перад тым як іх загружаць</translation>
 <translation id="2227444325776770048">Працягнуць як <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Збой 1 спампоўкі.}one{Збой # спампоўкі.}few{Збой # спамповак.}many{Збой # спамповак.}other{Збой # спампоўкі.}}</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5171045022955879922">Знайдзіце або ўвядзіце URL-адрас</translation>
+<translation id="517734441743343109">Працягваючы, вы прымаеце <ph name="BEGIN_TOS_LINK" />Умовы выкарыстання<ph name="END_TOS_LINK" /> і <ph name="BEGIN_PRIVACY_LINK" />Палітыку прыватнасці<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
 <translation id="5188992787241350004">Шукайце з дапамогай голасу</translation>
 <translation id="5191251636205085390">Даведайцеся пра новыя тэхналогіі, якія прыходзяць на змену староннім файлам cookie, а таксама пра спосабы кіравання імі</translation>
@@ -995,6 +998,7 @@
 <translation id="6633067410344541938">Разблакіраваць сеанс інкогніта</translation>
 <translation id="6636623428211296678">Вы можаце азнаёміцца з іншымі наладамі ніжэй або завяршыць праверку</translation>
 <translation id="663674369910034433">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце ў раздзелах <ph name="BEGIN_LINK1" />Сінхранізацыя<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />сэрвісы Google<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Chrome адпраўляе ў Google даныя пра збоі і выкарыстанне, якія дапамогуць палепшыць праграму. <ph name="BEGIN_UMA_LINK" />Кіраваць<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Блакіраваць заўсёды</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6643649862576733715">Сартаваць па аб'ёме сэканомленага трафіка</translation>
@@ -1395,6 +1399,7 @@
 <translation id="8788265440806329501">Гісторыя навігацыі закрыта</translation>
 <translation id="8788968922598763114">Адкрыць апошнюю закрытую ўкладку</translation>
 <translation id="8798449543960971550">Прачытана</translation>
+<translation id="8803526663383843427">Калі функцыя ўключана</translation>
 <translation id="8805097383171548551">Каб сканіраваць QR-код, выкарыстайце прыладу з камерай.</translation>
 <translation id="8812260976093120287">На некаторых вэб-сайтах можна плаціць з дапамогай указаных вышэй плацежных праграм, усталяваных на прыладзе.</translation>
 <translation id="881688628773363275">Не ўдаецца паказаць змесціва ўкладкі перадпрагляду.</translation>

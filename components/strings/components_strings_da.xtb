@@ -208,6 +208,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1559572115229829303">&lt;p&gt;Der kan ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da datoen og tiden på din enhed (<ph name="DATE_AND_TIME" />) er forkert.&lt;/p&gt;
 
       &lt;p&gt;Juster datoen og tiden i sektionen &lt;strong&gt;Generelt&lt;/strong&gt; i appen &lt;strong&gt;Indstillinger&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="156703335097561114">Netværksoplysninger som f.eks. adresser, grænsefladekonfiguration og forbindelseskvalitet</translation>
 <translation id="1567040042588613346">Denne politik fungerer efter hensigten, men et andet sted er den samme værdi blevet tilsidesat af denne politik.</translation>
 <translation id="1569487616857761740">Angiv udløbsdato</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -704,6 +705,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3234666976984236645">Registrer altid vigtigt indhold på dette website</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at tilpasse din browsers udseende</translation>
 <translation id="3240791268468473923">Regneark uden matchende loginoplysninger til sikker betaling er åbent</translation>
+<translation id="324180406144491771">"<ph name="HOST_NAME" />"-links er blokeret</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Fransk</translation>
 <translation id="3257954757204451555">Hvor stammer disse oplysninger fra?</translation>
@@ -1329,6 +1331,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5138227688689900538">Vis færre</translation>
 <translation id="5145883236150621069">Fejlkode til stede i politiksvar</translation>
 <translation id="5146995429444047494">Notifikationer for <ph name="ORIGIN" /> blokeres</translation>
+<translation id="514704532284964975"><ph name="URL" /> vil have adgang til og ændre oplysninger på NFC-enheder, som du trykker på via din telefon</translation>
 <translation id="5148809049217731050">Forside opad</translation>
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">Forside</translation>

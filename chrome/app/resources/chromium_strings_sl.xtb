@@ -16,6 +16,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1524282610922162960">Deljenje zavihka v Chromiumu</translation>
 <translation id="1553461853655228091">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimnih oken se ne bo znova odprlo.}}</translation>
+<translation id="1625909126243026060">Oglejte si ključne kontrolnike zasebnosti in varnosti v Chromiumu.</translation>
 <translation id="1708666629004767631">Na voljo je nova, varnejša različica Chromiuma.</translation>
 <translation id="1774152462503052664">Naj se Chromium izvaja v ozadju</translation>
 <translation id="1779356040007214683">Zaradi večje varnosti smo v Chromiumu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
@@ -119,6 +120,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="459535195905078186">Aplikacije za Chromium</translation>
 <translation id="4621240073146040695">Samo še malo. Znova zaženite Chromium, da dokončate posodobitev.</translation>
 <translation id="4665829708273112819">Opozorilo: Chromium razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v anonimnem načinu, počistite to možnost.</translation>
+<translation id="4673151026126227699">Če delite tudi poročila o uporabi Chromiuma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="4677944499843243528">Videti je, da profil uporablja drug Chromiumov proces (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chromium je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chromium.</translation>
 <translation id="469338717132742108">Pomoč za OS Chromium</translation>
 <translation id="4708774505295300557">Nekdo se je prijavil v Chromium v tem računalniku kot <ph name="ACCOUNT_EMAIL_LAST" />. Ustvarite nov uporabniški profil za Chromium, če želite, da bodo vaši podatki ločeni.</translation>
@@ -240,6 +242,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7597596667193879455">V računu ste vklopili izboljšano varno brskanje. Zdaj ga omogočite za Chromium.</translation>
 <translation id="761356813943268536">Chromium uporablja vašo kamero in mikrofon.</translation>
 <translation id="7617377681829253106">Chromium je pravkar postal še boljši</translation>
+<translation id="7682601070171973634">Chromium raziskuje nove funkcije, ki spletnim mestom omogočajo, da z manjšo količino prenesenih podatkov zagotavljajo isto izkušnjo pri brskanju.</translation>
 <translation id="7686590090926151193">Chromium ni privzeti brskalnik</translation>
 <translation id="7689606757190482937">V vseh svojih napravah sinhronizirajte in prilagodite Chromium</translation>
 <translation id="7729447699958282447">Chromium ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>

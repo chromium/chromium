@@ -2704,6 +2704,9 @@ Configura si <ph name="PRODUCT_NAME" /> en Linux usará notificaciones nativas.
 Si estableces esta política como verdadera o no la estableces, <ph name="PRODUCT_NAME" /> podrá usar notificaciones nativas.
 
 Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaciones nativas. Se usará el Centro de mensajes de <ph name="PRODUCT_NAME" /> como resguardo.</translation>
+<translation id="412394201461298128">Si estableces la política como verdadera, el teclado en pantalla continuará activado. Si la estableces como falsa, el teclado en pantalla continuará desactivado mientras no lo activen otros factores. Consulta ejemplos de esos factores en la política <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, el teclado en pantalla estará desactivado al principio, pero los usuarios podrán activarlo en cualquier momento.</translation>
 <translation id="412697421478384751">Permitir que los usuarios establezcan PIN no seguros para la pantalla bloqueada</translation>
 <translation id="4138655880188755661">Límite de tiempo</translation>
 <translation id="4147818922357566987">Habilitar solo variaciones relacionadas con correcciones críticas</translation>
@@ -3016,13 +3019,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de Internet Explorer, consulta el siguiente vínculo: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="4567137030726189378">Permitir el uso de las Herramientas para desarrolladores</translation>
-<translation id="4567818663772614440">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" />, que suben información sobre el funcionamiento del navegador a la consola del Administrador de Google.
-
-      Si no estableces esta política o la estableces como falsa, no se recopilarán ni subirán datos.
-      Si la estableces como verdadera, se recopilarán y subirán los datos a la consola del Administrador de Google.
-
-      Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
-      Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4570859815763368584">Dejó de estar disponible en M68. En su lugar, usa DefaultPopupsSetting.
 
       Para obtener una explicación completa, consulta https://www.chromestatus.com/feature/5675755719622656.
@@ -5132,6 +5128,18 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7041170641363384736">Permite establecer un cronograma personalizado para reiniciar los dispositivos. Actualmente, la política se aplica solo a los dispositivos que tienen habilitada la app de inicio automático en la sesión de kiosco. Si se establece como verdadera, el dispositivo se reiniciará según el cronograma. Para cancelar otros reinicios programados, debe quitarse la política.</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>
 <translation id="7047495632846973438">Especificar si se marca o se omite la política de permisos para la captura de pantalla</translation>
+<translation id="7054461992790881782">Complementa la política <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> a fin de controlar el teclado en pantalla.
+
+      Si estableces la política <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> como verdadera o si activas la configuración Habilitar el teclado en pantalla de Chrome OS, la política no tendrá efecto.
+
+      Si estableces la política <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> como falsa o no la estableces y no activas la configuración Habilitar el teclado en pantalla de Chrome OS, ocurrirá lo siguiente:
+      Si no la estableces, el teclado en pantalla se muestra cuando el dispositivo está en modo tablet.
+      Si la estableces como verdadera, el teclado en pantalla se muestra todo el tiempo.
+      Si la estableces como falsa, el teclado en pantalla nunca se muestra.
+
+      Es posible que el teclado en pantalla adopte un diseño compacto según el método de entrada.
+
+      Si estableces la política, los usuarios no podrán cambiarla.</translation>
 <translation id="7060497964524144376">Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si incluyen recursos peligrosos, como software malicioso, no deseado o de suplantación de identidad (phishing). El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará que no se reutilicen contraseñas.
 
       Si no estableces la política, se aplicará la protección predeterminada de la Navegación segura en todos los recursos.

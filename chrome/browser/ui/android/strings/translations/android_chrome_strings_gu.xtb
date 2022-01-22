@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">મારી ફાઇલો</translation>
 <translation id="189358972401248634">અન્ય ભાષાઓ</translation>
 <translation id="1894023287452300670">અહીં કિંમત ટ્રૅક કરો</translation>
+<translation id="1900260903084164610">આગળ વધીને, તમે <ph name="BEGIN_TOS_LINK" />સેવાની શરતો<ph name="END_TOS_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="1905320231301365059">તમે જે ફાઇલો છૂપા મોડમાં ડાઉનલોડ કરો છો, તે હજી પણ આ ડિવાઇસનો ઉપયોગ કરતી કોઈપણ વ્યક્તિને દેખાઈ શકે છે.</translation>
 <translation id="1910950723001426294">શેરિંગના વિકલ્પોની સૂચિ બંધ છે.</translation>
 <translation id="1918175104945982129">Assistant વૉઇસ શોધની સંમતિ માટેનું UI અડધી ઊંચાઈએ ખોલ્યું</translation>
@@ -206,6 +207,7 @@
 <translation id="2172905120685242547">વિન્ડો બંધ કરીએ?</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
 <translation id="218608176142494674">શેરિંગ</translation>
+<translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="2200113223741723867">વપરાશના ડેટાનું શેરિંગ મેનેજ કરો</translation>
 <translation id="2218567645332692482">નૅવિગેશનને HTTPS પર અપગ્રેડ કરો અને તેને સપોર્ટ ન કરતી સાઇટ લોડ કરતાં પહેલાં ચેતવણી મેળવો</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> તરીકે ચાલુ રાખો</translation>
@@ -586,6 +588,7 @@
 <translation id="4472118726404937099">સમગ્ર ઉપકરણો સિંક કરવા અને વ્યક્તિગત કરવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="4479839115899251637">વાંચન સૂચિમાંથી ડિલીટ કરો</translation>
 <translation id="4479972344484327217">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરી રહ્યાં છે…</translation>
+<translation id="4484496141267039529">કોઈ કનેક્શન નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="4487967297491345095">Chromeનો તમામ ઍપ ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે. આમાં તમામ ફાઇલો, સેટિંગ, એકાઉન્ટ, ડેટાબેઝ, વગેરેનો સમાવેશ થાય છે.</translation>
 <translation id="449126573531210296">તમારા Google એકાઉન્ટ સાથે સિંક કરેલા પાસવર્ડ એન્ક્રિપ્ટ કરો</translation>
 <translation id="4504667196171871375">વાઇ-ફાઇ અને મોબાઇલ ડેટા પર</translation>
@@ -718,6 +721,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ડાઉનલોડ નિષ્ફળ થયું.}one{# ડાઉનલોડ નિષ્ફળ થયું.}other{# ડાઉનલોડ નિષ્ફળ થયાં.}}</translation>
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="5171045022955879922">URL શોધો અથવા લખો</translation>
+<translation id="517734441743343109">આગળ વધીને, તમે <ph name="BEGIN_TOS_LINK" />સેવાની શરતો<ph name="END_TOS_LINK" /> અને <ph name="BEGIN_PRIVACY_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_PRIVACY_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="5184329579814168207">Chrome માં ખોલો</translation>
 <translation id="5188992787241350004">તમારા વૉઇસ વડે શોધો</translation>
 <translation id="5191251636205085390">ત્રીજા પક્ષની કુકીને બદલે વાપરવાના ઉદ્દેશ્યથી બનાવવામાં આવેલી નવી ટેક્નોલોજી વિશે જાણો અને તેમને નિયંત્રિત કરો</translation>
@@ -995,6 +999,7 @@
 <translation id="6633067410344541938">છૂપા મોડના સત્ર અનલૉક કરો</translation>
 <translation id="6636623428211296678">નીચે વધુ સેટિંગ વિશે જાણકારી મેળવો અથવા હવે સમાપ્ત કરો</translation>
 <translation id="663674369910034433">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK1" />સિંક<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Googleની સેવાઓ<ph name="END_LINK2" /> જુઓ</translation>
+<translation id="6637100877383020115">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_UMA_LINK" />મેનેજ કરો<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">હંમેશાં બ્લૉક કરો</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6643649862576733715">બચાવાયેલ ડેટાના પ્રમાણ અનુસાર સૉર્ટ કરો</translation>
@@ -1395,6 +1400,7 @@
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>
 <translation id="8788968922598763114">છેલ્લે બંધ કરેલ ટૅબ ફરીથી ખોલો</translation>
 <translation id="8798449543960971550">વાંચેલાં</translation>
+<translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
 <translation id="8805097383171548551">QR કોડને સ્કૅન કરવા માટે કૅમેરાવાળા ડિવાઇસનો ઉપયોગ કરો.</translation>
 <translation id="8812260976093120287">કેટલીક વેબસાઇટ પર, તમે સમર્થિત ચુકવણી ઍપ્લિકેશનો વડે ચુકવણી કરી શકો છો.</translation>
 <translation id="881688628773363275">પ્રીવ્યૂ ટૅબનું કન્ટેન્ટ જોઈ શકાતું નથી.</translation>

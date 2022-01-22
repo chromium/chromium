@@ -2922,13 +2922,6 @@
       このポリシーを未設定のままにするか false にすると、<ph name="PRODUCT_NAME" /> は <ph name="IE_PRODUCT_NAME" /> の <ph name="IEEM_SITELIST_POLICY" /> ポリシーをブラウザの切り替えを行うルールの参照元として使用しません。
       Internet Explorer の <ph name="IEEM_SITELIST_POLICY" /> ポリシーについて詳しくは、https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode をご覧ください。</translation>
 <translation id="4567137030726189378">デベロッパー ツールの使用を許可する</translation>
-<translation id="4567818663772614440">このポリシーでは、<ph name="PRODUCT_NAME" /> のクラウド レポートを管理します。クラウド レポートでは、ブラウザの操作に関する情報が Google 管理コンソールにアップロードされます。
-
-      このポリシーを未設定のままにするか False にすると、データの収集やアップロードは行われません。
-      このポリシーを True にすると、データが収集されて Google 管理コンソールにアップロードされます。
-
-      <ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
-      <ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。</translation>
 <translation id="4570859815763368584">M68 でサポートを終了します。代わりに DefaultPopupsSetting を使用してください。
 
       詳しくは、https://www.chromestatus.com/feature/5675755719622656 をご覧ください。

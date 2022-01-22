@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Мої файли</translation>
 <translation id="189358972401248634">Інші мови</translation>
 <translation id="1894023287452300670">Відстежуйте ціну тут</translation>
+<translation id="1900260903084164610">Продовжуючи, ви приймаєте <ph name="BEGIN_TOS_LINK" />Умови використання<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Файли, які ви завантажуєте в режимі анонімного перегляду, можуть переглядати всі користувачі цього пристрою.</translation>
 <translation id="1910950723001426294">Список параметрів спільного доступу закрито.</translation>
 <translation id="1918175104945982129">Інтерфейс надання згоди на голосовий пошук через Асистента відкрито на половину висоти</translation>
@@ -206,6 +207,7 @@
 <translation id="2172905120685242547">Закрити вікно?</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Спільний доступ</translation>
+<translation id="2194856509914051091">Що варто врахувати</translation>
 <translation id="2200113223741723867">Керувати доступом до даних про використання</translation>
 <translation id="2218567645332692482">Трафік переходить на HTTPS, а ви отримуєте сповіщення перед завантаженням сайтів, які не підтримують цей протокол</translation>
 <translation id="2227444325776770048">Продовжити як <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Не вдалося завантажити 1 файл.}one{Не вдалося завантажити # файл.}few{Не вдалося завантажити # файли.}many{Не вдалося завантажити # файлів.}other{Не вдалося завантажити # файлу.}}</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5171045022955879922">Введіть запит або URL-адресу</translation>
+<translation id="517734441743343109">Продовжуючи, ви приймаєте <ph name="BEGIN_TOS_LINK" />Умови використання<ph name="END_TOS_LINK" /> та <ph name="BEGIN_PRIVACY_LINK" />Політику конфіденційності<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Відкрити в Chrome</translation>
 <translation id="5188992787241350004">Шукайте голосом</translation>
 <translation id="5191251636205085390">Дізнайтеся про нові технології, що приходять на зміну стороннім файлам cookie, і як ними керувати</translation>
@@ -995,6 +998,7 @@
 <translation id="6633067410344541938">Розблокувати анонімний режим</translation>
 <translation id="6636623428211296678">Перейдіть до інших налаштувань нижче або завершіть перевірку</translation>
 <translation id="663674369910034433">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділах <ph name="BEGIN_LINK1" />Синхронізація<ph name="END_LINK1" /> та <ph name="BEGIN_LINK2" />Сервіси Google<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Щоб покращити додаток, Chrome надсилає дані про використання та збої в Google. <ph name="BEGIN_UMA_LINK" />Керувати<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Блокувати завжди</translation>
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6643649862576733715">Сортувати за кількістю заощадженого трафіку</translation>
@@ -1395,6 +1399,7 @@
 <translation id="8788265440806329501">Історію навігації закрито</translation>
 <translation id="8788968922598763114">Відкрити останню закриту вкладку</translation>
 <translation id="8798449543960971550">Прочитані</translation>
+<translation id="8803526663383843427">Коли функцію ввімкнено</translation>
 <translation id="8805097383171548551">Щоб зісканувати QR-код, скористайтеся пристроєм із камерою.</translation>
 <translation id="8812260976093120287">На деяких веб-сайтах ви можна оплачувати за допомогою перелічених вище підтримуваних додатків для платежів на вашому пристрої.</translation>
 <translation id="881688628773363275">Попередній перегляд вмісту вкладки не видно.</translation>

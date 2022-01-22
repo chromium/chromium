@@ -14,6 +14,7 @@
 <translation id="1524282610922162960">Chromium-Tab freigeben</translation>
 <translation id="1553461853655228091">Chromium benötigt Zugriff auf die Kamera, um eine 3D-Karte Ihrer Umgebung zu erstellen</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Laut Ihrem Administrator müssen Sie Chromium neu starten, um ein Update durchzuführen}=1{Laut Ihrem Administrator müssen Sie Chromium neu starten, um ein Update durchzuführen. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Laut Ihrem Administrator müssen Sie Chromium neu starten, um ein Update durchzuführen. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
+<translation id="1625909126243026060">Hiermit können Sie sich die wichtigsten Datenschutz- und Sicherheitseinstellungen in Chromium ansehen</translation>
 <translation id="1708666629004767631">Es gibt eine neue, sicherere Version von Chromium.</translation>
 <translation id="1774152462503052664">Chromium im Hintergrund ausführen</translation>
 <translation id="1779356040007214683">Um Chromium sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne Ihr Wissen hinzugefügt wurden.</translation>
@@ -117,6 +118,7 @@
 <translation id="459535195905078186">Chromium-Apps</translation>
 <translation id="4621240073146040695">Fast fertig! Starten Sie Chromium neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="4665829708273112819">Achtung: Chromium kann nicht verhindern, dass Ihr Browserverlauf von Erweiterungen protokolliert wird. Sie können diese Erweiterung für den Inkognitomodus deaktivieren, indem Sie die Auswahl für die entsprechende Option aufheben.</translation>
+<translation id="4673151026126227699">Wenn Sie Chromium-Nutzungsberichte teilen, enthalten diese Berichte die von Ihnen aufgerufenen URLs</translation>
 <translation id="4677944499843243528">Das Profil wird offenbar gerade von einem Chromium-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chromium gesperrt, damit es nicht beschädigt wird. Wenn Sie sicher sind, dass das Profil nicht von anderen Prozessen verwendet wird, können Sie das Profil entsperren und Chromium neu starten.</translation>
 <translation id="469338717132742108">Hilfe für Chromium OS aufrufen</translation>
 <translation id="4708774505295300557">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chromium angemeldet. Erstellen Sie einen neuen Chromium-Nutzer, um Ihre Daten getrennt zu verwenden.</translation>
@@ -236,6 +238,7 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="7597596667193879455">Sie haben das erweiterte Safe Browsing für Ihr Konto aktiviert. Verwenden Sie es jetzt in Chromium.</translation>
 <translation id="761356813943268536">Chromium verwendet Ihre Kamera und Ihr Mikrofon.</translation>
 <translation id="7617377681829253106">Chromium ist jetzt noch besser</translation>
+<translation id="7682601070171973634">In Chromium werden neue Funktionen ausprobiert, mit denen Websites bei gleichbleibender Nutzererfahrung beim Surfen weniger Nutzerdaten verwenden</translation>
 <translation id="7686590090926151193">Chromium ist nicht als Ihr Standardbrowser festgelegt</translation>
 <translation id="7689606757190482937">Chromium wird auf allen Ihren Geräten synchronisiert und personalisiert</translation>
 <translation id="7729447699958282447">Chromium konnte Ihre Daten nicht synchronisieren, da die Synchronisierung für Ihre Domain nicht zur Verfügung steht.</translation>

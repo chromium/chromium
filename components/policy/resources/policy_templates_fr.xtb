@@ -2691,6 +2691,9 @@ Elle détermine si <ph name="PRODUCT_NAME" /> utilise les notifications natives 
 Si elle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilise les notifications natives.
 
 Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les notifications natives. Le Centre de messagerie de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
+<translation id="412394201461298128">Définissez cette règle sur "True" pour maintenir le clavier à l'écran activé. Définissez-la sur "False" pour le maintenir désactivé, sauf si d'autres facteurs l'activent. Consultez la règle <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> pour un exemple de ces facteurs.
+
+      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, le clavier à l'écran est désactivé par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="412697421478384751">Autoriser les utilisateurs à définir des codes ayant un niveau de sécurité faible pour le code de l'écran de verrouillage</translation>
 <translation id="4138655880188755661">Période limite</translation>
 <translation id="4147818922357566987">Activer uniquement les variantes concernant les correctifs critiques</translation>
@@ -3003,13 +3006,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet Explorer, consultez la page https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="4567137030726189378">Autoriser l'utilisation des outils pour les développeurs</translation>
-<translation id="4567818663772614440">Cette règle permet de contrôler la création de rapports cloud, une option qui permet d'importer des informations concernant le fonctionnement du navigateur <ph name="PRODUCT_NAME" /> dans la console d'administration Google.
-
-      Si cette règle est définie sur "False" ou si elle n'est pas configurée, aucune donnée n'est recueillie ni importée.
-      Si cette règle est définie sur "True", les données sont recueillies et importées dans la console d'administration Google.
-
-      Concernant <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-      Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4570859815763368584">Règle abandonnée dans la version M68. Utilisez à la place la règle DefaultPopupsSetting.
 
       Pour obtenir une explication complète, consultez la page https://www.chromestatus.com/feature/5675755719622656.
@@ -5119,6 +5115,18 @@ Si vous sélectionnez les options suivantes :
 <translation id="7041170641363384736">Permet de planifier le redémarrage des appareils de manière personnalisée. La règle ne s'applique actuellement qu'aux appareils sur lesquels le démarrage automatique de l'application est activé dans la session Kiosque. Une fois la règle définie sur "True", l'appareil redémarrera en fonction du calendrier établi. Pour annuler tout autre redémarrage planifié, cette règle doit être supprimée.</translation>
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>
 <translation id="7047495632846973438">Indique si la règle display-capture permissions-policy est sélectionnée ou ignorée.</translation>
+<translation id="7054461992790881782">Contrôle le clavier à l'écran en agissant comme règle complémentaire de la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Si la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> est définie sur "True" ou si le paramètre Chrome OS "Activer le clavier à l'écran" est activé, cette règle n'a aucun effet.
+
+      Si la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> est définie sur "False" ou si elle n'est pas configurée et que le paramètre Chrome OS "Activer le clavier à l'écran" est désactivé, cette règle a l'effet suivant :
+      Si cette règle n'est pas configurée, le clavier à l'écran est affiché lorsque l'appareil est en mode tablette.
+      Si cette règle est définie sur "True", le clavier à l'écran est toujours affiché.
+      Si elle est définie sur "False", il n'est jamais affiché.
+
+      Le clavier à l'écran peut adopter une disposition compacte en fonction du mode de saisie.
+
+      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>
 <translation id="7060497964524144376">Si cette règle est activée, la navigation sécurisée juge fiables les domaines que vous avez spécifiés. Autrement dit, elle ne vérifie pas si des ressources présentent un danger (hameçonnage, logiciels malveillants ou indésirables, par exemple). Le service de protection des téléchargements associé à la navigation sécurisée ne vérifie pas non plus les téléchargements hébergés sur ces domaines. Le service de protection par mot de passe ne vérifie pas si un mot de passe est réutilisé.
 
       Si cette règle n'est pas configurée, la navigation sécurisée applique son service de protection par défaut à toutes les ressources.

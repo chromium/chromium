@@ -208,6 +208,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1559572115229829303">&lt;p&gt;Det gick inte att upprätta en privat anslutning till <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> eftersom enhetens datum och tid (<ph name="DATE_AND_TIME" />) inte stämmer.&lt;/p&gt;
 
       &lt;p&gt;Ändra datumet och tiden under &lt;strong&gt;Allmänt&lt;/strong&gt; i appen &lt;strong&gt;Inställningar&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="156703335097561114">Nätverksinformation som adresser, gränssnittskonfiguration och anslutningskvalitet</translation>
 <translation id="1567040042588613346">Den här principen fungerar som avsett, men den har även ställts in på annan plats med samma värde och detta andra värde ersätts av denna princip.</translation>
 <translation id="1569487616857761740">Ange sista giltighetsdatum</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -704,6 +705,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3234666976984236645">Upptäck alltid viktigt innehåll på den här webbplatsen</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa webbläsarens utseende</translation>
 <translation id="3240791268468473923">Arbetsblad för användaruppgifter för säker betalning utan överensstämmande användaruppgifter är öppet</translation>
+<translation id="324180406144491771"><ph name="HOST_NAME" />-länkarna har blockerats</translation>
 <translation id="3249845759089040423">Tuff</translation>
 <translation id="3252266817569339921">franska</translation>
 <translation id="3257954757204451555">Vem står bakom informationen?</translation>

@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Adott webhely cookie-jainak engedélyezése.</translation>
 <translation id="4046123991198612571">Következő szám</translation>
 <translation id="4165986682804962316">Webhelybeállítások</translation>
+<translation id="4194328954146351878">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára az NFC-eszközökön található információk megtekintését és az ilyen eszközökkel való információcserét (ajánlott)</translation>
 <translation id="4200726100658658164">Helybeállítások megnyitása</translation>
 <translation id="4226663524361240545">Az értesítések miatt rezeghet az eszköz</translation>
 <translation id="4259722352634471385">Le van tiltva az ide vezető navigáció: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Nagyítás</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Az NFC ki van kapcsolva ezen az eszközön. Kapcsolja be az <ph name="BEGIN_LINK" />Android Beállítások alkalmazásában<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">NFC-eszközökön található információk megtekintésének és az ilyen eszközökkel való információcserének a tiltása a webhelyek számára</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Adott webhely cookie-jainak letiltása.</translation>
 <translation id="8959122750345127698">Nem érhető el az ide vezető navigáció: <ph name="URL" /></translation>

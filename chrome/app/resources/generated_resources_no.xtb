@@ -1220,6 +1220,9 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Mediekilde uten navn</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />For å gi deg den beste opplevelsen samler <ph name="DEVICE_OS" /> inn maskinvaredata om enheter og deler dem med Google for å fastslå hvilke oppdateringer som skal leveres. Du kan velge å la Google bruke disse dataene for tilleggsformål, som brukerstøtte og forbedringer av <ph name="DEVICE_OS" />-opplevelsen og -tjenesten.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan logge på denne enheten og gå til delen CLOUDREADY_HARDWARE_INFO i chrome://system for å se dataene som sendes til Google for filtrering av oppdateringer og i andre sammenhenger hvor du velger å dele data med Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />For mer informasjon om hvilke data <ph name="DEVICE_OS" /> kan dele med Google, og hvordan de brukes, se g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Denne innstillingen tilhører <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Minst ett Kunst-gallerialbum må velges</translation>
 <translation id="2224551243087462610">Rediger mappenavn</translation>
@@ -1771,6 +1774,15 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2766161002040448006">Spør en forelder</translation>
 <translation id="2767077837043621282">Kunne ikke oppdatere Chromebooken din. Prøv igjen senere.</translation>
 <translation id="2767127727915954024">Da kan <ph name="ORIGIN" /> redigere <ph name="FILENAME" /> frem til du lukker alle fanene for dette nettstedet</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Prøv denne fremgangsmåten for feilsøking:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Sjekk at enheten har fungerende intern lagring, f.eks. HDD, SSD eller eMMC.
+    <ph name="LIST_ITEM" />Sjekk at den interne lagringen er større enn 16 GB.
+    <ph name="LIST_ITEM" />Sjekk tilkoblingen til den interne lagringsenheten, hvis den er fysisk tilgjengelig.
+    <ph name="LIST_ITEM" />Forsikre deg om at du bruker en sertifisert modell, og sjekk installasjonsmerknadene.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />For å få mer hjelp, se g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Fjern fra listen</translation>
 <translation id="2770690685823456775">Eksportér passordene dine til en annen mappe</translation>
 <translation id="2770929488047004208">Skjermoppløsning</translation>
@@ -2990,6 +3002,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4005817994523282006">Metode for registrering av tidssone</translation>
 <translation id="4007856537951125667">Skjul snarveier</translation>
 <translation id="4008291085758151621">Nettstedsinformasjon er ikke tilgjengelig i VR</translation>
+<translation id="4009955655170295852">Før du begynner, må du ta en sikkerhetskopi av dataene dine. Når <ph name="DEVICE_OS" /> installeres, blir harddisken din overskrevet. Finn ut mer på g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">For å få bokmerker på mobilenheten din, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Vil du reparere «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="4015163439792426608">Har du utvidelser? <ph name="BEGIN_LINK" />Administrer utvidelsene<ph name="END_LINK" /> på ett praktisk sted.</translation>
@@ -3712,6 +3725,9 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bokmerke er slettet}other{{COUNT} bokmerker er slettet}}</translation>
 <translation id="4819607494758673676">Google Assistent-varsler</translation>
 <translation id="4820236583224459650">Angi som aktiv sak</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Før du registrerer deg, må du tømme TPM-enheten, slik at <ph name="DEVICE_OS" /> kan få eierskap over enheten.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan også slå TPM-enheten helt av. Dataene dine blir fremdeles lagret trygt med programvarekryptering, men visse sikkerhetsfunksjoner, som maskinvarebaserte sertifikater, blir deaktivert.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Du kan endre TPM-innstillingene ved å starte systemet på nytt og gå inn i BIOS-/UEFI-innstillingene. Fremgangsmåten for dette avhenger av hvilken enhetsmodell du har. For mer informasjon, åpne <ph name="DEVICE_OS" />-dokumentasjonen på en annen enhet før du starter systemet på nytt: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profilering aktivert</translation>
 <translation id="4823484602432206655">lese og endre bruker- og enhetsinnstillinger</translation>
 <translation id="4824037980212326045">Linux-sikkerhetskopiering og -gjenoppretting</translation>
@@ -5619,6 +5635,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6834652994408928492">Mørk modus blir slått på automatisk ved solnedgang</translation>
 <translation id="6835762382653651563">Koble til Internett for å oppdatere <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Feil ved sletting av sertifikat</translation>
+<translation id="6839882458129755986">Google er ikke ansvarlig for eventuelt tap av data, og det kan hende <ph name="DEVICE_OS" /> ikke virker på usertifiserte modeller. Finn ut mer på g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Påloggingen er endret</translation>
 <translation id="6840155290835956714">Spør før noe sendes</translation>
 <translation id="6840184929775541289">Er ikke en sertifiseringsinstans</translation>
@@ -5936,6 +5953,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7180865173735832675">Tilpass</translation>
 <translation id="7182791023900310535">Flytt passordet</translation>
+<translation id="7183193772170782394">La Google bruke maskinvaredataene dine for å gjøre <ph name="DEVICE_OS" /> bedre. Hvis du avviser dette, blir dataene fremdeles sendt til Google for å fastslå hvilke oppdateringer som er riktige, men de blir ikke lagret eller brukt ellers. Finn ut mer på g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Slå av/på sidesøket. Sidesøket er ikke aktivert.</translation>
 <translation id="7186088072322679094">Behold i verktøyraden</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan ikke åpne denne mappen, fordi den inneholder systemfiler</translation>
@@ -7022,6 +7040,8 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8260864402787962391">Mus</translation>
 <translation id="8261378640211443080">Denne utvidelsen er ikke oppført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og kan ha blitt lagt uten at du har vært klar over det.</translation>
 <translation id="8261506727792406068">Slett</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Noe gikk galt, og <ph name="DEVICE_OS" /> kunne ikke installeres.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />For å få mer hjelp, se g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Gi denne gruppen navn</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> har deaktivert markøren din.</translation>
 <translation id="8264024885325823677">Denne innstillingen administreres av administratoren.</translation>
@@ -7494,7 +7514,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.}}</translation>
 <translation id="8777259617149177596">Batterinivået til etuiet er <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8777628254805677039">rotpassord</translation>
-<translation id="8778328560035799409">Brytertilordningene blir fjernet</translation>
+<translation id="8779944680596936487">Nettsteder kan bare bruke informasjonskapsler til å se nettleseraktiviteten din på sitt eget nettsted</translation>
 <translation id="8780123805589053431">Få bildebeskrivelser fra Google</translation>
 <translation id="8780443667474968681">Talesøk er slått av.</translation>
 <translation id="8781834595282316166">Ny fane i gruppen</translation>

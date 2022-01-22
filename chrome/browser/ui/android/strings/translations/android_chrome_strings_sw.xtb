@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Faili Zangu</translation>
 <translation id="189358972401248634">Lugha zingine</translation>
 <translation id="1894023287452300670">Fuatilia bei hapa</translation>
+<translation id="1900260903084164610">Kwa kuendelea, unakubali <ph name="BEGIN_TOS_LINK" />Sheria na Masharti<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Faili unazopakua katika hali fiche bado zinaweza kuonekana na mtu yeyote anayetumia kifaa hiki.</translation>
 <translation id="1910950723001426294">Orodha ya chaguo za kushiriki imefungwa.</translation>
 <translation id="1918175104945982129">Kiolesura cha idhini ya kutafuta kwa kutamka kupitia programu ya Mratibu kimefunguliwa kwenye nusu ya skrini</translation>
@@ -206,6 +207,7 @@ Gusa neno lolote ili utafute. Ili uchuje utafutaji wako, gusa na ushikilie ili u
 <translation id="2172905120685242547">Ungependa kufunga dirisha?</translation>
 <translation id="2175927920773552910">Msimbo wa QR</translation>
 <translation id="218608176142494674">Inashiriki</translation>
+<translation id="2194856509914051091">Mambo ya kuzingatia</translation>
 <translation id="2200113223741723867">Dhibiti mipangilio ya kushiriki data ya matumizi</translation>
 <translation id="2218567645332692482">Husasisha usogezaji uwe HTTPS na hukuonya kabla ya kupakia tovuti ambazo haziwezi kutumia mfumo huo</translation>
 <translation id="2227444325776770048">Endelea ukitumia <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Imeshindwa kupakua 1.}other{Imeshindwa kupakua faili #.}}</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5171045022955879922">Tafuta au charaza URL</translation>
+<translation id="517734441743343109">Kwa kuendelea, unakubali <ph name="BEGIN_TOS_LINK" />Sheria na Masharti<ph name="END_TOS_LINK" /> na <ph name="BEGIN_PRIVACY_LINK" />Sera ya\u00A0Faragha<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Fungulia katika Chrome</translation>
 <translation id="5188992787241350004">Tafuta kwa kutumia sauti yako</translation>
 <translation id="5191251636205085390">Pata maelezo na udhibiti teknolojia mpya zinazokusudia kuchukua nafasi ya vidakuzi vya wengine</translation>
@@ -995,6 +998,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6633067410344541938">Fungua hali fiche</translation>
 <translation id="6636623428211296678">Gundua mipangilio zaidi hapa chini au ukamilishe sasa</translation>
 <translation id="663674369910034433">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK1" />Usawazishaji<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />huduma za Google<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Ili kusaidia kuboresha programu, Chrome hutumia Google data ya matumizi na ripoti za kuacha kufanya kazi. <ph name="BEGIN_UMA_LINK" />Dhibiti<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Zuia kila wakati</translation>
 <translation id="6643016212128521049">Futa</translation>
 <translation id="6643649862576733715">Panga kulingana na kiasi cha data kilichookolewa</translation>
@@ -1395,6 +1399,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8788265440806329501">Historia ya uelekezaji imezimwa</translation>
 <translation id="8788968922598763114">Fungua tena kichupo kilichofungwa mwisho</translation>
 <translation id="8798449543960971550">Ulizosoma</translation>
+<translation id="8803526663383843427">Ukiwa umekiwasha</translation>
 <translation id="8805097383171548551">Ili uchanganue Msimbo wa QR, tumia kifaa kilicho na kamera.</translation>
 <translation id="8812260976093120287">Kwenye baadhi ya tovuti, unaweza kulipa kwa programu za malipo zinazotumika zilizo hapo juu kwenye kifaa chako.</translation>
 <translation id="881688628773363275">Maudhui ya kichupo cha kukagua kwanza hayawezi kuangaliwa.</translation>

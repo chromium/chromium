@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Իմ ֆայլերը</translation>
 <translation id="189358972401248634">Այլ լեզուներ</translation>
 <translation id="1894023287452300670">Հետևեք գներին այստեղ</translation>
+<translation id="1900260903084164610">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Օգտագործման պայմանները<ph name="END_TOS_LINK" />։</translation>
 <translation id="1905320231301365059">Ինկոգնիտո ռեժիմում ներբեռնված տարրերը տեսանելի են այս սարքն օգտագործողներին։</translation>
 <translation id="1910950723001426294">Կիսվելու տարբերակների ցանկը փակված է։</translation>
 <translation id="1918175104945982129">Օգնականի միջոցով ձայնային որոնման միջերեսը բացվում է կես բարձրությամբ</translation>
@@ -206,6 +207,7 @@
 <translation id="2172905120685242547">Փակե՞լ պատուհանը</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="218608176142494674">Ընդհանուր օգտագործում</translation>
+<translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="2200113223741723867">Կառավարել օգտագործման տվյալների տրամադրումը</translation>
 <translation id="2218567645332692482">Օգտագործել HTTPS հաղորդակարգը և նախազգուշացնել, երբ բեռնվող կայքերը չեն աջակցում այն</translation>
 <translation id="2227444325776770048">Շարունակել որպես <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Չհաջողվեց ներբեռնել 1 ֆայլ։}one{Չհաջողվեց ներբեռնել # ֆայլ։}other{Չհաջողվեց ներբեռնել # ֆայլ։}}</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5171045022955879922">Որոնեք կամ մուտքագրեք URL-ը</translation>
+<translation id="517734441743343109">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Օգտագործման պայմանները<ph name="END_TOS_LINK" /> և <ph name="BEGIN_PRIVACY_LINK" />Գաղտնիության\u00A0քաղաքականությունը<ph name="END_PRIVACY_LINK" />։</translation>
 <translation id="5184329579814168207">Բացել Chrome-ով</translation>
 <translation id="5188992787241350004">Որոնեք ձայնային հրահանգների միջոցով</translation>
 <translation id="5191251636205085390">Իմացեք ավելին նոր տեխնոլոգիաների մասին, որոնք փոխարինելու են երրորդ կողմի քուքիներին։</translation>
@@ -995,6 +998,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6633067410344541938">Ապակողպել ինկոգնիտո ներդիրները</translation>
 <translation id="6636623428211296678">Ստորև ծանոթացեք այլ կարգավորումների կամ ավարտեք ստուգումը</translation>
 <translation id="663674369910034433">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK1" />Համաժամացում<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google-ի ծառայություններ<ph name="END_LINK2" /> բաժիններում։</translation>
+<translation id="6637100877383020115">Հավելվածը բարելավելու նպատակով Chrome-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_UMA_LINK" />Կառավարել<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Միշտ արգելափակել</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6643649862576733715">Դասավորել ըստ պահված տվյալների ծավալի</translation>
@@ -1395,6 +1399,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8788265440806329501">Նավիգացիայի պատմության թերթը փակված է</translation>
 <translation id="8788968922598763114">Վերաբացել վերջին փակված ներդիրը</translation>
 <translation id="8798449543960971550">Ընթերցված</translation>
+<translation id="8803526663383843427">Երբ գործառույթը միացված է</translation>
 <translation id="8805097383171548551">QR կոդ սկանավորելու համար օգտագործեք տեսախցիկով սարք։</translation>
 <translation id="8812260976093120287">Որոշ կայքերում կարող եք վճարել ձեր սարքից՝ վերոնշյալ աջակցվող վճարային հավելվածների օգնությամբ:</translation>
 <translation id="881688628773363275">Նախադիտման ներդիրի բովանդակությունը չի ցուցադրվում։</translation>

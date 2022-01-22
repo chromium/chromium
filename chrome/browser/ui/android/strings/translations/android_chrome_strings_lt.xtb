@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">Mano failai</translation>
 <translation id="189358972401248634">Kitos kalbos</translation>
 <translation id="1894023287452300670">Čia stebėkite kainą</translation>
+<translation id="1900260903084164610">Tęsdami sutinkate su <ph name="BEGIN_TOS_LINK" />paslaugų teikimo sąlygomis<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Inkognito režimu atsisiųsti failai vis tiek matomi visiems šio įrenginio naudotojams.</translation>
 <translation id="1910950723001426294">Bendrinimo parinkčių sąrašas uždarytas.</translation>
 <translation id="1918175104945982129">Sutikimo atlikti paiešką balsu naudojant Padėjėją NS atidaryta iki pusės aukščio</translation>
@@ -206,6 +207,7 @@ Norėdami ieškoti, palieskite bet kurį žodį. Jei norite patikslinti paiešk�
 <translation id="2172905120685242547">Uždaryti langą?</translation>
 <translation id="2175927920773552910">QR kodas</translation>
 <translation id="218608176142494674">Bendrinimas</translation>
+<translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2200113223741723867">Tvarkyti naudojimo duomenų bendrinimą</translation>
 <translation id="2218567645332692482">Naršymai naujovinami į HTTPS ir esate įspėjami prieš įkeliant jo nepalaikančias svetaines</translation>
 <translation id="2227444325776770048">Tęsti kaip <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Nepavyko atlikti 1 atsisiuntimo.}one{Nepavyko atlikti # atsisiuntimo.}few{Nepavyko atlikti # atsisiuntimų.}many{Nepavyko atlikti # atsisiuntimo.}other{Nepavyko atlikti # atsisiuntimų.}}</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5171045022955879922">Ieškokite ar įveskite URL</translation>
+<translation id="517734441743343109">Tęsdami sutinkate su <ph name="BEGIN_TOS_LINK" />paslaugų teikimo sąlygomis<ph name="END_TOS_LINK" /> ir <ph name="BEGIN_PRIVACY_LINK" />privatumo\u00A0politika<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5188992787241350004">Ieškokite balsu</translation>
 <translation id="5191251636205085390">Sužinokite apie naujas technologijas, kurios pakeis trečiųjų šalių slapukus, ir valdykite jas</translation>
@@ -995,6 +998,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6633067410344541938">Atrakinti inkognito režimą</translation>
 <translation id="6636623428211296678">Galite toliau peržiūrėti daugiau nustatymų arba baigti dabar</translation>
 <translation id="663674369910034433">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyse <ph name="BEGIN_LINK1" />„Sinchronizavimas“<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />„Google“ paslaugos“<ph name="END_LINK2" /></translation>
+<translation id="6637100877383020115">Kad padėtų tobulinti programą, „Chrome“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_UMA_LINK" />Tvarkyti<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokuoti visą laiką</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6643649862576733715">Rūšiuoti pagal išsaugotų duomenų kiekį</translation>
@@ -1395,6 +1399,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8788265440806329501">Naršymo istorija uždaryta</translation>
 <translation id="8788968922598763114">Iš naujo atidaryti paskutinį uždarytą skirtuką</translation>
 <translation id="8798449543960971550">Skaityta</translation>
+<translation id="8803526663383843427">Kada įjungta</translation>
 <translation id="8805097383171548551">Jei norite nuskaityti QR kodą, naudokite įrenginį, kuriame yra fotoaparatas</translation>
 <translation id="8812260976093120287">Kai kuriose svetainėse galite mokėti naudodami įrenginyje įdiegtas anksčiau nurodytas palaikomas mokėjimo programas.</translation>
 <translation id="881688628773363275">Peržiūros skirtuko turinio peržiūrėti negalima.</translation>

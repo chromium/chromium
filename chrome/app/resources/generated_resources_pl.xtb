@@ -1212,6 +1212,9 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2220572644011485463">Kod PIN lub hasło</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Źródło multimedialne bez nazwy</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Aby zapewnić jak najlepsze działanie systemu, <ph name="DEVICE_OS" /> zbiera dane sprzętowe urządzeń i nam je udostępnia, a my na tej podstawie określamy, które aktualizacje należy dostarczyć. Opcjonalnie możesz pozwolić Google na szersze wykorzystanie tych danych, np. w celu ulepszania systemu <ph name="DEVICE_OS" /> i udostępniania dotyczącej go pomocy.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Aby zobaczyć dane wysyłane do Google i używane do filtrowania aktualizacji, a także wszelkie inne przypadki wyrażenia przez Ciebie zgody na udostępnianie danych firmie Google, możesz zalogować się na tym urządzeniu i otworzyć sekcję CLOUDREADY_HARDWARE_INFO na stronie chrome://system<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Aby dowiedzieć się więcej o tym, jakie dane system <ph name="DEVICE_OS" /> może udostępniać Google i jak są one wykorzystywane, wejdź na g.co/CR2/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">To ustawienie należy do <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Musi być wybrany co najmniej jeden album z Galerii sztuki</translation>
 <translation id="2224551243087462610">Edytuj nazwę folderu</translation>
@@ -1759,6 +1762,15 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2766161002040448006">Poproś rodzica</translation>
 <translation id="2767077837043621282">Nie udało się zaktualizować Chromebooka. Spróbuj ponownie później.</translation>
 <translation id="2767127727915954024">Strona <ph name="ORIGIN" /> będzie mogła edytować plik <ph name="FILENAME" />, dopóki nie zamkniesz wszystkich jej kart</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Spróbuj rozwiązać problem w ten sposób:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Sprawdź, czy Twoje urządzenie jest wyposażone w działającą pamięć wewnętrzną, np. dysk twardy, SSD lub eMMC.
+    <ph name="LIST_ITEM" />Upewnij się, że pojemność pamięci wewnętrznej przekracza 16 GB.
+    <ph name="LIST_ITEM" />Jeśli to możliwe, sprawdź połączenie z urządzeniem pamięci wewnętrznej.
+    <ph name="LIST_ITEM" />Upewnij się, że używasz urządzenia certyfikowanego i zapoznaj się z informacjami dotyczącymi instalacji.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Dodatkowa pomoc: g.co/CR2/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Usuń z listy</translation>
 <translation id="2770690685823456775">Eksportuj hasła do innego folderu</translation>
 <translation id="2770929488047004208">Rozdzielczość monitora</translation>
@@ -2980,6 +2992,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4005817994523282006">Metoda wykrywania strefy czasowej</translation>
 <translation id="4007856537951125667">Ukryj skróty</translation>
 <translation id="4008291085758151621">Informacje o stronie nie są dostępne w rzeczywistości wirtualnej</translation>
+<translation id="4009955655170295852">Przed rozpoczęciem instalacji sprawdź, czy masz kopię zapasową danych. Instalacja systemu operacyjnego <ph name="DEVICE_OS" /> spowoduje zastąpienie danych na dysku twardym. Więcej informacji: g.co/CR2/InstallGuide</translation>
 <translation id="4010917659463429001">Aby zaimportować zakładki na urządzenie mobilne, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Naprawić „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4015163439792426608">Korzystasz z rozszerzeń? <ph name="BEGIN_LINK" />Zarządzaj nimi<ph name="END_LINK" /> w jednym, łatwo dostępnym miejscu.</translation>
@@ -3702,6 +3715,9 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4816336393325437908">{COUNT,plural, =1{Usunięto 1 zakładkę}few{Usunięto {COUNT} zakładki}many{Usunięto {COUNT} zakładek}other{Usunięto {COUNT} zakładki}}</translation>
 <translation id="4819607494758673676">Powiadomienia od Asystenta Google</translation>
 <translation id="4820236583224459650">Ustaw jako zgłoszenie aktywne</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Przed rejestracją musisz wyczyścić TPM, aby system operacyjny <ph name="DEVICE_OS" /> mógł uzyskać prawo własności do tego urządzenia.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Możesz też całkowicie wyłączyć urządzenie TPM. Twoje dane będą przechowywane w bezpieczny sposób (zaszyfrowane programowo), ale niektóre funkcje, np. certyfikaty obsługiwane sprzętowo, będą wyłączone.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Możesz zmienić ustawienia TPM. Aby to zrobić, uruchom urządzenie ponownie i otwórz ustawienia BIOS/UEFI. Czynności, które trzeba wykonać, mogą się różnić w zależności od urządzenia. Aby dowiedzieć się więcej, przed ponownym uruchomieniem otwórz dokumentację systemu operacyjnego <ph name="DEVICE_OS" /> na innym urządzeniu: g.co/CR2/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profilowanie włączone</translation>
 <translation id="4823484602432206655">Odczyt i zmiana ustawień użytkownika oraz urządzenia</translation>
 <translation id="4824037980212326045">Tworzenie i przywracanie kopii zapasowej Linuksa</translation>
@@ -5609,6 +5625,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6834652994408928492">Tryb ciemny włączy się automatycznie o zachodzie słońca</translation>
 <translation id="6835762382653651563">Aby zaktualizować urządzenie <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
 <translation id="6839225236531462745">Błąd usuwania certyfikatu</translation>
+<translation id="6839882458129755986">Google nie ponosi odpowiedzialności za utratę danych. System operacyjny <ph name="DEVICE_OS" /> może nie działać na urządzeniach bez certyfikatu. Więcej informacji: g.co/CR2/InstallGuide</translation>
 <translation id="6839916869147598086">Logowanie wygląda teraz inaczej</translation>
 <translation id="6840155290835956714">Pytaj przed wysłaniem</translation>
 <translation id="6840184929775541289">Nie jest urzędem certyfikacji</translation>
@@ -5926,6 +5943,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7180865173735832675">Dostosuj</translation>
 <translation id="7182791023900310535">Przenieś hasło</translation>
+<translation id="7183193772170782394">Pozwól Google na używanie danych dotyczących Twojego sprzętu w celu ulepszania systemu <ph name="DEVICE_OS" />. Jeśli nie wyrazisz zgody, dane te nadal będą przesyłane do Google i używane do określania odpowiednich aktualizacji, ale nie będą przechowywane ani wykorzystywane do innych celów. Więcej informacji: g.co/CR2/HWDataCollection</translation>
 <translation id="7183420126213758623">Przełącz wyszukiwanie na boku. Wyszukiwanie na boku nie jest włączone.</translation>
 <translation id="7186088072322679094">Zachowaj na pasku narzędzi</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> nie może otwierać tego folderu, bo zawiera on pliki systemowe</translation>
@@ -7013,6 +7031,8 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8260864402787962391">Mysz</translation>
 <translation id="8261378640211443080">To rozszerzenie nie jest oferowane w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="8261506727792406068">Usuń</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Wystąpił problem i nie udało się zainstalować systemu operacyjnego <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Dodatkowa pomoc: g.co/CR2/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Nazwij grupę</translation>
 <translation id="8263744495942430914">Witryna <ph name="FULLSCREEN_ORIGIN" /> wyłączyła kursor myszy.</translation>
 <translation id="8264024885325823677">Tym ustawieniem zarządza Twój administrator.</translation>
@@ -7487,7 +7507,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}}</translation>
 <translation id="8777259617149177596">Poziom naładowania baterii obudowy to <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8777628254805677039">hasło główne</translation>
-<translation id="8778328560035799409">Obecnie przypisane przełączniki zostaną wyczyszczone</translation>
+<translation id="8779944680596936487">Witryny mogą używać plików cookie tylko do śledzenia Twojej aktywności związanej z przeglądaniem tych witryn</translation>
 <translation id="8780123805589053431">Pobieraj opisy obrazów z Google</translation>
 <translation id="8780443667474968681">Wyszukiwanie głosowe zostało wyłączone.</translation>
 <translation id="8781834595282316166">Nowa karta w grupie</translation>

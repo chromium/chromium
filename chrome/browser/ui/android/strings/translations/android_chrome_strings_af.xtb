@@ -144,6 +144,7 @@
 <translation id="1883903952484604915">My lêers</translation>
 <translation id="189358972401248634">Ander tale</translation>
 <translation id="1894023287452300670">Spoor prys hier na</translation>
+<translation id="1900260903084164610">Deur voort te gaan, stem jy in tot die <ph name="BEGIN_TOS_LINK" />diensbepalings<ph name="END_TOS_LINK" />.</translation>
 <translation id="1905320231301365059">Lêers wat jy in Incognitomodus aflaai, is steeds sigbaar vir enigiemand wat hierdie toestel gebruik.</translation>
 <translation id="1910950723001426294">Lys deelopsies is gesluit.</translation>
 <translation id="1918175104945982129">Assistent-stemsoektog se instemming-UI is teen halwe hoogte oopgemaak</translation>
@@ -206,6 +207,7 @@ Tik op enige woord om te soek. Raak en hou om meer of minder woorde te kies as j
 <translation id="2172905120685242547">Maak venster toe?</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="218608176142494674">Deling</translation>
+<translation id="2194856509914051091">Dinge om in ag te neem</translation>
 <translation id="2200113223741723867">Bestuur deling van gebruikdata</translation>
 <translation id="2218567645332692482">Gradeer navigasie op na HTTPS en waarsku jou voordat werwe gelaai word wat dit nie ondersteun nie</translation>
 <translation id="2227444325776770048">Gaan voort as <ph name="USER_FULL_NAME" /></translation>
@@ -718,6 +720,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Kon 1 item nie aflaai nie.}other{Kon # items nie aflaai nie.}}</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5171045022955879922">Soek of tik URL in</translation>
+<translation id="517734441743343109">Deur voort te gaan, stem jy in tot die <ph name="BEGIN_TOS_LINK" />diensbepalings<ph name="END_TOS_LINK" /> en <ph name="BEGIN_PRIVACY_LINK" />privaatheidsbeleid<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Maak in Chrome oop</translation>
 <translation id="5188992787241350004">Soek met jou stem</translation>
 <translation id="5191251636205085390">Vind meer uit oor en beheer nuwe tegnologieë wat beoog om derdepartywebkoekies te vervang</translation>
@@ -995,6 +998,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6633067410344541938">Ontsluit Incognito</translation>
 <translation id="6636623428211296678">Verken meer instellings hieronder of maak nou klaar</translation>
 <translation id="663674369910034433">Raadpleeg <ph name="BEGIN_LINK1" />Sinkronisering<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling</translation>
+<translation id="6637100877383020115">Chrome stuur gebruik- en omvaldata na Google toe om te help om die program beter te maak. <ph name="BEGIN_UMA_LINK" />Bestuur<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokkeer altyd</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6643649862576733715">Rangskik volgens hoeveelheid data bespaar</translation>
@@ -1395,6 +1399,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8788265440806329501">Navigasiegeskiedenis is toegemaak.</translation>
 <translation id="8788968922598763114">Heropen oortjie wat laaste toegemaak is</translation>
 <translation id="8798449543960971550">Lees</translation>
+<translation id="8803526663383843427">As dit aan is</translation>
 <translation id="8805097383171548551">Gebruik 'n toestel met 'n kamera as jy 'n QR-kode wil skandeer.</translation>
 <translation id="8812260976093120287">Op sommige webwerwe kan jy met gesteunde betalingprogramme op jou toestel betaal.</translation>
 <translation id="881688628773363275">Voorskou-oortjie se inhoud kan nie bekyk word.</translation>

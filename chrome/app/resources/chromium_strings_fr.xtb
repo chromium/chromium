@@ -15,6 +15,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1524282610922162960">Partager un onglet Chromium</translation>
 <translation id="1553461853655228091">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et créer un plan 3D de votre environnement</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour}=1{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
+<translation id="1625909126243026060">Examinez les paramètres clés de confidentialité et de sécurité dans Chromium</translation>
 <translation id="1708666629004767631">Une nouvelle version de Chromium encore plus sûre est disponible.</translation>
 <translation id="1774152462503052664">Laisser Chromium s'exécuter en arrière-plan</translation>
 <translation id="1779356040007214683">Afin de rendre Chrome plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
@@ -118,6 +119,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="459535195905078186">Applications Chromium</translation>
 <translation id="4621240073146040695">Mise à jour presque terminée. Relancez Chromium pour la finaliser.</translation>
 <translation id="4665829708273112819">Avertissement : Chromium ne peut pas empêcher les extensions d'enregistrer l'historique de votre navigation. Pour désactiver cette extension en mode navigation privée, désélectionnez cette option.</translation>
+<translation id="4673151026126227699">Si vous partagez aussi les rapports d'utilisation Chromium, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="4677944499843243528">Le profil semble être utilisé dans le cadre d'un autre processus Chromium (<ph name="PROCESS_ID" />) sur un autre ordinateur (<ph name="HOST_NAME" />). Ce profil a été verrouillé de sorte qu'il ne soit pas endommagé. Si vous êtes sûr que le profil n'est utilisé dans le cadre d'aucun autre processus, vous pouvez le déverrouiller et relancer Chromium.</translation>
 <translation id="469338717132742108">Obtenir de l'aide avec Chromium OS</translation>
 <translation id="4708774505295300557">Un utilisateur s'est récemment connecté à Chromium sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Chromium pour séparer vos informations.</translation>
@@ -238,6 +240,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7597596667193879455">Vous avez activé la navigation sécurisée avec protection renforcée dans votre compte. Activez-la maintenant dans Chromium.</translation>
 <translation id="761356813943268536">Votre webcam et votre micro sont en cours d'utilisation dans Chromium.</translation>
 <translation id="7617377681829253106">Chromium s'est amélioré</translation>
+<translation id="7682601070171973634">Chromium développe de nouvelles fonctionnalités qui permettent aux sites de proposer la même expérience de navigation en utilisant moins de données</translation>
 <translation id="7686590090926151193">Chromium n'est pas votre navigateur par défaut</translation>
 <translation id="7689606757190482937">Synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="7729447699958282447">Impossible de synchroniser vos données dans Chromium, car la synchronisation n'est pas disponible pour votre domaine.</translation>
