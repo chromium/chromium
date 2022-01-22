@@ -1838,21 +1838,6 @@
             ]
         }
     ],
-    "ChromeOSAssistantDspHotword": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableDspHotword"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSCarolineRegularMemoryPolicy": [
         {
             "platforms": [
