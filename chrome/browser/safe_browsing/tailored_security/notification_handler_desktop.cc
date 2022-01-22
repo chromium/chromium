@@ -47,10 +47,10 @@ const char kTailoredSecurityNotificationOrigin[] =
     "chrome://settings/security?q=enhanced";
 
 // |is_esb_enabled_in_sync| records if ESB was enabled in sync with Account-ESB
-void TurnOnEsbAndOpenSettings(Profile* profile, bool is_esb_enabled_in_sync) {
-  SetSafeBrowsingState(profile->GetPrefs(),
-                       SafeBrowsingState::ENHANCED_PROTECTION,
-                       is_esb_enabled_in_sync);
+void ChangeSafeBrowsingStateAndOpenSettings(Profile* profile,
+                                            SafeBrowsingState new_state,
+                                            bool is_esb_enabled_in_sync) {
+  SetSafeBrowsingState(profile->GetPrefs(), new_state, is_esb_enabled_in_sync);
   Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile).browser();
   chrome::ShowSafeBrowsingEnhancedProtection(browser);
 }
@@ -120,20 +120,21 @@ void TailoredSecurityNotificationHandler::OnClick(
   } else {
     bool is_enable = (notification_id == kTailoredSecurityEnableNotificationId);
     if (*action_index == 0) {
-      // Enable: Pressed Turn on is acceptance, Disable: Turn back on is
-      // rejection
-      TailoredSecurityOutcome outcome =
-          is_enable ? TailoredSecurityOutcome::kAccepted
-                    : TailoredSecurityOutcome::kRejected;
-      LogConsentedOutcome(outcome, is_enable);
-      TurnOnEsbAndOpenSettings(profile, is_enable);
-    } else {
-      // Enable: Pressed No Thanks is rejection, Disable: Pressed OK is
+      // Enable: Pressed Turn on, Disable: Pressed Turn off. Both are
       // acceptance
-      TailoredSecurityOutcome outcome =
-          is_enable ? TailoredSecurityOutcome::kRejected
-                    : TailoredSecurityOutcome::kAccepted;
-      LogConsentedOutcome(outcome, is_enable);
+      LogConsentedOutcome(TailoredSecurityOutcome::kAccepted, is_enable);
+      if (is_enable) {
+        ChangeSafeBrowsingStateAndOpenSettings(
+            profile, SafeBrowsingState::ENHANCED_PROTECTION,
+            /*is_esb_enabled_in_sync=*/true);
+      } else {
+        ChangeSafeBrowsingStateAndOpenSettings(
+            profile, SafeBrowsingState::STANDARD_PROTECTION,
+            /*is_esb_enabled_in_sync=*/false);
+      }
+    } else {
+      // Both enable and disable dialogs display No Thanks, and are rejecting.
+      LogConsentedOutcome(TailoredSecurityOutcome::kRejected, is_enable);
     }
   }
 
@@ -174,7 +175,7 @@ void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
         IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_DESCRIPTION);
     primary_button = l10n_util::GetStringUTF16(
         IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_OFF);
-    secondary_button = l10n_util::GetStringUTF16(IDS_OK);
+    secondary_button = l10n_util::GetStringUTF16(IDS_NO_THANKS);
     SkColor icon_color =
         color_provider->GetColor(ui::kColorSecondaryForeground);
     icon = gfx::Image(gfx::CreateVectorIcon(
