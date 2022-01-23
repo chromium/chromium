@@ -5,6 +5,7 @@
 #include "base/memory/ref_counted.h"
 
 #include <limits>
+#include <ostream>
 #include <type_traits>
 
 #include "base/threading/thread_collision_warner.h"

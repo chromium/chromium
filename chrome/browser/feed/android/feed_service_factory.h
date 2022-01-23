@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FEED_ANDROID_FEED_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
+#include "base/strings/string_piece_forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {

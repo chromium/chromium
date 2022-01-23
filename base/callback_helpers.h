@@ -11,6 +11,7 @@
 #define BASE_CALLBACK_HELPERS_H_
 
 #include <memory>
+#include <ostream>
 #include <type_traits>
 #include <utility>
 
