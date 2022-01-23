@@ -72,11 +72,12 @@ class HapticTouchpadHandler {
 
   // The next three methods (UploadFfEffect, TakeControlOfClickEffects, and
   // ReleaseControlOfClickEffects) depend on new changes to the linux userspace
-  // API. Therefore, if the new ioctl EVIOCFFTAKECONTROL is not defined, their
-  // definition is simplified. When a HapticTouchpadHandler is initialized
-  // without the required linux userspace API, haptics setup will fail and the
-  // device will act as a normal non-haptic touchpad, with click haptics handled
-  // by the touchpad controller.
+  // API. However, they will only be called if the touchpad is marked as a
+  // haptic touchpad by EventDeviceInfo, which also depends on the new changes
+  // to the linux UAPI. When a HapticTouchpadHandler is initialized without the
+  // required linux userspace API, haptics setup will fail before these methods
+  // are called and the device will act as a normal non-haptic touchpad, with
+  // click haptics handled by the touchpad controller.
 
   // Upload an effect to the touchpad with the given HID waveform usage and
   // intensity percentage. Returns the newly assigned effect ID if successful,
