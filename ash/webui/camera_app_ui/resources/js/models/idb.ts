@@ -33,7 +33,7 @@ export async function get<T>(key: string): Promise<T|null> {
   const transaction = (await idb).transaction(DB_STORE, 'readonly');
   const objStore = transaction.objectStore(DB_STORE);
   const request = objStore.get(key);
-  return new Promise<T>((resolve, reject) => {
+  return new Promise<T|null>((resolve, reject) => {
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       const entry = request.result;
