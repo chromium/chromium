@@ -120,6 +120,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"webview_saml_injected.js", IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"inline_login_util.js", IDR_INLINE_LOGIN_UTIL_JS},
+    {"arc_account_picker_app.js", IDR_INLINE_LOGIN_ARC_ACCOUNT_PICKER_APP_JS},
     {"welcome_page_app.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS},
     {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
     {"gaia_action_buttons.js", IDR_GAIA_ACTION_BUTTONS_JS},
@@ -162,6 +163,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
     {"accountManagerDialogWelcomeCheckbox",
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
+    {"accountManagerDialogArcAccountPickerTitle",
+     IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE},
     {"accountManagerErrorNoInternetTitle",
      IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE},
     {"accountManagerErrorNoInternetBody",
@@ -187,6 +190,14 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
           base::UTF8ToUTF16(
               chrome::GetOSSettingsUrl(
                   chromeos::settings::mojom::kGooglePlayStoreSubpagePath)
+                  .spec())));
+  source->AddString(
+      "accountManagerDialogArcAccountPickerBody",
+      l10n_util::GetStringFUTF16(
+          IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY,
+          base::UTF8ToUTF16(
+              chrome::GetOSSettingsUrl(
+                  chromeos::settings::mojom::kMyAccountsSubpagePath)
                   .spec())));
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(

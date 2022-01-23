@@ -5525,6 +5525,12 @@
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL" desc="Toggle text for the Welcome screen in Chrome OS 'Add account' dialog. If user toggles it on, the account that will be added will be available in Android Apps. The default value for the toggle may be 'on' or 'off' depending on where the dialog is being opened from." translateable="false">
     Use this account with Android apps. You can control permissions for Android apps in <ph name="LINK_BEGIN">&lt;a id="appsSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE" desc="" translateable="false">
+    Accounts available to use with Android apps
+  </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY" desc="" translateable="false">
+    You can select an existing account to use with Android apps or add a new Google Account. Once you sign in to an Android app, your account can be used with other Android apps. You can change Android apps access in <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings > Accounts<ph name="LINK_END">&lt;/a&gt;</ph>.
+  </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX" desc="Checkbox text for the Welcome screen in Chrome OS 'Add account' dialog. If user checks this checkbox, this screen will not be shown the next time they open the dialog.">
     Don't remind me next time
   </message>

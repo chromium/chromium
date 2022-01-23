@@ -15,9 +15,12 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos">
+import './arc_account_picker_app.js';
 import './gaia_action_buttons.js';
 import './welcome_page_app.js';
 import './strings.m.js';
+
+import {getAccountAdditionOptionsFromJSON} from './inline_login_util.js';
 // </if>
 
 import {AuthCompletedCredentials, Authenticator, AuthParams} from '../gaia_auth_host/authenticator.m.js';
@@ -32,6 +35,7 @@ import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_log
 const View = {
   addAccount: 'addAccount',
   welcome: 'welcome',
+  arcAccountPicker: 'arcAccountPicker',
 };
 
 Polymer({
@@ -344,7 +348,26 @@ Polymer({
    * @private
    */
   getDefaultView_() {
-    return this.isWelcomePageEnabled_() ? View.welcome : View.addAccount;
+    // TODO(https://crbug.com/1155041): simplify this when the file will be
+    // split into CrOS and non-CrOS parts.
+    if (!isChromeOS) {
+      // On non-ChromeOS always show 'Add account'.
+      return View.addAccount;
+    }
+
+    // <if expr="chromeos_ash">
+    if (this.isReauthentication_) {
+      return View.addAccount;
+    }
+    if (this.isArcAccountRestrictionsEnabled_) {
+      const options = getAccountAdditionOptionsFromJSON(
+          InlineLoginBrowserProxyImpl.getInstance().getDialogArguments());
+      if (!!options && options.showArcAvailabilityPicker) {
+        return View.arcAccountPicker;
+      }
+    }
+    return this.shouldSkipWelcomePage_ ? View.addAccount : View.welcome;
+    // </if>
   },
 
   /**

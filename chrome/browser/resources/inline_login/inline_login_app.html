@@ -31,7 +31,7 @@
     margin-bottom: calc(3 * 32px);
   }
   /* Make distance to the top 64px. */
-  #welcome {
+  #welcome, #arcAccountPicker {
     margin-top: calc(64px - var(--dialog-top-border-size));
   }
 </if>
@@ -72,6 +72,10 @@
         <welcome-page-app is-available-in-arc="{{isAvailableInArc_}}"
             on-opened-new-window="closeDialog_">
         </welcome-page-app>
+      </div>
+      <div id="[[View.arcAccountPicker]]" slot="view">
+        <arc-account-picker-app on-opened-new-window="closeDialog_">
+        </arc-account-picker-app>
       </div>
     </if>
 

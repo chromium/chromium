@@ -177,4 +177,39 @@ TEST_F(
     'ToggleHidden', function() {
       this.runMochaTest(inline_login_welcome_page_test.TestNames.ToggleHidden);
     });
+
+// eslint-disable-next-line no-var
+var InlineLoginArcAccountPickerBrowserTest =
+    class extends InlineLoginBrowserTest {
+  /** @override */
+  get browsePreload() {
+    // See Reason enum in components/signin/public/base/signin_metrics.h.
+    return 'chrome://chrome-signin/test_loader.html?module=inline_login/arc_account_picker_page_test.js&reason=5';
+  }
+
+  get suiteName() {
+    return arc_account_picker_page_test.suiteName;
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kArcAccountRestrictions',
+        'chromeos::features::kLacrosSupport'
+      ]
+    };
+  }
+};
+
+TEST_F('InlineLoginArcAccountPickerBrowserTest', 'ArcPickerActive', function() {
+  this.runMochaTest(arc_account_picker_page_test.TestNames.ArcPickerActive);
+});
+
+TEST_F(
+    'InlineLoginArcAccountPickerBrowserTest', 'ArcPickerHiddenForReauth',
+    function() {
+      this.runMochaTest(
+          arc_account_picker_page_test.TestNames.ArcPickerHiddenForReauth);
+    });
 GEN('#endif');

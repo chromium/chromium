@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
       ]
   deps = [
+    ":arc_account_picker_app",
     ":inline_login_app",
     ":inline_login_browser_proxy",
     ":inline_login_util",
@@ -22,6 +23,7 @@ js_type_check("closure_compile") {
 
 js_library("inline_login_app") {
   deps = [
+    ":arc_account_picker_app",
     ":inline_login_browser_proxy",
     ":inline_login_util",
     ":welcome_page_app",
@@ -44,6 +46,12 @@ js_library("welcome_page_app") {
   ]
 }
 
+js_library("arc_account_picker_app") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("inline_login_browser_proxy") {
   deps = [
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
@@ -60,5 +68,6 @@ html_to_js("web_components") {
   js_files = [
     "inline_login_app.js",
     "welcome_page_app.js",
+    "arc_account_picker_app.js",
   ]
 }
