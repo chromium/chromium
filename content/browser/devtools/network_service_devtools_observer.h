@@ -9,13 +9,13 @@
 
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 
 namespace content {
 
 class DevToolsAgentHostImpl;
+class FrameTreeNode;
 
 // A springboard class to be able to bind to the network service as a
 // DevToolsObserver but not requiring the creation of a DevToolsAgentHostImpl.

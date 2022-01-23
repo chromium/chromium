@@ -9,6 +9,7 @@
 #include "content/browser/devtools/protocol/audits_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"

@@ -18,8 +18,8 @@
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/loader/download_utils_impl.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,9 +35,12 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 
 namespace content {

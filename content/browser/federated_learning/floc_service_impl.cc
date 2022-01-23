@@ -5,12 +5,12 @@
 #include "content/browser/federated_learning/floc_service_impl.h"
 
 #include "base/bind.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "net/base/isolation_info.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 
 namespace content {

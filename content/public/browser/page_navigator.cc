@@ -9,7 +9,8 @@
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
 #pragma clang max_tokens_here 1150000
 
-#include "content/browser/renderer_host/navigation_request.h"
+#include "content/public/browser/navigation_handle.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 
 namespace content {

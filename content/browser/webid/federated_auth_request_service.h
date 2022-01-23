@@ -16,6 +16,7 @@
 namespace content {
 
 class FederatedAuthRequestImpl;
+class RenderFrameHost;
 
 // FederatedAuthRequestService handles mojo connections from the renderer to
 // fulfill WebID-related requests.

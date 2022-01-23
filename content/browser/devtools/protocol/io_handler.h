@@ -12,6 +12,7 @@
 namespace content {
 class BrowserContext;
 class DevToolsIOContext;
+class RenderFrameHostImpl;
 class StoragePartition;
 
 namespace protocol {

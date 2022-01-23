@@ -13,7 +13,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/browsing_data/clear_site_data_handler.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/ssl/ssl_manager.h"
 #include "content/browser/webrtc/webrtc_connections_observer.h"
 #include "content/public/browser/browser_context.h"

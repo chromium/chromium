@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"

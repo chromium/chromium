@@ -4,7 +4,6 @@
 
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"

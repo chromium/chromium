@@ -6,7 +6,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"

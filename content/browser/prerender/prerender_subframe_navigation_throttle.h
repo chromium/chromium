@@ -7,10 +7,11 @@
 
 #include "base/scoped_observation.h"
 #include "content/browser/prerender/prerender_host.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
+
+class FrameTreeNode;
 
 // PrerenderSubframeNavigationThrottle defers cross-origin subframe loading
 // during the main frame is in a prerendered state.

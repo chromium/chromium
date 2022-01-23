@@ -27,7 +27,6 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/process_lock.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/webui/url_data_manager_backend.h"

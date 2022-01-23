@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"

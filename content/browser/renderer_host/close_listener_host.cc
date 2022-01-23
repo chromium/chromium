@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/close_listener_host.h"
 
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {

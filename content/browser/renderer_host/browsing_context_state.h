@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_BROWSING_CONTEXT_STATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_BROWSING_CONTEXT_STATE_H_
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/browsing_instance.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_instance_group.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
