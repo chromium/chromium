@@ -104,6 +104,7 @@ source_set("web_applications") {
     "web_app_install_info.h",
     "web_app_install_manager.cc",
     "web_app_install_manager.h",
+    "web_app_install_manager_observer.h",
     "web_app_install_params.cc",
     "web_app_install_params.h",
     "web_app_install_task.cc",

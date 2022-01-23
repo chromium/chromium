@@ -20,6 +20,8 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +39,28 @@ struct FinalizeInstallResult {
 
 }  // namespace
 
+class TestInstallManagerObserver : public WebAppInstallManagerObserver {
+ public:
+  explicit TestInstallManagerObserver(WebAppInstallManager* install_manager) {
+    install_manager_observation_.Observe(install_manager);
+  }
+
+  void OnWebAppManifestUpdated(const AppId& app_id,
+                               base::StringPiece old_name) override {
+    web_app_manifest_updated_called = true;
+  }
+
+  bool GetWebAppManifestUpdatedCalled() const {
+    return web_app_manifest_updated_called;
+  }
+
+ private:
+  bool web_app_manifest_updated_called = false;
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
+};
+
 class WebAppInstallFinalizerUnitTest : public WebAppTest {
  public:
   WebAppInstallFinalizerUnitTest() = default;
@@ -51,6 +75,9 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
 
     fake_registry_controller_ =
         std::make_unique<FakeWebAppRegistryController>();
+    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
+    install_manager_observer_ =
+        std::make_unique<TestInstallManagerObserver>(install_manager_.get());
     fake_registry_controller_->SetUp(profile());
     icon_manager_ = std::make_unique<WebAppIconManager>(
         profile(), registrar(), base::MakeRefCounted<FileUtilsWrapper>());
@@ -60,7 +87,7 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
         profile(), icon_manager_.get(), policy_manager_.get());
 
     finalizer_->SetSubsystems(
-        &registrar(), ui_manager_.get(),
+        &install_manager(), &registrar(), ui_manager_.get(),
         &fake_registry_controller_->sync_bridge(),
         &fake_registry_controller_->os_integration_manager());
     fake_registry_controller_->Init();
@@ -68,6 +95,7 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
   }
 
   void TearDown() override {
+    install_manager_observer_.reset();
     finalizer_.reset();
     ui_manager_.reset();
     policy_manager_.reset();
@@ -98,13 +126,18 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
   WebAppRegistrar& registrar() {
     return fake_registry_controller_->registrar();
   }
+  WebAppInstallManager& install_manager() const { return *install_manager_; }
+
+ protected:
+  std::unique_ptr<WebAppInstallFinalizer> finalizer_;
+  std::unique_ptr<TestInstallManagerObserver> install_manager_observer_;
 
  private:
+  std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<WebAppPolicyManager> policy_manager_;
   std::unique_ptr<WebAppUiManager> ui_manager_;
-  std::unique_ptr<WebAppInstallFinalizer> finalizer_;
 };
 
 TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {

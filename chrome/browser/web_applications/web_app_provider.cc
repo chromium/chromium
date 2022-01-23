@@ -303,8 +303,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
-  install_finalizer_->SetSubsystems(registrar_.get(), ui_manager_.get(),
-                                    sync_bridge_.get(),
+  install_finalizer_->SetSubsystems(install_manager_.get(), registrar_.get(),
+                                    ui_manager_.get(), sync_bridge_.get(),
                                     os_integration_manager_.get());
   install_manager_->SetSubsystems(registrar_.get(),
                                   os_integration_manager_.get(),

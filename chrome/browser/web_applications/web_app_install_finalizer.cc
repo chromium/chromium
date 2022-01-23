@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -344,7 +345,7 @@ void WebAppInstallFinalizer::UninstallWithoutRegistryUpdateFromSync(
     }
     auto uninstall_task = std::make_unique<WebAppUninstallJob>(
         os_integration_manager_, sync_bridge_, icon_manager_, registrar_,
-        profile_->GetPrefs());
+        install_manager_, profile_->GetPrefs());
     uninstall_task->Start(
         app_id,
         url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
@@ -365,7 +366,7 @@ void WebAppInstallFinalizer::RetryIncompleteUninstalls(
       continue;
     auto uninstall_task = std::make_unique<WebAppUninstallJob>(
         os_integration_manager_, sync_bridge_, icon_manager_, registrar_,
-        profile_->GetPrefs());
+        install_manager_, profile_->GetPrefs());
     uninstall_task->Start(
         app_id,
         url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
@@ -452,10 +453,12 @@ void WebAppInstallFinalizer::SetRemoveSourceCallbackForTesting(
 }
 
 void WebAppInstallFinalizer::SetSubsystems(
+    WebAppInstallManager* install_manager,
     WebAppRegistrar* registrar,
     WebAppUiManager* ui_manager,
     WebAppSyncBridge* sync_bridge,
     OsIntegrationManager* os_integration_manager) {
+  install_manager_ = install_manager;
   registrar_ = registrar;
   ui_manager_ = ui_manager;
   sync_bridge_ = sync_bridge;
@@ -473,7 +476,7 @@ void WebAppInstallFinalizer::UninstallWebAppInternal(
   }
   auto uninstall_task = std::make_unique<WebAppUninstallJob>(
       os_integration_manager_, sync_bridge_, icon_manager_, registrar_,
-      profile_->GetPrefs());
+      install_manager_, profile_->GetPrefs());
   uninstall_task->Start(
       app_id, url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
       uninstall_source, WebAppUninstallJob::ModifyAppRegistry::kYes,
@@ -594,7 +597,10 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     return;
   }
 
+  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
   registrar_->NotifyWebAppInstalled(app_id);
+
+  install_manager_->NotifyWebAppInstalled(app_id);
   std::move(callback).Run(app_id, InstallResultCode::kSuccessNewInstall);
 }
 
@@ -640,7 +646,10 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
     AppId app_id,
     std::string old_name,
     web_app::OsHooksErrors os_hooks_errors) {
+  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
   registrar_->NotifyWebAppManifestUpdated(app_id, old_name);
+
+  install_manager_->NotifyWebAppManifestUpdated(app_id, old_name);
 
   std::move(callback).Run(app_id,
                           os_hooks_errors.any()

@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_sync_install_delegate.h"
@@ -134,6 +135,17 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   void RetryIncompleteUninstalls(
       const std::vector<AppId>& apps_to_uninstall) override;
 
+  virtual void AddObserver(WebAppInstallManagerObserver* observer);
+  virtual void RemoveObserver(WebAppInstallManagerObserver* observer);
+
+  virtual void NotifyWebAppInstalled(const AppId& app_id);
+  virtual void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
+  virtual void NotifyWebAppUninstalled(const AppId& app_id);
+  virtual void NotifyWebAppManifestUpdated(const AppId& app_id,
+                                           base::StringPiece old_name);
+  virtual void NotifyWebAppWillBeUninstalled(const AppId& app_id);
+  virtual void NotifyWebAppInstallManagerDestroyed();
+
   // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
   // flag is enabled to be used by: chrome://web-app-internals
   using ErrorLog = base::Value::ListStorage;
@@ -244,6 +256,8 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   std::unique_ptr<ErrorLog> error_log_;
   bool error_log_updated_ = false;
   bool error_log_writing_in_progress_ = false;
+
+  base::ObserverList<WebAppInstallManagerObserver> observers_;
 
   base::WeakPtrFactory<WebAppInstallManager> weak_ptr_factory_{this};
 };

@@ -156,9 +156,9 @@ class SystemWebAppManagerTest : public WebAppTest {
         std::make_unique<TestSystemWebAppManager>(profile());
     test_ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
-    install_finalizer().SetSubsystems(&controller().registrar(), &ui_manager(),
-                                      &controller().sync_bridge(),
-                                      &controller().os_integration_manager());
+    install_finalizer().SetSubsystems(
+        &install_manager(), &controller().registrar(), &ui_manager(),
+        &controller().sync_bridge(), &controller().os_integration_manager());
 
     install_manager().SetSubsystems(&controller().registrar(),
                                     &controller().os_integration_manager(),

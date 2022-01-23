@@ -19,6 +19,8 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -40,6 +42,9 @@ class WebAppUninstallJobTest : public WebAppTest {
         std::make_unique<FakeWebAppRegistryController>();
 
     controller().SetUp(profile());
+
+    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
+
     file_utils_wrapper_ =
         base::MakeRefCounted<testing::StrictMock<MockFileUtilsWrapper>>();
     icon_manager_ = std::make_unique<WebAppIconManager>(
@@ -55,7 +60,10 @@ class WebAppUninstallJobTest : public WebAppTest {
     return *fake_registry_controller_;
   }
 
+  WebAppInstallManager& install_manager() const { return *install_manager_; }
+
   testing::StrictMock<MockOsIntegrationManager> os_integration_manager_;
+  std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
@@ -72,7 +80,7 @@ TEST_F(WebAppUninstallJobTest, SimpleUninstall) {
 
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
-                          profile()->GetPrefs());
+                          &install_manager(), profile()->GetPrefs());
 
   OsHooksErrors result;
   EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(id, testing::_))
@@ -107,7 +115,7 @@ TEST_F(WebAppUninstallJobTest, FailedDataDelete) {
 
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
-                          profile()->GetPrefs());
+                          &install_manager(), profile()->GetPrefs());
 
   OsHooksErrors result;
   EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(id, testing::_))
@@ -142,7 +150,7 @@ TEST_F(WebAppUninstallJobTest, FailedOsHooks) {
 
   WebAppUninstallJob task(&os_integration_manager_, &controller().sync_bridge(),
                           icon_manager_.get(), &controller().registrar(),
-                          profile()->GetPrefs());
+                          &install_manager(), profile()->GetPrefs());
 
   OsHooksErrors result;
   result.set(true);

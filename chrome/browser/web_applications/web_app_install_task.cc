@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
@@ -92,11 +93,13 @@ bool IsEmptyIconBitmapsForIconUrl(const IconsMap& icons_map,
 
 WebAppInstallTask::WebAppInstallTask(
     Profile* profile,
+    WebAppInstallManager* install_manager,
     OsIntegrationManager* os_integration_manager,
     WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     WebAppRegistrar* registrar)
     : data_retriever_(std::move(data_retriever)),
+      install_manager_(install_manager),
       os_integration_manager_(os_integration_manager),
       install_finalizer_(install_finalizer),
       profile_(profile),
@@ -954,8 +957,12 @@ void WebAppInstallTask::OnOsHooksCreated(DisplayMode user_display_mode,
   if (ShouldStopInstall())
     return;
 
+  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
   DCHECK(registrar_);
   registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
+
+  DCHECK(install_manager_);
+  install_manager_->NotifyWebAppInstalledWithOsHooks(app_id);
   if (!background_installation_) {
     bool error = os_hook_errors[OsHookType::kShortcuts];
     const bool can_reparent_tab =

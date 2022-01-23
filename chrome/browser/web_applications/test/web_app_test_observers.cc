@@ -26,6 +26,70 @@ bool IsAnyIdEmpty(const std::set<AppId>& app_ids) {
 
 }  // namespace
 
+WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
+    WebAppInstallManager* install_manager) {
+  observation_.Observe(install_manager);
+}
+
+WebAppInstallManagerObserverAdapter::~WebAppInstallManagerObserverAdapter() =
+    default;
+
+void WebAppInstallManagerObserverAdapter::SetWebAppInstalledDelegate(
+    WebAppInstalledDelegate delegate) {
+  app_installed_delegate_ = delegate;
+}
+
+void WebAppInstallManagerObserverAdapter::SetWebAppInstalledWithOsHooksDelegate(
+    WebAppInstalledWithOsHooksDelegate delegate) {
+  app_installed_with_os_hooks_delegate_ = delegate;
+}
+
+void WebAppInstallManagerObserverAdapter::SetWebAppWillBeUninstalledDelegate(
+    WebAppWillBeUninstalledDelegate delegate) {
+  app_will_be_uninstalled_delegate_ = delegate;
+}
+
+void WebAppInstallManagerObserverAdapter::SetWebAppUninstalledDelegate(
+    WebAppUninstalledDelegate delegate) {
+  app_uninstalled_delegate_ = delegate;
+}
+
+void WebAppInstallManagerObserverAdapter::SetWebAppManifestUpdateDelegate(
+    WebAppManifestUpdateDelegate delegate) {
+  app_manifest_updated_delegate_ = delegate;
+}
+
+void WebAppInstallManagerObserverAdapter::OnWebAppInstalled(
+    const AppId& app_id) {
+  if (app_installed_delegate_)
+    app_installed_delegate_.Run(app_id);
+}
+
+void WebAppInstallManagerObserverAdapter::OnWebAppInstalledWithOsHooks(
+    const AppId& app_id) {
+  if (app_installed_with_os_hooks_delegate_)
+    app_installed_with_os_hooks_delegate_.Run(app_id);
+}
+
+void WebAppInstallManagerObserverAdapter::OnWebAppManifestUpdated(
+    const AppId& app_id,
+    base::StringPiece old_name) {
+  if (app_manifest_updated_delegate_)
+    app_manifest_updated_delegate_.Run(app_id, std::move(old_name));
+}
+
+void WebAppInstallManagerObserverAdapter::OnWebAppWillBeUninstalled(
+    const AppId& app_id) {
+  if (app_will_be_uninstalled_delegate_)
+    app_will_be_uninstalled_delegate_.Run(app_id);
+}
+
+void WebAppInstallManagerObserverAdapter::OnWebAppUninstalled(
+    const AppId& app_id) {
+  if (app_uninstalled_delegate_)
+    app_uninstalled_delegate_.Run(app_id);
+}
+
 WebAppTestRegistryObserverAdapter::WebAppTestRegistryObserverAdapter(
     WebAppRegistrar* registrar) {
   observation_.Observe(registrar);

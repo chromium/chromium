@@ -11,6 +11,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 class Profile;
@@ -18,6 +20,53 @@ class Profile;
 namespace web_app {
 
 class WebApp;
+
+class WebAppInstallManagerObserverAdapter
+    : public WebAppInstallManagerObserver {
+ public:
+  explicit WebAppInstallManagerObserverAdapter(
+      WebAppInstallManager* install_manager);
+  ~WebAppInstallManagerObserverAdapter() override;
+
+  using WebAppInstalledDelegate =
+      base::RepeatingCallback<void(const AppId& app_id)>;
+  void SetWebAppInstalledDelegate(WebAppInstalledDelegate delegate);
+
+  using WebAppInstalledWithOsHooksDelegate =
+      base::RepeatingCallback<void(const AppId& app_id)>;
+  void SetWebAppInstalledWithOsHooksDelegate(
+      WebAppInstalledWithOsHooksDelegate delegate);
+
+  using WebAppWillBeUninstalledDelegate =
+      base::RepeatingCallback<void(const AppId& app_id)>;
+  void SetWebAppWillBeUninstalledDelegate(
+      WebAppWillBeUninstalledDelegate delegate);
+
+  using WebAppUninstalledDelegate =
+      base::RepeatingCallback<void(const AppId& app_id)>;
+  void SetWebAppUninstalledDelegate(WebAppUninstalledDelegate delegate);
+
+  using WebAppManifestUpdateDelegate =
+      base::RepeatingCallback<void(const AppId& app_id,
+                                   base::StringPiece old_name)>;
+  void SetWebAppManifestUpdateDelegate(WebAppManifestUpdateDelegate delegate);
+
+  void OnWebAppInstalled(const AppId& app_id) override;
+  void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
+  void OnWebAppManifestUpdated(const AppId& app_id,
+                               base::StringPiece old_name) override;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppUninstalled(const AppId& app_id) override;
+
+ private:
+  WebAppInstalledDelegate app_installed_delegate_;
+  WebAppInstalledWithOsHooksDelegate app_installed_with_os_hooks_delegate_;
+  WebAppManifestUpdateDelegate app_manifest_updated_delegate_;
+  WebAppUninstalledDelegate app_uninstalled_delegate_;
+  WebAppWillBeUninstalledDelegate app_will_be_uninstalled_delegate_;
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      observation_{this};
+};
 
 // This is an adapter for the AppRegistrarObserver. This class registers
 // itself as an observer on construction, and will call the respective

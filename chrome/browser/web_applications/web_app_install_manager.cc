@@ -108,7 +108,7 @@ void WebAppInstallManager::LoadWebAppAndCheckManifest(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, os_integration_manager_, finalizer_,
+      profile_, this, os_integration_manager_, finalizer_,
       data_retriever_factory_.Run(), registrar_);
 
   task->LoadWebAppAndCheckManifest(
@@ -130,7 +130,7 @@ void WebAppInstallManager::InstallWebAppFromManifest(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, os_integration_manager_, finalizer_,
+      profile_, this, os_integration_manager_, finalizer_,
       data_retriever_factory_.Run(), registrar_);
   task->InstallWebAppFromManifest(
       contents, bypass_service_worker_check, install_source,
@@ -151,7 +151,7 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, os_integration_manager_, finalizer_,
+      profile_, this, os_integration_manager_, finalizer_,
       data_retriever_factory_.Run(), registrar_);
   task->InstallWebAppFromManifestWithFallback(
       contents, force_shortcut_app, install_source, std::move(dialog_callback),
@@ -172,7 +172,7 @@ void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
   // app_id is made available.
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, os_integration_manager_, finalizer_,
+      profile_, this, os_integration_manager_, finalizer_,
       data_retriever_factory_.Run(), registrar_);
 
   WebAppInstallParams params;
@@ -218,7 +218,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, os_integration_manager_, finalizer_,
+      profile_, this, os_integration_manager_, finalizer_,
       data_retriever_factory_.Run(), registrar_);
   if (install_params) {
     task->SetInstallParams(install_params.value());
@@ -241,7 +241,7 @@ void WebAppInstallManager::InstallWebAppWithParams(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, os_integration_manager_, finalizer_,
+      profile_, this, os_integration_manager_, finalizer_,
       data_retriever_factory_.Run(), registrar_);
   task->InstallWebAppWithParams(
       web_contents, install_params, install_source,
@@ -279,7 +279,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
   GURL start_url = web_application_info->start_url;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, os_integration_manager_, finalizer_,
+      profile_, this, os_integration_manager_, finalizer_,
       data_retriever_factory_.Run(), registrar_);
 
   task->ExpectAppId(sync_app_id);
@@ -420,7 +420,7 @@ void WebAppInstallManager::
 
   // Install failed. Do the fallback install from info fetching just icon URLs.
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, os_integration_manager_, finalizer_,
+      profile_, this, os_integration_manager_, finalizer_,
       data_retriever_factory_.Run(), registrar_);
   // Set the expect app id for fallback install too. This can avoid duplicate
   // installs.
@@ -495,7 +495,6 @@ void WebAppInstallManager::OnInstallTaskCompleted(WebAppInstallTask* task,
                                                   const AppId& app_id,
                                                   InstallResultCode code) {
   DeleteTask(task);
-
   std::move(callback).Run(app_id, code);
 }
 
@@ -632,6 +631,59 @@ void WebAppInstallManager::LogErrorObjectAtStage(const char* stage,
 
   object.SetStringKey("!stage", stage);
   LogErrorObject(std::move(object));
+}
+
+void WebAppInstallManager::AddObserver(WebAppInstallManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebAppInstallManager::RemoveObserver(
+    WebAppInstallManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void WebAppInstallManager::NotifyWebAppInstalled(const AppId& app_id) {
+  for (WebAppInstallManagerObserver& observer : observers_) {
+    observer.OnWebAppInstalled(app_id);
+  }
+  // TODO(alancutter): Call RecordWebAppInstallation here when we get access to
+  // the webapps::WebappInstallSource in this event.
+}
+
+void WebAppInstallManager::NotifyWebAppUninstalled(const AppId& app_id) {
+  for (WebAppInstallManagerObserver& observer : observers_) {
+    observer.OnWebAppUninstalled(app_id);
+  }
+}
+
+void WebAppInstallManager::NotifyWebAppManifestUpdated(
+    const AppId& app_id,
+    base::StringPiece old_name) {
+  for (WebAppInstallManagerObserver& observer : observers_) {
+    observer.OnWebAppManifestUpdated(app_id, old_name);
+  }
+}
+
+void WebAppInstallManager::NotifyWebAppWillBeUninstalled(const AppId& app_id) {
+  for (WebAppInstallManagerObserver& observer : observers_) {
+    observer.OnWebAppWillBeUninstalled(app_id);
+  }
+  // TODO(crbug/1275945): enable in phase 3 of resolving crbug/1275945 when
+  // NotifyWebAppWillBeUninstalled is removed from WebAppRegistrar.
+  // RecordWebAppUninstallation(profile_->GetPrefs(), app_id);
+}
+
+void WebAppInstallManager::NotifyWebAppInstallManagerDestroyed() {
+  for (WebAppInstallManagerObserver& observer : observers_) {
+    observer.OnWebAppInstallManagerDestroyed();
+  }
+}
+
+void WebAppInstallManager::NotifyWebAppInstalledWithOsHooks(
+    const AppId& app_id) {
+  for (WebAppInstallManagerObserver& obs : observers_) {
+    obs.OnWebAppInstalledWithOsHooks(app_id);
+  }
 }
 
 WebAppInstallManager::PendingTask::PendingTask() = default;

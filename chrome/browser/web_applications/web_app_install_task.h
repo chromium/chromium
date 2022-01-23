@@ -36,6 +36,7 @@ class WebContents;
 namespace web_app {
 
 class OsIntegrationManager;
+class WebAppInstallManager;
 class WebAppDataRetriever;
 class WebAppUrlLoader;
 class WebAppRegistrar;
@@ -50,6 +51,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)>;
 
   WebAppInstallTask(Profile* profile,
+                    WebAppInstallManager* install_manager,
                     OsIntegrationManager* os_integration_manager,
                     WebAppInstallFinalizer* install_finalizer,
                     std::unique_ptr<WebAppDataRetriever> data_retriever,
@@ -304,6 +306,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   std::unique_ptr<content::WebContents> web_contents_;
   content::WebContents* installing_web_contents_ = nullptr;
 
+  raw_ptr<WebAppInstallManager> install_manager_;
   raw_ptr<OsIntegrationManager> os_integration_manager_;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   const raw_ptr<Profile> profile_;

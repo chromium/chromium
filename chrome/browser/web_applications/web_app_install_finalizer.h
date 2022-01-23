@@ -33,6 +33,7 @@ class WebAppSyncBridge;
 class WebAppUiManager;
 class WebApp;
 class WebAppIconManager;
+class WebAppInstallManager;
 class WebAppPolicyManager;
 class WebAppRegistrar;
 class WebAppUninstallJob;
@@ -138,7 +139,8 @@ class WebAppInstallFinalizer {
   void Start();
   void Shutdown();
 
-  void SetSubsystems(WebAppRegistrar* registrar,
+  void SetSubsystems(WebAppInstallManager* install_manager,
+                     WebAppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
                      WebAppSyncBridge* sync_bridge,
                      OsIntegrationManager* os_integration_manager);
@@ -207,6 +209,7 @@ class WebAppInstallFinalizer {
       const AppId& app_id,
       const WebAppInstallInfo& new_web_app_info);
 
+  raw_ptr<WebAppInstallManager> install_manager_ = nullptr;
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
   raw_ptr<WebAppUiManager> ui_manager_ = nullptr;

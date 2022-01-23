@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -22,11 +23,13 @@ WebAppUninstallJob::WebAppUninstallJob(
     WebAppSyncBridge* sync_bridge,
     WebAppIconManager* icon_manager,
     WebAppRegistrar* registrar,
+    WebAppInstallManager* install_manager,
     PrefService* profile_prefs)
     : os_integration_manager_(os_integration_manager),
       sync_bridge_(sync_bridge),
       icon_manager_(icon_manager),
       registrar_(registrar),
+      install_manager_(install_manager),
       profile_prefs_(profile_prefs) {}
 
 WebAppUninstallJob::~WebAppUninstallJob() = default;
@@ -36,6 +39,8 @@ void WebAppUninstallJob::Start(const AppId& app_id,
                                webapps::WebappUninstallSource source,
                                ModifyAppRegistry delete_option,
                                UninstallCallback callback) {
+  DCHECK(install_manager_);
+
   app_id_ = app_id;
   source_ = source;
   delete_option_ = delete_option;
@@ -53,7 +58,10 @@ void WebAppUninstallJob::Start(const AppId& app_id,
     DCHECK(app);
     app->SetIsUninstalling(true);
   }
+  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
   registrar_->NotifyWebAppWillBeUninstalled(app_id);
+
+  install_manager_->NotifyWebAppWillBeUninstalled(app_id);
 
   RemoveAppIsolationState(profile_prefs_, app_origin);
 
@@ -105,7 +113,10 @@ void WebAppUninstallJob::MaybeFinishUninstall() {
       DCHECK_EQ(registrar_->GetAppById(app_id_), nullptr);
       break;
   }
+  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
   registrar_->NotifyWebAppUninstalled(app_id_);
+
+  install_manager_->NotifyWebAppUninstalled(app_id_);
   std::move(callback_).Run(errors_ ? WebAppUninstallJobResult::kError
                                    : WebAppUninstallJobResult::kSuccess);
 }

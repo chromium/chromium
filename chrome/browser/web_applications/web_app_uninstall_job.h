@@ -22,6 +22,7 @@ namespace web_app {
 
 class OsIntegrationManager;
 class WebAppIconManager;
+class WebAppInstallManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 
@@ -46,6 +47,7 @@ class WebAppUninstallJob {
                      WebAppSyncBridge* sync_bridge,
                      WebAppIconManager* icon_manager,
                      WebAppRegistrar* registrar,
+                     WebAppInstallManager* install_manager,
                      PrefService* profile_prefs);
   ~WebAppUninstallJob();
 
@@ -85,6 +87,7 @@ class WebAppUninstallJob {
   raw_ptr<WebAppSyncBridge> sync_bridge_;
   raw_ptr<WebAppIconManager> icon_manager_;
   raw_ptr<WebAppRegistrar> registrar_;
+  raw_ptr<WebAppInstallManager> install_manager_;
   raw_ptr<PrefService> profile_prefs_;
 
   AppId app_id_;
