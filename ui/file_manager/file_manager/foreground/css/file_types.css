@@ -9,12 +9,10 @@
 
  /* We are mixing background-image and -webkit-mask-image here for different
   SVGs.
-   * For SVGs whose "fill" colors look okay in light/dark mode, e.g.
-   filetype_audio.svg has red color, we need to use background-image to
-   keep the original color.
-   * For SVGs whose "fill" colors look not okay, e.g. filetype_generic.svg,
-   we need to use -webkit-mask-image together with background-color to
-   customize the color.
+   * For Microsoft office icons SVGs (e.g. word/ppt/excel), we need to use
+   background-image to keep the original color.
+   * For other icon SVGs , we need to use -webkit-mask-image together with
+   background-color to customize the color.
    * By default -webkit-mask-image is used because the default SVG is
    filetype_generic.svg. In order to use background-image to override,
    we need to reset both -webkit-mask-image and background-color. */
@@ -24,7 +22,7 @@
   -webkit-mask-image: url(../images/filetype/filetype_generic.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: currentColor;
+  background-color: var(--cros-icon-color-primary);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 20px 20px;
@@ -35,9 +33,7 @@
 }
 
 [file-type-icon='audio'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_audio.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_audio.svg);
 }
 
 [file-type-icon='excel'] {
@@ -51,7 +47,12 @@
 }
 
 
-body.check-select #list-container li[selected] [file-type-icon] {
+/* File type icon's background-image/mask-image needs to be reset to none:
+ *  * For [selected], checkmark icon will be displayed.
+ *  * For .has-thumbnail, thumbnail background image will be set.
+ */
+body.check-select #list-container li[selected] [file-type-icon],
+#list-container li [file-type-icon].has-thumbnail {
   -webkit-mask-image: none;
   background: none;
 }
@@ -86,15 +87,11 @@ body.check-select #list-container li[selected] [file-type-icon] {
 }
 
 [file-type-icon='gdoc'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gdoc.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gdoc.svg);
 }
 
 [file-type-icon='gdraw'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gdraw.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gdraw.svg);
 }
 
 [file-type-icon='glink'] {
@@ -102,51 +99,35 @@ body.check-select #list-container li[selected] [file-type-icon] {
 }
 
 [file-type-icon='gsheet'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gsheet.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gsheet.svg);
 }
 
 [file-type-icon='gslides'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gslides.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gslides.svg);
 }
 
 [file-type-icon='gtable'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gtable.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gtable.svg);
 }
 
 [file-type-icon='gform'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gform.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gform.svg);
 }
 
 [file-type-icon='gmap'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gmap.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gmap.svg);
 }
 
 [file-type-icon='gsite'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gsite.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gsite.svg);
 }
 
 [file-type-icon='image'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_image.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_image.svg);
 }
 
 [file-type-icon='pdf'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_pdf.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_pdf.svg);
 }
 
 [file-type-icon='ppt'] {
@@ -156,15 +137,11 @@ body.check-select #list-container li[selected] [file-type-icon] {
 }
 
 [file-type-icon='script'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_script.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_script.svg);
 }
 
 [file-type-icon='sites'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_sites.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_sites.svg);
 }
 
 [file-type-icon='smb'] {
@@ -172,15 +149,11 @@ body.check-select #list-container li[selected] [file-type-icon] {
 }
 
 [file-type-icon='tini'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_tini.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_tini.svg);
 }
 
 [file-type-icon='video'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_video.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_video.svg);
 }
 
 [file-type-icon='word'] {
@@ -195,29 +168,23 @@ body.check-select #list-container li[selected] [file-type-icon] {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 48px;
-  background-color: currentColor;
+  background-color: var(--cros-icon-color-primary);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 48px;
 }
 
 .no-thumbnail[generic-thumbnail='audio'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_audio.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_audio.svg);
 }
 
 .no-thumbnail[generic-thumbnail='image'],
 .no-thumbnail[generic-thumbnail='raw'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_image.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_image.svg);
 }
 
 .no-thumbnail[generic-thumbnail='video'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_video.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_video.svg);
 }
 
 /* grid view large icons for known types. */
@@ -226,9 +193,7 @@ body.check-select #list-container li[selected] [file-type-icon] {
 }
 
 .no-thumbnail[generic-thumbnail='tini'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_tini.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_tini.svg);
 }
 
 .no-thumbnail[generic-thumbnail='excel'] {
@@ -238,57 +203,39 @@ body.check-select #list-container li[selected] [file-type-icon] {
 }
 
 .no-thumbnail[generic-thumbnail='gdoc'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gdoc.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gdoc.svg);
 }
 
 .no-thumbnail[generic-thumbnail='gdraw'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gdraw.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gdraw.svg);
 }
 
 .no-thumbnail[generic-thumbnail='gsheet'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gsheet.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gsheet.svg);
 }
 
 .no-thumbnail[generic-thumbnail='gslides'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gslides.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gslides.svg);
 }
 
 .no-thumbnail[generic-thumbnail='gtable'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gtable.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gtable.svg);
 }
 
 .no-thumbnail[generic-thumbnail='gform'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gform.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gform.svg);
 }
 
 .no-thumbnail[generic-thumbnail='gmap'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gmap.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gmap.svg);
 }
 
 .no-thumbnail[generic-thumbnail='gsite'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_gsite.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_gsite.svg);
 }
 
 .no-thumbnail[generic-thumbnail='pdf'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_pdf.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_pdf.svg);
 }
 
 .no-thumbnail[generic-thumbnail='ppt'] {
@@ -298,21 +245,82 @@ body.check-select #list-container li[selected] [file-type-icon] {
 }
 
 .no-thumbnail[generic-thumbnail='script'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_script.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_script.svg);
 }
 
 .no-thumbnail[generic-thumbnail='sites'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_sites.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_sites.svg);
 }
 
 .no-thumbnail[generic-thumbnail='word'] {
   -webkit-mask-image: none;
   background-color: transparent;
   background-image: url(../images/filetype/filetype_word.svg);
+}
+
+/* File type icon and thumbnail colors. */
+[file-type-icon='gdoc'],
+[file-type-icon='script'],
+[file-type-icon='tini'],
+.no-thumbnail[generic-thumbnail='gdoc'],
+.no-thumbnail[generic-thumbnail='script'],
+.no-thumbnail[generic-thumbnail='tini'] {
+  background-color: var(--cros-icon-color-blue);
+}
+
+[file-type-icon='audio'],
+[file-type-icon='gdraw'],
+[file-type-icon='image'],
+[file-type-icon='gmap'],
+[file-type-icon='pdf'],
+[file-type-icon='video'],
+.no-thumbnail[generic-thumbnail='audio'],
+.no-thumbnail[generic-thumbnail='gdraw'],
+.no-thumbnail[generic-thumbnail='image'],
+.no-thumbnail[generic-thumbnail='gmap'],
+.no-thumbnail[generic-thumbnail='pdf'],
+.no-thumbnail[generic-thumbnail='raw'],
+.no-thumbnail[generic-thumbnail='video'] {
+  background-color: var(--cros-icon-color-red);
+}
+
+[file-type-icon='gsheet'],
+[file-type-icon='gtable'],
+.no-thumbnail[generic-thumbnail='gsheet'],
+.no-thumbnail[generic-thumbnail='gtable'] {
+  background-color: var(--cros-icon-color-green);
+}
+
+[file-type-icon='gslides'],
+.no-thumbnail[generic-thumbnail='gslides'] {
+  background-color: var(--cros-icon-color-yellow);
+}
+
+/* The following 4 colors are one off colors, not in the existing palette. */
+[file-type-icon='gform'],
+.no-thumbnail[generic-thumbnail='gform'] {
+  background-color: rgb(114, 72, 185);
+}
+
+[file-type-icon='gsite'],
+[file-type-icon='sites'],
+.no-thumbnail[generic-thumbnail='gsite'],
+.no-thumbnail[generic-thumbnail='sites'] {
+  background-color: rgb(121, 110, 238);
+}
+
+@media (prefers-color-theme: dark) {
+  [file-type-icon='gform'],
+  .no-thumbnail[generic-thumbnail='gform'] {
+    background-color: rgb(180, 140, 255);
+  }
+
+  [file-type-icon='gsite'],
+  [file-type-icon='sites'],
+  .no-thumbnail[generic-thumbnail='gsite'],
+  .no-thumbnail[generic-thumbnail='sites'] {
+    background-color: rgb(140, 158, 255);
+  }
 }
 
 /* Icons for volume types. A ".tree-row > .file-row" component in any rules

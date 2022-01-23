@@ -141,6 +141,22 @@
     icon_color_positive: "$color_positive",
     icon_color_warning: "$color_warning",
     icon_color_alert: "$color_alert",
+    icon_color_red: {
+      light: "$google_red_600",
+      dark: "$google_red_300",
+    },
+    icon_color_blue: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    icon_color_green: {
+      light: "$google_green_600",
+      dark: "$google_green_300",
+    },
+    icon_color_yellow: {
+      light: "$google_yellow_600",
+      dark: "$google_yellow_300",
+    },
 
     /*
      * App shield colors.

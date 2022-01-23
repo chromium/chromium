@@ -2654,12 +2654,13 @@ list.autocomplete-suggestions {
   box-sizing: border-box;  /* To match the width with the search box's. */
   color: var(--cros-menu-label-color);
   flex: none;
-  margin-inline-start: -36px;
-  margin-top: 10px;
+  margin-inline-start: -47px;
+  margin-top: 7px;
   overflow: hidden;
   padding: 8px 0;
   position: fixed;
-  width: 260px !important; /* This overrides the value specified by script. */
+  /* TODO(crbug.com/1289086): Remove the hard-code with, use JS to set it. */
+  width: 286px !important; /* This overrides the value specified by script. */
   z-index: 550;
 }
 
