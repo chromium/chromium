@@ -511,6 +511,7 @@
 <translation id="1521442365706402292">Manage certificates</translation>
 <translation id="1521774566618522728">Active today</translation>
 <translation id="152234381334907219">Never saved</translation>
+<translation id="1523279371236772909">Viewed in the past month</translation>
 <translation id="1523978563989812243">Text-to-speech engines</translation>
 <translation id="1524430321211440688">Keyboard</translation>
 <translation id="1524563461097350801">No, thanks</translation>
@@ -1032,6 +1033,7 @@
 <translation id="2022395138980869975">Toggle side search</translation>
 <translation id="2023167225947895179">PIN may be easy to guess</translation>
 <translation id="202352106777823113">The download was taking too long and was stopped by the network.</translation>
+<translation id="2024195579772565064">Delete search engine</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> has crashed. Click this balloon to reload the extension.</translation>
 <translation id="2028449514182362831">Features that need motion sensors won't work</translation>
 <translation id="202918510990975568">Enter your password to configure security and sign-in</translation>
@@ -1173,6 +1175,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Add Wi-Fi ...</translation>
 <translation id="2162155940152307086">Sync will start once you leave sync settings</translation>
+<translation id="2162926944953615670">No available eSIM profiles</translation>
 <translation id="2163470535490402084">Please connect to the Internet to sign in to your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
@@ -1249,6 +1252,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2232876851878324699">The file contained one certificate, which was not imported:</translation>
 <translation id="2233502537820838181">&amp;More information</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
+<translation id="2234827758954819389">Privacy guide</translation>
 <translation id="2234876718134438132">Sync and Google services</translation>
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
 <translation id="2238379619048995541">Frequency State Data</translation>
@@ -1866,6 +1870,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2828650939514476812">Connect to Wi-Fi network</translation>
 <translation id="2831430281393059038">Device is supported</translation>
 <translation id="2832124733806557606">Your child can use a PIN to sign in to or unlock the device.</translation>
+<translation id="2835177225987815960">Your current scanning setup will be reset, including any assigned switches and auto-scan speed preferences.</translation>
 <translation id="2835547721736623118">Speech recognition service</translation>
 <translation id="2836269494620652131">Crash</translation>
 <translation id="2836635946302913370">Signing in with this username has been disabled by your administrator.</translation>
@@ -3102,6 +3107,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4095264805865317199">Open Mobile Activation UI</translation>
 <translation id="4095507791297118304">Primary display</translation>
 <translation id="4096508467498758490">Disable developer mode extensions</translation>
+<translation id="4096797685681362305">Viewed in the past week</translation>
 <translation id="4097406557126260163">Apps and extensions</translation>
 <translation id="409742781329613461">Tips for Chrome</translation>
 <translation id="4097560579602855702">Search Google</translation>
@@ -3510,6 +3516,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4547659257713117923">No tabs from other devices</translation>
 <translation id="4547672827276975204">Set automatically</translation>
 <translation id="4549791035683739768">Your security key has no fingerprints stored</translation>
+<translation id="4550926046134589611">Some supported links will still open in <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Press <ph name="MODIFIER_KEY_DESCRIPTION" /> to undo</translation>
 <translation id="4553526521109675518">You need to restart your Chromebook to change the device language. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">Drag over images to search with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -3658,6 +3665,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4699357559218762027">(auto-launched)</translation>
 <translation id="4701025263201366865">Parent sign-in</translation>
+<translation id="4701335814944566468">Viewed yesterday</translation>
 <translation id="4708794300267213770">Show lock screen when waking from sleep</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restore settings</translation>
@@ -3725,6 +3733,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="479536056609751218">Web Page, HTML Only</translation>
 <translation id="4796142525425001238">Always restore</translation>
 <translation id="4798236378408895261">Attach <ph name="BEGIN_LINK" />Bluetooth Logs<ph name="END_LINK" /> (Google internal)</translation>
+<translation id="479863874072008121">Manage devices</translation>
 <translation id="4800839971935185386">Review name and icon updates</translation>
 <translation id="4801448226354548035">Hide accounts</translation>
 <translation id="4801512016965057443">Allow mobile data roaming</translation>
@@ -3798,6 +3807,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="48704129375571883">Add additional features</translation>
 <translation id="4870758487381879312">Enter admin-provided password to get configuration info</translation>
 <translation id="4870903493621965035">No paired devices</translation>
+<translation id="4870995365819149457">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and 1 other app.</translation>
 <translation id="4871308555310586478">Not from Chrome Web Store.</translation>
 <translation id="4871322859485617074">PIN contains invalid characters</translation>
 <translation id="4871370605780490696">Add bookmark</translation>
@@ -4831,6 +4841,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5969728632630673489">Keyboard shortcut notice dismissed</translation>
 <translation id="5971037678316050792">Control Bluetooth adaptor state and pairing</translation>
 <translation id="597235323114979258">See more destinations</translation>
+<translation id="5972543790327947908">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> or <ph name="APP_NAME_3" />.</translation>
 <translation id="5972666587303800813">No-op Service</translation>
 <translation id="5972708806901999743">Move to the top</translation>
 <translation id="5972826969634861500">Start <ph name="PRODUCT_NAME" /></translation>
@@ -5202,6 +5213,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6355789186038748882">Experimental (alpha-quality) browser! Some features are missing or incomplete. Report issues with: Help &gt; ‘Report an issue…’</translation>
 <translation id="635609604405270300">Keep device turned on</translation>
 <translation id="63566973648609420">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
+<translation id="6357305427698525450">Some supported links will still open in <ph name="APP_NAME" /> or <ph name="APP_NAME_2" />.</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="6359706544163531585">Disable Light theme</translation>
 <translation id="6361850914223837199">Error details:</translation>
@@ -5718,6 +5730,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6900284862687837908">Background App: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6900651018461749106">Sign in again to update <ph name="USER_EMAIL" /></translation>
+<translation id="6900654715912436255">Are you sure that you want to delete this search engine?</translation>
 <translation id="6902066522699286937">Voice to preview</translation>
 <translation id="6902336033320348843">Section not supported: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Join device to domain</translation>
@@ -5987,6 +6000,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7189234443051076392">Make sure that there is enough space on your device</translation>
 <translation id="7189451821249468368">You do not have enough upgrades to enrol this device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
 <translation id="7189965711416741966">Fingerprint added.</translation>
+<translation id="7191063546666816478">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and <ph name="NUMBER_OF_OTHER_APPS" /> other apps.</translation>
 <translation id="7191159667348037">Unknown printer (USB)</translation>
 <translation id="7193051357671784796">This app was added by your organisation. Restart the app to finish installing it.</translation>
 <translation id="7193374945610105795">No passwords saved for <ph name="ORIGIN" /></translation>
@@ -6441,6 +6455,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7659154729610375585">Exit Incognito mode anyway?</translation>
 <translation id="7659297516559011665">Passwords on this device only</translation>
+<translation id="7659336857671800422">Take the privacy guide</translation>
 <translation id="7659584679870740384">You are not authorised to use this device. Please contact the administrator for sign-in permission.</translation>
 <translation id="7661259717474717992">Allow sites to save and read cookie data</translation>
 <translation id="7661451191293163002">A registration certificate could not be obtained.</translation>
@@ -7960,6 +7975,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9200339982498053969"><ph name="ORIGIN" /> will be able to edit files in <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Search <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Any offline data will be cleared</translation>
+<translation id="9201117361710210082">Viewed previously</translation>
 <translation id="9201220332032049474">Screen lock options</translation>
 <translation id="9201842707396338580">Something went wrong. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiling enabled</translation>

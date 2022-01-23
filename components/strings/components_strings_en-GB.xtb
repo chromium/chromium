@@ -1225,6 +1225,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
           <ph name="LIST_ITEM" />Employers or schools can track browsing activity<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internet service providers may monitor web traffic<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ignored because the policy can only be set by cloud user policy.</translation>
 <translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">View your Chrome history</translation>

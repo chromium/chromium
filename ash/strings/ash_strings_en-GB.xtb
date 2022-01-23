@@ -82,6 +82,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
 <translation id="1364382257761975320">To unlock your Chromebook, use your fingerprint</translation>
+<translation id="1364618750746929654">Can't generate transcription</translation>
 <translation id="1383597849754832576">Can't download speech files. Try again later.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">On</translation>
@@ -679,6 +680,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="54609108002486618">Managed</translation>
 <translation id="5465662442746197494">Need help?</translation>
 <translation id="547979256943495781">Shelf on right</translation>
+<translation id="5491186829646618080">Firmware updates available</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Your administrator has removed all eSIM profiles. Contact your administrator for more info.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> is connecting.</translation>
@@ -1177,6 +1179,7 @@ New install</translation>
 <translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
+<translation id="888982883502837004">Firmware updates are available for your device. Click to review and update.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> will be permanently deleted</translation>
 <translation id="890616557918890486">Change source</translation>
 <translation id="8909138438987180327">Battery at <ph name="PERCENTAGE" /> per cent.</translation>

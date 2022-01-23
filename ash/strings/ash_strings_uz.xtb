@@ -82,6 +82,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1346748346194534595">O‘ngga</translation>
 <translation id="1351937230027495976">Menyuni yopish</translation>
 <translation id="1364382257761975320">Chromebook qulfini ochish uchun barmoq izidan foydalaning</translation>
+<translation id="1364618750746929654">Transkripsiya yaratilmadi</translation>
 <translation id="1383597849754832576">Avtomatik subtitr fayllarni yuklanmadi. Keyinroq urining.</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1391102559483454063">Yoniq</translation>
@@ -679,6 +680,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="54609108002486618">Boshqariladigan</translation>
 <translation id="5465662442746197494">Yordam kerakmi?</translation>
 <translation id="547979256943495781">Javon oʻngda</translation>
+<translation id="5491186829646618080">Mikrodastur yangilanshi mavjud</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator barcha eSIM profillarni olib tashladi. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ulanmoqda.</translation>
@@ -1177,6 +1179,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8876661425082386199">Aloqani tekshiring</translation>
 <translation id="8877788021141246043">Eslatma belgilash</translation>
 <translation id="8878886163241303700">Yoyilgan ekran</translation>
+<translation id="888982883502837004">Qurilmangiz uchun chiqqan mikrodastur yangilanishlari. Koʻrib chiqish va yangilash uchun bosing.</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />” soʻrovi butunlay oʻchirib tashlanadi</translation>
 <translation id="890616557918890486">Manbani almashtirish</translation>
 <translation id="8909138438987180327">Batareya quvvati: <ph name="PERCENTAGE" />%.</translation>
