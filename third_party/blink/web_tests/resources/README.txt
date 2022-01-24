@@ -14,7 +14,7 @@ The following files are native to Blink and can be modified:
 * testharnessreport.js    integration with Blink's test runner
 
 See also:
-https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_platform_tests.md
+https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_platform_tests.md
 
 References:
 * web-platform-tests  https://github.com/web-platform-tests/wpt

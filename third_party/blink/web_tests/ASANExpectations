@@ -5,7 +5,7 @@
 # This file is used for tests that only need to be suppressed on
 # the Chromium WebKit ASAN bots.
 # Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 # NULL deref in libflashplayer.so, http://crbug.com/145940
 # ==12527== ERROR: AddressSanitizer: SEGV on unknown address 0x7f628058b38b

@@ -4,7 +4,7 @@
 # platforms that run web tests).
 #
 # Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 accessibility/aria-labelledby-on-input.html
 accessibility/insert-adjacent-html-causes-crash.xhtml

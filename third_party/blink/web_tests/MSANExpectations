@@ -5,7 +5,7 @@
 # This file is used for tests that only need to be suppressed on
 # the Chromium Blink MSan bots.
 # Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 # Those stress V8's simulator, making them very slow under MSan.
 crbug.com/420198 [ Linux ] fast/js/regress/* [ Skip ]

@@ -20,7 +20,7 @@
 #   6. Tests that fail due to Debug rendering variations from Release behavior.
 #   7. Tests that are not meant to be run automatically (manual tests).
 #   8. Tests that are automatically imported but not intended to be run.
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 # Perf tests are really slow in debug builds and there are few benefits in running them.
 [ Debug ] http/tests/perf/* [ Skip ]
