@@ -183,6 +183,9 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   Deprecation& GetDeprecation() { return deprecation_; }
 
+  // Returns the current list of user preferred languages.
+  String GetAcceptLanguages() const;
+
  protected:
   // Sets outside's CSP used for off-main-thread top-level worker script
   // fetch.
