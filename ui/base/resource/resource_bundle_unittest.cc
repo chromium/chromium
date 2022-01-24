@@ -70,7 +70,7 @@ gfx::ImageSkiaRep ParseLottieAsStillImageForTesting(
   expected_bytes_string->data() = "test";
   CHECK(bytes_string.Equals(expected_bytes_string));
 
-  const int kDimension = 16;
+  constexpr int kDimension = 16;
   return gfx::ImageSkiaRep(gfx::Size(kDimension, kDimension), 0.f);
 }
 #endif
