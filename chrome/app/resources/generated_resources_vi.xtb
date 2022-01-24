@@ -1226,6 +1226,9 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Nguồn phương tiện nghe nhìn chưa đặt tên</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Để mang lại trải nghiệm phù hợp nhất, <ph name="DEVICE_OS" /> sẽ thu thập dữ liệu phần cứng của thiết bị và chia sẻ dữ liệu đó cho Google để xác định xem nên phân phối bản cập nhật nào. Bạn có thể tuỳ ý cho phép Google dùng dữ liệu này cho các mục đích bổ sung như hỗ trợ và cải thiện trải nghiệm cũng như chất lượng dịch vụ của <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Bạn có thể đăng nhập trên thiết bị này rồi truy cập mục CLOUDREADY_HARDWARE_INFO trong chrome://system để xem dữ liệu được gửi tới Google phục vụ việc lọc bản cập nhật, cũng như xem mọi trường hợp khác mà bạn chọn chia sẻ dữ liệu với Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Để biết thêm thông tin về dữ liệu mà <ph name="DEVICE_OS" /> có thể chia sẻ với Google cũng như cách dữ liệu đó được sử dụng, hãy truy cập g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Cài đặt này thuộc về <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Cần chọn tối thiểu một album trong Phòng tranh</translation>
 <translation id="2224551243087462610">Chỉnh sửa tên thư mục</translation>
@@ -1777,6 +1780,15 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2766161002040448006">Xin phép cha mẹ</translation>
 <translation id="2767077837043621282">Không thể cập nhật chiếc Chromebook của bạn. Vui lòng thử lại sau.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> sẽ có thể chỉnh sửa <ph name="FILENAME" /> cho đến khi bạn đóng tất cả các thẻ cho trang web này</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Hãy thử các bước khắc phục sự cố sau:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Đảm bảo rằng thiết bị có bộ nhớ trong đang hoạt động, chẳng hạn như ổ đĩa HDD, SSD hoặc eMMC
+    <ph name="LIST_ITEM" />Kiểm tra xem bộ nhớ trong của thiết bị có lớn hơn 16 GB hay không
+    <ph name="LIST_ITEM" />Kiểm tra trạng thái kết nối với bộ nhớ trong, nếu có thể kiểm tra thực tế bên ngoài
+    <ph name="LIST_ITEM" />Đảm bảo rằng bạn đang dùng một kiểu thiết bị được chứng nhận rồi kiểm tra ghi chú về việc cài đặt
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Để được trợ giúp thêm, hãy truy cập: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Xóa khỏi danh sách</translation>
 <translation id="2770690685823456775">Xuất mật khẩu của bạn sang thư mục khác</translation>
 <translation id="2770929488047004208">Độ phân giải màn hình</translation>
@@ -2998,6 +3010,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4005817994523282006">Phương pháp phát hiện múi giờ</translation>
 <translation id="4007856537951125667">Ẩn lối tắt</translation>
 <translation id="4008291085758151621">Không có thông tin trang web trong VR</translation>
+<translation id="4009955655170295852">Trước khi bắt đầu, hãy đảm bảo rằng bạn đã sao lưu dữ liệu của mình. Quá trình cài đặt <ph name="DEVICE_OS" /> sẽ ghi đè lên ổ đĩa cứng. Tìm hiểu thêm tại g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Để nhận dấu trang trên thiết bị di động của bạn, hãy truy cập <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Bạn muốn sửa "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Bạn đang sử dụng tiện ích? Bạn có thể dễ dàng <ph name="BEGIN_LINK" />quản lý các tiện ích của mình<ph name="END_LINK" /> ở cùng một nơi.</translation>
@@ -3721,6 +3734,9 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Đã xóa 1 dấu trang}other{Đã xóa {COUNT} dấu trang}}</translation>
 <translation id="4819607494758673676">Thông báo của Trợ lý Google</translation>
 <translation id="4820236583224459650">Đặt làm phiếu đang hoạt động</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Trước khi đăng ký, bạn cần xoá TPM để <ph name="DEVICE_OS" /> có thể nắm quyền sở hữu thiết bị này.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Bạn cũng có thể tắt hoàn toàn TPM trên thiết bị. Dữ liệu của bạn vẫn sẽ được lưu trữ an toàn bằng tính năng mã hoá phần mềm, nhưng một số tính năng bảo mật cụ thể (chẳng hạn như chứng chỉ dựa trên phần cứng) sẽ bị vô hiệu hoá.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Bạn có thể thay đổi chế độ cài đặt TPM bằng cách khởi động lại rồi vào phần cài đặt BIOS/UEFI của hệ thống. Các bước thực hiện sẽ khác nhau tuỳ theo kiểu thiết bị. Để biết thêm thông tin, hãy mở tài liệu <ph name="DEVICE_OS" /> trên một thiết bị khác trước khi bạn khởi động lại: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Bật cấu hình</translation>
 <translation id="4823484602432206655">Đọc và thay đổi cài đặt người dùng và thiết bị</translation>
 <translation id="4824037980212326045">Sao lưu và khôi phục Linux</translation>
@@ -5629,6 +5645,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6834652994408928492">Chế độ tối sẽ tự động bật vào buổi tối</translation>
 <translation id="6835762382653651563">Vui lòng kết nối Internet để cập nhật <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="6839225236531462745">Lỗi xóa chứng chỉ</translation>
+<translation id="6839882458129755986">Google không chịu trách nhiệm đối với mọi dữ liệu bị mất và <ph name="DEVICE_OS" /> có thể không hoạt động trên một số kiểu thiết bị chưa được chứng nhận. Tìm hiểu thêm tại g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Quy trình đăng nhập đã thay đổi</translation>
 <translation id="6840155290835956714">Hỏi trước khi gửi</translation>
 <translation id="6840184929775541289">Không phải là Tổ chức phát hành chứng chỉ</translation>
@@ -5946,6 +5963,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7182791023900310535">Di chuyển mật khẩu của bạn</translation>
+<translation id="7183193772170782394">Cho phép Google dùng dữ liệu phần cứng của bạn để giúp cải thiện <ph name="DEVICE_OS" />. Nếu bạn từ chối thì dữ liệu này vẫn được gửi tới Google để xác định bản cập nhật thích hợp, nhưng sẽ không được lưu trữ hay sử dụng cho mục đích khác. Tìm hiểu thêm tại g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Bật/tắt bảng tìm kiếm bên. Chưa kích hoạt bảng tìm kiếm bên.</translation>
 <translation id="7186088072322679094">Giữ trong thanh công cụ</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> không thể mở thư mục này vì thư mục này chứa tệp hệ thống</translation>
@@ -7033,6 +7051,8 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8260864402787962391">Chuột</translation>
 <translation id="8261378640211443080">Tiện ích này không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="8261506727792406068">Xóa</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Đã xảy ra lỗi và không cài đặt được <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Để được trợ giúp thêm, hãy truy cập: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Đặt tên cho nhóm này</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> đã tắt con trỏ chuột của bạn.</translation>
 <translation id="8264024885325823677">Quản trị viên của bạn quản lý tùy chọn cài đặt này.</translation>
@@ -7505,6 +7525,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}}</translation>
 <translation id="8777259617149177596">Mức pin hộp đựng <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8777628254805677039">mật khẩu gốc</translation>
+<translation id="8779944680596936487">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của chính họ</translation>
 <translation id="8780123805589053431">Lấy nội dung mô tả hình ảnh từ Google</translation>
 <translation id="8780443667474968681">Tính năng tìm kiếm bằng giọng nói đã bị tắt.</translation>
 <translation id="8781834595282316166">Thẻ mới trong nhóm</translation>

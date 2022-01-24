@@ -1015,6 +1015,7 @@
 <translation id="2022395138980869975">サイド検索を切り替える</translation>
 <translation id="2023167225947895179">推測されやすい PIN です</translation>
 <translation id="202352106777823113">ダウンロードは時間がかかりすぎたため、ネットワークによって停止されました。</translation>
+<translation id="2024195579772565064">検索エンジンを削除</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> がクラッシュしました。このバルーンをクリックして再起動してください。</translation>
 <translation id="2028449514182362831">モーション センサーを必要とする機能は動作しなくなります</translation>
 <translation id="202918510990975568">セキュリティとログインを設定するには、パスワードを入力してください</translation>
@@ -1156,6 +1157,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi を追加...</translation>
 <translation id="2162155940152307086">同期設定を閉じると同期が開始します</translation>
+<translation id="2162926944953615670">eSIM プロファイルがありません</translation>
 <translation id="2163470535490402084">お使いの <ph name="DEVICE_TYPE" /> にログインするにはインターネットに接続してください。</translation>
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 1 個のスイッチ</translation>
@@ -1842,6 +1844,7 @@
 <translation id="2828650939514476812">Wi-Fi ネットワークへの接続</translation>
 <translation id="2831430281393059038">デバイスはサポートされています</translation>
 <translation id="2832124733806557606">お子様はデバイスのログインやロック解除に PIN を使用できます。</translation>
+<translation id="2835177225987815960">現在のスキャン設定（割り当てたスイッチや自動スキャンの速度設定など）はリセットされます。</translation>
 <translation id="2835547721736623118">音声認識サービス</translation>
 <translation id="2836269494620652131">クラッシュ</translation>
 <translation id="2836635946302913370">このユーザー名でのログインは、管理者によって無効にされています。</translation>
@@ -3474,6 +3477,7 @@
 <translation id="4547659257713117923">他のデバイスからのタブはありません</translation>
 <translation id="4547672827276975204">自動的に設定する</translation>
 <translation id="4549791035683739768">セキュリティ キーにフィンガープリントは保存されていません</translation>
+<translation id="4550926046134589611">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> で開かれます。</translation>
 <translation id="4551763574344810652">元に戻すには <ph name="MODIFIER_KEY_DESCRIPTION" /> を押します</translation>
 <translation id="4553526521109675518">デバイスの言語を変更するには Chromebook を再起動する必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">画像上をドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で検索</translation>
@@ -3760,6 +3764,7 @@
 <translation id="48704129375571883">その他の機能を追加</translation>
 <translation id="4870758487381879312">設定情報を取得するには管理者から提供されたパスワードを入力してください</translation>
 <translation id="4870903493621965035">ペア設定されたデバイスはありません</translation>
+<translation id="4870995365819149457">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、その他 1 件のアプリで開かれます。</translation>
 <translation id="4871308555310586478">Chrome ウェブストア以外の場所からインストールされました。</translation>
 <translation id="4871322859485617074">PIN に無効な文字が含まれています</translation>
 <translation id="4871370605780490696">ブックマークを追加</translation>
@@ -4790,6 +4795,7 @@
 <translation id="5969728632630673489">キーボード ショートカットの通知を非表示にしました</translation>
 <translation id="5971037678316050792">Bluetooth アダプタの状態とペア設定の制御</translation>
 <translation id="597235323114979258">その他の印刷先</translation>
+<translation id="5972543790327947908">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、または <ph name="APP_NAME_3" /> で開かれます。</translation>
 <translation id="5972666587303800813">機能なしのサービス</translation>
 <translation id="5972708806901999743">トップに移動</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> を起動</translation>
@@ -5158,6 +5164,7 @@
 <translation id="6355789186038748882">試験運用版（アルファ版品質）のブラウザです。一部の機能がないか、不完全です。問題が発生した場合は、[ヘルプ] &gt; [問題の報告...] からご報告ください。</translation>
 <translation id="635609604405270300">デバイスの電源を切らないでください</translation>
 <translation id="63566973648609420">パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />する必要があります。</translation>
+<translation id="6357305427698525450">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> または <ph name="APP_NAME_2" /> で開かれます。</translation>
 <translation id="6358884629796491903">ドラゴン</translation>
 <translation id="6359706544163531585">ライトモードを無効にする</translation>
 <translation id="6361850914223837199">エラーの詳細:</translation>
@@ -5669,6 +5676,7 @@
 <translation id="6900284862687837908">バックグラウンド アプリ: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">保護強化機能</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> を更新するにはもう一度ログインしてください</translation>
+<translation id="6900654715912436255">この検索エンジンを削除してもよろしいですか？</translation>
 <translation id="6902066522699286937">プレビューする音声</translation>
 <translation id="6902336033320348843">セクションがサポートされていません: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">デバイスをドメインに追加しましょう</translation>
@@ -5939,6 +5947,7 @@
 <translation id="7189234443051076392">デバイスに十分な空き容量があることを確認してください</translation>
 <translation id="7189451821249468368">このデバイスの登録に必要なアップグレード ライセンスを持っていません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
 <translation id="7189965711416741966">指紋の登録が完了しました。</translation>
+<translation id="7191063546666816478">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、その他 <ph name="NUMBER_OF_OTHER_APPS" /> 件のアプリで開かれます。</translation>
 <translation id="7191159667348037">不明なプリンタ（USB）</translation>
 <translation id="7193051357671784796">このアプリは組織によって追加されました。インストールを完了するにはアプリを再起動してください。</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> 用に保存されているパスワードはありません</translation>

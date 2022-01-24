@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">کوکی‌ها را برای سایت خاصی مجاز کنید.</translation>
 <translation id="4046123991198612571">آهنگ بعدی</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
+<translation id="4194328954146351878">‏قبل‌از اینکه به سایت‌ها اجازه داده شود اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند سؤال شود (توصیه می‌شود)</translation>
 <translation id="4200726100658658164">باز کردن «تنظیمات مکان»</translation>
 <translation id="4226663524361240545">اعلان‌ها ممکن است دستگاه را بلرزانند</translation>
 <translation id="4259722352634471385">پیمایش مسدود شده است: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏NFC برای این دستگاه خاموش است. در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> آن را روشن کنید.</translation>
+<translation id="8928445016601307354">‏سایت‌ها اجازه نداشته باشند اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">کوکی‌ها را برای سایت خاصی مسدود کنید.</translation>
 <translation id="8959122750345127698">پیمایش غیرقابل دسترسی است: <ph name="URL" /></translation>

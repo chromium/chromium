@@ -1219,6 +1219,7 @@
           <ph name="LIST_ITEM" />雇用主や教育機関で閲覧アクティビティを追跡している場合があります<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />インターネット サービス プロバイダでウェブ トラフィックを監視していることがあります<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">ポリシーは、クラウド ユーザー ポリシーでのみ設定可能なため無視されました。</translation>
 <translation id="483241715238664915">警告をオンにする</translation>
 <translation id="4838327282952368871">ドリーミー</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>

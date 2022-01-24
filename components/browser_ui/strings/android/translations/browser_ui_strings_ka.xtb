@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">ქუქი-ჩანაწერების დაშვება კონკრეტული საიტისთვის.</translation>
 <translation id="4046123991198612571">შემდეგი ჩანაწერი</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
+<translation id="4194328954146351878">შეკითხვა საიტებისთვის NFC მოწყობილობებზე ინფორმაციაზე წვდომისა და მისი შეცვლის დაშვებამდე (რეკომენდებული)</translation>
 <translation id="4200726100658658164">მდებარეობის პარამეტრების გახსნა</translation>
 <translation id="4226663524361240545">შეტყობინებებმა შეიძლება მოწყობილობის ვიბრაცია გამოიწვიოს</translation>
 <translation id="4259722352634471385">ნავიგაცია დაბლოკილია: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">მასშტაბის გადიდება</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC გამორთულია ამ მოწყობილობისთვის. მისი ჩართვა შეგიძლიათ <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">აეკრძალოს საიტებს ინფორმაციაზე წვდომა და მისი შეცვლა NFC მოწყობილობებზე</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ქუქი-ჩანაწერების დაბლოკვა კონკრეტული საიტისთვის.</translation>
 <translation id="8959122750345127698">ნავიგაცია მიუწვდომელია: <ph name="URL" /></translation>

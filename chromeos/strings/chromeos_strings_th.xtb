@@ -170,6 +170,7 @@
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="3583278742022654445">ความแรงสัญญาณไม่ดี ลองขยับไปใกล้ๆ แหล่งสัญญาณ Wi-Fi มากขึ้น</translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
+<translation id="3603829704940252505">รูปโปรไฟล์</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3606583719724308068">เวลาในการตอบสนองไปยังเว็บไซต์ HTTPS สูง</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
@@ -421,6 +422,7 @@
 <translation id="6905724422583748843">กลับไปที่ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">ฝาเครื่องสแกนเปิดอยู่ ปิดฝาแล้วลองอีกครั้ง</translation>
 <translation id="6911383237894364323">เชื่อมต่อเซิร์ฟเวอร์สื่อไม่ได้</translation>
+<translation id="6935486296377631201">โปรแกรมรักษาหน้าจอ</translation>
 <translation id="6957231940976260713">ชื่อบริการ</translation>
 <translation id="6961170852793647506">วางเอกสารบนเครื่องสแกนเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="6965382102122355670">ตกลง</translation>

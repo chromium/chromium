@@ -1016,6 +1016,7 @@
 <translation id="2022395138980869975">เปิด/ปิดการค้นหาในแผงด้านข้าง</translation>
 <translation id="2023167225947895179">PIN อาจคาดเดาได้ง่าย</translation>
 <translation id="202352106777823113">การดาวน์โหลดนี้ใช้เวลานานเกินไปและถูกหยุดลงโดยเครือข่าย</translation>
+<translation id="2024195579772565064">ลบเครื่องมือค้นหา</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ขัดข้อง คลิกที่บอลลูนเพื่อโหลดส่วนขยายอีกครั้ง</translation>
 <translation id="2028449514182362831">ฟีเจอร์ที่ต้องใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวจะไม่ทำงาน</translation>
 <translation id="202918510990975568">ป้อนรหัสผ่านเพื่อกำหนดค่าความปลอดภัยและการลงชื่อเข้าใช้</translation>
@@ -1156,6 +1157,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">เพิ่ม WiFi...</translation>
 <translation id="2162155940152307086">การซิงค์จะเริ่มขึ้นเมื่อคุณออกจากการตั้งค่า</translation>
+<translation id="2162926944953615670">ไม่มีโปรไฟล์ eSIM ที่ใช้ได้</translation>
 <translation id="2163470535490402084">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
@@ -1844,6 +1846,7 @@
 <translation id="2828650939514476812">เชื่อมต่อเครือข่าย Wi-Fi</translation>
 <translation id="2831430281393059038">รองรับอุปกรณ์นี้</translation>
 <translation id="2832124733806557606">บุตรหลานจะใช้ PIN เพื่อลงชื่อเข้าใช้หรือปลดล็อกอุปกรณ์ได้</translation>
+<translation id="2835177225987815960">ระบบจะรีเซ็ตการตั้งค่าการสแกนในปัจจุบัน ซึ่งรวมถึงสวิตช์ที่กำหนดไว้และค่ากำหนดความเร็วในการสแกนอัตโนมัติ</translation>
 <translation id="2835547721736623118">บริการการรู้จำคำพูด</translation>
 <translation id="2836269494620652131">ขัดข้อง</translation>
 <translation id="2836635946302913370">ผู้ดูแลระบบของคุณปิดใช้งานการลงชื่อเข้าใช้ด้วยชื่อผู้ใช้นี้</translation>
@@ -3480,6 +3483,7 @@
 <translation id="4547659257713117923">ไม่มีแท็บจากอุปกรณ์อื่น</translation>
 <translation id="4547672827276975204">ตั้งค่าโดยอัตโนมัติ</translation>
 <translation id="4549791035683739768">คีย์ความปลอดภัยไม่มีลายนิ้วมือบันทึกไว้</translation>
+<translation id="4550926046134589611">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" /></translation>
 <translation id="4551763574344810652">กด <ph name="MODIFIER_KEY_DESCRIPTION" /> เพื่อเลิกทำ</translation>
 <translation id="4553526521109675518">คุณต้องรีสตาร์ท Chromebook เพื่อเปลี่ยนภาษาของอุปกรณ์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">ลากไปบนรูปภาพเพื่อค้นหาด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -3768,6 +3772,7 @@
 <translation id="48704129375571883">เพิ่มฟีเจอร์</translation>
 <translation id="4870758487381879312">ป้อนรหัสผ่านที่ผู้ดูแลระบบให้เพื่อดูข้อมูลการกำหนดค่า</translation>
 <translation id="4870903493621965035">ไม่มีอุปกรณ์ที่จับคู่</translation>
+<translation id="4870995365819149457">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> และอีก 1 แอป</translation>
 <translation id="4871308555310586478">ไม่ได้มาจาก Chrome เว็บสโตร์</translation>
 <translation id="4871322859485617074">PIN มีอักขระที่ไม่ถูกต้อง</translation>
 <translation id="4871370605780490696">เพิ่มบุ๊กมาร์ก</translation>
@@ -4800,6 +4805,7 @@
 <translation id="5969728632630673489">ปิดแบนเนอร์แสดงแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="5971037678316050792">ควบคุมสถานะและการจับคู่อะแดปเตอร์บลูทูธ</translation>
 <translation id="597235323114979258">ดูปลายทางเพิ่มเติม</translation>
+<translation id="5972543790327947908">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> หรือ <ph name="APP_NAME_3" /></translation>
 <translation id="5972666587303800813">บริการที่ไม่มีการดำเนินการ</translation>
 <translation id="5972708806901999743">ย้ายไปด้านบน</translation>
 <translation id="5972826969634861500">เริ่มต้นใช้งาน <ph name="PRODUCT_NAME" /></translation>
@@ -5171,6 +5177,7 @@
 <translation id="6355789186038748882">เบราว์เซอร์ทดลอง (คุณภาพระดับอัลฟ่า) บางฟีเจอร์อาจไม่มีหรือใช้งานได้ไม่สมบูรณ์ โปรดรายงานปัญหาโดยไปที่ความช่วยเหลือ &gt; "รายงานปัญหา..."</translation>
 <translation id="635609604405270300">โปรดเปิดอุปกรณ์ไว้</translation>
 <translation id="63566973648609420">เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นจึงจะสามารถอ่านข้อมูลที่เข้ารหัสของคุณได้ Google จะไม่ส่งหรือจัดเก็บรหัสผ่านนี้ หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ คุณจะต้อง<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
+<translation id="6357305427698525450">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" /> หรือ <ph name="APP_NAME_2" /></translation>
 <translation id="6358884629796491903">มังกร</translation>
 <translation id="6359706544163531585">ปิดใช้ธีมสว่าง</translation>
 <translation id="6361850914223837199">รายละเอียดข้อผิดพลาด:</translation>
@@ -5684,6 +5691,7 @@
 <translation id="6900284862687837908">แอปพื้นหลัง: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">การปกป้องที่ปรับปรุงแล้ว</translation>
 <translation id="6900651018461749106">ลงชื่อเข้าใช้อีกครั้งเพื่ออัปเดต <ph name="USER_EMAIL" /></translation>
+<translation id="6900654715912436255">คุณแน่ใจไหมว่าต้องการลบเครื่องมือค้นหานี้</translation>
 <translation id="6902066522699286937">แสดงตัวอย่างเสียง</translation>
 <translation id="6902336033320348843">ส่วนที่ไม่รองรับ: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">นำอุปกรณ์เข้าร่วมโดเมน</translation>
@@ -5954,6 +5962,7 @@
 <translation id="7189234443051076392">ตรวจสอบว่าอุปกรณ์มีพื้นที่ว่างเพียงพอ</translation>
 <translation id="7189451821249468368">คุณมีการอัปเกรดไม่เพียงพอสำหรับการลงทะเบียนอุปกรณ์นี้ โปรดติดต่อฝ่ายขายเพื่อสั่งซื้อเพิ่มเติม หากคุณเชื่อว่าคุณเห็นข้อความนี้เนื่องจากข้อผิดพลาด โปรดติดต่อฝ่ายสนับสนุน</translation>
 <translation id="7189965711416741966">เพิ่มลายนิ้วมือแล้ว</translation>
+<translation id="7191063546666816478">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> และอีก <ph name="NUMBER_OF_OTHER_APPS" /> แอป</translation>
 <translation id="7191159667348037">เครื่องพิมพ์ที่ไม่รู้จัก (USB)</translation>
 <translation id="7193051357671784796">องค์กรของคุณเป็นผู้เพิ่มแอปนี้ รีสตาร์ทแอปเพื่อติดตั้งให้เสร็จ</translation>
 <translation id="7193374945610105795">ไม่มีรหัสผ่านบันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>

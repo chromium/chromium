@@ -1213,6 +1213,9 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Adsız medya kaynağı</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" />, hangi güncellemenin sağlanması gerektiğini belirlemek için cihazlarla ilgili donanım verilerini toplayıp Google'la paylaşarak en iyi deneyimi sağlamayı amaçlar. İsterseniz Google'ın bu verileri <ph name="DEVICE_OS" /> deneyimini ve hizmetini destekleyip iyileştirmesi gibi ek amaçlar için kullanmasına izin verebilirsiniz.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Bu cihazda giriş yapıp chrome://system adresindeki CLOUDREADY_HARDWARE_INFO bölümünü ziyaret ederek güncelleme filtrelemesi için Google'a gönderilen verileri ve Google ile veri paylaşmayı seçtiğiniz diğer örnekleri görebilirsiniz.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> işletim sisteminin Google ile paylaşabileceği veriler ve bu verilerin nasıl kullanıldığıyla ilgili daha fazla bilgi için g.co/CR2/HWDataCollection sayfasını ziyaret edebilirsiniz.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Bu ayar <ph name="OWNER_EMAIL" /> kullanıcısına aittir.</translation>
 <translation id="222447520299472966">En az bir Sanat galerisi albümü seçilmelidir</translation>
 <translation id="2224551243087462610">Klasör adını düzenle</translation>
@@ -1760,6 +1763,15 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2766161002040448006">Ebeveyninize sorun</translation>
 <translation id="2767077837043621282">Chromebook'unuz güncellenemedi. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" />, siz bu siteye ait tüm sekmeleri kapatana kadar <ph name="FILENAME" /> dosyasını düzenleyebilecek</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Aşağıdaki sorun giderme adımlarını deneyin:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Cihazınızda HDD, SSD veya eMMC gibi çalışan bir dahili depolama olduğundan emin olun
+    <ph name="LIST_ITEM" />Dahili depolama cihazınızda 16 GB'ın üzerinde alan olup olmadığını kontrol edin
+    <ph name="LIST_ITEM" />Fiziksel olarak erişilebilir durumdaysa dahili depolamaya olan bağlantıyı kontrol edin
+    <ph name="LIST_ITEM" />Sertifikalı bir model kullandığınızdan emin olup modelin yükleme notlarını kontrol edin
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Daha fazla yardım almak için g.co/CR2/InstallErrors adresini ziyaret edin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Listeden kaldır</translation>
 <translation id="2770690685823456775">Şifrelerinizi başka bir klasöre dışa aktarın</translation>
 <translation id="2770929488047004208">Monitör çözünürlüğü</translation>
@@ -2981,6 +2993,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4005817994523282006">Saat dilimi algılama yöntemi</translation>
 <translation id="4007856537951125667">Kısayolları gizle</translation>
 <translation id="4008291085758151621">Site bilgileri VR'da kullanılamıyor</translation>
+<translation id="4009955655170295852">Başlamadan önce verilerinizi yedeklemeyi unutmayın. <ph name="DEVICE_OS" /> yüklenirken sabit diskinizin üzerine yazılır. Daha fazla bilgiyi g.co/CR2/InstallGuide sayfasında bulabilirsiniz.</translation>
 <translation id="4010917659463429001">Yer işaretlerinizi mobil cihazınıza taşımak için <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" onarılsın mı?</translation>
 <translation id="4015163439792426608">Uzantı kullanıyor musunuz? <ph name="BEGIN_LINK" />Uzantılarınızı tek yerden kolayca yönetin<ph name="END_LINK" />.</translation>
@@ -3703,6 +3716,9 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 yer işareti silindi}other{{COUNT} yer işareti silindi}}</translation>
 <translation id="4819607494758673676">Google Asistan Bildirimleri</translation>
 <translation id="4820236583224459650">Aktif bilet olarak ayarla</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> işletim sisteminin, cihazın sahipliğini alabilmesi için kaydolmadan önce TPM'yi temizlemeniz gerekir.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />TPM cihazını tamamen de kapatabilirsiniz. Verileriniz yazılım şifreleme ile güvenli bir şekilde depolanmaya devam eder ancak donanım destekli sertifikalar gibi bazı güvenlik özellikleri devre dışı bırakılır.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Yeniden başlatıp sistem BIOS/UEFI ayarlarını girerek TPM ayarlarınızı değiştirebilirsiniz. Uygulanacak adımlar cihaz modeline göre değişir. Daha fazla bilgi için, yeniden başlatma işleminden önce <ph name="DEVICE_OS" /> dokümanlarını ayrı bir cihazda açın: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profil Oluşturma Etkin</translation>
 <translation id="4823484602432206655">Kullanıcı ve cihaz ayarlarını okuma ve değiştirme</translation>
 <translation id="4824037980212326045">Linux yedekleme ve geri yükleme</translation>
@@ -5612,6 +5628,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6834652994408928492">Koyu mod, güneş battığında otomatik olarak açılır</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
 <translation id="6839225236531462745">Sertifika Silme Hatası</translation>
+<translation id="6839882458129755986">Google, hiçbir veri kaybından sorumlu değildir ve <ph name="DEVICE_OS" />, sertifikasız modellerde çalışmayabilir. Daha fazla bilgiyi g.co/CR2/InstallGuide sayfasında bulabilirsiniz.</translation>
 <translation id="6839916869147598086">Oturum açma değişti</translation>
 <translation id="6840155290835956714">Göndermeden önce sor</translation>
 <translation id="6840184929775541289">Sertifika Yetkilisi değildir</translation>
@@ -5929,6 +5946,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7180865173735832675">Özelleştir</translation>
 <translation id="7182791023900310535">Şifrenizi taşıyın</translation>
+<translation id="7183193772170782394"><ph name="DEVICE_OS" /> işletim sistemini iyileştirmemize yardımcı olmak için Google'ın donanım verilerinizi kullanmasına izin verin. Reddetmeniz durumunda bu veriler uygun güncellemeleri belirlemek için Google'a gönderilmeye devam eder ancak başka şekilde depolanmaz veya kullanılmaz. Daha fazla bilgiyi g.co/CR2/HWDataCollection sayfasında bulabilirsiniz.</translation>
 <translation id="7183420126213758623">Yan aramayı aç/kapat. Yan arama etkinleştirilmedi.</translation>
 <translation id="7186088072322679094">Araç Çubuğunda Tut</translation>
 <translation id="7186303001964993981">Sistem dosyaları içerdiği için <ph name="ORIGIN" /> bu klasörü açamaz</translation>
@@ -7014,6 +7032,8 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8260864402787962391">Fare</translation>
 <translation id="8261378640211443080">Bu uzantı <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmiyor ve bilginiz dışında eklenmiş olabilir.</translation>
 <translation id="8261506727792406068">Sil</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Bir sorun oluştuğu için <ph name="DEVICE_OS" /> yüklenemedi.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Daha fazla yardım için g.co/CR2/InstallErrors sayfasını ziyaret edin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Bu Gruba Bir Ad Verin</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />, fare imlecinizi devre dışı bıraktı.</translation>
 <translation id="8264024885325823677">Bu ayar, yöneticiniz tarafından yönetilir.</translation>
@@ -7486,6 +7506,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.}}</translation>
 <translation id="8777259617149177596">Kılıfın pil seviyesi %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="8777628254805677039">kök şifre</translation>
+<translation id="8779944680596936487">Siteler, çerezleri yalnızca kendi sitelerindeki tarama etkinliğinizi görmek için kullanabilir</translation>
 <translation id="8780123805589053431">Google'dan resim açıklamaları al</translation>
 <translation id="8780443667474968681">Sesli arama özelliği kapatıldı.</translation>
 <translation id="8781834595282316166">Grupta Yeni Sekme</translation>

@@ -1029,6 +1029,7 @@
 <translation id="2022395138980869975">Хажуугийн хайлтыг асаах/унтраах</translation>
 <translation id="2023167225947895179">ПИН-г таахад хялбар байж болзошгүй</translation>
 <translation id="202352106777823113">Татаж авах ажиллагаа хэт удаан байсан бөгөөд үүнийг сүлжээнээс зогсоосон байна.</translation>
+<translation id="2024195579772565064">Хайлтын системийг устгах</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" />-д гэмтэл гарчээ. Өргөтгөлыг дахин ачаалахын тулд энэ бөмбөлөг дээр дарна уу.</translation>
 <translation id="2028449514182362831">Хөдөлгөөн мэдрэгч шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="202918510990975568">Аюулгүй байдал болон нэвтрэлтийг тохируулахын тулд нууц үгээ оруулна уу</translation>
@@ -1170,6 +1171,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi нэмэх...</translation>
 <translation id="2162155940152307086">Таныг синк хийх тохиргооноос гарсны дараа синк хийж эхэлнэ</translation>
+<translation id="2162926944953615670">Боломжтой eSIM профайл байхгүй байна</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" />-д нэвтрэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> болон өөр 1 сэлгүүр</translation>
@@ -1865,6 +1867,7 @@
 <translation id="2828650939514476812">Wi-Fi сүлжээнд холбогдох</translation>
 <translation id="2831430281393059038">Төхөөрөмжийг дэмждэг</translation>
 <translation id="2832124733806557606">Таны хүүхэд төхөөрөмжид нэвтрэх эсвэл түгжээг тайлахын тулд ПИН ашиглах боломжтой.</translation>
+<translation id="2835177225987815960">Таны оноосон аливаа сэлгүүр болон автоматаар скан хийх хурдны тохиргоог оруулаад одоогийн скан хийх тохируулгыг шинэчилнэ.</translation>
 <translation id="2835547721736623118">Яриа таних үйлчилгээ</translation>
 <translation id="2836269494620652131">Эвдрэл</translation>
 <translation id="2836635946302913370">Энэ хэрэглэгчийн нэрээр нэвтрэхийг администратор хориглосон байна.</translation>
@@ -3510,6 +3513,7 @@
 <translation id="4547659257713117923">Бусад төхөөрөмжөөс ирсэн цонх байхгүй байна</translation>
 <translation id="4547672827276975204">Автоматаар тохируулах</translation>
 <translation id="4549791035683739768">Таны аюулгүй байдлын түлхүүр дээр хадгалсан хурууны хээ байхгүй байна</translation>
+<translation id="4550926046134589611">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" />-д нээх боломжтой хэвээр байна.</translation>
 <translation id="4551763574344810652">Болихын тулд <ph name="MODIFIER_KEY_DESCRIPTION" />-г дарна уу</translation>
 <translation id="4553526521109675518">Та төхөөрөмжийн хэлийг өөрчлөхийн тулд Chromebook-ээ дахин эхлүүлэх шаардлагатай. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" />-р хайхын тулд зураг чирэх</translation>
@@ -3798,6 +3802,7 @@
 <translation id="48704129375571883">Нэмэлт онцлог нэмэх</translation>
 <translation id="4870758487381879312">Тохируулгын мэдээллийг авахын тулд админы өгсөн нууц үгийг оруулна уу</translation>
 <translation id="4870903493621965035">Холбосон төхөөрөмж алга</translation>
+<translation id="4870995365819149457">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> болон өөр 1 аппад нээх боломжтой хэвээр байна.</translation>
 <translation id="4871308555310586478">Chrome Web Store-оос биш</translation>
 <translation id="4871322859485617074">ПИН хүчингүй тэмдэгт агуулж байна</translation>
 <translation id="4871370605780490696">Хадгалагдсан холбоос нэмэх</translation>
@@ -4833,6 +4838,7 @@
 <translation id="5969728632630673489">Товчлуурын шууд холбоосны мэдэгдлийг хаасан</translation>
 <translation id="5971037678316050792">Bluetooth адаптерийн статус болон хослолийг хянах</translation>
 <translation id="597235323114979258">Бусад очих газрыг харах</translation>
+<translation id="5972543790327947908">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> эсвэл <ph name="APP_NAME_3" />-д нээх боломжтой хэвээр байна.</translation>
 <translation id="5972666587303800813">Ажилладаггүй үйлчилгээ</translation>
 <translation id="5972708806901999743">Дээд хэсэг рүү шилжих</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" />-ийн эхлүүлэх</translation>
@@ -5204,6 +5210,7 @@
 <translation id="6355789186038748882">Туршилтын (альфа-чанар) хөтөч! Зарим онцлог дутуу эсвэл дуусаагүй байна. Асуудлыг дараахаар мэдээлнэ үү: Тусламж &gt; "Асуудал мэдээлэх...".</translation>
 <translation id="635609604405270300">Төхөөрөмжийг асаалттай хэвээр байлгаарай</translation>
 <translation id="63566973648609420">Зөвхөн таны нэвтрэх үгийг мэддэг хүн л таны шифрлэсэн өгөгдлийг унших боломжтой. Нэвтрэх үгийг Google-д илгээх болон хадгалахгүй. Хэрэв та нэвтрэх үгээ мартсан, эсвэл тохиргоог өөрчлөх бол <ph name="BEGIN_LINK" />синкийг дахин тохируулах<ph name="END_LINK" /> шаардлагатай.</translation>
+<translation id="6357305427698525450">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" /> эсвэл  <ph name="APP_NAME_2" />-д нээх боломжтой хэвээр байна.</translation>
 <translation id="6358884629796491903">Луу</translation>
 <translation id="6359706544163531585">Цайвар загварыг идэвхгүй болгох</translation>
 <translation id="6361850914223837199">Алдааны талаарх дэлгэрэнгүй мэдээлэл:</translation>
@@ -5722,6 +5729,7 @@
 <translation id="6900284862687837908">Дэвсгэрийн апп: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Сайжруулсан хамгаалалт</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />-г шинэчлэхийн тулд дахин нэвтэрнэ үү</translation>
+<translation id="6900654715912436255">Та энэ хайлтын системийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="6902066522699286937">Урьдчилан үзэх дуу хоолой</translation>
 <translation id="6902336033320348843">Хэсгийг дэмжээгүй байна: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Домайнд төхөөрөмж нэгтгэх</translation>
@@ -5992,6 +6000,7 @@
 <translation id="7189234443051076392">Tөхөөрөмждөө хангалттай зай гаргана уу</translation>
 <translation id="7189451821249468368">Танд энэ төхөөрөмжийг бүртгүүлэх хангалттай дэвшүүлэлт байхгүй байна. Нэмж худалдан авах бол борлуулалтын хэсэгтэй холбогдоно уу. Хэрэв та алдаа гарсны улмаас энэ мессежийг харж байна гэж бодож байвал тусламжтай холбогдоно уу.</translation>
 <translation id="7189965711416741966">Хурууны хээг нэмсэн</translation>
+<translation id="7191063546666816478">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> болон өөр <ph name="NUMBER_OF_OTHER_APPS" /> аппад нээх боломжтой хэвээр байна.</translation>
 <translation id="7191159667348037">Тодорхойгүй хэвлэгч (USB)</translation>
 <translation id="7193051357671784796">Энэ аппыг танай байгууллага нэмсэн байна. Аппыг суулгаж дуусгахын тулд дахин эхлүүлнэ үү.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />-д хадгалсан нууц үг алга</translation>

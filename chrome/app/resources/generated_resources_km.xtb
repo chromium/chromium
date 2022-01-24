@@ -511,6 +511,7 @@
 <translation id="1521442365706402292">គ្រប់គ្រងវិញ្ញាបនប័ត្រ</translation>
 <translation id="1521774566618522728">ដំណើរការ​ថ្ងៃនេះ</translation>
 <translation id="152234381334907219">កុំរក្សាទុក</translation>
+<translation id="1523279371236772909">បានមើល​កាលពីខែមុន</translation>
 <translation id="1523978563989812243">ម៉ាស៊ីន​បំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
 <translation id="1524430321211440688">ក្ដារចុច</translation>
 <translation id="1524563461097350801">ទេ អរគុណ</translation>
@@ -1251,6 +1252,7 @@
 <translation id="2232876851878324699">ឯកសារនេះបានផ្ទុកវិញ្ញាបនប័ត្រមួយដែលមិនត្រូវបាននាំចូល៖</translation>
 <translation id="2233502537820838181">ព័ត៌មានច្រើនទៀត</translation>
 <translation id="223356358902285214">សកម្មភាពកម្មវិធី និងគេហទំព័រ</translation>
+<translation id="2234827758954819389">ការណែនាំ​អំពី​ឯកជនភាព</translation>
 <translation id="2234876718134438132">សមកាលកម្ម និងសេវាកម្ម Google</translation>
 <translation id="2235344399760031203">បាន​ទប់ស្កាត់ខូគី​ភាគី​ទីបី</translation>
 <translation id="2238379619048995541">ទិន្នន័យស្ថានភាពប្រេកង់</translation>
@@ -3107,6 +3109,7 @@
 <translation id="4095264805865317199">បើក UI សម្រាប់​បើកដំណើរការ​បណ្តាញចល័ត</translation>
 <translation id="4095507791297118304">អេក្រង់ចម្បង</translation>
 <translation id="4096508467498758490">បិទដំណើរការកម្មវិធីបន្ថែមរបៀបអ្នកអភិវឌ្ឍន៍</translation>
+<translation id="4096797685681362305">បានមើលកាលពី​សប្ដាហ៍មុន</translation>
 <translation id="4097406557126260163">កម្មវិធី និង​កម្មវិធីបន្ថែម</translation>
 <translation id="409742781329613461">គន្លឹះ​សម្រាប់ Chrome</translation>
 <translation id="4097560579602855702">ស្វែងរក​នៅលើ Google</translation>
@@ -3663,6 +3666,7 @@
 <translation id="4699172675775169585">រូបភាព និងឯកសារដែលផ្ទុកក្នុងឃ្លាំងសម្ងាត់</translation>
 <translation id="4699357559218762027">(បានបើកដំណើរស្វ័យប្រវត្តិ)</translation>
 <translation id="4701025263201366865">ការចូលគណនីដោយមាតាបិតា</translation>
+<translation id="4701335814944566468">បានមើល​កាលពី​ម្សិលមិញ</translation>
 <translation id="4708794300267213770">បង្ហាញអេក្រង់ចាក់សោនៅពេលភ្ញាក់ពីដំណេក</translation>
 <translation id="4708849949179781599">ចាកចេញ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">ស្តារការកំណត់</translation>
@@ -3730,6 +3734,7 @@
 <translation id="479536056609751218">គេហទំព័រ HTML តែប៉ុណ្ណោះ</translation>
 <translation id="4796142525425001238">ស្ដារ​ជានិច្ច</translation>
 <translation id="4798236378408895261">ភ្ជាប់<ph name="BEGIN_LINK" />កំណត់ហេតុ​ប៊្លូធូស<ph name="END_LINK" /> (ផ្ទៃក្នុង Google)</translation>
+<translation id="479863874072008121">គ្រប់គ្រងឧបករណ៍</translation>
 <translation id="4800839971935185386">ពិនិត្យមើលការប្ដូរឈ្មោះ និងរូបតំណាង</translation>
 <translation id="4801448226354548035">លាក់គណនី</translation>
 <translation id="4801512016965057443">អនុញ្ញាតការរ៉ូមីងទិន្នន័យទូរស័ព្ទ</translation>
@@ -6454,6 +6459,7 @@
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7659154729610375585">នៅតែចង់​ចាកចេញពី​មុខងារ​ឯកជនឬ?</translation>
 <translation id="7659297516559011665">ពាក្យសម្ងាត់នៅក្នុងឧបករណ៍នេះតែប៉ុណ្ណោះ</translation>
+<translation id="7659336857671800422">ពិនិត្យមើល​ការណែនាំអំពី​ឯកជនភាព</translation>
 <translation id="7659584679870740384">អ្នកមិនត្រូវបានអនុញ្ញាតឲ្យប្រើឧបករណ៍នេះទេ។ សូមទាក់ទងអ្នកគ្រប់គ្រងសម្រាប់ការអនុញ្ញាតចូល។</translation>
 <translation id="7661259717474717992">អនុញ្ញាតឲ្យគេហទំព័ររក្សាទុក និងអានទិន្នន័យខុកឃី</translation>
 <translation id="7661451191293163002">មិនអាចទទួលវិញ្ញាបនបត្រចុះឈ្មោះបានទេ។</translation>
@@ -7975,6 +7981,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> នឹងអាចកែ​ឯកសារ​នៅក្នុង <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">ស្វែងរក <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">រាល់​​ទិន្នន័យ​ដែលបានផ្ទុកក្នុងឧបករណ៍​នឹង​ត្រូវបាន​សម្អាត</translation>
+<translation id="9201117361710210082">បានមើល​ពីមុន</translation>
 <translation id="9201220332032049474">ជម្រើស​ចាក់សោអេក្រង់</translation>
 <translation id="9201842707396338580">មានអ្វីមួយខុសប្រក្រតី។ សូមទាក់ទង​អ្នកគ្រប់គ្រង ឬម្ចាស់ឧបករណ៍​របស់អ្នក។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="9203398526606335860">បើកដំណើរការទម្រង់</translation>

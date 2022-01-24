@@ -415,6 +415,7 @@
       提供元の一致パターンは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> ポリシーと同様の形式で指定します。詳しくは、http://www.chromium.org/administrators/url-blocklist-filter-format をご覧ください。
 
       ただし、このポリシーの提供元の一致パターンに「/path」要素や「@query」要素を含めることはできません。「/path」要素や「@query」要素が含まれているパターンは無視されます。</translation>
+<translation id="1508588104835702000">管理対象ブラウザのクラウド レポートを無効にする</translation>
 <translation id="1509377996969000672">このポリシーでは、デバイスに接続された企業プリンタの設定を指定できます。フォーマットは <ph name="NATIVE_PRINTERS_POLICY_NAME" /> ディクショナリと一致させ、許可リストまたは拒否リストに登録するプリンタごとに「id」または「guid」フィールドを追加で指定する必要があります。ファイルのサイズは 5 MB 以下とし、JSON 形式にします。5 MB は、約 21,000 台のプリンタを指定してエンコードしたファイルに相当します。ダウンロードの整合性の確認には暗号化ハッシュが使用されます。このファイルはダウンロードされた後、キャッシュされ、URL またはハッシュに変更があった場合は再度ダウンロードされます。<ph name="PRODUCT_OS_NAME" /> ではプリンタ設定ファイルがダウンロードされ、<ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> に沿ってプリンタが利用可能になります。
 
       このポリシーに関する留意事項:
@@ -920,6 +921,7 @@
 <translation id="208566302163036794">無効にした機能をブロックする</translation>
 <translation id="208623333578980446">電源管理の画面の wake lock を許可する</translation>
 <translation id="2086944573376916479">管理対象アカウントを予備のアカウントのないメイン アカウントのみとする</translation>
+<translation id="2089541797660774692">管理対象ブラウザのクラウド レポートを有効にする</translation>
 <translation id="2090304907729569435">ブラウザのサイドパネルでの <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />結果の表示を無効にする</translation>
 <translation id="2090939118981888335">このポリシーを有効に設定した場合、データ圧縮プロキシが許可されます。このポリシーを無効に設定した場合、プロキシは許可されません。
 
@@ -1950,6 +1952,16 @@
           このポリシーは、企業の管理者による管理対象の Chrome OS デバイスへの接続には影響しません。
 
           このポリシーを有効にするか、空白または未設定のままにした場合、ポリシーは無視されます。</translation>
+<translation id="3246744067327836077">
+      このポリシーでは、特定の管理対象プロファイルの <ph name="PRODUCT_NAME" /> クラウド レポートを管理します。
+
+      このポリシーを未設定のままにするか、Disabled に設定した場合、データの収集やアップロードは行われません。
+      このポリシーを Enabled に設定した場合、データが収集され、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> にアップロードされます。
+
+      レポートには、プロファイルの状態と使用状況に関する情報が含められます。これには、OS バージョン、ブラウザ バージョン、インストールされている拡張機能と適用されているポリシーが含まれます（ただしこれらに限定されません）。
+
+      このポリシーは、クラウド ユーザー ポリシーとしてのみ設定できます。
+      </translation>
 <translation id="3251500716404598358">ブラウザ切り替えのポリシーを設定します。
 
       設定したウェブサイトは、<ph name="PRODUCT_NAME" /> ではなく別のブラウザで自動的に表示されるようになります。</translation>
@@ -3809,6 +3821,7 @@
       このポリシーを未設定のままにした場合、キャッシュされた GPO は最大 25 時間後まで再使用される可能性があります。
 
       注: キャッシュは再起動またはログアウトすると削除されます。</translation>
+<translation id="5717973246079053225">管理対象プロファイルのクラウド レポートを無効にする</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5728154254076636808"><ph name="PRODUCT_NAME" /> プロフィール データのローミング コピーを作成できるようにする</translation>
 <translation id="5729308727912841256">Kerberos パスワードです。プレースホルダ「<ph name="PASSWORD_PLACEHOLDER" />」はログイン パスワードに置き換えられます。</translation>
@@ -4554,6 +4567,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、印刷コマンドを実行すると印刷プレビュー画面が表示されます。</translation>
 <translation id="6658245400435704251">最初にアップデートがサーバーにプッシュされた時刻から、デバイスによるアップデートのダウンロードをランダムに遅延できる最大時間を秒数で指定します。デバイスは、この時間の一部を実際の経過時間として、残りの時間をアップデート チェックとして待機できます。どのような場合でも、係数にはある一定の時間の上限があるため、アップデートのダウンロードを永遠に待機してデバイスが停止し続けることはありません。</translation>
 <translation id="6659537776197644458">パスワード同期の認証フローをトリガーしない</translation>
+<translation id="6661178198729301029">管理対象プロファイルのクラウド レポートを有効にする</translation>
 <translation id="6665670272107384733">ロックのクイック解除機能を使用するために必要なパスワード入力の頻度を設定する</translation>
 <translation id="6667586534922258705">ログイン画面とロック画面にパスワード表示ボタンを表示する</translation>
 <translation id="6669700740683748046">この機能は、アドレスバーに URL 全体を表示できるようにします。
@@ -6478,6 +6492,7 @@
 <translation id="8917070657147922192">インストール済み CA 証明書の管理をユーザーに許可する。</translation>
 <translation id="8919100556245407184"><ph name="PRODUCT_OS_NAME" /> のバージョンが指定の <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> よりも前の場合に、自動更新の有効期限の通知後、ユーザーがログアウトされるまでの期間（日）</translation>
 <translation id="8919369436496201075">デバイスで LTS のアップデートを受信できるようにする</translation>
+<translation id="8921669704201370845">管理対象プロファイルの <ph name="PRODUCT_NAME" /> クラウド レポートを有効にする</translation>
 <translation id="8930064580550462145"><ph name="PRODUCT_OS_NAME" /> では、ロック画面でのログイン時に、サーバーに対して（オンラインで）、またはキャッシュに保存されたパスワードを使用して（オフラインで）、認証を行うことができます。
 
       このポリシーの値を -2 に設定した場合は、<ph name="POLICY" /> で指定されたログイン画面でのオフラインのログインの時間制限と同じ値が適用されます。
@@ -6724,6 +6739,13 @@
 <translation id="9220314833408124365">デフォルトのリファラー ポリシー「no-referrer-when-downgrade」を使用する</translation>
 <translation id="922540222991413931">拡張機能、アプリ、ユーザー スクリプトのインストール ソースを設定する</translation>
 <translation id="924557436754151212">初回実行時にデフォルトのブラウザから保存したパスワードをインポートする</translation>
+<translation id="926104720905645793">このポリシーでは、<ph name="PRODUCT_NAME" /> のクラウド レポートを管理します。クラウド レポートでは、ブラウザの操作に関する情報が <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> にアップロードされます。
+
+      このポリシーを未設定のままにするか、Disabled に設定した場合、データの収集やアップロードは行われません。
+      このポリシーを Enabled に設定した場合、データが収集され、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> にアップロードされます。
+
+      <ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
+      <ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。</translation>
 <translation id="927384371566552478">このポリシーを有効に設定するか未設定のままにした場合、ユーザーは書き出しと読み込みの UI を使用できます。このポリシーを無効に設定した場合、ユーザーは書き出しと読み込みの UI を使用できません。</translation>
 <translation id="927444535723396977">このポリシーを 1 に設定した場合、ウェブサイトによる JavaScript の実行が許可されます。このポリシーを 2 に設定した場合、JavaScript は拒否されます。
 

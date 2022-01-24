@@ -1230,6 +1230,7 @@
           <ph name="LIST_ITEM" />యాజమాన్య సంస్థలు లేదా పాఠశాలలు బ్రౌజింగ్ యాక్టివిటీని ట్రాక్ చేయగలవు<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్‌లు వెబ్ ట్రాఫిక్‌ను మానిటర్ చేయగలవు<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">క్లౌడ్ యూజర్ పాలసీ ద్వారా మాత్రమే పాలసీని సెట్ చేయాలి కాబట్టి ఇది విస్మరించబడింది.</translation>
 <translation id="483241715238664915">హెచ్చరికలను ఆన్ చేయండి</translation>
 <translation id="4838327282952368871">స్వప్నం లాంటిది</translation>
 <translation id="4840250757394056958">మీ Chrome హిస్టరీని చూడండి</translation>
