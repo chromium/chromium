@@ -133,9 +133,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
         UploadDepthData::kUserDataKey,
         std::make_unique<UploadDepthData>(max_upload_depth + 1));
 
-    UploadMap::iterator it;
-    bool inserted;
-    std::tie(it, inserted) = uploads_.insert(
+    auto [it, inserted] = uploads_.insert(
         std::make_pair(std::move(request), std::move(callback)));
     DCHECK(inserted);
     it->first->Start();
