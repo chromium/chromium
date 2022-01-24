@@ -732,6 +732,15 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
     case user_data_auth::CryptohomeErrorCode_INT_MAX_SENTINEL_DO_NOT_USE_:
       // Ignored
       return;
+    default:
+      // We need the default case here so that it is possible to add new
+      // CryptohomeErrorCode, because CryptohomeErrorCode is defined in another
+      // repo.
+      // However, we should seek to handle all CryptohomeErrorCode and not let
+      // any of them hit the default block.
+      NOTREACHED() << "Unhandled CryptohomeErrorCode in ProcessCryptohomeError"
+                      ": "
+                   << static_cast<int>(error);
   }
   NotifyFailure(default_error, std::move(context));
 }
