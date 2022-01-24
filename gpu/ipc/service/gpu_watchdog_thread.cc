@@ -72,6 +72,7 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
       watchdog_timeout_(timeout),
       watchdog_init_factor_(init_factor),
       watchdog_restart_factor_(restart_factor),
+      thread_name_(thread_name),
       is_test_mode_(is_test_mode),
       watched_gpu_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   base::CurrentThread::Get()->AddTaskObserver(this);
@@ -629,6 +630,11 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
 
   const int num_of_processors = base::SysInfo::NumberOfProcessors();
   crash_keys::num_of_processors.Set(base::NumberToString(num_of_processors));
+
+  if (thread_name_ == "GpuWatchdog_Compositor")
+    crash_keys::gpu_thread.Set("compositor");
+  else
+    crash_keys::gpu_thread.Set("main");
 
   // Check the arm_disarm_counter value one more time.
   auto last_arm_disarm_counter = ReadArmDisarmCounter();
