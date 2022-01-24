@@ -52049,6 +52049,7 @@ from previous Chrome versions.
   <int value="-1261263046"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:disabled"/>
   <int value="-1261110018" label="AllowDisableTouchpadHapticFeedback:disabled"/>
+  <int value="-1260211490" label="FastPairLowPower:disabled"/>
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
   <int value="-1259627326" label="AllowRepeatedUpdates:disabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
@@ -56108,6 +56109,7 @@ from previous Chrome versions.
   <int value="1714922056" label="GlobalMediaControls:disabled"/>
   <int value="1715338237" label="ContextualSearchSecondTap:disabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>
+  <int value="1716533817" label="FastPairLowPower:enabled"/>
   <int value="1717788959" label="SlowDCTimerInterruptsWin:disabled"/>
   <int value="1717987538" label="NTPTilesLowerResolutionFavicons:enabled"/>
   <int value="1718341860" label="NTPButton:enabled"/>

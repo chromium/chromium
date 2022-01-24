@@ -4302,6 +4302,12 @@ const char kFastPairDescription[] =
     "Use along with #bluetooth-advertisement-monitoring to allow background "
     "scanning.";
 
+const char kFastPairLowPowerName[] = "Enable Fast Pair Low Power mode";
+const char kFastPairLowPowerDescription[] =
+    "Enables Fast Pair Low Power mode, which doesn't scan for devices "
+    "continously. This results in lower power usage, but also higher latency "
+    "for device discovery.";
+
 const char kFastPairSoftwareScanningName[] =
     "Enable Fast Pair Software Scanning";
 const char kFastPairSoftwareScanningDescription[] =

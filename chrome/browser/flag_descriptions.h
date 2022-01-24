@@ -2466,6 +2466,9 @@ extern const char kDisplayAlignmentAssistanceDescription[];
 extern const char kFastPairName[];
 extern const char kFastPairDescription[];
 
+extern const char kFastPairLowPowerName[];
+extern const char kFastPairLowPowerDescription[];
+
 extern const char kFastPairSoftwareScanningName[];
 extern const char kFastPairSoftwareScanningDescription[];
 

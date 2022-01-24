@@ -5705,6 +5705,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPair)},
 
+    {"fast-pair-low-power", flag_descriptions::kFastPairLowPowerName,
+     flag_descriptions::kFastPairLowPowerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPairLowPower)},
+
     {"fast-pair-software-scanning",
      flag_descriptions::kFastPairSoftwareScanningName,
      flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,

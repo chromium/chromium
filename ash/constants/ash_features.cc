@@ -591,6 +591,10 @@ const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
 // Enables the Fast Pair feature.
 const base::Feature kFastPair{"FastPair", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Sets Fast Pair scanning to low power mode.
+const base::Feature kFastPairLowPower{"FastPairLowPower",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allows Fast Pair to use software scanning on devices which don't support
 // hardware offloading of BLE scans.
 const base::Feature kFastPairSoftwareScanning{
@@ -1532,6 +1536,10 @@ bool IsFamilyLinkOnSchoolDeviceEnabled() {
 
 bool IsFastPairEnabled() {
   return base::FeatureList::IsEnabled(kFastPair);
+}
+
+bool IsFastPairLowPowerEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairLowPower);
 }
 
 bool IsFastPairSoftwareScanningEnabled() {
