@@ -65,6 +65,7 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
     case CSPDirectiveName::ChildSrc:
     case CSPDirectiveName::ConnectSrc:
     case CSPDirectiveName::DefaultSrc:
+    case CSPDirectiveName::FencedFrameSrc:
     case CSPDirectiveName::FontSrc:
     case CSPDirectiveName::FormAction:
     case CSPDirectiveName::FrameAncestors:
@@ -104,6 +105,7 @@ bool SupportedInMeta(CSPDirectiveName directive) {
     case CSPDirectiveName::ChildSrc:
     case CSPDirectiveName::ConnectSrc:
     case CSPDirectiveName::DefaultSrc:
+    case CSPDirectiveName::FencedFrameSrc:
     case CSPDirectiveName::FontSrc:
     case CSPDirectiveName::FormAction:
     case CSPDirectiveName::FrameSrc:
@@ -134,6 +136,9 @@ bool SupportedInMeta(CSPDirectiveName directive) {
 // $2: Blocking policy.
 const char* ErrorMessage(CSPDirectiveName directive) {
   switch (directive) {
+    case CSPDirectiveName::FencedFrameSrc:
+      return "Refused to frame '$1' as a fenced frame because it violates the "
+             "following Content Security Policy directive: \"$2\".";
     case CSPDirectiveName::FormAction:
       return "Refused to send form data to '$1' because it violates the "
              "following Content Security Policy directive: \"$2\".";
@@ -975,6 +980,7 @@ void AddContentSecurityPolicyFromHeader(
       case CSPDirectiveName::ChildSrc:
       case CSPDirectiveName::ConnectSrc:
       case CSPDirectiveName::DefaultSrc:
+      case CSPDirectiveName::FencedFrameSrc:
       case CSPDirectiveName::FontSrc:
       case CSPDirectiveName::FormAction:
       case CSPDirectiveName::FrameAncestors:
@@ -1088,6 +1094,9 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::StyleSrcAttr:
     case CSPDirectiveName::StyleSrcElem:
       return CSPDirectiveName::StyleSrc;
+
+    case CSPDirectiveName::FencedFrameSrc:
+      return CSPDirectiveName::FrameSrc;
 
     case CSPDirectiveName::FrameSrc:
     case CSPDirectiveName::WorkerSrc:
@@ -1237,7 +1246,8 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
 
     if (!allowed) {
       ReportViolation(context, policy, effective_directive_name, directive_name,
-                      directive_name == CSPDirectiveName::FrameSrc
+                      directive_name == CSPDirectiveName::FrameSrc ||
+                              directive_name == CSPDirectiveName::FencedFrameSrc
                           ? url
                           : url_before_redirects,
                       has_followed_redirect, source_location);
@@ -1342,7 +1352,7 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
       CSPDirectiveName::StyleSrcAttr,   CSPDirectiveName::StyleSrcElem,
       CSPDirectiveName::WorkerSrc,      CSPDirectiveName::BaseURI,
       CSPDirectiveName::FrameAncestors, CSPDirectiveName::FormAction,
-      CSPDirectiveName::NavigateTo};
+      CSPDirectiveName::NavigateTo,     CSPDirectiveName::FencedFrameSrc};
 
   return base::ranges::all_of(directives, [&](CSPDirectiveName directive) {
     auto required = GetSourceList(directive, policy_a);
@@ -1380,6 +1390,8 @@ CSPDirectiveName ToCSPDirectiveName(const std::string& name) {
     return CSPDirectiveName::ConnectSrc;
   if (base::LowerCaseEqualsASCII(name, "default-src"))
     return CSPDirectiveName::DefaultSrc;
+  if (base::LowerCaseEqualsASCII(name, "fenced-frame-src"))
+    return CSPDirectiveName::FencedFrameSrc;
   if (base::LowerCaseEqualsASCII(name, "frame-ancestors"))
     return CSPDirectiveName::FrameAncestors;
   if (base::LowerCaseEqualsASCII(name, "frame-src"))
@@ -1444,6 +1456,8 @@ std::string ToString(CSPDirectiveName name) {
       return "connect-src";
     case CSPDirectiveName::DefaultSrc:
       return "default-src";
+    case CSPDirectiveName::FencedFrameSrc:
+      return "fenced-frame-src";
     case CSPDirectiveName::FrameAncestors:
       return "frame-ancestors";
     case CSPDirectiveName::FrameSrc:
