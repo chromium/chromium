@@ -281,6 +281,13 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+void ChromeAccountManagerService::OnAccessTokenRefreshFailed(
+    ChromeIdentity* identity,
+    NSDictionary* user_info) {
+  for (auto& observer : observer_list_)
+    observer.OnAccessTokenRefreshFailed(identity, user_info);
+}
+
 void ChromeAccountManagerService::OnIdentityListChanged(
     bool need_user_approval) {
   for (auto& observer : observer_list_)

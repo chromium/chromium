@@ -31,9 +31,7 @@
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -133,8 +131,6 @@ void AuthenticationService::Initialize(
   crash_keys::SetCurrentlySignedIn(
       HasPrimaryIdentity(signin::ConsentLevel::kSignin));
 
-  identity_service_observation_.Observe(
-      ios::GetChromeBrowserProvider().GetChromeIdentityService());
   account_manager_service_observation_.Observe(account_manager_service_);
 
   // Register for prefs::kSigninAllowed.
@@ -289,16 +285,6 @@ void AuthenticationService::ApproveAccountList() {
       identity_manager_->GetAccountsWithRefreshTokens();
   user_approved_account_list_manager_.SetApprovedAccountList(
       current_accounts_info);
-}
-
-void AuthenticationService::OnChromeIdentityServiceDidChange(
-    ios::ChromeIdentityService* new_service) {
-  identity_service_observation_.Observe(
-      ios::GetChromeBrowserProvider().GetChromeIdentityService());
-}
-
-void AuthenticationService::OnChromeBrowserProviderWillBeDestroyed() {
-  identity_service_observation_.Reset();
 }
 
 void AuthenticationService::MigrateAccountsStoredInPrefsIfNeeded() {
@@ -622,10 +608,6 @@ void AuthenticationService::OnAccessTokenRefreshFailed(
       base::BindOnce(&AuthenticationService::HandleForgottenIdentity,
                      base::Unretained(this), identity, /*should_prompt=*/true,
                      /*device_restore=*/false));
-}
-
-void AuthenticationService::OnChromeIdentityServiceWillBeDestroyed() {
-  identity_service_observation_.Reset();
 }
 
 void AuthenticationService::HandleForgottenIdentity(

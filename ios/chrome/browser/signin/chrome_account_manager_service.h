@@ -35,6 +35,14 @@ class ChromeAccountManagerService : public KeyedService,
     Observer& operator=(const Observer&) = delete;
     virtual ~Observer() {}
 
+    // Handles access token refresh failed events.
+    // |identity| is the the identity for which the access token refresh failed.
+    // |user_info| is the user info dictionary in the original notification. It
+    // should not be accessed directly but via helper methods (like
+    // ChromeIdentityService::IsInvalidGrantError).
+    virtual void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
+                                            NSDictionary* user_info) {}
+
     // Handles identity list changed events.
     // If |need_user_approval| is true, the user need to approve the new account
     // list (related to SignedInAccountsViewController). Notifications with no
@@ -96,6 +104,8 @@ class ChromeAccountManagerService : public KeyedService,
   void RemoveObserver(Observer* observer);
 
   // ChromeIdentityServiceObserver implementation.
+  void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
+                                  NSDictionary* user_info) override;
   void OnIdentityListChanged(bool need_user_approval) override;
   void OnProfileUpdate(ChromeIdentity* identity) override;
   void OnChromeIdentityServiceWillBeDestroyed() override;

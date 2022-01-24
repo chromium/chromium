@@ -18,7 +18,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/user_approved_account_list_manager.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 namespace syncer {
 class SyncService;
@@ -35,8 +34,6 @@ class SyncSetupService;
 // authentication library.
 class AuthenticationService : public KeyedService,
                               public signin::IdentityManager::Observer,
-                              public ios::ChromeBrowserProvider::Observer,
-                              public ios::ChromeIdentityService::Observer,
                               public ChromeAccountManagerService::Observer {
  public:
   // The service status for AuthenticationService.
@@ -163,11 +160,6 @@ class AuthenticationService : public KeyedService,
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
 
-  // ChromeBrowserProvider implementation.
-  void OnChromeIdentityServiceDidChange(
-      ios::ChromeIdentityService* new_service) override;
-  void OnChromeBrowserProviderWillBeDestroyed() override;
-
  private:
   friend class AuthenticationServiceFake;
   friend class AuthenticationServiceTest;
@@ -213,12 +205,9 @@ class AuthenticationService : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
-  // ChromeIdentityServiceObserver implementation.
+  // ChromeAccountManagerServiceObserver implementation.
   void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
                                   NSDictionary* user_info) override;
-  void OnChromeIdentityServiceWillBeDestroyed() override;
-
-  // ChromeAccountManagerServiceObserver implementation.
   void OnIdentityListChanged(bool need_user_approval) override;
 
   // Fires |OnPrimaryAccountRestricted| on all observers.
@@ -261,10 +250,6 @@ class AuthenticationService : public KeyedService,
 
   // Map between account IDs and their associated MDM error.
   mutable std::map<CoreAccountId, NSDictionary*> cached_mdm_infos_;
-
-  base::ScopedObservation<ios::ChromeIdentityService,
-                          ios::ChromeIdentityService::Observer>
-      identity_service_observation_{this};
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
