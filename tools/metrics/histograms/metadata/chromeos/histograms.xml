@@ -737,78 +737,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="ChromeOS.FamilyLink.ChildStatusReportRequest.Size" units="KB"
-    expires_after="2022-08-23">
-  <owner>tobyhuang@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    Reports the size of the uploaded ChildStatusReportRequest proto in
-    kilobytes. This metric records right before the report uploads. The max
-    bucket value is 500MB.
-  </summary>
-</histogram>
-
-<histogram
-    name="ChromeOS.FamilyLink.ChildStatusReportRequest.TimeSinceLastReport"
-    units="minutes" expires_after="2022-08-23">
-  <owner>tobyhuang@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    Reports the time in between ChildStatusReportRequest uploads in minutes. The
-    default upload frequency is once every ten minutes. This metric records
-    right before the report uploads. The max bucket value is 100,000 minutes
-    (1667 hours).
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.FamilyLinkUser.LogSegment"
-    enum="FamilyLinkUserLogSegment" expires_after="never">
-<!-- expires-never: used internally for filtering -->
-
-  <owner>tobyhuang@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Categorizes the current user for the Family Experiences team's metrics.
-    Other is for all other users that do not fall into any of the below
-    categories. Users under the age of consent automatically have supervision
-    applied to their accounts. Users over the age of consent can opt into
-    supervision.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.FamilyUser.LogSegment2" enum="FamilyUserLogSegment"
-    expires_after="never">
-<!-- expires-never: used internally for filtering -->
-
-  <owner>tobyhuang@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Categorizes the current user for the Family Experiences team's metrics.
-    Other is for all other users that do not fall into any of the below
-    categories. A Supervised User has a supervised primary account and no
-    secondary accounts. A Supervised Student has a supervised primary account
-    and one or more EDU secondary accounts, which is the only available option
-    for a secondary account in that scenario. A Student at Home has a K-12 EDU
-    primary account on an unmanaged ChromeOS device, regardless of the secondary
-    account. A Regular User is an unmanaged consumer user on any device. This
-    metric is logged with every UMA upload in ProvideCurrentSessionData().
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.FamilyUser.NumSecondaryAccounts" units="accounts"
-    expires_after="2022-03-10">
-  <owner>tobyhuang@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Reports the number of secondary accounts besides the primary user. This
-    metric is logged with every UMA upload in ProvideCurrentSessionData(). This
-    metric is not reported for guest users.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.FeatureUsage.{FeatureName}" enum="FeatureUsageEvent"
     expires_after="2022-11-11">
   <owner>rsorokin@chromium.org</owner>
@@ -1080,18 +1008,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records whether a language pack uninstallation was successful after a
     language pack uninstallation attempt.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen"
-    enum="LegacySupervisedUserStatus" expires_after="2022-04-09">
-  <owner>tobyhuang@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    Reports &quot;hidden&quot; when the login screen hides a legacy supervised
-    user (LSU). Reports &quot;displayed&quot; when the login screen displays a
-    non-LSU Gaia user. Reports &quot;deleted&quot; when the login screen
-    attempts to delete a LSU. Recorded whenever the user sees the login screen.
   </summary>
 </histogram>
 
