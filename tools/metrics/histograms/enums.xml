@@ -43352,6 +43352,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1592177888"
       label="Bluetooth.MacOS.Errors.DidDiscoverPrimaryServices"/>
   <int value="-1561887015" label="MediaRouter.Cast.Channel.Error"/>
+  <int value="-1554891874"
+      label="PageLoad.PageTiming.NavigationToFailedProvisionalLoad"/>
   <int value="-1459119846"
       label="ServiceWorkerCache.Cache.Scheduler.QueueLength"/>
   <int value="-1433928548" label="WebCore.FindInPage.TaskDuration"/>
@@ -43424,11 +43426,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Network.Shill.Wifi.LinkMonitorResponseTimeSample"/>
   <int value="433324211" label="Extensions.FunctionCalls"/>
   <int value="480662546" label="ActivityTracker.CollectCrash.Event"/>
+  <int value="488535034"
+      label="Android.WebView.ComponentUpdater.CPSDirectorySize"/>
   <int value="513321612"
       label="V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp"/>
   <int value="536258327" label="Blink.UseCounter.SVGImage.Features"/>
   <int value="560548778"
       label="Autofill.FieldPredictionQuality.ByFieldType.Server.BasedOnAutocomplete"/>
+  <int value="627537023"
+      label="Android.WebView.ComponentUpdater.CUSDirectorySize"/>
   <int value="628921860"
       label="Network.Shill.Ethernet.LinkMonitorResponseTimeSample"/>
   <int value="656165878"
@@ -43449,6 +43455,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="UMA.PersistentAllocator.CrashpadMetrics.UsedPct"/>
   <int value="910415681" label="DevTools.ExperimentEnabledAtLaunch"/>
   <int value="1096524200" label="DevTools.IssueCreated"/>
+  <int value="1120293692" label="DocumentEventTiming.BeforeUnloadDuration"/>
   <int value="1126499749"
       label="Autofill.FieldPredictionQuality.ByFieldType.Overall.NoSubmission"/>
   <int value="1193017729" label="Compositing.ResourcePoolMemoryUsage.Renderer"/>
@@ -43462,6 +43469,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="DataUse.MessageSize.AllServices.Upstream.Background.Cellular"/>
   <int value="1386149670" label="Navigation.StartToCommit.NewNavigation"/>
   <int value="1404054418" label="DevTools.DeveloperResourceScheme"/>
+  <int value="1425303622"
+      label="Android.WebView.ComponentUpdater.UpdateJobDuration"/>
+  <int value="1441867637"
+      label="Android.WebView.ComponentUpdater.UpdateJobFilesChanged"/>
   <int value="1488162221" label="Blink.UseCounter.File.Features"/>
   <int value="1507345292"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic.BasedOnAutocomplete"/>
@@ -43482,9 +43493,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1864392953" label="AsyncDNS.HostsNotifyInterval"/>
   <int value="1880204153"
       label="Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Positive"/>
+  <int value="1902443515"
+      label="Android.WebView.ComponentUpdater.GetFilesResult"/>
   <int value="1977321258"
       label="DataUse.MessageSize.AllServices.Downstream.Background.Cellular"/>
   <int value="2006926569" label="Arc.OOMKills.Score"/>
+  <int value="2050720559" label="LocalStorage.MojoTimeToPrime"/>
   <int value="2057863428"
       label="UMA.PersistentAllocator.BrowserMetrics.UsedPct"/>
   <int value="2060836318"
