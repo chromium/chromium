@@ -53,7 +53,8 @@ namespace {
 
 // 0 `num_component_urls` means no component URLs, as opposed to an empty list
 // (which isn't tested at this layer).
-std::string MakeBidScript(const std::string& bid,
+std::string MakeBidScript(const url::Origin& seller,
+                          const std::string& bid,
                           const std::string& render_url,
                           int num_ad_components,
                           const url::Origin& interest_group_owner,
@@ -63,6 +64,7 @@ std::string MakeBidScript(const std::string& bid,
                           const std::string& signal_val) {
   // TODO(morlovich): Use JsReplace.
   constexpr char kBidScript[] = R"(
+    const seller = "%s";
     const bid = %s;
     const renderUrl = "%s";
     const numAdComponents = %i;
@@ -102,8 +104,10 @@ std::string MakeBidScript(const std::string& bid,
           }
         }
       }
-      if (perBuyerSignals.signalsFor !== interestGroupName)
+      if (perBuyerSignals[seller + 'Signals'] !==
+          interestGroupName + 'Signals') {
         throw new Error("wrong perBuyerSignals");
+      }
       if (!auctionSignals.isAuctionSignals)
         throw new Error("wrong auctionSignals");
       if (hasSignals) {
@@ -116,7 +120,7 @@ std::string MakeBidScript(const std::string& bid,
       }
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname");
-      if (browserSignals.seller != 'https://adstuff.publisher1.com')
+      if (browserSignals.seller != seller)
          throw new Error("wrong seller");
       if (browserSignals.joinCount !== 3)
         throw new Error("joinCount")
@@ -139,8 +143,10 @@ std::string MakeBidScript(const std::string& bid,
                        browserSignals) {
       if (!auctionSignals.isAuctionSignals)
         throw new Error("wrong auctionSignals");
-      if (perBuyerSignals.signalsFor !== interestGroupName)
+      if (perBuyerSignals[seller + 'Signals'] !==
+          interestGroupName + 'Signals') {
         throw new Error("wrong perBuyerSignals");
+      }
 
       // sellerSignals in these tests is just sellers' browserSignals, since
       // that's what reportResult passes through.
@@ -168,16 +174,17 @@ std::string MakeBidScript(const std::string& bid,
         throw new Error("wrong browserSignals.renderUrl");
       if (browserSignals.bid !== bid)
         throw new Error("wrong browserSignals.bid");
-      if (browserSignals.seller != 'https://adstuff.publisher1.com')
+      if (browserSignals.seller != seller)
          throw new Error("wrong seller");
 
       sendReportTo("https://buyer-reporting.example.com");
     }
   )";
   return base::StringPrintf(
-      kBidScript, bid.c_str(), render_url.c_str(), num_ad_components,
-      interest_group_owner.Serialize().c_str(), interest_group_name.c_str(),
-      has_signals ? "true" : "false", signal_key.c_str(), signal_val.c_str());
+      kBidScript, seller.Serialize().c_str(), bid.c_str(), render_url.c_str(),
+      num_ad_components, interest_group_owner.Serialize().c_str(),
+      interest_group_name.c_str(), has_signals ? "true" : "false",
+      signal_key.c_str(), signal_val.c_str());
 }
 
 // This can be appended to the standard script to override the function.
@@ -196,79 +203,92 @@ constexpr char kReportWinExpectNullAuctionSignals[] = R"(
   }
 )";
 
-constexpr char kCheckingAuctionScript[] = R"(
-  function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
-                   browserSignals) {
-    if (adMetadata.bidKey !== ("data for " + bid)) {
-      throw new Error("wrong data for bid:" +
-                      JSON.stringify(adMetadata) + "/" + bid);
-    }
-    if (adMetadata.renderUrl !== ("data for " + browserSignals.renderUrl)) {
-      throw new Error("wrong data for renderUrl:" +
-                      JSON.stringify(adMetadata) + "/" +
-                      browserSignals.renderUrl);
-    }
-    let components = browserSignals.adComponents;
-    if (adMetadata.adComponentsUrl) {
-      if (components.length !== 1 ||
-          components[0] !== adMetadata.adComponentsUrl) {
+std::string MakeDecisionScript(
+    const GURL& decision_logic_url,
+    absl::optional<GURL> send_report_url = absl::nullopt) {
+  constexpr char kCheckingAuctionScript[] = R"(
+    const decisionLogicUrl = "%s";
+    const sendReportUrl = "%s";
+
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                     browserSignals) {
+      if (adMetadata.bidKey !== ("data for " + bid)) {
+        throw new Error("wrong data for bid:" +
+                        JSON.stringify(adMetadata) + "/" + bid);
+      }
+      if (adMetadata.renderUrl !== ("data for " + browserSignals.renderUrl)) {
+        throw new Error("wrong data for renderUrl:" +
+                        JSON.stringify(adMetadata) + "/" +
+                        browserSignals.renderUrl);
+      }
+      let components = browserSignals.adComponents;
+      if (adMetadata.adComponentsUrl) {
+        if (components.length !== 1 ||
+            components[0] !== adMetadata.adComponentsUrl) {
+          throw new Error("wrong data for adComponents:" +
+                          JSON.stringify(adMetadata) + "/" +
+                          browserSignals.adComponents);
+        }
+      } else if (components !== undefined) {
         throw new Error("wrong data for adComponents:" +
                         JSON.stringify(adMetadata) + "/" +
                         browserSignals.adComponents);
       }
-    } else if (components !== undefined) {
-      throw new Error("wrong data for adComponents:" +
-                      JSON.stringify(adMetadata) + "/" +
-                      browserSignals.adComponents);
-    }
-    if (auctionConfig.decisionLogicUrl
-        !== "https://adstuff.publisher1.com/auction.js") {
-      throw new Error("wrong auctionConfig");
-    }
-    if (auctionConfig.perBuyerSignals['https://adplatform.com'].signalsFor
-        !== 'Ad Platform') {
-      throw new Error("Wrong perBuyerSignals in auctionConfig");
-    }
-    if (!auctionConfig.sellerSignals.isSellerSignals)
-      throw new Error("Wrong sellerSignals");
-    if (browserSignals.topWindowHostname !== 'publisher1.com')
-      throw new Error("wrong topWindowHostname");
-    if ("joinCount" in browserSignals)
-      throw new Error("wrong kind of browser signals");
-    if (typeof browserSignals.biddingDurationMsec !== "number")
-      throw new Error("biddingDurationMsec is not a number. huh");
-    if (browserSignals.biddingDurationMsec < 0)
-      throw new Error("biddingDurationMsec should be non-negative.");
+      if (auctionConfig.decisionLogicUrl !== decisionLogicUrl) {
+        throw new Error("wrong decisionLogicUrl in auctionConfig");
+      }
+      // Check `perBuyerSignals` for the first bidder.
+      let signals1 = auctionConfig.perBuyerSignals['https://adplatform.com'];
+      if (signals1[auctionConfig.seller + 'Signals'] !== 'Ad PlatformSignals')
+        throw new Error("Wrong perBuyerSignals in auctionConfig");
+      if (auctionConfig.sellerSignals["url"] != decisionLogicUrl)
+        throw new Error("Wrong sellerSignals");
+      if (browserSignals.topWindowHostname !== 'publisher1.com')
+        throw new Error("wrong topWindowHostname");
+      if ("joinCount" in browserSignals)
+        throw new Error("wrong kind of browser signals");
+      if (typeof browserSignals.biddingDurationMsec !== "number")
+        throw new Error("biddingDurationMsec is not a number. huh");
+      if (browserSignals.biddingDurationMsec < 0)
+        throw new Error("biddingDurationMsec should be non-negative.");
 
-    return bid * 2;
-  }
-)";
-
-constexpr char kReportResultScript[] = R"(
-  function reportResult(auctionConfig, browserSignals) {
-    if (auctionConfig.decisionLogicUrl
-        !== "https://adstuff.publisher1.com/auction.js") {
-      throw new Error("wrong auctionConfig");
+      return bid * 2;
     }
-    if (browserSignals.topWindowHostname !== 'publisher1.com')
-      throw new Error("wrong topWindowHostname");
-    sendReportTo("https://reporting.example.com");
-    return browserSignals;
-  }
-)";
 
-constexpr char kReportResultScriptNoUrl[] = R"(
-  function reportResult(auctionConfig, browserSignals) {
-    return browserSignals;
-  }
-)";
+    function reportResult(auctionConfig, browserSignals) {
+      // Check `perBuyerSignals` for the first bidder.
+      let signals1 = auctionConfig.perBuyerSignals['https://adplatform.com'];
+      if (signals1[auctionConfig.seller + 'Signals'] !== 'Ad PlatformSignals')
+        throw new Error("Wrong perBuyerSignals in auctionConfig");
+      if (auctionConfig.decisionLogicUrl
+          !== decisionLogicUrl) {
+        throw new Error("wrong decisionLogicUrl in auctionConfig");
+      }
+      if (browserSignals.topWindowHostname !== 'publisher1.com')
+        throw new Error("wrong topWindowHostname in browserSignals");
+      if (sendReportUrl)
+        sendReportTo(sendReportUrl);
+      return browserSignals;
+    }
+  )";
 
-std::string MakeAuctionScript() {
-  return std::string(kCheckingAuctionScript) + kReportResultScript;
+  return base::StringPrintf(
+      kCheckingAuctionScript, decision_logic_url.spec().c_str(),
+      send_report_url ? send_report_url->spec().c_str() : "");
 }
 
-std::string MakeAuctionScriptNoReportUrl() {
-  return std::string(kCheckingAuctionScript) + kReportResultScriptNoUrl;
+std::string MakeAuctionScript(
+    const GURL& decision_logic_url =
+        GURL("https://adstuff.publisher1.com/auction.js")) {
+  return MakeDecisionScript(decision_logic_url, /*send_report_url=*/GURL(
+                                "https://reporting.example.com"));
+}
+
+std::string MakeAuctionScriptNoReportUrl(
+    const GURL& decision_logic_url =
+        GURL("https://adstuff.publisher1.com/auction.js")) {
+  return MakeDecisionScript(decision_logic_url,
+                            /*send_report_url=*/absl::nullopt);
 }
 
 const char kAuctionScriptRejects2[] = R"(
@@ -279,8 +299,15 @@ const char kAuctionScriptRejects2[] = R"(
   }
 )";
 
+const char kBasicReportResult[] = R"(
+  function reportResult(auctionConfig, browserSignals) {
+    sendReportTo("https://reporting.example.com/");
+    return browserSignals;
+  }
+)";
+
 std::string MakeAuctionScriptReject2() {
-  return std::string(kAuctionScriptRejects2) + kReportResultScript;
+  return std::string(kAuctionScriptRejects2) + kBasicReportResult;
 }
 
 // Sorts a vector of PreviousWinPtr so that the most recent wins are last.
@@ -842,6 +869,42 @@ class AuctionRunnerTest : public testing::Test,
   // Gets and clear most recent bad Mojo message.
   std::string TakeBadMessage() { return std::move(bad_message_); }
 
+  // Helper to create an auction config with the specified values.
+  blink::mojom::AuctionAdConfigPtr CreateAuctionConfig(
+      const GURL& seller_decision_logic_url,
+      std::vector<url::Origin> buyers) {
+    blink::mojom::AuctionAdConfigPtr auction_config =
+        blink::mojom::AuctionAdConfig::New();
+    auction_config->seller = url::Origin::Create(seller_decision_logic_url);
+    auction_config->decision_logic_url = seller_decision_logic_url;
+
+    auction_config->auction_ad_config_non_shared_params =
+        blink::mojom::AuctionAdConfigNonSharedParams::New();
+    auction_config->auction_ad_config_non_shared_params->interest_group_buyers =
+        blink::mojom::InterestGroupBuyers::New();
+    auction_config->auction_ad_config_non_shared_params->interest_group_buyers
+        ->set_buyers(std::move(buyers));
+
+    auction_config->auction_ad_config_non_shared_params->seller_signals =
+        base::StringPrintf(R"({"url": "%s"})",
+                           seller_decision_logic_url.spec().c_str());
+
+    base::flat_map<url::Origin, std::string> per_buyer_signals;
+    // Use a combination of bidder and seller values, so can make sure bidders
+    // get the value from the correct seller script. Also append a fixed string,
+    // as a defense against pulling the right values from the wrong places.
+    per_buyer_signals[kBidder1] = base::StringPrintf(
+        R"({"%sSignals": "%sSignals"})",
+        auction_config->seller.Serialize().c_str(), kBidder1Name.c_str());
+    per_buyer_signals[kBidder2] = base::StringPrintf(
+        R"({"%sSignals": "%sSignals"})",
+        auction_config->seller.Serialize().c_str(), kBidder2Name.c_str());
+    auction_config->auction_ad_config_non_shared_params->per_buyer_signals =
+        std::move(per_buyer_signals);
+
+    return auction_config;
+  }
+
   // Starts an auction without waiting for it to complete. Useful when using
   // MockAuctionProcessManager.
   //
@@ -856,28 +919,12 @@ class AuctionRunnerTest : public testing::Test,
     auction_complete_ = false;
 
     blink::mojom::AuctionAdConfigPtr auction_config =
-        blink::mojom::AuctionAdConfig::New();
-    auction_config->seller = url::Origin::Create(seller_decision_logic_url);
-    auction_config->decision_logic_url = seller_decision_logic_url;
-    auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
-    auction_config->auction_ad_config_non_shared_params =
-        blink::mojom::AuctionAdConfigNonSharedParams::New();
+        CreateAuctionConfig(seller_decision_logic_url, interest_group_buyers_);
 
-    auction_config->auction_ad_config_non_shared_params->interest_group_buyers =
-        blink::mojom::InterestGroupBuyers::New();
-    auction_config->auction_ad_config_non_shared_params->interest_group_buyers
-        ->set_buyers(std::vector<url::Origin>{kBidder1, kBidder2});
+    auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
 
     auction_config->auction_ad_config_non_shared_params->auction_signals =
         auction_signals_json;
-    auction_config->auction_ad_config_non_shared_params->seller_signals =
-        R"({"isSellerSignals": true})";
-
-    base::flat_map<url::Origin, std::string> per_buyer_signals;
-    per_buyer_signals[kBidder1] = R"({"signalsFor": ")" + kBidder1Name + "\"}";
-    per_buyer_signals[kBidder2] = R"({"signalsFor": ")" + kBidder2Name + "\"}";
-    auction_config->auction_ad_config_non_shared_params->per_buyer_signals =
-        std::move(per_buyer_signals);
 
     interest_group_manager_ = std::make_unique<InterestGroupManager>(
         base::FilePath(), /*in_memory=*/true,
@@ -1177,6 +1224,7 @@ class AuctionRunnerTest : public testing::Test,
   const url::Origin frame_origin_ =
       url::Origin::Create(GURL("https://frame.origin.test"));
   const GURL kSellerUrl{"https://adstuff.publisher1.com/auction.js"};
+  const url::Origin kSeller = url::Origin::Create(kSellerUrl);
   absl::optional<GURL> trusted_scoring_signals_url_;
 
   const GURL kBidder1Url{"https://adplatform.com/offers.js"};
@@ -1188,6 +1236,8 @@ class AuctionRunnerTest : public testing::Test,
   const url::Origin kBidder2 = url::Origin::Create(kBidder2Url);
   const std::string kBidder2Name{"Another Ad Thing"};
   const GURL kBidder2TrustedSignalsUrl{"https://anotheradthing.com/signals2"};
+
+  std::vector<url::Origin> interest_group_buyers_ = {kBidder1, kBidder2};
 
   // Origins which are not allowed to take part in auctions, as the
   // corresponding participant types.
@@ -1307,8 +1357,8 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoBidScript) {
 TEST_F(AuctionRunnerTest, OneInterestGroup) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/0, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
@@ -1353,13 +1403,13 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
 TEST_F(AuctionRunnerTest, Basic) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
@@ -1410,12 +1460,12 @@ TEST_F(AuctionRunnerTest, Basic) {
 TEST_F(AuctionRunnerTest, BasicDebug) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name, /*has_signals=*/true, "k1", "a"));
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name, /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name, /*has_signals=*/true, "l2", "b"));
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name, /*has_signals=*/true, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
   auction_worklet::AddJsonResponse(&url_loader_factory_,
@@ -1463,7 +1513,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
         "id":3,
         "method":"Debugger.setBreakpointByUrl",
         "params": {
-          "lineNumber": 7,
+          "lineNumber": 5,
           "url": "%s",
           "columnNumber": 0,
           "condition": ""
@@ -1490,7 +1540,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
           hit_breakpoints->GetList();
       ASSERT_EQ(1u, hit_breakpoints_list.size());
       ASSERT_TRUE(hit_breakpoints_list[0].is_string());
-      EXPECT_EQ(base::StringPrintf("1:7:0:%s", debug_url.spec().c_str()),
+      EXPECT_EQ(base::StringPrintf("1:5:0:%s", debug_url.spec().c_str()),
                 hit_breakpoints_list[0].GetString());
 
       // Just resume execution.
@@ -1548,8 +1598,8 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
@@ -1567,8 +1617,8 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
   task_environment_.RunUntilIdle();
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
 
   process_manager_impl->ResumeAllPaused();
@@ -1602,13 +1652,13 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
   auction_worklet::AddJsonResponse(&url_loader_factory_,
                                    GURL(kBidder1TrustedSignalsUrl.spec() +
@@ -1696,8 +1746,8 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
   // 2's script is requested.
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
@@ -1739,13 +1789,13 @@ TEST_F(AuctionRunnerTest, DisallowedAsOtherParticipant) {
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
@@ -1769,8 +1819,8 @@ TEST_F(AuctionRunnerTest, DisallowedAsOtherParticipant) {
 TEST_F(AuctionRunnerTest, OneBidOne404) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
@@ -1823,8 +1873,8 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
 TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
 
   // The auction script doesn't make any bids.
@@ -1934,15 +1984,16 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
 
 // An auction where the seller script doesn't have a scoring function.
 TEST_F(AuctionRunnerTest, SellerRejectsAll) {
-  std::string bid_script1 = MakeBidScript(
-      "1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1, kBidder1Name,
-      /*has_signals=*/true, "k1", "a");
+  std::string bid_script1 =
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a");
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
                                          bid_script1);
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
 
   // No seller scoring function in a bid script.
@@ -1979,13 +2030,13 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
 TEST_F(AuctionRunnerTest, SellerRejectsOne) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScriptReject2());
@@ -2044,13 +2095,13 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
 TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/0, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/false, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/0, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/false, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
@@ -2087,13 +2138,13 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
 TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/false, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/false, "l2", "b"));
   url_loader_factory_.AddResponse(
       kBidder1TrustedSignalsUrl.spec() + "?hostname=publisher1.com&keys=k1,k2",
@@ -2134,13 +2185,13 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
 TEST_F(AuctionRunnerTest, NoReportResultUrl) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScriptNoReportUrl());
@@ -2175,14 +2226,14 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
 TEST_F(AuctionRunnerTest, NoReportWinUrl) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a") +
           kReportWinNoUrl);
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b") +
           kReportWinNoUrl);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
@@ -2217,14 +2268,14 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
 TEST_F(AuctionRunnerTest, NeitherReportUrl) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a") +
           kReportWinNoUrl);
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b") +
           kReportWinNoUrl);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
@@ -2262,17 +2313,22 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
 TEST_F(AuctionRunnerTest, NoReportResult) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b") +
           kReportWinExpectNullAuctionSignals);
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         kCheckingAuctionScript);
+                                         R"(
+function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                  browserSignals) {
+  return bid * 2;
+}
+                                         )");
   auction_worklet::AddJsonResponse(&url_loader_factory_,
                                    GURL(kBidder1TrustedSignalsUrl.spec() +
                                         "?hostname=publisher1.com&keys=k1,k2"),
@@ -2308,13 +2364,13 @@ TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b") +
           kReportWinExpectNullAuctionSignals);
   auction_worklet::AddJsonResponse(&url_loader_factory_,
@@ -2340,7 +2396,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
     return 0;
   throw "incorrect trustedScoringSignals";
 }
-                                         )") + kReportResultScript);
+                                         )") + kBasicReportResult);
 
   // Only accept first bidder's bid. Requests will always be batched non-racily,
   // since a mock time is in use.
@@ -2377,13 +2433,13 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
-      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
-                    kBidder1Name,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
-      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
-                    kBidder2Name,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b"));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScript());
