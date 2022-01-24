@@ -1624,13 +1624,15 @@ void ExtractUnderlines(NSAttributedString* string,
   bool is_for_main_frame = false;
   _host->SyncIsWidgetForMainFrame(&is_for_main_frame);
 
-  bool is_speaking = false;
-  _host->SyncIsSpeaking(&is_speaking);
-
   SEL action = [item action];
 
-  if (action == @selector(stopSpeaking:))
-    return is_for_main_frame && is_speaking;
+  if (action == @selector(stopSpeaking:)) {
+    if (!is_for_main_frame)
+      return NO;
+    bool is_speaking = false;
+    _host->SyncIsSpeaking(&is_speaking);
+    return is_speaking;
+  }
 
   if (action == @selector(startSpeaking:))
     return is_for_main_frame;
