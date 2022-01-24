@@ -72,8 +72,6 @@ namespace cbor_extract {
 //      Stop<MyObj>(),
 //   };
 //
-// A map cannot be optional at this time, although that can be fixed later.
-//
 // The target structure names gets repeated a lot. That's C++ templates for you.
 //
 // Because the StepOrByte helper functions are constexpr, the steps can be
@@ -162,9 +160,10 @@ constexpr StepOrByte<S> StringKey() {
 }
 
 template <typename S>
-constexpr StepOrByte<S> Map() {
+constexpr StepOrByte<S> Map(const Is required = Is::kRequired) {
   return StepOrByte<S>(
-      internal::Step(true, static_cast<uint8_t>(internal::Type::kMap), -1));
+      internal::Step(required == Is::kRequired,
+                     static_cast<uint8_t>(internal::Type::kMap), -1));
 }
 
 template <typename S>
