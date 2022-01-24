@@ -7,7 +7,6 @@
 
 #include <map>
 #include <string>
-#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -22,7 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;

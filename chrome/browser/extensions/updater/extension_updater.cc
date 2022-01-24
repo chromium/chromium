@@ -57,10 +57,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using base::RandDouble;
-using base::RandInt;
 typedef extensions::ExtensionDownloaderDelegate::Error Error;
 typedef extensions::ExtensionDownloaderDelegate::PingResult PingResult;
 
