@@ -74,6 +74,9 @@
   <message name="IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL" desc="A label for the 'My files' root which is parent of Downloads, Linux and Android files. Use sentence case.">
     My files
   </message>
+  <message name="IDS_FILE_BROWSER_MEDIA_VIEW_ALL_ROOT_LABEL" desc="A label for the 'All' root of media views.">
+    All
+  </message>
   <message name="IDS_FILE_BROWSER_MEDIA_VIEW_IMAGES_ROOT_LABEL" desc="A label for the 'Images' root of media views.">
     Images
   </message>

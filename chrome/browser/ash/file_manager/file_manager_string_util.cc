@@ -174,6 +174,8 @@ void AddStringsForDrive(base::Value* dict) {
 }
 
 void AddStringsForMediaView(base::Value* dict) {
+  SET_STRING("MEDIA_VIEW_ALL_ROOT_LABEL",
+             IDS_FILE_BROWSER_MEDIA_VIEW_ALL_ROOT_LABEL);
   SET_STRING("MEDIA_VIEW_AUDIO_ROOT_LABEL",
              IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL);
   SET_STRING("MEDIA_VIEW_IMAGES_ROOT_LABEL",
