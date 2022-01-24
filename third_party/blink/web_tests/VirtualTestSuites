@@ -1031,7 +1031,8 @@
     "bases": [
       "http/tests/fenced_frame",
       "wpt_internal/fenced_frame",
-      "http/tests/inspector-protocol/fenced-frame"
+      "http/tests/inspector-protocol/fenced-frame",
+      "external/wpt/html/cross-origin-embedder-policy/anonymous-iframe"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,Prerender2,PartitionedCookies"]
   },
@@ -1039,7 +1040,8 @@
     "prefix": "fenced-frame-shadow-dom",
     "bases": [
       "http/tests/fenced_frame",
-      "wpt_internal/fenced_frame"
+      "wpt_internal/fenced_frame",
+      "external/wpt/html/cross-origin-embedder-policy/anonymous-iframe"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,Prerender2,PartitionedCookies"]
   },

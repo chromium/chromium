@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL FencedFrame within an AnonymousIframe is not anonymous assert_equals: Check window.anonymous in FencedFrame expected "false" but got "true"
+Harness: the test ran to completion.
+

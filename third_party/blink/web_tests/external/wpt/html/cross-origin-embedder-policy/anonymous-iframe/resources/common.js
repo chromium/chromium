@@ -27,6 +27,20 @@ const newPopup = (test, origin) => {
   const popup = window.open(origin + executor_path + `&uuid=${popup_token}`);
   test.add_cleanup(() => popup.close());
   return popup_token;
+}
+
+// Create a fenced frame. The new document will execute any scripts sent
+// toward the token it returns.
+const newFencedFrame = (child_origin) => {
+  const support_loading_mode_fenced_frame =
+    "|header(Supports-Loading-Mode,fenced-frame)";
+  const sub_document_token = token();
+  const fencedframe = document.createElement('fencedframe');
+  fencedframe.src = child_origin + executor_path +
+    support_loading_mode_fenced_frame +
+    `&uuid=${sub_document_token}`;
+  document.body.appendChild(fencedframe);
+  return sub_document_token;
 };
 
 const importScript = (url) => {
