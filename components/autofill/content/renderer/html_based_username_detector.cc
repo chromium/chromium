@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -286,11 +285,7 @@ const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
 
   DCHECK(!all_control_elements.empty());
 
-  // True if the cache has no entry for |form|.
-  bool cache_miss = true;
-  // Iterator pointing to the entry for |form| if the entry for |form| is found.
-  UsernameDetectorCache::iterator form_position;
-  std::tie(form_position, cache_miss) = username_detector_cache->emplace(
+  auto [form_position, cache_miss] = username_detector_cache->emplace(
       form_util::GetFormRendererId(form), std::vector<FieldRendererId>());
 
   if (cache_miss) {

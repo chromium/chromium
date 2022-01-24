@@ -2421,12 +2421,7 @@ ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
     return ButtonTitleList();
   }
 
-  // True if the cache has no entry for |web_form|.
-  bool cache_miss = true;
-  // Iterator pointing to the entry for |web_form| if the entry for |web_form|
-  // is found.
-  ButtonTitlesCache::iterator form_position;
-  std::tie(form_position, cache_miss) = button_titles_cache->emplace(
+  auto [form_position, cache_miss] = button_titles_cache->emplace(
       GetFormRendererId(web_form), ButtonTitleList());
   if (!cache_miss)
     return form_position->second;
