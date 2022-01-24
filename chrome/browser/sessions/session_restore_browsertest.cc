@@ -778,7 +778,13 @@ void VerifyNavigationEntries(content::NavigationController& controller,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
+// Flaky on Lacros and Wayland. https://crbug.com/1283339
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
+#define MAYBE_RestoreForeignTab DISABLED_RestoreForeignTab
+#else
+#define MAYBE_RestoreForeignTab RestoreForeignTab
+#endif
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreForeignTab) {
   GURL url1("http://google.com");
   GURL url2("http://google2.com");
 
