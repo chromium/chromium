@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <algorithm>
-#include <tuple>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -110,8 +109,7 @@ void ToChromeLanguageSynonym(std::string* language) {
     }
   }
 
-  base::StringPiece main_part, tail_part;
-  std::tie(main_part, tail_part) = language::SplitIntoMainAndTail(*language);
+  auto [main_part, tail_part] = language::SplitIntoMainAndTail(*language);
   if (main_part.empty())
     return;
 
