@@ -10,6 +10,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_unpair_handler.h"
 #include "base/bind.h"
@@ -89,6 +90,8 @@ void PairerBrokerImpl::OnFastPairPairingFailure(scoped_refptr<Device> device,
   for (auto& observer : observers_) {
     observer.OnPairFailure(device, failure);
   }
+
+  FastPairHandshakeLookup::GetInstance()->Erase(device);
 }
 
 void PairerBrokerImpl::OnAccountKeyFailure(scoped_refptr<Device> device,
@@ -100,6 +103,7 @@ void PairerBrokerImpl::OnFastPairProcedureComplete(
     scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
   fast_pair_pairers_.erase(device->ble_address);
+  FastPairHandshakeLookup::GetInstance()->Erase(device);
 }
 
 }  // namespace quick_pair
