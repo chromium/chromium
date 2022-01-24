@@ -34,9 +34,9 @@ template("ios_chrome_xcuitest_app_host") {
     }
 
     if (ios_use_shared_bundle_id_for_test_apps) {
-      bundle_identifier = "$ios_app_bundle_id_prefix.gtest.unittests"
+      bundle_identifier = "$ios_app_bundle_id_prefix.chrome.unittests"
     } else {
-      bundle_identifier = "$ios_app_bundle_id_prefix.gtest." +
+      bundle_identifier = "$ios_app_bundle_id_prefix.chrome." +
                           string_replace(_output_name, "_", "-")
     }
 
