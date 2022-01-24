@@ -66,6 +66,7 @@ android_library("weblayer_java_tests") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/blink/public/common:common_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//weblayer/browser/java:interfaces_java",

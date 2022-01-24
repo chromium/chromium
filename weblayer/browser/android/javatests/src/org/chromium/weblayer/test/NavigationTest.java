@@ -32,6 +32,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.Browser;
@@ -705,6 +706,7 @@ public class NavigationTest {
     @MinWebLayerVersion(98)
     @Test
     @SmallTest
+    @CommandLineFlags.Add("enable-features=" + BlinkFeatures.INITIAL_NAVIGATION_ENTRY)
     public void testInitialRendererInitiatedNavigationToAboutBlankSucceeds() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
 
