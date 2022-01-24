@@ -71,7 +71,7 @@ void AutofillAssistantModelExecutor::BuildExecutionTask(
       std::make_unique<ExecutionTask>(std::move(tflite_engine), this);
 }
 
-absl::optional<std::string>
+absl::optional<std::pair<int, int>>
 AutofillAssistantModelExecutor::ExecuteModelWithInput(
     const blink::AutofillAssistantNodeSignals& node_signals) {
   if (!execution_task_) {
@@ -115,7 +115,10 @@ void AutofillAssistantModelExecutor::InitializeTextTokenizer(
 bool AutofillAssistantModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const blink::AutofillAssistantNodeSignals& node_signals) {
-  DCHECK_GE(input_tensors.size(), 5u);
+  if (input_tensors.size() < 5u) {
+    NOTREACHED() << "Input tensors mismatch.";
+    return false;
+  }
   std::vector<std::vector<float>> inputs;
   for (const auto* input_tensor : input_tensors) {
     if (!input_tensor->dims || input_tensor->dims->size < 1) {
@@ -153,32 +156,105 @@ bool AutofillAssistantModelExecutor::Preprocess(
   return true;
 }
 
-// TODO(b/204841212): Implement this with use of ModelMetadata.
-absl::optional<std::string> AutofillAssistantModelExecutor::Postprocess(
-    const std::vector<const TfLiteTensor*>& output_tensors) {
-  static const base::NoDestructor<std::vector<std::string>> output_roles{
-      {"UNKNOWN_ROLE", "NAME_FIRST", "NAME_LAST", "NAME_FULL", "ADDRESS_LINE1",
-       "ADDRESS_LINE2", "CITY", "STATE", "COUNTRY", "POSTAL_CODE",
-       "CREDIT_CARD_NUMBER", "CREDIT_CARD_EXP_MONTH",
-       "CREDIT_CARD_VERIFICATION_CODE", "ORGANIZATION",
-       "CREDIT_CARD_EXPIRATION", "PHONE_NUMBER", "USERNAME_OR_EMAIL",
-       "CREDIT_CARD_EXP_YEAR"}};
+bool AutofillAssistantModelExecutor::GetIndexOfBestRole(
+    const std::vector<float>& output_role,
+    size_t* index_of_best_role) {
+  if (output_role.size() <
+      static_cast<size_t>(
+          model_metadata_.output().semantic_role().classes_size())) {
+    NOTREACHED();
+    return false;
+  }
+  *index_of_best_role = std::distance(
+      output_role.begin(),
+      std::max_element(
+          output_role.begin(),
+          output_role.begin() +
+              model_metadata_.output().semantic_role().classes_size()));
+  return true;
+}
 
-  DCHECK_GE(output_tensors.size(), 1u);
-  std::vector<float> data;
-  absl::Status vector_status =
-      tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
-  if (!vector_status.ok()) {
+bool AutofillAssistantModelExecutor::GetBlockIndex(
+    const std::vector<float>& output_role,
+    size_t index_of_best_role,
+    int* block_index) {
+  if (index_of_best_role >=
+      static_cast<size_t>(model_metadata_.output()
+                              .semantic_role()
+                              .objective_block_index_size())) {
+    NOTREACHED();
+    return false;
+  }
+  *block_index = model_metadata_.output().semantic_role().objective_block_index(
+      index_of_best_role);
+  return true;
+}
+
+bool AutofillAssistantModelExecutor::GetObjective(
+    const std::vector<float>& output_objective,
+    int block_index,
+    int* objective) {
+  if (block_index + 1 >= model_metadata_.output().objective().blocks_size()) {
+    NOTREACHED();
+    return false;
+  }
+  auto block_start = output_objective.begin() +
+                     model_metadata_.output().objective().blocks(block_index);
+  auto block_end = output_objective.begin() +
+                   model_metadata_.output().objective().blocks(block_index + 1);
+  size_t index_of_best_objective =
+      std::distance(block_start, std::max_element(block_start, block_end));
+  if (index_of_best_objective >=
+      static_cast<size_t>(
+          model_metadata_.output().objective().classes_size())) {
+    NOTREACHED();
+    return false;
+  }
+
+  *objective =
+      model_metadata_.output().objective().classes(index_of_best_objective);
+  return true;
+}
+
+absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
+    const std::vector<const TfLiteTensor*>& output_tensors) {
+  if (output_tensors.size() < 2u) {
+    NOTREACHED() << "Output Tensors mismatch.";
+    return absl::nullopt;
+  }
+  std::vector<float> output_role;
+  absl::Status role_status = tflite::task::core::PopulateVector<float>(
+      output_tensors[0], &output_role);
+  if (!role_status.ok()) {
+    return absl::nullopt;
+  }
+  std::vector<float> output_objective;
+  absl::Status objective_status = tflite::task::core::PopulateVector<float>(
+      output_tensors[1], &output_objective);
+  if (!objective_status.ok()) {
     return absl::nullopt;
   }
 
-  // TODO(b/204841212): The output is 24 floats, but we only care about the
-  // the first [0-17].
-  DCHECK_GE(data.size(), output_roles->size());
-  int index = std::distance(
-      data.begin(),
-      std::max_element(data.begin(), data.begin() + output_roles->size()));
-  return output_roles->at(index);
+  size_t index_of_best_role;
+  if (!GetIndexOfBestRole(output_role, &index_of_best_role)) {
+    return absl::nullopt;
+  }
+  int semantic_role =
+      model_metadata_.output().semantic_role().classes(index_of_best_role);
+  if (semantic_role == 0) {
+    return std::pair<int, int>(semantic_role, 0);
+  }
+
+  int block_index;
+  if (!GetBlockIndex(output_role, index_of_best_role, &block_index)) {
+    return absl::nullopt;
+  }
+  int objective;
+  if (!GetObjective(output_objective, block_index, &objective)) {
+    return absl::nullopt;
+  }
+
+  return std::pair<int, int>(semantic_role, objective);
 }
 
 void AutofillAssistantModelExecutor::Tokenize(

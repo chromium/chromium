@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_RENDERER_AUTOFILL_ASSISTANT_MODEL_EXECUTOR_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file.h"
@@ -26,11 +27,11 @@ namespace autofill_assistant {
 // node signals.
 class AutofillAssistantModelExecutor
     : public optimization_guide::BaseModelExecutor<
-          std::string,
+          std::pair<int, int>,
           const blink::AutofillAssistantNodeSignals&> {
  public:
   using ExecutionTask = optimization_guide::GenericModelExecutionTask<
-      std::string,
+      std::pair<int, int>,
       const blink::AutofillAssistantNodeSignals&>;
 
   AutofillAssistantModelExecutor();
@@ -44,7 +45,7 @@ class AutofillAssistantModelExecutor
   bool InitializeModelFromFile(base::File model_file);
 
   // Execute the model with the given input.
-  absl::optional<std::string> ExecuteModelWithInput(
+  absl::optional<std::pair<int, int>> ExecuteModelWithInput(
       const blink::AutofillAssistantNodeSignals& node_signals);
 
  protected:
@@ -52,7 +53,7 @@ class AutofillAssistantModelExecutor
   bool Preprocess(
       const std::vector<TfLiteTensor*>& input_tensors,
       const blink::AutofillAssistantNodeSignals& node_signals) override;
-  absl::optional<std::string> Postprocess(
+  absl::optional<std::pair<int, int>> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
  private:
@@ -74,6 +75,16 @@ class AutofillAssistantModelExecutor
   void Tokenize(const std::u16string& input,
                 tflite::support::text::tokenizer::RegexTokenizer* tokenizer,
                 std::vector<float>* output);
+
+  // Helper functions for post processing based on |model_metadata_|.
+  bool GetIndexOfBestRole(const std::vector<float>& output_role,
+                          size_t* index_of_best_role);
+  bool GetBlockIndex(const std::vector<float>& output_role,
+                     size_t index_of_best_role,
+                     int* block_index);
+  bool GetObjective(const std::vector<float>& output_objective,
+                    int block_index,
+                    int* objective);
 
   // Tokenizer for HTML tag.
   std::unique_ptr<tflite::support::text::tokenizer::RegexTokenizer>

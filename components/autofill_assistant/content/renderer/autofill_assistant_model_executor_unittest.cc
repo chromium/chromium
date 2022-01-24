@@ -4,8 +4,8 @@
 
 #include "components/autofill_assistant/content/renderer/autofill_assistant_model_executor.h"
 
-#include <fstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file.h"
@@ -80,8 +80,10 @@ TEST_F(AutofillAssistantModelExecutorTest, ExecuteWithLoadedModel) {
   node_signals.context_features.header_text.push_back(
       blink::WebString::FromUTF8("SHIPPING"));
 
-  EXPECT_EQ(model_executor_.ExecuteModelWithInput(node_signals),
-            "ADDRESS_LINE1");
+  auto result = model_executor_.ExecuteModelWithInput(node_signals);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->first, 47 /* ADDRESS_LINE1 */);
+  EXPECT_EQ(result->second, 7 /* FILL_DELIVERY_ADDRESS */);
 }
 
 }  // namespace

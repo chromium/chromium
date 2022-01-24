@@ -49,6 +49,13 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
 
   mojom::AutofillAssistantDriver& GetDriver();
 
+  void OnGetModelFile(base::Time start_time,
+                      blink::WebLocalFrame* frame,
+                      int32_t role,
+                      int32_t objective,
+                      GetSemanticNodesCallback callback,
+                      base::File model);
+
   mojo::AssociatedRemote<mojom::AutofillAssistantDriver> driver_;
 
   mojo::AssociatedReceiver<mojom::AutofillAssistantAgent> receiver_{this};
