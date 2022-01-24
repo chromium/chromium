@@ -171,7 +171,7 @@ const GpuControlList::More kMoreForEntry5_572251052Exception0 = {
     GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const int kFeatureListForGpuManagerTestingEntry6[12] = {
+const int kFeatureListForGpuManagerTestingEntry6[11] = {
     GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
     GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE,
