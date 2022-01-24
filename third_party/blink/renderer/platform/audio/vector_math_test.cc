@@ -506,8 +506,8 @@ TEST_F(VectorMathTest, Zvmul) {
           &real1[i] < &sources[0u][kFloatArraySize / 2u] + 16u) {
         // FLT_MAX products should have overflowed.
         EXPECT_TRUE(std::isinf(expected_dest_real[i]) ||
-                    std::isinf(expected_dest_imag[i]));
-        EXPECT_TRUE(std::isnan(expected_dest_real[i]) ||
+                    std::isnan(expected_dest_real[i]));
+        EXPECT_TRUE(std::isinf(expected_dest_imag[i]) ||
                     std::isnan(expected_dest_imag[i]));
       }
     }
