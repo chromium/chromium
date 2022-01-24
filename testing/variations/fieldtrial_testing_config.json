@@ -6305,21 +6305,6 @@
             ]
         }
     ],
-    "ServiceManagerForBackgroundPrefetch": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceManagerForBackgroundPrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
     "SetTimeoutZeroWithoutClamping": [
         {
             "platforms": [
