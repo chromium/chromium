@@ -616,21 +616,6 @@ bool content::IsNSRange(id value) {
          0 == strcmp([value objCType], @encode(NSRange));
 }
 
-id content::AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
-                             int offset,
-                             ax::mojom::TextAffinity affinity) {
-  BrowserAccessibility* anchor_node = [anchor owner];
-  AXPosition position = anchor_node->CreateTextPositionAt(offset, affinity);
-  return AXPositionToAXTextMarker(std::move(position));
-}
-
-id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
-  AXTextMarkerRangeRef cf_marker_range = AXTextMarkerRangeCreate(
-      kCFAllocatorDefault, static_cast<AXTextMarkerRef>(anchor_textmarker),
-      static_cast<AXTextMarkerRef>(focus_textmarker));
-  return [static_cast<id>(cf_marker_range) autorelease];
-}
-
 @implementation BrowserAccessibilityCocoa
 
 + (void)initialize {

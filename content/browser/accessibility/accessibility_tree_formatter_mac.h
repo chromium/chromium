@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_MAC_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_MAC_H_
 
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_call_statement_invoker_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 @class BrowserAccessibilityCocoa;
@@ -62,7 +62,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
                      base::Value* dict) const;
 
   // Invokes an attributes by a property node.
-  a11y::OptionalNSObject InvokeAttributeFor(
+  ui::AXOptionalNSObject InvokeAttributeFor(
       const BrowserAccessibilityCocoa* cocoa_node,
       const ui::AXPropertyNode& property_node,
       const ui::AXTreeIndexerMac* indexer) const;

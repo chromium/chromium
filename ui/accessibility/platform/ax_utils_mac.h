@@ -12,6 +12,8 @@
 
 namespace ui {
 
+class AXPlatformNodeCocoa;
+
 // An AXTextMarker is used by applications like Chrome to store a position in
 // the accessibility tree's text representation. It is a data structure whose
 // contents are opaque to the system but whose allocation and deallocation is
@@ -41,6 +43,20 @@ AX_EXPORT id AXPositionToAXTextMarker(AXPlatformNodeDelegate::AXPosition);
 
 // Returns the AXTextMarkerRange representing the given AXRange.
 AX_EXPORT id AXRangeToAXTextMarkerRange(AXPlatformNodeDelegate::AXRange);
+
+// Returns the AXTextMarker representing the position within the given node.
+AX_EXPORT id AXTextMarkerFrom(const AXPlatformNodeCocoa* anchor,
+                              int offset,
+                              ax::mojom::TextAffinity affinity);
+
+// Returns the AXTextMarkerRange representing the given AXTextMarker objects.
+AX_EXPORT id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
+
+// Returns the start text marker from the given AXTextMarkerRange.
+AX_EXPORT id AXTextMarkerRangeStart(id text_marker_range);
+
+// Returns the end text marker from the given AXTextMarkerRange.
+AX_EXPORT id AXTextMarkerRangeEnd(id text_marker_range);
 
 }  // namespace ui
 

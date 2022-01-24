@@ -6,6 +6,9 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "ui/accessibility/ax_range.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
+#include "ui/accessibility/platform/ax_platform_node_cocoa.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 // The following are private accessibility APIs required for cursor navigation
 // and text selection. VoiceOver started relying on them in Mac OS X 10.11.
@@ -22,6 +25,8 @@ AXTextMarkerRef AXTextMarkerCreate(CFAllocatorRef,
 AXTextMarkerRangeRef AXTextMarkerRangeCreate(CFAllocatorRef,
                                              AXTextMarkerRef start,
                                              AXTextMarkerRef end);
+AXTextMarkerRef AXTextMarkerRangeCopyStartMarker(AXTextMarkerRangeRef);
+AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(AXTextMarkerRangeRef);
 size_t AXTextMarkerGetLength(AXTextMarkerRef);
 const UInt8* AXTextMarkerGetBytePtr(AXTextMarkerRef);
 
@@ -120,6 +125,33 @@ id AXRangeToAXTextMarkerRange(AXPlatformNodeDelegate::AXRange range) {
   AXTextMarkerRangeRef cf_marker_range =
       AXTextMarkerRangeCreate(kCFAllocatorDefault, start_marker, end_marker);
   return [static_cast<id>(cf_marker_range) autorelease];
+}
+
+id AXTextMarkerFrom(const AXPlatformNodeCocoa* anchor,
+                    int offset,
+                    ax::mojom::TextAffinity affinity) {
+  AXPlatformNode* anchor_platform_node = [static_cast<id>(anchor) node];
+  AXPlatformNodeDelegate* anchor_node = anchor_platform_node->GetDelegate();
+  AXPlatformNodeDelegate::AXPosition position =
+      anchor_node->CreateTextPositionAt(offset, affinity);
+  return AXPositionToAXTextMarker(std::move(position));
+}
+
+id AXTextMarkerRangeFrom(id start_textmarker, id end_textmarker) {
+  AXTextMarkerRangeRef cf_marker_range = AXTextMarkerRangeCreate(
+      kCFAllocatorDefault, static_cast<AXTextMarkerRef>(start_textmarker),
+      static_cast<AXTextMarkerRef>(end_textmarker));
+  return [static_cast<id>(cf_marker_range) autorelease];
+}
+
+id AXTextMarkerRangeStart(id text_marker_range) {
+  return static_cast<id>(AXTextMarkerRangeCopyStartMarker(
+      static_cast<AXTextMarkerRangeRef>(text_marker_range)));
+}
+
+id AXTextMarkerRangeEnd(id text_marker_range) {
+  return static_cast<id>(AXTextMarkerRangeCopyEndMarker(
+      static_cast<AXTextMarkerRangeRef>(text_marker_range)));
 }
 
 }  // namespace ui

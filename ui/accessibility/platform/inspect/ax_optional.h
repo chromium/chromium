@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_OPTIONAL_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_OPTIONAL_H_
 
+#include <string>
+
 #include "build/build_config.h"
 #include "ui/accessibility/ax_export.h"
 

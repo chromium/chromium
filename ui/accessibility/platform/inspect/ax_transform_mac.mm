@@ -8,6 +8,7 @@
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_cocoa.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
@@ -124,8 +125,8 @@ base::Value AXPositionToBaseValue(
   if (!platform_node_anchor)
     return AXNilToBaseValue();
 
-  AXPlatformNodeCocoa* cocoa_anchor =
-      platform_node_anchor->GetNativeViewAccessible();
+  AXPlatformNodeCocoa* cocoa_anchor = static_cast<AXPlatformNodeCocoa*>(
+      platform_node_anchor->GetNativeViewAccessible());
   if (!cocoa_anchor)
     return AXNilToBaseValue();
 
@@ -144,7 +145,7 @@ base::Value AXPositionToBaseValue(
 
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetPath(AXMakeSetKey(AXMakeOrderedKey("anchor", 0)),
-                AXElementToBaseValue(cocoa_anchor, indexer));
+                AXElementToBaseValue(static_cast<id>(cocoa_anchor), indexer));
   value.SetIntPath(AXMakeSetKey(AXMakeOrderedKey("offset", 1)),
                    position->text_offset());
   value.SetStringPath(AXMakeSetKey(AXMakeOrderedKey("affinity", 2)),
