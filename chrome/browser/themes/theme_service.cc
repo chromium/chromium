@@ -314,10 +314,7 @@ ThemeService::BrowserThemeProvider::GetColorProviderColor(int id) const {
 
 CustomThemeSupplier* ThemeService::BrowserThemeProvider::GetThemeSupplier()
     const {
-  bool should_ignore_theme_supplier =
-      incognito_ && base::FeatureList::IsEnabled(
-                        features::kIncognitoBrandConsistencyForDesktop);
-  return should_ignore_theme_supplier ? nullptr : delegate_->GetThemeSupplier();
+  return incognito_ ? nullptr : delegate_->GetThemeSupplier();
 }
 
 // ThemeService ---------------------------------------------------------------

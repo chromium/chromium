@@ -370,20 +370,10 @@ void BrowserFrame::SelectNativeTheme() {
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
   if (browser_view_->browser()->profile()->IsIncognitoProfile()) {
-    // If the flag is enabled, then no matter if we are using the default theme
-    // or not we always use the dark ui instance.
-    if (base::FeatureList::IsEnabled(
-            features::kIncognitoBrandConsistencyForDesktop)) {
-      SetNativeTheme(ui::NativeTheme::GetInstanceForDarkUI());
-      return;
-    }
-
-    // Flag is disabled, fallback to using dark theme only if the incognito
-    // profile is using a default theme.
-    if (ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile())
-            ->UsingDefaultTheme()) {
-      native_theme = ui::NativeTheme::GetInstanceForDarkUI();
-    }
+    // No matter if we are using the default theme or not we always use the dark
+    // ui instance.
+    SetNativeTheme(ui::NativeTheme::GetInstanceForDarkUI());
+    return;
   }
 
 #if BUILDFLAG(IS_LINUX)

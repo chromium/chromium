@@ -131,31 +131,6 @@ SkColor IncreaseLightness(SkColor color, double percent) {
   return color_utils::HSLToSkColor(result, SkColorGetA(color));
 }
 
-// For legacy reasons, the theme supplier requires the incognito variants of
-// color IDs.  This converts from normal to incognito IDs where they exist.
-int GetIncognitoId(int id) {
-  switch (id) {
-    case TP::COLOR_FRAME_ACTIVE:
-      return TP::COLOR_FRAME_ACTIVE_INCOGNITO;
-    case TP::COLOR_FRAME_INACTIVE:
-      return TP::COLOR_FRAME_INACTIVE_INCOGNITO;
-    case TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE:
-      return TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO;
-    case TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE:
-      return TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO;
-    case TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
-      return TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO;
-    case TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
-      return TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO;
-    case TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE:
-      return TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_ACTIVE;
-    case TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE:
-      return TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE;
-    default:
-      return id;
-  }
-}
-
 // Key for cache of separator colors; pair is <tab color, frame color>.
 using SeparatorColorKey = std::pair<SkColor, SkColor>;
 using SeparatorColorCache = std::map<SeparatorColorKey, SkColor>;
@@ -283,11 +258,9 @@ SkColor ThemeHelper::GetColor(int id,
   if (omnibox_color.has_value())
     return omnibox_color.value();
 
-  if (theme_supplier &&
-      !ShouldIgnoreThemeSupplier(id, incognito, theme_supplier)) {
+  if (theme_supplier && !incognito) {
     SkColor color;
-    const int theme_supplier_id = incognito ? GetIncognitoId(id) : id;
-    if (theme_supplier->GetColor(theme_supplier_id, &color)) {
+    if (theme_supplier->GetColor(id, &color)) {
       if (has_custom_color)
         *has_custom_color = true;
       return color;
@@ -306,11 +279,7 @@ color_utils::HSL ThemeHelper::GetTint(
   if (theme_supplier && theme_supplier->GetTint(id, &hsl))
     return hsl;
 
-  // Incognito tints are ignored for custom themes so they apply atop a
-  // predictable state.
-  return TP::GetDefaultTint(id,
-                            incognito && UseIncognitoColor(id, theme_supplier),
-                            UseDarkModeColors(theme_supplier));
+  return TP::GetDefaultTint(id, incognito, UseDarkModeColors(theme_supplier));
 }
 
 gfx::ImageSkia* ThemeHelper::GetImageSkiaNamed(
@@ -485,9 +454,7 @@ SkColor ThemeHelper::GetDefaultColor(
     }
   }
 
-  return TP::GetDefaultColor(id,
-                             incognito && UseIncognitoColor(id, theme_supplier),
-                             UseDarkModeColors(theme_supplier));
+  return TP::GetDefaultColor(id, incognito, UseDarkModeColors(theme_supplier));
 }
 
 // static
@@ -528,36 +495,11 @@ SkColor ThemeHelper::GetSeparatorColor(SkColor tab_color, SkColor frame_color) {
 }
 
 // static
-bool ThemeHelper::UseIncognitoColor(int id,
-                                    const CustomThemeSupplier* theme_supplier) {
-  // Incognito is disabled for any non-ignored custom theme colors so they apply
-  // atop a predictable state.
-  return ShouldIgnoreThemeSupplier(id, true, theme_supplier) ||
-         (!IsCustomTheme(theme_supplier) &&
-          (!theme_supplier || theme_supplier->CanUseIncognitoColors()));
-}
-
-// static
 bool ThemeHelper::UseDarkModeColors(const CustomThemeSupplier* theme_supplier) {
   // Dark mode is disabled for custom themes so they apply atop a predictable
   // state.
   return !IsCustomTheme(theme_supplier) &&
          ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
-}
-
-// static
-bool ThemeHelper::ShouldIgnoreThemeSupplier(
-    int id,
-    bool incognito,
-    const CustomThemeSupplier* theme_supplier) {
-  if (incognito && base::FeatureList::IsEnabled(
-                       features::kIncognitoBrandConsistencyForDesktop)) {
-    return true;
-  }
-  // The incognito NTP uses the default background color instead of any theme
-  // background color, unless the theme also sets a custom background image.
-  return incognito && (id == TP::COLOR_NTP_BACKGROUND) &&
-         !HasCustomImage(IDR_THEME_NTP_BACKGROUND, theme_supplier);
 }
 
 gfx::Image ThemeHelper::GetImageNamed(

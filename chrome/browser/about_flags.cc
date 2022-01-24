@@ -6631,23 +6631,11 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-    {"incognito-brand-consistency-for-desktop",
-     flag_descriptions::kIncognitoBrandConsistencyForDesktopName,
-     flag_descriptions::kIncognitoBrandConsistencyForDesktopDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kIncognitoBrandConsistencyForDesktop)},
-
     {"incognito-clear-browsing-data-dialog-for-desktop",
      flag_descriptions::kIncognitoClearBrowsingDataDialogForDesktopName,
      flag_descriptions::kIncognitoClearBrowsingDataDialogForDesktopDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIncognitoClearBrowsingDataDialogForDesktop)},
-
-    {"inherit-native-theme-from-parent-widget",
-     flag_descriptions::kInheritNativeThemeFromParentWidgetName,
-     flag_descriptions::kInheritNativeThemeFromParentWidgetDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(views::features::kInheritNativeThemeFromParentWidget)},
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

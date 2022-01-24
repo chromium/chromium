@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,7 +37,6 @@
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/image_model_utils.h"
 #include "ui/views/views_delegate.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
@@ -1786,9 +1784,7 @@ const ui::NativeTheme* Widget::GetNativeTheme() const {
   if (native_theme_)
     return native_theme_;
 
-  if (base::FeatureList::IsEnabled(
-          features::kInheritNativeThemeFromParentWidget) &&
-      parent_)
+  if (parent_)
     return parent_->GetNativeTheme();
 
 #if BUILDFLAG(IS_LINUX)

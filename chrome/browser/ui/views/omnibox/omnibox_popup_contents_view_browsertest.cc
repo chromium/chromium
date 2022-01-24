@@ -296,26 +296,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, ThemeIntegration) {
   EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
 }
 
-class OmniboxPopupContentsViewInIncognitoTest
-    : public OmniboxPopupContentsViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  OmniboxPopupContentsViewInIncognitoTest() {
-    feature_list_.InitWithFeatureState(
-        features::kIncognitoBrandConsistencyForDesktop, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(OmniboxPopupContentsViewInIncognitoWithFeatureFlagTest,
-                         OmniboxPopupContentsViewInIncognitoTest,
-                         testing::Bool());
-
 // Integration test for omnibox popup theming in Incognito.
-IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewInIncognitoTest,
-                       ThemeIntegration) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
+                       ThemeIntegrationInIncognito) {
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
   UseDefaultTheme();
@@ -324,7 +307,6 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewInIncognitoTest,
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
   SetUseDarkColor(false);
-  const SkColor selection_color_light = GetSelectedColor(browser());
 
   // Install a theme (in both browsers, since it's the same profile).
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
@@ -339,18 +321,13 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewInIncognitoTest,
   // Check unthemed incognito windows.
   Browser* incognito_browser = CreateIncognitoBrowser();
 
-  if (GetParam() /*Incognito brand consistency enabled*/) {
-    EXPECT_EQ(selection_color_dark, GetSelectedColor(incognito_browser));
-  } else {
-    // The previous theme installation should make it light.
-    EXPECT_EQ(selection_color_light, GetSelectedColor(incognito_browser));
-  }
-
+  EXPECT_EQ(selection_color_dark, GetSelectedColor(incognito_browser));
   // Switch to the default theme without installing a custom theme. E.g. this is
   // what gets used on KDE or when switching to the "classic" theme in settings.
   UseDefaultTheme();
 
-  // Check incognito again. It should now use a dark theme, even on Linux.
+  // Check incognito again. It should continue to use a dark theme, even on
+  // Linux.
   EXPECT_EQ(selection_color_dark, GetSelectedColor(incognito_browser));
 }
 

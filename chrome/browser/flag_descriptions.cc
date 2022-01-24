@@ -1475,12 +1475,6 @@ const char kIncognitoReauthenticationForAndroidDescription[] =
     "When enabled, a setting appears in Settings > Privacy and Security, to "
     "enable reauthentication for accessing your existing Incognito tabs.";
 
-const char kIncognitoBrandConsistencyForDesktopName[] =
-    "Enable Incognito brand consistency in desktop.";
-const char kIncognitoBrandConsistencyForDesktopDescription[] =
-    "When enabled, removes any theme or background customization done by the "
-    "user on the Incognito UI.";
-
 const char kIncognitoClearBrowsingDataDialogForDesktopName[] =
     "Enable clear browsing data dialog in Incognito.";
 const char kIncognitoClearBrowsingDataDialogForDesktopDescription[] =
@@ -1502,12 +1496,6 @@ const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
     "thumbnails visible.";
-
-const char kInheritNativeThemeFromParentWidgetName[] =
-    "Allow widgets to inherit native theme from its parent widget.";
-const char kInheritNativeThemeFromParentWidgetDescription[] =
-    "When enabled, secondary UI like menu, dialog etc would be in dark mode "
-    "when Incognito mode is open.";
 
 const char kInProductHelpDemoModeChoiceName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeChoiceDescription[] =

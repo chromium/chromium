@@ -842,9 +842,6 @@ extern const char kIncognitoBrandConsistencyForAndroidDescription[];
 extern const char kIncognitoReauthenticationForAndroidName[];
 extern const char kIncognitoReauthenticationForAndroidDescription[];
 
-extern const char kIncognitoBrandConsistencyForDesktopName[];
-extern const char kIncognitoBrandConsistencyForDesktopDescription[];
-
 extern const char kIncognitoDownloadsWarningName[];
 extern const char kIncognitoDownloadsWarningDescription[];
 
@@ -859,9 +856,6 @@ extern const char kIncognitoNtpRevampDescription[];
 
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
-
-extern const char kInheritNativeThemeFromParentWidgetName[];
-extern const char kInheritNativeThemeFromParentWidgetDescription[];
 
 extern const char kInProductHelpDemoModeChoiceName[];
 extern const char kInProductHelpDemoModeChoiceDescription[];
