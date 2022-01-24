@@ -90,7 +90,6 @@ import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
-import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -247,6 +246,7 @@ public class ContextualSearchManagerTest {
     private EmbeddedTestServer mTestServer;
     private ContextualSearchManagerTestHost mTestHost;
     private UserActionTester mActionTester;
+    private OmniboxTestUtils mOmnibox;
 
     private float mDpToPx;
 
@@ -280,6 +280,7 @@ public class ContextualSearchManagerTest {
         });
 
         mTestServer = sActivityTestRule.getTestServer();
+        mOmnibox = new OmniboxTestUtils(sActivityTestRule.getActivity());
 
         sActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
 
@@ -1458,9 +1459,7 @@ public class ContextualSearchManagerTest {
         assertContainsParameters("Intelligence", "alternate-term");
         waitForPanelToPeek();
 
-        OmniboxTestUtils.toggleUrlBarFocus(
-                (UrlBar) sActivityTestRule.getActivity().findViewById(R.id.url_bar), true);
-
+        mOmnibox.requestFocus();
         assertPanelClosedOrUndefined();
     }
 

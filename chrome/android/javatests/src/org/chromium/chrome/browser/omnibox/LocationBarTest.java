@@ -114,6 +114,7 @@ public class LocationBarTest {
     private LocationBarMediator mLocationBarMediator;
     private String mSearchUrl;
     private ActivityKeyboardVisibilityDelegate mKeyboardDelegate;
+    private OmniboxTestUtils mOmnibox;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -170,6 +171,7 @@ public class LocationBarTest {
     }
 
     private void doPostActivitySetup(ChromeActivity activity) {
+        mOmnibox = new OmniboxTestUtils(activity);
         mUrlBar = activity.findViewById(org.chromium.chrome.R.id.url_bar);
         mLocationBarCoordinator = ((LocationBarCoordinator) activity.getToolbarManager()
                                            .getToolbarLayoutForTesting()
@@ -610,15 +612,10 @@ public class LocationBarTest {
         startActivityNormally();
         assertFalse(mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
 
-        OmniboxTestUtils.toggleUrlBarFocus(mUrlBar, true);
-        CriteriaHelper.pollUiThread(() -> mUrlBar.hasFocus());
-        CriteriaHelper.pollUiThread(
-                () -> mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
-
-        OmniboxTestUtils.toggleUrlBarFocus(mUrlBar, false);
-        CriteriaHelper.pollUiThread(() -> !mUrlBar.hasFocus());
-        CriteriaHelper.pollUiThread(
-                () -> !mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
+        mOmnibox.requestFocus();
+        mOmnibox.checkFocus(true);
+        mOmnibox.clearFocus();
+        mOmnibox.checkFocus(false);
     }
 
     @Test
@@ -661,8 +658,7 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
+        mOmnibox.requestFocus();
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 

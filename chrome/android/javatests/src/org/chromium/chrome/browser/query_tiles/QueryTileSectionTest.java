@@ -10,6 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.isEmptyString;
+
 import static org.chromium.chrome.browser.query_tiles.ListMatchers.matchList;
 import static org.chromium.chrome.browser.query_tiles.ViewActions.scrollTo;
 
@@ -32,7 +34,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -59,6 +60,7 @@ public class QueryTileSectionTest {
 
     private Tab mTab;
     private TestTileProvider mTileProvider;
+    private OmniboxTestUtils mOmnibox;
 
     @Before
     public void setUp() {
@@ -68,6 +70,7 @@ public class QueryTileSectionTest {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         mTab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(mTab);
+        mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
     }
 
     @After
@@ -107,9 +110,8 @@ public class QueryTileSectionTest {
 
         // Click on the search box. Omnibox should show up.
         onView(withId(R.id.search_box_text)).perform(click());
-        UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
-        Assert.assertTrue(urlBar.getText().toString().isEmpty());
+        mOmnibox.checkFocus(true);
+        mOmnibox.checkText(isEmptyString(), null);
     }
 
     private String getTabUrl() {

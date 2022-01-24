@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.hamcrest.core.IsEqual.equalTo;
+
 import android.content.pm.ActivityInfo;
 import android.support.test.InstrumentationRegistry;
 import android.util.Base64;
@@ -32,8 +34,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.LocationBarLayout;
-import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -48,7 +48,6 @@ import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
@@ -76,6 +75,7 @@ public class NavigateTest {
 
     private static final String HTTPS_SCHEME = "https://";
 
+    private OmniboxTestUtils mOmnibox;
     private EmbeddedTestServer mTestServer;
 
     @Before
@@ -83,6 +83,7 @@ public class NavigateTest {
         mActivityTestRule.startMainActivityFromLauncher();
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
+        mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
     }
 
     @After
@@ -90,22 +91,17 @@ public class NavigateTest {
         mTestServer.stopAndDestroyServer();
     }
 
-    private void navigateAndObserve(final String startUrl, final String endUrl)
-            throws Exception {
-        new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab())
-                .fullyLoadUrl(startUrl);
+    private void navigateAndObserve(final String url) throws Exception {
+        new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab()).fullyLoadUrl(url);
+
+        // Note: Omnibox does not present the scheme.
+        mOmnibox.checkText(equalTo(expectedLocation(url)), null);
 
         CriteriaHelper.pollUiThread(() -> {
-            final UrlBar urlBar =
-                    (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-            Criteria.checkThat("urlBar is null", urlBar, Matchers.notNullValue());
-            Criteria.checkThat("UrlBar text wrong", urlBar.getText().toString(),
-                    Matchers.is(expectedLocation(endUrl)));
-
             Criteria.checkThat("Tab url wrong",
                     ChromeTabUtils.getUrlStringOnUiThread(
                             mActivityTestRule.getActivity().getActivityTab()),
-                    Matchers.is(endUrl));
+                    Matchers.is(url));
         });
     }
 
@@ -121,25 +117,18 @@ public class NavigateTest {
      */
     private String typeInOmniboxAndNavigate(final String url, final String expectedTitle)
             throws Exception {
-        final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        Assert.assertNotNull("urlBar is null", urlBar);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            urlBar.requestFocus();
-            urlBar.setText(url);
-        });
-        final LocationBarLayout locationBar =
-                (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
-        OmniboxTestUtils.waitForOmniboxSuggestions(locationBar);
+        mOmnibox.requestFocus();
+        mOmnibox.typeText(url, false);
+        mOmnibox.checkSuggestionsShown();
 
         // Loads the url.
         TabLoadObserver observer = new TabLoadObserver(
                 mActivityTestRule.getActivity().getActivityTab(), expectedTitle, null);
-        KeyUtils.singleKeyEventView(
-                InstrumentationRegistry.getInstrumentation(), urlBar, KeyEvent.KEYCODE_ENTER);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_ENTER);
         observer.assertLoaded();
 
         // The URL has been set before the page notification was broadcast, so it is safe to access.
-        return urlBar.getText().toString();
+        return mOmnibox.getText();
     }
 
     /**
@@ -207,7 +196,7 @@ public class NavigateTest {
     public void testOpenAndNavigate() throws Exception {
         final String url =
                 mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
-        navigateAndObserve(url, url);
+        navigateAndObserve(url);
 
         final int tabCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
         ChromeTabUtils.newTabFromMenu(
@@ -230,7 +219,7 @@ public class NavigateTest {
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
 
-        navigateAndObserve(url1, url1);
+        navigateAndObserve(url1);
         mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -254,7 +243,7 @@ public class NavigateTest {
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
 
-        navigateAndObserve(url1, url1);
+        navigateAndObserve(url1);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -286,7 +275,7 @@ public class NavigateTest {
         String url2 = mTestServer.getURL(
                 "/echoheader?sec-ch-ua-arch&sec-ch-ua-mobile&sec-ch-ua-model&sec-ch-ua-platform");
 
-        navigateAndObserve(url1, url1);
+        navigateAndObserve(url1);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -295,7 +284,7 @@ public class NavigateTest {
                                 tab, /* switchToDesktop */ true, /* forcedByUser */ true));
         ChromeTabUtils.waitForTabPageLoaded(tab, url1);
 
-        navigateAndObserve(url2, url2);
+        navigateAndObserve(url2);
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         String content = JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 tab.getWebContents(), "document.body.textContent");
@@ -326,7 +315,7 @@ public class NavigateTest {
                         -> TabUtils.switchUserAgent(
                                 tab, /* switchToDesktop */ true, /* forcedByUser */ true));
 
-        navigateAndObserve(url, url);
+        navigateAndObserve(url);
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
         String content = JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 tab.getWebContents(), "document.body.textContent");
@@ -343,7 +332,7 @@ public class NavigateTest {
         final String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         final String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
 
-        navigateAndObserve(url1, url1);
+        navigateAndObserve(url1);
         mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
 
         TabObserver onPageLoadStartedObserver = new EmptyTabObserver() {
@@ -458,7 +447,7 @@ public class NavigateTest {
         };
 
         for (String url : urls) {
-            navigateAndObserve(url, url);
+            navigateAndObserve(url);
         }
 
         final int repeats = 3;
@@ -622,7 +611,7 @@ public class NavigateTest {
                         + Base64.encodeToString(
                                 ApiCompatibilityUtils.getBytesUtf8(secondUrl), Base64.URL_SAFE));
 
-        navigateAndObserve(firstUrl, firstUrl);
+        navigateAndObserve(firstUrl);
         mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
 
         TabObserver onPageLoadStartedObserver = new EmptyTabObserver() {

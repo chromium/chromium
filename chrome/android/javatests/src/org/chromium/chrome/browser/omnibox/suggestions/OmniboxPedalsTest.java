@@ -41,9 +41,12 @@ public class OmniboxPedalsTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    private OmniboxTestUtils mOmniboxUtils;
+
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
+        mOmniboxUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
     }
 
     /**
@@ -57,7 +60,7 @@ public class OmniboxPedalsTest {
         Assert.assertNotNull(urlBar);
 
         WaitForFocusHelper.acquireFocusForView(urlBar);
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
+        mOmniboxUtils.requestFocus();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { urlBar.setText(text); });
     }

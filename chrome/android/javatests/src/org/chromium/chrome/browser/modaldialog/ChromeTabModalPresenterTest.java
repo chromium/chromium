@@ -119,10 +119,12 @@ public class ChromeTabModalPresenterTest {
     private ChromeTabModalPresenter mTabModalPresenter;
     private TestObserver mTestObserver;
     private Integer mExpectedDismissalCause;
+    private OmniboxTestUtils mOmnibox;
 
     @Before
     public void setUp() {
         mActivity = sActivityTestRule.getActivity();
+        mOmnibox = new OmniboxTestUtils(mActivity);
         mManager =
                 TestThreadUtils.runOnUiThreadBlockingNoException(mActivity::getModalDialogManager);
         mTestObserver = new TestObserver();
@@ -164,16 +166,7 @@ public class ChromeTabModalPresenterTest {
         // When editing URL, it should be shown on top of the dialog.
         UrlBar urlBar = mActivity.findViewById(R.id.url_bar);
         int callCount = mTestObserver.onUrlFocusChangedCallback.getCallCount();
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, true);
-
-        // TODO(crbug/812066): Following line helps narrow down the cause of flakiness. Previous
-        // call to toggleUrlBarFocus() should have focused urlBar. Screenshots indicate that
-        // sometimes it doesn't happen. toggleUrlBarFocus() simulates tap in the middle of the view,
-        // maybe there are some timing issues there. Accurately simulating tap is not necessary for
-        // the purpose of this test therefore as an alternative we could call requestFocus() on
-        // urlBar view.
-        Assert.assertTrue(
-                "UrlBar didn't get focused", OmniboxTestUtils.doesUrlBarHaveFocus(urlBar));
+        mOmnibox.requestFocus();
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertThat(containerParent.indexOfChild(dialogContainer),
@@ -182,7 +175,7 @@ public class ChromeTabModalPresenterTest {
 
         // When URL bar is not focused, the dialog should be shown on top of the toolbar again.
         callCount = mTestObserver.onUrlFocusChangedCallback.getCallCount();
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, false);
+        mOmnibox.clearFocus();
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertThat(containerParent.indexOfChild(dialogContainer),

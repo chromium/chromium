@@ -78,6 +78,8 @@ public class LocationBarLayoutTest {
     @Mock
     SearchEngineLogoUtils mSearchEngineLogoUtils;
 
+    private OmniboxTestUtils mOmnibox;
+
     public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
             new LocationBarModel.OfflineStatus() {
                 @Override
@@ -94,6 +96,7 @@ public class LocationBarLayoutTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
+        mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
         doReturn(true).when(mAndroidPermissionDelegate).hasPermission(anyString());
         mActivityTestRule.getActivity().getWindowAndroid().setAndroidPermissionDelegate(
@@ -245,16 +248,14 @@ public class LocationBarLayoutTest {
         Callable<Integer> softInputModeCallable = () -> {
             return mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
         };
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, true);
-        CriteriaHelper.pollUiThread(urlBar::hasFocus);
+        mOmnibox.requestFocus();
         CriteriaHelper.pollUiThread(() -> {
             int inputMode =
                     mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
             Criteria.checkThat(inputMode, is(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN));
         });
 
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, false);
-        CriteriaHelper.pollUiThread(() -> !urlBar.hasFocus());
+        mOmnibox.clearFocus();
         CriteriaHelper.pollUiThread(() -> {
             int inputMode =
                     mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
