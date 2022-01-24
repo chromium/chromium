@@ -223,7 +223,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
     }
     success = base::win::CreateOrUpdateShortcutLink(
                   shortcut_file, shortcut_properties,
-                  base::win::SHORTCUT_CREATE_ALWAYS) &&
+                  base::win::ShortcutOperation::kCreateAlways) &&
               success;
     if (out_filenames)
       out_filenames->push_back(shortcut_file);
@@ -282,7 +282,7 @@ void UpdateIconFileForShortcut(const base::FilePath& web_app_path,
   shortcut_properties.set_icon(icon_file, 0);
   if (!base::win::CreateOrUpdateShortcutLink(
           shortcut, shortcut_properties,
-          base::win::ShortcutOperation::SHORTCUT_UPDATE_EXISTING)) {
+          base::win::ShortcutOperation::kUpdateExisting)) {
     DVLOG(1) << "Error updating icon for shortcut " << new_app_title;
   }
 }

@@ -977,7 +977,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
     if (updated_properties.options &&
         base::win::CreateOrUpdateShortcutLink(
             shortcut, updated_properties,
-            base::win::SHORTCUT_UPDATE_EXISTING)) {
+            base::win::ShortcutOperation::kUpdateExisting)) {
       ++shortcuts_migrated;
     }
   }

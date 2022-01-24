@@ -65,8 +65,8 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
                                 ShortcutOperation operation) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  // A target is required unless |operation| is SHORTCUT_UPDATE_EXISTING.
-  if (operation != SHORTCUT_UPDATE_EXISTING &&
+  // A target is required unless |operation| is kUpdateExisting.
+  if (operation != ShortcutOperation::kUpdateExisting &&
       !(properties.options & ShortcutProperties::PROPERTIES_TARGET)) {
     NOTREACHED();
     return false;
@@ -82,14 +82,14 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
   ComPtr<IShellLink> i_shell_link;
   ComPtr<IPersistFile> i_persist_file;
   switch (operation) {
-    case SHORTCUT_CREATE_ALWAYS:
+    case ShortcutOperation::kCreateAlways:
       InitializeShortcutInterfaces(nullptr, &i_shell_link, &i_persist_file);
       break;
-    case SHORTCUT_UPDATE_EXISTING:
+    case ShortcutOperation::kUpdateExisting:
       InitializeShortcutInterfaces(shortcut_path.value().c_str(), &i_shell_link,
                                    &i_persist_file);
       break;
-    case SHORTCUT_REPLACE_EXISTING:
+    case ShortcutOperation::kReplaceExisting:
       InitializeShortcutInterfaces(shortcut_path.value().c_str(),
                                    &old_i_shell_link, &old_i_persist_file);
       // Confirm |shortcut_path| exists and is a shortcut by verifying

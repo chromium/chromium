@@ -44,7 +44,8 @@ bool CreateTestAppShortcut(const base::FilePath& shortcut_path,
   shortcut_properties.set_arguments(args_cl.GetArgumentsString());
   shortcut_properties.set_target(base::FilePath(FILE_PATH_LITERAL("target")));
   return base::win::CreateOrUpdateShortcutLink(
-      shortcut_path, shortcut_properties, base::win::SHORTCUT_CREATE_ALWAYS);
+      shortcut_path, shortcut_properties,
+      base::win::ShortcutOperation::kCreateAlways);
 }
 
 base::FilePath GetShortcutPath(

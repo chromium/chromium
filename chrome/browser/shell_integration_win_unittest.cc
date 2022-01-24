@@ -99,7 +99,7 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
     shortcuts_.push_back(shortcut_test_object);
     ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
         shortcut_path, *shortcut_properties,
-        base::win::SHORTCUT_CREATE_ALWAYS));
+        base::win::ShortcutOperation::kCreateAlways));
     shortcut_properties->options = 0U;
   }
 

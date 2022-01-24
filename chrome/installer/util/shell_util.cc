@@ -1016,17 +1016,17 @@ base::win::ShortcutOperation TranslateShortcutOperation(
   switch (operation) {
     case ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS:  // Falls through.
     case ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL:
-      return base::win::SHORTCUT_CREATE_ALWAYS;
+      return base::win::ShortcutOperation::kCreateAlways;
 
     case ShellUtil::SHELL_SHORTCUT_UPDATE_EXISTING:
-      return base::win::SHORTCUT_UPDATE_EXISTING;
+      return base::win::ShortcutOperation::kUpdateExisting;
 
     case ShellUtil::SHELL_SHORTCUT_REPLACE_EXISTING:
-      return base::win::SHORTCUT_REPLACE_EXISTING;
+      return base::win::ShortcutOperation::kReplaceExisting;
 
     default:
       NOTREACHED();
-      return base::win::SHORTCUT_REPLACE_EXISTING;
+      return base::win::ShortcutOperation::kReplaceExisting;
   }
 }
 
@@ -1346,7 +1346,7 @@ bool ShortcutOpRetarget(const base::FilePath& old_target,
   }
 
   bool result = base::win::CreateOrUpdateShortcutLink(
-      shortcut_path, new_prop, base::win::SHORTCUT_UPDATE_EXISTING);
+      shortcut_path, new_prop, base::win::ShortcutOperation::kUpdateExisting);
   LOG_IF(ERROR, !result) << "Failed to retarget " << shortcut_path.value();
   return result;
 }
@@ -1378,7 +1378,8 @@ bool ShortcutOpListOrRemoveUnknownArgs(
   base::win::ShortcutProperties updated_properties;
   updated_properties.set_arguments(desired_args.GetArgumentsString());
   return base::win::CreateOrUpdateShortcutLink(
-      shortcut_path, updated_properties, base::win::SHORTCUT_UPDATE_EXISTING);
+      shortcut_path, updated_properties,
+      base::win::ShortcutOperation::kUpdateExisting);
 }
 
 bool ShortcutOpResetAttributes(const base::FilePath& file_path) {
@@ -1954,7 +1955,7 @@ bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
   bool success = true;
   if (should_install_shortcut) {
     // Make sure the parent directories exist when creating the shortcut.
-    if (shortcut_operation == base::win::SHORTCUT_CREATE_ALWAYS &&
+    if (shortcut_operation == base::win::ShortcutOperation::kCreateAlways &&
         !base::CreateDirectory(chosen_path->DirName())) {
       NOTREACHED();
       return false;
@@ -1966,7 +1967,8 @@ bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
         *chosen_path, shortcut_properties, shortcut_operation);
   }
 
-  if (success && shortcut_operation == base::win::SHORTCUT_CREATE_ALWAYS &&
+  if (success &&
+      shortcut_operation == base::win::ShortcutOperation::kCreateAlways &&
       properties.pin_to_taskbar && base::win::CanPinShortcutToTaskbar()) {
     bool pinned = base::win::PinShortcutToTaskbar(*chosen_path);
     LOG_IF(ERROR, !pinned) << "Failed to pin to taskbar "

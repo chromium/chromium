@@ -282,7 +282,8 @@ ShortcutCommand ShortcutHandler::CreateWithArguments(const std::wstring& name,
   shortcut_properties.set_arguments(args);
   EXPECT_TRUE(base::win::CreateOrUpdateShortcutLink(
       path_to_create, shortcut_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS)) << path_to_create.value();
+      base::win::ShortcutOperation::kCreateAlways))
+      << path_to_create.value();
   shortcut_path_ = path_to_create;
   return ShortcutCommand(shortcut_path_, args);
 }

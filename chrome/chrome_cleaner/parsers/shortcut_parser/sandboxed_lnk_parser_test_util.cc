@@ -22,7 +22,7 @@ base::win::ScopedHandle CreateAndOpenShortcutInTempDir(
       temp_dir->GetPath().AppendASCII(lnk_name.c_str());
   if (!base::win::CreateOrUpdateShortcutLink(
           shortcut_path, properties,
-          base::win::ShortcutOperation::SHORTCUT_CREATE_ALWAYS)) {
+          base::win::ShortcutOperation::kCreateAlways)) {
     LOG(ERROR) << "Could not create shortcut";
     return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
   }

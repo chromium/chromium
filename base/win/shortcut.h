@@ -16,15 +16,15 @@
 namespace base {
 namespace win {
 
-enum ShortcutOperation {
+enum class ShortcutOperation {
   // Create a new shortcut (overwriting if necessary).
-  SHORTCUT_CREATE_ALWAYS = 0,
+  kCreateAlways = 0,
   // Overwrite an existing shortcut (fails if the shortcut doesn't exist).
   // If the arguments are not specified on the new shortcut, keep the old
   // shortcut's arguments.
-  SHORTCUT_REPLACE_EXISTING,
+  kReplaceExisting,
   // Update specified properties only on an existing shortcut.
-  SHORTCUT_UPDATE_EXISTING,
+  kUpdateExisting,
 };
 
 // Properties for shortcuts. Properties set will be applied to the shortcut on
@@ -122,12 +122,12 @@ struct BASE_EXPORT ShortcutProperties {
   uint32_t options = 0U;
 };
 
-// This method creates (or updates) a shortcut link at |shortcut_path| using the
-// information given through |properties|.
+// This method creates (or updates) a shortcut link at `shortcut_path` using the
+// information given through `properties`.
 // Ensure you have initialized COM before calling into this function.
-// |operation|: a choice from the ShortcutOperation enum.
-// If |operation| is SHORTCUT_REPLACE_EXISTING or SHORTCUT_UPDATE_EXISTING and
-// |shortcut_path| does not exist, this method is a no-op and returns false.
+// `operation`: a choice from the ShortcutOperation enum.
+// If `operation` is kReplaceExisting or kUpdateExisting and
+// `shortcut_path` does not exist, this method is a no-op and returns false.
 BASE_EXPORT bool CreateOrUpdateShortcutLink(
     const FilePath& shortcut_path,
     const ShortcutProperties& properties,

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_HANDLER_REGISTRATION_UTILS_WIN_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_HANDLER_REGISTRATION_UTILS_WIN_H_
 
+#include <set>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

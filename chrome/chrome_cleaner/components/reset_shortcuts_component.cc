@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -102,7 +103,8 @@ void ResetShortcuts(std::vector<ShortcutInformation> shortcuts,
                                   base::size(kept_switches));
     updated_properties.set_arguments(desired_args.GetArgumentsString());
     bool success = base::win::CreateOrUpdateShortcutLink(
-        shortcut_path, updated_properties, base::win::SHORTCUT_CREATE_ALWAYS);
+        shortcut_path, updated_properties,
+        base::win::ShortcutOperation::kCreateAlways);
     if (!success)
       LOG(ERROR) << "Reset shortcut failed on: "
                  << SanitizePath(shortcut.lnk_path);
