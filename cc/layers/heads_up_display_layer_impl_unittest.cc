@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
@@ -29,8 +31,9 @@ void CheckDrawLayer(HeadsUpDisplayLayerImpl* layer,
     layer->AppendQuads(render_pass.get(), &data);
   viz::CompositorRenderPassList pass_list;
   pass_list.push_back(std::move(render_pass));
-  layer->UpdateHudTexture(draw_mode, frame_sink, resource_provider,
-                          context_provider, pass_list);
+  bool gpu_raster = context_provider != nullptr;
+  layer->UpdateHudTexture(draw_mode, frame_sink, resource_provider, gpu_raster,
+                          pass_list);
   if (will_draw)
     layer->DidDraw(resource_provider);
 

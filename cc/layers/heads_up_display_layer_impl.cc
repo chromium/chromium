@@ -32,7 +32,6 @@
 #include "cc/paint/paint_shader.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
-#include "cc/raster/scoped_gpu_raster.h"
 #include "cc/resources/memory_history.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -240,21 +239,15 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   // Update state that will be drawn.
   UpdateHudContents();
 
-  // TODO(penghuang): Do not use worker_context_provider() when context_provider
-  // is changed to RasterContextProvider.
-  // https://crbug.com/c/1286950
-  auto* raster_context_provider =
-      gpu_raster ? layer_tree_frame_sink->worker_context_provider() : nullptr;
+  viz::RasterContextProvider* raster_context_provider = nullptr;
   absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
-  bool use_oopr = false;
-  if (raster_context_provider) {
+  if (gpu_raster) {
+    // TODO(penghuang): It would be better to use context_provider() instead of
+    // worker_context_provider() if/when it's switched to RasterContextProvider.
+    raster_context_provider = layer_tree_frame_sink->worker_context_provider();
+    DCHECK(raster_context_provider);
     lock.emplace(raster_context_provider);
-    use_oopr =
-        raster_context_provider->ContextCapabilities().supports_oop_raster;
-    if (!use_oopr) {
-      raster_context_provider = nullptr;
-      lock.reset();
-    }
+    DCHECK(raster_context_provider->ContextCapabilities().supports_oop_raster);
   }
 
   auto* context_provider = layer_tree_frame_sink->context_provider();
@@ -281,8 +274,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   ResourcePool::InUsePoolResource pool_resource;
   bool needs_clear = false;
   if (draw_mode == DRAW_MODE_HARDWARE) {
-    DCHECK(raster_context_provider || context_provider);
-    const auto& caps = raster_context_provider
+    const auto& caps = gpu_raster
                            ? raster_context_provider->ContextCapabilities()
                            : context_provider->ContextCapabilities();
     viz::ResourceFormat format =
@@ -293,9 +285,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
 
     if (!pool_resource.gpu_backing()) {
       auto backing = std::make_unique<HudGpuBacking>();
-      auto* sii = raster_context_provider
-                      ? raster_context_provider->SharedImageInterface()
-                      : context_provider->SharedImageInterface();
+      auto* sii = gpu_raster ? raster_context_provider->SharedImageInterface()
+                             : context_provider->SharedImageInterface();
       backing->shared_image_interface = sii;
       backing->InitOverlayCandidateAndTextureTarget(
           pool_resource.format(), caps,
@@ -304,12 +295,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
               .resource_settings.use_gpu_memory_buffer_resources);
 
       uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY;
-      if (use_oopr) {
+      if (gpu_raster) {
         flags |= gpu::SHARED_IMAGE_USAGE_RASTER |
                  gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-      } else if (gpu_raster) {
-        flags |= gpu::SHARED_IMAGE_USAGE_GLES2 |
-                 gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
       } else {
         flags |= gpu::SHARED_IMAGE_USAGE_GLES2;
       }
@@ -319,7 +307,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
           pool_resource.format(), pool_resource.size(),
           pool_resource.color_space(), kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
-      if (raster_context_provider) {
+      if (gpu_raster) {
         auto* ri = raster_context_provider->RasterInterface();
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       } else {
@@ -329,7 +317,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       pool_resource.set_gpu_backing(std::move(backing));
       needs_clear = true;
     } else if (pool_resource.gpu_backing()->returned_sync_token.HasData()) {
-      if (raster_context_provider) {
+      if (gpu_raster) {
         auto* ri = raster_context_provider->RasterInterface();
         ri->WaitSyncTokenCHROMIUM(
             pool_resource.gpu_backing()->returned_sync_token.GetConstData());
@@ -369,75 +357,41 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     DCHECK(pool_resource.gpu_backing());
     auto* backing = static_cast<HudGpuBacking*>(pool_resource.gpu_backing());
 
-    if (use_oopr) {
-      const auto& size = pool_resource.size();
-      auto display_item_list = base::MakeRefCounted<DisplayItemList>(
-          DisplayItemList::kTopLevelDisplayItemList);
-      RecordPaintCanvas canvas(display_item_list.get(),
-                               SkRect::MakeIWH(size.width(), size.height()));
-      display_item_list->StartPaint();
-      DrawHudContents(&canvas);
-      display_item_list->EndPaintOfUnpaired(gfx::Rect(size));
-      display_item_list->Finalize();
+    const auto& size = pool_resource.size();
+    auto display_item_list = base::MakeRefCounted<DisplayItemList>(
+        DisplayItemList::kTopLevelDisplayItemList);
+    RecordPaintCanvas canvas(display_item_list.get(),
+                             SkRect::MakeIWH(size.width(), size.height()));
+    display_item_list->StartPaint();
+    DrawHudContents(&canvas);
+    display_item_list->EndPaintOfUnpaired(gfx::Rect(size));
+    display_item_list->Finalize();
 
-      auto* ri = raster_context_provider->RasterInterface();
-      constexpr GLuint background_color = SkColorSetARGB(0, 0, 0, 0);
-      constexpr GLuint msaa_sample_count = -1;
-      constexpr bool can_use_lcd_text = true;
-      ri->BeginRasterCHROMIUM(background_color, needs_clear, msaa_sample_count,
-                              gpu::raster::kNoMSAA, can_use_lcd_text,
-                              gfx::ColorSpace::CreateSRGB(),
-                              backing->mailbox.name);
-      gfx::Vector2dF post_translate(0.f, 0.f);
-      gfx::Vector2dF post_scale(1.f, 1.f);
-      DummyImageProvider image_provider;
-      size_t max_op_size_limit =
-          gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-      ri->RasterCHROMIUM(display_item_list.get(), &image_provider, size,
-                         gfx::Rect(size), gfx::Rect(size), post_translate,
-                         post_scale, false /* requires_clear */,
-                         &max_op_size_limit);
-      ri->EndRasterCHROMIUM();
-      backing->mailbox_sync_token =
-          viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
-    } else {
-      auto* gl = context_provider->ContextGL();
-      GLuint mailbox_texture_id =
-          gl->CreateAndTexStorage2DSharedImageCHROMIUM(backing->mailbox.name);
-      gl->BeginSharedImageAccessDirectCHROMIUM(
-          mailbox_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-
-      {
-        ScopedGpuRaster scoped_gpu_raster(context_provider);
-        viz::ClientResourceProvider::ScopedSkSurface scoped_surface(
-            context_provider->GrContext(),
-            pool_resource.color_space().ToSkColorSpace(), mailbox_texture_id,
-            backing->texture_target, pool_resource.size(),
-            pool_resource.format(),
-            skia::LegacyDisplayGlobals::ComputeSurfaceProps(
-                false /* can_use_lcd_text */),
-            0 /* msaa_sample_count */);
-        SkSurface* surface = scoped_surface.surface();
-        if (!surface) {
-          pool_->ReleaseResource(std::move(pool_resource));
-          return;
-        }
-        SkiaPaintCanvas canvas(surface->getCanvas());
-        DrawHudContents(&canvas);
-      }
-
-      gl->EndSharedImageAccessDirectCHROMIUM(mailbox_texture_id);
-      gl->DeleteTextures(1, &mailbox_texture_id);
-      backing->mailbox_sync_token =
-          viz::ClientResourceProvider::GenerateSyncTokenHelper(gl);
-    }
+    auto* ri = raster_context_provider->RasterInterface();
+    constexpr GLuint background_color = SkColorSetARGB(0, 0, 0, 0);
+    constexpr GLuint msaa_sample_count = -1;
+    constexpr bool can_use_lcd_text = true;
+    ri->BeginRasterCHROMIUM(
+        background_color, needs_clear, msaa_sample_count, gpu::raster::kNoMSAA,
+        can_use_lcd_text, gfx::ColorSpace::CreateSRGB(), backing->mailbox.name);
+    constexpr gfx::Vector2dF post_translate(0.f, 0.f);
+    constexpr gfx::Vector2dF post_scale(1.f, 1.f);
+    DummyImageProvider image_provider;
+    size_t max_op_size_limit =
+        gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
+    ri->RasterCHROMIUM(display_item_list.get(), &image_provider, size,
+                       gfx::Rect(size), gfx::Rect(size), post_translate,
+                       post_scale, /*requires_clear=*/false,
+                       &max_op_size_limit);
+    ri->EndRasterCHROMIUM();
+    backing->mailbox_sync_token =
+        viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
   } else if (draw_mode == DRAW_MODE_HARDWARE) {
     // If not using |gpu_raster| but using gpu compositing, we DrawHudContents()
     // into a software bitmap and upload it to a texture for compositing.
     DCHECK(pool_resource.gpu_backing());
     auto* backing = static_cast<HudGpuBacking*>(pool_resource.gpu_backing());
-    gpu::gles2::GLES2Interface* gl =
-        layer_tree_impl()->context_provider()->ContextGL();
+    gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
 
     if (!staging_surface_ ||
         gfx::SkISizeToSize(staging_surface_->getCanvas()->getBaseLayerSize()) !=
