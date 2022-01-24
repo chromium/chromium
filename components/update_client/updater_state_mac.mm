@@ -70,11 +70,12 @@ base::Version GetVersionFromPlist(const base::FilePath& info_plist) {
 
 }  // namespace
 
-std::string UpdaterState::GetUpdaterName() {
+std::string UpdaterState::StateReaderKeystone::GetUpdaterName() const {
   return std::string("Keystone");
 }
 
-base::Version UpdaterState::GetUpdaterVersion(bool /*is_machine*/) {
+base::Version UpdaterState::StateReaderKeystone::GetUpdaterVersion(
+    bool /*is_machine*/) const {
   // System Keystone trumps user one, so check this one first
   base::FilePath local_library;
   bool success = base::mac::GetLocalDirectory(NSLibraryDirectory,
@@ -91,26 +92,30 @@ base::Version UpdaterState::GetUpdaterVersion(bool /*is_machine*/) {
   return GetVersionFromPlist(user_bundle_plist);
 }
 
-base::Time UpdaterState::GetUpdaterLastStartedAU(bool /*is_machine*/) {
+base::Time UpdaterState::StateReaderKeystone::GetUpdaterLastStartedAU(
+    bool /*is_machine*/) const {
   return GetUpdaterSettingsTime(@"lastCheckStartDate");
 }
 
-base::Time UpdaterState::GetUpdaterLastChecked(bool /*is_machine*/) {
+base::Time UpdaterState::StateReaderKeystone::GetUpdaterLastChecked(
+    bool /*is_machine*/) const {
   return GetUpdaterSettingsTime(@"lastServerCheckDate");
 }
 
-bool UpdaterState::IsAutoupdateCheckEnabled() {
+bool UpdaterState::StateReaderKeystone::IsAutoupdateCheckEnabled() const {
   // Auto-update check period override (in seconds).
   // Applies only to older versions of Keystone.
   base::scoped_nsobject<NSNumber> timeInterval =
       GetUpdaterSettingsValue<NSNumber>(@"checkInterval");
-  if (!timeInterval.get()) return true;
+  if (!timeInterval.get()) {
+    return true;
+  }
   int value = [timeInterval intValue];
 
   return 0 < value && value < (24 * 60 * 60);
 }
 
-int UpdaterState::GetUpdatePolicy() {
+int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
   return -1;  // Keystone does not support update policies.
 }
 

@@ -12,6 +12,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -28,37 +30,83 @@ class UpdaterState {
   ~UpdaterState();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(UpdaterStateTest, Serialize);
+  FRIEND_TEST_ALL_PREFIXES(UpdaterStateTest, SerializeChrome);
+  FRIEND_TEST_ALL_PREFIXES(UpdaterStateTest, SerializeChromium);
+
+  struct State {
+    State();
+    State(const State&);
+    State& operator=(const State&);
+    ~State();
+
+    std::string updater_name;
+    base::Version updater_version;
+    base::Time last_autoupdate_started;
+    base::Time last_checked;
+    bool is_autoupdate_check_enabled = false;
+    int update_policy = 0;
+  };
+
+  class StateReader {
+   public:
+    static std::unique_ptr<StateReader> Create();
+
+    // Returns the state of the Chrome updater.
+    State Read(bool is_machine) const;
+
+    virtual ~StateReader() = default;
+
+   private:
+    virtual std::string GetUpdaterName() const = 0;
+    virtual base::Version GetUpdaterVersion(bool is_machine) const = 0;
+    virtual bool IsAutoupdateCheckEnabled() const = 0;
+    virtual base::Time GetUpdaterLastStartedAU(bool is_machine) const = 0;
+    virtual base::Time GetUpdaterLastChecked(bool is_machine) const = 0;
+    virtual int GetUpdatePolicy() const = 0;
+  };
+
+#if BUILDFLAG(IS_MAC)
+  class StateReaderKeystone final : public StateReader {
+   private:
+    std::string GetUpdaterName() const override;
+    base::Version GetUpdaterVersion(bool is_machine) const override;
+    bool IsAutoupdateCheckEnabled() const override;
+    base::Time GetUpdaterLastStartedAU(bool is_machine) const override;
+    base::Time GetUpdaterLastChecked(bool is_machine) const override;
+    int GetUpdatePolicy() const override;
+  };
+#elif BUILDFLAG(IS_WIN)
+  class StateReaderOmaha final : public StateReader {
+   private:
+    std::string GetUpdaterName() const override;
+    base::Version GetUpdaterVersion(bool is_machine) const override;
+    bool IsAutoupdateCheckEnabled() const override;
+    base::Time GetUpdaterLastStartedAU(bool is_machine) const override;
+    base::Time GetUpdaterLastChecked(bool is_machine) const override;
+    int GetUpdatePolicy() const override;
+  };
+#endif
 
   explicit UpdaterState(bool is_machine);
 
-  // This function is best-effort. It updates the class members with
-  // the relevant values that could be retrieved.
-  void ReadState();
+  // Builds the map of state attributes by serializing the state of this object.
+  Attributes Serialize() const;
 
-  // Builds the map of state attributes by serializing this object state.
-  Attributes BuildAttributes() const;
+  static absl::optional<State> ReadState(bool is_machine);
 
   static std::string GetUpdaterName();
   static base::Version GetUpdaterVersion(bool is_machine);
   static bool IsAutoupdateCheckEnabled();
   static base::Time GetUpdaterLastStartedAU(bool is_machine);
   static base::Time GetUpdaterLastChecked(bool is_machine);
-
   static int GetUpdatePolicy();
 
   static std::string NormalizeTimeDelta(const base::TimeDelta& delta);
 
-  // True if the Omaha updater is installed per-machine.
-  // The MacOS implementation ignores the value of this member but this may
-  // change in the future.
+  // True if the updater is installed per-machine.
   bool is_machine_ = false;
-  std::string updater_name_;
-  base::Version updater_version_;
-  base::Time last_autoupdate_started_;
-  base::Time last_checked_;
-  bool is_autoupdate_check_enabled_ = false;
-  int update_policy_ = 0;
+
+  absl::optional<State> state_;
 };
 
 }  // namespace update_client

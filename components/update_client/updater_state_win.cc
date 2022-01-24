@@ -59,11 +59,12 @@ base::Time GetUpdaterTimeValue(bool is_machine, const wchar_t* value_name) {
 
 }  // namespace
 
-std::string UpdaterState::GetUpdaterName() {
+std::string UpdaterState::StateReaderOmaha::GetUpdaterName() const {
   return std::string("Omaha");
 }
 
-base::Version UpdaterState::GetUpdaterVersion(bool is_machine) {
+base::Version UpdaterState::StateReaderOmaha::GetUpdaterVersion(
+    bool is_machine) const {
   const HKEY root_key = is_machine ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
   std::wstring version;
   base::win::RegKey key;
@@ -77,12 +78,22 @@ base::Version UpdaterState::GetUpdaterVersion(bool is_machine) {
   return base::Version();
 }
 
-base::Time UpdaterState::GetUpdaterLastStartedAU(bool is_machine) {
+bool UpdaterState::StateReaderOmaha::IsAutoupdateCheckEnabled() const {
+  return UpdaterState::IsAutoupdateCheckEnabled();
+}
+
+base::Time UpdaterState::StateReaderOmaha::GetUpdaterLastStartedAU(
+    bool is_machine) const {
   return GetUpdaterTimeValue(is_machine, kRegValueLastStartedAU);
 }
 
-base::Time UpdaterState::GetUpdaterLastChecked(bool is_machine) {
+base::Time UpdaterState::StateReaderOmaha::GetUpdaterLastChecked(
+    bool is_machine) const {
   return GetUpdaterTimeValue(is_machine, kRegValueLastChecked);
+}
+
+int UpdaterState::StateReaderOmaha::GetUpdatePolicy() const {
+  return UpdaterState::GetUpdatePolicy();
 }
 
 bool UpdaterState::IsAutoupdateCheckEnabled() {
