@@ -223,8 +223,6 @@ static_library("renderer") {
       "pepper/chrome_renderer_pepper_host_factory.h",
       "pepper/pepper_flash_font_file_host.cc",
       "pepper/pepper_flash_font_file_host.h",
-      "pepper/pepper_flash_fullscreen_host.cc",
-      "pepper/pepper_flash_fullscreen_host.h",
       "pepper/pepper_helper.cc",
       "pepper/pepper_helper.h",
       "pepper/pepper_shared_memory_message_filter.cc",

@@ -2051,11 +2051,6 @@ IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFontFile_GetFontTable,
 IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashFontFile_GetFontTableReply,
                      std::string /* output */)
 
-// Flash fullscreen.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashFullscreen_Create)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFullscreen_SetFullscreen,
-                     bool /* fullscreen */)
-
 // PDF ------------------------------------------------------------------------
 
 // Creates the PDF resource.

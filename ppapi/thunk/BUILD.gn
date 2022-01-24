@@ -73,7 +73,6 @@ source_set("thunk") {
     "ppb_file_system_thunk.cc",
     "ppb_find_private_thunk.cc",
     "ppb_flash_font_file_api.h",
-    "ppb_flash_fullscreen_api.h",
     "ppb_fullscreen_thunk.cc",
     "ppb_gamepad_api.h",
     "ppb_gamepad_thunk.cc",

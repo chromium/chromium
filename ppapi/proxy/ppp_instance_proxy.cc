@@ -27,7 +27,6 @@
 #include "ppapi/shared_impl/resource_tracker.h"
 #include "ppapi/shared_impl/scoped_pp_resource.h"
 #include "ppapi/thunk/enter.h"
-#include "ppapi/thunk/ppb_flash_fullscreen_api.h"
 #include "ppapi/thunk/ppb_view_api.h"
 
 namespace ppapi {
@@ -75,11 +74,10 @@ void DidChangeView(PP_Instance instance, PP_Resource view_resource) {
     return;
   }
 
-  PP_Bool flash_fullscreen = PP_FALSE;
   EnterInstanceNoLock enter_instance(instance);
   dispatcher->Send(new PpapiMsg_PPPInstance_DidChangeView(
       API_ID_PPP_INSTANCE, instance, enter_view.object()->GetData(),
-      flash_fullscreen));
+      /*flash_fullscreen=*/PP_FALSE));
 }
 
 void DidChangeFocus(PP_Instance instance, PP_Bool has_focus) {
@@ -201,7 +199,7 @@ void PPP_Instance_Proxy::OnPluginMsgDidDestroy(PP_Instance instance) {
 void PPP_Instance_Proxy::OnPluginMsgDidChangeView(
     PP_Instance instance,
     const ViewData& new_data,
-    PP_Bool flash_fullscreen) {
+    PP_Bool /*flash_fullscreen*/) {
   PluginDispatcher* dispatcher = PluginDispatcher::GetForInstance(instance);
   if (!dispatcher)
     return;
@@ -209,12 +207,6 @@ void PPP_Instance_Proxy::OnPluginMsgDidChangeView(
   if (!data)
     return;
   data->view = new_data;
-
-#if !BUILDFLAG(IS_NACL)
-  EnterInstanceAPINoLock<PPB_Flash_Fullscreen_API> enter(instance);
-  if (!enter.failed())
-    enter.functions()->SetLocalIsFullscreen(instance, flash_fullscreen);
-#endif  // !BUILDFLAG(IS_NACL)
 
   ScopedPPResource resource(
       ScopedPPResource::PassRef(),
