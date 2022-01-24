@@ -138,7 +138,10 @@ void BrowserAppInstanceRegistry::NotifyExistingInstances(
   for (const auto& pair : ash_instance_tracker_.window_instances_) {
     observer->OnBrowserWindowAdded(*pair.second);
   }
-  for (const auto& pair : ash_instance_tracker_.app_instances_) {
+  for (const auto& pair : ash_instance_tracker_.app_tab_instances_) {
+    observer->OnBrowserAppAdded(*pair.second);
+  }
+  for (const auto& pair : ash_instance_tracker_.app_window_instances_) {
     observer->OnBrowserAppAdded(*pair.second);
   }
   for (const auto& pair : lacros_window_instances_) {

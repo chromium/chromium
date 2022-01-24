@@ -64,6 +64,8 @@ struct BrowserAppInstance {
   aura::Window* window;
   std::string title;
   bool is_browser_active;
+  // If a tab is active in the browser's tab strip. Only applicable to instances
+  // with type kAppTab. Always set to true for app instances of type kAppWindow.
   bool is_web_contents_active;
   uint32_t browser_session_id;
   uint32_t restored_browser_session_id;

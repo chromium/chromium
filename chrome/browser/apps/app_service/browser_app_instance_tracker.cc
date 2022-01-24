@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_context.h"
@@ -67,10 +68,6 @@ wm::ActivationClient* ActivationClientForBrowser(Browser* browser) {
   return client;
 }
 
-std::string GetAppId(content::WebContents* contents) {
-  return GetInstanceAppIdForWebContents(contents).value_or("");
-}
-
 bool IsBrowserActive(Browser* browser) {
   auto* aura_window = AuraWindowForBrowser(browser);
   auto* activation_client = ActivationClientForBrowser(browser);
@@ -79,6 +76,34 @@ bool IsBrowserActive(Browser* browser) {
 
 bool IsWebContentsActive(Browser* browser, content::WebContents* contents) {
   return browser->tab_strip_model()->GetActiveWebContents() == contents;
+}
+
+std::string GetAppIdForTab(content::WebContents* contents) {
+  return GetInstanceAppIdForWebContents(contents).value_or("");
+}
+
+std::string GetAppIdForBrowser(Browser* browser) {
+  return web_app::GetAppIdFromApplicationName(browser->app_name());
+}
+
+std::string GetTitle(content::WebContents* contents) {
+  return base::UTF16ToUTF8(contents->GetTitle());
+}
+
+std::string GetTitle(Browser* browser) {
+  content::WebContents* active_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  return active_contents ? base::UTF16ToUTF8(active_contents->GetTitle()) : "";
+}
+
+bool IsAppWindow(Browser* browser) {
+  return (browser->is_type_app() || browser->is_type_app_popup()) &&
+         GetAppIdForBrowser(browser) != "";
+}
+
+bool IsBrowserWindow(Browser* browser) {
+  return browser->is_type_normal() || browser->is_type_popup() ||
+         browser->is_type_devtools();
 }
 
 }  // namespace
@@ -133,16 +158,34 @@ BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
 
 const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
     content::WebContents* contents) const {
-  return GetInstance(app_instances_, contents);
+  // Try get the app tab instance first, if exists.
+  const BrowserAppInstance* instance =
+      GetInstance(app_tab_instances_, contents);
+  if (instance) {
+    return instance;
+  }
+  // Then app window instance, which should be at most one per WebContents,
+  // although multiple WebContents can map to a single app window instance, in
+  // case of app windows with tab strips.
+  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  if (!browser) {
+    return nullptr;
+  }
+  return GetAppInstance(browser);
 }
 
-const BrowserWindowInstance* BrowserAppInstanceTracker::GetWindowInstance(
+const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
     Browser* browser) const {
+  return GetInstance(app_window_instances_, browser);
+}
+
+const BrowserWindowInstance*
+BrowserAppInstanceTracker::GetBrowserWindowInstance(Browser* browser) const {
   return GetInstance(window_instances_, browser);
 }
 
 void BrowserAppInstanceTracker::ActivateTabInstance(base::UnguessableToken id) {
-  for (const auto& pair : app_instances_) {
+  for (const auto& pair : app_tab_instances_) {
     const BrowserAppInstance& instance = *pair.second;
     if (instance.id == id) {
       Browser* browser = chrome::FindBrowserWithWebContents(pair.first);
@@ -156,21 +199,33 @@ void BrowserAppInstanceTracker::ActivateTabInstance(base::UnguessableToken id) {
 }
 
 void BrowserAppInstanceTracker::StopInstancesOfApp(const std::string& app_id) {
+  // Handle app tabs.
   std::vector<content::WebContents*> web_contents_to_close;
-  for (const auto& pair : app_instances_) {
+  for (const auto& pair : app_tab_instances_) {
     if (pair.second->app_id == app_id) {
       web_contents_to_close.push_back(pair.first);
     }
   }
-
   for (content::WebContents* web_contents : web_contents_to_close) {
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-    if (!browser)
+    if (!browser) {
       continue;
+    }
     int index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
     DCHECK(index != TabStripModel::kNoTab);
     browser->tab_strip_model()->CloseWebContentsAt(index,
                                                    TabStripModel::CLOSE_NONE);
+  }
+
+  // Handle app windows.
+  std::vector<Browser*> browsers_to_close;
+  for (const auto& pair : app_window_instances_) {
+    if (pair.second->app_id == app_id) {
+      browsers_to_close.push_back(pair.first);
+    }
+  }
+  for (Browser* browser : browsers_to_close) {
+    browser->tab_strip_model()->CloseAllTabs();
   }
 }
 
@@ -359,14 +414,21 @@ void BrowserAppInstanceTracker::OnBrowserFirstTabAttached(Browser* browser) {
   }
 
   tracked_browsers_.insert(browser);
-  if (browser->is_type_normal() || browser->is_type_popup() ||
-      browser->is_type_devtools()) {
-    CreateWindowInstance(browser);
+  if (IsBrowserWindow(browser)) {
+    CreateBrowserWindowInstance(browser);
+  } else if (IsAppWindow(browser)) {
+    // All tabs in the app window will map to the same app ID
+    std::string app_id = GetAppIdForBrowser(browser);
+    CreateAppWindowInstance(std::move(app_id), browser);
   }
 }
 
 void BrowserAppInstanceTracker::OnBrowserLastTabDetached(Browser* browser) {
-  RemoveWindowInstanceIfExists(browser);
+  if (IsBrowserWindow(browser)) {
+    RemoveBrowserWindowInstanceIfExists(browser);
+  } else if (IsAppWindow(browser)) {
+    RemoveAppWindowInstanceIfExists(browser);
+  }
   tracked_browsers_.erase(browser);
 
   // Unobserve the activation client of the root window of the browser's aura
@@ -383,9 +445,13 @@ void BrowserAppInstanceTracker::OnTabCreated(Browser* browser,
       std::make_unique<BrowserAppInstanceTracker::WebContentsObserver>(contents,
                                                                        this);
 
-  std::string app_id = GetAppId(contents);
+  if (IsAppWindow(browser)) {
+    return;
+  }
+
+  std::string app_id = GetAppIdForTab(contents);
   if (!app_id.empty()) {
-    CreateAppInstance(std::move(app_id), browser, contents);
+    CreateAppTabInstance(std::move(app_id), browser, contents);
   }
 }
 
@@ -396,23 +462,31 @@ void BrowserAppInstanceTracker::OnTabAttached(Browser* browser,
 
 void BrowserAppInstanceTracker::OnTabUpdated(Browser* browser,
                                              content::WebContents* contents) {
-  std::string new_app_id = GetAppId(contents);
-  BrowserAppInstance* instance = GetInstance(app_instances_, contents);
+  if (IsAppWindow(browser)) {
+    BrowserAppInstance* instance = GetInstance(app_window_instances_, browser);
+    DCHECK(instance);
+    MaybeUpdateAppWindowInstance(*instance, browser);
+    return;
+  }
+
+  // Handle app tabs.
+  std::string new_app_id = GetAppIdForTab(contents);
+  BrowserAppInstance* instance = GetInstance(app_tab_instances_, contents);
   if (instance) {
     if (instance->app_id != new_app_id) {
       // If app ID changed on navigation, remove the old app.
-      RemoveAppInstanceIfExists(contents);
+      RemoveAppTabInstanceIfExists(contents);
       // Add the new app instance, if navigated to another app.
       if (!new_app_id.empty()) {
-        CreateAppInstance(std::move(new_app_id), browser, contents);
+        CreateAppTabInstance(std::move(new_app_id), browser, contents);
       }
     } else {
       // App ID did not change, but other attributes may have.
-      MaybeUpdateAppInstance(*instance, browser, contents);
+      MaybeUpdateAppTabInstance(*instance, browser, contents);
     }
   } else if (!new_app_id.empty()) {
     // Tab previously had no app ID, but navigated to a URL that does.
-    CreateAppInstance(std::move(new_app_id), browser, contents);
+    CreateAppTabInstance(std::move(new_app_id), browser, contents);
   } else {
     // Tab without an app has changed, we don't care about it.
   }
@@ -420,7 +494,7 @@ void BrowserAppInstanceTracker::OnTabUpdated(Browser* browser,
 
 void BrowserAppInstanceTracker::OnTabClosing(Browser* browser,
                                              content::WebContents* contents) {
-  RemoveAppInstanceIfExists(contents);
+  RemoveAppTabInstanceIfExists(contents);
   DCHECK(base::Contains(webcontents_to_observer_map_, contents));
   webcontents_to_observer_map_.erase(contents);
 }
@@ -441,7 +515,7 @@ void BrowserAppInstanceTracker::OnBrowserWindowUpdated(Browser* browser) {
   }
   BrowserWindowInstance* instance = GetInstance(window_instances_, browser);
   if (instance) {
-    MaybeUpdateWindowInstance(*instance, browser);
+    MaybeUpdateBrowserWindowInstance(*instance, browser);
   }
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -451,44 +525,39 @@ void BrowserAppInstanceTracker::OnBrowserWindowUpdated(Browser* browser) {
   }
 }
 
-void BrowserAppInstanceTracker::CreateAppInstance(
+void BrowserAppInstanceTracker::CreateAppTabInstance(
     std::string app_id,
     Browser* browser,
     content::WebContents* contents) {
-  auto& instance = AddInstance(
-      app_instances_, contents,
-      std::make_unique<BrowserAppInstance>(
-          GenerateId(),
-          (browser->is_type_app() || browser->is_type_app_popup())
-              ? BrowserAppInstance::Type::kAppWindow
-              : BrowserAppInstance::Type::kAppTab,
-          std::move(app_id), browser->window()->GetNativeWindow(),
-          base::UTF16ToUTF8(contents->GetTitle()), IsBrowserActive(browser),
-          IsWebContentsActive(browser, contents), browser->session_id().id(),
-          browser->create_params().restore_id));
+  auto new_instance = std::make_unique<BrowserAppInstance>(
+      GenerateId(), BrowserAppInstance::Type::kAppTab, std::move(app_id),
+      browser->window()->GetNativeWindow(), GetTitle(contents),
+      IsBrowserActive(browser), IsWebContentsActive(browser, contents),
+      browser->session_id().id(), browser->create_params().restore_id);
+  auto& instance =
+      AddInstance(app_tab_instances_, contents, std::move(new_instance));
   for (auto& observer : observers_) {
     observer.OnBrowserAppAdded(instance);
   }
 }
 
-void BrowserAppInstanceTracker::MaybeUpdateAppInstance(
+void BrowserAppInstanceTracker::MaybeUpdateAppTabInstance(
     BrowserAppInstance& instance,
     Browser* browser,
     content::WebContents* contents) {
   if (instance.MaybeUpdate(
-          browser->window()->GetNativeWindow(),
-          base::UTF16ToUTF8(contents->GetTitle()), IsBrowserActive(browser),
-          IsWebContentsActive(browser, contents), browser->session_id().id(),
-          browser->create_params().restore_id)) {
+          browser->window()->GetNativeWindow(), GetTitle(contents),
+          IsBrowserActive(browser), IsWebContentsActive(browser, contents),
+          browser->session_id().id(), browser->create_params().restore_id)) {
     for (auto& observer : observers_) {
       observer.OnBrowserAppUpdated(instance);
     }
   }
 }
 
-void BrowserAppInstanceTracker::RemoveAppInstanceIfExists(
+void BrowserAppInstanceTracker::RemoveAppTabInstanceIfExists(
     content::WebContents* contents) {
-  auto instance = PopInstanceIfExists(app_instances_, contents);
+  auto instance = PopInstanceIfExists(app_tab_instances_, contents);
   if (instance) {
     for (auto& observer : observers_) {
       observer.OnBrowserAppRemoved(*instance);
@@ -496,7 +565,46 @@ void BrowserAppInstanceTracker::RemoveAppInstanceIfExists(
   }
 }
 
-void BrowserAppInstanceTracker::CreateWindowInstance(Browser* browser) {
+void BrowserAppInstanceTracker::CreateAppWindowInstance(std::string app_id,
+                                                        Browser* browser) {
+  auto new_instance = std::make_unique<BrowserAppInstance>(
+      GenerateId(), BrowserAppInstance::Type::kAppWindow, std::move(app_id),
+      browser->window()->GetNativeWindow(), GetTitle(browser),
+      IsBrowserActive(browser),
+      /*is_web_contents_active=*/true, browser->session_id().id(),
+      browser->create_params().restore_id);
+  auto& instance =
+      AddInstance(app_window_instances_, browser, std::move(new_instance));
+  for (auto& observer : observers_) {
+    observer.OnBrowserAppAdded(instance);
+  }
+}
+
+void BrowserAppInstanceTracker::MaybeUpdateAppWindowInstance(
+    BrowserAppInstance& instance,
+    Browser* browser) {
+  if (instance.MaybeUpdate(browser->window()->GetNativeWindow(),
+                           GetTitle(browser), IsBrowserActive(browser),
+                           /*is_web_contents_active=*/true,
+                           browser->session_id().id(),
+                           browser->create_params().restore_id)) {
+    for (auto& observer : observers_) {
+      observer.OnBrowserAppUpdated(instance);
+    }
+  }
+}
+
+void BrowserAppInstanceTracker::RemoveAppWindowInstanceIfExists(
+    Browser* browser) {
+  auto instance = PopInstanceIfExists(app_window_instances_, browser);
+  if (instance) {
+    for (auto& observer : observers_) {
+      observer.OnBrowserAppRemoved(*instance);
+    }
+  }
+}
+
+void BrowserAppInstanceTracker::CreateBrowserWindowInstance(Browser* browser) {
   auto& instance = AddInstance(
       window_instances_, browser,
       std::make_unique<BrowserWindowInstance>(
@@ -508,7 +616,7 @@ void BrowserAppInstanceTracker::CreateWindowInstance(Browser* browser) {
   }
 }
 
-void BrowserAppInstanceTracker::MaybeUpdateWindowInstance(
+void BrowserAppInstanceTracker::MaybeUpdateBrowserWindowInstance(
     BrowserWindowInstance& instance,
     Browser* browser) {
   if (instance.MaybeUpdate(IsBrowserActive(browser))) {
@@ -518,7 +626,8 @@ void BrowserAppInstanceTracker::MaybeUpdateWindowInstance(
   }
 }
 
-void BrowserAppInstanceTracker::RemoveWindowInstanceIfExists(Browser* browser) {
+void BrowserAppInstanceTracker::RemoveBrowserWindowInstanceIfExists(
+    Browser* browser) {
   auto instance = PopInstanceIfExists(window_instances_, browser);
   if (instance) {
     for (auto& observer : observers_) {

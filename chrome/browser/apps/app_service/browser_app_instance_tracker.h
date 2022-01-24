@@ -55,12 +55,19 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   BrowserAppInstanceTracker& operator=(const BrowserAppInstanceTracker&) =
       delete;
 
-  // Get app instance running in a |contents|. Returns null if no app is found.
+  // Get an app instance associated with |contents|. It will return either an
+  // app instance associated with this tab, or an app instance associated with a
+  // browser containing this tab (for app windows and tabs in tabbed app
+  // windows). Returns null if no app is found.
   const BrowserAppInstance* GetAppInstance(
       content::WebContents* contents) const;
 
+  // Get a window app instance associated with |browser|. Returns null if no app
+  // is found.
+  const BrowserAppInstance* GetAppInstance(Browser* browser) const;
+
   // Get Chrome instance running in |browser|. Returns null if not found.
-  const BrowserWindowInstance* GetWindowInstance(Browser* browser) const;
+  const BrowserWindowInstance* GetBrowserWindowInstance(Browser* browser) const;
 
   // Activate the given instance within its tabstrip. If the instance lives in
   // its own window, this will have no effect.
@@ -131,31 +138,41 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // Called on browser window changes. Sends update events for all open tabs.
   void OnBrowserWindowUpdated(Browser* browser);
 
-  // Creates an app instance for the app running in |WebContents|. Handles both
-  // apps in tabs and windows.
-  void CreateAppInstance(std::string app_id,
-                         Browser* browser,
-                         content::WebContents* contents);
+  // App tab instance lifecycle
 
+  // Creates an app tab instance for the app running in |contents|.
+  void CreateAppTabInstance(std::string app_id,
+                            Browser* browser,
+                            content::WebContents* contents);
   // Updates the app instance with the new attributes and notifies observers, if
   // it was updated.
-  void MaybeUpdateAppInstance(BrowserAppInstance& instance,
-                              Browser* browser,
-                              content::WebContents* contents);
+  void MaybeUpdateAppTabInstance(BrowserAppInstance& instance,
+                                 Browser* browser,
+                                 content::WebContents* contents);
+  // Removes the app tab instance, if it exists, and notifies observers.
+  void RemoveAppTabInstanceIfExists(content::WebContents* contents);
 
-  // Removes the app instance, if it exists, and notifies observers.
-  void RemoveAppInstanceIfExists(content::WebContents* contents);
+  // App window instance lifecycle
+
+  // Creates an app window instance for the app running in |browser|.
+  void CreateAppWindowInstance(std::string app_id, Browser* browser);
+  // Updates the app instance with the new attributes and notifies observers, if
+  // it was updated.
+  void MaybeUpdateAppWindowInstance(BrowserAppInstance& instance,
+                                    Browser* browser);
+  // Removes the app window instance, if it exists, and notifies observers.
+  void RemoveAppWindowInstanceIfExists(Browser* browser);
+
+  // Browser window instance lifecycle
 
   // Creates an app instance for a Chrome browser window.
-  void CreateWindowInstance(Browser* browser);
-
+  void CreateBrowserWindowInstance(Browser* browser);
   // Updates the browser instance with the new attributes and notifies
   // observers, if it was updated.
-  void MaybeUpdateWindowInstance(BrowserWindowInstance& instance,
-                                 Browser* browser);
-
+  void MaybeUpdateBrowserWindowInstance(BrowserWindowInstance& instance,
+                                        Browser* browser);
   // Removes the browser instance, if it exists, and notifies observers.
-  void RemoveWindowInstanceIfExists(Browser* browser);
+  void RemoveBrowserWindowInstanceIfExists(Browser* browser);
 
   // Virtual to override in tests.
   virtual base::UnguessableToken GenerateId() const;
@@ -184,10 +201,12 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // another.
   std::set<content::WebContents*> tabs_in_transit_;
 #endif
-
-  // A set of all apps running in either tabs or windows.
+  // App instances running in tabs.
   BrowserAppInstanceMap<content::WebContents*, BrowserAppInstance>
-      app_instances_;
+      app_tab_instances_;
+
+  // App instances running in windows.
+  BrowserAppInstanceMap<Browser*, BrowserAppInstance> app_window_instances_;
 
   // Chrome browser windows.
   BrowserAppInstanceMap<Browser*, BrowserWindowInstance> window_instances_;

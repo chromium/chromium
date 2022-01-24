@@ -8,16 +8,22 @@
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/ash/web_applications/crosh_system_web_app_info.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -319,7 +325,10 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
   }
 
   uint64_t GetId(Browser* browser) {
-    const auto* instance = tracker_->GetWindowInstance(browser);
+    if (const auto* instance = tracker_->GetAppInstance(browser)) {
+      return ToUint64(instance->id);
+    }
+    const auto* instance = tracker_->GetBrowserWindowInstance(browser);
     return instance ? ToUint64(instance->id) : 0;
   }
 
@@ -643,14 +652,14 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
   content::WebContents* tab = nullptr;
   aura::Window* window = nullptr;
 
-  // Open app D in a window.(configured to open in a window).
+  // Open app D in a window (configured to open in a window).
   {
     SCOPED_TRACE("create a windowed app in a window");
     Recorder recorder(*tracker_);
 
     browser = CreateAppBrowser(app_id);
     tab = InsertForegroundTab(browser, "https://d.example.org");
-    EXPECT_EQ(GetId(browser), 0);
+    EXPECT_EQ(GetId(browser), 1);
     EXPECT_EQ(GetId(tab), 1);
     window = browser->window()->GetNativeWindow();
     recorder.Verify({
@@ -681,6 +690,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
 
     browser = CreateAppBrowser(kAppId_A);
     tab = InsertForegroundTab(browser, "https://a.example.org");
+    EXPECT_EQ(GetId(browser), 2);
     EXPECT_EQ(GetId(tab), 2);
     window = browser->window()->GetNativeWindow();
     // When open in a window it's still an app, even if configured to open in a
@@ -702,6 +712,72 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
     recorder.Verify({
         {"removed", 2, kAppWindow, kAppId_A, window, kTitle_A, kActive,
          kActive},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
+  // Make sure we can use crosh.
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(web_app::WebAppProvider::GetForSystemWebApps(profile));
+  web_app::WebAppProvider::GetForSystemWebApps(profile)
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  std::string app_id = web_app::GenerateAppId(
+      absl::nullopt, GURL(chrome::kChromeUIUntrustedCroshURL));
+
+  Browser* browser = nullptr;
+  aura::Window* window = nullptr;
+
+  {
+    SCOPED_TRACE("create an app window");
+    Recorder recorder(*tracker_);
+
+    // Open an app window (crosh) and insert a tab.
+    browser = CreateAppBrowser(app_id);
+    chrome::NewTab(browser);
+    content::WebContents* tab = browser->tab_strip_model()->GetWebContentsAt(0);
+    tab->UpdateTitleForEntry(tab->GetController().GetLastCommittedEntry(),
+                             u"crosh1");
+
+    // A window is added, both the window and the tab map to the same app
+    // instance.
+    EXPECT_EQ(GetId(browser), 1);
+    EXPECT_EQ(GetId(tab), 1);
+    window = browser->window()->GetNativeWindow();
+    recorder.Verify({
+        {"added", 1, kAppWindow, app_id, window, "", kActive, kActive},
+        {"updated", 1, kAppWindow, app_id, window, "crosh1", kActive, kActive},
+    });
+  }
+
+  {
+    SCOPED_TRACE("add a second tab");
+    Recorder recorder(*tracker_);
+
+    // Add a second WebContents to the same app window.
+    chrome::NewTab(browser);
+    content::WebContents* tab = browser->tab_strip_model()->GetWebContentsAt(1);
+    tab->UpdateTitleForEntry(tab->GetController().GetLastCommittedEntry(),
+                             u"crosh2");
+
+    // Only title of the existing app instance should be updated.
+    EXPECT_EQ(GetId(tab), 1);
+    recorder.Verify({
+        {"updated", 1, kAppWindow, app_id, window, "", kActive, kActive},
+        {"updated", 1, kAppWindow, app_id, window, "crosh2", kActive, kActive},
+    });
+  }
+
+  {
+    SCOPED_TRACE("close browser");
+    Recorder recorder(*tracker_);
+
+    browser->tab_strip_model()->CloseAllTabs();
+
+    // The app instance disappars with the window.
+    recorder.Verify({
+        {"removed", 1, kAppWindow, app_id, window, "crosh2", kActive, kActive},
     });
   }
 }
@@ -955,16 +1031,16 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, Accessors) {
   ASSERT_FALSE(browser2->window()->IsActive());
   ASSERT_TRUE(browser3->window()->IsActive());
 
-  auto* b1_app = tracker_->GetWindowInstance(browser1);
+  auto* b1_app = tracker_->GetBrowserWindowInstance(browser1);
   auto* b1_tab1_app = tracker_->GetAppInstance(b1_tab1);
   auto* b1_tab2_app = tracker_->GetAppInstance(b1_tab2);
   auto* b1_tab3_app = tracker_->GetAppInstance(b1_tab3);
 
-  auto* b2_app = tracker_->GetWindowInstance(browser2);
+  auto* b2_app = tracker_->GetBrowserWindowInstance(browser2);
   auto* b2_tab1_app = tracker_->GetAppInstance(b2_tab1);
   auto* b2_tab2_app = tracker_->GetAppInstance(b2_tab2);
 
-  auto* b3_app = tracker_->GetWindowInstance(browser3);
+  auto* b3_app = tracker_->GetAppInstance(browser3);
   auto* b3_tab1_app = tracker_->GetAppInstance(b3_tab1);
 
   EXPECT_EQ(TestInstance::Create(b1_app),
@@ -986,7 +1062,11 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, Accessors) {
             (TestInstance{"snapshot", 5, kAppTab, kAppId_B, window2, kTitle_B,
                           kInactive, kActive}));
 
-  EXPECT_EQ(TestInstance::Create(b3_app), TestInstance{});
+  // browser3 does not map to any browser window instance, but it maps to the
+  // same app instance as the tab.
+  EXPECT_EQ(TestInstance::Create(tracker_->GetBrowserWindowInstance(browser3)),
+            TestInstance{});
+  EXPECT_EQ(b3_app, b3_tab1_app);
   EXPECT_EQ(TestInstance::Create(b3_tab1_app),
             (TestInstance{"snapshot", 6, kAppWindow, kAppId_B, window3,
                           kTitle_B, kActive, kActive}));
