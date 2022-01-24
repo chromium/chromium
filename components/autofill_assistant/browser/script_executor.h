@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
@@ -408,14 +409,15 @@ class ScriptExecutor : public ActionDelegate,
   void GetNextActions();
   void OnProcessedAction(base::TimeTicks start_time,
                          std::unique_ptr<ProcessedActionProto> action);
-  void CheckElementMatches(
+  void CheckElementConditionMatches(
       const Selector& selector,
       BatchElementChecker* checker,
       base::OnceCallback<void(const ClientStatus&)> callback);
   void CheckElementMatchesCallback(
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status,
-      const ElementFinder::Result& ignored_element);
+      const std::vector<std::string>& ignored_payloads,
+      const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void OnShortWaitForElement(
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
       const ClientStatus& element_status,

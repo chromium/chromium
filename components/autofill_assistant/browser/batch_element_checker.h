@@ -35,14 +35,6 @@ class BatchElementChecker {
 
   virtual ~BatchElementChecker();
 
-  // Callback for AddElementCheck. Arguments are an ok client status if the
-  // check passed and an |ElementFinder::Result|.
-  //
-  // An ElementCheckCallback must not delete its calling BatchElementChecker.
-  using ElementCheckCallback =
-      base::OnceCallback<void(const ClientStatus&,
-                              const ElementFinder::Result&)>;
-
   // Callback for AddFieldValueCheck. Argument is true is the element exists.
   // The string contains the field value, or an empty string if accessing the
   // value failed.
@@ -64,13 +56,6 @@ class BatchElementChecker {
 
   // Returns true if element condition is empty.
   static bool IsElementConditionEmpty(const ElementConditionProto& proto);
-
-  // Checks an element.
-  //
-  // New element checks cannot be added once Run has been called.
-  void AddElementCheck(const Selector& selector,
-                       bool strict,
-                       ElementCheckCallback callback);
 
   // Checks an element precondition
   //
@@ -144,10 +129,12 @@ class BatchElementChecker {
     base::flat_map<std::string, DomObjectFrameStack> elements;
   };
 
-  // Gets called for each ElementCheck.
-  void OnElementChecked(std::vector<ElementCheckCallback>* callbacks,
-                        const ClientStatus& element_status,
-                        std::unique_ptr<ElementFinder::Result> element_result);
+  // Gets called for each Selector checked.
+  void OnSelectorChecked(
+      std::vector<std::pair</* element_condition_index */ size_t,
+                            /* result_index */ size_t>>* results,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result);
 
   void OnElementPreconditionChecked(
       std::vector<ElementConditionCheckCallback>* callbacks,
@@ -164,21 +151,20 @@ class BatchElementChecker {
   void AddElementConditionResults(const ElementConditionProto& proto,
                                   size_t element_condition_index);
 
-  void OnCheckElementExists(size_t element_condition_index,
-                            size_t result_index,
-                            const ClientStatus& element_status,
-                            const ElementFinder::Result& element_reference);
-
   bool EvaluateElementPrecondition(const ElementConditionProto& proto_,
                                    const std::vector<Result>& results,
                                    size_t* results_iter,
                                    std::vector<std::string>* payloads);
   void CheckElementConditions();
 
-  // A map of ElementCheck arguments (check_type, selector) to callbacks that
-  // take the result of the check.
-  base::flat_map<std::pair<Selector, bool>, std::vector<ElementCheckCallback>>
-      element_check_callbacks_;
+  // A way to find unique selectors and what |Result|'s are affected by them.
+  //
+  // Must not be modified after Run() is called because it's referenced by
+  // index.
+  base::flat_map<std::pair<Selector, /* strict */ bool>,
+                 std::vector<std::pair</* element_condition_index */ size_t,
+                                       /* result_index */ size_t>>>
+      unique_selectors_;
 
   std::vector<ElementConditionCheck> element_condition_checks_;
 

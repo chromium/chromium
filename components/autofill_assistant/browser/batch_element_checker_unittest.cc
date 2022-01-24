@@ -51,13 +51,16 @@ class BatchElementCheckerTest : public testing::Test {
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   }
 
-  void OnElementExistenceCheck(const std::string& name,
-                               const ClientStatus& result,
-                               const ElementFinder::Result& ignored_element) {
+  void OnElementExistenceCheck(
+      const std::string& name,
+      const ClientStatus& result,
+      const std::vector<std::string>& ignored_payloads,
+      const base::flat_map<std::string, DomObjectFrameStack>&
+          ignored_elements) {
     element_exists_results_[name] = result.ok();
   }
 
-  BatchElementChecker::ElementCheckCallback ElementExistenceCallback(
+  BatchElementChecker::ElementConditionCheckCallback ElementExistenceCallback(
       const std::string& name) {
     return base::BindOnce(&BatchElementCheckerTest::OnElementExistenceCheck,
                           base::Unretained(this), name);
@@ -95,6 +98,17 @@ class BatchElementCheckerTest : public testing::Test {
     checks_.Run(&mock_web_controller_);
   }
 
+  ElementConditionProto Match(const Selector& selector, bool strict = false) {
+    ElementConditionProto condition;
+    *condition.mutable_match() = selector.proto;
+    condition.set_require_unique_element(strict);
+    return condition;
+  }
+
+  ElementConditionProto StrictMatch(const Selector& selector) {
+    return Match(selector, /* strict= */ true);
+  }
+
   MockWebController mock_web_controller_;
   BatchElementChecker checks_;
   base::flat_map<std::string, bool> element_exists_results_;
@@ -110,8 +124,8 @@ class BatchElementCheckerTest : public testing::Test {
 
 TEST_F(BatchElementCheckerTest, Empty) {
   EXPECT_TRUE(checks_.empty());
-  checks_.AddElementCheck(Selector({"exists"}), /* strict= */ false,
-                          ElementExistenceCallback("exists"));
+  checks_.AddElementConditionCheck(Match(Selector({"exists"})),
+                                   ElementExistenceCallback("exists"));
   EXPECT_FALSE(checks_.empty());
   Run("all_done");
   EXPECT_THAT(all_done_, Contains("all_done"));
@@ -120,8 +134,8 @@ TEST_F(BatchElementCheckerTest, Empty) {
 TEST_F(BatchElementCheckerTest, OneElementFound) {
   Selector expected_selector({"exists"});
   test_util::MockFindElement(mock_web_controller_, expected_selector);
-  checks_.AddElementCheck(expected_selector, /* strict= */ false,
-                          ElementExistenceCallback("exists"));
+  checks_.AddElementConditionCheck(Match(expected_selector),
+                                   ElementExistenceCallback("exists"));
   Run("was_run");
 
   EXPECT_THAT(element_exists_results_, Contains(Pair("exists", true)));
@@ -130,8 +144,8 @@ TEST_F(BatchElementCheckerTest, OneElementFound) {
 
 TEST_F(BatchElementCheckerTest, OneElementNotFound) {
   Selector expected_notexists_selector({"does_not_exist"});
-  checks_.AddElementCheck(expected_notexists_selector, /* strict= */ false,
-                          ElementExistenceCallback("does_not_exist"));
+  checks_.AddElementConditionCheck(Match(expected_notexists_selector),
+                                   ElementExistenceCallback("does_not_exist"));
   Run("was_run");
 
   EXPECT_THAT(element_exists_results_, Contains(Pair("does_not_exist", false)));
@@ -143,8 +157,8 @@ TEST_F(BatchElementCheckerTest, TooManyElementsForStrict) {
   EXPECT_CALL(mock_web_controller_,
               FindElement(expected_multiple_selector, /* strict= */ true, _))
       .WillOnce(RunOnceCallback<2>(ClientStatus(TOO_MANY_ELEMENTS), nullptr));
-  checks_.AddElementCheck(expected_multiple_selector, /* strict= */ true,
-                          ElementExistenceCallback("multiple"));
+  checks_.AddElementConditionCheck(StrictMatch(expected_multiple_selector),
+                                   ElementExistenceCallback("multiple"));
   Run("was_run");
 
   EXPECT_THAT(element_exists_results_, Contains(Pair("multiple", false)));
@@ -221,14 +235,14 @@ TEST_F(BatchElementCheckerTest, MultipleElements) {
       .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED),
                                    std::string()));
 
-  checks_.AddElementCheck(expected_selector_1, /* strict= */ false,
-                          ElementExistenceCallback("1"));
-  checks_.AddElementCheck(expected_selector_2, /* strict= */ false,
-                          ElementExistenceCallback("2"));
-  checks_.AddElementCheck(expected_selector_3, /* strict= */ false,
-                          ElementExistenceCallback("3"));
-  checks_.AddElementCheck(expected_selector_4, /* strict= */ true,
-                          ElementExistenceCallback("4"));
+  checks_.AddElementConditionCheck(Match(expected_selector_1),
+                                   ElementExistenceCallback("1"));
+  checks_.AddElementConditionCheck(Match(expected_selector_2),
+                                   ElementExistenceCallback("2"));
+  checks_.AddElementConditionCheck(Match(expected_selector_3),
+                                   ElementExistenceCallback("3"));
+  checks_.AddElementConditionCheck(StrictMatch(expected_selector_4),
+                                   ElementExistenceCallback("4"));
   checks_.AddFieldValueCheck(expected_selector_5, FieldValueCallback("5"));
   checks_.AddFieldValueCheck(expected_selector_6, FieldValueCallback("6"));
   Run("was_run");
@@ -261,16 +275,16 @@ TEST_F(BatchElementCheckerTest, DeduplicateElementExists) {
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
-  checks_.AddElementCheck(expected_selector_1, /* strict= */ false,
-                          ElementExistenceCallback("first 1"));
-  checks_.AddElementCheck(expected_selector_1, /* strict= */ false,
-                          ElementExistenceCallback("second 1"));
-  checks_.AddElementCheck(expected_selector_2, /* strict= */ false,
-                          ElementExistenceCallback("2"));
-  checks_.AddElementCheck(expected_selector_3, /* strict= */ true,
-                          ElementExistenceCallback("first 3"));
-  checks_.AddElementCheck(expected_selector_3, /* strict= */ false,
-                          ElementExistenceCallback("second 3"));
+  checks_.AddElementConditionCheck(Match(expected_selector_1),
+                                   ElementExistenceCallback("first 1"));
+  checks_.AddElementConditionCheck(Match(expected_selector_1),
+                                   ElementExistenceCallback("second 1"));
+  checks_.AddElementConditionCheck(Match(expected_selector_2),
+                                   ElementExistenceCallback("2"));
+  checks_.AddElementConditionCheck(StrictMatch(expected_selector_3),
+                                   ElementExistenceCallback("first 3"));
+  checks_.AddElementConditionCheck(Match(expected_selector_3),
+                                   ElementExistenceCallback("second 3"));
 
   Run("was_run");
 
@@ -285,8 +299,8 @@ TEST_F(BatchElementCheckerTest, DeduplicateElementExists) {
 TEST_F(BatchElementCheckerTest, CallMultipleAllDoneCallbacks) {
   Selector expected_selector({"exists"});
   test_util::MockFindElement(mock_web_controller_, expected_selector);
-  checks_.AddElementCheck(expected_selector, /* strict= */ false,
-                          ElementExistenceCallback("exists"));
+  checks_.AddElementConditionCheck(Match(expected_selector),
+                                   ElementExistenceCallback("exists"));
   checks_.AddAllDoneCallback(DoneCallback("1"));
   checks_.AddAllDoneCallback(DoneCallback("2"));
   checks_.AddAllDoneCallback(DoneCallback("3"));

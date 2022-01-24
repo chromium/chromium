@@ -33,15 +33,6 @@ BatchElementChecker::ElementConditionCheck::~ElementConditionCheck() = default;
 BatchElementChecker::ElementConditionCheck::ElementConditionCheck(
     ElementConditionCheck&&) = default;
 
-void BatchElementChecker::AddElementCheck(const Selector& selector,
-                                          bool strict,
-                                          ElementCheckCallback callback) {
-  DCHECK(!started_);
-
-  element_check_callbacks_[std::make_pair(selector, strict)].emplace_back(
-      std::move(callback));
-}
-
 void BatchElementChecker::AddElementConditionCheck(
     const ElementConditionProto& condition,
     ElementConditionCheckCallback callback) {
@@ -67,7 +58,8 @@ void BatchElementChecker::AddFieldValueCheck(const Selector& selector,
 }
 
 bool BatchElementChecker::empty() const {
-  return element_check_callbacks_.empty() && get_field_value_callbacks_.empty();
+  return element_condition_checks_.empty() &&
+         get_field_value_callbacks_.empty();
 }
 
 bool BatchElementChecker::IsElementConditionEmpty(
@@ -83,16 +75,20 @@ void BatchElementChecker::AddAllDoneCallback(
 void BatchElementChecker::Run(WebController* web_controller) {
   DCHECK(web_controller);
   DCHECK(!started_);
+  for (size_t i = 0; i < element_condition_checks_.size(); ++i) {
+    AddElementConditionResults(element_condition_checks_[i].proto, i);
+  }
   started_ = true;
 
   pending_checks_count_ =
-      element_check_callbacks_.size() + get_field_value_callbacks_.size() + 1;
+      unique_selectors_.size() + get_field_value_callbacks_.size() + 1;
 
-  for (auto& entry : element_check_callbacks_) {
+  for (auto& entry : unique_selectors_) {
     web_controller->FindElement(
-        /* selector= */ entry.first.first, /* strict= */ entry.first.second,
+        /* selector= */ entry.first.first,
+        /* strict= */ entry.first.second,
         base::BindOnce(
-            &BatchElementChecker::OnElementChecked,
+            &BatchElementChecker::OnSelectorChecked,
             weak_ptr_factory_.GetWeakPtr(),
             // Guaranteed to exist for the lifetime of this instance, because
             // the map isn't modified after Run has been called.
@@ -126,14 +122,25 @@ void BatchElementChecker::Run(WebController* web_controller) {
   CheckDone();
 }
 
-void BatchElementChecker::OnElementChecked(
-    std::vector<ElementCheckCallback>* callbacks,
+void BatchElementChecker::OnSelectorChecked(
+    std::vector<std::pair</* element_condition_index */ size_t,
+                          /* result_index */ size_t>>* results,
     const ClientStatus& element_status,
     std::unique_ptr<ElementFinder::Result> element_result) {
-  for (auto& callback : *callbacks) {
-    std::move(callback).Run(element_status, *element_result);
+  for (auto& pair : *results) {
+    size_t condition_index = pair.first;
+    size_t result_index = pair.second;
+    DCHECK(condition_index < element_condition_checks_.size());
+    auto& condition = element_condition_checks_[condition_index];
+    DCHECK(result_index < condition.results.size());
+    Result& result = condition.results[result_index];
+    result.match = element_status.ok();
+    // TODO(szermatt): Consider reporting element_status as an unexpected error
+    // right away if it is neither success nor ELEMENT_RESOLUTION_FAILED.
+    if (element_status.ok() && result.client_id.has_value()) {
+      condition.elements[*result.client_id] = element_result->dom_object;
+    }
   }
-  callbacks->clear();
   CheckDone();
 }
 
@@ -239,50 +246,45 @@ bool BatchElementChecker::EvaluateElementPrecondition(
 }
 
 void BatchElementChecker::AddElementConditionResults(
-    const ElementConditionProto& proto_,
+    const ElementConditionProto& proto,
     size_t element_condition_index) {
-  switch (proto_.type_case()) {
+  switch (proto.type_case()) {
     case ElementConditionProto::kAllOf:
       for (const ElementConditionProto& condition :
-           proto_.all_of().conditions()) {
+           proto.all_of().conditions()) {
         AddElementConditionResults(condition, element_condition_index);
       }
       break;
 
     case ElementConditionProto::kAnyOf:
       for (const ElementConditionProto& condition :
-           proto_.any_of().conditions()) {
+           proto.any_of().conditions()) {
         AddElementConditionResults(condition, element_condition_index);
       }
       break;
 
     case ElementConditionProto::kNoneOf:
       for (const ElementConditionProto& condition :
-           proto_.none_of().conditions()) {
+           proto.none_of().conditions()) {
         AddElementConditionResults(condition, element_condition_index);
       }
       break;
 
     case ElementConditionProto::kMatch: {
-      Result result;
-      result.selector = Selector(proto_.match());
-      if (proto_.has_client_id()) {
-        result.client_id = proto_.client_id().identifier();
-      }
-      result.strict = proto_.require_unique_element();
       auto& results =
           element_condition_checks_[element_condition_index].results;
-      results.emplace_back(result);
-
+      Result& result = results.emplace_back();
+      result.selector = Selector(proto.match());
+      if (proto.has_client_id()) {
+        result.client_id = proto.client_id().identifier();
+      }
+      result.strict = proto.require_unique_element();
       if (result.selector.empty()) {
         // Empty selectors never match.
         result.match = false;
       } else {
-        AddElementCheck(
-            result.selector, result.strict,
-            base::BindOnce(&BatchElementChecker::OnCheckElementExists,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           element_condition_index, results.size() - 1));
+        unique_selectors_[std::make_pair(result.selector, result.strict)]
+            .emplace_back(element_condition_index, results.size() - 1);
       }
       break;
     }
@@ -291,22 +293,4 @@ void BatchElementChecker::AddElementConditionResults(
       break;
   }
 }
-
-void BatchElementChecker::OnCheckElementExists(
-    size_t element_condition_index,
-    size_t result_index,
-    const ClientStatus& element_status,
-    const ElementFinder::Result& element_reference) {
-  DCHECK(element_condition_index < element_condition_checks_.size());
-  auto& check = element_condition_checks_[element_condition_index];
-  DCHECK(result_index < check.results.size());
-  Result& result = check.results[result_index];
-  result.match = element_status.ok();
-  // TODO(szermatt): Consider reporting element_status as an unexpected error
-  // right away if it is neither success nor ELEMENT_RESOLUTION_FAILED.
-  if (element_status.ok() && result.client_id.has_value()) {
-    check.elements[*result.client_id] = element_reference.dom_object;
-  }
-}
-
 }  // namespace autofill_assistant

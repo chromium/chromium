@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -243,8 +244,9 @@ void ScriptExecutor::ShortWaitForElement(
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_,
       delegate_->GetSettings().short_wait_for_element_deadline,
-      /* allow_interrupt= */ false, /* observer= */ nullptr,
-      base::BindRepeating(&ScriptExecutor::CheckElementMatches,
+      /* allow_interrupt= */ false,
+      /* observer= */ nullptr,
+      base::BindRepeating(&ScriptExecutor::CheckElementConditionMatches,
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -257,8 +259,9 @@ void ScriptExecutor::ShortWaitForElementWithSlowWarning(
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_,
       delegate_->GetSettings().short_wait_for_element_deadline,
-      /* allow_interrupt= */ false, /* observer= */ nullptr,
-      base::BindRepeating(&ScriptExecutor::CheckElementMatches,
+      /* allow_interrupt= */ false,
+      /* observer= */ nullptr,
+      base::BindRepeating(&ScriptExecutor::CheckElementConditionMatches,
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -1010,12 +1013,15 @@ void ScriptExecutor::OnProcessedAction(
   ProcessNextAction();
 }
 
-void ScriptExecutor::CheckElementMatches(
+void ScriptExecutor::CheckElementConditionMatches(
     const Selector& selector,
     BatchElementChecker* checker,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  checker->AddElementCheck(
-      selector, /* strict= */ false,
+  ElementConditionProto condition;
+  *condition.mutable_match() = selector.proto;
+  condition.set_require_unique_element(false);
+  checker->AddElementConditionCheck(
+      condition,
       base::BindOnce(&ScriptExecutor::CheckElementMatchesCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -1023,7 +1029,8 @@ void ScriptExecutor::CheckElementMatches(
 void ScriptExecutor::CheckElementMatchesCallback(
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status,
-    const ElementFinder::Result& ignored_element) {
+    const std::vector<std::string>& ignored_payloads,
+    const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
   std::move(callback).Run(status);
 }
 
