@@ -651,6 +651,23 @@ TEST_F(CastActivityManagerTest, LaunchSessionTerminatesExistingSessionFromTab) {
       data_decoder::DataDecoder::ValueOrError());
 }
 
+TEST_F(CastActivityManagerTest, LaunchSessionTerminatesPendingLaunchFromTab) {
+  CallLaunchSessionFailure();
+  // Stop session message not sent because session has not launched yet.
+  ExpectAppActivityStoppedTimes(0);
+
+  // Launch a new session from the same tab on a different sink.
+  auto source = CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId2));
+  // Use LaunchSessionParsed() instead of LaunchSession() here because
+  // LaunchSessionParsed() is called asynchronously and will fail the test.
+  manager_->LaunchSessionParsed(
+      *source, sink2_, kPresentationId2, origin_, kTabId, /*incognito*/
+      false,
+      base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
+                     base::Unretained(this)),
+      data_decoder::DataDecoder::ValueOrError());
+}
+
 TEST_F(CastActivityManagerTest, AddRemoveNonLocalActivity) {
   auto session = MakeSession(kAppId1);
   ExpectSingleRouteUpdate();

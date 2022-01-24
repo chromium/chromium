@@ -139,6 +139,8 @@ class CastActivityManager : public CastActivityManagerBase,
                            LaunchSessionTerminatesExistingSessionOnSink);
   FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest,
                            LaunchSessionTerminatesExistingSessionFromTab);
+  FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest,
+                           LaunchSessionTerminatesPendingLaunchFromTab);
   FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest, SendMediaRequestToReceiver);
 
   using ActivityMap =
