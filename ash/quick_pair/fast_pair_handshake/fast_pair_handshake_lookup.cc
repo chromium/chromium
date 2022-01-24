@@ -39,6 +39,17 @@ FastPairHandshake* FastPairHandshakeLookup::Get(scoped_refptr<Device> device) {
   return it != fast_pair_handshakes_.end() ? it->second.get() : nullptr;
 }
 
+FastPairHandshake* FastPairHandshakeLookup::Get(const std::string& address) {
+  for (const auto& pair : fast_pair_handshakes_) {
+    if (pair.first->classic_address() == address ||
+        pair.first->ble_address == address) {
+      return pair.second.get();
+    }
+  }
+
+  return nullptr;
+}
+
 bool FastPairHandshakeLookup::Erase(scoped_refptr<Device> device) {
   return fast_pair_handshakes_.erase(device) == 1;
 }

@@ -7,6 +7,8 @@
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -15,7 +17,7 @@
 namespace {
 
 constexpr base::TimeDelta kFilterDeviceFoundTimeout = base::Seconds(1);
-constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(5);
+constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(6);
 constexpr uint8_t kFilterPatternStartPosition = 0;
 const std::vector<uint8_t> kFastPairFilterPatternValue = {0x2c, 0xfe};
 constexpr base::TimeDelta kRssiSamplingPeriod = base::Milliseconds(500);
@@ -109,6 +111,16 @@ void FastPairScannerImpl::OnDeviceFound(
     return;
   }
 
+  FastPairHandshake* handshake =
+      FastPairHandshakeLookup::GetInstance()->Get(device->GetAddress());
+
+  if (handshake) {
+    QP_LOG(WARNING) << __func__
+                    << ": We have an active handshake for this device, which "
+                       "means we never 'lost' it. We ignore this event.";
+    return;
+  }
+
   device_address_advertisement_data_map_[device->GetAddress()].insert(
       *service_data);
   NotifyDeviceFound(device);
@@ -145,6 +157,19 @@ void FastPairScannerImpl::NotifyDeviceFound(device::BluetoothDevice* device) {
 void FastPairScannerImpl::OnDeviceLost(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
+  FastPairHandshake* handshake =
+      FastPairHandshakeLookup::GetInstance()->Get(device->GetAddress());
+
+  // If we have a connected handshake, it means that the device was lost because
+  // it stopped advertising while the GATT connection is active.
+  // We ignore this event in that case, and expect to get another OnDeviceFound
+  // event.
+  if (handshake && handshake->IsConnected()) {
+    QP_LOG(WARNING) << __func__
+                    << ": Active handshake exists, ignoring lost event.";
+    return;
+  }
+
   device_address_advertisement_data_map_.erase(device->GetAddress());
   for (auto& observer : observers_)
     observer.OnDeviceLost(device);

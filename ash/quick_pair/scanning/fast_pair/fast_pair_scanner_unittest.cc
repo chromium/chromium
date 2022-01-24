@@ -2,11 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
 
 #include <memory>
 
 #include "ash/quick_pair/common/constants.h"
+#include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -33,11 +44,6 @@ std::unique_ptr<device::MockBluetoothDevice> CreateTestBluetoothDevice() {
                                      {1, 2, 3});
   return mock_device;
 }
-
-}  // namespace
-
-namespace ash {
-namespace quick_pair {
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -71,7 +77,8 @@ class FakeBluetoothAdapter
   ~FakeBluetoothAdapter() override = default;
 };
 
-class FastPairScannerObserver : public FastPairScanner::Observer {
+class FastPairScannerObserver
+    : public ash::quick_pair::FastPairScanner::Observer {
  public:
   // FastPairScanner::Observer overrides
   void OnDeviceFound(device::BluetoothDevice* device) override {
@@ -96,6 +103,11 @@ class FastPairScannerObserver : public FastPairScanner::Observer {
   std::vector<std::string> device_addreses_;
   int on_device_found_count_ = 0;
 };
+
+}  // namespace
+
+namespace ash {
+namespace quick_pair {
 
 class FastPairScannerTest : public testing::Test {
  public:
@@ -153,6 +165,28 @@ class FastPairScannerTest : public testing::Test {
                             CreateTestBluetoothDevice().get());
   }
 
+  void AddConnectedHandshake() {
+    FastPairHandshakeLookup::SetCreateFunctionForTesting(
+        base::BindRepeating(&FastPairScannerTest::CreateConnectedHandshake,
+                            base::Unretained(this)));
+
+    FastPairHandshakeLookup::GetInstance()->Create(
+        adapter_,
+        base::MakeRefCounted<Device>("test_metadata_id", kTestBleDeviceAddress,
+                                     Protocol::kFastPairInitial),
+        base::DoNothing());
+  }
+
+  std::unique_ptr<FastPairHandshake> CreateConnectedHandshake(
+      scoped_refptr<Device> device,
+      FastPairHandshakeLookup::OnCompleteCallback callback) {
+    std::unique_ptr<FakeFastPairHandshake> handshake =
+        std::make_unique<FakeFastPairHandshake>(adapter_, std::move(device),
+                                                std::move(callback));
+    handshake->SetConnected(true);
+    return handshake;
+  }
+
  protected:
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<FastPairScannerImpl> scanner_;
@@ -179,6 +213,16 @@ TEST_F(FastPairScannerTest, DeviceChangedNotifiesObservors) {
   EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
   adapter().ChangeDevice();
   EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
+}
+
+TEST_F(FastPairScannerTest, IgnoresEventDuringActiveHandshake) {
+  TriggerOnDeviceFound();
+  EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice());
+  AddConnectedHandshake();
+  TriggerOnDeviceLost();
+  EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice());
+  TriggerOnDeviceFound();
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
 }
 
 }  // namespace quick_pair
