@@ -17,6 +17,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/updater_scope.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -183,6 +184,8 @@ REGSAM Wow6432(REGSAM access);
 HRESULT RunElevated(const base::FilePath& file_path,
                     const std::wstring& parameters,
                     DWORD* exit_code);
+
+absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 
 }  // namespace updater
 

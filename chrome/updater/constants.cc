@@ -51,6 +51,8 @@ const char kServerUpdateServiceSwitchValue[] = "update";
 const char kInstallFromOutDir[] = "install-from-out-dir";
 #endif  // BUILDFLAG(IS_WIN)
 
+const char kHealthCheckSwitch[] = "healthcheck";
+
 // Path names.
 const char kAppsDir[] = "apps";
 const char kUninstallScript[] = "uninstall.cmd";

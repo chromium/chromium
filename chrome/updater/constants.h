@@ -127,6 +127,13 @@ extern const char kAppIdSwitch[];
 // Specifies the version of the application that the updater needs to register.
 extern const char kAppVersionSwitch[];
 
+// Specifies that the Updater should perform some minimal checks to verify that
+// it is operational/healthy. This is for backward compatibility with Omaha 3.
+// Omaha 3 runs "GoogleUpdate.exe /healthcheck" and expects an exit code of
+// HRESULT SUCCESS, i.e., S_OK, in which case it will hand off the installation
+// to Omaha 4.
+extern const char kHealthCheckSwitch[];
+
 // File system paths.
 //
 // The directory name where CRX apps get installed. This is provided for demo

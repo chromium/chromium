@@ -14,14 +14,17 @@
 #include <memory>
 #include <string>
 
+#include "base/base_paths_win.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/path_service.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
@@ -628,6 +631,27 @@ HRESULT RunElevated(const base::FilePath& file_path,
 
   *exit_code = ret_val;
   return S_OK;
+}
+
+absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
+  base::FilePath goopdate_base_dir;
+  if (!base::PathService::Get(scope == UpdaterScope::kSystem
+                                  ? base::DIR_PROGRAM_FILESX86
+                                  : base::DIR_LOCAL_APP_DATA,
+                              &goopdate_base_dir)) {
+    LOG(ERROR) << "Can't retrieve GoogleUpdate base directory.";
+    return absl::nullopt;
+  }
+
+  base::FilePath goopdate_dir =
+      goopdate_base_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+          .AppendASCII("Update");
+  if (!base::CreateDirectory(goopdate_dir)) {
+    LOG(ERROR) << "Can't create GoogleUpdate directory: " << goopdate_dir;
+    return absl::nullopt;
+  }
+
+  return goopdate_dir.AppendASCII("GoogleUpdate.exe");
 }
 
 }  // namespace updater

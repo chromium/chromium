@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -79,6 +80,15 @@ void DeleteComInterfaces(HKEY root, bool uninstall_all) {
       InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
     }
   }
+}
+
+void DeleteGoogleUpdateEntries(UpdaterScope scope, HKEY root) {
+  InstallUtil::DeleteRegistryKey(root, UPDATER_KEY, KEY_WOW64_32KEY);
+
+  const absl::optional<base::FilePath> target_path =
+      GetGoogleUpdateExePath(scope);
+  if (target_path)
+    base::DeleteFile(*target_path);
 }
 
 int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
@@ -157,6 +167,8 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   if (scope == UpdaterScope::kSystem)
     DeleteComService(uninstall_all);
   DeleteComServer(scope, key, uninstall_all);
+
+  DeleteGoogleUpdateEntries(scope, key);
 
   return RunUninstallScript(scope, uninstall_all);
 }

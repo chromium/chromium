@@ -14,10 +14,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,6 +29,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/registry.h"
+#include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
@@ -37,6 +40,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/setup/uninstall.h"
@@ -81,12 +85,69 @@ bool SwapUninstallCmdLine(UpdaterScope scope,
   uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);
   uninstall_if_unused_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                                 kLoggingModuleSwitchValue);
-  list->AddCreateRegKeyWorkItem(root, UPDATER_KEY, KEY_WOW64_32KEY);
   list->AddSetRegValueWorkItem(
       root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
       uninstall_if_unused_command.GetCommandLineString(), true);
 
   return true;
+}
+
+// Creates a temp directory, which is under a secure location for System
+// installs.
+bool CreateSecureTempDir(UpdaterScope scope,
+                         installer::SelfCleaningTempDir& temp_path) {
+  base::FilePath temp_dir;
+  if (!base::PathService::Get(scope == UpdaterScope::kSystem
+                                  ? base::DIR_PROGRAM_FILES
+                                  : base::DIR_TEMP,
+                              &temp_dir)) {
+    return false;
+  }
+
+  constexpr wchar_t kTempPrefix[] = L"UPDATER_TEMP_DIR";
+  if (!temp_path.Initialize(temp_dir, kTempPrefix)) {
+    PLOG(ERROR) << "Could not create temporary path.";
+    return false;
+  }
+
+  VLOG(1) << "Created temp path " << temp_path.path().value();
+  return true;
+}
+
+// Install Updater.exe as GoogleUpdate.exe in the file system under
+// Google\Update. And add a "pv" registry value under the
+// UPDATER_KEY\Clients\{GoogleUpdateAppId}.
+// Finally, update the registry value for the "UninstallCmdLine".
+bool SwapGoogleUpdate(UpdaterScope scope,
+                      const base::FilePath& updater_path,
+                      const base::FilePath& temp_path,
+                      HKEY root,
+                      WorkItemList* list) {
+  DCHECK(list);
+
+  // TODO(crbug.com/1290496) Do we need to set the shutdown event and wait or
+  // kill any running GoogleUpdate.exe instances? If so, is waiting a good idea
+  // during the swap?
+  const absl::optional<base::FilePath> target_path =
+      GetGoogleUpdateExePath(scope);
+  if (!target_path)
+    return false;
+  list->AddCopyTreeWorkItem(updater_path, *target_path, temp_path,
+                            WorkItem::ALWAYS);
+
+  const std::wstring google_update_appid_key =
+      base::StrCat({CLIENTS_KEY, L"{430FD4D0-B729-4F61-AA34-91526481799D}"});
+  list->AddCreateRegKeyWorkItem(root, COMPANY_KEY, KEY_WOW64_32KEY);
+  list->AddCreateRegKeyWorkItem(root, UPDATER_KEY, KEY_WOW64_32KEY);
+  list->AddCreateRegKeyWorkItem(root, CLIENTS_KEY, KEY_WOW64_32KEY);
+  list->AddCreateRegKeyWorkItem(root, google_update_appid_key, KEY_WOW64_32KEY);
+  list->AddSetRegValueWorkItem(root, google_update_appid_key, KEY_WOW64_32KEY,
+                               kRegValuePV, kUpdaterVersionUtf16, true);
+  list->AddSetRegValueWorkItem(
+      root, google_update_appid_key, KEY_WOW64_32KEY, kRegValueName,
+      base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
+
+  return SwapUninstallCmdLine(scope, updater_path, root, list);
 }
 
 }  // namespace
@@ -196,8 +257,16 @@ bool ComServerApp::SwapInNewVersion() {
 
   HKEY root = (updater_scope() == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE
                                                          : HKEY_CURRENT_USER;
-  if (!SwapUninstallCmdLine(updater_scope(), updater_path, root, list.get()))
+
+  installer::SelfCleaningTempDir temp_dir;
+  if (!CreateSecureTempDir(updater_scope(), temp_dir)) {
     return false;
+  }
+
+  if (!SwapGoogleUpdate(updater_scope(), updater_path, temp_dir.path(), root,
+                        list.get())) {
+    return false;
+  }
 
   if (IsCOMService()) {
     AddComServiceWorkItems(updater_path, false, list.get());

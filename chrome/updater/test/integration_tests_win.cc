@@ -202,7 +202,20 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_EQ(is_installed, RegKeyExists(root, key));
     }
 
+    EXPECT_EQ(is_installed, base::PathExists(*GetGoogleUpdateExePath(scope)));
+
     if (is_installed) {
+      std::wstring pv;
+      EXPECT_EQ(ERROR_SUCCESS,
+                base::win::RegKey(
+                    root,
+                    base::StrCat({CLIENTS_KEY,
+                                  L"{430FD4D0-B729-4F61-AA34-91526481799D}"})
+                        .c_str(),
+                    Wow6432(KEY_READ))
+                    .ReadValue(kRegValuePV, &pv));
+      EXPECT_STREQ(kUpdaterVersionUtf16, pv.c_str());
+
       std::wstring uninstall_cmd_line_string;
       EXPECT_EQ(ERROR_SUCCESS,
                 base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
@@ -216,6 +229,8 @@ void CheckInstallation(UpdaterScope scope,
             UPDATER_POLICIES_KEY}) {
         EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
       }
+
+      EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
     }
   }
 
@@ -372,6 +387,11 @@ void Clean(UpdaterScope scope) {
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::DeletePathRecursively(*path));
+
+  const absl::optional<base::FilePath> target_path =
+      GetGoogleUpdateExePath(scope);
+  if (target_path)
+    base::DeleteFile(*target_path);
 }
 
 void EnterTestMode(const GURL& url) {

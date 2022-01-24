@@ -152,6 +152,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 #if BUILDFLAG(IS_WIN)
   if (command_line->HasSwitch(kComServiceSwitch))
     return ServiceMain::RunComService(command_line);
+
+  if (command_line->HasSwitch(kHealthCheckSwitch)) {
+    return 0;
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   if (command_line->HasSwitch(kInstallSwitch) ||
@@ -190,6 +194,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kUninstallSwitch,
       kUpdateSwitch,
       kWakeSwitch,
+      kHealthCheckSwitch,
   };
   const char** it = std::find_if(
       std::begin(commands), std::end(commands),
