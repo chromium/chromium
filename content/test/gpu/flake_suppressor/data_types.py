@@ -19,7 +19,7 @@ class Expectation(unexpected_dt.Expectation):
 
   def AppliesToResult(self, result):
     assert isinstance(result, Result)
-    return (self._comp(result.test) and self.tags <= set(result.tags))
+    return self._comp(result.test) and self.tags <= set(result.tags)
 
 
 class Result():

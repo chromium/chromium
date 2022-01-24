@@ -3,13 +3,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import argparse
 import logging
 import sys
 
-import gold_inexact_matching.base_parameter_optimizer as base_optimizer
 import gold_inexact_matching.binary_search_parameter_optimizer\
     as binary_optimizer
 import gold_inexact_matching.brute_force_parameter_optimizer as brute_optimizer

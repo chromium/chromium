@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import os
 import sys
 import json
@@ -25,6 +23,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def Name(cls):
     return 'webcodecs'
+
+# pylint: disable=too-many-branches
 
   @classmethod
   def GenerateGpuTests(cls, options):
@@ -93,6 +93,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                    "codec": codec,
                    "acceleration": acc
                }))
+# pylint: enable=too-many-branches
 
   def RunActualGpuTest(self, test_path, *args):
     url = self.UrlOfStaticFilePath(html_path + '/' + test_path)

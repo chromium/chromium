@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import logging
 import os
 import sys
@@ -390,8 +388,10 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       logging.info('Skipping test because not running on Android')
       return
 
+    # pylint: disable=protected-access
     sdk_version = \
         self.browser.platform._platform_backend.device.build_version_sdk
+    # pylint: enable=protected-access
     if sdk_version < version_codes.PIE:
       logging.info('Skipping test because not running on Android P+')
       return

@@ -227,7 +227,7 @@ class BigQueryQuerier():
     Returns:
       The loaded JSON results from running |query|.
     """
-    cmd = upc_queries._GenerateBigQueryCommand(
+    cmd = upc_queries.GenerateBigQueryCommand(
         self._billing_project,
         {'INT64': {
             'sample_period': self._sample_period

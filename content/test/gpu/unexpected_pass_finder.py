@@ -29,8 +29,6 @@ using an inline `# finder:disable` comment for a single expectation or a pair of
 `# finder:disable`/`# finder:enable` comments for a block of expectations.
 """
 
-from __future__ import print_function
-
 import argparse
 import os
 import sys
@@ -38,12 +36,15 @@ import sys
 CHROMIUM_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
+# TODO(crbug.com/1289421): Remove this disable.
+# pylint: disable=wrong-import-position
 from unexpected_passes import gpu_builders
 from unexpected_passes import gpu_expectations
 from unexpected_passes import gpu_queries
 from unexpected_passes_common import argument_parsing
 from unexpected_passes_common import builders
 from unexpected_passes_common import result_output
+# pylint: enable=wrong-import-position
 
 SUITE_TO_EXPECTATIONS_MAP = {
     'power': 'power_measurement',
@@ -117,6 +118,7 @@ def ParseArgs():
   return args
 
 
+# pylint: disable=too-many-locals
 def main():
   args = ParseArgs()
 
@@ -173,6 +175,7 @@ def main():
   if affected_urls:
     orphaned_urls = expectations_instance.FindOrphanedBugs(affected_urls)
     result_output.OutputAffectedUrls(affected_urls, orphaned_urls)
+# pylint: enable=too-many-locals
 
 
 if __name__ == '__main__':

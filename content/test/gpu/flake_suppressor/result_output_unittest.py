@@ -3,10 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# pylint: disable=protected-access
+
 import tempfile
 import unittest
 
-from pyfakefs import fake_filesystem_unittest
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
 from flake_suppressor import result_output
 

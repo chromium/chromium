@@ -2,19 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import inspect
 import itertools
 import os
 import re
-import sys
 import unittest
-
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
+import unittest.mock as mock
 
 import gpu_project_config
 

@@ -3,14 +3,15 @@
 # found in the LICENSE file.
 """GPU implementation of //testing/skia_gold_common/skia_gold_properties.py."""
 
-from __future__ import print_function
-
 import subprocess
 import sys
 
 from gpu_tests import path_util
 path_util.AddDirToPathIfNeeded(path_util.GetChromiumSrcDir(), 'build')
+# TODO(crbug.com/1289421): Remove this disable
+# pylint: disable=wrong-import-position
 from skia_gold_common import skia_gold_properties
+# pylint: enable=wrong-import-position
 
 
 class GpuSkiaGoldProperties(skia_gold_properties.SkiaGoldProperties):

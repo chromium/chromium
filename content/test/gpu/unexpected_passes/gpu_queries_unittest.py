@@ -3,17 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
+# pylint: disable=protected-access
 
 import json
 import subprocess
-import sys
 import unittest
-
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
+import unittest.mock as mock
 
 from unexpected_passes import gpu_queries
 from unexpected_passes import gpu_unittest_utils as gpu_uu
@@ -149,7 +144,7 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
         test_filter.GetClauses()[0], """\
         AND REGEXP_CONTAINS(
           test_id,
-          r"gpu_tests\.pixel_integration_test\.")""")
+          r"gpu_tests\\.pixel_integration_test\\.")""")
     self.assertIsInstance(test_filter, gpu_queries.GpuFixedQueryGenerator)
     self._query_mock.assert_not_called()
 

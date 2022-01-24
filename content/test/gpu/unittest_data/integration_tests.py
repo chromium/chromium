@@ -2,25 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import json
 import logging
 import os
 import sys
-import tempfile
-import unittest
-
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
 
 from telemetry.testing import fakes
-from telemetry.testing import browser_test_runner
 from telemetry.testing import browser_test_context
-
-import gpu_project_config
 
 from gpu_tests import gpu_integration_test
 
@@ -83,7 +71,7 @@ class SimpleTest(_BaseSampleIntegrationTest):
     cls._test_state['num_browser_starts'] += 1
 
   def RunActualGpuTest(self, test_path, *args):
-    logging.warn('Running ' + test_path)
+    logging.warning('Running %s', test_path)
     if test_path == 'failure.html':
       self.fail('Expected failure')
     elif test_path == 'flaky.html':
@@ -179,7 +167,7 @@ class BrowserCrashAfterStartTest(_BaseSampleIntegrationTest):
       # fetch of this tab to fail. crbug.com/682819
       try:
         browser.tabs[0].Navigate('chrome://crash')
-      except Exception:
+      except Exception:  # pylint: disable=broad-except
         pass
 
   @classmethod

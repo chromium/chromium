@@ -10,17 +10,23 @@ to the browser_test_runner's sharding algorithm, to improve shard
 distribution.
 """
 
-from __future__ import print_function
-
 import argparse
 import json
 import logging
 import sys
 
-if sys.version_info[0] == 2:
-  import urllib2 as ulib
-else:
+import six  # pylint: disable=import-error
+
+# //content/test/gpu is Python 3-only at this point, but
+# //testing/scripts/test_buildbucket_api_gpu_use_cases.py does import this file
+# via Python 2 on bots during the "get compile targets for scripts" step. So,
+# keep this compatibility in for now.
+# pylint: disable=wrong-import-position
+if six.PY3:
   import urllib.request as ulib
+else:
+  import urllib2 as ulib  # pylint: disable=import-error
+# pylint: enable=wrong-import-position
 
 
 def GetBuildData(method, request):
@@ -198,7 +204,7 @@ gather_swarming_json_results.py \
     logging.basicConfig(level=logging.DEBUG)
 
   if sys.version_info < (2, 7, 10):
-    logging.warn('Script does not work with Python older than 2.7.10')
+    logging.warning('Script does not work with Python older than 2.7.10')
     return 0
 
   extracted_times, merged_json = GatherResults(options.bot, options.build,

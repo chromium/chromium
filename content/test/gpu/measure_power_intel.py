@@ -45,12 +45,10 @@ power source some time before measuring.  See "Computer setup" section here:
   https://microsoftedge.github.io/videotest/2017-04/WebdriverMethodology.html
 """
 
-from __future__ import print_function
-
+import argparse
 import csv
 import datetime
 import logging
-import optparse
 import os
 import shutil
 import sys
@@ -110,7 +108,7 @@ def LocateBrowserWin(options_browser):
         ", ".join(SUPPORTED_BROWSERS))
     return None
   if not os.path.exists(browser):
-    logging.warning("Can't locate browser at " + browser)
+    logging.warning("Can't locate browser at %s", browser)
     logging.warning("Please pass full path to the executable in --browser")
     return None
   return browser
@@ -135,7 +133,7 @@ def LocateBrowserMac(options_browser):
         ", ".join(SUPPORTED_BROWSERS))
     return None
   if not os.path.exists(browser):
-    logging.warning("Can't locate browser at " + browser)
+    logging.warning("Can't locate browser at %s", browser)
     logging.warning("Please pass full path to the executable in --browser")
     return None
   return browser
@@ -190,9 +188,10 @@ def CreateWebDriver(browser, user_data_dir, url, fullscreen,
   return driver
 
 
+# pylint: disable=too-many-arguments
 def MeasurePowerOnce(browser, logfile, duration, delay, resolution, url,
                      fullscreen, extra_browser_args):
-  logging.debug("Logging into " + logfile)
+  logging.debug("Logging into %s", logfile)
   user_data_dir = tempfile.mkdtemp()
 
   driver = CreateWebDriver(browser, user_data_dir, url, fullscreen,
@@ -202,80 +201,77 @@ def MeasurePowerOnce(browser, logfile, duration, delay, resolution, url,
 
   try:
     shutil.rmtree(user_data_dir)
-  except Exception as err:
-    logging.warning("Failed to remove temporary folder: " + user_data_dir)
+  except Exception as err:  # pylint: disable=broad-except
+    logging.warning("Failed to remove temporary folder: %s", user_data_dir)
     logging.warning("Please kill browser and remove it manually to avoid leak")
     logging.debug(err)
   results = ipg_utils.AnalyzeIPGLogFile(logfile, delay)
   return results
+# pylint: enable=too-many-arguments
 
 
-def main(argv):
-  parser = optparse.OptionParser()
-  parser.add_option(
-      "--browser",
-      help=("select which browser to run. Options include: " +
-            ", ".join(SUPPORTED_BROWSERS) +
-            ", or a full path to a browser executable. " +
-            "By default, stable is selected."))
-  parser.add_option(
-      "--duration",
-      default=60,
-      type="int",
-      help="specify how many seconds Intel Power Gadget "
-      "measures. By default, 60 seconds is selected.")
-  parser.add_option(
-      "--delay",
-      default=10,
-      type="int",
-      help="specify how many seconds we skip in the data "
-      "Intel Power Gadget collects. This time is for starting "
-      "video play, switching to fullscreen mode, etc. "
-      "By default, 10 seconds is selected.")
-  parser.add_option(
-      "--resolution",
-      default=100,
-      type="int",
-      help="specify how often Intel Power Gadget samples "
-      "data in milliseconds. By default, 100 ms is selected.")
-  parser.add_option(
-      "--logdir",
-      help="specify where Intel Power Gadget stores its log."
-      "By default, it is the current path.")
-  parser.add_option(
-      "--logname",
-      help="specify the prefix for Intel Power Gadget log "
-      "filename. By default, it is PowerLog.")
-  parser.add_option(
-      "-v",
-      "--verbose",
-      action="store_true",
-      default=False,
-      help="print out debug information.")
-  parser.add_option(
-      "--repeat",
-      default=1,
-      type="int",
-      help="specify how many times to run the measurements.")
-  parser.add_option(
-      "--url", help="specify the webpage URL the browser launches with.")
-  parser.add_option(
+def ParseArgs():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--browser",
+                      help=("select which browser to run. Options include: " +
+                            ", ".join(SUPPORTED_BROWSERS) +
+                            ", or a full path to a browser executable. " +
+                            "By default, stable is selected."))
+  parser.add_argument("--duration",
+                      default=60,
+                      type="int",
+                      help="specify how many seconds Intel Power Gadget "
+                      "measures. By default, 60 seconds is selected.")
+  parser.add_argument("--delay",
+                      default=10,
+                      type="int",
+                      help="specify how many seconds we skip in the data "
+                      "Intel Power Gadget collects. This time is for starting "
+                      "video play, switching to fullscreen mode, etc. "
+                      "By default, 10 seconds is selected.")
+  parser.add_argument("--resolution",
+                      default=100,
+                      type="int",
+                      help="specify how often Intel Power Gadget samples "
+                      "data in milliseconds. By default, 100 ms is selected.")
+  parser.add_argument("--logdir",
+                      help="specify where Intel Power Gadget stores its log."
+                      "By default, it is the current path.")
+  parser.add_argument("--logname",
+                      help="specify the prefix for Intel Power Gadget log "
+                      "filename. By default, it is PowerLog.")
+  parser.add_argument("-v",
+                      "--verbose",
+                      action="store_true",
+                      default=False,
+                      help="print out debug information.")
+  parser.add_argument("--repeat",
+                      default=1,
+                      type="int",
+                      help="specify how many times to run the measurements.")
+  parser.add_argument("--url",
+                      help="specify the webpage URL the browser launches with.")
+  parser.add_argument(
       "--extra-browser-args",
       dest="extra_browser_args",
       help="specify extra command line switches for the browser "
       "that are separated by spaces (quoted).")
-  parser.add_option(
+  parser.add_argument(
       "--extra-browser-args-filename",
       dest="extra_browser_args_filename",
       metavar="FILE",
       help="specify extra command line switches for the browser "
       "in a text file that are separated by whitespace.")
-  parser.add_option(
-      "--fullscreen",
-      action="store_true",
-      default=False,
-      help="specify whether video should be made fullscreen.")
-  (options, _) = parser.parse_args(args=argv)
+  parser.add_argument("--fullscreen",
+                      action="store_true",
+                      default=False,
+                      help="specify whether video should be made fullscreen.")
+
+  return parser.parse_args()
+
+
+def main():
+  options = ParseArgs()
   if options.verbose:
     logging.basicConfig(level=logging.DEBUG)
 
@@ -321,10 +317,10 @@ def main(argv):
       w = csv.DictWriter(results_csv, fieldnames=labels)
       w.writeheader()
       w.writerows(all_results)
-  except Exception as err:
-    logging.warning('Failed to write results file ' + results_filename)
+  except Exception as err:  # pylint: disable=broad-except
+    logging.warning('Failed to write results file %s', results_filename)
     logging.debug(err)
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+  sys.exit(main())

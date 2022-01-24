@@ -23,18 +23,17 @@ This script is tested and works fine with the following video sites:
   * http://crosvideo.appspot.com
 """
 
-from __future__ import print_function
+import logging
+import os
+import sys
+import time
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
 from gpu_tests import ipg_utils
 from gpu_tests import path_util
 
-import logging
-import os
 import py_utils
-import sys
-import time
 
 # Waits for [x] seconds after browser launch before measuring power to
 # avoid startup tasks affecting results.

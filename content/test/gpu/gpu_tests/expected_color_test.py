@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import logging
 
 from gpu_tests import pixel_test_pages
@@ -131,18 +129,18 @@ class ExpectedColorTest(
           if ('device_type' in override
               and (tab.browser.platform.GetDeviceTypeName() ==
                    override['device_type'])):
-            logging.warning('Overriding device_pixel_ratio ' +
-                            str(device_pixel_ratio) + ' with scale factor ' +
-                            str(override['scale_factor']) +
-                            ' for device type ' + override['device_type'])
+            logging.warning(
+                'Overriding device_pixel_ration %s with scale '
+                'factor %s for device type %s', device_pixel_ratio,
+                override['scale_factor'], override['device_type'])
             device_pixel_ratio = override['scale_factor']
             break
           if (test_machine_name and 'machine_name' in override
               and override["machine_name"] == test_machine_name):
-            logging.warning('Overriding device_pixel_ratio ' +
-                            str(device_pixel_ratio) + ' with scale factor ' +
-                            str(override['scale_factor']) +
-                            ' for machine name ' + test_machine_name)
+            logging.warning(
+                'Overriding device_pixel_ratio %s with scale '
+                'factor %s for machine name %s', device_pixel_ratio,
+                override['scale_factor'], test_machine_name)
             device_pixel_ratio = override['scale_factor']
             break
         # Only support one "scale_factor_overrides" in the expectation format.

@@ -11,8 +11,6 @@ Depends on the `bq` tool, which is available as part of the Google Cloud SDK
 https://cloud.google.com/sdk/docs/quickstarts.
 """
 
-from __future__ import print_function
-
 import argparse
 import json
 import os
@@ -20,9 +18,12 @@ import subprocess
 
 from gpu_tests import path_util
 path_util.SetupTelemetryPaths()
+# TODO(crbug.com/1289421): Remove this disable.
+# pylint: disable=wrong-import-position
 from gpu_tests import gpu_integration_test
 
 from typ import expectations_parser
+# pylint: enable=wrong-import-position
 
 BQ_QUERY_TEMPLATE = """\
 WITH
@@ -55,9 +56,8 @@ def ParseArgs():
   return parser.parse_args()
 
 
-def main():
-  args = ParseArgs()
-
+def _GetUsedTags():
+  """Helper function to get all currently used tags."""
   # Get the list of tags in expectation files. Any expectation file will do
   # since tags are synced between all of them.
   expectation_file_path = os.path.join(os.path.dirname(__file__), 'gpu_tests',
@@ -68,11 +68,11 @@ def main():
   used_tags = set()
   for tag_set in list_parser.tag_sets:
     used_tags |= set(tag_set)
+  return used_tags
 
-  # Get the list of ignored tags from the GPU tests.
-  ignored_tags = set(gpu_integration_test.GpuIntegrationTest.IgnoredTags())
 
-  # Get the list of all tags being generated on the bots.
+def _GetGeneratedTags(args):
+  """Helper function to get all currently generated tags from bots."""
   generated_tags = set()
   for table in [
       'chrome-luci-data.chromium.gpu_ci_test_results',
@@ -97,10 +97,19 @@ def main():
     results = json.loads(stdout)
     for pair in results:
       generated_tags |= set(pair.values())
+  return generated_tags
 
+
+def main():
+  args = ParseArgs()
+
+  used_tags = _GetUsedTags()
+  # Get the list of ignored tags from the GPU tests.
+  ignored_tags = set(gpu_integration_test.GpuIntegrationTest.IgnoredTags())
+  generated_tags = _GetGeneratedTags(args)
   known_tags = used_tags | ignored_tags
-
   unused_tags = generated_tags - known_tags
+
   if unused_tags:
     print('Tags that were generated but unused:')
     for t in unused_tags:

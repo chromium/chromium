@@ -3,8 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import argparse
 import json
 import os
@@ -15,9 +13,12 @@ import gpu_project_config
 
 path_util.SetupTelemetryPaths()
 
+# TODO(crbug.com/1289421): Remove this disable.
+# pylint: disable=wrong-import-position
 from telemetry.testing import browser_test_runner
 from telemetry.testing import serially_executed_browser_test_case
 from py_utils import discover
+# pylint: enable=wrong-import-position
 
 
 def PostprocessJSON(file_name, run_test_args):
@@ -36,7 +37,7 @@ def FailIfScreenLockedOnMac():
   # tests.
   if not sys.platform.startswith('darwin'):
     return
-  import Quartz  # pylint: disable=import-outside-toplevel
+  import Quartz  # pylint: disable=import-outside-toplevel,import-error
   current_session = Quartz.CGSessionCopyCurrentDictionary()
   if not current_session:
     # Using the logging module doesn't seem to be guaranteed to show up in

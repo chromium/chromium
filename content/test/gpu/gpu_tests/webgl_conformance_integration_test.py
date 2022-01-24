@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import logging
 import os
 import re
@@ -398,8 +396,8 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           cls._command_decoder = o[len('--use-cmd-decoder='):]
     if found_js_flags:
       logging.warning('Overriding built-in JavaScript flags:')
-      logging.warning(' Original flags: ' + builtin_js_flags)
-      logging.warning(' New flags: ' + user_js_flags)
+      logging.warning(' Original flags: %s', builtin_js_flags)
+      logging.warning(' New flags: %s', user_js_flags)
     else:
       default_args.append(builtin_js_flags)
 

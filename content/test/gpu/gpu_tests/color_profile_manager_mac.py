@@ -51,7 +51,7 @@ if sys.platform.startswith('darwin'):
 # Set |display_id| to use the color profile specified in |profile_url|. If
 # |profile_url| is None, then use the factor default.
 def SetDisplayCustomProfile(device_id, profile_url):
-  if profile_url == None:
+  if profile_url is None:
     profile_url = Foundation.kCFNull
   profile_info = {
       kColorSyncDeviceDefaultProfileID: profile_url,
@@ -59,7 +59,7 @@ def SetDisplayCustomProfile(device_id, profile_url):
   }
   result = ColorSyncDeviceSetCustomProfiles(kColorSyncDisplayDeviceClass,
                                             device_id, profile_info)
-  if result != True:
+  if not result:
     raise Exception('Failed to set display custom profile')
 
 

@@ -49,7 +49,7 @@ class ResultUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       _ = data_types.Result('suite', 't*', ('win', 'nvidia'), 'id')
 
-  def testHashability(self):
+  def testHashability(self):  # pylint: disable=no-self-use
     """Tests that Result objects are hashable."""
     r = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id')
     _ = set([r])

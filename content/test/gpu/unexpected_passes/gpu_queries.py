@@ -126,7 +126,7 @@ WITH
       AND status != "SKIP"
       AND REGEXP_CONTAINS(
         test_id,
-        r"gpu_tests\.{suite}\.")
+        r"gpu_tests\\.{suite}\\.")
   )
 SELECT DISTINCT r.test_id
 FROM results r
@@ -213,7 +213,7 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
           builder, """\
         AND REGEXP_CONTAINS(
           test_id,
-          r"gpu_tests\.%s\.")""" % self._suite)
+          r"gpu_tests\\.%s\\.")""" % self._suite)
 
     query = TEST_FILTER_QUERY_TEMPLATE.format(
         builder_project=builder.project,

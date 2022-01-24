@@ -18,8 +18,6 @@ An easy way to use the APIs are:
    5 seconds, call AnalyzeIPGLogFile(skip_in_sec=5).
 """
 
-from __future__ import print_function
-
 import datetime
 import json
 import logging
@@ -66,7 +64,7 @@ def RunIPG(duration_in_s=60, resolution_in_ms=100, logfile=None):
     # It is not necessary but allows to print out the log path for debugging.
     logfile = GenerateIPGLogFilename()
   command = command + (' -file %s' % logfile)
-  logging.debug("Running: " + command)
+  logging.debug("Running: %s", command)
   try:
     output = subprocess.check_output(command,
                                      shell=True,
@@ -112,8 +110,7 @@ def AnalyzeIPGLogFile(logfile=None, skip_in_sec=0):
     if skip_in_sec > 0 and float(tokens[col_time]) < skip_in_sec:
       continue
     samples += 1
-    for ii in range(0, len(indices)):
-      index = indices[ii]
+    for ii, index in enumerate(indices):
       sums[ii] += float(tokens[index])
   results = {'samples': samples}
   if samples > 0:

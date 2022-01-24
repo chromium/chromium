@@ -10,14 +10,26 @@ for more details about the presubmit API built into depot_tools.
 
 USE_PYTHON3 = True
 
+EXTRA_PATHS_COMPONENTS = [
+    tuple(['build']),
+    ('build', 'fuchsia'),
+    tuple(['testing']),
+    ('third_party', 'catapult', 'common', 'py_utils'),
+    ('third_party', 'catapult', 'devil'),
+    ('third_party', 'catapult', 'telemetry'),
+    ('third_party', 'catapult', 'third_party', 'typ'),
+    ('tools', 'perf'),
+]
+
 
 def CommonChecks(input_api, output_api):
   results = []
 
   gpu_env = dict(input_api.environ)
   current_path = input_api.PresubmitLocalPath()
-  testing_path = input_api.os_path.realpath(
-      input_api.os_path.join(current_path, '..', '..', '..', 'testing'))
+  chromium_src_path = input_api.os_path.realpath(
+      input_api.os_path.join(current_path, '..', '..', '..'))
+  testing_path = input_api.os_path.join(chromium_src_path, 'testing')
   gpu_env.update({
       'PYTHONPATH':
       input_api.os_path.pathsep.join([testing_path, current_path]),
@@ -65,9 +77,16 @@ def CommonChecks(input_api, output_api):
           run_on_python3=True,
           skip_shebang_check=True))
 
-  pylint_checks = input_api.canned_checks.GetPylint(input_api,
-                                                    output_api,
-                                                    version='2.7')
+  pylint_extra_paths = [
+      input_api.os_path.join(chromium_src_path, *component)
+      for component in EXTRA_PATHS_COMPONENTS
+  ]
+  pylint_checks = input_api.canned_checks.GetPylint(
+      input_api,
+      output_api,
+      extra_paths_list=pylint_extra_paths,
+      pylintrc='pylintrc',
+      version='2.7')
   results.extend(input_api.RunTests(pylint_checks))
 
   results.extend(CheckForNewSkipExpectations(input_api, output_api))

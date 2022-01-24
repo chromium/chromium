@@ -2,13 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import collections
 import logging
 import re
 import sys
-import time
 import unittest
 
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
@@ -221,8 +218,7 @@ class GpuIntegrationTest(
     new_browser_args = cls._GenerateAndSanitizeBrowserArgs(additional_args)
     if force_restart or set(
         new_browser_args) != cls._last_launched_browser_args:
-      logging.info('Restarting browser with arguments: ' +
-                   str(new_browser_args))
+      logging.info('Restarting browser with arguments: %s', new_browser_args)
       cls.StopBrowser()
       cls._SetBrowserArgsForNextStartup(new_browser_args)
       cls.StartBrowser()
@@ -262,8 +258,9 @@ class GpuIntegrationTest(
           url = screenshot.TryCaptureScreenShotAndUploadToCloudStorage(
               cls.platform)
           if url is not None:
-            logging.info("GpuIntegrationTest screenshot of browser failure " +
-                         "located at " + url)
+            logging.info(
+                "GpuIntegrationTest screenshot of browser failure "
+                "located at %s", url)
           else:
             logging.warning("GpuIntegrationTest unable to take screenshot.")
         # Stop the browser to make sure it's in an
@@ -276,7 +273,7 @@ class GpuIntegrationTest(
 
   @classmethod
   def _RestartBrowser(cls, reason):
-    logging.warning('Restarting browser due to ' + reason)
+    logging.warning('Restarting browser due to %s', reason)
     # The Browser may be None at this point if all attempts to start it failed.
     # This can occur if there is a consistent startup crash. For example caused
     # by a bad combination of command-line arguments. So reset to the original
@@ -306,32 +303,54 @@ class GpuIntegrationTest(
     if os_name in ('android', 'chromeos'):
       logging.warning(
           'Restarting TsProxyServer due to being on a remote platform')
+      # pylint: disable=protected-access
       network_controller_backend = (
           cls.platform._platform_backend.network_controller_backend)
       wpr_mode = network_controller_backend._wpr_mode
+      # pylint: enable=protected-access
       network_controller_backend.Close()
       network_controller_backend.Open(wpr_mode)
 
-  def _ShouldForceRetryOnFailureFirstTest(self):
+  def _ShouldForceRetryOnFailureFirstTest(self):  # pylint: disable=no-self-use
     return False
 
-  def _RunGpuTest(self, url, test_name, *args):
-    expected_results, should_retry_on_failure = (
-        self.GetExpectationsForTest()[:2])
-    # This is a temporary workaround for flaky GPU process startup in WebGL
-    # conformance tests in the first test run on a shard. This should not be
-    # kept in long-term. See crbug.com/1079244.
+  def _DetermineFirstTestRetryWorkaround(self, test_name):
+    """Potentially allows retries for the first test run on a shard.
+
+    This is a temporary workaround for flaky GPU process startup in WebGL
+    conformance tests in the first test run on a shard. This should not be kept
+    long-term. See crbug.com/1079244.
+
+    Args:
+      test_name: A string containing the name of the test about to be run.
+
+    Returns:
+      A boolean indicating whether a retry on failure should be forced.
+    """
     if self._ShouldForceRetryOnFailureFirstTest():
       if GpuIntegrationTest._first_run_test is None:
         GpuIntegrationTest._first_run_test = test_name
       if GpuIntegrationTest._first_run_test == test_name:
         logging.warning('Forcing RetryOnFailure in test %s', test_name)
-        # Internal bookkeeping.
-        should_retry_on_failure = True
         # Notify typ that it should retry this test if necessary.
         # pylint: disable=attribute-defined-outside-init
         self.retryOnFailure = True
         # pylint: enable=attribute-defined-outside-init
+        return True
+    return False
+
+  def _EnsureScreenOn(self):
+    """Ensures the screen is on for applicable platforms."""
+    os_name = self.browser.platform.GetOSName()
+    if os_name == 'android':
+      self.browser.platform.android_action_runner.TurnScreenOn()
+
+  def _RunGpuTest(self, url, test_name, *args):
+    expected_results, should_retry_on_failure = (
+        self.GetExpectationsForTest()[:2])
+    should_retry_on_failure = (
+        should_retry_on_failure
+        or self._DetermineFirstTestRetryWorkaround(test_name))
     try:
       # TODO(nednguyen): For some reason the arguments are getting wrapped
       # in another tuple sometimes (like in the WebGL extension tests).
@@ -340,11 +359,9 @@ class GpuIntegrationTest(
       if len(args) == 1 and isinstance(args[0], tuple):
         args = args[0]
       expected_crashes = self.GetExpectedCrashes(args)
-      os_name = self.browser.platform.GetOSName()
       # The GPU tests don't function correctly if the screen is not on, so
       # ensure that this is the case.
-      if os_name == 'android':
-        self.browser.platform.android_action_runner.TurnScreenOn()
+      self._EnsureScreenOn()
       self.RunActualGpuTest(url, *args)
     except unittest.SkipTest:
       # pylint: disable=attribute-defined-outside-init
@@ -353,65 +370,79 @@ class GpuIntegrationTest(
       raise
     except Exception:
       if ResultType.Failure in expected_results or should_retry_on_failure:
-        # We don't check the return value here since we'll be raising the
-        # caught exception already.
-        self._ClearExpectedCrashes(expected_crashes)
-        if should_retry_on_failure:
-          logging.exception('Exception while running flaky test %s', test_name)
-          # Perform the same data collection as we do for an unexpected failure
-          # but only if this was the last try for a flaky test so we don't
-          # waste time symbolizing minidumps for expected flaky crashes.
-          # TODO(crbug.com/1248602): Replace this with a different method of
-          # tracking retries if possible.
-          self._flaky_test_tries[test_name] += 1
-          if self._flaky_test_tries[test_name] == _MAX_TEST_TRIES:
-            if self.browser is not None:
-              self.browser.CollectDebugData(logging.ERROR)
-          # For robustness, shut down the browser and restart it
-          # between flaky test failures, to make sure any state
-          # doesn't propagate to the next iteration.
-          self._RestartBrowser('flaky test failure')
-        else:
-          logging.exception('Expected exception while running %s', test_name)
-          # Even though this is a known failure, the browser might still
-          # be in a bad state; for example, certain kinds of timeouts
-          # will affect the next test. Restart the browser to prevent
-          # these kinds of failures propagating to the next test.
-          self._RestartBrowser('expected test failure')
+        self._HandleExpectedFailureOrFlake(test_name, expected_crashes,
+                                           should_retry_on_failure)
       else:
-        logging.exception('Unexpected exception while running %s', test_name)
-        # Symbolize any crash dump (like from the GPU process) that
-        # might have happened but wasn't detected above. Note we don't
-        # do this for either 'fail' or 'flaky' expectations because
-        # there are still quite a few flaky failures in the WebGL test
-        # expectations, and since minidump symbolization is slow
-        # (upwards of one minute on a fast laptop), symbolizing all the
-        # stacks could slow down the tests' running time unacceptably.
-        # We also don't do this if the browser failed to startup.
-        if self.browser is not None:
-          self.browser.CollectDebugData(logging.ERROR)
-        # This failure might have been caused by a browser or renderer
-        # crash, so restart the browser to make sure any state doesn't
-        # propagate to the next test iteration.
-        self._RestartBrowser('unexpected test failure')
+        self._HandleUnexpectedFailure(test_name)
       raise
     else:
-      # Fuchsia does not have minidump support, use system info to check
-      # for crash count.
-      if os_name == 'fuchsia':
-        total_expected_crashes = sum(expected_crashes.values())
-        actual_and_expected_crashes_match = self._CheckCrashCountMatch(
-            total_expected_crashes)
-      # We always want to clear any expected crashes, but we don't bother
-      # failing the test if it's expected to fail.
-      else:
-        actual_and_expected_crashes_match = self._ClearExpectedCrashes(
-            expected_crashes)
-      if ResultType.Failure in expected_results:
-        logging.warning('%s was expected to fail, but passed.\n', test_name)
-      else:
-        if not actual_and_expected_crashes_match:
-          raise RuntimeError('Actual and expected crashes did not match')
+      self._HandlePass(test_name, expected_crashes, expected_results)
+
+  def _HandleExpectedFailureOrFlake(self, test_name, expected_crashes,
+                                    should_retry_on_failure):
+    """Helper method for handling a failure in an expected flaky/failing test"""
+    # We don't check the return value here since we'll be raising the caught
+    # exception already.
+    self._ClearExpectedCrashes(expected_crashes)
+    if should_retry_on_failure:
+      logging.exception('Exception while running flaky test %s', test_name)
+      # Perform the same data collection as we do for an unexpected failure
+      # but only if this was the last try for a flaky test so we don't
+      # waste time symbolizing minidumps for expected flaky crashes.
+      # TODO(crbug.com/1248602): Replace this with a different method of
+      # tracking retries if possible.
+      self._flaky_test_tries[test_name] += 1
+      if self._flaky_test_tries[test_name] == _MAX_TEST_TRIES:
+        if self.browser is not None:
+          self.browser.CollectDebugData(logging.ERROR)
+      # For robustness, shut down the browser and restart it
+      # between flaky test failures, to make sure any state
+      # doesn't propagate to the next iteration.
+      self._RestartBrowser('flaky test failure')
+    else:
+      logging.exception('Expected exception while running %s', test_name)
+      # Even though this is a known failure, the browser might still
+      # be in a bad state; for example, certain kinds of timeouts
+      # will affect the next test. Restart the browser to prevent
+      # these kinds of failures propagating to the next test.
+      self._RestartBrowser('expected test failure')
+
+  def _HandleUnexpectedFailure(self, test_name):
+    """Helper method for handling an unexpected failure in a test."""
+    logging.exception('Unexpected exception while running %s', test_name)
+    # Symbolize any crash dump (like from the GPU process) that
+    # might have happened but wasn't detected above. Note we don't
+    # do this for either 'fail' or 'flaky' expectations because
+    # there are still quite a few flaky failures in the WebGL test
+    # expectations, and since minidump symbolization is slow
+    # (upwards of one minute on a fast laptop), symbolizing all the
+    # stacks could slow down the tests' running time unacceptably.
+    # We also don't do this if the browser failed to startup.
+    if self.browser is not None:
+      self.browser.CollectDebugData(logging.ERROR)
+    # This failure might have been caused by a browser or renderer
+    # crash, so restart the browser to make sure any state doesn't
+    # propagate to the next test iteration.
+    self._RestartBrowser('unexpected test failure')
+
+  def _HandlePass(self, test_name, expected_crashes, expected_results):
+    """Helper function for handling a passing test."""
+    # Fuchsia does not have minidump support, use system info to check
+    # for crash count.
+    if self.browser.platform.GetOSName() == 'fuchsia':
+      total_expected_crashes = sum(expected_crashes.values())
+      actual_and_expected_crashes_match = self._CheckCrashCountMatch(
+          total_expected_crashes)
+    else:
+      actual_and_expected_crashes_match = self._ClearExpectedCrashes(
+          expected_crashes)
+    # We always want to clear any expected crashes, but we don't bother
+    # failing the test if it's expected to fail.
+    if ResultType.Failure in expected_results:
+      logging.warning('%s was expected to fail, but passed.\n', test_name)
+    else:
+      if not actual_and_expected_crashes_match:
+        raise RuntimeError('Actual and expected crashes did not match')
 
   def _CheckCrashCountMatch(self, total_expected_crashes):
     # We can't get crashes if we don't have a browser.
@@ -426,8 +457,8 @@ class GpuIntegrationTest(
     retval = True
     if number_of_crashes != total_expected_crashes:
       retval = False
-      logging.warning('Expected %d gpu process crashes; got: %d' %
-                      (total_expected_crashes, number_of_crashes))
+      logging.warning('Expected %d gpu process crashes; got: %d',
+                      total_expected_crashes, number_of_crashes)
     if number_of_crashes > 0:
       # Restarting is necessary because the crash count includes all
       # crashes since the browser started.

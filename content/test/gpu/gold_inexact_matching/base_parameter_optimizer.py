@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import glob
 import hashlib
 import itertools
@@ -12,11 +10,13 @@ import json
 import logging
 import multiprocessing
 import os
-from PIL import Image
-import requests
 import shutil
 import subprocess
 import tempfile
+
+from PIL import Image  # pylint: disable=import-error
+
+import requests  # pylint: disable=import-error
 
 from gold_inexact_matching import parameter_set
 

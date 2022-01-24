@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import argparse
 import os
 import shutil
@@ -15,9 +13,12 @@ from gpu_tests import path_util
 
 sys.path.insert(0,
                 os.path.join(path_util.GetChromiumSrcDir(), 'build', 'fuchsia'))
+# This is disable is not a candidate for removal after path modification is
+# consolidated due to it being Fuchsia-specific.
+# pylint: disable=wrong-import-position
 from common_args import (AddCommonArgs, AddTargetSpecificArgs, ConfigureLogging,
                          GetDeploymentTargetForArgs)
-from symbolizer import BuildIdsPaths
+# pylint: enable=wrong-import-position
 
 
 def RunTestOnFuchsiaDevice(script_cmd):
@@ -61,11 +62,15 @@ def RunTestOnFuchsiaDevice(script_cmd):
     with GetDeploymentTargetForArgs(runner_script_args) as target:
       target.Start()
       target.StartSystemLog(package_paths)
+      # pylint: disable=protected-access
       fuchsia_device_address, fuchsia_ssh_port = target._GetEndpoint()
+      # pylint: enable=protected-access
       script_cmd.extend(
           ['--chromium-output-directory', runner_script_args.out_dir])
       script_cmd.extend(['--fuchsia-device-address', fuchsia_device_address])
+      # pylint: disable=protected-access
       script_cmd.extend(['--fuchsia-ssh-config', target._GetSshConfigPath()])
+      # pylint: enable=protected-access
       if fuchsia_ssh_port:
         script_cmd.extend(['--fuchsia-ssh-port', str(fuchsia_ssh_port)])
       script_cmd.extend([

@@ -3,28 +3,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# pylint: disable=protected-access
+
 import base64
 import os
 import sys
 import tempfile
 import unittest
-
-import six
-
-# Same reasoning as below.
-if six.PY3:
-  import urllib.error
-
-# This script is not Python 2-compatible, but some presubmit scripts end up
-# trying to parse this to find tests.
-# TODO(crbug.com/1198237): Remove this once all the GPU tests, and by
-# extension the presubmit scripts, are Python 3-compatible.
-if six.PY3:
-  import unittest.mock as mock
+import unittest.mock as mock
+import urllib.error
 
 import validate_tag_consistency
 
-from pyfakefs import fake_filesystem_unittest
+from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
 
 from flake_suppressor import expectations
 from flake_suppressor import unittest_utils as uu

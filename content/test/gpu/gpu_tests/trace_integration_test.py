@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import os
 import sys
 
@@ -410,8 +408,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       return
 
     valid_entry_found = False
-    for index in range(len(presentation_mode_history)):
-      mode = presentation_mode_history[index]
+    for index, mode in enumerate(presentation_mode_history):
       if mode in (_SWAP_CHAIN_PRESENTATION_MODE_NONE,
                   _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED):
         # Be more tolerant to avoid test flakiness

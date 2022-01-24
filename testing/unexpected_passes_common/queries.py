@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 """Methods related to querying the ResultDB BigQuery tables."""
 
-from __future__ import print_function
-
 import json
 import logging
 import math
@@ -158,7 +156,7 @@ class BigQueryQuerier(object):
     include_internal_builders = any([b.is_internal_builder for b in builders])
     query = self._GetActiveBuilderQuery(
         builder_type, include_internal_builders).encode('utf-8')
-    cmd = _GenerateBigQueryCommand(self._project, {}, batch=False)
+    cmd = GenerateBigQueryCommand(self._project, {}, batch=False)
     with open(os.devnull, 'w') as devnull:
       p = subprocess.Popen(cmd,
                            stdout=subprocess.PIPE,
@@ -423,7 +421,7 @@ class BigQueryQuerier(object):
       finally:
         cleanup()
 
-    bq_cmd = _GenerateBigQueryCommand(self._project, parameters)
+    bq_cmd = GenerateBigQueryCommand(self._project, parameters)
     stdouts = run_cmd(bq_cmd, 0)
     combined_json = []
     for result in [json.loads(s) for s in stdouts]:
@@ -576,7 +574,7 @@ class SplitQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-meth
     return self._clauses
 
 
-def _GenerateBigQueryCommand(project, parameters, batch=True):
+def GenerateBigQueryCommand(project, parameters, batch=True):
   """Generate a BigQuery commandline.
 
   Does not contain the actual query, as that is passed in via stdin.

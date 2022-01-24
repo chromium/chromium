@@ -3,8 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import copy
 import json
 import subprocess
@@ -568,13 +566,13 @@ class RunBigQueryCommandsForJsonOutputUnittest(unittest.TestCase):
 class GenerateBigQueryCommandUnittest(unittest.TestCase):
   def testNoParametersSpecified(self):
     """Tests that no parameters are added if none are specified."""
-    cmd = queries._GenerateBigQueryCommand('project', {})
+    cmd = queries.GenerateBigQueryCommand('project', {})
     for element in cmd:
       self.assertFalse(element.startswith('--parameter'))
 
   def testParameterAddition(self):
     """Tests that specified parameters are added appropriately."""
-    cmd = queries._GenerateBigQueryCommand('project', {
+    cmd = queries.GenerateBigQueryCommand('project', {
         '': {
             'string': 'string_value'
         },
@@ -587,7 +585,7 @@ class GenerateBigQueryCommandUnittest(unittest.TestCase):
 
   def testBatchMode(self):
     """Tests that batch mode adds the necessary arg."""
-    cmd = queries._GenerateBigQueryCommand('project', {}, batch=True)
+    cmd = queries.GenerateBigQueryCommand('project', {}, batch=True)
     self.assertIn('--batch', cmd)
 
 

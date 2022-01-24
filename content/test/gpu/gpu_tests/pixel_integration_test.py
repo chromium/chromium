@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import logging
 import os
 import sys
@@ -112,7 +110,7 @@ class PixelIntegrationTest(
     finally:
       test_messages = _TestHarnessMessages(tab)
       if test_messages:
-        logging.info('Logging messages from the test:\n' + test_messages)
+        logging.info('Logging messages from the test:\n%s', test_messages)
       if do_page_action or page.restart_browser_after_test:
         self._RestartBrowser(
             'Must restart after page actions or if required by test')

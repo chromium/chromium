@@ -2,16 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import os
 import re
 import sys
-
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
+import unittest.mock as mock
 
 # This set must be the union of the driver tags used in WebGL and WebGL2
 # expectations files.
@@ -247,8 +241,8 @@ def EvaluateVersionComparison(version,
   def parse_version(ver):
     if ver.isdigit():
       return int(ver), ''
-    for i in range(0, len(ver)):
-      if not ver[i].isdigit():
+    for i, digit in enumerate(ver):
+      if not digit.isdigit():
         return int(ver[:i]) if i > 0 else 0, ver[i:]
     return None
 

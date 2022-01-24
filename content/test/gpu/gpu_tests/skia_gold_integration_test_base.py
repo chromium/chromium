@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 from datetime import date
 import logging
 import os
@@ -361,8 +359,6 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     use_luci = not (gold_properties.local_pixel_tests
                     or gold_properties.no_luci_auth)
 
-    inexact_matching_args = page.matching_algorithm.GetCmdline()
-
     # TODO(skbug.com/12149): Remove this once Gold stops clobbering earlier
     # results when running retry steps.
     force_dryrun = False
@@ -375,7 +371,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     status, error = gold_session.RunComparison(
         name=image_name,
         png_file=png_temp_file,
-        inexact_matching_args=inexact_matching_args,
+        inexact_matching_args=page.matching_algorithm.GetCmdline(),
         use_luci=use_luci,
         force_dryrun=force_dryrun)
     if not status:
@@ -456,7 +452,7 @@ def _ToHex(num):
 
 
 def _ToHexOrNone(num):
-  return 'None' if num == None else _ToHex(num)
+  return 'None' if num is None else _ToHex(num)
 
 
 def _ToNonEmptyStrOrNone(val):

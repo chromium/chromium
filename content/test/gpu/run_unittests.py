@@ -7,17 +7,18 @@
 This script DOES NOT run tests. run_gpu_test does that.
 """
 
-from __future__ import print_function
-
 import sys
 
 from gpu_tests import path_util
 
 path_util.SetupTelemetryPaths()
 
+# TODO(crbug.com/1289421): Remove this disable.
+# pylint: disable=wrong-import-position
 import gpu_project_config
 
 from telemetry.testing import unittest_runner
+# pylint: enable=wrong-import-position
 
 
 def main():
