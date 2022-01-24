@@ -575,24 +575,34 @@ struct ClientHintsExtendedData {
   bool is_1p_origin = false;
 };
 
+bool SkipPermissionPolicyCheck(WebClientHintsType type) {
+  // TODO(crbug/1282230): Add || type == WebClientHintsType::kFullUserAgent;
+  return type == WebClientHintsType::kUAReduced;
+}
+
+bool IsClientHintEnabled(const ClientHintsExtendedData& data,
+                         WebClientHintsType type) {
+  return blink::IsClientHintSentByDefault(type) || data.hints.IsEnabled(type) ||
+         (type == WebClientHintsType::kUAReduced &&
+          data.is_embedder_ua_reduced);
+  // TODO(crbug/1282230): Add || (type == WebClientHintsType::kFullUserAgent &&
+  // data.is_embedder_ua_full);
+}
+
 bool IsClientHintAllowed(const ClientHintsExtendedData& data,
                          WebClientHintsType type) {
-  if (data.is_main_frame)
+  if (data.is_main_frame) {
     return data.is_1p_origin;
-  return (data.is_embedder_ua_reduced &&
-          type == WebClientHintsType::kUAReduced) ||
-         (data.permissions_policy &&
-          data.permissions_policy->IsFeatureEnabledForOrigin(
-              blink::GetClientHintToPolicyFeatureMap().at(type),
-              data.resource_origin));
+  }
+  return SkipPermissionPolicyCheck(type) ||
+         (data.permissions_policy->IsFeatureEnabledForOrigin(
+             blink::GetClientHintToPolicyFeatureMap().at(type),
+             data.resource_origin));
 }
 
 bool ShouldAddClientHint(const ClientHintsExtendedData& data,
                          WebClientHintsType type) {
-  if (!blink::IsClientHintSentByDefault(type) && !data.hints.IsEnabled(type) &&
-      !data.is_embedder_ua_reduced)
-    return false;
-  return IsClientHintAllowed(data, type);
+  return IsClientHintEnabled(data, type) && IsClientHintAllowed(data, type);
 }
 
 bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
@@ -1027,8 +1037,9 @@ bool AreCriticalHintsMissing(
   // origin-level or "browser-level" policies like disabiling JS or other
   // features.
   for (auto hint : critical_hints) {
-    if (IsClientHintAllowed(data, hint) && !ShouldAddClientHint(data, hint))
+    if (IsClientHintAllowed(data, hint) && !IsClientHintEnabled(data, hint)) {
       return true;
+    }
   }
 
   return false;
