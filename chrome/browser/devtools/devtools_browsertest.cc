@@ -1964,8 +1964,9 @@ class DevToolsAutoOpenerTest : public DevToolsTest {
 IN_PROC_BROWSER_TEST_F(DevToolsAutoOpenerTest, MAYBE_TestAutoOpenForTabs) {
   {
     DevToolsWindowCreationObserver observer;
-    AddTabAtIndexToBrowser(browser(), 0, GURL("about:blank"),
-        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+    ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL("about:blank"),
+                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                       false));
     observer.WaitForLoad();
   }
   Browser* new_browser = nullptr;
@@ -1976,8 +1977,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutoOpenerTest, MAYBE_TestAutoOpenForTabs) {
   }
   {
     DevToolsWindowCreationObserver observer;
-    AddTabAtIndexToBrowser(new_browser, 0, GURL("about:blank"),
-        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+    ASSERT_TRUE(AddTabAtIndexToBrowser(new_browser, 0, GURL("about:blank"),
+                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                       false));
     observer.WaitForLoad();
   }
   observer_->CloseAllSync();
