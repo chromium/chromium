@@ -21,10 +21,11 @@ import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {setSearchResults} from './actions.js';
 import {destroy as destroyApiListener, init as initApiListener} from './api_listener.js';
+import {getTemplate} from './app.html.js';
 import {LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, ROOT_NODE_ID} from './constants.js';
 import {DNDManager} from './dnd_manager.js';
 import {MouseFocusMixin} from './mouse_focus_behavior.js';
@@ -53,6 +54,10 @@ export interface BookmarksAppElement {
 export class BookmarksAppElement extends BookmarksAppElementBase {
   static get is() {
     return 'bookmarks-app';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -230,11 +235,6 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
   /** Overridden from IronScrollTargetBehavior */
   _scrollHandler() {
     this.toolbarShadow_ = this.scrollTarget!.scrollTop !== 0;
-  }
-
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

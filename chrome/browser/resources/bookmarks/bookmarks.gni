@@ -2,34 +2,49 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# List of files that don't need to be passed to html_to_js().
-non_web_component_files = [
+ts_files = [
   "actions.ts",
   "api_listener.ts",
+  "app.ts",
   "bookmarks.ts",
   "browser_proxy.ts",
+  "command_manager.ts",
   "constants.ts",
   "debouncer.ts",
   "dialog_focus_manager.ts",
   "dnd_manager.ts",
-  "mouse_focus_behavior.ts",
-  "reducers.ts",
-  "store_client_mixin.ts",
-  "store.ts",
-  "types.ts",
-  "util.ts",
-]
-
-# List of files that should be passed to html_to_js().
-web_component_files = [
-  "app.ts",
-  "command_manager.ts",
   "edit_dialog.ts",
   "folder_node.ts",
   "item.ts",
   "list.ts",
+  "mouse_focus_behavior.ts",
+  "reducers.ts",
   "router.ts",
+  "store_client_mixin.ts",
+  "store.ts",
+  "toolbar.ts",
+  "types.ts",
+  "util.ts",
+]
+
+html_files = [
+  "app.html",
+  "bookmarks.html",
+  "command_manager.html",
+  "edit_dialog.html",
+  "folder_node.html",
+  "item.html",
+  "list.html",
+  "router.html",
+  "toolbar.html",
+]
+
+html_wrapper_files = []
+foreach(html_file, html_files) {
+  html_wrapper_files += [ html_file + ".ts" ]
+}
+
+css_wrapper_files = [
   "shared_style.ts",
   "shared_vars.ts",
-  "toolbar.ts",
 ]

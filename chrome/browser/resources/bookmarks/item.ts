@@ -14,11 +14,12 @@ import {isMac} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectItem} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
+import {getTemplate} from './item.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
 import {BookmarkNode} from './types.js';
 
@@ -37,7 +38,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

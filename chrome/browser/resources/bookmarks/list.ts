@@ -17,12 +17,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, selectAll, selectItem, updateAnchor} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {MenuSource} from './constants.js';
 import {BookmarksItemElement} from './item.js';
+import {getTemplate} from './list.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
 import {OpenCommandMenuDetail} from './types.js';
 import {canReorderChildren, getDisplayedList} from './util.js';
@@ -43,7 +44,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

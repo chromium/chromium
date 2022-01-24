@@ -12,10 +12,11 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
+import {getTemplate} from './edit_dialog.html.js';
 import {BookmarkNode} from './types.js';
 
 export interface BookmarksEditDialogElement {
@@ -33,7 +34,7 @@ export class BookmarksEditDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
