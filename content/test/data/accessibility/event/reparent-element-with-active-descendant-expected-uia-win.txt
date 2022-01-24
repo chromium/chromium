@@ -1,0 +1,9 @@
+AutomationFocusChanged on role=menuitem, name=New
+=== Start Continuation ===
+AutomationFocusChanged on role=menuitem, name=Open...
+=== Start Continuation ===
+StructureChanged/ChildAdded on role=group
+StructureChanged/ChildRemoved on role=menubar
+StructureChanged/ChildrenReordered on role=menubar
+=== Start Continuation ===
+AutomationFocusChanged on role=menuitem, name=Quit

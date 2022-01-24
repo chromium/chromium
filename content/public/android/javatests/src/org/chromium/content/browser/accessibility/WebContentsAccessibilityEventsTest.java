@@ -928,6 +928,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_reparentElementWithActiveDescendant() {
+        performTest("reparent-element-with-active-descendant.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_reportValidityInvalidField() {
         performTest("report-validity-invalid-field.html",
                 "report-validity-invalid-field-expected-android.txt");
