@@ -133,7 +133,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/core/frame/window_controls_overlay_changed_delegate.h"
+#include "third_party/blink/renderer/core/frame/window_controls_overlay.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -401,7 +401,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(background_color_paint_image_generator_);
   visitor->Trace(box_shadow_paint_image_generator_);
   visitor->Trace(clip_path_paint_image_generator_);
-  visitor->Trace(window_controls_overlay_changed_delegate_);
   Frame::Trace(visitor);
   Supplementable<LocalFrame>::Trace(visitor);
 }
@@ -2739,15 +2738,15 @@ void LocalFrame::UpdateWindowControlsOverlay(
     }
   }
 
-  if (fire_event && window_controls_overlay_changed_delegate_) {
-    window_controls_overlay_changed_delegate_->WindowControlsOverlayChanged(
-        window_controls_overlay_rect_);
-  }
-}
+  if (fire_event) {
+    auto* window_controls_overlay =
+        WindowControlsOverlay::FromIfExists(*DomWindow()->navigator());
 
-void LocalFrame::RegisterWindowControlsOverlayChangedDelegate(
-    WindowControlsOverlayChangedDelegate* delegate) {
-  window_controls_overlay_changed_delegate_ = delegate;
+    if (window_controls_overlay) {
+      window_controls_overlay->WindowControlsOverlayChanged(
+          window_controls_overlay_rect_);
+    }
+  }
 }
 
 HitTestResult LocalFrame::HitTestResultForVisualViewportPos(

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WINDOW_CONTROLS_OVERLAY_WINDOW_CONTROLS_OVERLAY_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_WINDOW_CONTROLS_OVERLAY_WINDOW_CONTROLS_OVERLAY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_CONTROLS_OVERLAY_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_CONTROLS_OVERLAY_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/frame/window_controls_overlay_changed_delegate.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -17,10 +17,9 @@ namespace blink {
 
 class Navigator;
 
-class WindowControlsOverlay final
+class CORE_EXPORT WindowControlsOverlay final
     : public EventTargetWithInlineData,
-      public Supplement<Navigator>,
-      public WindowControlsOverlayChangedDelegate {
+      public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -45,11 +44,11 @@ class WindowControlsOverlay final
   bool visible() const;
   DOMRect* getTitlebarAreaRect() const;
 
-  void WindowControlsOverlayChanged(const gfx::Rect&) final;
+  void WindowControlsOverlayChanged(const gfx::Rect& rect);
 
   void Trace(Visitor*) const override;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WINDOW_CONTROLS_OVERLAY_WINDOW_CONTROLS_OVERLAY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_CONTROLS_OVERLAY_H_

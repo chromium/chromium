@@ -140,7 +140,6 @@ class WebInputEventAttribution;
 class WebPluginContainerImpl;
 class WebPrescientNetworking;
 class WebURLLoaderFactory;
-class WindowControlsOverlayChangedDelegate;
 struct BlinkTransferableMessage;
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
@@ -648,8 +647,6 @@ class CORE_EXPORT LocalFrame final
   void GetCharacterIndexAtPoint(const gfx::Point& point);
 #endif
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
-  void RegisterWindowControlsOverlayChangedDelegate(
-      WindowControlsOverlayChangedDelegate*);
 
   SystemClipboard* GetSystemClipboard();
 
@@ -931,8 +928,6 @@ class CORE_EXPORT LocalFrame final
 
   bool is_window_controls_overlay_visible_ = false;
   gfx::Rect window_controls_overlay_rect_;
-  WeakMember<WindowControlsOverlayChangedDelegate>
-      window_controls_overlay_changed_delegate_;
 
   // The evidence for or against a frame being an ad frame. `absl::nullopt` if
   // not yet set or if the frame is a top-level frame. (Only subframes can be

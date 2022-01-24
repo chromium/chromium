@@ -2653,26 +2653,6 @@ if (target_os != "android") {
   ]
 }
 
-# WindowControlsOverlay
-# This uses target_os rather than current_os (which is what is_android is set
-# from) for the case of generating the v8 context snapshot for android. When
-# generating the snapshot for android, blink is compiled with
-# current_os="linux" and target_os="android". Using target_os is necessary as
-# we need to compile in the same way as would happen when current_os="android".
-if (target_os != "android") {
-  generated_dictionary_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.h",
-  ]
-
-  generated_enumeration_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event.h",
-  ]
-}
-
 generated_interface_sources_in_modules += [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/init_idl_interfaces.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/init_idl_interfaces.h",
