@@ -48,9 +48,6 @@ class IconDecodeRequest : public ImageDecoder::ImageRequest {
   // DisableSafeDecodingForTesting() is called.
   void StartWithOptions(const std::vector<uint8_t>& image_data);
 
-  // If |normalized| is true, MD normalization is applied to the decoded icon.
-  void set_normalized(bool normalized) { normalized_ = normalized; }
-
   // ImageDecoder::ImageRequest:
   void OnImageDecoded(const SkBitmap& bitmap) override;
   void OnDecodeImageFailed() override;
@@ -58,7 +55,6 @@ class IconDecodeRequest : public ImageDecoder::ImageRequest {
  private:
   SetIconCallback set_icon_callback_;
   const int dimension_dip_;
-  bool normalized_ = false;
 };
 
 }  // namespace arc
