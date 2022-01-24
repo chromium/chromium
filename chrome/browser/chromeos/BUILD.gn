@@ -401,6 +401,7 @@ source_set("chromeos") {
     "//components/reporting/metrics:metrics_data_collection",
     "//components/reporting/proto:interface_proto",
     "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
     "//components/reporting/storage:storage_module",
     "//components/reporting/storage_selector",
     "//components/reporting/util:backoff_settings",
@@ -480,6 +481,7 @@ source_set("chromeos") {
     "//printing/backend",
     "//printing/mojom",
     "//remoting/host/chromeos:remoting_service",
+    "//remoting/protocol",
     "//remoting/protocol:errors",
     "//services/audio/public/cpp",
     "//services/data_decoder/public/cpp",
@@ -536,6 +538,10 @@ source_set("chromeos") {
     "//ui/wm/public",
     "//url",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "//remoting/host/chromeos:host_event_reporter_impl" ]
+  }
+
   data_deps = [ ":dbus_service_files" ]
 
   allow_circular_includes_from = [
@@ -2679,6 +2685,7 @@ source_set("chromeos") {
     "../ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h",
     "../ash/policy/reporting/metrics_reporting/usb/usb_events_observer.cc",
     "../ash/policy/reporting/metrics_reporting/usb/usb_events_observer.h",
+    "../ash/policy/reporting/remoting_host_event_reporter_delegate_impl.cc",
     "../ash/policy/reporting/single_arc_app_install_event_log.cc",
     "../ash/policy/reporting/single_arc_app_install_event_log.h",
     "../ash/policy/reporting/single_extension_install_event_log.cc",

@@ -7584,6 +7584,7 @@ static_library("test_support") {
     ":browser_process",
     "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
+    "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/share:share",
     "//chrome/common",
     "//chrome/common/notifications",

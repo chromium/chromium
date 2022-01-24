@@ -9,4 +9,9 @@ specific_include_rules = {
     "+content/public/browser/browser_thread.h",
     "+content/public/browser/storage_partition.h",
   ],
+  "host_event_reporter_impl*": [
+    "+chrome/browser/policy/messaging_layer/proto",  # For ERP events prototypes
+    "+components/reporting",  # For ERP
+    "+remoting/protocol",
+  ]
 }

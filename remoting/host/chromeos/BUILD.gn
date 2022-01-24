@@ -79,6 +79,35 @@ source_set("remoting_service") {
   ]
 }
 
+static_library("host_event_reporter_impl") {
+  sources = [
+    "host_event_reporter_impl.cc",
+    "host_event_reporter_impl.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
+    "//components/reporting/proto:record_constants",
+    "//remoting/host:common",
+    "//remoting/protocol",
+  ]
+}
+
+# All unit tests are built as part of the //remoting/host:unit_tests target
+# and must be one target named "unit_tests".
+source_set("reporter_unit_tests") {
+  testonly = true
+  sources = [ "host_event_reporter_impl_unittest.cc" ]
+  deps = [
+    ":host_event_reporter_impl",
+    "//base",
+    "//base/test:test_support",
+    "//remoting/host:common",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 # The host portions of the remoting unit tests.
 source_set("unit_tests") {
   testonly = true
