@@ -334,8 +334,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardDisabledTest,
 // Nickpay is requested in incognito mode and it supports just-in-time
 // installation but is not installed. In this case canMakePayment() returns true
 // and hasEnrolledInstrument() returns false as in a normal mode.
+// DISABLED for flakiness. See https://crbug.com/1288946
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryBasicCardDisabledTest,
-                       CanMakePayment_NotSupported_InIncognitoMode) {
+                       DISABLED_CanMakePayment_NotSupported_InIncognitoMode) {
   std::string method = nickpay_server_.GetURL("nickpay.com", "/pay").spec();
 
   NavigateTo("/payment_request_can_make_payment_query_test.html");
