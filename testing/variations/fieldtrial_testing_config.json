@@ -7614,31 +7614,6 @@
             ]
         }
     ],
-    "VideoTutorialChromeIntroStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "VideoTutorialNTPChromeIntro",
-                    "params": {
-                        "availability": ">=0",
-                        "event_1": "name:video_tutorial_iph_clicked_chrome_intro;comparator:==0;window:30;storage:30",
-                        "event_2": "name:video_tutorial_iph_dismissed_chrome_intro;comparator:==0;window:30;storage:30",
-                        "event_trigger": "name:tutorial_chrome_intro_iph_trigger;comparator:any;window:30;storage:30",
-                        "event_used": "name:chrome_intro;comparator:any;window:30;storage:30",
-                        "session_rate": "any",
-                        "session_rate_impact": "none"
-                    },
-                    "enable_features": [
-                        "IPH_VideoTutorial_NTP_ChromeIntro"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
     "VideoTutorialDownloadStudy": [
         {
             "platforms": [
