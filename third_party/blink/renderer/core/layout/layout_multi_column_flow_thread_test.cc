@@ -1694,6 +1694,35 @@ LayoutNGBlockFlow DIV id="mc"
   }
 }
 
+TEST_F(MultiColumnRenderingTest, LegacyMulticolWithMathMLAndAbspos) {
+  // Disable LayoutNGBlockFragmentation, so that multicol uses legacy layout.
+  ScopedLayoutNGBlockFragmentationForTest layout_ng_block_fragmentation(false);
+
+  // Enable MathML, which forces LayoutNG even in legacy multicol.
+  ScopedMathMLCoreForTest mathml_core(true);
+  ScopedLayoutNGForTest layout_ng(true);
+
+  // This combination should not crash when having abspos.
+  SetBodyContent(
+      "<section style='position: relative; column-count: 1'>"
+      "<math>"
+      "<mtext style='position: absolute'></mtext>"
+      "<mtext style='position: fixed'></mtext>"
+      "</math>"
+      "</section>");
+
+  Element* multicol = GetDocument().QuerySelector("section");
+  EXPECT_EQ(R"DUMP(
+LayoutBlockFlow SECTION style="position: relative; column-count: 1"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGMathMLBlock math
+  |  |  +--LayoutNGMathMLBlockFlow mtext style="position: absolute"
+  |  |  +--LayoutNGMathMLBlockFlow mtext style="position: fixed"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+            ToSimpleLayoutTree(*multicol->GetLayoutObject()));
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

@@ -412,12 +412,10 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
 
-  LayoutBlock* containing_block = nullptr;
   for (const auto& descendant :
        physical_fragment.OutOfFlowPositionedDescendants()) {
-    if (!containing_block)
-      containing_block = Base::ContainingBlock();
-    descendant.Node().InsertIntoLegacyPositionedObjectsOf(containing_block);
+    descendant.Node().InsertIntoLegacyPositionedObjectsOf(
+        descendant.box->ContainingBlock());
   }
 
   // Even if we are a layout root, our baseline may have shifted. In this
@@ -426,10 +424,7 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   if (is_layout_root && previous_result && !Base::IsNGSVGText()) {
     if (To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment())
             .Baseline() != physical_fragment.Baseline()) {
-      if (!containing_block)
-        containing_block = Base::ContainingBlock();
-      DCHECK(containing_block);
-      if (containing_block) {
+      if (auto* containing_block = Base::ContainingBlock()) {
         containing_block->SetNeedsLayout(
             layout_invalidation_reason::kChildChanged, kMarkContainerChain);
       }
