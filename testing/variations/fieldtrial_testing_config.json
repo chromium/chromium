@@ -3773,8 +3773,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Preview_20220124",
+                    "params": {
+                        "DiscoverFeedIsNativeUIEnabled": "true"
+                    },
                     "enable_features": [
+                        "DiscoverFeedInNtp",
                         "EnableDiscoverFeedPreview"
                     ]
                 }
