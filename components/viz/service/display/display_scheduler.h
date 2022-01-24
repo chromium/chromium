@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/timer/timer.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -98,7 +99,11 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
     // BeginFrame yet so we need to wait longer.
     kNone
   };
-  base::TimeTicks DesiredBeginFrameDeadlineTime() const;
+
+  static base::TimeTicks DesiredBeginFrameDeadlineTime(
+      BeginFrameDeadlineMode deadline_mode,
+      BeginFrameArgs begin_frame_args);
+
   BeginFrameDeadlineMode AdjustedBeginFrameDeadlineMode() const;
   BeginFrameDeadlineMode DesiredBeginFrameDeadlineMode() const;
   virtual void ScheduleBeginFrameDeadline();
@@ -122,7 +127,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   BeginFrameArgs current_begin_frame_args_;
   base::RepeatingClosure begin_frame_deadline_closure_;
-  base::CancelableOnceClosure begin_frame_deadline_task_;
+  base::DeadlineTimer begin_frame_deadline_timer_;
   base::TimeTicks begin_frame_deadline_task_time_;
 
   base::CancelableOnceClosure missed_begin_frame_task_;

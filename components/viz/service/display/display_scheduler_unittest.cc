@@ -137,7 +137,9 @@ class TestDisplayScheduler : public DisplayScheduler {
   }
 
   base::TimeTicks DesiredBeginFrameDeadlineTimeForTest() {
-    return DesiredBeginFrameDeadlineTime();
+    BeginFrameDeadlineMode deadline_mode = AdjustedBeginFrameDeadlineMode();
+    return DesiredBeginFrameDeadlineTime(deadline_mode,
+                                         current_begin_frame_args_);
   }
 
   void BeginFrameDeadlineForTest() {

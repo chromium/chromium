@@ -84,6 +84,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
           features::IsDynamicSchedulerEnabledForClients()),
       dynamic_scheduler_deadlines_percentile_(
           features::IsDynamicSchedulerEnabledForDraw()) {
+  begin_frame_deadline_timer_.SetTaskRunner(task_runner);
   if (dynamic_cc_deadlines_percentile_.has_value())
     begin_frame_source_->SetDynamicBeginFrameDeadlineOffsetSource(this);
   begin_frame_source_->AddStateObserver(begin_frame_state_observer_.get());
@@ -328,15 +329,17 @@ bool DisplayScheduler::ShouldDraw() const {
          !damage_tracker_->root_frame_missing();
 }
 
-base::TimeTicks DisplayScheduler::DesiredBeginFrameDeadlineTime() const {
-  switch (AdjustedBeginFrameDeadlineMode()) {
+// static
+base::TimeTicks DisplayScheduler::DesiredBeginFrameDeadlineTime(
+    BeginFrameDeadlineMode deadline_mode,
+    BeginFrameArgs begin_frame_args) {
+  switch (deadline_mode) {
     case BeginFrameDeadlineMode::kImmediate:
       return base::TimeTicks();
     case BeginFrameDeadlineMode::kRegular:
-      return current_begin_frame_args_.deadline;
+      return begin_frame_args.deadline;
     case BeginFrameDeadlineMode::kLate:
-      return current_begin_frame_args_.frame_time +
-             current_begin_frame_args_.interval;
+      return begin_frame_args.frame_time + begin_frame_args.interval;
     case BeginFrameDeadlineMode::kNone:
       return base::TimeTicks::Max();
     default:
@@ -419,15 +422,17 @@ void DisplayScheduler::ScheduleBeginFrameDeadline() {
   if (!inside_begin_frame_deadline_interval_) {
     TRACE_EVENT_INSTANT0("viz", "Waiting for next BeginFrame",
                          TRACE_EVENT_SCOPE_THREAD);
-    DCHECK(begin_frame_deadline_task_.IsCancelled());
+    DCHECK(!begin_frame_deadline_timer_.IsRunning());
     return;
   }
 
   // Determine the deadline we want to use.
-  base::TimeTicks desired_deadline = DesiredBeginFrameDeadlineTime();
+  BeginFrameDeadlineMode deadline_mode = AdjustedBeginFrameDeadlineMode();
+  base::TimeTicks desired_deadline =
+      DesiredBeginFrameDeadlineTime(deadline_mode, current_begin_frame_args_);
 
   // Avoid re-scheduling the deadline if it's already correctly scheduled.
-  if (!begin_frame_deadline_task_.IsCancelled() &&
+  if (begin_frame_deadline_timer_.IsRunning() &&
       desired_deadline == begin_frame_deadline_task_time_) {
     TRACE_EVENT_INSTANT0("viz", "Using existing deadline",
                          TRACE_EVENT_SCOPE_THREAD);
@@ -436,7 +441,7 @@ void DisplayScheduler::ScheduleBeginFrameDeadline() {
 
   // Schedule the deadline.
   begin_frame_deadline_task_time_ = desired_deadline;
-  begin_frame_deadline_task_.Cancel();
+  begin_frame_deadline_timer_.Stop();
 
   if (begin_frame_deadline_task_time_ == base::TimeTicks::Max()) {
     TRACE_EVENT_INSTANT0("viz", "Using infinite deadline",
@@ -444,18 +449,16 @@ void DisplayScheduler::ScheduleBeginFrameDeadline() {
     return;
   }
 
-  begin_frame_deadline_task_.Reset(begin_frame_deadline_closure_);
-  base::TimeDelta delta =
-      std::max(base::TimeDelta(), desired_deadline - base::TimeTicks::Now());
-  task_runner_->PostDelayedTask(FROM_HERE,
-                                begin_frame_deadline_task_.callback(), delta);
-  TRACE_EVENT2("viz", "Using new deadline", "delta", delta.ToInternalValue(),
+  begin_frame_deadline_timer_.Start(FROM_HERE, desired_deadline,
+                                    begin_frame_deadline_closure_,
+                                    base::ExactDeadline(true));
+  TRACE_EVENT2("viz", "Using new deadline", "deadline_mode", deadline_mode,
                "desired_deadline", desired_deadline);
 }
 
 bool DisplayScheduler::AttemptDrawAndSwap() {
   inside_begin_frame_deadline_interval_ = false;
-  begin_frame_deadline_task_.Cancel();
+  begin_frame_deadline_timer_.Stop();
   begin_frame_deadline_task_time_ = base::TimeTicks();
 
   if (ShouldDraw()) {

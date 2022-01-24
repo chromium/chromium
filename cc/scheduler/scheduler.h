@@ -12,6 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/scheduler/begin_frame_tracker.h"
@@ -320,7 +321,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // scheduled to run immediately.
   // NOTE: Scheduler weak ptrs are not necessary if CancelableOnceCallback is
   // used.
-  base::CancelableOnceClosure begin_impl_frame_deadline_task_;
+  base::DeadlineTimer begin_impl_frame_deadline_timer_;
 
   // This is used for queueing begin frames while scheduler is waiting for
   // previous frame's deadline, or if it's inside ProcessScheduledActions().

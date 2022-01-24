@@ -56,6 +56,8 @@ Scheduler::Scheduler(
   DCHECK(client_);
   DCHECK(!state_machine_.BeginFrameNeeded());
 
+  begin_impl_frame_deadline_timer_.SetTaskRunner(task_runner);
+
   // We want to handle animate_only BeginFrames.
   wants_animate_only_begin_frames_ = true;
 
@@ -253,7 +255,7 @@ void Scheduler::DidLoseLayerTreeFrameSink() {
 void Scheduler::DidCreateAndInitializeLayerTreeFrameSink() {
   TRACE_EVENT0("cc", "Scheduler::DidCreateAndInitializeLayerTreeFrameSink");
   DCHECK(!observing_begin_frame_source_);
-  DCHECK(begin_impl_frame_deadline_task_.IsCancelled());
+  DCHECK(!begin_impl_frame_deadline_timer_.IsRunning());
   state_machine_.DidCreateAndInitializeLayerTreeFrameSink();
   UpdateCompositorTimingHistoryRecordingEnabled();
   ProcessScheduledActions();
@@ -447,7 +449,7 @@ void Scheduler::OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
               SchedulerStateMachine::BeginImplFrameState::IDLE);
     DCHECK(!needs_finish_frame_for_synchronous_compositor_);
   }
-  DCHECK(begin_impl_frame_deadline_task_.IsCancelled());
+  DCHECK(!begin_impl_frame_deadline_timer_.IsRunning());
 
   state_machine_.SetResourcelessSoftwareDraw(resourceless_software_draw);
   state_machine_.SetSkipDraw(skip_draw);
@@ -656,7 +658,7 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
                                base::TimeTicks now) {
   DCHECK_EQ(state_machine_.begin_impl_frame_state(),
             SchedulerStateMachine::BeginImplFrameState::IDLE);
-  DCHECK(begin_impl_frame_deadline_task_.IsCancelled());
+  DCHECK(!begin_impl_frame_deadline_timer_.IsRunning());
   DCHECK(state_machine_.HasInitializedLayerTreeFrameSink());
   cc_frame_time_available_ = args.interval - kDeadlineFudgeFactor -
                              compositor_timing_history_->DrawDurationEstimate();
@@ -690,7 +692,7 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
       // NONE is returned when deadlines aren't used (synchronous compositor),
       // or when outside a begin frame. In either case deadline task shouldn't
       // be posted or should be cancelled already.
-      DCHECK(begin_impl_frame_deadline_task_.IsCancelled());
+      DCHECK(!begin_impl_frame_deadline_timer_.IsRunning());
       return;
     case DeadlineMode::BLOCKED: {
       // TODO(sunnyps): Posting the deadline for pending begin frame is required
@@ -706,7 +708,7 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
         new_deadline = base::TimeTicks();
         break;
       } else {
-        begin_impl_frame_deadline_task_.Cancel();
+        begin_impl_frame_deadline_timer_.Stop();
         return;
       }
     }
@@ -738,28 +740,30 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
 
   // Post deadline task only if we didn't have one already or something caused
   // us to change the deadline.
-  bool has_no_deadline_task = begin_impl_frame_deadline_task_.IsCancelled();
+  bool has_no_deadline_task = !begin_impl_frame_deadline_timer_.IsRunning();
   if (has_no_deadline_task || new_deadline != deadline_) {
     TRACE_EVENT2("cc", "Scheduler::ScheduleBeginImplFrameDeadline",
                  "new deadline", new_deadline, "deadline mode",
                  SchedulerStateMachine::BeginImplFrameDeadlineModeToString(
                      deadline_mode_));
     deadline_ = new_deadline;
-    deadline_scheduled_at_ = Now();
-
-    begin_impl_frame_deadline_task_.Reset(base::BindOnce(
-        &Scheduler::OnBeginImplFrameDeadline, base::Unretained(this)));
-
-    base::TimeDelta delay =
-        std::max(deadline_ - deadline_scheduled_at_, base::TimeDelta());
-    task_runner_->PostDelayedTask(
-        FROM_HERE, begin_impl_frame_deadline_task_.callback(), delay);
+    static const unsigned char* debug_tracing_enabled =
+        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+            TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"));
+    if (debug_tracing_enabled)
+      deadline_scheduled_at_ = Now();
+    begin_impl_frame_deadline_timer_.Stop();
+    begin_impl_frame_deadline_timer_.Start(
+        FROM_HERE, deadline_,
+        base::BindOnce(&Scheduler::OnBeginImplFrameDeadline,
+                       base::Unretained(this)),
+        base::ExactDeadline(true));
   }
 }
 
 void Scheduler::OnBeginImplFrameDeadline() {
   TRACE_EVENT0("cc,benchmark", "Scheduler::OnBeginImplFrameDeadline");
-  begin_impl_frame_deadline_task_.Cancel();
+  begin_impl_frame_deadline_timer_.Stop();
   // We split the deadline actions up into two phases so the state machine
   // has a chance to trigger actions that should occur durring and after
   // the deadline separately. For example:
@@ -945,7 +949,7 @@ void Scheduler::AsProtozeroInto(
 
   state->set_observing_begin_frame_source(observing_begin_frame_source_);
   state->set_begin_impl_frame_deadline_task(
-      !begin_impl_frame_deadline_task_.IsCancelled());
+      begin_impl_frame_deadline_timer_.IsRunning());
   state->set_pending_begin_frame_task(!pending_begin_frame_task_.IsCancelled());
   state->set_skipped_last_frame_missed_exceeded_deadline(
       skipped_last_frame_missed_exceeded_deadline_);
