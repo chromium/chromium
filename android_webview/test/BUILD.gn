@@ -72,6 +72,7 @@ script_test("system_webview_wpt") {
     "//chrome/test/chromedriver:chromedriver($host_toolchain)",
     "//testing:wpt_android_lib",
     "//third_party/blink/tools:wpt_tests_android_isolate",
+    "//tools/imagediff",
   ]
 }
 
