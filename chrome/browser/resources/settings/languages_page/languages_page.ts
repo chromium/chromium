@@ -60,7 +60,8 @@ type FocusConfig = Map<string, (string|(() => void))>;
 const SettingsLanguagesPageElementBase =
     I18nMixin(PrefsMixin(BaseMixin(PolymerElement)));
 
-class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
+export class SettingsLanguagesPageElement extends
+    SettingsLanguagesPageElementBase {
   static get is() {
     return 'settings-languages-page';
   }
@@ -390,6 +391,12 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
     assert(expandButton);
     expandButton.expanded = !expandButton.expanded;
     focusWithoutInk(expandButton);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-languages-page': SettingsLanguagesPageElement;
   }
 }
 

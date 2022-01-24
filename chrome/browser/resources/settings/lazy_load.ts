@@ -106,11 +106,13 @@ export {IncompatibleApplicationItemElement} from './incompatible_applications_pa
 export {ActionTypes, IncompatibleApplication, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';
 export {SettingsIncompatibleApplicationsPageElement} from './incompatible_applications_page/incompatible_applications_page.js';
 // </if>
-// <if expr="not chromeos and not is_macosx">
+// <if expr="not chromeos">
+export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';
+// <if expr="not is_macosx">
 export {SettingsEditDictionaryPageElement} from './languages_page/edit_dictionary_page.js';
 // </if>
-// <if expr="not chromeos">
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
+export {SettingsLanguagesPageElement} from './languages_page/languages_page.js';
 export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_page/languages_settings_metrics_proxy.js';
 export {kMenuCloseDelay, SettingsLanguagesSubpageElement} from './languages_page/languages_subpage.js';
 export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.js';

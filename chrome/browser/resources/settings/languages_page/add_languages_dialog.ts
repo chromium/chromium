@@ -21,7 +21,7 @@ import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_fie
 import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-interface SettingsAddLanguagesDialogElement {
+export interface SettingsAddLanguagesDialogElement {
   $: {
     dialog: CrDialogElement,
     search: CrSearchFieldElement,
@@ -44,7 +44,7 @@ const SettingsAddLanguagesDialogElementBase =
     mixinBehaviors([CrScrollableBehavior], FindShortcutMixin(PolymerElement)) as
     {new (): PolymerElement & FindShortcutMixinInterface};
 
-class SettingsAddLanguagesDialogElement extends
+export class SettingsAddLanguagesDialogElement extends
     SettingsAddLanguagesDialogElementBase {
   static get is() {
     return 'settings-add-languages-dialog';
@@ -188,6 +188,12 @@ class SettingsAddLanguagesDialogElement extends
       (this.$.search as unknown as HTMLElementWithScroll)
           .scrollIntoViewIfNeeded();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-add-languages-dialog': SettingsAddLanguagesDialogElement;
   }
 }
 
