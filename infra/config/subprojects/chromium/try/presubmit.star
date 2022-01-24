@@ -123,7 +123,7 @@ presubmit_builder(
     name = "chromium_presubmit",
     branch_selector = branches.ALL_BRANCHES,
     executable = "recipe:presubmit",
-    execution_timeout = 30 * time.minute,
+    execution_timeout = 40 * time.minute,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
