@@ -1917,9 +1917,9 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
       base::BindRepeating([](const rmad::RmadState& state) {
         EXPECT_EQ(state.state_case(), rmad::RmadState::kUpdateDeviceInfo);
         EXPECT_EQ(state.update_device_info().serial_number(), "serial number");
-        EXPECT_EQ(state.update_device_info().region_index(), 1UL);
-        EXPECT_EQ(state.update_device_info().sku_index(), 2UL);
-        EXPECT_EQ(state.update_device_info().whitelabel_index(), 3UL);
+        EXPECT_EQ(state.update_device_info().region_index(), 1L);
+        EXPECT_EQ(state.update_device_info().sku_index(), 2L);
+        EXPECT_EQ(state.update_device_info().whitelabel_index(), 3L);
         EXPECT_EQ(state.update_device_info().dram_part_number(), "123-456-789");
       });
   base::RunLoop run_loop;
