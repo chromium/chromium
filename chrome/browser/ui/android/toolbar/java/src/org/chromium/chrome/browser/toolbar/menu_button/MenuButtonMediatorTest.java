@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -45,6 +46,7 @@ import java.lang.ref.WeakReference;
  * Unit tests for ToolbarAppMenuManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class MenuButtonMediatorTest {
     @Mock
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;

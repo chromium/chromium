@@ -25,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -48,6 +49,7 @@ import java.util.Set;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ToggleTabStackButtonCoordinatorTest.ShadowChromeFeatureList.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ToggleTabStackButtonCoordinatorTest {
     private static final ToolbarIntentMetadata DEFAULT_INTENT_METADATA =
             new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);

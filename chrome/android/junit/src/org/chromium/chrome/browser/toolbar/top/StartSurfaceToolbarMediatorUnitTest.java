@@ -46,6 +46,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -75,6 +76,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for {@link StartSurfaceToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class StartSurfaceToolbarMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private StartSurfaceToolbarMediator mMediator;
