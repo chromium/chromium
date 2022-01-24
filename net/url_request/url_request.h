@@ -32,7 +32,6 @@
 #include "net/base/request_priority.h"
 #include "net/base/upload_progress.h"
 #include "net/cookies/canonical_cookie.h"
-#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/filter/source_stream.h"
@@ -277,15 +276,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     isolation_info_ = isolation_info;
   }
   const IsolationInfo& isolation_info() const { return isolation_info_; }
-
-  // The First-Party Set metadata of this leg of the request. This gets updated
-  // on redirects.
-  const FirstPartySetMetadata& first_party_set_metadata() const {
-    return first_party_set_metadata_;
-  }
-  void set_first_party_set_metadata(FirstPartySetMetadata metadata) {
-    first_party_set_metadata_ = std::move(metadata);
-  }
 
   // Indicate whether SameSite cookies should be attached even though the
   // request is cross-site.
@@ -907,11 +897,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // the request if it's a value other than OK.
   void OnCallToDelegateComplete(int error = OK);
 
-  // Called after getting First-Party Set metadata, when starting a request leg.
-  void OnGotFirstPartySetMetadata(
-      std::unique_ptr<URLRequestJob> job,
-      FirstPartySetMetadata first_party_set_metadata);
-
   // Records the referrer policy of the given request, bucketed by
   // whether the request is same-origin or not. To save computation,
   // takes this fact as a boolean parameter rather than dynamically
@@ -933,8 +918,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   SiteForCookies site_for_cookies_;
 
   IsolationInfo isolation_info_;
-
-  FirstPartySetMetadata first_party_set_metadata_;
 
   bool force_ignore_site_for_cookies_;
   bool force_ignore_top_frame_party_for_cookies_;

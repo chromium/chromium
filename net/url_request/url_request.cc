@@ -26,7 +26,6 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
-#include "net/cookies/first_party_set_metadata.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_util.h"
@@ -647,23 +646,6 @@ void URLRequest::BeforeRequestComplete(int error) {
 void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
   DCHECK(!is_pending_);
   DCHECK(!job_);
-  if (!context()->cookie_store()) {
-    OnGotFirstPartySetMetadata(std::move(job), FirstPartySetMetadata());
-    return;
-  }
-
-  cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
-      SchemefulSite(url()), isolation_info(),
-      context()->cookie_store()->cookie_access_delegate(),
-      force_ignore_top_frame_party_for_cookies(),
-      base::BindOnce(&URLRequest::OnGotFirstPartySetMetadata,
-                     weak_factory_.GetWeakPtr(), std::move(job)));
-}
-
-void URLRequest::OnGotFirstPartySetMetadata(
-    std::unique_ptr<URLRequestJob> job,
-    FirstPartySetMetadata first_party_set_metadata) {
-  set_first_party_set_metadata(std::move(first_party_set_metadata));
 
   net_log_.BeginEvent(NetLogEventType::URL_REQUEST_START_JOB, [&] {
     return NetLogURLRequestStartParams(

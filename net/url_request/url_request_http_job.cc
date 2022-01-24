@@ -51,6 +51,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "net/filter/brotli_source_stream.h"
 #include "net/filter/filter_source_stream.h"
@@ -259,10 +260,6 @@ void URLRequestHttpJob::SetPriority(RequestPriority priority) {
 void URLRequestHttpJob::Start() {
   DCHECK(!transaction_.get());
 
-  // URLRequest::SetReferrer ensures that we do not send username and password
-  // fields in the referrer.
-  GURL referrer(request_->referrer());
-
   request_info_.url = request_->url();
   request_info_.method = request_->method();
 
@@ -283,6 +280,21 @@ void URLRequestHttpJob::Start() {
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
 
+  if (!ShouldAddCookieHeader()) {
+    OnGotFirstPartySetMetadata(FirstPartySetMetadata());
+    return;
+  }
+  cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
+      SchemefulSite(request()->url()), request()->isolation_info(),
+      request()->context()->cookie_store()->cookie_access_delegate(),
+      request()->force_ignore_top_frame_party_for_cookies(),
+      base::BindOnce(&URLRequestHttpJob::OnGotFirstPartySetMetadata,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void URLRequestHttpJob::OnGotFirstPartySetMetadata(
+    FirstPartySetMetadata first_party_set_metadata) {
+  first_party_set_metadata_ = std::move(first_party_set_metadata);
   // Privacy mode could still be disabled in SetCookieHeaderAndStart if we are
   // going to send previously saved cookies.
   request_info_.privacy_mode = DeterminePrivacyMode();
@@ -294,6 +306,10 @@ void URLRequestHttpJob::Start() {
   // from overriding headers that are controlled using other means. Otherwise a
   // plugin could set a referrer although sending the referrer is inhibited.
   request_info_.extra_headers.RemoveHeader(HttpRequestHeaders::kReferer);
+
+  // URLRequest::SetReferrer ensures that we do not send username and password
+  // fields in the referrer.
+  GURL referrer(request_->referrer());
 
   // Our consumer should have made sure that this is a safe referrer (e.g. via
   // URLRequestJob::ComputeReferrerForPolicy).
@@ -366,7 +382,7 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
     privacy_setting = request()->network_delegate()->ForcePrivacyMode(
         request_->url(), request_->site_for_cookies(),
         request_->isolation_info().top_frame_origin(),
-        request_->first_party_set_metadata().context().context_type());
+        first_party_set_metadata_.context().context_type());
   }
   switch (privacy_setting) {
     case NetworkDelegate::PrivacySetting::kStateAllowed:
@@ -624,14 +640,14 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
           is_main_frame_navigation, force_ignore_site_for_cookies);
 
   bool is_in_nontrivial_first_party_set =
-      request_->first_party_set_metadata().owner().has_value();
+      first_party_set_metadata_.owner().has_value();
   CookieOptions options = CreateCookieOptions(
-      same_site_context, request_->first_party_set_metadata().context(),
+      same_site_context, first_party_set_metadata_.context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);
 
   UMA_HISTOGRAM_ENUMERATION(
       "Cookie.FirstPartySetsContextType.HTTP.Read",
-      request_->first_party_set_metadata().first_party_sets_context_type());
+      first_party_set_metadata_.first_party_sets_context_type());
 
   cookie_store->GetCookieListWithOptionsAsync(
       request_->url(), options,
@@ -841,14 +857,14 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           force_ignore_site_for_cookies);
 
   bool is_in_nontrivial_first_party_set =
-      request_->first_party_set_metadata().owner().has_value();
+      first_party_set_metadata_.owner().has_value();
   CookieOptions options = CreateCookieOptions(
-      same_site_context, request_->first_party_set_metadata().context(),
+      same_site_context, first_party_set_metadata_.context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);
 
   UMA_HISTOGRAM_ENUMERATION(
       "Cookie.FirstPartySetsContextType.HTTP.Write",
-      request_->first_party_set_metadata().first_party_sets_context_type());
+      first_party_set_metadata_.first_party_sets_context_type());
 
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.

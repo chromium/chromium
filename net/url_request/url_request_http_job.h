@@ -24,6 +24,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/http/http_request_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
@@ -215,6 +216,10 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // `override_response_info_::headers`.
   HttpResponseHeaders* GetResponseHeaders() const;
 
+  // Called after getting the FirstPartySetMetadata during Start for this job.
+  void OnGotFirstPartySetMetadata(
+      FirstPartySetMetadata first_party_set_metadata);
+
   // Computes and saves the cookie partition key for the request. Partitioned
   // cookies should be set using this key and only partitioned cookies with this
   // partition key should be sent.  The cookie partition key is
@@ -310,6 +315,10 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
+
+  // The First-Party Set metadata associated with this job. Set when the job is
+  // started.
+  FirstPartySetMetadata first_party_set_metadata_;
 
   // Partitioned cookies will be set using this key and only partitioned cookies
   // with this partition key will be sent.
