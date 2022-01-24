@@ -9,7 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/stored_payment_app.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -233,8 +235,63 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePayment) {
   EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
 }
 
+class ServiceWorkerPaymentAppBasicCardDisabledTest
+    : public ServiceWorkerPaymentAppTest {
+ public:
+  ServiceWorkerPaymentAppBasicCardDisabledTest(
+      const ServiceWorkerPaymentAppBasicCardDisabledTest&) = delete;
+  ServiceWorkerPaymentAppBasicCardDisabledTest& operator=(
+      const ServiceWorkerPaymentAppBasicCardDisabledTest&) = delete;
+
+ protected:
+  ServiceWorkerPaymentAppBasicCardDisabledTest() {
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test modifiers can be matched based on capabilities.
-TEST_F(ServiceWorkerPaymentAppTest, IsValidForModifier) {
+TEST_F(ServiceWorkerPaymentAppBasicCardDisabledTest, IsValidForModifier) {
+  CreateServiceWorkerPaymentApp(true);
+
+  EXPECT_FALSE(GetApp()->IsValidForModifier(
+      /*method=*/"basic-card", /*supported_networks_specified=*/false,
+      /*supported_networks=*/{}));
+
+  EXPECT_TRUE(GetApp()->IsValidForModifier(
+      /*method=*/"https://bobpay.com", /*supported_networks_specified=*/true,
+      /*supported_networks=*/{}));
+
+  EXPECT_FALSE(GetApp()->IsValidForModifier(
+      /*method=*/"basic-card", /*supported_networks_specified=*/true,
+      /*supported_networks=*/{"mastercard"}));
+
+  EXPECT_FALSE(GetApp()->IsValidForModifier(
+      /*method=*/"basic-card", /*supported_networks_specified=*/true,
+      /*supported_networks=*/{"unionpay"}));
+}
+
+class ServiceWorkerPaymentAppBasicCardEnabledTest
+    : public ServiceWorkerPaymentAppTest {
+ public:
+  ServiceWorkerPaymentAppBasicCardEnabledTest(
+      const ServiceWorkerPaymentAppBasicCardEnabledTest&) = delete;
+  ServiceWorkerPaymentAppBasicCardEnabledTest& operator=(
+      const ServiceWorkerPaymentAppBasicCardEnabledTest&) = delete;
+
+ protected:
+  ServiceWorkerPaymentAppBasicCardEnabledTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test modifiers can be matched based on capabilities.
+TEST_F(ServiceWorkerPaymentAppBasicCardEnabledTest, IsValidForModifier) {
   CreateServiceWorkerPaymentApp(true);
 
   EXPECT_TRUE(GetApp()->IsValidForModifier(

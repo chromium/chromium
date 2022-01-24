@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -20,6 +21,7 @@
 #include "components/payments/content/autofill_payment_app.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/test_payment_request_delegate.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
@@ -155,49 +157,6 @@ TEST_F(PaymentResponseHelperTest, GeneratePaymentResponse_SupportedMethod) {
       response()->stringified_details);
 }
 
-// Test generating a PaymentResponse when the method is specified through
-// "basic-card".
-TEST_F(PaymentResponseHelperTest, GeneratePaymentResponse_BasicCard) {
-  // The method data supports visa through basic-card.
-  mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
-  entry->supported_method = "basic-card";
-  entry->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry));
-  RecreateSpecWithOptionsAndDetails(mojom::PaymentOptions::New(),
-                                    mojom::PaymentDetails::New(),
-                                    std::move(method_data));
-
-  // "basic-card" is specified so it is returned as the method name.
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), GetWeakPtr());
-  EXPECT_EQ("basic-card", response()->method_name);
-  EXPECT_EQ(
-      base::StringPrintf(
-          "{\"billingAddress\":"
-          "{\"addressLine\":[\"666 Erebus St.\",\"Apt 8\"],"
-          "\"city\":\"Elysium\","
-          "\"country\":\"US\","
-          "\"dependentLocality\":\"\","
-          "\"organization\":\"Underworld\","
-          "\"phone\":\"16502111111\","
-          "\"postalCode\":\"91111\","
-          "\"recipient\":\"John H. Doe\","
-          "\"region\":\"CA\","
-          "\"sortingCode\":\"\"},"
-          "\"cardNumber\":\"4111111111111111\","
-          "\"cardSecurityCode\":\"123\","
-          "\"cardholderName\":\"Test User\","
-          "\"expiryMonth\":\"%s\","
-          "\"expiryYear\":\"%s\"}",
-          base::UTF16ToUTF8(test_credit_card().Expiration2DigitMonthAsString())
-              .c_str(),
-          base::UTF16ToUTF8(test_credit_card().Expiration4DigitYearAsString())
-              .c_str()),
-      response()->stringified_details);
-}
-
 // Tests the the generated PaymentResponse has the correct values for the
 // shipping address.
 TEST_F(PaymentResponseHelperTest, GeneratePaymentResponse_ShippingAddress) {
@@ -306,6 +265,67 @@ TEST_F(PaymentResponseHelperTest,
 
   // Check that the phone was formatted.
   EXPECT_EQ("5151231234", response()->payer->phone.value());
+}
+
+class PaymentResponseHelperBasicCardEnabledTest
+    : public PaymentResponseHelperTest {
+ public:
+  PaymentResponseHelperBasicCardEnabledTest(
+      const PaymentResponseHelperBasicCardEnabledTest&) = delete;
+  PaymentResponseHelperBasicCardEnabledTest& operator=(
+      const PaymentResponseHelperBasicCardEnabledTest&) = delete;
+
+ protected:
+  PaymentResponseHelperBasicCardEnabledTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test generating a PaymentResponse when the method is specified through
+// "basic-card".
+TEST_F(PaymentResponseHelperBasicCardEnabledTest,
+       GeneratePaymentResponse_BasicCard) {
+  // The method data supports visa through basic-card.
+  mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
+  entry->supported_method = "basic-card";
+  entry->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  method_data.push_back(std::move(entry));
+  RecreateSpecWithOptionsAndDetails(mojom::PaymentOptions::New(),
+                                    mojom::PaymentDetails::New(),
+                                    std::move(method_data));
+
+  // "basic-card" is specified so it is returned as the method name.
+  PaymentResponseHelper helper("en-US", spec(), test_app(),
+                               test_payment_request_delegate(), test_address(),
+                               test_address(), GetWeakPtr());
+  EXPECT_EQ("basic-card", response()->method_name);
+  EXPECT_EQ(
+      base::StringPrintf(
+          "{\"billingAddress\":"
+          "{\"addressLine\":[\"666 Erebus St.\",\"Apt 8\"],"
+          "\"city\":\"Elysium\","
+          "\"country\":\"US\","
+          "\"dependentLocality\":\"\","
+          "\"organization\":\"Underworld\","
+          "\"phone\":\"16502111111\","
+          "\"postalCode\":\"91111\","
+          "\"recipient\":\"John H. Doe\","
+          "\"region\":\"CA\","
+          "\"sortingCode\":\"\"},"
+          "\"cardNumber\":\"4111111111111111\","
+          "\"cardSecurityCode\":\"123\","
+          "\"cardholderName\":\"Test User\","
+          "\"expiryMonth\":\"%s\","
+          "\"expiryYear\":\"%s\"}",
+          base::UTF16ToUTF8(test_credit_card().Expiration2DigitMonthAsString())
+              .c_str(),
+          base::UTF16ToUTF8(test_credit_card().Expiration4DigitYearAsString())
+              .c_str()),
+      response()->stringified_details);
 }
 
 }  // namespace payments
