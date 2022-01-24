@@ -12,9 +12,7 @@ load("../fallback-cq.star", "fallback_cq")
 
 try_.defaults.set(
     cores = 8,
-    # TODO(gbeaty) After prod freeze, lower this to something sensible for the
-    # actual time these builders take
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = 15 * time.minute,
     list_view = "presubmit",
     main_list_view = "try",
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
@@ -125,6 +123,7 @@ presubmit_builder(
     name = "chromium_presubmit",
     branch_selector = branches.ALL_BRANCHES,
     executable = "recipe:presubmit",
+    execution_timeout = 30 * time.minute,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
