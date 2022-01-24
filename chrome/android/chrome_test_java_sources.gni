@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/feed/features.gni")
+import("//build/config/android/config.gni")
 
 # Java test file for clank components. all test sources that are not
 # conditionally added. See java_source.gni for conditionally added files.
@@ -386,7 +387,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/payments/MockPackageManagerDelegate.java",
   "javatests/src/org/chromium/chrome/browser/payments/MockPaymentApp.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentDetailsUpdateServiceHelperTest.java",
-  "javatests/src/org/chromium/chrome/browser/payments/PaymentErrorStringsTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentHandlerChangePaymentMethodTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentHandlerEnableDelegationsTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentManifestDownloaderTest.java",
@@ -653,4 +653,9 @@ chrome_test_java_sources = [
 
 if (enable_feed_v2) {
   chrome_test_java_sources += [ "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageColorWithFeedV2Test.java" ]
+}
+
+# Test can be broken by R8 and isn't testing functionality.
+if (is_java_debug) {
+  chrome_test_java_sources += [ "javatests/src/org/chromium/chrome/browser/payments/PaymentErrorStringsTest.java" ]
 }
