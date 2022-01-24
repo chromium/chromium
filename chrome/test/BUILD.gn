@@ -5656,8 +5656,6 @@ test("unit_tests") {
       "../utility/importer/safari_importer_unittest.mm",
     ]
 
-    data += [ "//chrome/test/data/performance_monitor/" ]
-
     data_deps += [ "//chrome:chrome_framework" ]
 
     deps += [
