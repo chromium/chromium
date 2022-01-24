@@ -58,6 +58,7 @@ void DualMediaSinkService::OnUserGesture() {
     dial_media_sink_service_->OnUserGesture();
 }
 
+#if BUILDFLAG(IS_WIN)
 void DualMediaSinkService::StartMdnsDiscovery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -71,6 +72,7 @@ bool DualMediaSinkService::MdnsDiscoveryStarted() {
              ? cast_media_sink_service_->MdnsDiscoveryStarted()
              : false;
 }
+#endif
 
 DualMediaSinkService::DualMediaSinkService() {
   if (DialMediaRouteProviderEnabled()) {

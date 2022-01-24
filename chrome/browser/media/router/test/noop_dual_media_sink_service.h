@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_TEST_NOOP_DUAL_MEDIA_SINK_SERVICE_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_TEST_NOOP_DUAL_MEDIA_SINK_SERVICE_H_
 
+#include "build/build_config.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 
 namespace media_router {
@@ -22,7 +23,9 @@ class NoopDualMediaSinkService : public DualMediaSinkService {
 
   // DualMediaSinkService
   void OnUserGesture() override {}
+#if BUILDFLAG(IS_WIN)
   void StartMdnsDiscovery() override {}
+#endif
   void BindLogger(LoggerImpl* logger_impl) override {}
   void RemoveLogger() override {}
 };

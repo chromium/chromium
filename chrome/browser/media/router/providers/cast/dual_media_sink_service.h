@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -81,11 +82,13 @@ class DualMediaSinkService {
 
   virtual void OnUserGesture();
 
+#if BUILDFLAG(IS_WIN)
   // Starts mDNS discovery on |cast_media_sink_service_| if it is not already
   // started.
   virtual void StartMdnsDiscovery();
 
   bool MdnsDiscoveryStarted();
+#endif
 
  protected:
   // Used by tests.
