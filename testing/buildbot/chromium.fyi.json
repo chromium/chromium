@@ -95195,7 +95195,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "hidpi": "0",
               "os": "Mac-10.12.6"
             }
           ],
