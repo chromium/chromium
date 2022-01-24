@@ -78,6 +78,39 @@ std::string ProtocolUtils::CreateGetScriptsRequest(
 }
 
 // static
+std::string ProtocolUtils::CreateCapabilitiesByHashRequest(
+    uint32_t hash_prefix_length,
+    const std::vector<uint64_t>& hash_prefix,
+    const ClientContextProto& client_context,
+    const ScriptParameters& script_parameters) {
+  GetCapabilitiesByHashPrefixRequestProto request;
+  request.set_hash_prefix_length(hash_prefix_length);
+  for (uint64_t prefix : hash_prefix) {
+    request.add_hash_prefix(prefix);
+  }
+  *request.mutable_script_parameters() =
+      script_parameters.ToProto(/* only_non_sensitive_allowlisted = */ true);
+
+  ClientContextProto non_sensitive_context;
+  if (client_context.has_locale()) {
+    non_sensitive_context.set_locale(client_context.locale());
+  }
+  if (client_context.has_country()) {
+    non_sensitive_context.set_country(client_context.country());
+  }
+  if (client_context.chrome().has_chrome_version()) {
+    non_sensitive_context.mutable_chrome()->set_chrome_version(
+        client_context.chrome().chrome_version());
+  }
+  *request.mutable_client_context() = non_sensitive_context;
+
+  std::string serialized_request;
+  bool success = request.SerializeToString(&serialized_request);
+  DCHECK(success);
+  return serialized_request;
+}
+
+// static
 void ProtocolUtils::AddScript(const SupportedScriptProto& script_proto,
                               std::vector<std::unique_ptr<Script>>* scripts) {
   auto script = std::make_unique<Script>();

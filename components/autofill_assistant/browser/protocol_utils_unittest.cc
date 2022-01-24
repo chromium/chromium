@@ -40,6 +40,8 @@ class ProtocolUtilsTest : public testing::Test {
     client_context_proto_.set_is_direct_action(false);
     client_context_proto_.set_accounts_matching_status(
         ClientContextProto::UNKNOWN);
+    client_context_proto_.set_country("US");
+    client_context_proto_.set_locale("en-US");
   }
   ~ProtocolUtilsTest() override {}
 
@@ -156,6 +158,31 @@ TEST_F(ProtocolUtilsTest, CreateGetScriptsRequest) {
   EXPECT_THAT(request.script_parameters(),
               UnorderedElementsAreArray(parameters.ToProto()));
   EXPECT_EQ("http://example.com/", request.url());
+}
+
+TEST_F(ProtocolUtilsTest, CreateCapabilitiesByHashRequest) {
+  ScriptParameters parameters = {
+      {{"key_a", "value_a"}, {"INTENT", "DUMMY_INTENT"}}};
+
+  GetCapabilitiesByHashPrefixRequestProto request;
+  EXPECT_TRUE(
+      request.ParseFromString(ProtocolUtils::CreateCapabilitiesByHashRequest(
+          16U, {13ULL, 17ULL}, client_context_proto_, parameters)));
+
+  // Note: We can only send the following approved fields on the client_context:
+  ClientContextProto client_context;
+  client_context.set_locale(client_context_proto_.locale());
+  client_context.set_country(client_context_proto_.country());
+  client_context.mutable_chrome()->set_chrome_version(
+      client_context_proto_.chrome().chrome_version());
+  EXPECT_EQ(client_context, request.client_context());
+
+  EXPECT_EQ(request.hash_prefix_length(), 16U);
+  EXPECT_THAT(request.hash_prefix(), ElementsAre(13ULL, 17ULL));
+  EXPECT_THAT(
+      request.script_parameters(),
+      UnorderedElementsAreArray(base::flat_map<std::string, std::string>{
+          {"INTENT", "DUMMY_INTENT"}}));
 }
 
 TEST_F(ProtocolUtilsTest, AddScriptIgnoreInvalid) {
